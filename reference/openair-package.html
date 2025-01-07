@@ -3,7 +3,7 @@
 Tools to analyse, interpret and understand air pollution data. Data are typically regular time series and air quality measurement, meteorological data and dispersion model output can be analysed. The package is described in Carslaw and Ropkins (2012, doi:10.1016/j.envsoft.2011.09.008
 ) and subsequent papers."><meta property="og:description" content="
 Tools to analyse, interpret and understand air pollution data. Data are typically regular time series and air quality measurement, meteorological data and dispersion model output can be analysed. The package is described in Carslaw and Ropkins (2012, doi:10.1016/j.envsoft.2011.09.008
-) and subsequent papers."><meta property="og:image" content="https://davidcarslaw.github.io/openair/logo.png"></head><body>
+) and subsequent papers."><meta property="og:image" content="https://openair-project.github.io/openair/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -22,10 +22,10 @@ Tools to analyse, interpret and understand air pollution data. Data are typicall
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/openair.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Functions</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">News</a></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://bookdown.org/david_carslaw/openair/">Book (external)</a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://openair-project.github.io/book/">Book (external)</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/davidcarslaw/openair/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/openair-project/openair/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul></div>
 
 
@@ -34,7 +34,7 @@ Tools to analyse, interpret and understand air pollution data. Data are typicall
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>openair: Tools for the Analysis of Air Pollution Data</h1>
-      <small class="dont-index">Source: <a href="https://github.com/davidcarslaw/openair/blob/master/R/openair-package.R" class="external-link"><code>R/openair-package.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/openair-project/openair/blob/master/R/openair-package.R" class="external-link"><code>R/openair-package.R</code></a></small>
       <div class="d-none name"><code>openair-package.Rd</code></div>
     </div>
 
@@ -65,7 +65,7 @@ the UK Automatic Urban and Rural Network (AURN), networks run by King's
 College London (e.g. the LAQN) and the Scottish Air Quality Network (SAQN).</p>
 <p>The package has a number of requirements for input data and these are
 discussed in the manual (available on the <code>openair</code> website at
-<a href="https://davidcarslaw.github.io/openair/">https://davidcarslaw.github.io/openair/</a>). The key requirements are
+<a href="https://openair-project.github.io/openair/">https://openair-project.github.io/openair/</a>). The key requirements are
 that a date or date-time field must have the name <code>date' (and can be \code{Date} or \code{POSIXct} format), that wind speed is represented as </code>ws' and that wind direction is `wd'.</p>
 <p>Most functions work in a very straightforward way, but offer many options
 for finer control and perhaps more in-depth analysis.</p>
@@ -75,7 +75,7 @@ other people to function properly.</p>
 installed, and this requires a connection to the internet. Other packages
 required come with the R base system.  If there are problems with the
 automatic download of these packages, see
-<a href="https://davidcarslaw.github.io/openair/">https://davidcarslaw.github.io/openair/</a> for more details.</p>
+<a href="https://openair-project.github.io/openair/">https://openair-project.github.io/openair/</a> for more details.</p>
 <p>NOTE: openair assumes that data are not expressed in local time where
 'Daylight Saving Time' is used. All functions check that this is the case
 and issue a warning if TRUE. It is recommended that data are expressed in
@@ -114,9 +114,9 @@ quality data analysis.  Environmental Modelling &amp; Software. Volume 27-28,
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>See <a href="https://davidcarslaw.github.io/openair/">https://davidcarslaw.github.io/openair/</a> for up to date
+    <div class="dont-index"><p>See <a href="https://openair-project.github.io/openair/">https://openair-project.github.io/openair/</a> for up to date
 information on the project, and the openair book
-(<a href="https://bookdown.org/david_carslaw/openair/" class="external-link">https://bookdown.org/david_carslaw/openair/</a>) for thorough
+(<a href="https://openair-project.github.io/book/" class="external-link">https://openair-project.github.io/book/</a>) for thorough
 documentation and examples.</p></div>
     </div>
     <div class="section level2">
@@ -130,7 +130,7 @@ documentation and examples.</p></div>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># load package</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://davidcarslaw.github.io/openair/">openair</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://openair-project.github.io/openair/">openair</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># summarise data in a compact way</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="summaryPlot.html">summaryPlot</a></span><span class="op">(</span><span class="va">mydata</span><span class="op">)</span></span></span>
