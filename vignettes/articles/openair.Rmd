@@ -9,7 +9,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-This vignette outlines some core functionality in `{openair}`. For further examples, please see the [online book](https://bookdown.org/david_carslaw/openair/).
+This vignette outlines some core functionality in `{openair}`. For further examples, please see the [online book](https://openair-project.github.io/book/).
 
 ```{r setup}
 library(openair)
@@ -95,7 +95,7 @@ windRose(mydata,
 
 Wind roses summarising the wind conditions at a monitoring station per year, demonstrating the `{openair}` type option.
 
-There are many flavours of bivariate polar plots, as described [here](https://bookdown.org/david_carslaw/openair/sections/directional-analysis/polar-plots.html) that are useful for understanding air pollution sources.
+There are many flavours of bivariate polar plots, as described [here](https://openair-project.github.io/book/sections/directional-analysis/polar-plots.html) that are useful for understanding air pollution sources.
 
 ```{r polarplot}
 polarPlot(mydata,

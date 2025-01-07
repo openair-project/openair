@@ -1,4 +1,4 @@
-url: https://davidcarslaw.github.io/openair/
+url: https://openair-project.github.io/openair/
 template:
   bootstrap: 5
   bslib:
@@ -19,7 +19,7 @@ navbar:
       href: news/index.html
     book:
       text: Book (external)
-      href: https://bookdown.org/david_carslaw/openair/
+      href: https://openair-project.github.io/book/
 
 reference:
 - title: Data

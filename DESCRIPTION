@@ -18,9 +18,9 @@ Description: Tools to analyse, interpret and understand air pollution
     analysed. The package is described in Carslaw and Ropkins (2012,
     <doi:10.1016/j.envsoft.2011.09.008>) and subsequent papers.
 License: GPL (>= 2)
-URL: https://davidcarslaw.github.io/openair/,
-    https://github.com/davidcarslaw/openair
-BugReports: https://github.com/davidcarslaw/openair/issues
+URL: https://openair-project.github.io/openair/,
+    https://github.com/openair-project/openair
+BugReports: https://github.com/openair-project/openair/issues
 Depends:
     R (>= 3.2.0)
 Imports:

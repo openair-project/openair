@@ -195,7 +195,7 @@
 - add option to `TaylorDiagram` for annotation of observed data.
 - fix issue with `timevariation` when `difference = TRUE`
 - fix `trajCluster` issue to do with `dplyr`
-- access other time-averaged air quality data using `importAURN`, `importSAQN`, `importWAQN`, `importAQE` and `importNI`. New option `data_type`, which can be "hourly" (default), "annual", "monthly", "daily" and "15min" (for SO~2~). These new data sources should make it much easier to work with long-term time series with many sites. See [the openair manual](https://bookdown.org/david_carslaw/openair/sections/data-access/UK-air-quality-data.html) for more details.
+- access other time-averaged air quality data using `importAURN`, `importSAQN`, `importWAQN`, `importAQE` and `importNI`. New option `data_type`, which can be "hourly" (default), "annual", "monthly", "daily" and "15min" (for SO~2~). These new data sources should make it much easier to work with long-term time series with many sites. See [the openair manual](https://openair-project.github.io/book/sections/data-access/UK-air-quality-data.html) for more details.
 - fix terrible spelling in `selectRunning`.
 
 # openair 2.8-6
@@ -382,7 +382,7 @@
 - fix issue with `type` when used with `timeProp`
 - fix bias correction when not default type in `windRose`
 - fix pch colour bug in `timePlot`
-- add option `alpha` to `polarPlot` to control transparency of plotted surface. Mostly useful for overlaying polar plots on leaflet maps (see [openairmaps](https://github.com/davidcarslaw/openairmaps) package)
+- add option `alpha` to `polarPlot` to control transparency of plotted surface. Mostly useful for overlaying polar plots on leaflet maps (see [openairmaps](https://github.com/openair-project/openairmaps) package)
 - enhance `grid.line` option in `windRose` so that users can control grid spacing, line type and line colour
 
 # openair 1.9-9

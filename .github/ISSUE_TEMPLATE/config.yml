@@ -1,5 +1,5 @@
 blank_issues_enabled: true
 contact_links:
   - name: openair book
-    url: https://bookdown.org/david_carslaw/openair/
+    url: https://openair-project.github.io/book/
     about: Before you submit your issue, check to see if your answer is already in the openair book!

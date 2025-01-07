@@ -204,8 +204,6 @@ primarily determined by direct emissions of NO2 and the availability of One
 to react with NO to form NO2. The method aims to quantify the amount of NO2
 formed through these two processes by seeking the optimum level of primary
 NO2 that gives the least error.
-
-Test data is provided at \url{https://davidcarslaw.github.io/openair/}.
 }
 \references{
 Clapp, L.J., Jenkin, M.E., 2001. Analysis of the relationship
