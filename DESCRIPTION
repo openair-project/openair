@@ -17,7 +17,7 @@ Description: Tools to analyse, interpret and understand air pollution
     measurement, meteorological data and dispersion model output can be
     analysed. The package is described in Carslaw and Ropkins (2012,
     <doi:10.1016/j.envsoft.2011.09.008>) and subsequent papers.
-License: GPL (>= 2)
+License: MIT + file LICENSE
 URL: https://openair-project.github.io/openair/,
     https://github.com/openair-project/openair
 BugReports: https://github.com/openair-project/openair/issues
@@ -56,6 +56,8 @@ Suggests:
     spelling
 LinkingTo: 
     Rcpp
+VignetteBuilder: 
+    knitr
 ByteCompile: true
 Config/Needs/website: openair-project/openairpkgdown
 Encoding: UTF-8
@@ -64,4 +66,3 @@ LazyData: yes
 LazyLoad: yes
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-VignetteBuilder: knitr
