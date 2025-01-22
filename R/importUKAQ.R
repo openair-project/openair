@@ -95,9 +95,9 @@
 #'   `2000:2020`. To import several specific years use `year = c(2000, 2010,
 #'   2020)`.
 #' @param source The network to which the `site`(s) belong. The default, `NULL`,
-#'   allows [importUKAQ()] to guess the correct `source`, preferring national 
-#'   networks over locally managed networks. Alternatively, users can define a `source`.
-#'   Providing a single network will attempt to import all of the
+#'   allows [importUKAQ()] to guess the correct `source`, preferring national
+#'   networks over locally managed networks. Alternatively, users can define a
+#'   `source`. Providing a single network will attempt to import all of the
 #'   given `site`s from the provided network. Alternatively, a vector of sources
 #'   can be provided of the same length as `site` to indicate which network each
 #'   `site` individually belongs. Available networks include:
@@ -125,15 +125,18 @@
 #'   c("nox", "no2")}. Pollutant names can be upper or lower case.
 #' @param hc Include hydrocarbon measurements in the imported data? Defaults to
 #'   `FALSE` as most users will not be interested in using hydrocarbon data.
-#' @param meta Append the site type, latitude and longitude of each selected
-#'   `site`? Defaults to `FALSE`.
+#' @param meta Append metadata columns to data for each selected `site`?
+#'   Defaults to `FALSE`. Columns are defined using `meta_columns`.
+#' @param meta_columns The specific columns to append when `meta = TRUE`.
+#'   Defaults to site type, latitude and longitude. Should be any of the
+#'   metadata columns available via [importMeta()].
 #' @param meteo Append modelled meteorological data, if available? Defaults to
 #'   `TRUE`, which will return wind speed (`ws`), wind direction (`wd`) and
 #'   ambient temperature (`air_temp`). The variables are calculated from using
 #'   the WRF model run by Ricardo Energy & Environment and are available for
 #'   most but not all networks. Setting `meteo = FALSE` is useful if you have
-#'   other meteorological data to use in preference, for example from
-#'   the `worldmet` package.
+#'   other meteorological data to use in preference, for example from the
+#'   `worldmet` package.
 #' @param ratified Append `qc` column(s) to hourly data indicating whether each
 #'   species was ratified (i.e., quality-checked)?  Defaults to `FALSE`.
 #' @param to_narrow Return the data in a "narrow"/"long"/"tidy" format? By
@@ -190,6 +193,7 @@ importUKAQ <-
            pollutant = "all",
            hc = FALSE,
            meta = FALSE,
+           meta_columns = c("site_type", "latitude", "longitude"),
            meteo = TRUE,
            ratified = FALSE,
            to_narrow = FALSE,
@@ -213,6 +217,27 @@ importUKAQ <-
         cli::cli_abort("Please provide a {.field source} when {.field data_type} is '{data_type}'.")
       }
       source <- guess_source(site)
+    }
+    
+    # check correct "meta_columns" are passed
+    if (meta) {
+      meta_opts <- c("site_type",
+                     "latitude",
+                     "longitude",
+                     "zone",
+                     "agglomeration",
+                     "local_authority")
+      
+      if ("local" %in% source) {
+        meta_opts <- append(meta_opts, "provider")
+      }
+      
+      meta_columns <-
+        rlang::arg_match(
+          meta_columns,
+          meta_opts, 
+          multiple = TRUE
+        )
     }
 
     # obtain correct URL info for the source
@@ -418,7 +443,8 @@ importUKAQ <-
 
     # add meta data?
     if (meta) {
-      aq_data <- add_meta(source = source, aq_data)
+      aq_data <-
+        add_meta(source = source, columns = meta_columns, aq_data)
     }
 
     # arrange output by source
@@ -457,6 +483,7 @@ importAURN <-
            pollutant = "all",
            hc = FALSE,
            meta = FALSE,
+           meta_columns = c("site_type", "latitude", "longitude"),
            meteo = TRUE,
            ratified = FALSE,
            to_narrow = FALSE,
@@ -473,6 +500,7 @@ importAURN <-
       pollutant = pollutant,
       hc = hc,
       meta = meta,
+      meta_columns = meta_columns,
       meteo = meteo,
       ratified = ratified,
       to_narrow = to_narrow,
@@ -491,6 +519,7 @@ importAQE <-
            data_type = "hourly",
            pollutant = "all",
            meta = FALSE,
+           meta_columns = c("site_type", "latitude", "longitude"),
            meteo = TRUE,
            ratified = FALSE,
            to_narrow = FALSE,
@@ -506,6 +535,7 @@ importAQE <-
       data_type = data_type,
       pollutant = pollutant,
       meta = meta,
+      meta_columns = meta_columns,
       meteo = meteo,
       ratified = ratified,
       to_narrow = to_narrow,
@@ -524,6 +554,7 @@ importSAQN <-
            data_type = "hourly",
            pollutant = "all",
            meta = FALSE,
+           meta_columns = c("site_type", "latitude", "longitude"),
            meteo = TRUE,
            ratified = FALSE,
            to_narrow = FALSE,
@@ -539,6 +570,7 @@ importSAQN <-
       data_type = data_type,
       pollutant = pollutant,
       meta = meta,
+      meta_columns = meta_columns,
       meteo = meteo,
       ratified = ratified,
       to_narrow = to_narrow,
@@ -557,6 +589,7 @@ importWAQN <-
            data_type = "hourly",
            pollutant = "all",
            meta = FALSE,
+           meta_columns = c("site_type", "latitude", "longitude"),
            meteo = TRUE,
            ratified = FALSE,
            to_narrow = FALSE,
@@ -572,6 +605,7 @@ importWAQN <-
       data_type = data_type,
       pollutant = pollutant,
       meta = meta,
+      meta_columns = meta_columns,
       meteo = meteo,
       ratified = ratified,
       to_narrow = to_narrow,
@@ -590,6 +624,7 @@ importNI <-
            data_type = "hourly",
            pollutant = "all",
            meta = FALSE,
+           meta_columns = c("site_type", "latitude", "longitude"),
            meteo = TRUE,
            ratified = FALSE,
            to_narrow = FALSE,
@@ -605,6 +640,7 @@ importNI <-
       data_type = data_type,
       pollutant = pollutant,
       meta = meta,
+      meta_columns = meta_columns,
       meteo = meteo,
       ratified = ratified,
       to_narrow = to_narrow,
@@ -623,6 +659,7 @@ importLocal <-
            data_type = "hourly",
            pollutant = "all",
            meta = FALSE,
+           meta_columns = c("site_type", "latitude", "longitude"),
            to_narrow = FALSE,
            verbose = FALSE,
            progress = TRUE) {
@@ -636,6 +673,7 @@ importLocal <-
       data_type = data_type,
       pollutant = pollutant,
       meta = meta,
+      meta_columns = meta_columns,
       meteo = TRUE,
       ratified = FALSE,
       to_narrow = to_narrow,

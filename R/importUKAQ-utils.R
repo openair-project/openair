@@ -325,11 +325,14 @@ readDAQI <- function(files, year, source) {
 #' @param source network of interest (e.g., "aurn")
 #' @param aq_data imported air quality data (annual, daqi, or otherwise)
 #' @noRd
-add_meta <- function(source, aq_data) {
-  meta_data <- importMeta(source = unique(source), duplicate = TRUE)
+add_meta <- function(source, columns, aq_data) {
+  meta_data <-
+    importMeta(source = unique(source),
+               all = TRUE,
+               duplicate = TRUE)
 
   meta_data <- distinct(meta_data, source, site, .keep_all = TRUE) %>%
-    select(source, site, code, latitude, longitude, site_type)
+    select(source, site, code, dplyr::all_of(columns))
 
   aq_data <- left_join(aq_data, meta_data, by = c("source", "code", "site"))
 
