@@ -73,8 +73,10 @@ from a site. To import only NOx and NO2 for example use \code{pollutant =
 Defaults to \code{FALSE}. Columns are defined using \code{meta_columns}.}
 
 \item{meta_columns}{The specific columns to append when \code{meta = TRUE}.
-Defaults to site type, latitude and longitude. Should be any of the
-metadata columns available via \code{\link[=importMeta]{importMeta()}}.}
+Defaults to site type, latitude and longitude. Can be any of \code{"site_type"},
+\code{"latitude"}, \code{"longitude"}, \code{"zone"}, \code{"agglomeration"}, and
+\code{"local_authority"} (as well as \code{"provider"} for locally managed data). See
+\code{\link[=importMeta]{importMeta()}} for more complete information.}
 
 \item{meteo}{Append modelled meteorological data, if available? Defaults to
 \code{TRUE}, which will return wind speed (\code{ws}), wind direction (\code{wd}) and

@@ -128,8 +128,10 @@
 #' @param meta Append metadata columns to data for each selected `site`?
 #'   Defaults to `FALSE`. Columns are defined using `meta_columns`.
 #' @param meta_columns The specific columns to append when `meta = TRUE`.
-#'   Defaults to site type, latitude and longitude. Should be any of the
-#'   metadata columns available via [importMeta()].
+#'   Defaults to site type, latitude and longitude. Can be any of `"site_type"`,
+#'   `"latitude"`, `"longitude"`, `"zone"`, `"agglomeration"`, and
+#'   `"local_authority"` (as well as `"provider"` for locally managed data). See
+#'   [importMeta()] for more complete information.
 #' @param meteo Append modelled meteorological data, if available? Defaults to
 #'   `TRUE`, which will return wind speed (`ws`), wind direction (`wd`) and
 #'   ambient temperature (`air_temp`). The variables are calculated from using
