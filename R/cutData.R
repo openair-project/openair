@@ -330,7 +330,6 @@ cutData <- function(x, type = "default", hemisphere = "northern",
     }
 
     if (type %in% c("seasonyear", "yearseason")) {
-
       # this cuts data to ensure that a season spans two years to keep it together
       # For example, winter 2015 is considered  Dec. 2014 and Jan. Feb, 2015
 
@@ -341,17 +340,18 @@ cutData <- function(x, type = "default", hemisphere = "northern",
       ## calculate year
       x <- mutate(
         x,
-        year = lubridate::year(date),
-        month = lubridate::month(date)
+        openair__year = lubridate::year(date),
+        openair__month = lubridate::month(date)
       )
 
       ## ids where month = 12, make December part of following year's season
-      ids <- which(x$month == 12)
-      x$year[ids] <- x$year[ids] + 1
+      ids <- which(x$openair__month == 12)
+      x$openair__year[ids] <- x$openair__year[ids] + 1
 
-      labels <- paste(x$season, "-", x$year)
+      labels <- paste(x$season, "-", x$openair__year)
       x[[type]] <- labels
       x[[type]] <- ordered(x[[type]], levels = unique(x[[type]]))
+      x$openair__year <- x$openair__month <- NULL
     }
 
     if (type == "weekend") {
