@@ -7,6 +7,7 @@
 cutData(
   x,
   type = "default",
+  name = NULL,
   hemisphere = "northern",
   n.levels = 4,
   start.day = 1,
@@ -28,6 +29,11 @@ Pre-defined values are: \code{"default"}, \code{"year"}, \code{"hour"}, \code{"m
 \code{type} can also be the name of a numeric or factor. If a numeric column
 name is supplied \code{\link[=cutData]{cutData()}} will split the data into four quantiles.
 Factors levels will be used to split the data without any adjustment.}
+
+\item{name}{By default, the columns created by \code{\link[=cutData]{cutData()}} are named after
+their \code{type} option. Specifying \code{name} defines other names for the columns,
+which map onto the \code{type} options in the same order they are given. The
+length of \code{name} should therefore be equal to the length of \code{type}.}
 
 \item{hemisphere}{Can be \code{"northern"} or \code{"southern"}, used to split data
 into seasons.}
@@ -55,8 +61,8 @@ longitudes.}
 \item{...}{All additional parameters are passed on to next function(s).}
 }
 \value{
-Returns the data frame, \code{x}, with a column appended defined by
-\code{type}.
+Returns the data frame, \code{x}, with columns appended as defined by
+\code{type} and \code{name}.
 }
 \description{
 Utility function to split data frames up in various ways for conditioning

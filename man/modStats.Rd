@@ -53,6 +53,10 @@ available.}
   Arguments passed on to \code{\link[=cutData]{cutData}}
   \describe{
     \item{\code{x}}{A data frame containing a field \code{date}.}
+    \item{\code{name}}{By default, the columns created by \code{\link[=cutData]{cutData()}} are named after
+their \code{type} option. Specifying \code{name} defines other names for the columns,
+which map onto the \code{type} options in the same order they are given. The
+length of \code{name} should therefore be equal to the length of \code{type}.}
     \item{\code{hemisphere}}{Can be \code{"northern"} or \code{"southern"}, used to split data
 into seasons.}
     \item{\code{n.levels}}{Number of quantiles to split numeric data into.}

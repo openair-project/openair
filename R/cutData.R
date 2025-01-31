@@ -78,6 +78,10 @@
 #'   `type` can also be the name of a numeric or factor. If a numeric column
 #'   name is supplied [cutData()] will split the data into four quantiles.
 #'   Factors levels will be used to split the data without any adjustment.
+#' @param name By default, the columns created by [cutData()] are named after
+#'   their `type` option. Specifying `name` defines other names for the columns,
+#'   which map onto the `type` options in the same order they are given. The
+#'   length of `name` should therefore be equal to the length of `type`.
 #' @param hemisphere Can be `"northern"` or `"southern"`, used to split data
 #'   into seasons.
 #' @param n.levels Number of quantiles to split numeric data into.
@@ -98,8 +102,8 @@
 #'   longitudes.
 #' @param ... All additional parameters are passed on to next function(s).
 #' @export
-#' @return Returns the data frame, `x`, with a column appended defined by
-#'   `type`.
+#' @return Returns the data frame, `x`, with columns appended as defined by
+#'   `type` and `name`.
 #' @author David Carslaw
 #' @author Karl Ropkins (`"daylight"` option)
 #' @examples
@@ -109,6 +113,7 @@
 #' head(mydata)
 cutData <- function(x,
                     type = "default",
+                    name = NULL,
                     hemisphere = "northern",
                     n.levels = 4,
                     start.day = 1,
@@ -117,7 +122,17 @@ cutData <- function(x,
                     latitude = 51,
                     longitude = -0.5,
                     ...) {
-  makeCond <- function(x, type = "default") {
+  if (!is.null(name)) {
+    if (length(name) != length(type)) {
+      cli::cli_abort("Length of {.field name} ({.val {length(name)}}) not equal to length of {.field type} ({.val {length(type)}}).")
+    }
+  }
+  
+  makeCond <- function(x, name = NULL, type = "default") {
+    if (is.null(name)) {
+      name <- type
+    }
+    
     # reserved types
     conds <- c(
       "default",
@@ -143,7 +158,7 @@ cutData <- function(x,
     # factor
     if (type %in% conds && type %in% names(x)) {
       if (is.factor(x[[type]])) {
-        x[[type]] <- factor(x[[type]]) ## remove unused factor levels
+        x[[name]] <- factor(x[[type]]) ## remove unused factor levels
         return(x)
       }
     }
@@ -152,10 +167,10 @@ cutData <- function(x,
     if (!type %in% conds) {
       # error if 'type' isn't in the document
       if (!type %in% names(x)) {
-        cli::cli_abort(
+        cli::cli_abort(call = NULL,
           c(
-            "x" = "{.field type} is neither a built-in option, nor a column in {.field x}.",
-            "i" = "{.emph Preseved names:} {conds}",
+            "x" = "{.field type} '{type}' is neither a built-in option, nor a column in {.field x}.",
+            "i" = "{.emph Built-ins:} {conds}",
             "i" = "{.emph Names in {.field x}}: {names(x)}"
           )
         )
@@ -166,13 +181,13 @@ cutData <- function(x,
 
       # split by quantiles if numeric, else set to factor
       if (inherits(x[[type]], c("numeric", "integer"))) {
-        x[[type]] <- cutVecNumeric(x[[type]],
+        x[[name]] <- cutVecNumeric(x[[type]],
           type = type,
           n.levels = n.levels,
           is.axis = is.axis
         )
       } else {
-        x[[type]] <- factor(x[[type]])
+        x[[name]] <- factor(x[[type]])
       }
 
       return(x)
@@ -182,7 +197,7 @@ cutData <- function(x,
       # shows dates (if available)
       # not always available e.g. scatterPlot
       if ("date" %in% names(x)) {
-        x[[type]] <- factor(paste(
+        x[[name]] <- factor(paste(
           format(min(x$date), "%d %B %Y"),
           " to ",
           format(max(x$date), "%d %B %Y"),
@@ -191,65 +206,65 @@ cutData <- function(x,
         ## order the data by date
         x <- arrange(x, date)
       } else {
-        x[[type]] <- factor("all data")
+        x[[name]] <- factor("all data")
       }
     }
 
     if (type == "year") {
-      x[[type]] <- cutVecYear(x$date)
+      x[[name]] <- cutVecYear(x$date)
     }
 
     if (type == "hour") {
-      x[[type]] <- cutVecHour(x$date)
+      x[[name]] <- cutVecHour(x$date)
     }
 
     if (type == "month") {
-      x[[type]] <- cutVecMonth(x$date, is.axis = is.axis)
+      x[[name]] <- cutVecMonth(x$date, is.axis = is.axis)
     }
 
     if (type %in% c("monthyear", "yearmonth")) {
-      x[[type]] <- cutVecMonthyear(x$date, is.axis = is.axis)
+      x[[name]] <- cutVecMonthyear(x$date, is.axis = is.axis)
     }
 
     if (type == "week") {
-      x[[type]] <- cutVecWeek(x$date)
+      x[[name]] <- cutVecWeek(x$date)
     }
 
     if (type == "season") {
-      x[[type]] <- cutVecSeasons(x$date, hemisphere = hemisphere)
+      x[[name]] <- cutVecSeasons(x$date, hemisphere = hemisphere)
     }
 
     if (type %in% c("seasonyear", "yearseason")) {
-      x[[type]] <- cutVecSeasonyear(x$date, hemisphere = hemisphere)
+      x[[name]] <- cutVecSeasonyear(x$date, hemisphere = hemisphere)
     }
 
     if (type == "weekend") {
-      x[[type]] <- cutVecWeekend(x$date)
+      x[[name]] <- cutVecWeekend(x$date)
     }
 
     if (type == "weekday") {
-      x[[type]] <- cutVecWeekday(x$date, start.day = start.day)
+      x[[name]] <- cutVecWeekday(x$date, start.day = start.day)
     }
 
     if (type == "wd") {
       x <- dropNAbyType(x, "wd")
-      x[[type]] <- cutVecWinddir(x$wd)
+      x[[name]] <- cutVecWinddir(x$wd)
     }
 
     if (type %in% c("dst", "bstgmt", "gmtbst")) {
       type <- "dst" ## keep it simple
-      x[[type]] <- cutVecDST(x$date, local.tz = local.tz)
+      x[[name]] <- cutVecDST(x$date, local.tz = local.tz)
     }
 
     if (type == "daylight") {
-      x[[type]] <- cutVecDaylight(x$date, latitude, longitude, ...)
+      x[[name]] <- cutVecDaylight(x$date, latitude, longitude, ...)
     }
 
     return(x)
   }
 
   for (i in seq_along(type)) {
-    x <- makeCond(x, type[i])
+    x <- makeCond(x, name = name[i], type = type[i])
   }
   return(x)
 }
