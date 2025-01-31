@@ -8,6 +8,7 @@ cutData(
   x,
   type = "default",
   name = NULL,
+  suffix = NULL,
   hemisphere = "northern",
   n.levels = 4,
   start.day = 1,
@@ -34,6 +35,11 @@ Factors levels will be used to split the data without any adjustment.}
 their \code{type} option. Specifying \code{name} defines other names for the columns,
 which map onto the \code{type} options in the same order they are given. The
 length of \code{name} should therefore be equal to the length of \code{type}.}
+
+\item{suffix}{If \code{name} is not specified, \code{suffix} will be appended to any
+added columns that would otherwise overwrite existing columns. For example,
+\code{cutData(mydata, "nox", suffix = "_cuts")} would append a \code{nox_cuts} column
+rather than overwriting \code{nox}.}
 
 \item{hemisphere}{Can be \code{"northern"} or \code{"southern"}, used to split data
 into seasons.}

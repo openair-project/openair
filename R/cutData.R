@@ -82,6 +82,10 @@
 #'   their `type` option. Specifying `name` defines other names for the columns,
 #'   which map onto the `type` options in the same order they are given. The
 #'   length of `name` should therefore be equal to the length of `type`.
+#' @param suffix If `name` is not specified, `suffix` will be appended to any
+#'   added columns that would otherwise overwrite existing columns. For example,
+#'   `cutData(mydata, "nox", suffix = "_cuts")` would append a `nox_cuts` column
+#'   rather than overwriting `nox`.
 #' @param hemisphere Can be `"northern"` or `"southern"`, used to split data
 #'   into seasons.
 #' @param n.levels Number of quantiles to split numeric data into.
@@ -114,6 +118,7 @@
 cutData <- function(x,
                     type = "default",
                     name = NULL,
+                    suffix = NULL,
                     hemisphere = "northern",
                     n.levels = 4,
                     start.day = 1,
@@ -131,6 +136,9 @@ cutData <- function(x,
   makeCond <- function(x, name = NULL, type = "default") {
     if (is.null(name)) {
       name <- type
+      if (name %in% names(x)) {
+        name <- paste0(name, suffix)
+      }
     }
     
     # reserved types
