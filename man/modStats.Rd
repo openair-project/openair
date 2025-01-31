@@ -53,10 +53,14 @@ available.}
   Arguments passed on to \code{\link[=cutData]{cutData}}
   \describe{
     \item{\code{x}}{A data frame containing a field \code{date}.}
-    \item{\code{name}}{By default, the columns created by \code{\link[=cutData]{cutData()}} are named after
-their \code{type} option. Specifying \code{name} defines other names for the columns,
+    \item{\code{names}}{By default, the columns created by \code{\link[=cutData]{cutData()}} are named after
+their \code{type} option. Specifying \code{names} defines other names for the columns,
 which map onto the \code{type} options in the same order they are given. The
-length of \code{name} should therefore be equal to the length of \code{type}.}
+length of \code{names} should therefore be equal to the length of \code{type}.}
+    \item{\code{suffix}}{If \code{name} is not specified, \code{suffix} will be appended to any
+added columns that would otherwise overwrite existing columns. For example,
+\code{cutData(mydata, "nox", suffix = "_cuts")} would append a \code{nox_cuts} column
+rather than overwriting \code{nox}.}
     \item{\code{hemisphere}}{Can be \code{"northern"} or \code{"southern"}, used to split data
 into seasons.}
     \item{\code{n.levels}}{Number of quantiles to split numeric data into.}

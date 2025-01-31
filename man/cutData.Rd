@@ -7,7 +7,7 @@
 cutData(
   x,
   type = "default",
-  name = NULL,
+  names = NULL,
   suffix = NULL,
   hemisphere = "northern",
   n.levels = 4,
@@ -31,10 +31,10 @@ Pre-defined values are: \code{"default"}, \code{"year"}, \code{"hour"}, \code{"m
 name is supplied \code{\link[=cutData]{cutData()}} will split the data into four quantiles.
 Factors levels will be used to split the data without any adjustment.}
 
-\item{name}{By default, the columns created by \code{\link[=cutData]{cutData()}} are named after
-their \code{type} option. Specifying \code{name} defines other names for the columns,
+\item{names}{By default, the columns created by \code{\link[=cutData]{cutData()}} are named after
+their \code{type} option. Specifying \code{names} defines other names for the columns,
 which map onto the \code{type} options in the same order they are given. The
-length of \code{name} should therefore be equal to the length of \code{type}.}
+length of \code{names} should therefore be equal to the length of \code{type}.}
 
 \item{suffix}{If \code{name} is not specified, \code{suffix} will be appended to any
 added columns that would otherwise overwrite existing columns. For example,
