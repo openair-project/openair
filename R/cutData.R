@@ -78,10 +78,10 @@
 #'   `type` can also be the name of a numeric or factor. If a numeric column
 #'   name is supplied [cutData()] will split the data into four quantiles.
 #'   Factors levels will be used to split the data without any adjustment.
-#' @param name By default, the columns created by [cutData()] are named after
-#'   their `type` option. Specifying `name` defines other names for the columns,
+#' @param names By default, the columns created by [cutData()] are named after
+#'   their `type` option. Specifying `names` defines other names for the columns,
 #'   which map onto the `type` options in the same order they are given. The
-#'   length of `name` should therefore be equal to the length of `type`.
+#'   length of `names` should therefore be equal to the length of `type`.
 #' @param suffix If `name` is not specified, `suffix` will be appended to any
 #'   added columns that would otherwise overwrite existing columns. For example,
 #'   `cutData(mydata, "nox", suffix = "_cuts")` would append a `nox_cuts` column
@@ -117,7 +117,7 @@
 #' head(mydata)
 cutData <- function(x,
                     type = "default",
-                    name = NULL,
+                    names = NULL,
                     suffix = NULL,
                     hemisphere = "northern",
                     n.levels = 4,
@@ -127,16 +127,16 @@ cutData <- function(x,
                     latitude = 51,
                     longitude = -0.5,
                     ...) {
-  if (!is.null(name)) {
-    if (length(name) != length(type)) {
-      cli::cli_abort("Length of {.field name} ({.val {length(name)}}) not equal to length of {.field type} ({.val {length(type)}}).")
+  if (!is.null(names)) {
+    if (length(names) != length(type)) {
+      cli::cli_abort("Length of {.field names} ({.val {length(names)}}) not equal to length of {.field type} ({.val {length(type)}}).")
     }
   }
   
   makeCond <- function(x, name = NULL, type = "default") {
-    if (is.null(name)) {
+    if (is.null(names)) {
       name <- type
-      if (name %in% names(x)) {
+      while (name %in% names(x)) {
         name <- paste0(name, suffix)
       }
     }
@@ -272,7 +272,7 @@ cutData <- function(x,
   }
 
   for (i in seq_along(type)) {
-    x <- makeCond(x, name = name[i], type = type[i])
+    x <- makeCond(x, name = names[i], type = type[i])
   }
   return(x)
 }
