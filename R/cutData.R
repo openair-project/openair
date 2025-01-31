@@ -136,8 +136,10 @@ cutData <- function(x,
   makeCond <- function(x, name = NULL, type = "default") {
     if (is.null(names)) {
       name <- type
-      while (name %in% names(x)) {
-        name <- paste0(name, suffix)
+      if (!is.null(suffix)) {
+        while (name %in% names(x)) {
+          name <- paste0(name, suffix)
+        }
       }
     }
     
@@ -239,7 +241,7 @@ cutData <- function(x,
     }
 
     if (type == "season") {
-      x[[name]] <- cutVecSeasons(x$date, hemisphere = hemisphere)
+      x[[name]] <- cutVecSeason(x$date, hemisphere = hemisphere)
     }
 
     if (type %in% c("seasonyear", "yearseason")) {
@@ -606,7 +608,7 @@ cutVecDaylight <- function(x,
 
 #' Cut a vector into seasons
 #' @noRd
-cutVecSeasons <- function(x, hemisphere) {
+cutVecSeason <- function(x, hemisphere) {
   hemisphere <- rlang::arg_match(hemisphere, c("northern", "southern"))
   
   # need to work out month names local to the user and extract first letter
