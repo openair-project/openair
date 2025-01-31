@@ -53,26 +53,23 @@ available.}
   Arguments passed on to \code{\link[=cutData]{cutData}}
   \describe{
     \item{\code{x}}{A data frame containing a field \code{date}.}
-    \item{\code{hemisphere}}{Can be \code{"northern"} or \code{"southern"}, used to
-split data into seasons.}
+    \item{\code{hemisphere}}{Can be \code{"northern"} or \code{"southern"}, used to split data
+into seasons.}
     \item{\code{n.levels}}{Number of quantiles to split numeric data into.}
-    \item{\code{start.day}}{What day of the week should the \code{type = "weekday"}
-start on?  The user can change the start day by supplying an integer
-between 0 and 6. Sunday = 0, Monday = 1, \ldots For example to start the
-weekday plots on a Saturday, choose \code{start.day = 6}.}
-    \item{\code{is.axis}}{A logical (\code{TRUE}/\code{FALSE}), used to request
-shortened cut labels for axes.}
+    \item{\code{start.day}}{What day of the week should the \code{type = "weekday"} start on?
+The user can change the start day by supplying an integer between 0 and 6.
+Sunday = 0, Monday = 1, ... For example to start the weekday plots on a
+Saturday, choose \code{start.day = 6}.}
+    \item{\code{is.axis}}{A logical (\code{TRUE}/\code{FALSE}), used to request shortened cut
+labels for axes.}
     \item{\code{local.tz}}{Used for identifying whether a date has daylight savings time
 (DST) applied or not. Examples include \code{local.tz = "Europe/London"},
-\code{local.tz = "America/New_York"} i.e. time zones that assume DST.
+\code{local.tz = "America/New_York"}, i.e., time zones that assume DST.
 \url{https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones} shows time
 zones that should be valid for most systems. It is important that the
-original data are in GMT (UTC) or a fixed offset from GMT. See
-\code{import} and the openair manual for information on how to import data
-and ensure no DST is applied.}
-    \item{\code{latitude}}{The decimal latitude used in \code{type = "daylight"}.}
-    \item{\code{longitude}}{The decimal longitude. Note that locations west of Greenwich
-are negative.}
+original data are in GMT (UTC) or a fixed offset from GMT.}
+    \item{\code{latitude,longitude}}{The decimal latitude and longitudes used when \code{type = "daylight"}. Note that locations west of Greenwich have negative
+longitudes.}
   }}
 }
 \value{
