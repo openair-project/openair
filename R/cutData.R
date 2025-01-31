@@ -124,25 +124,25 @@ cutData <- function(x,
   ## function to cutData depending on choice of variable
   ## pre-defined types and user-defined types
   ## If another added, then amend checkPrep
-  
+
   ## note: is.axis modifies factor levels to give shorter labels for axis
   ##       generic label shortening handled at end of section
   ##       format(date, "%?") outputs modified by is.axis are set using temp
   ##       declared at at start of associated type section - karl
-  
+
   # so we know that openair has looked at the data
   attr(x, "source") <- "openair"
-  
-  
+
+
   makeCond <- function(x, type = "default") {
     ## if type is time based and already exists in data,
     ## just return data
-    
+
     # if (type %in% dateTypes & type %in% names(x) & attr(x, "source") != "openair") {
     #   message(paste0("\nUsing ", "'", type, "'", " in data frame and not date-based openair version. \nThis may result in different behaviour compared with openair calculations."))
     #   return(x)
     # }
-    
+
     conds <- c(
       "default",
       "year",
@@ -162,7 +162,7 @@ cutData <- function(x,
       "seasonyear",
       "yearseason"
     )
-    
+
     ## if conditioning type already built in, is present in data frame and is a factor
     if (type %in% conds & type %in% names(x)) {
       if (is.factor(x[[type]])) {
@@ -170,25 +170,26 @@ cutData <- function(x,
         return(x)
       }
     }
-    
+
     if (type %in% conds == FALSE) {
       ## generic, user-defined
       ## split by quantiles unless it is a factor, in which case keep as is
       ## number of quantiles set by n.levels
-      
+
       # don't want missing values in cuts
       if (anyNA(x[[type]])) {
         lenNA <- length(which(is.na(x[[type]])))
-        
+
         x <- x[!is.na(x[[type]]), ]
-        
+
         warning(paste0("removing ", lenNA, " missing rows due to ", type),
-                call. = FALSE)
+          call. = FALSE
+        )
       }
-      
+
       if (is.factor(x[[type]]) |
-          is.character(x[[type]]) | class(x[[type]])[1] == "Date" |
-          "POSIXt" %in% class(x[[type]])) {
+        is.character(x[[type]]) | class(x[[type]])[1] == "Date" |
+        "POSIXt" %in% class(x[[type]])) {
         ## drop unused levels while we are at it
         x[[type]] <- factor(x[[type]])
       } else {
@@ -196,31 +197,35 @@ cutData <- function(x,
           levels(cut(x[[type]], unique(
             quantile(
               x[[type]],
-              probs = seq(0, 1, length =
-                            n.levels + 1),
+              probs = seq(0, 1,
+                length =
+                  n.levels + 1
+              ),
               na.rm = TRUE
             )
           ), include.lowest = TRUE))
-        
+
         x[[type]] <- cut(x[[type]],
-                         unique(quantile(
-                           x[[type]],
-                           probs = seq(0, 1, length = n.levels + 1),
-                           na.rm = TRUE
-                         )),
-                         include.lowest = TRUE,
-                         labels = FALSE)
-        
+          unique(quantile(
+            x[[type]],
+            probs = seq(0, 1, length = n.levels + 1),
+            na.rm = TRUE
+          )),
+          include.lowest = TRUE,
+          labels = FALSE
+        )
+
         x[[type]] <- as.factor(x[[type]])
         temp.levels <- gsub("[(]|[)]|[[]|[]]", "", temp.levels)
         temp.levels <- gsub("[,]", " to ", temp.levels)
-        levels(x[[type]]) <- if (is.axis)
+        levels(x[[type]]) <- if (is.axis) {
           temp.levels
-        else
+        } else {
           paste(type, temp.levels)
+        }
       }
     }
-    
+
     if (type == "default") {
       ## shows dates (if available)
       ## not always available e.g. scatterPlot
@@ -237,61 +242,65 @@ cutData <- function(x,
         x[[type]] <- factor("all data")
       }
     }
-    
-    if (type == "year")
+
+    if (type == "year") {
       x[[type]] <- factor(year(x$date))
-    
-    if (type == "hour")
+    }
+
+    if (type == "hour") {
       x[[type]] <- factor(format(x$date, "%H"))
-    
+    }
+
     if (type == "month") {
       ## need to generate month abbrevs on the fly for different languages
-      temp <- if (is.axis)
+      temp <- if (is.axis) {
         "%b"
-      else
+      } else {
         "%B"
+      }
       x[[type]] <- format(x$date, temp)
-      
+
       ## month names
       month.abbs <- format(seq(as.Date("2000-01-01"), as.Date("2000-12-31"), "month"), temp)
-      
+
       ## might only be partial year...
       ids <- which(month.abbs %in% unique(x$month))
       the.months <- month.abbs[ids]
-      
+
       x[[type]] <- ordered(x[[type]], levels = the.months)
     }
-    
+
     if (type == "monthyear") {
       x[[type]] <- format(x$date, "%B %Y")
       x[[type]] <- ordered(x[[type]], levels = unique(x[[type]]))
     }
-    
+
     if (type == "week") {
       x[[type]] <- format(x$date, "%W")
       x[[type]] <- ordered(x[[type]], levels = unique(x[[type]]))
     }
-    
+
     if (type == "season") {
       ## need to generate month abbrevs on the fly for different languages
-      temp <- if (is.axis)
+      temp <- if (is.axis) {
         "%b"
-      else
+      } else {
         "%B"
+      }
       x[[type]] <- format(x$date, temp)
-      
+
       ## month names
       month.abbs <- format(seq(as.Date("2000-01-01"), as.Date("2000-12-31"), "month"), temp)
-      
+
       make_month_abbr <- function(x) {
         month.starts <- substr(month.abbs, 1, 1)
         paste(month.starts[x], collapse = "")
       }
-      
+
       if (!hemisphere %in% c("northern", "southern")) {
         stop("hemisphere must be 'northern' or 'southern'")
       }
-      
+
       if (hemisphere == "northern") {
         ## define all as winter first, then assign others
         x[[type]] <- paste0("winter (", make_month_abbr(c(12, 1, 2)), ")")
@@ -301,14 +310,14 @@ cutData <- function(x,
         x[[type]][ids] <- paste0("summer (", make_month_abbr(6:8), ")")
         ids <- which(as.numeric(format(x$date, "%m")) %in% 9:11)
         x[[type]][ids] <- paste0("autumn (", make_month_abbr(9:11), ")")
-        
+
         seasons <- c(
           paste0("spring (", make_month_abbr(3:5), ")"),
           paste0("summer (", make_month_abbr(6:8), ")"),
           paste0("autumn (", make_month_abbr(9:11), ")"),
           paste0("winter (", make_month_abbr(c(12, 1:2)), ")")
         )
-        
+
         ## might only be partial year...
         ids <- which(seasons %in% unique(x$season))
         the.season <- seasons[ids]
@@ -323,70 +332,71 @@ cutData <- function(x,
         x[[type]][ids] <- paste0("winter (", make_month_abbr(c(6:8)), ")")
         ids <- which(as.numeric(format(x$date, "%m")) %in% 9:11)
         x[[type]][ids] <- paste0("spring (", make_month_abbr(c(9:11)), ")")
-        
+
         seasons <- c(
           paste0("spring (", make_month_abbr(c(9:11)), ")"),
           paste0("summer (", make_month_abbr(c(12, 1, 2)), ")"),
           paste0("autumn (", make_month_abbr(c(3:5)), ")"),
           paste0("winter (", make_month_abbr(c(6:8)), ")")
         )
-        
+
         ## might only be partial year...
         ids <- which(seasons %in% unique(x$season))
         the.season <- seasons[ids]
         x[[type]] <- ordered(x[[type]], levels = seasons)
       }
     }
-    
+
     if (type %in% c("seasonyear", "yearseason")) {
       # this cuts data to ensure that a season spans two years to keep it together
       # For example, winter 2015 is considered  Dec. 2014 and Jan. Feb, 2015
-      
+
       x <- cutData(x, type = "season", hemisphere = hemisphere)
       ## remove any missing seasons e.g. through type = "season"
       x <- x[!is.na(x$season), ]
-      
+
       ## calculate year
       x <- mutate(x,
-                  year = lubridate::year(date),
-                  month = lubridate::month(date))
-      
+        year = lubridate::year(date),
+        month = lubridate::month(date)
+      )
+
       ## ids where month = 12, make December part of following year's season
       ids <- which(x$month == 12)
       x$year[ids] <- x$year[ids] + 1
-      
+
       labels <- paste(x$season, "-", x$year)
       x[[type]] <- labels
       x[[type]] <- ordered(x[[type]], levels = unique(x[[type]]))
     }
-    
+
     if (type == "weekend") {
       ## split by weekend/weekday
       weekday <- selectByDate(x, day = "weekday")
       weekday[[type]] <- "weekday"
       weekend <- selectByDate(x, day = "weekend")
       weekend[[type]] <- "weekend"
-      
+
       x <- rbind(weekday, weekend)
       x[[type]] <- ordered(x[[type]], levels = c("weekday", "weekend"))
     }
-    
+
     if (type == "weekday") {
       x[[type]] <- format(x$date, "%A")
       # weekday.names <-  format(ISOdate(2000, 1, 3:9), "%A")
       weekday.names <- format(ISOdate(2000, 1, 2:8), "%A")
-      
+
       if (start.day < 0 || start.day > 6) {
         stop("start.day must be between 0 and 6.")
       }
-      
+
       day.ord <- c(weekday.names[(1 + start.day):7], weekday.names[1:(1 + start.day - 1)])
-      
+
       ## might only be certain days available...
       ids <- which(weekday.names %in% unique(x$weekday))
       # the.days <- weekday.names[ids]
       the.days <- day.ord[ids]
-      
+
       ## just use sequence of days given if <7, if not order them
       if (length(unique(x$weekday)) < 7) {
         x[[type]] <- ordered(x[[type]], levels = factor(unique(x$weekday)))
@@ -394,62 +404,63 @@ cutData <- function(x,
         x[[type]] <- ordered(x[[type]], levels = the.days)
       }
     }
-    
+
     if (type == "wd") {
       ## could be missing data
       id <- which(is.na(x$wd))
       if (length(id) > 0) {
         x <- x[-id, ]
         warning(paste(length(id), "missing wind direction line(s) removed"),
-                call. = FALSE)
+          call. = FALSE
+        )
       }
-      
+
       x[[type]] <- cut(
         x$wd,
         breaks = seq(22.5, 382.5, 45),
         labels = c("NE", "E", "SE", "S", "SW", "W", "NW", "N")
       )
       x[[type]][is.na(x[[type]])] <- "N" # for wd < 22.5
-      
+
       x[[type]] <- ordered(x[[type]], levels = c("N", "NE", "E", "SE", "S", "SW", "W", "NW"))
     }
-    
-    
+
+
     if (type == "site") {
       x[[type]] <- x$site
       x[[type]] <- factor(x[[type]]) ## will get rid of any unused factor levels
     }
-    
+
     if (type %in% c("dst", "bstgmt", "gmtbst")) {
       type <- "dst" ## keep it simple
-      
+
       ## how to extract BST/GMT
       if (is.null(local.tz)) {
         message("missing time zone, assuming Europe/London")
         local.tz <- "Europe/London"
       }
-      
+
       attr(x$date, "tzone") <- local.tz
-      
+
       id.nondst <- which(as.POSIXlt(x$date)$isdst == 0)
       id.dst <- which(as.POSIXlt(x$date)$isdst == 1)
-      
+
       if (any(as.POSIXlt(x$date)$isdst == -1)) {
         stop("Not possible to identify DST")
       }
-      
+
       x[id.nondst, type] <- "Non-DST"
       x[id.dst, type] <- "DST"
       x[[type]] <- factor(x[[type]])
     }
-    
+
     if (type == "daylight") {
       x <- cutDaylight(x, latitude, longitude, ...)
     }
-    
+
     x
   }
-  
+
   for (i in 1:length(type)) {
     x <- makeCond(x, type[i])
   }
@@ -463,7 +474,7 @@ cutDaylight <- function(x,
                         longitude = -0.154700,
                         ...) {
   ## long, hour.off
-  
+
   # condition openair data by daylight
   # using date (POSIXt)
   # kr v 0.2
@@ -472,7 +483,7 @@ cutDaylight <- function(x,
   # http://www.srrb.noaa.gov/highlights/sunrise/calcdetails.html
   # by Chris Cornwall, Aaron Horiuchi and Chris Lehman
   #
-  
+
   ######################
   # notes
   ######################
@@ -489,101 +500,103 @@ cutDaylight <- function(x,
   # currently unsure about extremes
   # long nights and days at poles need checking
   #
-  
+
   ##################
   # suggestions:
   ##################
   # local hour offset could be a lookup table linked to tz
   #
-  
+
   if (!"POSIXt" %in% class(x$date)) {
     stop("required field 'date' missing or not POSIXt\n", call. = FALSE)
   }
-  
+
   # local hour offset
-  
+
   local.hour.offset <- as.numeric(lubridate::force_tz(x$date[1], "UTC") - x$date[1])
-  
+
   ###################
   # temp functions
   ###################
-  rad <- function(x)
+  rad <- function(x) {
     x * pi / 180
-  degrees <- function(x)
+  }
+  degrees <- function(x) {
     x * (180 / pi)
-  
+  }
+
   ###############
   # get local time
   ###############
   temp <- x$date
-  
+
   #################
   # make julian.refs
   #################
   # ref Gregorian calendar back extrapolated.
   # assumed good for years between 1800 and 2100
-  
+
   p.day <- (as.numeric(format(temp, "%H")) * 3600) +
     (as.numeric(format(temp, "%M")) * 60) +
     as.numeric(format(temp, "%S"))
   p.day <- p.day / 86400
-  
+
   # julian century (via julian day)
   julian.century <-
     as.numeric(as.Date(temp, format = "%m/%d/%Y")) + 2440587.5 +
     p.day - (local.hour.offset / 24)
   julian.century <- (julian.century - 2451545) / 36525
-  
+
   ##################
   # main calcs
   ##################
   # as of noaa
-  
+
   geom.mean.long.sun.deg <-
     (280.46646 + julian.century * (36000.76983 + julian.century * 0.0003032)) %% 360
-  
+
   geom.mean.anom.sun.deg <-
     357.52911 + julian.century * (35999.05029 - 0.0001537 * julian.century)
-  
+
   eccent.earth.orbit <-
     0.016708634 - julian.century * (0.000042037 + 0.0001537 * julian.century)
-  
+
   sun.eq.of.ctr <- sin(rad(geom.mean.anom.sun.deg)) *
     (1.914602 - julian.century * (0.004817 + 0.000014 * julian.century)) +
     sin(rad(2 * geom.mean.anom.sun.deg)) *
-    (0.019993 - 0.000101 * julian.century) +
+      (0.019993 - 0.000101 * julian.century) +
     sin(rad(3 * geom.mean.anom.sun.deg)) * 0.000289
-  
+
   sun.true.long.deg <- sun.eq.of.ctr + geom.mean.long.sun.deg
-  
+
   sun.app.long.deg <- sun.true.long.deg - 0.00569 - 0.00478 *
     sin(rad(125.04 - 1934.136 * julian.century))
-  
+
   mean.obliq.ecliptic.deg <- 23 + (26 + ((
     21.448 - julian.century *
       (46.815 + julian.century *
-         (0.00059 - julian.century
-          * 0.001813))
+        (0.00059 - julian.century
+        * 0.001813))
   )) / 60) / 60
-  
+
   obliq.corr.deg <- mean.obliq.ecliptic.deg +
     0.00256 * cos(rad(125.04 - 1934.136 * julian.century))
-  
+
   sun.declin.deg <- degrees(asin(sin(rad(obliq.corr.deg)) *
-                                   sin(rad(sun.app.long.deg))))
-  
+    sin(rad(sun.app.long.deg))))
+
   vary <- tan(rad(obliq.corr.deg / 2)) * tan(rad(obliq.corr.deg / 2))
-  
+
   eq.of.time.minutes <-
     4 * degrees(
       vary * sin(2 * rad(geom.mean.long.sun.deg)) -
         2 * eccent.earth.orbit * sin(rad(geom.mean.anom.sun.deg)) +
         4 * eccent.earth.orbit * vary * sin(rad(geom.mean.anom.sun.deg)) *
-        cos(2 * rad(geom.mean.long.sun.deg)) - 0.5 * vary * vary *
-        sin(4 * rad(geom.mean.long.sun.deg)) - 1.25 * eccent.earth.orbit *
-        eccent.earth.orbit * sin(2 * rad(geom.mean.anom.sun.deg))
+          cos(2 * rad(geom.mean.long.sun.deg)) - 0.5 * vary * vary *
+          sin(4 * rad(geom.mean.long.sun.deg)) - 1.25 * eccent.earth.orbit *
+          eccent.earth.orbit * sin(2 * rad(geom.mean.anom.sun.deg))
     )
-  
+
   # original nooa code
   ##
   # ha.sunrise.deg <- degrees(acos(cos(rad(90.833)) /
@@ -592,28 +605,28 @@ cutDaylight <- function(x,
   ##
   # R error catcher added
   # for long nights>24hours/short nights<0
-  
+
   ha.sunrise.deg <- cos(rad(90.833)) /
     (cos(rad(latitude)) * cos(rad(sun.declin.deg))) -
     tan(rad(latitude)) * tan(rad(sun.declin.deg))
   ha.sunrise.deg <- ifelse(ha.sunrise.deg > 1, 1, ha.sunrise.deg)
   ha.sunrise.deg <- ifelse(ha.sunrise.deg < -1, -1, ha.sunrise.deg)
   ha.sunrise.deg <- degrees(acos(ha.sunrise.deg))
-  
+
   solar.noon.lst <-
     (720 - 4 * longitude - eq.of.time.minutes + local.hour.offset * 60) / 1440
-  
+
   sunrise.time.lst <- solar.noon.lst - ha.sunrise.deg * 4 / 1440
-  
+
   sunset.time.lst <- solar.noon.lst + ha.sunrise.deg * 4 / 1440
-  
+
   sunlight.duration.minutes <- 8 * ha.sunrise.deg
-  
+
   #################################
   # daylight factor
   #################################
   # need to confirm dusk/dawn handing
-  
+
   daylight <- ifelse(
     sunlight.duration.minutes == 0,
     FALSE,
@@ -623,7 +636,7 @@ cutDaylight <- function(x,
       ifelse(
         sunrise.time.lst < sunset.time.lst,
         ifelse(p.day < sunset.time.lst &
-                 p.day > sunrise.time.lst, TRUE, FALSE),
+          p.day > sunrise.time.lst, TRUE, FALSE),
         ifelse(
           p.day <= sunrise.time.lst &
             p.day >= sunset.time.lst,
@@ -640,7 +653,7 @@ cutDaylight <- function(x,
       levels = c(TRUE, FALSE),
       labels = c("daylight", "nighttime")
     )
-  
+
   ###############################
   # output
   ###############################
