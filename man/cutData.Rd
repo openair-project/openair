@@ -72,10 +72,10 @@ range in the format "day month year".
 \item \code{"year"} splits the data by each year.
 \item \code{"month"} splits the data by month of the year.
 \item \code{"hour"} splits the data by hour of the day.
-\item \code{"monthyear"} splits the data by year and month. It differs from month in that
-a level is defined for each month of the data set. This is useful sometimes
-to show an ordered sequence of months if the data set starts half way through
-a year; rather than starting in January.
+\item \code{"monthyear"} splits the data by year and month. It differs from month in
+that a level is defined for each month of the data set. This is useful
+sometimes to show an ordered sequence of months if the data set starts half
+way through a year; rather than starting in January.
 \item \code{"weekend"} splits the data by weekday and weekend.
 \item \code{"weekday"} splits the data by day of the week - ordered to start Monday.
 \item \code{"season"} splits data up by season. In the northern hemisphere winter =
@@ -85,17 +85,18 @@ definitions will change of \code{hemisphere = "southern"}.
 intervals, keeping the months of a season together. For example, December
 2010 is considered as part of winter 2011 (with January and February 2011).
 This makes it easier to consider contiguous seasons. In contrast, \code{type = "season"} will just split the data into four seasons regardless of the year.
-\item \code{"daylight"} splits the data relative to estimated sunrise and sunset to give
-either daylight or nighttime. The cut is made by \code{cutDaylight} but more
+\item \code{"daylight"} splits the data relative to estimated sunrise and sunset to
+give either daylight or nighttime. The cut is made by \code{cutDaylight} but more
 conveniently accessed via \code{cutData}, e.g. \code{cutData(mydata, type = "daylight", latitude = my.latitude, longitude = my.longitude)}. The daylight estimation,
 which is valid for dates between 1901 and 2099, is made using the measurement
 location, date, time and astronomical algorithms to estimate the relative
 positions of the Sun and the measurement location on the Earth's surface, and
 is based on NOAA methods. Measurement location should be set using \code{latitude}
 (+ to North; - to South) and \code{longitude} (+ to East; - to West).
-\item \code{"dst"} will split the data by hours that are in daylight saving time (DST) and
-hours that are not for appropriate time zones. The option also requires that
-the local time zone is given e.g. \code{local.tz = "Europe/London"}, \code{local.tz = "America/New_York"}. Each of the two periods will be in
+\item \code{"dst"} will split the data by hours that are in daylight saving time (DST)
+and hours that are not for appropriate time zones. The option also requires
+that the local time zone is given e.g. \code{local.tz = "Europe/London"},
+\code{local.tz = "America/New_York"}. Each of the two periods will be in
 \emph{local time}. The main purpose of this option is to test whether there
 is a shift in the diurnal profile when DST and non-DST hours are compared.
 This option is particularly useful with the \code{\link[=timeVariation]{timeVariation()}} function. For
@@ -108,10 +109,8 @@ temperature should show a clear shift when expressed in local time. In
 essence, this option when used with \code{timeVariation()} may help determine
 whether the variation in a pollutant is driven by man-made emissions or
 natural processes.
-\item \code{"wd"} splits the data by 8 wind sectors and requires a column \code{wd}: "NE", "E",
-"SE", "S", "SW", "W", "NW", "N".
-\item \code{"ws"} splits the data by 8 quantiles of wind speed and requires a column \code{ws}.
-\item \code{"site"} splits the data by site and therefore requires a column \code{site}.
+\item \code{"wd"} splits the data by 8 wind sectors and requires a column \code{wd}: "NE",
+"E", "SE", "S", "SW", "W", "NW", "N".
 }
 
 Note that all the date-based types, e.g., \code{"month"}/\code{"year"} are derived from
