@@ -16,11 +16,14 @@ through openair. Available networks include:
 \item \code{"waqn"},  The Welsh Air Quality Network.
 \item \code{"ni"},  The Northern Ireland Air Quality Network.
 \item \code{"local"},  Locally managed air quality networks in England.
-\item \code{"kcl"}, King's College London networks.
+\item \code{"imperial"}, Imperial College London (formerly King's College London) networks.
 \item \code{"europe"}, European AirBase/e-reporting data.
+}
+
 There are two additional options provided for convenience:
+\itemize{
 \item \code{"ukaq"} will return metadata for all networks for which data is imported by \code{\link[=importUKAQ]{importUKAQ()}} (i.e., AURN, AQE, SAQN, WAQN, NI, and the local networks).
-\item \code{"all"} will import all available metadata (i.e., \code{"ukaq"} plus \code{"kcl"} and \code{"europe"}).
+\item \code{"all"} will import all available metadata (i.e., \code{"ukaq"} plus \code{"imperial"} and \code{"europe"}).
 }}
 
 \item{all}{When \code{all = FALSE} only the site code, site name, latitude and
@@ -33,7 +36,7 @@ point in that year are returned. If \code{all = TRUE} only sites that
 measured a particular pollutant in that year are returned. Year can also be
 a sequence e.g. \code{year = 2010:2020} or of length 2 e.g. \code{year = c(2010, 2020)}, which will return only sites that were open over the
 duration. Note that \code{year} is ignored when the \code{source} is either
-\code{"kcl"} or \code{"europe"}.}
+\code{"imperial"} or \code{"europe"}.}
 
 \item{duplicate}{Some UK air quality sites are part of multiple networks, so
 could appear more than once when \code{source} is a vector of two or more. The
@@ -45,7 +48,7 @@ A data frame with meta data.
 \description{
 Function to import meta data for air quality monitoring sites. By default,
 the function will return the site latitude, longitude and site type, as well
-as the code used in functions like \code{\link[=importUKAQ]{importUKAQ()}}, \code{\link[=importKCL]{importKCL()}} and
+as the code used in functions like \code{\link[=importUKAQ]{importUKAQ()}}, \code{\link[=importImperial]{importImperial()}} and
 \code{\link[=importEurope]{importEurope()}}. Additional information may optionally be returned.
 }
 \details{
@@ -58,7 +61,7 @@ Europe:
 \item \code{"waqn"},  The \href{https://airquality.gov.wales/}{Welsh Air Quality Network}.
 \item \code{"ni"},  The \href{https://www.airqualityni.co.uk/}{Northern Ireland Air Quality Network}.
 \item \code{"local"},  Locally managed air quality networks in England.
-\item \code{"kcl"},  King's College London networks.
+\item \code{"imperial"},  Imperial College London (formerly King's College London) networks.
 \item \code{"europe"},  Hourly European data (Air Quality e-Reporting) based on a
 simplified version of the \code{{saqgetr}} package.
 }
@@ -94,7 +97,7 @@ Other import functions:
 \code{\link{importADMS}()},
 \code{\link{importAURN}()},
 \code{\link{importEurope}()},
-\code{\link{importKCL}()},
+\code{\link{importImperial}()},
 \code{\link{importTraj}()},
 \code{\link{importUKAQ}()}
 }

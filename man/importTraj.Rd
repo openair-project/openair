@@ -137,7 +137,7 @@ Other import functions:
 \code{\link{importADMS}()},
 \code{\link{importAURN}()},
 \code{\link{importEurope}()},
-\code{\link{importKCL}()},
+\code{\link{importImperial}()},
 \code{\link{importMeta}()},
 \code{\link{importUKAQ}()}
 

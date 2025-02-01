@@ -27,8 +27,9 @@ would not normally have access to. The functions consist of those developed
 by the authors and a growing number from other researchers.
 
 The package also provides access to a wide range of data sources including
-the UK Automatic Urban and Rural Network (AURN), networks run by King's
-College London (e.g. the LAQN) and the Scottish Air Quality Network (SAQN).
+the UK Automatic Urban and Rural Network (AURN), networks run by Imperial
+College London (e.g., the LAQN) and the Scottish Air Quality Network
+(SAQN).
 
 The package has a number of requirements for input data and these are
 discussed in the manual (available on the \code{openair} website at
@@ -118,8 +119,8 @@ quality data analysis.  Environmental Modelling & Software. Volume 27-28,
 \seealso{
 See \url{https://openair-project.github.io/openair/} for up to date
 information on the project, and the openair book
-(\url{https://openair-project.github.io/book/}) for thorough
-documentation and examples.
+(\url{https://openair-project.github.io/book/}) for thorough documentation
+and examples.
 }
 \author{
 \strong{Maintainer}: David Carslaw \email{david.carslaw@york.ac.uk} (\href{https://orcid.org/0000-0003-0991-950X}{ORCID})
