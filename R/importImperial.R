@@ -30,11 +30,11 @@
 #' The data are imported by stacking sites on top of one another and will have
 #' field names `date`, `site`, `code` (the site code) and
 #' pollutant(s). Sometimes it is useful to have columns of site data. This can
-#' be done using the `reshape` function --- see examples below.
+#' be done using the [reshape()] function --- see examples below.
 #'
 #' The situation for particle measurements is not straightforward given the
 #' variety of methods used to measure particle mass and changes in their use
-#' over time. The `importImperial` function imports two measures of PM10
+#' over time. The [importImperial()] function imports two measures of PM10
 #' where available. `PM10_raw` are TEOM measurements with a 1.3 factor
 #' applied to take account of volatile losses. The `PM10` data is a current
 #' best estimate of a gravimetric equivalent measure as described below. NOTE!
@@ -94,7 +94,7 @@
 #' @param site Site code of the network site to import e.g. "my1" is Marylebone
 #'   Road. Several sites can be imported with `site = c("my1", "kc1")` ---
 #'   to import Marylebone Road and North Kensignton for example.
-#' @param meteo Should meteorological data be added to the import data? The
+#' @param meteo,met Should meteorological data be added to the import data? The
 #'   default is `FALSE`. If `TRUE` wind speed (m/s), wind direction
 #'   (degrees), solar radiation and rain amount are available. See details
 #'   below.
@@ -106,7 +106,6 @@
 #'   concentrations.
 #' @param progress Show a progress bar when many sites/years are being imported?
 #'   Defaults to `TRUE`.
-#' @param extra Not currently used.
 #' @export
 #' @return Returns a data frame of hourly mean values with date in POSIXct class
 #'   and time zone GMT.
@@ -114,18 +113,28 @@
 #' @family import functions
 #'
 #' @rdname importImperial
-#' @order 2
+#' @order 1
 #'
 #' @examples
 #' ## import all pollutants from Marylebone Rd from 1990:2009
-#' \dontrun{mary <- importImperial(site = "my1", year = 2000:2009)}
+#' \dontrun{
+#' mary <- importImperial(site = "my1", year = 2000:2009)
+#' }
 #'
-#' ## import nox, no2, o3 from Marylebone Road and North Kensignton for 2000
-#' \dontrun{thedata <- importImperial(site = c("my1", "kc1"), year = 2000,
-#' pollutant = c("nox", "no2", "o3"))}
+#' ## import nox, no2, o3 from Marylebone Road and North Kensington for 2000
+#' \dontrun{
+#' thedata <-
+#'   importImperial(
+#'     site = c("my1", "kc1"),
+#'     year = 2000,
+#'     pollutant = c("nox", "no2", "o3")
+#'   )
+#' }
 #'
 #' ## import met data too...
-#' \dontrun{my1 <- importImperial(site = "my1", year = 2008, met = TRUE)}
+#' \dontrun{
+#' my1 <- importImperial(site = "my1", year = 2008, meteo = TRUE)
+#' }
 importImperial <-
   function(site = "my1",
            year = 2009,
@@ -156,17 +165,19 @@ importImperial <-
       ))
     load(con)
     close(con)
-
+    
     id <-
-      sapply(site, function(x)
-        which(sites$SiteCode %in% toupper(x)))
+      sapply(site, function(x) {
+        which(sites$SiteCode %in% toupper(x))
+      })
     site.name <- sites$SiteName[id]
-
+    
     ## RData files to import
-    files <- lapply(site, function(x)
-      paste(x, "_", year, sep = ""))
+    files <- lapply(site, function(x) {
+      paste(x, "_", year, sep = "")
+    })
     files <- do.call(c, files)
-
+    
     loadData <- function(x) {
       tryCatch({
         fileName <-
@@ -176,7 +187,7 @@ importImperial <-
                 sep = "")
         con <- url(fileName)
         load(con)
-
+        
         ## need to check the date starts at start of year...
         start <- ISOdatetime(
           year = as.numeric(format(x$date[1], "%Y")),
@@ -187,71 +198,76 @@ importImperial <-
           sec = 0,
           tz = "GMT"
         )
-
+        
         if (x$date[1] != start) {
           ## add first row
           x1 <- data.frame(date = start, site = x$site[1])
           x <- bind_rows(x1, x)
         }
-
+        
         x <- date.pad(x, type = "site") ## pad out missing dates
         x
-      },
-      error = function(ex) {
+      }, error = function(ex) {
         warning(x, "does not exist - ignoring that one.")
         NULL
-      },
-      finally = {
+      }, finally = {
         close(con)
       })
     }
-
-    if (progress)
+    
+    if (progress) {
       progress <- "Importing Air Quality Data"
+    }
     thedata <-
       purrr::map(files, loadData, .progress = progress) %>%
       purrr::list_rbind()
-
+    
     if (is.null(thedata)) {
       warning("No data to import - check site codes and year.", call. = FALSE)
       return()
     }
-
+    
     if (nrow(thedata) < 1) {
       warning("No data to import - check site codes and year.", call. = FALSE)
       return()
     }
-
+    
     thedata$code <- thedata$site
-
+    
     thedata$site <-
       factor(thedata$site, labels = site.name, levels = site)
-
+    
     ## change names
     names(thedata) <- tolower(names(thedata))
-
+    
     ## if particular pollutants have been selected
     if (!missing(pollutant)) {
       if (pollutant != "all") {
         thedata <- thedata[, c("date", pollutant, "site", "code")]
       }
     }
-
+    
     ## change units to mass units, use values in ugm3Conversion table
     if (units == "mass") {
-      if ("nox" %in% names(thedata))
+      if ("nox" %in% names(thedata)) {
         thedata$nox <- thedata$nox * 1.91
-      if ("no2" %in% names(thedata))
+      }
+      if ("no2" %in% names(thedata)) {
         thedata$no2 <- thedata$no2 * 1.91
-      if ("o3" %in% names(thedata))
+      }
+      if ("o3" %in% names(thedata)) {
         thedata$o3 <- thedata$o3 * 2.00
-      if ("so2" %in% names(thedata))
+      }
+      if ("so2" %in% names(thedata)) {
         thedata$so2 <- thedata$so2 * 2.66
-      if ("co" %in% names(thedata))
+      }
+      if ("co" %in% names(thedata)) {
         thedata$co <- thedata$co * 1.16
-      if ("pm10_raw" %in% names(thedata))
+      }
+      if ("pm10_raw" %in% names(thedata)) {
         thedata$pm10_raw <- thedata$pm10_raw * 1.30
-
+      }
+      
       msg <-
         c(
           "i" = "{.strong NOTE: Mass units are used}.",
@@ -260,28 +276,31 @@ importImperial <-
           "*" = "PM10_raw is raw data multiplied by 1.3"
         )
     }
-
+    
     ## rename PM volatile/non volatile components if present
-
+    
     if ("pmfr" %in% names(thedata)) {
       thedata <- rename(thedata, v10 = pmfr)
       thedata <- transform(thedata, v10 = -1 * v10)
     }
-
+    
     if ("p2fr" %in% names(thedata)) {
       thedata <- rename(thedata, v2.5 = p2fr)
       thedata <- transform(thedata, v2.5 = -1 * v2.5)
     }
-
-    if ("pmfb" %in% names(thedata))
+    
+    if ("pmfb" %in% names(thedata)) {
       thedata <- rename(thedata, nv10 = pmfb)
-    if ("p2fb" %in% names(thedata))
+    }
+    if ("p2fb" %in% names(thedata)) {
       thedata <- rename(thedata, nv2.5 = p2fb)
-
-
+    }
+    
+    
     if (units != "mass") {
-      if ("pm10" %in% names(thedata))
+      if ("pm10" %in% names(thedata)) {
         thedata$pm10_raw <- thedata$pm10_raw * 1.30
+      }
       
       msg <-
         c(
@@ -291,7 +310,7 @@ importImperial <-
           "*" = "PM10_raw is raw data multiplied by 1.3"
         )
     }
-
+    
     ## don't add additional species
     if (!extra) {
       theNames <- c(
@@ -314,19 +333,20 @@ importImperial <-
       )
       thedata <- thedata[, which(names(thedata) %in% theNames)]
     }
-
+    
     if (is.null(nrow(thedata))) {
       return()
     }
-
+    
     ## warning about recent, possibly unratified data
     timeDiff <-
       difftime(Sys.time(), max(thedata$date), units = "days")
     if (timeDiff < 180) {
       warning("Some of the more recent data may not be ratified.")
     }
-
+    
     if (meteo) {
+      met <- NULL
       ## merge met data
       load(url(
         paste(
@@ -339,11 +359,11 @@ importImperial <-
       # closeAllConnections()
       thedata <- merge(thedata, met, by = "date")
     }
-
+    
     ## make sure it is in GMT
     attr(thedata$date, "tzone") <- "GMT"
-    thedata <- thedata[order(thedata$site, thedata$date),]
-
+    thedata <- thedata[order(thedata$site, thedata$date), ]
+    
     # add meta data
     if (meta) {
       meta_data <- importMeta(source = "imperial")
@@ -351,7 +371,7 @@ importImperial <-
       thedata <-
         suppressWarnings(inner_join(thedata, meta_data, by = c("code", "site")))
     }
-
+    
     if (to_narrow) {
       if (meta) {
         thedata <-
@@ -361,11 +381,11 @@ importImperial <-
           arrange(site, code, pollutant, date)
       } else {
         thedata <-
-          pivot_longer(thedata,-c(date, site, code), names_to = "pollutant") %>%
+          pivot_longer(thedata, -c(date, site, code), names_to = "pollutant") %>%
           arrange(site, code, pollutant, date)
       }
     }
-
+    
     cli::cli_inform(msg)
     
     return(as_tibble(thedata))

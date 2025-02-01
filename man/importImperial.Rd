@@ -44,12 +44,12 @@ from a site. To import only NOx and NO2 for example use \code{pollutant =
 \item{meta}{Append the site type, latitude and longitude of each selected
 \code{site}? Defaults to \code{FALSE}.}
 
-\item{meteo}{Should meteorological data be added to the import data? The
+\item{meteo, met}{Should meteorological data be added to the import data? The
 default is \code{FALSE}. If \code{TRUE} wind speed (m/s), wind direction
 (degrees), solar radiation and rain amount are available. See details
 below.}
 
-\item{extra}{Not currently used.}
+\item{extra}{Defaults to \code{FALSE}. When \code{TRUE}, returns additional data.}
 
 \item{units}{By default the returned data frame expresses the units in mass
 terms (ug/m3 for NOx, NO2, O3, SO2; mg/m3 for CO). Use \code{units = "volume"} to use ppb etc. PM10_raw TEOM data are multiplied by 1.3 and
@@ -101,11 +101,11 @@ may not be ratified.
 The data are imported by stacking sites on top of one another and will have
 field names \code{date}, \code{site}, \code{code} (the site code) and
 pollutant(s). Sometimes it is useful to have columns of site data. This can
-be done using the \code{reshape} function --- see examples below.
+be done using the \code{\link[=reshape]{reshape()}} function --- see examples below.
 
 The situation for particle measurements is not straightforward given the
 variety of methods used to measure particle mass and changes in their use
-over time. The \code{importImperial} function imports two measures of PM10
+over time. The \code{\link[=importImperial]{importImperial()}} function imports two measures of PM10
 where available. \code{PM10_raw} are TEOM measurements with a 1.3 factor
 applied to take account of volatile losses. The \code{PM10} data is a current
 best estimate of a gravimetric equivalent measure as described below. NOTE!
@@ -163,14 +163,22 @@ back-compatibility reasons only. New users should use \code{\link[=importImperia
 }
 \examples{
 ## import all pollutants from Marylebone Rd from 1990:2009
-\dontrun{mary <- importImperial(site = "my1", year = 2000:2009)}
+\dontrun{
+mary <- importImperial(site = "my1", year = 2000:2009)
+}
 
-## import nox, no2, o3 from Marylebone Road and North Kensignton for 2000
-\dontrun{thedata <- importImperial(site = c("my1", "kc1"), year = 2000,
-pollutant = c("nox", "no2", "o3"))}
+## import nox, no2, o3 from Marylebone Road and North Kensington for 2000
+\dontrun{
+thedata <- 
+  importImperial(
+    site = c("my1", "kc1"), 
+    year = 2000, 
+    pollutant = c("nox", "no2", "o3")
+  )
+}
 
 ## import met data too...
-\dontrun{my1 <- importImperial(site = "my1", year = 2008, met = TRUE)}
+\dontrun{my1 <- importImperial(site = "my1", year = 2008, meteo = TRUE)}
 }
 \seealso{
 Other import functions: 
