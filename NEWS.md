@@ -40,7 +40,7 @@
 
 - `importUKAQ()` will correctly append site meta data when `meta = TRUE`, `source` is a length greater than 1, and a single site is repeated in more than one source (e.g., `importUKAQ(source = c("waqn", "aurn"), data_type = "daqi", year = 2024L))`)
 
-- `calcPercentile()` will not correctly pass its arguments (e.g., `date.start`) to `timeAverage()`.
+- `calcPercentile()` will now correctly pass its arguments (e.g., `date.start`) to `timeAverage()`.
 
 # openair 2.18-2
 
