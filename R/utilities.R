@@ -203,28 +203,28 @@ decimalDate <- function(x, date = "date") {
 #' time sequence but return a data frame with the same number of rows
 #' supplied.
 #'
-#' @param mydata A data frame containing a \code{date}
-#' field. \code{mydata} must contain a \code{date} field in
-#' \code{Date} or \code{POSIXct} format. The input time series must
+#' @param mydata A data frame containing a `date`
+#' field. `mydata` must contain a `date` field in
+#' `Date` or `POSIXct` format. The input time series must
 #' be regular e.g. hourly, daily.
-#' @param pollutant The name of a pollutant e.g. \code{pollutant = "o3"}.
+#' @param pollutant The name of a pollutant e.g. `pollutant = "o3"`.
 #' @param width The averaging period (rolling window width) to use
-#' e.g. \code{width = 8} will generate 8-hour rolling mean values
+#' e.g. `width = 8` will generate 8-hour rolling mean values
 #' when hourly data are analysed.
 #' @param new.name The name given to the new rollingMean variable. If
 #' not supplied it will create a name based on the name of the
 #' pollutant and the averaging period used.
 #' @param data.thresh The data capture threshold in %. No values are
 #' calculated if data capture over the period of interest is less
-#' than this value. For example, with \code{width = 8} and
-#' \code{data.thresh = 75} at least 6 hours are required to calculate
-#' the mean, else \code{NA} is returned.
+#' than this value. For example, with `width = 8` and
+#' `data.thresh = 75` at least 6 hours are required to calculate
+#' the mean, else `NA` is returned.
 #' @param align specifies how the moving window should be
-#' aligned. \code{"right"} means that the previous \code{hours}
+#' aligned. `"right"` means that the previous `hours`
 #' (including the current) are averaged. This seems to be the default
-#' for UK air quality rolling mean statistics. \code{"left"} means
-#' that the forward \code{hours} are averaged, and \code{"centre"} or
-#' \code{"center"}, which is the default.
+#' for UK air quality rolling mean statistics. `"left"` means
+#' that the forward `hours` are averaged, and `"centre"` or
+#' `"center"`, which is the default.
 #' @param ... other arguments, currently unused.
 #' @export
 #' @author David Carslaw
@@ -314,11 +314,11 @@ convert.date <- function(mydata, format = "%d/%m/%Y %H:%M") {
 #' Utility function to prepare input data for use in openair functions
 #'
 #' This function partitions a data frame up into different time segments. It
-#' produces a new column called controlled by \code{name} that can be used in many
-#' \code{openair} functions. Note that there must be one more label than there
-#' are dates. See examples below and in full \code{openair} documentation.
+#' produces a new column called controlled by `name` that can be used in many
+#' `openair` functions. Note that there must be one more label than there
+#' are dates. See examples below and in full `openair` documentation.
 #'
-#' @param mydata A data frame containing a \code{date} field in hourly or high
+#' @param mydata A data frame containing a `date` field in hourly or high
 #'   resolution format.
 #' @param dates A date or dates to split data by.
 #' @param labels Labels for each time partition.
@@ -388,33 +388,33 @@ one more label than date")
 #' can be intimidating for new users. This function can be used to select quite
 #' complex dates simply - see examples below.
 #'
-#' Dates are assumed to be inclusive, so \code{start = "1/1/1999"} means that
-#' times are selected from hour zero. Similarly, \code{end = "31/12/1999"} will
-#' include all hours of the 31st December. \code{start} and \code{end} can also
-#' be in standard R format as a string i.e. "YYYY-mm-dd", so \code{start =
-#' "1999-01-01"} is fine.
+#' Dates are assumed to be inclusive, so `start = "1/1/1999"` means that
+#' times are selected from hour zero. Similarly, `end = "31/12/1999"` will
+#' include all hours of the 31st December. `start` and `end` can also
+#' be in standard R format as a string i.e. "YYYY-mm-dd", so `start =
+#' "1999-01-01"` is fine.
 #'
 #' All options are applied in turn making it possible to select quite complex
 #' dates
 #'
-#' @param mydata A data frame containing a \code{date} field in hourly or high
+#' @param mydata A data frame containing a `date` field in hourly or high
 #'   resolution format.
 #' @param start A start date string in the form d/m/yyyy e.g. \dQuote{1/2/1999}
 #'   or in \sQuote{R} format i.e. \dQuote{YYYY-mm-dd}, \dQuote{1999-02-01}
-#' @param end See \code{start} for format.
-#' @param year A year or years to select e.g. \code{year = 1998:2004} to select
-#'   1998-2004 inclusive or \code{year = c(1998, 2004)} to select 1998 and
+#' @param end See `start` for format.
+#' @param year A year or years to select e.g. `year = 1998:2004` to select
+#'   1998-2004 inclusive or `year = c(1998, 2004)` to select 1998 and
 #'   2004.
 #' @param month A month or months to select. Can either be numeric e.g.
-#'   \code{month = 1:6} to select months 1-6 (January to June), or by name e.g.
-#'   \code{month = c("January", "December")}. Names can be abbreviated to 3
+#'   `month = 1:6` to select months 1-6 (January to June), or by name e.g.
+#'   `month = c("January", "December")`. Names can be abbreviated to 3
 #'   letters and be in lower or upper case.
-#' @param day A day name or or days to select. \code{day} can be numeric (1 to
-#'   31) or character. For example \code{day = c("Monday", "Wednesday")} or
-#'   \code{day = 1:10} (to select the 1st to 10th of each month). Names can be
+#' @param day A day name or or days to select. `day` can be numeric (1 to
+#'   31) or character. For example `day = c("Monday", "Wednesday")` or
+#'   `day = 1:10` (to select the 1st to 10th of each month). Names can be
 #'   abbreviated to 3 letters and be in lower or upper case. Also accepts
 #'   \dQuote{weekday} (Monday - Friday) and \dQuote{weekend} for convenience.
-#' @param hour An hour or hours to select from 0-23 e.g. \code{hour = 0:12} to
+#' @param hour An hour or hours to select from 0-23 e.g. `hour = 0:12` to
 #'   select hours 0 to 12 inclusive.
 #' @export
 #' @author David Carslaw
@@ -807,104 +807,6 @@ errorInMean <- function(x, mult = qt((1 + conf.int) / 2, n - 1), conf.int = 0.95
     se)
 }
 
-## bootsrap confidence intervals in the mean from Hmisc
-bootMean <- function(x, conf.int = 0.95, B = 1000, ...) {
-  x <- x[!is.na(x)] # remove missings
-  n <- length(x)
-  xbar <- mean(x)
-  if (n < 2) {
-    return(c(Mean = xbar, Lower = NA, Upper = NA))
-  }
-  z <- unlist(lapply(1:B, function(i, x, N)
-    sum(x[(sample.int(N, N, TRUE, NULL))]), x = x, N = n)) / n
-  quant <- quantile(z, c((1 - conf.int) / 2, (1 + conf.int) / 2))
-  names(quant) <- NULL
-  res <- c(Mean = xbar, Lower = quant[1], Upper = quant[2])
-
-  res
-}
-
-
-#' Bootsrap confidence intervals in the mean
-#'
-#' A utility function to calculation the uncertainty intervals in the mean of a
-#' vector. The function removes any missing data before the calculation.
-#'
-#' @param x A vector from which the mean and bootstrap confidence intervals in
-#'   the mean are to be calculated
-#' @param conf.int The confidence interval; default = 0.95.
-#' @param B The number of bootstrap simulations
-#'
-#' @return Returns a data frame with the mean, lower uncertainty, upper
-#'   uncertainty and number of values used in the calculation
-#' @export
-#'
-#' @examples
-#' test <- rnorm(20, mean = 10)
-#' bootMeanDF(test)
-bootMeanDF <- function(x, conf.int = 0.95, B = 1000) {
-  if (!is.vector(x)) {
-    stop("x should be a vector.")
-  }
-
-  res <- bootMean(x = x, conf.int = conf.int, B = B)
-  res <- data.frame(mean = res[1], min = res[2], max = res[3], n = length(na.omit(x)))
-  res <- return(res)
-}
-
-
-bootMeanDiff <- function(mydata, x = "x", y = "y", conf.int = 0.95, B = 1000, na.rm = FALSE) {
-
-  ## calculates bootstrap mean differences
-  ## assumes y - x
-  x.name <- x
-  y.name <- y
-  x <- na.omit(mydata[[x]])
-  y <- na.omit(mydata[[y]])
-  Mean <- mean(y) - mean(x)
-
-  if (nrow(mydata) < 2 | is.na(Mean)) {
-    res1 <- data.frame(variable = x.name, Mean = mean(x), Lower = NA, Upper = NA,
-                       stringsAsFactors = FALSE)
-
-    res2 <- data.frame(variable = y.name, Mean = mean(y), Lower = NA, Upper = NA,
-                       stringsAsFactors = FALSE)
-
-    res <- data.frame(variable = paste(y.name, "-", x.name), Mean = Mean,
-                      Lower = NA, Upper = NA,
-                      stringsAsFactors = FALSE)
-
-    res <- bind_rows(res1, res2, res)
-    res$variable <- factor(res$variable)
-    return(res)
-  }
-
-  x <- bootMean(x, B = B)
-  y <- bootMean(y, B = B)
-  quant1 <- quantile(x, c((1 - conf.int) / 2, (1 + conf.int) / 2), na.rm = na.rm)
-  quant2 <- quantile(y, c((1 - conf.int) / 2, (1 + conf.int) / 2), na.rm = na.rm)
-  quant <- quantile(y - x, c((1 - conf.int) / 2, (1 + conf.int) / 2), na.rm = na.rm)
-  names(quant1) <- NULL
-  names(quant2) <- NULL
-  names(quant) <- NULL
-
-  res1 <- data.frame(variable = x.name, Mean = mean(x),
-                     Lower = quant1[1], Upper = quant1[2],
-                     stringsAsFactors = FALSE)
-
-  res2 <- data.frame(variable = y.name, Mean = mean(y), Lower = quant2[1],
-                     Upper = quant2[2],
-                     stringsAsFactors = FALSE)
-
-  res <- data.frame(variable = paste(y.name, "-", x.name),
-                    Mean = Mean, Lower = quant[1], Upper = quant[2],
-                    stringsAsFactors = FALSE)
-
-  res <- bind_rows(res1, res2, res)
-  res$variable <- factor(res$variable)
-  res
-}
-
 ###########################################################################################################
 
 ## list update function
@@ -1084,69 +986,5 @@ checkNum <- function(mydata, vars) {
 
 
 
-#' Bin data, calculate mean and bootstrap 95 % confidence interval in the mean
-#'
-#' Bin a variable and calculate mean an uncertainties in mean
-#'
-#' This function summarises data by intervals and calculates the mean and
-#' bootstrap 95 % confidence intervals in the mean of a chosen variable in a
-#' data frame. Any other numeric variables are summarised by their mean
-#' intervals.
-#'
-#' There are three options for binning. The default is to bon \code{bin} into 40
-#' intervals. Second, the user can choose an binning interval e.g.
-#' \code{interval = 5}. Third, the user can supply their own breaks to use as
-#' binning intervals.
-#'
-#' @param mydata Name of the data frame to process.
-#' @param bin The name of the column to divide into intervals
-#' @param uncer The name of the column for which the mean, lower and upper
-#'   uncertainties should be calculated for each interval of \code{bin}.
-#' @param n The number of intervals to split \code{bin} into.
-#' @param interval The interval to be used for binning the data.
-#' @param breaks User specified breaks to use for binning.
-#'
-#' @return Returns a summarised data frame with new columns for the mean and
-#'   upper / lower 95 percent confidence intervals in the mean.
-#' @export
-#'
-#' @examples
-#' # how does nox vary by intervals of wind speed?
-#' results <- binData(mydata, bin = "ws", uncer = "nox")
-#'
-#' # easy to plot this using ggplot2
-#' \dontrun{
-#' library(ggplot2)
-#' ggplot(results, aes(ws, mean, ymin = min, ymax = max)) +
-#' geom_pointrange()
-#' }
-binData <- function(mydata, bin = "nox", uncer = "no2", n = 40, interval = NA,
-                    breaks = NA) {
-  if (!is.na(interval)) {
-    mydata$interval <- cut(
-      mydata[[bin]], sort(unique(round_any(mydata[[bin]], interval))),
-      include.lowest = TRUE
-    )
-  } else if (!anyNA(breaks)) {
-    mydata$interval <- cut(mydata[[bin]], breaks = breaks, include.lowest = TRUE)
-  } else {
-    mydata$interval <- cut(mydata[[bin]], breaks = n)
-  }
 
-  # remove any missing intervals
-  id <- which(is.na(mydata$interval))
-  if (length(id) > 0)
-    mydata <- mydata[-id, ]
-
-  # calculate 95% CI in mean
-  uncert <- group_by(mydata, interval) %>%
-    do(bootMeanDF(.[[uncer]], B = 250))
-
-  mydata <- group_by(mydata, interval) %>%
-    summarise_if(is.numeric, mean, na.rm = TRUE)
-
-  mydata <- inner_join(mydata, uncert, by = "interval")
-
-  mydata
-}
 
