@@ -26,6 +26,8 @@
 
 - DAQI information imported using `importUKAQ(data_type = "daqi")` will be returned with the relevant DAQI band appended as an additional factor column; either "Low" (1-3), "Moderate" (4-6), "High" (7-9), or "Very High" (10). See <https://uk-air.defra.gov.uk/air-pollution/daqi> for more information.
  
+- Added `importImperial()`, a new version of `importKCL()` which more accurately describes the origin of its data and has arguments more similar to `importUKAQ()`. `importKCL()` still exists for back-compatibility reasons, but new users should use `importImperial()`.
+ 
 ## Bug fixes
 
 - Fixed an issue wherein `importUKAQ()` would drop sites if importing from `local` sites *and* another network.
