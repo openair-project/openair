@@ -1,9 +1,10 @@
 #' Bin data, calculate mean and bootstrap confidence interval in the mean
 #'
-#' This function summarises data by intervals and calculates the mean and
-#' bootstrap confidence intervals (by default 95% CI) in the mean of a chosen
-#' variable in a data frame. Any other numeric variables are summarised by their
-#' mean intervals.
+#' [binData()] summarises data by intervals and calculates the mean and bootstrap
+#' confidence intervals (by default 95% CI) in the mean of a chosen variable in
+#' a data frame. Any other numeric variables are summarised by their mean
+#' intervals. This occurs via [bootMeanDF()], which calculates the uncertainty
+#' intervals in the mean of a vector.
 #'
 #' There are three options for binning. The default is to bin `bin` into 40
 #' intervals. Second, the user can choose an binning `interval`, e.g., `interval
@@ -27,9 +28,14 @@
 #'   upper / lower confidence intervals in the mean.
 #' @export
 #'
-#' @seealso [bootMeanDF()]
+#' @rdname bootMeans
+#' @order 1
 #'
 #' @examples
+#' # work with vectors
+#' test <- rnorm(20, mean = 10)
+#' bootMeanDF(test)
+#' 
 #' # how does nox vary by intervals of wind speed?
 #' results <- binData(mydata, bin = "ws", uncer = "nox")
 #' \dontrun{
@@ -45,7 +51,7 @@
 #'   geom_pointrange() +
 #'   facet_wrap(vars(weekend))
 #' }
-#'
+#' 
 binData <- function(mydata,
                     bin = "nox",
                     uncer = "no2",
@@ -98,24 +104,11 @@ binData <- function(mydata,
   return(mydata)
 }
 
-#' Bootstrap confidence intervals in the mean
-#'
-#' A utility function to calculation the uncertainty intervals in the mean of a
-#' vector. The function removes any missing data before the calculation.
-#'
 #' @param x A vector from which the mean and bootstrap confidence intervals in
 #'   the mean are to be calculated
-#' @inheritParams binData
-#'
-#' @return Returns a data frame with the mean, lower uncertainty, upper
-#'   uncertainty and number of values used in the calculation
+#' @rdname bootMeans
+#' @order 2
 #' @export
-#'
-#' @seealso [binData()]
-#'
-#' @examples
-#' test <- rnorm(20, mean = 10)
-#' bootMeanDF(test)
 bootMeanDF <- function(x, conf.int = 0.95, B = 1000) {
   if (!is.vector(x)) {
     cli::cli_abort(c("x" = "{.field x} should be a vector.", "i" = "{.field x} is a {class(x)}."))
