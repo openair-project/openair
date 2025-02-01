@@ -2,6 +2,7 @@
 % Please edit documentation in R/bootMeans.R
 \name{binData}
 \alias{binData}
+\alias{bootMeanDF}
 \title{Bin data, calculate mean and bootstrap confidence interval in the mean}
 \usage{
 binData(
@@ -16,6 +17,8 @@ binData(
   B = 250,
   ...
 )
+
+bootMeanDF(x, conf.int = 0.95, B = 1000)
 }
 \arguments{
 \item{mydata}{Name of the data frame to process.}
@@ -38,16 +41,20 @@ Confidence Interval).}
 
 \item{...}{Other parameters that are passed on to \code{\link[=cutData]{cutData()}}, for use with
 \code{type}.}
+
+\item{x}{A vector from which the mean and bootstrap confidence intervals in
+the mean are to be calculated}
 }
 \value{
 Returns a summarised data frame with new columns for the mean and
 upper / lower confidence intervals in the mean.
 }
 \description{
-This function summarises data by intervals and calculates the mean and
-bootstrap confidence intervals (by default 95\% CI) in the mean of a chosen
-variable in a data frame. Any other numeric variables are summarised by their
-mean intervals.
+\link{binData} summarises data by intervals and calculates the mean and bootstrap
+confidence intervals (by default 95\% CI) in the mean of a chosen variable in
+a data frame. Any other numeric variables are summarised by their mean
+intervals. This occurs via \code{\link[=bootMeanDF]{bootMeanDF()}}, which calculates the uncertainty
+intervals in the mean of a vector.
 }
 \details{
 There are three options for binning. The default is to bin \code{bin} into 40
@@ -55,6 +62,10 @@ intervals. Second, the user can choose an binning \code{interval}, e.g., \code{i
 intervals.
 }
 \examples{
+# work with vectors
+test <- rnorm(20, mean = 10)
+bootMeanDF(test)
+
 # how does nox vary by intervals of wind speed?
 results <- binData(mydata, bin = "ws", uncer = "nox")
 \dontrun{
@@ -71,7 +82,4 @@ ggplot(results2, aes(x = ws, y = mean, ymin = min, ymax = max)) +
   facet_wrap(vars(weekend))
 }
 
-}
-\seealso{
-\code{\link[=bootMeanDF]{bootMeanDF()}}
 }
