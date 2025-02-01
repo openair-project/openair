@@ -1,15 +1,16 @@
 #' Bin data, calculate mean and bootstrap confidence interval in the mean
 #'
-#' [binData()] summarises data by intervals and calculates the mean and bootstrap
-#' confidence intervals (by default 95% CI) in the mean of a chosen variable in
-#' a data frame. Any other numeric variables are summarised by their mean
-#' intervals. This occurs via [bootMeanDF()], which calculates the uncertainty
-#' intervals in the mean of a vector.
+#' [binData()] summarises data by intervals and calculates the mean and
+#' bootstrap confidence intervals (by default 95% CI) in the mean of a chosen
+#' variable in a data frame. Any other numeric variables are summarised by their
+#' mean intervals. This occurs via [bootMeanDF()], which calculates the
+#' uncertainty intervals in the mean of a vector.
 #'
 #' There are three options for binning. The default is to bin `bin` into 40
 #' intervals. Second, the user can choose an binning `interval`, e.g., `interval
 #' = 5`. Third, the user can supply their own `breaks` to use as binning
-#' intervals.
+#' intervals. Note that intervals are calculated on the whole dataset before the
+#' data is cut into categories using `type`.
 #'
 #' @param mydata Name of the data frame to process.
 #' @param bin The name of the column to divide into intervals.
@@ -35,7 +36,7 @@
 #' # work with vectors
 #' test <- rnorm(20, mean = 10)
 #' bootMeanDF(test)
-#' 
+#'
 #' # how does nox vary by intervals of wind speed?
 #' results <- binData(mydata, bin = "ws", uncer = "nox")
 #' \dontrun{
