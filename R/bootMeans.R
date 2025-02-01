@@ -16,6 +16,9 @@
 #' @param bin The name of the column to divide into intervals.
 #' @param uncer The name of the column for which the mean, lower and upper
 #'   uncertainties should be calculated for each interval of `bin`.
+#' @param type Used for splitting the data further. Passed to [cutData()]. Note
+#'   that intervals are calculated on the whole dataset before the data is
+#'   categorised, meaning intervals will be the same for the different groups.
 #' @param n The number of intervals to split `bin` into.
 #' @param interval The interval to be used for binning the data.
 #' @param breaks User specified breaks to use for binning.

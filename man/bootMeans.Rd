@@ -28,6 +28,10 @@ bootMeanDF(x, conf.int = 0.95, B = 1000)
 \item{uncer}{The name of the column for which the mean, lower and upper
 uncertainties should be calculated for each interval of \code{bin}.}
 
+\item{type}{Used for splitting the data further. Passed to \code{\link[=cutData]{cutData()}}. Note
+that intervals are calculated on the whole dataset before the data is
+categorised, meaning intervals will be the same for the different groups.}
+
 \item{n}{The number of intervals to split \code{bin} into.}
 
 \item{interval}{The interval to be used for binning the data.}
