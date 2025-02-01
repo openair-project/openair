@@ -50,16 +50,17 @@ Returns a summarised data frame with new columns for the mean and
 upper / lower confidence intervals in the mean.
 }
 \description{
-\link{binData} summarises data by intervals and calculates the mean and bootstrap
-confidence intervals (by default 95\% CI) in the mean of a chosen variable in
-a data frame. Any other numeric variables are summarised by their mean
-intervals. This occurs via \code{\link[=bootMeanDF]{bootMeanDF()}}, which calculates the uncertainty
-intervals in the mean of a vector.
+\code{\link[=binData]{binData()}} summarises data by intervals and calculates the mean and
+bootstrap confidence intervals (by default 95\% CI) in the mean of a chosen
+variable in a data frame. Any other numeric variables are summarised by their
+mean intervals. This occurs via \code{\link[=bootMeanDF]{bootMeanDF()}}, which calculates the
+uncertainty intervals in the mean of a vector.
 }
 \details{
 There are three options for binning. The default is to bin \code{bin} into 40
 intervals. Second, the user can choose an binning \code{interval}, e.g., \code{interval = 5}. Third, the user can supply their own \code{breaks} to use as binning
-intervals.
+intervals. Note that intervals are calculated on the whole dataset before the
+data is cut into categories using \code{type}.
 }
 \examples{
 # work with vectors
