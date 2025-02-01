@@ -28,15 +28,15 @@
 #' may not be ratified.
 #'
 #' The data are imported by stacking sites on top of one another and will have
-#' field names \code{date}, \code{site}, \code{code} (the site code) and
+#' field names `date`, `site`, `code` (the site code) and
 #' pollutant(s). Sometimes it is useful to have columns of site data. This can
-#' be done using the \code{reshape} function --- see examples below.
+#' be done using the `reshape` function --- see examples below.
 #'
 #' The situation for particle measurements is not straightforward given the
 #' variety of methods used to measure particle mass and changes in their use
-#' over time. The \code{importImperial} function imports two measures of PM10
-#' where available. \code{PM10_raw} are TEOM measurements with a 1.3 factor
-#' applied to take account of volatile losses. The \code{PM10} data is a current
+#' over time. The `importImperial` function imports two measures of PM10
+#' where available. `PM10_raw` are TEOM measurements with a 1.3 factor
+#' applied to take account of volatile losses. The `PM10` data is a current
 #' best estimate of a gravimetric equivalent measure as described below. NOTE!
 #' many sites have several instruments that measure PM10 or PM2.5. In the case
 #' of FDMS measurements, these are given as separate site codes (see below). For
@@ -67,7 +67,7 @@
 #' widespread measurements of volatile PM became available. The 1.3 correction
 #' factor is now considered redundant for measurements of PM10 made after 1st
 #' January 2004.  Further information on the VCM can be found at
-#' \url{http://www.volatile-correction-model.info/}.
+#' <http://www.volatile-correction-model.info/>.
 #'
 #' All PM10 statistics on the LondonAir web site, including the bulletins and
 #' statistical tools (and in the RData objects downloaded using
@@ -92,16 +92,16 @@
 #'
 #' @inheritParams importAURN
 #' @param site Site code of the network site to import e.g. "my1" is Marylebone
-#'   Road. Several sites can be imported with \code{site = c("my1", "kc1")} ---
+#'   Road. Several sites can be imported with `site = c("my1", "kc1")` ---
 #'   to import Marylebone Road and North Kensignton for example.
 #' @param meteo Should meteorological data be added to the import data? The
-#'   default is \code{FALSE}. If \code{TRUE} wind speed (m/s), wind direction
+#'   default is `FALSE`. If `TRUE` wind speed (m/s), wind direction
 #'   (degrees), solar radiation and rain amount are available. See details
 #'   below.
 #' @param extra Defaults to `FALSE`. When `TRUE`, returns additional data.
 #' @param units By default the returned data frame expresses the units in mass
-#'   terms (ug/m3 for NOx, NO2, O3, SO2; mg/m3 for CO). Use \code{units =
-#'   "volume"} to use ppb etc. PM10_raw TEOM data are multiplied by 1.3 and
+#'   terms (ug/m3 for NOx, NO2, O3, SO2; mg/m3 for CO). Use `units =
+#'   "volume"` to use ppb etc. PM10_raw TEOM data are multiplied by 1.3 and
 #'   PM2.5 have no correction applied. See details below concerning PM10
 #'   concentrations.
 #' @param progress Show a progress bar when many sites/years are being imported?

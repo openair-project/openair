@@ -52,8 +52,7 @@ below.}
 \item{extra}{Not currently used.}
 
 \item{units}{By default the returned data frame expresses the units in mass
-terms (ug/m3 for NOx, NO2, O3, SO2; mg/m3 for CO). Use \code{units =
-  "volume"} to use ppb etc. PM10_raw TEOM data are multiplied by 1.3 and
+terms (ug/m3 for NOx, NO2, O3, SO2; mg/m3 for CO). Use \code{units = "volume"} to use ppb etc. PM10_raw TEOM data are multiplied by 1.3 and
 PM2.5 have no correction applied. See details below concerning PM10
 concentrations.}
 
