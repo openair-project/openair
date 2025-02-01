@@ -8,7 +8,7 @@ body:
       value: |
         Thank you for helping with the development of `{openair}` by requesting a new feature.
         
-        Before you submit your issue, it may be useful to check through the [openair book](https://bookdown.org/david_carslaw/openair/) just to make sure your suggestion can't already be achieved!
+        Before you submit your issue, it may be useful to check through the [openair book](https://openair-project.github.io/book/) just to make sure your suggestion can't already be achieved!
 
   - type: textarea
     attributes:

@@ -1,7 +1,7 @@
 Type: Package
 Package: openair
 Title: Tools for the Analysis of Air Pollution Data
-Version: 2.18.2.9004
+Version: 2.18.2.9007
 Date: 2024-10-01
 Authors@R: c(
     person("David", "Carslaw", , "david.carslaw@york.ac.uk", role = c("aut", "cre"),
@@ -17,10 +17,10 @@ Description: Tools to analyse, interpret and understand air pollution
     measurement, meteorological data and dispersion model output can be
     analysed. The package is described in Carslaw and Ropkins (2012,
     <doi:10.1016/j.envsoft.2011.09.008>) and subsequent papers.
-License: GPL (>= 2)
-URL: https://davidcarslaw.github.io/openair/,
-    https://github.com/davidcarslaw/openair
-BugReports: https://github.com/davidcarslaw/openair/issues
+License: MIT + file LICENSE
+URL: https://openair-project.github.io/openair/,
+    https://github.com/openair-project/openair
+BugReports: https://github.com/openair-project/openair/issues
 Depends:
     R (>= 3.2.0)
 Imports:
@@ -57,10 +57,10 @@ Suggests:
 LinkingTo: 
     Rcpp
 ByteCompile: true
+Config/Needs/website: openair-project/openairpkgdown
 Encoding: UTF-8
 Language: en-GB
 LazyData: yes
 LazyLoad: yes
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-VignetteBuilder: knitr

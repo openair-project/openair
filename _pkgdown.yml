@@ -1,25 +1,6 @@
-url: https://davidcarslaw.github.io/openair/
+url: https://openair-project.github.io/openair/
 template:
-  bootstrap: 5
-  bslib:
-    bootswatch: lumen
-    pkgdown-nav-height: 100px
-
-navbar:
-  title: openair
-  structure:
-    left:  [intro, reference, news, book, articles, tutorials]
-    right: [search, github]
-  components:
-    reference:
-      text: Functions
-      href: reference/index.html
-    news:
-      text: News
-      href: news/index.html
-    book:
-      text: Book (external)
-      href: https://bookdown.org/david_carslaw/openair/
+  package: openairpkgdown
 
 reference:
 - title: Data

@@ -19,8 +19,6 @@
 #' formed through these two processes by seeking the optimum level of primary
 #' NO2 that gives the least error.
 #'
-#' Test data is provided at \url{https://davidcarslaw.github.io/openair/}.
-#'
 #' @param input A data frame with the following fields. \code{nox} and\code{no2}
 #'   (roadside NOX and NO2 concentrations), \code{back_nox}, \code{back_no2} and
 #'   \code{back_o3} (hourly background concentrations of each pollutant). In

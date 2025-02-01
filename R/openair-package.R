@@ -19,7 +19,7 @@
 #'
 #'   The package has a number of requirements for input data and these are
 #'   discussed in the manual (available on the \code{openair} website at
-#'   \url{https://davidcarslaw.github.io/openair/}). The key requirements are
+#'   \url{https://openair-project.github.io/openair/}). The key requirements are
 #'   that a date or date-time field must have the name `date' (and can be
 #'   \code{Date} or \code{POSIXct} format), that wind speed is represented as
 #'   `ws' and that wind direction is `wd'.
@@ -34,7 +34,7 @@
 #'   installed, and this requires a connection to the internet. Other packages
 #'   required come with the R base system.  If there are problems with the
 #'   automatic download of these packages, see
-#'   \url{https://davidcarslaw.github.io/openair/} for more details.
+#'   \url{https://openair-project.github.io/openair/} for more details.
 #'
 #'   NOTE: openair assumes that data are not expressed in local time where
 #'   'Daylight Saving Time' is used. All functions check that this is the case
@@ -75,9 +75,9 @@
 #'   quality data analysis.  Environmental Modelling & Software. Volume 27-28,
 #'   52-61.
 #'
-#' @seealso See \url{https://davidcarslaw.github.io/openair/} for up to date
+#' @seealso See \url{https://openair-project.github.io/openair/} for up to date
 #'   information on the project, and the openair book
-#'   (\url{https://bookdown.org/david_carslaw/openair/}) for thorough
+#'   (\url{https://openair-project.github.io/book/}) for thorough
 #'   documentation and examples.
 #'
 #' @examples
