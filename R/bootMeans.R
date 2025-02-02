@@ -75,35 +75,34 @@ binData <- function(mydata,
   } else {
     mydata$interval <- cut(mydata[[bin]], breaks = n)
   }
-
+  
   # cut for type
   mydata <- cutData(mydata, type = type, ...)
-
+  
   # remove any missing intervals
   mydata <- mydata[!is.na(mydata$interval), ]
-
+  
   # calculate 95% CI in mean
   uncert <- dplyr::reframe(mydata,
-    bootMeanDF(.data[[uncer]], conf.int = conf.int, B = B),
-    .by = dplyr::all_of(c("interval", type))
-  )
-
+                           bootMeanDF(.data[[uncer]], conf.int = conf.int, B = B),
+                           .by = dplyr::all_of(c("interval", type)))
+  
   # calculate mean for other variables
   means <- dplyr::summarise(mydata,
-    dplyr::across(dplyr::where(is.numeric), function(x) {
-      mean(x, na.rm = TRUE)
-    }),
-    .by = dplyr::all_of(c("interval", type))
-  )
-
+                            dplyr::across(dplyr::where(is.numeric), function(x) {
+                              mean(x, na.rm = TRUE)
+                            }),
+                            .by = dplyr::all_of(c("interval", type)))
+  
   # join dataframes
-  mydata <- inner_join(means, uncert, by = dplyr::all_of(c("interval", type)))
-
+  by <- c("interval", type)
+  mydata <- dplyr::inner_join(means, uncert, by = by)
+  
   # drop type column if default
   if (type == "default") {
     mydata$default <- NULL
   }
-
+  
   # return
   return(mydata)
 }
@@ -117,7 +116,7 @@ bootMeanDF <- function(x, conf.int = 0.95, B = 1000) {
   if (!is.vector(x)) {
     cli::cli_abort(c("x" = "{.field x} should be a vector.", "i" = "{.field x} is a {class(x)}."))
   }
-
+  
   res <- bootMean(x = x, conf.int = conf.int, B = B)
   res <- data.frame(
     mean = res[1],
