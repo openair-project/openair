@@ -109,12 +109,6 @@
 #' @keywords internal
 "_PACKAGE"
 ## usethis namespace: start
-#' @importFrom graphics abline
-#' @importFrom grDevices col2rgb
-#' @importFrom grDevices colorRampPalette
-#' @importFrom grDevices grey
-#' @importFrom grDevices rgb
-#' @importFrom grDevices xy.coords
 #' @importFrom latticeExtra useOuterStrips
 #' @importFrom lubridate as_date
 #' @importFrom lubridate ceiling_date
@@ -129,10 +123,6 @@
 #' @importFrom lubridate round_date
 #' @importFrom lubridate wday
 #' @importFrom lubridate year
-#' @importFrom lubridate ymd
-#' @importFrom lubridate ymd_hm
-#' @importFrom lubridate ymd_hms
-#' @importFrom MASS rlm
 #' @importFrom methods is
 #' @importFrom Rcpp evalCpp
 #' @importFrom rlang .data
@@ -176,12 +166,9 @@
 #' @importFrom stats var
 #' @importFrom tibble tibble
 #' @importFrom utils compareVersion
-#' @importFrom utils download.file
 #' @importFrom utils head
 #' @importFrom utils modifyList
-#' @importFrom utils packageDescription
 #' @importFrom utils read.csv
-#' @importFrom utils read.table
 #' @importFrom utils tail
 ## usethis namespace: end
 NULL

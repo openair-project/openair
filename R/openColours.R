@@ -204,7 +204,7 @@ openColours <- function(scheme = "default", n = 100) {
       cols <- huePalette(n)
     }
     if (scheme == "greyscale") {
-      cols <- grey(seq(0.9, 0.1, length = n))
+      cols <- grDevices::grey(seq(0.9, 0.1, length = n))
     }
     if (scheme %in% seq_schemes) {
       cols <- seqPalette(n, scheme = scheme)
@@ -231,7 +231,7 @@ openColours <- function(scheme = "default", n = 100) {
 
     if (length(scheme) > 1) {
       # interpolate
-      user.cols <- colorRampPalette(scheme)
+      user.cols <- grDevices::colorRampPalette(scheme)
       cols <- user.cols(n)
     } else {
       cols <- rep(scheme, n)
@@ -260,7 +260,7 @@ brewerPalette <- function(n, scheme, brewer.col, brewer.n) {
     brewer.pal(n, scheme)
   } else {
     thefun <-
-      suppressWarnings(colorRampPalette(brewer.pal(n.brew, scheme), interpolate = "spline"))
+      suppressWarnings(grDevices::colorRampPalette(brewer.pal(n.brew, scheme), interpolate = "spline"))
     thefun(n)
   }
 }
@@ -568,7 +568,7 @@ seqPalette <- function(n, scheme) {
     cols <- c("#12436D", "#2073BC", "#6BACE6")
   }
 
-  fun <- colorRampPalette(colors = cols, interpolate = interpolate)
+  fun <- grDevices::colorRampPalette(colors = cols, interpolate = interpolate)
 
   cols <- fun(n)
 
@@ -580,7 +580,7 @@ seqPalette <- function(n, scheme) {
 areColors <- function(x) {
   sapply(x, function(X) {
     tryCatch(
-      is.matrix(col2rgb(X)),
+      is.matrix(grDevices::col2rgb(X)),
       error = function(e) {
         FALSE
       }

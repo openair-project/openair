@@ -228,7 +228,7 @@ cutData <- function(x, type = "default", hemisphere = "northern",
       }
     }
 
-    if (type == "year") x[[type]] <- factor(year(x$date))
+    if (type == "year") x[[type]] <- factor(lubridate::year(x$date))
 
     if (type == "hour") x[[type]] <- factor(format(x$date, "%H"))
 

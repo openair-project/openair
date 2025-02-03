@@ -147,7 +147,7 @@ summaryPlot <- function(mydata,
                         plot.type = "l",
                         col.trend = "darkgoldenrod2",
                         col.data = "lightblue",
-                        col.mis = rgb(0.65, 0.04, 0.07),
+                        col.mis = "#A60A12",
                         col.hist = "forestgreen",
                         cols = NULL,
                         date.breaks = 7,
@@ -165,7 +165,7 @@ summaryPlot <- function(mydata,
     # other local colours
     col.trend <- "lightgrey"
     col.data <- "lightgrey"
-    col.mis <- grey(0.15)
+    col.mis <- grDevices::grey(0.15)
     col.hist <- "grey"
     col.stat <- "black"
   } else {

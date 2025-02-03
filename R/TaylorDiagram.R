@@ -572,11 +572,11 @@ panel.taylor.setup <- function(x, y, subscripts, results, maxsd, cor.col, rms.co
   corr.lines <- c(0.2, 0.4, 0.6, 0.8, 0.9)
 
   ## grid line with alpha transparency
-  theCol <- t(col2rgb(cor.col)) / 255
+  theCol <- t(grDevices::col2rgb(cor.col)) / 255
 
   for (gcl in corr.lines) llines(
       c(0, maxsd * gcl), c(0, maxsd * sqrt(1 - gcl ^ 2)),
-      col = rgb(theCol, alpha = 0.4), alpha = 0.5
+      col = grDevices::rgb(theCol, alpha = 0.4), alpha = 0.5
     )
 
   bigtick <- acos(seq(0.1, 0.9, by = 0.1))
