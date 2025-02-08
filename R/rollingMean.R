@@ -107,6 +107,11 @@ rollingMean <- function(mydata,
     purrr::map(split(mydata, mydata[[type]], drop = TRUE), calc.rolling) %>%
     purrr::list_rbind()
   
+  # drop default column
+  if (type == "default") {
+    mydata$default <- NULL
+  }
+  
   # return
   return(mydata)
 }
