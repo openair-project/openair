@@ -70,6 +70,9 @@ rollingMean <- function(mydata,
   # deal with type
   if (type == "default" & "site" %in% names(mydata)) {
     # back compatibility to avoid breaking change
+    cli::cli_inform(
+      '{.field type} is "default" but {.code site} column identified - setting {.field type} to "site".'
+    )
     type <- "site"
   }
   mydata <- cutData(mydata, type = type, ...)
