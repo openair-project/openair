@@ -83,7 +83,7 @@ selectRunning <- function(mydata,
     dplyr::mutate(
       `__flag__` = rlang::eval_tidy(rlang::parse_expr(expr)),
       `__run__` = dplyr::consecutive_id(`__flag__`),
-      .by = type
+      .by = dplyr::all_of(type)
     ) %>%
     # ensure runs are unique per type
     dplyr::mutate(`__run__` = paste(`__run__`, .data[[type]])) %>%
@@ -101,7 +101,7 @@ selectRunning <- function(mydata,
     )
   
   # format outputs
-  if (mode == "append") {
+  if (mode == "filter") {
     mydata <- mydata[thedata$`__flag__`, ]
   }
   
