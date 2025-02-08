@@ -22,10 +22,15 @@
 #' @param threshold The threshold value for `pollutant` above which data should
 #'   be extracted.
 #' @param type Used for splitting the data further. Passed to [cutData()].
-#' @param result A vector of length 2, defining how to label the run lengths.
-#'   The first object should be the label for the `TRUE` label, and the second
-#'   the `FALSE` label - e.g., `c("yes", "no")`.
-#' @param name The name of the column to be appended to the data frame.
+#' @param name The name of the column to be appended to the data frame when
+#'   `mode = "flag"`.
+#' @param result A vector of length 2, defining how to label the run lengths
+#'   when `mode = "flag"`. The first object should be the label for the `TRUE`
+#'   label, and the second the `FALSE` label - e.g., `c("yes", "no")`.
+#' @param mode Changes how the function behaves. When `mode = "flag"`, the
+#'   default, the function appends a column flagging where the criteria was met.
+#'   Alternatively, `"filter"` will filter `mydata` to only return rows where
+#'   the criteria was met.
 #' @param ... Additional parameters passed to [cutData()]. For use with `type`.
 #' @export
 #' @return A data frame
@@ -47,8 +52,8 @@ selectRunning <- function(mydata,
                           run.len = 5L,
                           threshold = 500,
                           type = "default",
-                          result = c("yes", "no"),
                           name = "criterion",
+                          result = c("yes", "no"),
                           mode = c("flag", "filter"),
                           ...) {
   # check inputs are valid
@@ -82,18 +87,18 @@ selectRunning <- function(mydata,
     # create flags of the criterion, and work out run length
     dplyr::mutate(
       `__flag__` = rlang::eval_tidy(rlang::parse_expr(expr)),
-      `__run__` = dplyr::consecutive_id(`__flag__`),
+      `__run__` = dplyr::consecutive_id(.data[["__flag__"]]),
       .by = dplyr::all_of(type)
     ) %>%
     # ensure runs are unique per type
-    dplyr::mutate(`__run__` = paste(`__run__`, .data[[type]])) %>%
+    dplyr::mutate(`__run__` = paste(.data[["__run__"]], .data[[type]])) %>%
     # count length of runs
     dplyr::mutate(`__len__` = dplyr::n(), .by = "__run__") %>%
     # check if run length is greather than run.len for positive flags
     dplyr::mutate(
       `__flag__` = dplyr::if_else(
-        condition = `__flag__` &
-          `__len__` >= run.len,
+        condition = .data[["__flag__"]] &
+          .data[["__len__"]] >= run.len,
         true = TRUE,
         false = FALSE,
         missing = FALSE

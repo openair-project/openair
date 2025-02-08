@@ -11,8 +11,8 @@ selectRunning(
   run.len = 5L,
   threshold = 500,
   type = "default",
-  result = c("yes", "no"),
   name = "criterion",
+  result = c("yes", "no"),
   mode = c("flag", "filter"),
   ...
 )
@@ -34,11 +34,17 @@ be extracted.}
 
 \item{type}{Used for splitting the data further. Passed to \code{\link[=cutData]{cutData()}}.}
 
-\item{result}{A vector of length 2, defining how to label the run lengths.
-The first object should be the label for the \code{TRUE} label, and the second
-the \code{FALSE} label - e.g., \code{c("yes", "no")}.}
+\item{name}{The name of the column to be appended to the data frame when
+\code{mode = "flag"}.}
 
-\item{name}{The name of the column to be appended to the data frame.}
+\item{result}{A vector of length 2, defining how to label the run lengths
+when \code{mode = "flag"}. The first object should be the label for the \code{TRUE}
+label, and the second the \code{FALSE} label - e.g., \code{c("yes", "no")}.}
+
+\item{mode}{Changes how the function behaves. When \code{mode = "flag"}, the
+default, the function appends a column flagging where the criteria was met.
+Alternatively, \code{"filter"} will filter \code{mydata} to only return rows where
+the criteria was met.}
 
 \item{...}{Additional parameters passed to \code{\link[=cutData]{cutData()}}. For use with \code{type}.}
 }
