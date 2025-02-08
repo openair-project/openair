@@ -10,9 +10,11 @@ selectRunning(
   criterion = ">",
   run.len = 5L,
   threshold = 500,
+  type = "default",
   result = c("yes", "no"),
   name = "criterion",
-  mode = c("flag", "filter")
+  mode = c("flag", "filter"),
+  ...
 )
 }
 \arguments{
@@ -30,11 +32,15 @@ meeting the \code{criterion} in relation to the \code{threshold}.}
 \item{threshold}{The threshold value for \code{pollutant} above which data should
 be extracted.}
 
+\item{type}{Used for splitting the data further. Passed to \code{\link[=cutData]{cutData()}}.}
+
 \item{result}{A vector of length 2, defining how to label the run lengths.
 The first object should be the label for the \code{TRUE} label, and the second
 the \code{FALSE} label - e.g., \code{c("yes", "no")}.}
 
 \item{name}{The name of the column to be appended to the data frame.}
+
+\item{...}{Additional parameters passed to \code{\link[=cutData]{cutData()}}. For use with \code{type}.}
 }
 \value{
 A data frame

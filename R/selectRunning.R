@@ -21,10 +21,12 @@
 #'   meeting the `criterion` in relation to the `threshold`.
 #' @param threshold The threshold value for `pollutant` above which data should
 #'   be extracted.
+#' @param type Used for splitting the data further. Passed to [cutData()].
 #' @param result A vector of length 2, defining how to label the run lengths.
 #'   The first object should be the label for the `TRUE` label, and the second
 #'   the `FALSE` label - e.g., `c("yes", "no")`.
 #' @param name The name of the column to be appended to the data frame.
+#' @param ... Additional parameters passed to [cutData()]. For use with `type`.
 #' @export
 #' @return A data frame
 #' @author David Carslaw
@@ -44,38 +46,50 @@ selectRunning <- function(mydata,
                           criterion = ">",
                           run.len = 5L,
                           threshold = 500,
+                          type = "default",
                           result = c("yes", "no"),
                           name = "criterion",
-                          mode = c("flag", "filter")) {
+                          mode = c("flag", "filter"),
+                          ...) {
   # check inputs are valid
   mode <- rlang::arg_match(mode)
   criterion <- rlang::arg_match(criterion, c("<", ">", "<=", ">=", "==", "!="), multiple = FALSE)
   
+  # construct expression
+  expr <- paste(pollutant, criterion, threshold)
+  
+  # handle type
+  mydata <- cutData(mydata, type = type, ...)
+  
   # pad out missing data
-  thedata <- date.pad(mydata)
+  thedata <- date.pad(mydata, type = type)
   
   # save input for later
   mydata <- thedata
   
   # check input data - ensures `date` are in correct order
+  vars <- unique(c("date", names(mydata)))
   thedata <- checkPrep(
     mydata,
-    Names = c("date", pollutant),
-    type = "default",
+    Names = vars,
+    type = type,
     remove.calm = FALSE
   )
-  
-  # construct expression
-  expr <- paste(pollutant, criterion, threshold)
   
   # calculate run lengths
   thedata <-
     thedata %>%
+    # create flags of the criterion, and work out run length
     dplyr::mutate(
       `__flag__` = rlang::eval_tidy(rlang::parse_expr(expr)),
-      `__run__` = dplyr::consecutive_id(`__flag__`)
+      `__run__` = dplyr::consecutive_id(`__flag__`),
+      .by = type
     ) %>%
+    # ensure runs are unique per type
+    dplyr::mutate(`__run__` = paste(`__run__`, .data[[type]])) %>%
+    # count length of runs
     dplyr::mutate(`__len__` = dplyr::n(), .by = "__run__") %>%
+    # check if run length is greather than run.len for positive flags
     dplyr::mutate(
       `__flag__` = dplyr::if_else(
         condition = `__flag__` &
@@ -87,13 +101,17 @@ selectRunning <- function(mydata,
     )
   
   # format outputs
-  if (mode == "flag") {
+  if (mode == "append") {
     mydata <- mydata[thedata$`__flag__`, ]
   }
   
-  if (mode == "append") {
+  if (mode == "flag") {
     mydata[[name]] <- thedata$`__flag__`
     mydata[[name]] <- ifelse(mydata[[name]], result[1], result[2])
+  }
+  
+  if (type == "default") {
+    mydata$default <- NULL
   }
   
   # return
