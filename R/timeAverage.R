@@ -172,6 +172,7 @@
 #' }
 timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
                         statistic = "mean", type = "default", percentile = NA,
+                        percentileInterpolation=TRUE,
                         start.date = NA, end.date = NA, interval = NA,
                         vector.ws = FALSE, fill = FALSE, progress = TRUE, ...) {
 
@@ -236,9 +237,16 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
     }
   }
 
-  if (statistic == "percentile") {
+  if (statistic == "percentile" & percentileInterpolation==TRUE) {
     FUN <- function(x)
-      quantile(x, probs = percentile, na.rm = TRUE)
+      quantile(x, probs = percentile,na.rm = TRUE)
+  } else if (statistic == "percentile" & percentileInterpolation==FALSE){
+    FUN <-function(x){
+      sorted_data <- sort(na.omit(x))
+      n <- length(sorted_data)
+      position <- trunc(((percentile) * n)+sign(((percentile) * n))*0.5)
+      return(sorted_data[position])
+    }
   }
 
   calc.mean <- function(mydata, start.date) { ## function to calculate means
