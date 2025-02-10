@@ -19,7 +19,9 @@
     - When `n` isn't defined for a qualitative palette (e.g., "Dark2"), the full qualitative palette will be returned. Previously this errored with the default of `100`.
     
     - `openColours()` will now check whether the provided `scheme` is either a known scheme name *or* a vector of valid R colours, and provide an informative error if this is not the case.
-    
+
+- `selectRunning()` has gained the `type`, `name`, and `mode` arguments. Of the latter two, the former allows users to rename the column appended by the function. The latter can currently change the function to filter for data with the specified `run.len` rather than appending a new flag column.
+
 - The `formula.label` argument of `polarPlot()` will now control whether concentration information is printed when `statistic = "cpf"`.
 
 - add `calm.thresh` as an option to `windRose`. This change allows users to set a non-zero wind speed threshold that is considered as calm.
