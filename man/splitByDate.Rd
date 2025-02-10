@@ -9,7 +9,8 @@ splitByDate(
   dates = "1/1/2003",
   labels = c("before", "after"),
   name = "split.by",
-  format = c("\%d/\%m/\%Y", "\%Y/\%m/\%d")
+  format = c("\%d/\%m/\%Y", "\%Y/\%m/\%d", "\%d/\%m/\%Y \%H:\%M:\%S",
+    "\%Y/\%m/\%d \%H:\%M:\%S")
 )
 }
 \arguments{
