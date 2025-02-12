@@ -34,6 +34,10 @@
 
 - `importUKAQ()` will correctly append site meta data when `meta = TRUE`, `source` is a length greater than 1, and a single site is repeated in more than one source (e.g., `importUKAQ(source = c("waqn", "aurn"), data_type = "daqi", year = 2024L))`)
 
+## Deprecations
+
+`importEurope()` relies on the same back-end database as the `saqgetr` package (<https://github.com/skgrange/saqgetr>), which was retired in February 2024. `importEurope()` will now warn users of this, and outright error if `year >= 2025`. Users are instead encouraged to use the EEA Air Quality Download Service <https://eeadmz1-downloads-webapp.azurewebsites.net> to obtain European data.
+
 # openair 2.18-2
 
 ## New Features
