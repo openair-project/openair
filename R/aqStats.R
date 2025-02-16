@@ -77,6 +77,7 @@ aqStats <- function(mydata,
                     data.thresh = 0,
                     percentile = c(95, 99),
                     transpose = FALSE,
+                    progress = TRUE,
                     ...) {
   ## get rid of R check annoyances
   year <- rolling8value <- NULL
@@ -99,38 +100,44 @@ aqStats <- function(mydata,
 
   # reorganise data
   mydata <-
-    gather(mydata, key = pollutant, value = value, pollutant) %>%
+    mydata %>%
+    tidyr::pivot_longer(cols = pollutant, names_to = "pollutant") %>%
     mutate(year = lubridate::year(date))
 
   vars <- c(type, "pollutant", "year")
 
   # calculate the statistics
-  results <- mydata %>%
-    group_by(across(vars)) %>%
-    do(calcStats(.,
-      data.thresh = data.thresh,
-      percentile = percentile, ...
-    ))
-
-  ## transpose if requested
+  results <-
+    purrr::map(
+      .x = split(mydata, mydata[vars], sep = "__"),
+      .f = function(x) {
+        calcStats(x, data.thresh = data.thresh, percentile = percentile, ...)
+      },
+      .progress = progress
+    ) %>%
+    dplyr::bind_rows(.id = "__id__") %>%
+    dplyr::select(-"year") %>%
+    tidyr::separate_wider_delim(cols = "__id__",
+                                delim = "__",
+                                names = vars)
+  
+  # transpose if requested
   if (transpose) {
-    results <- gather(results,
-      key = variable,
-      value = value, -c(type, pollutant, year, date)
-    )
-
-    if (type != "default") {
-      results <- unite(results, site_pol, type, pollutant)
-    } else {
-      results <- unite(results, site_pol, pollutant)
+    unite_vars <- c(type, "pollutant")
+    if (type == "default") {
+      unite_vars <- c("pollutant")
     }
-
-    results <- spread(results, site_pol, value)
-
-    ## sort out names
-    names(results) <- gsub("\\_", " ", names(results))
+    
+    results <-
+      results %>%
+      tidyr::pivot_longer(-c(vars, date)) %>%
+      tidyr::unite(site_pol, dplyr::all_of(unite_vars)) %>%
+      tidyr::pivot_wider(names_from = "site_pol") %>%
+      dplyr::rename_with(function(x)
+        gsub("_", " ", x))
   }
 
+  # return
   return(results)
 }
 
@@ -164,9 +171,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       mydata[1, setdiff(names(mydata), c("date", "value"))]
   }
 
-
   # statistics
-
   Mean <- timeAverage(
     mydata,
     avg.time = "year",

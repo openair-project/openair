@@ -11,6 +11,7 @@ aqStats(
   data.thresh = 0,
   percentile = c(95, 99),
   transpose = FALSE,
+  progress = TRUE,
   ...
 )
 }
@@ -39,6 +40,9 @@ and \code{end.date} to see whether it is advisable to set these other options.}
 \item{transpose}{The default is to return a data frame with columns
 representing the statistics. If \code{transpose = TRUE} then the results have
 columns for each pollutant-site combination.}
+
+\item{progress}{Show a progress bar when many groups make up \code{type}? Defaults
+to \code{TRUE}.}
 
 \item{...}{Other arguments, currently unused.}
 }
