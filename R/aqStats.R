@@ -79,11 +79,6 @@ aqStats <- function(mydata,
                     transpose = FALSE,
                     progress = TRUE,
                     ...) {
-  ## get rid of R check annoyances
-  year <- rolling8value <- NULL
-  daylight <- NULL
-  . <- NULL
-  
   # variables we need
   vars <- c("date", pollutant, type)
   
@@ -142,14 +137,11 @@ aqStats <- function(mydata,
 }
 
 # function to calculate statistics
-calcStats <- function(mydata, data.thresh, percentile, ...) 
-  rolling8value <- NULL # keep R check happy
-  
+calcStats <- function(mydata, data.thresh, percentile, ...) {
   # check to see if dates duplicate
   if (length(unique(mydata$date)) != length(mydata$date)) {
     cli::cli_warn(
-      c("!" = 'Duplicate dates detected per {.field type}.', 
-        "i" = 'Is there more than one site? Use {.code {.field type} = "site"}.'),
+      c("!" = 'Duplicate dates detected per {.field type}.', "i" = 'Is there more than one site? Use {.code {.field type} = "site"}.'),
       call = NULL
     )
   }
@@ -211,13 +203,9 @@ calcStats <- function(mydata, data.thresh, percentile, ...)
   Max <- timeAverageYear(mydata, "max")
   Median <- timeAverageYear(mydata, "median")
   rollMax8 <-
-    maxRollTimeAverage(
-      mydata, width = 8L, newname = "roll_8_max"
-    )
+    maxRollTimeAverage(mydata, width = 8L, newname = "roll_8_max")
   rollMax24 <-
-    maxRollTimeAverage(
-      mydata, width = 24L, newname = "roll_24_max"
-    )
+    maxRollTimeAverage(mydata, width = 24L, newname = "roll_24_max")
   
   # maximum daily mean
   maxDaily <- timeAverage(
@@ -227,17 +215,14 @@ calcStats <- function(mydata, data.thresh, percentile, ...)
     data.thresh,
     print.int = FALSE
   ) %>%
-    timeAverageYear(
-      "max", 
-      "max_daily"
-    )
-
+    timeAverageYear("max", "max_daily")
+  
   # data capture
   dataCapture <-
     dplyr::summarise(
       mydata,
-      date = min(date),
-      dat.cap = 100 * mean(!is.na(value)),
+      date = min(.data$date, na.rm = TRUE),
+      dat.cap = 100 * mean(!is.na(.data$value)),
       .by = .data$year
     )
   
@@ -259,17 +244,15 @@ calcStats <- function(mydata, data.thresh, percentile, ...)
     dplyr::bind_rows()
   
   # Tables list to merge
-  tables <- list(
-    dataCapture,
-    Mean,
-    Min,
-    Max,
-    Median,
-    maxDaily,
-    rollMax8,
-    rollMax24,
-    Percentile
-  )
+  tables <- list(dataCapture,
+                 Mean,
+                 Min,
+                 Max,
+                 Median,
+                 maxDaily,
+                 rollMax8,
+                 rollMax24,
+                 Percentile)
   
   # specific treatment of pollutants
   
@@ -281,11 +264,15 @@ calcStats <- function(mydata, data.thresh, percentile, ...)
         .x = split(mydata, ~ year),
         .f = function(x, i) {
           rollingMean(x, pollutant = "value", data.thresh = data.thresh, ...) %>%
-            timeAverage(avg.time = "day",
-                        statistic = "max",
-                        data.thresh = data.thresh) %>%
-            dplyr::summarise(roll.8.O3.gt.100 = sum(rolling8value > 100, na.rm = TRUE),
-                             roll.8.O3.gt.120 = sum(rolling8value > 120, na.rm = TRUE)) %>%
+            timeAverage(
+              avg.time = "day",
+              statistic = "max",
+              data.thresh = data.thresh
+            ) %>%
+            dplyr::summarise(
+              roll.8.O3.gt.100 = sum(.data$rolling8value > 100, na.rm = TRUE),
+              roll.8.O3.gt.120 = sum(.data$rolling8value > 120, na.rm = TRUE)
+            ) %>%
             dplyr::mutate(year =  as.numeric(i))
         }
       ) %>%
@@ -310,7 +297,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...)
   if (grepl("no2", mydata$pollutant[1], ignore.case = TRUE)) {
     hours <-
       dplyr::summarise(mydata,
-                       hours = sum(value > 200, na.rm = TRUE),
+                       hours = sum(.data$value > 200, na.rm = TRUE),
                        .by = .data$year) %>%
       dplyr::mutate(date = Mean$date)
     
@@ -321,19 +308,14 @@ calcStats <- function(mydata, data.thresh, percentile, ...)
   if (length(grep("pm10", mydata$pollutant[1], ignore.case = TRUE)) == 1) {
     days <-
       timeAverage(
-      mydata,
-      avg.time = "day",
-      statistic = "mean", 
-      data.thresh = data.thresh,
-      type = "year"
-    ) %>%
-      dplyr::summarise(
-        days = sum(value > 50, na.rm = TRUE)
+        mydata,
+        avg.time = "day",
+        statistic = "mean",
+        data.thresh = data.thresh,
+        type = "year"
       ) %>%
-        dplyr::mutate(
-          date = Mean$date,
-          year = mydata$year[1]
-        )
+      dplyr::summarise(days = sum(.data$value > 50, na.rm = TRUE)) %>%
+      dplyr::mutate(date = Mean$date, year = mydata$year[1])
     
     tables <- append(tables, list(days))
   }
@@ -342,7 +324,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...)
   purrr::reduce(
     .x = tables,
     .f = function(x, y) {
-      dplyr::full_join(x, y, by = c("date", "year")) 
+      dplyr::full_join(x, y, by = c("date", "year"))
     }
   )
 }
