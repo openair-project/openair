@@ -1,17 +1,15 @@
 #' Calculate summary statistics for air pollution data by year
 #'
-#' Calculate a range of air pollution-relevant statistics by year.
-#'
 #' This function calculates a range of common and air pollution-specific
 #' statistics from a data frame. The statistics are calculated on an annual
 #' basis and the input is assumed to be hourly data. The function can cope with
 #' several sites and years, e.g., using `type = "site"`. The user can control
-#' the output by setting `transpose` appropriately.
-#'
-#' Note that the input data is assumed to be in mass units e.g. ug/m3 for all
-#' species except CO (mg/m3).
+#' the output by setting `transpose` appropriately. Note that the input data is
+#' assumed to be in mass units, e.g., ug/m3 for all species except CO (mg/m3).
 #'
 #' The following statistics are calculated:
+#'
+#' For all pollutants:
 #'
 #' - **data.capture** --- percentage data capture over a full year.
 #'
@@ -32,6 +30,8 @@
 #' - **percentile.95** --- 95th percentile. Note that several percentiles
 #' can be calculated.
 #'
+#' When `pollutant == "o3"`:
+#'
 #' - **roll.8.O3.gt.100** --- number of days when the daily maximum
 #' rolling 8-hour mean ozone concentration is >100 ug/m3. This is the target
 #' value.
@@ -45,7 +45,11 @@
 #' September). Note that `latitude` and `longitude` can also be passed to this
 #' calculation.
 #'
+#' When `pollutant == "no2"`:
+#'
 #' - **hours.gt.200** --- number of hours NO2 is more than 200 ug/m3.
+#'
+#' When `pollutant == "pm10"`:
 #'
 #' - **days.gt.50** --- number of days PM10 is more than 50 ug/m3.
 #'
@@ -59,10 +63,12 @@
 #' @inheritParams timeAverage
 #' @param mydata A data frame containing a `date` field of hourly data.
 #' @param pollutant The name of a pollutant e.g. `pollutant = c("o3", "pm10")`.
+#'   Additional statistics will be calculated if `pollutant %in% c("no2",
+#'   "pm10", "o3")`.
 #' @param percentile Percentile values to calculate for each pollutant.
 #' @param transpose The default is to return a data frame with columns
 #'   representing the statistics. If `transpose = TRUE` then the results have
-#'   columns for each pollutant-site combination.
+#'   columns for each pollutant-type combination.
 #' @param ... Other arguments, currently unused.
 #' @export
 #' @author David Carslaw
@@ -105,7 +111,15 @@ aqStats <- function(mydata,
     purrr::map(
       .x = split(mydata, mydata[vars], sep = "__"),
       .f = function(x) {
-        calcStats(x, data.thresh = data.thresh, percentile = percentile, ...)
+        rlang::exec(
+          calcStats,
+          !!!rlang::list2(
+            mydata = x,
+            data.thresh = data.thresh,
+            percentile = percentile,
+            ...
+          )
+        )
       },
       .progress = progress
     ) %>%
@@ -179,17 +193,20 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
   }
   
   # convenience function for rolled maxes
-  maxRollTimeAverage <- function(mydata, width, newname) {
+  maxRollTimeAverage <- function(mydata, width, newname, ...) {
     purrr::map(
       .x = split(mydata, ~ year),
       .f = function(x) {
-        rollingMean(
-          x,
-          pollutant = "value",
-          data.thresh = data.thresh,
-          width = width,
-          new.name = "value",
-          ...
+        rlang::exec(
+          rollingMean,
+          !!!rlang::list2(
+            mydata = x,
+            pollutant = "value",
+            data.thresh = data.thresh,
+            width = width,
+            new.name = "value",
+            ...
+          )
         ) %>%
           timeAverageYear("max", newname)
       }
@@ -203,9 +220,9 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
   Max <- timeAverageYear(mydata, "max")
   Median <- timeAverageYear(mydata, "median")
   rollMax8 <-
-    maxRollTimeAverage(mydata, width = 8L, newname = "roll_8_max")
+    maxRollTimeAverage(mydata, width = 8L, newname = "roll_8_max", ...)
   rollMax24 <-
-    maxRollTimeAverage(mydata, width = 24L, newname = "roll_24_max")
+    maxRollTimeAverage(mydata, width = 24L, newname = "roll_24_max", ...)
   
   # maximum daily mean
   maxDaily <- timeAverage(
@@ -263,7 +280,15 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       purrr::imap(
         .x = split(mydata, ~ year),
         .f = function(x, i) {
-          rollingMean(x, pollutant = "value", data.thresh = data.thresh, ...) %>%
+          rlang::exec(
+            rollingMean,
+            !!!rlang::list2(
+              mydata = x,
+              pollutant = "value",
+              data.thresh = data.thresh,
+              ...
+            )
+          ) %>%
             timeAverage(
               avg.time = "day",
               statistic = "max",
@@ -283,8 +308,14 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       purrr::imap(
         .x = split(mydata, ~ year),
         .f = function(x, i) {
-          AOT40(x, "value") %>%
-            dplyr::mutate(year = as.numeric(i))
+          rlang::exec(
+            AOT40,
+            !!!rlang::list2(
+              mydata = x,
+              pollutant = "value",
+              ...
+            )
+          )
         }
       ) %>%
       dplyr::bind_rows() %>%

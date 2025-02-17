@@ -18,7 +18,8 @@ aqStats(
 \arguments{
 \item{mydata}{A data frame containing a \code{date} field of hourly data.}
 
-\item{pollutant}{The name of a pollutant e.g. \code{pollutant = c("o3", "pm10")}.}
+\item{pollutant}{The name of a pollutant e.g. \code{pollutant = c("o3", "pm10")}.
+Additional statistics will be calculated if \code{pollutant \%in\% c("no2", "pm10", "o3")}.}
 
 \item{type}{\code{type} allows \code{\link[=timeAverage]{timeAverage()}} to be applied to cases where there
 are groups of data that need to be split and the function applied to each
@@ -39,7 +40,7 @@ and \code{end.date} to see whether it is advisable to set these other options.}
 
 \item{transpose}{The default is to return a data frame with columns
 representing the statistics. If \code{transpose = TRUE} then the results have
-columns for each pollutant-site combination.}
+columns for each pollutant-type combination.}
 
 \item{progress}{Show a progress bar when many groups make up \code{type}? Defaults
 to \code{TRUE}.}
@@ -47,19 +48,17 @@ to \code{TRUE}.}
 \item{...}{Other arguments, currently unused.}
 }
 \description{
-Calculate a range of air pollution-relevant statistics by year.
-}
-\details{
 This function calculates a range of common and air pollution-specific
 statistics from a data frame. The statistics are calculated on an annual
 basis and the input is assumed to be hourly data. The function can cope with
 several sites and years, e.g., using \code{type = "site"}. The user can control
-the output by setting \code{transpose} appropriately.
-
-Note that the input data is assumed to be in mass units e.g. ug/m3 for all
-species except CO (mg/m3).
-
+the output by setting \code{transpose} appropriately. Note that the input data is
+assumed to be in mass units, e.g., ug/m3 for all species except CO (mg/m3).
+}
+\details{
 The following statistics are calculated:
+
+For all pollutants:
 \itemize{
 \item \strong{data.capture} --- percentage data capture over a full year.
 \item \strong{mean} --- annual mean.
@@ -71,6 +70,10 @@ The following statistics are calculated:
 \item \strong{max.rolling.24} --- maximum 24-hour rolling mean.
 \item \strong{percentile.95} --- 95th percentile. Note that several percentiles
 can be calculated.
+}
+
+When \code{pollutant == "o3"}:
+\itemize{
 \item \strong{roll.8.O3.gt.100} --- number of days when the daily maximum
 rolling 8-hour mean ozone concentration is >100 ug/m3. This is the target
 value.
@@ -81,7 +84,15 @@ Value not to be exceeded > 10 days a year.
 value of 40 ppb for daylight hours in the growing season (April to
 September). Note that \code{latitude} and \code{longitude} can also be passed to this
 calculation.
+}
+
+When \code{pollutant == "no2"}:
+\itemize{
 \item \strong{hours.gt.200} --- number of hours NO2 is more than 200 ug/m3.
+}
+
+When \code{pollutant == "pm10"}:
+\itemize{
 \item \strong{days.gt.50} --- number of days PM10 is more than 50 ug/m3.
 }
 
