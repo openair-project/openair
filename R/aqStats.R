@@ -315,7 +315,8 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
               pollutant = "value",
               ...
             )
-          )
+          ) %>%
+            dplyr::mutate(year =  as.numeric(i))
         }
       ) %>%
       dplyr::bind_rows() %>%
