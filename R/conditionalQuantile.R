@@ -175,9 +175,9 @@ conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
     trellis.par.set(list(strip.background = list(col = "white")))
     # other local colours
     ideal.col <- "black"
-    col.1 <- grey(0.75)
-    col.2 <- grey(0.5)
-    col.5 <- grey(0.25)
+    col.1 <- grDevices::grey(0.75)
+    col.2 <- grDevices::grey(0.5)
+    col.5 <- grDevices::grey(0.25)
   } else {
     ideal.col <- "#0080ff"
     col.1 <- col[1]

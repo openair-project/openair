@@ -18,7 +18,7 @@ summaryPlot(
   plot.type = "l",
   col.trend = "darkgoldenrod2",
   col.data = "lightblue",
-  col.mis = rgb(0.65, 0.04, 0.07),
+  col.mis = "#A60A12",
   col.hist = "forestgreen",
   cols = NULL,
   date.breaks = 7,

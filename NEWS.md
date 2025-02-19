@@ -22,6 +22,8 @@
 
 - `binData()` has gained the `type`, `B` and `conf.int` arguments. The first is passed to `cutData()` and the latter two to `bootMeanDF()`.
 
+- `splitByDate()` can now more consistently take `Date` / `POSIXct` inputs as well as characters, and provides more flexibility over inputs with a new `format` argument.
+    
 - The `formula.label` argument of `polarPlot()` will now control whether concentration information is printed when `statistic = "cpf"`.
 
 - add `calm.thresh` as an option to `windRose`. This change allows users to set a non-zero wind speed threshold that is considered as calm.
