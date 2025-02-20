@@ -57,16 +57,27 @@ Europe:
 \item \code{"saqn"},  The \href{https://www.scottishairquality.scot/}{Scottish Air Quality Network}.
 \item \code{"waqn"},  The \href{https://airquality.gov.wales/}{Welsh Air Quality Network}.
 \item \code{"ni"},  The \href{https://www.airqualityni.co.uk/}{Northern Ireland Air Quality Network}.
-\item \code{"local"},  Locally managed air quality networks in England.
-\item \code{"kcl"},  King's College London networks.
+\item \code{"local"},  \href{https://uk-air.defra.gov.uk/networks/network-info?view=nondefraaqmon}{Locally managed} air quality networks in England.
+\item \code{"kcl"}, King's College London networks.
 \item \code{"europe"},  Hourly European data (Air Quality e-Reporting) based on a
 simplified version of the \code{{saqgetr}} package.
 }
 
 By default, the function will return the site latitude, longitude and site
 type. If the option \code{all = TRUE} is used, much more detailed information is
-returned. For most networks, this detailed information includes per-pollutant
-summaries, opening and closing dates of sites etc.
+returned. The following metadata columns are available in the complete dataset:
+\itemize{
+\item \strong{source}: The network with which the site is associated. Note that some monitoring sites are part of multiple networks (e.g., the AURN & SAQN) so the same site may feature twice under different sources.
+\item \strong{code}: The site code, used to import data from specific sites of interest.
+\item \strong{site}: The site name, which is more human-readable than the site code.
+\item \strong{site_type}: A description of the site environment. Read more at \url{https://uk-air.defra.gov.uk/networks/site-types}.
+\item \strong{latitude} and \strong{longitude}: The coordinates of the monitoring station, using the World Geodetic System (\url{https://epsg.io/4326}).
+\item \strong{start_date} and \strong{end_date}: The opening and closing dates of the monitoring station. If \code{by_pollutant = TRUE}, these dates are instead the first and last dates at which specific pollutants were measured. A missing value, \code{NA}, indicates that monitoring is ongoing.
+\item \strong{ratified_to}: The date to which data has been ratified (i.e., 'quality checked'). Data after this date is subject to change.
+\item \strong{zone} and \strong{agglomeration}: The UK is divided into agglomeration zones (large urban areas) and non-agglomeration zones for air quality assessment, which are given in these columns.
+\item \strong{local_authority}: The local authority in which the monitoring station is found.
+\item \strong{provider} and \strong{code}: The specific provider of the locally managed dataset (e.g., \code{"londonair"}).
+}
 
 Thanks go to Trevor Davies (Ricardo), Dr Stuart Grange (EMPA) and Dr Ben
 Barratt (KCL) and  for making these data available.

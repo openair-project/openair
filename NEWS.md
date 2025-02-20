@@ -11,6 +11,8 @@
     - When `data_type` is one of the aggregate types (e.g., `"annual"`) and a `site` isn't defined, a `source` must be provided.
 
     - It is likely *slightly* slower for the function to assign `source` itself than for users to specify it themselves.
+    
+- The specific metadata columns appended when `importUKAQ(meta = TRUE)` can now be controlled using the `meta_columns` argument. For example, setting `meta_columns` to `c("zone", "agglomeration")` will append the zone/agglomeration information instead of the default site type/latitude/longitude.
 
 - Added new features for `openColours()`:
 

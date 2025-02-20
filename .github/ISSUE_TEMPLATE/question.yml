@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        This is a place to ask a question about `openair`. This could be about how to properly use `openair` functions, interpret plots, or something else entirely.
+        This is a place to ask a question about packages in the openair project. This could be about how to properly use functions, interpret plots, or something else entirely.
         
         Before you submit your issue, it may be useful to check through the [openair book](https://openair-project.github.io/book/) just to make sure your question hasn't already been answered!
         
