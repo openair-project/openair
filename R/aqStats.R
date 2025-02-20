@@ -115,7 +115,7 @@ aqStats <- function(mydata,
   # reorganise data
   mydata <-
     gather(mydata, key = pollutant, value = value, pollutant) %>%
-    mutate(year = year(date))
+    mutate(year = lubridate::year(date))
   
   
   vars <- c(type, "pollutant", "year")

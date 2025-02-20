@@ -241,13 +241,13 @@ readSummaryData <-
     }
 
     if (data_type == "monthly") {
-      thedata <- mutate(thedata, date = ymd(date, tz = "UTC"))
+      thedata <- mutate(thedata, date = lubridate::ymd(date, tz = "UTC"))
     }
 
     if (data_type == "annual") {
       thedata <- rename(thedata, date = year) %>%
         drop_na(date) %>%
-        mutate(date = ymd(paste0(date, "-01-01"), tz = "UTC"))
+        mutate(date = lubridate::ymd(paste0(date, "-01-01"), tz = "UTC"))
     }
 
     if (to_narrow) {
@@ -308,7 +308,7 @@ readDAQI <- function(files, year, source) {
       code = as.character(code),
       site = as.character(site),
       pollutant = as.character(pollutant),
-      date = ymd(Date, tz = "GMT"),
+      date = lubridate::ymd(Date, tz = "GMT"),
       measurement_period = as.character(measurement_period)
     ) %>%
     select(-Date) %>%
