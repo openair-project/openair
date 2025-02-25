@@ -4,16 +4,9 @@
 #' periods (month, year, etc.). All options are applied in turn, meaning this
 #' function can be used to select quite complex dates simply.
 #'
-#' Dates are assumed to be inclusive, so \code{start = "1/1/1999"} means that
-#' times are selected from hour zero. Similarly, \code{end = "31/12/1999"} will
-#' include all hours of the 31st December. \code{start} and \code{end} can also
-#' be in standard R format as a string i.e. "YYYY-mm-dd", so \code{start =
-#' "1999-01-01"} is fine.
-#'
-#' @param mydata A data frame containing a \code{date} field in hourly or high
-#'   resolution format.
-#' @param start A start date string in the form d/m/yyyy e.g. \dQuote{1/2/1999}
-#'   or in \sQuote{R} format i.e. \dQuote{YYYY-mm-dd}, \dQuote{1999-02-01}
+#' @param mydata A data frame containing a \code{date} field in Date or POSIXct format.
+#' @param start A start date or date-time string in the form d/m/yyyy, m/d/yyyy, d/m/yyyy HH:MM,
+#' m/d/yyyy HH:MM, d/m/yyyy HH:MM:SS or m/d/yyyy HH:MM:SS.
 #' @param end See \code{start} for format.
 #' @param year A year or years to select e.g. \code{year = 1998:2004} to select
 #'   1998-2004 inclusive or \code{year = c(1998, 2004)} to select 1998 and 2004.
@@ -33,12 +26,12 @@
 #' @examples
 #'
 #' ## select all of 1999
-#' data.1999 <- selectByDate(mydata, start = "1/1/1999", end = "31/12/1999")
+#' data.1999 <- selectByDate(mydata, start = "1/1/1999", end = "31/12/1999 23:00")
 #' head(data.1999)
 #' tail(data.1999)
 #'
 #' # or...
-#' data.1999 <- selectByDate(mydata, start = "1999-01-01", end = "1999-12-31")
+#' data.1999 <- selectByDate(mydata, start = "1999-01-01", end = "1999-12-31 23:00")
 #'
 #' # easier way
 #' data.1999 <- selectByDate(mydata, year = 1999)
@@ -48,59 +41,62 @@
 #' sub.data <- selectByDate(mydata, day = "weekday", hour = 7:19)
 #'
 #' # select weekends between the hours of 7 am to 7 pm in winter (Dec, Jan, Feb)
-#' sub.data <- selectByDate(mydata, day = "weekend", hour = 7:19, month =
-#' c("dec", "jan", "feb"))
-#' 
+#' sub.data <- selectByDate(mydata,
+#'   day = "weekend", hour = 7:19, month =
+#'     c("dec", "jan", "feb")
+#' )
+#'
 selectByDate <- function(mydata, start = "1/1/2008",
                          end = "31/12/2008", year = 2008,
                          month = 1, day = "weekday", hour = 1) {
   ## extract variables of interest
   vars <- names(mydata)
-  
+
   ## check data - mostly date format
   mydata <- checkPrep(
     mydata, vars, "default",
     remove.calm = FALSE,
     strip.white = FALSE
   )
-  
+
   weekday.names <- format(ISOdate(2000, 1, 3:9), "%A")
-  
-  
+
+  date_formats <- c("dmy", "ymd", "mdy")
+
   if (!missing(start)) {
-    
-    
-    ## assume R date format
-    start <- as_date(parse_date_time(start, c("ymd", "dmy")))
-    
-    mydata <- subset(mydata, as_date(date) >= start)
+    if (is.Date(mydata$date)) {
+      start <- lubridate::as_date(start, format = date_formats)
+    } else {
+      start <- lubridate::parse_date_time(start, orders = c("dmy_HM", "dmy_HMS", "ymd_HM", "ymd_HMS", "dmy", "mdy", "ymd"))
+    }
+
+    mydata <- filter(mydata, date >= start)
   }
-  
+
   if (!missing(end)) {
-    
-    
-    ## assume R date format
-    end <-as_date(parse_date_time(end, c("ymd", "dmy")))
-    
-    mydata <- subset(mydata, as_date(date) <= end)
+    if (is.Date(mydata$date)) {
+      end <- lubridate::as_date(end, format = date_formats)
+    } else {
+      end <- lubridate::parse_date_time(end, orders = c("dmy_HM", "dmy_HMS", "ymd_HM", "ymd_HMS", "dmy", "mdy", "ymd"))
+    }
+
+    mydata <- filter(mydata, date <= end)
   }
-  
-  
+
+
   if (!missing(year)) {
     mydata <- mydata[which(year(mydata$date) %in% year), ]
   }
-  
-  
+
+
   if (!missing(month)) {
     if (is.numeric(month)) {
       if (any(month < 1 | month > 12)) {
         stop("Month must be between 1 to 12.")
       }
-      
+
       mydata <- mydata[which(month(mydata$date) %in% month), ]
-    }
-    
-    else {
+    } else {
       mydata <- subset(mydata, substr(tolower(format(
         date,
         "%B"
@@ -109,13 +105,13 @@ selectByDate <- function(mydata, start = "1/1/2008",
   }
   if (!missing(hour)) {
     if (any(hour < 0 | hour > 23)) stop("Hour must be between 0 to 23.")
-    
+
     mydata <- mydata[which(hour(mydata$date) %in% hour), ]
   }
-  
+
   if (!missing(day)) {
     days <- day
-    
+
     if (is.numeric(day)) {
       if (any(day < 1 | day > 31)) {
         stop("Day must be between 1 to 31.")
@@ -129,7 +125,7 @@ selectByDate <- function(mydata, start = "1/1/2008",
         days <- weekday.names[6:7]
       }
       mydata <- subset(mydata, substr(tolower(format(date, "%A")), 1, 3) %in%
-                         substr(tolower(days), 1, 3))
+        substr(tolower(days), 1, 3))
     }
   }
   mydata
