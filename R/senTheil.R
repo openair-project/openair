@@ -208,7 +208,7 @@ tsp1reg <- function(x, y, plotit = FALSE) {
   coef <- c(coef, slope)
   if (plotit) {
     plot(x, y, xlab = "X", ylab = "Y")
-    abline(coef)
+    graphics::abline(coef)
   }
   res <- y - slope * x - coef[1]
   list(coef = coef, residuals = res)

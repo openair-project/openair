@@ -1512,7 +1512,7 @@ scatterPlot <- function(mydata, x = "nox", y = "no2", z = NA, method = "scatter"
       n <- nrow(subdata) ## for intensity estimate
       x <- subdata[[x]]
       y <- subdata[[y]]
-      xy <- xy.coords(x, y, "xlab", "ylab")
+      xy <- grDevices::xy.coords(x, y, "xlab", "ylab")
       xlab <- xy$xlab
       ylab <- xy$ylab
       x <- cbind(xy$x, xy$y)[

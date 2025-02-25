@@ -25,6 +25,8 @@
     - Added the `type` argument, in line with `timeAverage()`.
     
     - Added the `prefix` argument to control the naming of the returned columns.
+ 
+- `splitByDate()` can now more consistently take `Date` / `POSIXct` inputs as well as characters, and provides more flexibility over inputs with a new `format` argument.
     
 - The `formula.label` argument of `polarPlot()` will now control whether concentration information is printed when `statistic = "cpf"`.
 
