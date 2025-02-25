@@ -22,6 +22,8 @@
 
 - `selectRunning()` has gained the `type`, `name`, and `mode` arguments. Of the latter two, the former allows users to rename the column appended by the function. The latter can currently change the function to filter for data with the specified `run.len` rather than appending a new flag column.
 
+- `splitByDate()` can now more consistently take `Date` / `POSIXct` inputs as well as characters, and provides more flexibility over inputs with a new `format` argument.
+    
 - The `formula.label` argument of `polarPlot()` will now control whether concentration information is printed when `statistic = "cpf"`.
 
 - add `calm.thresh` as an option to `windRose`. This change allows users to set a non-zero wind speed threshold that is considered as calm.
