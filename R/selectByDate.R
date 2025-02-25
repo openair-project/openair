@@ -64,7 +64,7 @@ selectByDate <- function(mydata, start = "1/1/2008",
   date_formats <- c("dmy", "ymd", "mdy")
 
   if (!missing(start)) {
-    if (is.Date(mydata$date)) {
+    if (lubridate::is.Date(mydata$date)) {
       start <- lubridate::as_date(start, format = date_formats)
     } else {
       start <- lubridate::parse_date_time(start, orders = c("dmy_HM", "dmy_HMS", "ymd_HM", "ymd_HMS", "dmy", "mdy", "ymd"))
@@ -74,7 +74,7 @@ selectByDate <- function(mydata, start = "1/1/2008",
   }
 
   if (!missing(end)) {
-    if (is.Date(mydata$date)) {
+    if (lubridate::is.Date(mydata$date)) {
       end <- lubridate::as_date(end, format = date_formats)
     } else {
       end <- lubridate::parse_date_time(end, orders = c("dmy_HM", "dmy_HMS", "ymd_HM", "ymd_HMS", "dmy", "mdy", "ymd"))
