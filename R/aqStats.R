@@ -101,7 +101,7 @@ aqStats <- function(mydata,
   # reorganise data
   mydata <-
     mydata %>%
-    tidyr::pivot_longer(cols = pollutant, names_to = "pollutant") %>%
+    tidyr::pivot_longer(cols = dplyr::all_of(pollutant), names_to = "pollutant") %>%
     mutate(year = lubridate::year(date))
   
   vars <- c(type, "pollutant", "year")
@@ -111,7 +111,7 @@ aqStats <- function(mydata,
     purrr::map(
       .x = split(mydata, mydata[vars], sep = "__"),
       .f = function(x) {
-        rlang::exec(
+        out <- rlang::exec(
           calcStats,
           !!!rlang::list2(
             mydata = x,
@@ -120,14 +120,13 @@ aqStats <- function(mydata,
             ...
           )
         )
+        out[vars] <- x[vars][1, , drop = FALSE]
+        out
       },
       .progress = progress
     ) %>%
-    dplyr::bind_rows(.id = "__id__") %>%
-    dplyr::select(-"year") %>%
-    tidyr::separate_wider_delim(cols = "__id__",
-                                delim = "__",
-                                names = vars)
+    dplyr::bind_rows() %>%
+    dplyr::relocate(dplyr::all_of(vars))
   
   # transpose if requested
   if (transpose) {
@@ -138,8 +137,8 @@ aqStats <- function(mydata,
     
     results <-
       results %>%
-      tidyr::pivot_longer(-c(vars, date)) %>%
-      tidyr::unite(site_pol, dplyr::all_of(unite_vars)) %>%
+      tidyr::pivot_longer(-c(vars, date)) %>% 
+      tidyr::unite(site_pol, dplyr::all_of(unite_vars)) %>% 
       tidyr::pivot_wider(names_from = "site_pol") %>%
       dplyr::rename_with(function(x) {
         gsub("_", " ", x)
