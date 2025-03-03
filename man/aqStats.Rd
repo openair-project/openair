@@ -11,103 +11,103 @@ aqStats(
   data.thresh = 0,
   percentile = c(95, 99),
   transpose = FALSE,
+  progress = TRUE,
   ...
 )
 }
 \arguments{
 \item{mydata}{A data frame containing a \code{date} field of hourly data.}
 
-\item{pollutant}{The name of a pollutant e.g. \code{pollutant = c("o3",
-"pm10")}.}
+\item{pollutant}{The name of a pollutant e.g. \code{pollutant = c("o3", "pm10")}.
+Additional statistics will be calculated if \code{pollutant \%in\% c("no2", "pm10", "o3")}.}
 
-\item{type}{\code{type} allows \code{\link[=timeAverage]{timeAverage()}} to be applied to cases where
-there are groups of data that need to be split and the function applied to
-each group. The most common example is data with multiple sites identified
-with a column representing site name e.g. \code{type = "site"}. More
-generally, \code{type} should be used where the date repeats for a
-particular grouping variable.}
+\item{type}{\code{type} allows \code{\link[=timeAverage]{timeAverage()}} to be applied to cases where there
+are groups of data that need to be split and the function applied to each
+group. The most common example is data with multiple sites identified with
+a column representing site name e.g. \code{type = "site"}. More generally,
+\code{type} should be used where the date repeats for a particular grouping
+variable. However, if type is not supplied the data will still be averaged
+but the grouping variables (character or factor) will be dropped.}
 
-\item{data.thresh}{The data capture threshold in \%. No values are calculated
-if data capture over the period of interest is less than this value.
-\code{data.thresh} is used for example in the calculation of daily mean
-values from hourly data. If there are less than \code{data.thresh}
-percentage of measurements available in a period, \code{NA} is returned.}
+\item{data.thresh}{The data capture threshold to use (\%). A value of zero
+means that all available data will be used in a particular period
+regardless if of the number of values available. Conversely, a value of 100
+will mean that all data will need to be present for the average to be
+calculated, else it is recorded as \code{NA}. See also \code{interval}, \code{start.date}
+and \code{end.date} to see whether it is advisable to set these other options.}
 
 \item{percentile}{Percentile values to calculate for each pollutant.}
 
 \item{transpose}{The default is to return a data frame with columns
-representing the statistics. If \code{transpose = TRUE} then the results
-have columns for each pollutant-site combination.}
+representing the statistics. If \code{transpose = TRUE} then the results have
+columns for each pollutant-type combination.}
+
+\item{progress}{Show a progress bar when many groups make up \code{type}? Defaults
+to \code{TRUE}.}
 
 \item{...}{Other arguments, currently unused.}
 }
 \description{
-Calculate a range of air pollution-relevant statistics by year.
-}
-\details{
 This function calculates a range of common and air pollution-specific
 statistics from a data frame. The statistics are calculated on an annual
 basis and the input is assumed to be hourly data. The function can cope with
-several sites and years e.g. using \code{type = "site"}. The user can control
-the output by setting \code{transpose} appropriately.
-
-Note that the input data is assumed to be in mass units e.g. ug/m3 for all
-species except CO (mg/m3).
-
+several sites and years, e.g., using \code{type = "site"}. The user can control
+the output by setting \code{transpose} appropriately. Note that the input data is
+assumed to be in mass units, e.g., ug/m3 for all species except CO (mg/m3).
+}
+\details{
 The following statistics are calculated:
 
-\itemize{ \item \bold{data.capture} --- percentage data capture over a full
-year.
-
-\item \bold{mean} --- annual mean.
-
-\item \bold{minimum} --- minimum hourly value.
-
-\item \bold{maximum} --- maximum hourly value.
-
-\item \bold{median} --- median value.
-
-\item \bold{max.daily} --- maximum daily mean.
-
-\item \bold{max.rolling.8} --- maximum 8-hour rolling mean.
-
-\item \bold{max.rolling.24} --- maximum 24-hour rolling mean.
-
-\item \bold{percentile.95} --- 95th percentile. Note that several percentiles
+For all pollutants:
+\itemize{
+\item \strong{data.capture} --- percentage data capture over a full year.
+\item \strong{mean} --- annual mean.
+\item \strong{minimum} --- minimum hourly value.
+\item \strong{maximum} --- maximum hourly value.
+\item \strong{median} --- median value.
+\item \strong{max.daily} --- maximum daily mean.
+\item \strong{max.rolling.8} --- maximum 8-hour rolling mean.
+\item \strong{max.rolling.24} --- maximum 24-hour rolling mean.
+\item \strong{percentile.95} --- 95th percentile. Note that several percentiles
 can be calculated.
+}
 
-\item \bold{roll.8.O3.gt.100} --- number of days when the daily maximum
+When \code{pollutant == "o3"}:
+\itemize{
+\item \strong{roll.8.O3.gt.100} --- number of days when the daily maximum
 rolling 8-hour mean ozone concentration is >100 ug/m3. This is the target
 value.
-
-\item \bold{roll.8.O3.gt.120} --- number of days when the daily maximum
+\item \strong{roll.8.O3.gt.120} --- number of days when the daily maximum
 rolling 8-hour mean ozone concentration is >120 ug/m3. This is the Limit
 Value not to be exceeded > 10 days a year.
-
-\item \bold{AOT40} --- is the accumulated amount of ozone over the threshold
+\item \strong{AOT40} --- is the accumulated amount of ozone over the threshold
 value of 40 ppb for daylight hours in the growing season (April to
-September). Note that \code{latitude} and \code{longitude} can also be passed
-to this calculation.
+September). Note that \code{latitude} and \code{longitude} can also be passed to this
+calculation.
+}
 
-\item \bold{hours.gt.200} --- number of hours NO2 is more than 200 ug/m3.
+When \code{pollutant == "no2"}:
+\itemize{
+\item \strong{hours.gt.200} --- number of hours NO2 is more than 200 ug/m3.
+}
 
-\item \bold{days.gt.50} --- number of days PM10 is more than 50 ug/m3. }
+When \code{pollutant == "pm10"}:
+\itemize{
+\item \strong{days.gt.50} --- number of days PM10 is more than 50 ug/m3.
+}
 
-For the rolling means, the user can supply the option \code{align}, which can
-be "centre" (default), "left" or "right". See \code{rollingMean} for more
-details.
+For the rolling means, the user can supply the option \code{align}, which can be
+"centre" (default), "left" or "right". See \code{\link[=rollingMean]{rollingMean()}} for more details.
 
 There can be small discrepancies with the AURN due to the treatment of
-rounding data. The \code{aqStats} function does not round, whereas AURN data
-can be rounded at several stages during the calculations.
+rounding data. The \code{\link[=aqStats]{aqStats()}} function does not round, whereas AURN data can
+be rounded at several stages during the calculations.
 }
 \examples{
 
-## Statistics for 2004. NOTE! these data are in ppb/ppm so the
-## example is for illustrative purposes only
+# Statistics for 2004. NOTE! these data are in ppb/ppm so the
+# example is for illustrative purposes only
 aqStats(selectByDate(mydata, year = 2004), pollutant = "no2")
-
-
 }
 \author{
 David Carslaw
