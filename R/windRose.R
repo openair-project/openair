@@ -55,7 +55,7 @@
 #' }
 #'
 #' ## example of comparing 2 met sites
-#' ## first we will make some new ws/wd data with a postive bias
+#' ## first we will make some new ws/wd data with a positive bias
 #' mydata$ws2 <- mydata$ws + 2 * rnorm(nrow(mydata)) + 1
 #' mydata$wd2 <- mydata$wd + 30 * rnorm(nrow(mydata)) + 30
 #'
@@ -389,7 +389,7 @@ windRose <- function(
     trellis.par.set(fontsize = list(text = extra$fontsize))
   }
 
-  ## preset statitistics
+  ## pre-set statistics
 
   if (is.character(statistic)) {
     ## allowed cases
