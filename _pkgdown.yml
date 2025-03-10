@@ -33,6 +33,11 @@ reference:
   - linearRelation
   - calcFno2
 - title: Utilities
+- subtitle: Air Quality Statistics
+  desc: Functions for easily calculating air quality statistics and flexibly comparing them with AQ targets.
+  contents:
+  - calcAQStats
+  - aqStats
 - subtitle: Plot Utilities
   desc: Tools for refining openair plots.
   contents:
@@ -40,9 +45,8 @@ reference:
   - quickText
   - drawOpenKey
 - subtitle: Data Utilities
-  desc: Tools for manipulating and summarising air quality data.
+  desc: Tools for manipulating air quality data.
   contents:
-  - aqStats
   - binData
   - bootMeanDF
   - calcPercentile
