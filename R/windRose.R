@@ -306,7 +306,7 @@ windRose <- function(
   cols = "default",
   grid.line = NULL,
   width = 1,
-  seg = NULL,
+  seg = 0.9,
   auto.text = TRUE,
   breaks = 4,
   offset = 10,
@@ -328,22 +328,20 @@ windRose <- function(
   plot = TRUE,
   ...
 ) {
-  if (is.null(seg)) seg <- 0.9
-
-  ## greyscale handling
+  # greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
     trellis.par.set(list(strip.background = list(col = "white")))
-    ## other local colours
+    # other local colours
     calm.col <- "black"
   } else {
     calm.col <- "forestgreen"
   }
 
-  ## set graphics
+  # set graphics
   current.strip <- trellis.par.get("strip.background")
   current.font <- trellis.par.get("fontsize")
 
-  ## reset graphic parameters
+  # reset graphic parameters
   on.exit(trellis.par.set(
     fontsize = current.font
   ))

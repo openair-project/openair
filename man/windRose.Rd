@@ -18,7 +18,7 @@ windRose(
   cols = "default",
   grid.line = NULL,
   width = 1,
-  seg = NULL,
+  seg = 0.9,
   auto.text = TRUE,
   breaks = 4,
   offset = 10,
@@ -226,7 +226,7 @@ contribution of each bin to the panel mean, and is intended for use with
 windRose(mydata)
 
 # one windRose for each year
-windRose(mydata,type = "year")
+windRose(mydata, type = "year")
 
 # windRose in 10 degree intervals with gridlines and width adjusted
 \dontrun{
