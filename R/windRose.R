@@ -126,8 +126,8 @@ pollutionRose <- function(
 #' substitutes other measurements, most commonly a pollutant time series, for
 #' wind speed.
 #'
-#' For [windRose()] data are summarised by direction, typically by 45 or 30 (or
-#' 10) degrees and by different wind speed categories. By defualt wind speeds
+#' For [windRose()] data are summarised by direction, typically by `45`, 30 or 10
+#' degrees and by different wind speed categories. By defualt wind speeds
 #' are represented by different width "paddles". The plots show the proportion
 #' (here represented as a percentage) of time that the wind is from a certain
 #' angle and wind speed range.
@@ -350,18 +350,17 @@ windRose <- function(
   mydata <- checkNum(mydata, vars = c(ws, wd))
 
   if (360 / angle != round(360 / angle)) {
-    warning(
-      "In windRose(...):\n  angle will produce some spoke overlap",
-      "\n  suggest one of: 5, 6, 8, 9, 10, 12, 15, 30, 45, etc.",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "!" = "Chosen {.field angle}, {.int {angle}}, will produce some spoke overlap.",
+      "i" = "Suggest one of: {.int {(3:170)[(360 / (3:170)) %% 1 == 0L]}}."
+    ))
   }
+
   if (angle < 3) {
-    warning(
-      "In windRose(...):\n  angle too small",
-      "\n  enforcing 'angle = 3'",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "!" = "Chosen {.field angle}, {.int {angle}}, is too small.",
+      "i" = "Enforcing {.field angle} = {3L}."
+    ))
     angle <- 3
   }
 
@@ -390,19 +389,12 @@ windRose <- function(
   }
 
   ## pre-set statistics
-
   if (is.character(statistic)) {
-    ## allowed cases
-    ok.stat <- c("prop.count", "prop.mean", "abs.count", "frequency")
-
-    if (!is.character(statistic) || !statistic[1] %in% ok.stat) {
-      warning(
-        "In windRose(...):\n  statistic unrecognised",
-        "\n  enforcing statistic = 'prop.count'",
-        call. = FALSE
+    statistic <-
+      rlang::arg_match(
+        statistic,
+        c("prop.count", "prop.mean", "abs.count", "frequency")
       )
-      statistic <- "prop.count"
-    }
 
     if (statistic == "prop.count") {
       stat.fun <- length
@@ -436,14 +428,11 @@ windRose <- function(
   }
 
   if (is.list(statistic)) {
-    ## IN DEVELOPMENT
-
-    ## this section has no testing/protection
-    ## but allows users to supply a function
-    ## scale it by total data or panel
-    ## convert proportions to percentage
-    ## label it
-
+    # this section has no testing/protection
+    # but allows users to supply a function
+    # scale it by total data or panel
+    # convert proportions to percentage
+    # label it
     stat.fun <- statistic$fun
     stat.unit <- statistic$unit
     stat.scale <- statistic$scale
@@ -540,7 +529,7 @@ windRose <- function(
   }
 
   if (min(breaks) > min(mydata$x, na.rm = TRUE)) {
-    warning("Some values are below minimum break.")
+    cli::cli_warn(c("!" = "Some values are below minimum break."))
   }
 
   breaks <- unique(breaks)
