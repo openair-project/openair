@@ -15,11 +15,8 @@ polarDiff(
 )
 }
 \arguments{
-\item{before}{A data frame that represents the "before" case. See
-\code{\link[=polarPlot]{polarPlot()}} for details of different input requirements.}
-
-\item{after}{A data frame that represents the "after" case. See \code{\link[=polarPlot]{polarPlot()}}
-for details of different input requirements.}
+\item{before, after}{Data frames representing the "before" and "after" cases.
+See \code{\link[=polarPlot]{polarPlot()}} for details of different input requirements.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \code{pollutant = "nox"}. There can also
@@ -286,14 +283,12 @@ same location, it can be used for any two data sets that contain the same
 pollutant. For example, data from two sites that are close to one another, or
 two co-located instruments.
 
-The analysis works by calculating the polar plot surface for the
-\code{before} and \code{after} periods and then subtracting the \code{before}
-surface from the \code{after} surface.
+The analysis works by calculating the polar plot surface for the \code{before} and
+\code{after} periods and then subtracting the \code{before} surface from the \code{after}
+surface.
 }
 \examples{
-
 \dontrun{
-
 before_data <- selectByDate(mydata, year = 2002)
 after_data <- selectByDate(mydata, year = 2003)
 
@@ -301,7 +296,6 @@ polarDiff(before_data, after_data, pollutant = "no2")
 
 # with some options
 polarDiff(before_data, after_data, pollutant = "no2", cols = "RdYlBu", limits = c(-20, 20))
-
 }
 }
 \seealso{
