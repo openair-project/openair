@@ -8,8 +8,10 @@ polarDiff(
   before,
   after,
   pollutant = "nox",
+  type = "default",
   x = "ws",
   limits = NULL,
+  auto.text = TRUE,
   plot = TRUE,
   ...
 )
@@ -31,27 +33,7 @@ Pearson correlation and regression techniques are to be plotted,
 \code{pollutant} takes two elements too. For example, \code{pollutant =
   c("bc", "pm25")} where \code{"bc"} is a function of \code{"pm25"}.}
 
-\item{x}{Name of variable to plot against wind direction in polar
-coordinates, the default is wind speed, \dQuote{ws}.}
-
-\item{limits}{The function does its best to choose sensible limits
-automatically. However, there are circumstances when the user will wish to
-set different ones. An example would be a series of plots showing each year
-of data separately. The limits are set in the form \code{c(lower, upper)},
-so \code{limits = c(0, 100)} would force the plot limits to span 0-100.}
-
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other ways.}
-
-\item{...}{
-  Arguments passed on to \code{\link[=polarPlot]{polarPlot}}
-  \describe{
-    \item{\code{mydata}}{A data frame minimally containing \code{wd}, another variable
-to plot in polar coordinates (the default is a column \dQuote{ws} --- wind
-speed) and a pollutant. Should also contain \code{date} if plots by time
-period are required.}
-    \item{\code{wd}}{Name of wind direction field.}
-    \item{\code{type}}{\code{type} determines how the data are split i.e. conditioned,
+\item{type}{\code{type} determines how the data are split i.e. conditioned,
 and then plotted. The default is will produce a single plot using the
 entire data. Type can be one of the built-in types as detailed in
 \code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
@@ -68,6 +50,27 @@ different variables and how they depend on one another.
 Type can be up length two e.g. \code{type = c("season", "weekday")} will
 produce a 2x2 plot split by season and day of the week. Note, when two
 types are provided the first forms the columns and the second the rows.}
+
+\item{x}{Name of variable to plot against wind direction in polar
+coordinates, the default is wind speed, \dQuote{ws}.}
+
+\item{limits}{The function does its best to choose sensible limits
+automatically. However, there are circumstances when the user will wish to
+set different ones. An example would be a series of plots showing each year
+of data separately. The limits are set in the form \code{c(lower, upper)},
+so \code{limits = c(0, 100)} would force the plot limits to span 0-100.}
+
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
+titles and axis labels will automatically try and format pollutant names
+and units properly e.g.  by subscripting the `2' in NO2.}
+
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
+analysing data to extract plot components and plotting them in other ways.}
+
+\item{...}{
+  Arguments passed on to \code{\link[=polarPlot]{polarPlot}}
+  \describe{
+    \item{\code{wd}}{Name of wind direction field.}
     \item{\code{statistic}}{The statistic that should be applied to each wind
 speed/direction bin. Because of the smoothing involved, the colour scale
 for some of these statistics is only to provide an indication of overall
@@ -243,9 +246,6 @@ arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"}
 and \code{"left"}.}
     \item{\code{key}}{Fine control of the scale key via \code{drawOpenKey}. See
 \code{drawOpenKey} for further details.}
-    \item{\code{auto.text}}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
-titles and axis labels will automatically try and format pollutant names
-and units properly e.g.  by subscripting the `2' in NO2.}
     \item{\code{ws_spread}}{The value of sigma used for Gaussian kernel weighting of
 wind speed when \code{statistic = "nwr"} or when correlation and regression
 statistics are used such as \emph{r}. Default is \code{0.5}.}
