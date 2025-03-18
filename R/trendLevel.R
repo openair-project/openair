@@ -169,6 +169,52 @@ trendLevel <- function(
     fontsize = current.font
   ))
 
+  # check length of x
+  if (length(x) > 1) {
+    x <- x[1]
+    xlab <- xlab[1]
+    cli::cli_warn(
+      c(
+        "!" = "{.fun trendLevel} does not allow multiple {.field x} values.",
+        "i" = "Setting {.field x} to '{x}'."
+      )
+    )
+  }
+  
+  # check length of y
+  if (length(y) > 1) {
+    y <- y[1]
+    ylab <- ylab[1]
+    cli::cli_warn(
+      c(
+        "!" = "{.fun trendLevel} does not allow multiple {.field y} values.",
+        "i" = "Setting {.field y} to '{y}'."
+      )
+    )
+  }
+  
+  # check length of type
+  if (length(type) > 1) {
+    type <- type[1]
+    cli::cli_warn(
+      c(
+        "!" = "{.fun trendLevel} does not allow multiple {.field type} values.",
+        "i" = "Setting {.field type} to '{type}'."
+      )
+    )
+  }
+  
+  # ensure x, y and type are unique
+  vars <- c(pollutant, x, y, type)
+  if (length(vars) != length(unique(vars))) {
+    cli::cli_abort(
+      c(
+        "x" = "{.fun trendLevel} could not rationalise plot structure.", 
+        "i" = "Duplicate term(s) in {.field pollutant} ('{pollutant}'), {.field x} ('{x}'), {.field y} ('{y}'), and {.field type} ('{type}')."
+      )
+    )
+  }
+  
   # assume pollutant scale is not a categorical value
   category <- FALSE
   if (any(!is.na(labels)) && any(!is.na(breaks))) {
@@ -199,66 +245,6 @@ trendLevel <- function(
 
   if ("fontsize" %in% names(extra.args)) {
     trellis.par.set(fontsize = list(text = extra.args$fontsize))
-  }
-
-  # ##############################
-  # check lengths of x, y, type
-  # ##############################
-
-  if (length(x) > 1) {
-    warning(
-      paste(
-        "\ttrendLevel does not allow multiple 'x' values.",
-        "\n\t[ignoring all but first]",
-        sep = ""
-      ),
-      call. = FALSE
-    )
-    x <- x[1]
-    xlab <- xlab[1]
-  }
-  if (length(y) > 1) {
-    warning(
-      paste(
-        "\ttrendLevel does not allow multiple 'y' values.",
-        "\n\t[ignoring all but first]",
-        sep = ""
-      ),
-      call. = FALSE
-    )
-    y <- y[1]
-    ylab <- ylab[1]
-  }
-
-  if (length(type) > 2) {
-    warning(
-      paste(
-        "\ttrendLevel allows up to two 'type' values.",
-        "\n\t[ignoring all but first two]",
-        sep = ""
-      ),
-      call. = FALSE
-    )
-    type <- type[1]
-  }
-
-  # #################################
-  # check x, y and type do not match
-  # #################################
-
-  temp <- unique(c(x, y, type)[duplicated(c(x, y, type))])
-
-  if (length(temp) > 0) {
-    stop(
-      paste0(
-        "\ttrendLevel could not rationalise plot structure.",
-        "\n\t[duplicate term(s) in pollutant, x, y, type structure]",
-        "\n\t[term(s): ",
-        paste(temp, collapse = ", "),
-        "]"
-      ),
-      call. = FALSE
-    )
   }
 
   # ###############################
