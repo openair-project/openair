@@ -263,7 +263,7 @@ trendLevel <- function(
   # #######################
   # statistic handling
   # #######################
-  if (is.character(statistic) | is.function(statistic)) {
+  if (is.character(statistic) || is.function(statistic)) {
     if (is.character(statistic)) {
       # hardcoded statistic options
       statistic <- rlang::arg_match(statistic)
@@ -424,7 +424,7 @@ trendLevel <- function(
 
   # special case handling
   # layout for wd
-  if (length(type) == 1 & type[1] == "wd" & !"layout" %in% names(extra.args)) {
+  if (length(type) == 1 && type[1] == "wd" && !"layout" %in% names(extra.args)) {
     # re-order to make sensible layout
 
     wds <- c("NW", "N", "NE", "W", "E", "SW", "S", "SE")
