@@ -223,30 +223,17 @@ trendLevel <- function(
   
   # extra.args
   extra.args <- list(...)
-
-  # label controls
-  extra.args$xlab <- if ("xlab" %in% names(extra.args)) {
-    quickText(extra.args$xlab, auto.text)
-  } else {
-    quickText(x, auto.text)
-  }
-
-  extra.args$ylab <- if ("ylab" %in% names(extra.args)) {
-    quickText(extra.args$ylab, auto.text)
-  } else {
-    quickText(y, auto.text)
-  }
-
-  extra.args$main <- if ("main" %in% names(extra.args)) {
-    quickText(extra.args$main, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
-
+  
+  # font size
   if ("fontsize" %in% names(extra.args)) {
     trellis.par.set(fontsize = list(text = extra.args$fontsize))
   }
-
+  
+  # label controls
+  extra.args$xlab <- quickText(extra.args$xlab %||% x, auto.text = auto.text) 
+  extra.args$ylab <- quickText(extra.args$ylab %||% y, auto.text = auto.text)
+  extra.args$main <- quickText(extra.args$main %||% "", auto.text = auto.text) 
+  
   # ###############################
   # number vector handling
   # ###############################
