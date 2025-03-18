@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">openair</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.18.2.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.18.2.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,7 +71,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
-<ul><li><p>Fixed an issue wherein <code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> would drop sites if importing from <code>local</code> sites <em>and</em> another network.</p></li>
+<ul><li><p>Fixed <code>annotate = FALSE</code> in <code>windRose</code> where axes and labels were not shown</p></li>
+<li><p>Fixed an issue wherein <code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> would drop sites if importing from <code>local</code> sites <em>and</em> another network.</p></li>
 <li><p><code><a href="../reference/polarCluster.html">polarCluster()</a></code> will no longer error with multiple <code>pollutant</code>s and a single <code>n.clusters</code>.</p></li>
 <li><p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> will correctly append site meta data when <code>meta = TRUE</code>, <code>source</code> is a length greater than 1, and a single site is repeated in more than one source (e.g., <code>importUKAQ(source = c("waqn", "aurn"), data_type = "daqi", year = 2024L))</code>)</p></li>
 </ul></div>
