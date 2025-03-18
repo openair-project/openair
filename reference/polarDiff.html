@@ -67,8 +67,10 @@ between two periods.</p>
 <span>  <span class="va">before</span>,</span>
 <span>  <span class="va">after</span>,</span>
 <span>  pollutant <span class="op">=</span> <span class="st">"nox"</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  x <span class="op">=</span> <span class="st">"ws"</span>,</span>
 <span>  limits <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -78,14 +80,9 @@ between two periods.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-before">before<a class="anchor" aria-label="anchor" href="#arg-before"></a></dt>
-<dd><p>A data frame that represents the "before" case. See
-<code><a href="polarPlot.html">polarPlot()</a></code> for details of different input requirements.</p></dd>
-
-
-<dt id="arg-after">after<a class="anchor" aria-label="anchor" href="#arg-after"></a></dt>
-<dd><p>A data frame that represents the "after" case. See <code><a href="polarPlot.html">polarPlot()</a></code>
-for details of different input requirements.</p></dd>
+<dl><dt id="arg-before-after">before, after<a class="anchor" aria-label="anchor" href="#arg-before-after"></a></dt>
+<dd><p>Data frames representing the "before" and "after" cases.
+See <code><a href="polarPlot.html">polarPlot()</a></code> for details of different input requirements.</p></dd>
 
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
@@ -103,35 +100,7 @@ Pearson correlation and regression techniques are to be plotted,
   c("bc", "pm25")</code> where <code>"bc"</code> is a function of <code>"pm25"</code>.</p></dd>
 
 
-<dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>Name of variable to plot against wind direction in polar
-coordinates, the default is wind speed, “ws”.</p></dd>
-
-
-<dt id="arg-limits">limits<a class="anchor" aria-label="anchor" href="#arg-limits"></a></dt>
-<dd><p>The function does its best to choose sensible limits
-automatically. However, there are circumstances when the user will wish to
-set different ones. An example would be a series of plots showing each year
-of data separately. The limits are set in the form <code>c(lower, upper)</code>,
-so <code>limits = c(0, 100)</code> would force the plot limits to span 0-100.</p></dd>
-
-
-<dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
-<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when
-analysing data to extract plot components and plotting them in other ways.</p></dd>
-
-
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Arguments passed on to <code><a href="polarPlot.html">polarPlot</a></code></p><dl><dt><code>mydata</code></dt>
-<dd><p>A data frame minimally containing <code>wd</code>, another variable
-to plot in polar coordinates (the default is a column “ws” — wind
-speed) and a pollutant. Should also contain <code>date</code> if plots by time
-period are required.</p></dd>
-
-    <dt><code>wd</code></dt>
-<dd><p>Name of wind direction field.</p></dd>
-
-    <dt><code>type</code></dt>
+<dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p><code>type</code> determines how the data are split i.e. conditioned,
 and then plotted. The default is will produce a single plot using the
 entire data. Type can be one of the built-in types as detailed in
@@ -147,6 +116,35 @@ different variables and how they depend on one another.</p>
 <p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will
 produce a 2x2 plot split by season and day of the week. Note, when two
 types are provided the first forms the columns and the second the rows.</p></dd>
+
+
+<dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
+<dd><p>Name of variable to plot against wind direction in polar
+coordinates, the default is wind speed, “ws”.</p></dd>
+
+
+<dt id="arg-limits">limits<a class="anchor" aria-label="anchor" href="#arg-limits"></a></dt>
+<dd><p>The function does its best to choose sensible limits
+automatically. However, there are circumstances when the user will wish to
+set different ones. An example would be a series of plots showing each year
+of data separately. The limits are set in the form <code>c(lower, upper)</code>,
+so <code>limits = c(0, 100)</code> would force the plot limits to span 0-100.</p></dd>
+
+
+<dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
+<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code>
+titles and axis labels will automatically try and format pollutant names
+and units properly e.g.  by subscripting the `2' in NO2.</p></dd>
+
+
+<dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
+<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when
+analysing data to extract plot components and plotting them in other ways.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Arguments passed on to <code><a href="polarPlot.html">polarPlot</a></code></p><dl><dt><code>wd</code></dt>
+<dd><p>Name of wind direction field.</p></dd>
 
     <dt><code>statistic</code></dt>
 <dd><p>The statistic that should be applied to each wind
@@ -353,11 +351,6 @@ and <code>"left"</code>.</p></dd>
 <dd><p>Fine control of the scale key via <code>drawOpenKey</code>. See
 <code>drawOpenKey</code> for further details.</p></dd>
 
-    <dt><code>auto.text</code></dt>
-<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code>
-titles and axis labels will automatically try and format pollutant names
-and units properly e.g.  by subscripting the `2' in NO2.</p></dd>
-
     <dt><code>ws_spread</code></dt>
 <dd><p>The value of sigma used for Gaussian kernel weighting of
 wind speed when <code>statistic = "nwr"</code> or when correlation and regression
@@ -406,9 +399,9 @@ and will be ignored if <code>"quantile.slope"</code> is not used.</p></dd>
 same location, it can be used for any two data sets that contain the same
 pollutant. For example, data from two sites that are close to one another, or
 two co-located instruments.</p>
-<p>The analysis works by calculating the polar plot surface for the
-<code>before</code> and <code>after</code> periods and then subtracting the <code>before</code>
-surface from the <code>after</code> surface.</p>
+<p>The analysis works by calculating the polar plot surface for the <code>before</code> and
+<code>after</code> periods and then subtracting the <code>before</code> surface from the <code>after</code>
+surface.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -424,9 +417,7 @@ surface from the <code>after</code> surface.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="va">before_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="selectByDate.html">selectByDate</a></span><span class="op">(</span><span class="va">mydata</span>, year <span class="op">=</span> <span class="fl">2002</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">after_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="selectByDate.html">selectByDate</a></span><span class="op">(</span><span class="va">mydata</span>, year <span class="op">=</span> <span class="fl">2003</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -434,7 +425,6 @@ surface from the <code>after</code> surface.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># with some options</span></span></span>
 <span class="r-in"><span><span class="fu">polarDiff</span><span class="op">(</span><span class="va">before_data</span>, <span class="va">after_data</span>, pollutant <span class="op">=</span> <span class="st">"no2"</span>, cols <span class="op">=</span> <span class="st">"RdYlBu"</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
