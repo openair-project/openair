@@ -28,6 +28,8 @@
  
 ## Bug fixes
 
+- Fixed `annotate = FALSE` in `windRose` where axes and labels were not shown
+
 - Fixed an issue wherein `importUKAQ()` would drop sites if importing from `local` sites *and* another network.
 
 - `polarCluster()` will no longer error with multiple `pollutant`s and a single `n.clusters`.
