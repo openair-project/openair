@@ -115,6 +115,7 @@
 #' @importFrom lubridate year
 #' @importFrom methods is
 #' @importFrom Rcpp evalCpp
+#' @importFrom rlang %||%
 #' @importFrom rlang .data
 #' @importFrom stats aggregate
 #' @importFrom stats approx
