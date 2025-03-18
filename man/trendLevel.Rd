@@ -31,116 +31,100 @@ trendLevel(
 )
 }
 \arguments{
-\item{mydata}{The openair data frame to use to generate the \code{trendLevel}
+\item{mydata}{The openair data frame to use to generate the \code{\link[=trendLevel]{trendLevel()}}
 plot.}
 
-\item{pollutant}{The name of the data series in \code{mydata} to sample to
-produce the \code{trendLevel} plot.}
+\item{pollutant}{The name of the data series in \code{mydata} to sample to produce
+the \code{\link[=trendLevel]{trendLevel()}} plot.}
 
-\item{x}{The name of the data series to use as the \code{trendLevel} x-axis.
-This is used with the \code{y} and \code{type} options to bin the data
-before applying \code{statistic} (see below). Other data series in
-\code{mydata} can also be used. (Note: \code{trendLevel} does not allow
-duplication in \code{x}, \code{y} and \code{type} options within a call.)}
+\item{x, y, type}{The name of the data series to use as the \code{\link[=trendLevel]{trendLevel()}}
+x-axis, y-axis or conditioning variable, passed to \code{\link[=cutData]{cutData()}}. These are
+used before applying \code{statistic}. \code{\link[=trendLevel]{trendLevel()}} does not allow duplication
+in \code{x}, \code{y} and \code{type} options.}
 
-\item{y}{The names of the data series to use as the \code{trendLevel} y-axis
-and for additional conditioning, respectively. As \code{x} above.}
+\item{rotate.axis}{The rotation to be applied to \code{trendLevel} \code{x} and \code{y}
+axes. The default, \code{c(90, 0)}, rotates the x axis by 90 degrees but does
+not rotate the y axis. If only one value is supplied, this is applied to
+both axes; if more than two values are supplied, only the first two are
+used.}
 
-\item{type}{See \code{y}.}
-
-\item{rotate.axis}{The rotation to be applied to \code{trendLevel} \code{x}
-and \code{y} axes. The default, \code{c(90, 0)}, rotates the x axis by 90
-degrees but does not rotate the y axis. (Note: If only one value is
-supplied, this is applied to both axes; if more than two values are
-supplied, only the first two are used.)}
-
-\item{n.levels}{The number of levels to split \code{x}, \code{y} and
-\code{type} data into if numeric. The default, \code{c(10, 10, 4)}, cuts
-numeric \code{x} and \code{y} data into ten levels and numeric \code{type}
-data into four levels. (Notes: This option is ignored for date conditioning
-and factors.  If less than three values are supplied, three values are
-determined by recursion; if more than three values are supplied, only the
-first three are used.)}
+\item{n.levels}{The number of levels to split \code{x}, \code{y} and \code{type} data into
+if numeric. The default, \code{c(10, 10, 4)}, cuts numeric \code{x} and \code{y} data into
+ten levels and numeric \code{type} data into four levels. This option is ignored
+for date conditioning and factors. If less than three values are supplied,
+three values are determined by recursion; if more than three values are
+supplied, only the first three are used.}
 
 \item{limits}{The colour scale range to use when generating the
-\code{trendLevel} plot.}
+\code{\link[=trendLevel]{trendLevel()}} plot.}
 
-\item{cols}{The colour set to use to colour the \code{trendLevel} surface.
-\code{cols} is passed to \code{openColours} for evaluation. See
-\code{?openColours} for more details.}
+\item{cols}{The colour set to use to colour the \code{\link[=trendLevel]{trendLevel()}} surface.
+\code{cols} is passed to \code{\link[=openColours]{openColours()}} for evaluation.}
 
-\item{auto.text}{Automatic routine text formatting. \code{auto.text = TRUE}
-passes common \code{lattice} labelling terms (e.g. \code{xlab} for the
-x-axis, \code{ylab} for the y-axis and \code{main} for the title) to the
-plot via \code{quickText} to provide common text formatting.  The
-alternative \code{auto.text = FALSE} turns this option off and passes any
-supplied labels to the plot without modification.}
+\item{auto.text}{Automatic routine text formatting. \code{auto.text = TRUE} passes
+common \code{lattice} labelling terms (e.g. \code{xlab} for the x-axis, \code{ylab} for
+the y-axis and \code{main} for the title) to the plot via \code{\link[=quickText]{quickText()}} to
+provide common text formatting.  The alternative \code{auto.text = FALSE} turns
+this option off and passes any supplied labels to the plot without
+modification.}
 
 \item{key.header, key.footer}{Adds additional text labels above and/or below
-the scale key, respectively. For example, passing the options
-\code{key.header = "", key.footer = c("mean","nox")} adds the addition text
-as a scale footer. If enabled (\code{auto.text = TRUE}), these arguments
-are passed to the scale key (\code{drawOpenKey}) via \code{quickText} to
-handle formatting. The term \code{"get.stat.name"}, used as the default
-\code{key.header} setting, is reserved and automatically adds statistic
-function names or defaults to \code{"level"} when unnamed functions are
-requested via \code{statistic}.}
+the scale key, respectively. For example, passing the options \verb{key.header = "", key.footer = c("mean","nox")} adds the addition text as a scale footer.
+If enabled (\code{auto.text = TRUE}), these arguments are passed to the scale
+key (\code{\link[=drawOpenKey]{drawOpenKey()}}) via \code{\link[=quickText]{quickText()}} to handle formatting. The term
+\code{"get.stat.name"}, used as the default \code{key.header} setting, is reserved
+and automatically adds statistic function names or defaults to \code{"level"}
+when unnamed functions are requested via \code{statistic}.}
 
-\item{key.position}{Location where the scale key should be plotted.  Allowed
-arguments currently include \dQuote{top}, \dQuote{right}, \dQuote{bottom}
-and \dQuote{left}.}
+\item{key.position}{Location where the scale key should be plotted. Allowed
+arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"}, and \code{"left"}.}
 
-\item{key}{Fine control of the scale key via \code{drawOpenKey}. See
-\code{?drawOpenKey} for further details.}
+\item{key}{Fine control of the scale key via \code{\link[=drawOpenKey]{drawOpenKey()}}.}
 
 \item{labels}{If a categorical colour scale is required then these labels
-will be used. Note there is one less label than break. For example,
-\code{labels = c("good", "bad", "very bad")}. \code{breaks} must also be
-supplied if labels are given.}
+will be used. Note there is one less label than break. For example, \code{labels = c("good", "bad", "very bad")}. \code{breaks} must also be supplied if labels
+are given.}
 
 \item{breaks}{If a categorical colour scale is required then these breaks
-will be used. For example, \code{breaks = c(0, 50, 100, 1000)}. In this
-case \dQuote{good} corresponds to values between 0 and 50 and so on. Users
-should set the maximum value of \code{breaks} to exceed the maximum data
-value to ensure it is within the maximum final range e.g. 100--1000 in this
-case. \code{labels} must also be supplied.}
+will be used. For example, \code{breaks = c(0, 50, 100, 1000)}. In this case
+\code{"good"} corresponds to values between 0 and 50 and so on. Users should set
+the maximum value of \code{breaks} to exceed the maximum data value to ensure it
+is within the maximum final range, e.g., 100--1000 in this case. \code{labels}
+must also be supplied.}
 
 \item{statistic}{The statistic method to be use to summarise locally binned
 \code{pollutant} measurements with. Three options are currently encoded:
-\dQuote{mean} (default), \dQuote{max} and \dQuote{frequency}. (Note:
-Functions can also be sent directly via \code{statistic}.  However, this
-option is still in development and should be used with caution. See Details
-below.)}
+\code{"mean"} (default), \code{"max"} and \code{"frequency"}. Functions can also be sent
+directly via \code{statistic}; see 'Details' for more information.}
 
-\item{stat.args}{Additional options to be used with \code{statistic} if this
-is a function. The extra options should be supplied as a list of named
-parameters. (see Details below.)}
+\item{stat.args}{Additional options to be used with \code{statistic} if this is a
+function. The extra options should be supplied as a list of named
+parameters; see 'Details' for more information.}
 
 \item{stat.safe.mode}{An addition protection applied when using functions
-directly with \code{statistic} that most users can ignore. This option
-returns \code{NA} instead of running \code{statistic} on binned subsamples
-that are empty. Many common functions terminate with an error message when
-applied to an empty dataset. So, this option provides a mechanism to work
-with such functions. For a very few cases, e.g. for a function that counted
-missing entries, it might need to be set to \code{FALSE} (see Details
-below.)}
+directly with \code{statistic} that most users can ignore. This option returns
+\code{NA} instead of running \code{statistic} on binned sub samples that are empty.
+Many common functions terminate with an error message when applied to an
+empty dataset. So, this option provides a mechanism to work with such
+functions. For a very few cases, e.g., for a function that counted missing
+entries, it might need to be set to \code{FALSE}; see 'Details' for more
+information.}
 
-\item{drop.unused.types}{Hide unused/empty \code{type} conditioning cases.
-Some conditioning options may generate empty cases for some data sets, e.g.
-a hour of the day when no measurements were taken. Empty \code{x} and
-\code{y} cases generate 'holes' in individual plots. However, empty
-\code{type} cases would produce blank panels if plotted. Therefore, the
-default, \code{TRUE}, excludes these empty panels from the plot. The
-alternative \code{FALSE} plots all \code{type} panels.}
+\item{drop.unused.types}{Hide unused/empty \code{type} conditioning cases. Some
+conditioning options may generate empty cases for some data sets, e.g. a
+hour of the day when no measurements were taken. Empty \code{x} and \code{y} cases
+generate 'holes' in individual plots. However, empty \code{type} cases would
+produce blank panels if plotted. Therefore, the default, \code{TRUE}, excludes
+these empty panels from the plot. The alternative \code{FALSE} plots all \code{type}
+panels.}
 
 \item{col.na}{Colour to be used to show missing data.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other ways.}
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data to extract plot components and plotting them in other ways.}
 
-\item{...}{Addition options are passed on to \code{cutData} for \code{type}
-handling and \code{levelplot} in \code{lattice} for finer control of the
-plot itself.}
+\item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling
+and \code{\link[lattice:levelplot]{lattice::levelplot()}} for finer control of the plot itself.}
 }
 \value{
 an \link[=openair-package]{openair} object.
@@ -155,45 +139,38 @@ and diurnal variations. However, x, y and type and summarising statistics can
 all be modified to provide a range of other similar plots.
 }
 \details{
-\code{trendLevel} allows the use of third party summarising functions via the
-\code{statistic} option. Any additional function arguments not included
-within a function called using \code{statistic} should be supplied as a list
-of named parameters and sent using \code{stat.args}. For example, the encoded
-option \code{statistic = "mean"} is equivalent to \code{statistic = mean,
-stat.args = list(na.rm = TRUE)} or the R command \code{mean(x, na.rm= TRUE)}.
-Many R functions and user's own code could be applied in a similar fashion,
-subject to the following restrictions: the first argument sent to the
-function must be the data series to be analysed; the name `x' cannot be used
-for any of the extra options supplied in \code{stat.args}; and the function
-should return the required answer as a numeric or \code{NA}. Note: If the
-supplied function returns more than one answer, currently only the first of
-these is retained and used by \code{trendLevel}. All other returned
-information will be ignored without warning. If the function terminates with
-an error when it is sent an empty data series, the option
-\code{stat.safe.mode} should not be set to \code{FALSE} or \code{trendLevel}
-may fail. Note: The \code{stat.safe.mode = TRUE} option returns an NA without
-warning for empty data series.
+\code{\link[=trendLevel]{trendLevel()}} allows the use of third party summarising functions via the
+\code{statistic} option. Any additional function arguments not included within a
+function called using \code{statistic} should be supplied as a list of named
+parameters and sent using \code{stat.args}. For example, the encoded option
+\code{statistic = "mean"} is equivalent to \verb{statistic = mean, stat.args = list(na.rm = TRUE)} or the R command \code{mean(x, na.rm = TRUE)}. Many R
+functions and user's own code could be applied in a similar fashion, subject
+to the following restrictions: the first argument sent to the function must
+be the data series to be analysed; the name \verb{x' cannot be used for any of the extra options supplied in }stat.args\verb{; and the function should return the required answer as a numeric or }NA\verb{. Note: If the supplied function returns more than one answer, currently only the first of these is retained and used by [trendLevel()]. All other returned information will be ignored without warning. If the function terminates with an error when it is sent an empty data series, the option }stat.safe.mode\verb{should not be set to}FALSE\verb{or [trendLevel()] may fail. Note: The}stat.safe.mode = TRUE` option returns an
+NA without warning for empty data series.
 }
 \examples{
-#basic use
-#default statistic = "mean"
+# basic use
+# default statistic = "mean"
 trendLevel(mydata, pollutant = "nox")
 
-#applying same as 'own' statistic
+# applying same as 'own' statistic
 my.mean <- function(x) mean(x, na.rm = TRUE)
 trendLevel(mydata, pollutant = "nox", statistic = my.mean)
 
-#alternative for 'third party' statistic
-#trendLevel(mydata, pollutant = "nox", statistic = mean,
+# alternative for 'third party' statistic
+# trendLevel(mydata, pollutant = "nox", statistic = mean,
 #           stat.args = list(na.rm = TRUE))
 
 \dontrun{
 # example with categorical scale
-trendLevel(mydata, pollutant = "no2",
-border = "white", statistic = "max",
-breaks = c(0, 50, 100, 500),
-labels = c("low", "medium", "high"),
-cols = c("forestgreen", "yellow", "red"))
+trendLevel(mydata,
+  pollutant = "no2",
+  border = "white", statistic = "max",
+  breaks = c(0, 50, 100, 500),
+  labels = c("low", "medium", "high"),
+  cols = c("forestgreen", "yellow", "red")
+)
 }
 }
 \seealso{
@@ -207,6 +184,8 @@ Other time series and trend functions:
 \code{\link{timeVariation}()}
 }
 \author{
-Karl Ropkins and David Carslaw
+Karl Ropkins
+
+David Carslaw
 }
 \concept{time series and trend functions}
