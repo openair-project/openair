@@ -75,6 +75,7 @@
 #' @param cex.lim For the annotation of concentration labels on each day. The
 #'   first sets the size of the text below `lim` and the second sets the size of
 #'   the text above `lim`.
+#' @param cex.date The base size of the annotation text for the date.
 #' @param digits The number of digits used to display concentration values when
 #'   `annotate = "value"`.
 #' @param data.thresh Data capture threshold passed to [timeAverage()]. For
@@ -169,6 +170,7 @@ calendarPlot <-
            col.arrow = "black",
            font.lim = c(1, 2),
            cex.lim = c(0.6, 1),
+           cex.date = 0.6,
            digits = 0,
            data.thresh = 0,
            labels = NA,
@@ -591,7 +593,7 @@ calendarPlot <-
             x[subscripts],
             y[subscripts],
             labels = mydata$date.mat[subscripts],
-            cex = 0.6,
+            cex = cex.date,
             col = as.character(mydata$dateColour[subscripts])
           )
         }
@@ -605,7 +607,7 @@ calendarPlot <-
             x[subscripts],
             y[subscripts],
             labels = mydata$date.mat[subscripts],
-            cex = 0.6,
+            cex = cex.date,
             col = date.col
           )
 
