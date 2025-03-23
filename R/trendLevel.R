@@ -132,29 +132,30 @@
 #' )
 #' }
 trendLevel <- function(
-    mydata,
-    pollutant = "nox",
-    x = "month",
-    y = "hour",
-    type = "year",
-    rotate.axis = c(90, 0),
-    n.levels = c(10, 10, 4),
-    limits = c(0, 100),
-    cols = "default",
-    auto.text = TRUE,
-    key.header = "use.stat.name",
-    key.footer = pollutant,
-    key.position = "right",
-    key = TRUE,
-    labels = NA,
-    breaks = NA,
-    statistic = c("mean", "max", "frequency"),
-    stat.args = NULL,
-    stat.safe.mode = TRUE,
-    drop.unused.types = TRUE,
-    col.na = "white",
-    plot = TRUE,
-    ...) {
+  mydata,
+  pollutant = "nox",
+  x = "month",
+  y = "hour",
+  type = "year",
+  rotate.axis = c(90, 0),
+  n.levels = c(10, 10, 4),
+  limits = c(0, 100),
+  cols = "default",
+  auto.text = TRUE,
+  key.header = "use.stat.name",
+  key.footer = pollutant,
+  key.position = "right",
+  key = TRUE,
+  labels = NA,
+  breaks = NA,
+  statistic = c("mean", "max", "frequency"),
+  stat.args = NULL,
+  stat.safe.mode = TRUE,
+  drop.unused.types = TRUE,
+  col.na = "white",
+  plot = TRUE,
+  ...
+) {
   # greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
     trellis.par.set(list(strip.background = list(col = "white")))
@@ -180,7 +181,7 @@ trendLevel <- function(
       )
     )
   }
-  
+
   # check length of y
   if (length(y) > 1) {
     y <- y[1]
@@ -192,7 +193,7 @@ trendLevel <- function(
       )
     )
   }
-  
+
   # check length of type
   if (length(type) > 1) {
     type <- type[1]
@@ -203,37 +204,37 @@ trendLevel <- function(
       )
     )
   }
-  
+
   # ensure x, y and type are unique
   vars <- c(pollutant, x, y, type)
   if (length(vars) != length(unique(vars))) {
     cli::cli_abort(
       c(
-        "x" = "{.fun trendLevel} could not rationalise plot structure.", 
+        "x" = "{.fun trendLevel} could not rationalise plot structure.",
         "i" = "Duplicate term(s) in {.field pollutant} ('{pollutant}'), {.field x} ('{x}'), {.field y} ('{y}'), and {.field type} ('{type}')."
       )
     )
   }
-  
+
   # assume pollutant scale is not a categorical value
   category <- FALSE
   if (any(!is.na(labels)) && any(!is.na(breaks))) {
     category <- TRUE
   }
-  
+
   # extra.args
   extra.args <- list(...)
-  
+
   # font size
   if ("fontsize" %in% names(extra.args)) {
     trellis.par.set(fontsize = list(text = extra.args$fontsize))
   }
-  
+
   # label controls
-  extra.args$xlab <- quickText(extra.args$xlab %||% x, auto.text = auto.text) 
+  extra.args$xlab <- quickText(extra.args$xlab %||% x, auto.text = auto.text)
   extra.args$ylab <- quickText(extra.args$ylab %||% y, auto.text = auto.text)
-  extra.args$main <- quickText(extra.args$main %||% "", auto.text = auto.text) 
-  
+  extra.args$main <- quickText(extra.args$main %||% "", auto.text = auto.text)
+
   # number vector handling
   ls.check.fun <- function(vector, vector.name, len) {
     if (!is.numeric(vector)) {
@@ -260,7 +261,7 @@ trendLevel <- function(
     if (is.character(statistic)) {
       # hardcoded statistic options
       statistic <- rlang::arg_match(statistic)
-      
+
       if (statistic == "mean") {
         stat.fun <- mean
         stat.args <- list(na.rm = TRUE)
@@ -315,6 +316,50 @@ trendLevel <- function(
     )
   }
 
+  # checkPrep
+  temp <- c(pollutant)
+  if ("date" %in% names(mydata)) {
+    temp <- c("date", pollutant)
+  }
+
+  # all of x, y, temp need to be handled as type here
+  mydata <- checkPrep(mydata, temp, type = c(x, y, type), remove.calm = FALSE)
+
+  # cutData
+  # different n.levels for axis and type, axes get `is.axis = TRUE`
+  newdata <-
+    mydata %>%
+    cutData(x, n.levels = n.levels[1], is.axis = TRUE, ...) %>%
+    cutData(y, n.levels = n.levels[2], is.axis = TRUE, ...) %>%
+    cutData(type, n.levels = n.levels[3], ...)
+
+  # select only pollutant and axis/facet columns
+  newdata <- newdata[c(pollutant, x, y, type)]
+
+  calc_stat <- function(x) {
+    args <- append(stat.args, list(x = x))
+    rlang::exec(stat.fun, !!!args)
+  }
+  newdata <-
+    newdata %>%
+    dplyr::summarise(
+      {{ pollutant }} := calc_stat(.data[[pollutant]]),
+      .by = dplyr::all_of(c(x, y, type))
+    ) %>%
+    dplyr::mutate(dplyr::across(
+      dplyr::all_of(c(x, y, type)),
+      function(x) factor(x, ordered = FALSE)
+    )) %>%
+    as.data.frame()
+
+  # plot setup
+  temp <- paste(type, collapse = "+")
+  myform <- formula(paste0(pollutant, " ~ ", x, " * ", y, " | ", temp))
+
+  if (type == "default") {
+    myform <- formula(paste0(pollutant, " ~ ", x, " * ", y))
+  }
+
   # key.header, footer stat.name recovery
   if (!is.null(key.header)) {
     if (is.character(key.header)) {
@@ -327,67 +372,11 @@ trendLevel <- function(
     }
   }
 
-  # checkPrep
-  temp <- c(pollutant)
-  if ("date" %in% names(mydata)) {
-    temp <- c("date", pollutant)
-  }
-
-  # all of x, y, temp need to be handled as type here
-  mydata <- checkPrep(mydata, temp, type = c(x, y, type), remove.calm = FALSE)
-
-  # cutData
-  # different n.levels for axis and type, axes get `is.axis = TRUE`
-  newdata <- 
-    mydata %>%
-    cutData(x, n.levels = n.levels[1], is.axis = TRUE, ...) %>%
-    cutData(y, n.levels = n.levels[2], is.axis = TRUE, ...) %>%
-    cutData(type, n.levels = n.levels[3], ...)
-  
-  # select only pollutant and axis/facet columns
-  newdata <- newdata[c(pollutant, x, y, type)]
-
-  # calculate statistic
-  calc.stat <- function(...) {
-    tapply(newdata[[pollutant]], newdata[c(x, y, type)], stat.fun, ...)
-  }
-  # if null - just turn into an empty list
-  stat.args <- stat.args %||% list()
-  newdata <- try(do.call(calc.stat, stat.args), silent = TRUE)
-  
-  # error handling for stat
-  if (is(newdata)[1] == "try-error") {
-    stop(
-      paste0(
-        "\ttrendLevel could not complete supplied statistic operation '",
-        stat.name,
-        "'.\n\t[R error below]",
-        "\n\t",
-        temp[1]
-      ),
-      call. = FALSE
-    )
-  }
-
-  # restructure new data for plot
-  newdata <- data.frame(
-    expand.grid(dimnames(newdata)),
-    matrix(unlist(newdata), byrow = TRUE)
-  )
-  pollutant <- paste(pollutant, stat.name, sep = ".")
-  names(newdata)[ncol(newdata)] <- pollutant
-
-  # plot setup
-  temp <- paste(type, collapse = "+")
-  myform <- formula(paste0(pollutant, " ~ ", x, " * ", y, " | ", temp))
-
-  if (type == "default") {
-    myform <- formula(paste0(pollutant, " ~ ", x, " * ", y))
-  }
-
   # special case handling
   # layout for wd
-  if (length(type) == 1 && type[1] == "wd" && !"layout" %in% names(extra.args)) {
+  if (
+    length(type) == 1 && type[1] == "wd" && !"layout" %in% names(extra.args)
+  ) {
     # re-order to make sensible layout
 
     wds <- c("NW", "N", "NE", "W", "E", "SW", "S", "SE")
@@ -603,7 +592,7 @@ trendLevel <- function(
   if (plot) {
     plot(plt)
   }
-  
+
   output <- list(plot = plt, data = dplyr::tibble(newdata), call = match.call())
   class(output) <- "openair"
   invisible(output)
