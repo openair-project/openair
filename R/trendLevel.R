@@ -76,10 +76,16 @@
 #'   the maximum value of `breaks` to exceed the maximum data value to ensure it
 #'   is within the maximum final range, e.g., 100--1000 in this case. `labels`
 #'   must also be supplied.
-#' @param statistic The statistic method to be use to summarise locally binned
-#'   `pollutant` measurements with. Three options are currently encoded:
-#'   `"mean"` (default), `"max"` and `"frequency"`. Functions can also be sent
-#'   directly via `statistic`; see 'Details' for more information.
+#' @param statistic The statistic to apply when aggregating the data; default is
+#'   the mean. Can be one of `"mean"`, `"max"`, `"min"`, `"median"`,
+#'   `"frequency"`, `"sum"`, `"sd"`, `"percentile"`. Note that `"sd"` is the
+#'   standard deviation, `"frequency"` is the number (frequency) of valid
+#'   records in the period and `"data.cap"` is the percentage data capture.
+#'   `"percentile"` is the percentile level (%) between 0-100, which can be set
+#'   using the `"percentile"` option. Functions can also be sent directly via
+#'   `statistic`; see 'Details' for more information.
+#' @param percentile The percentile level used when `statistic = "percentile"`.
+#'   The default is 95%.
 #' @param stat.args Additional options to be used with `statistic` if this is a
 #'   function. The extra options should be supplied as a list of named
 #'   parameters; see 'Details' for more information.
@@ -148,7 +154,17 @@ trendLevel <- function(
   key = TRUE,
   labels = NA,
   breaks = NA,
-  statistic = c("mean", "max", "frequency"),
+  statistic = c(
+    "mean",
+    "max",
+    "min",
+    "median",
+    "frequency",
+    "sum",
+    "sd",
+    "percentile"
+  ),
+  percentile = 95,
   stat.args = NULL,
   stat.safe.mode = TRUE,
   drop.unused.types = TRUE,
@@ -261,9 +277,20 @@ trendLevel <- function(
     if (is.character(statistic)) {
       # hardcoded statistic options
       statistic <- rlang::arg_match(statistic)
+      stat.name <- statistic
 
       if (statistic == "mean") {
         stat.fun <- mean
+        stat.args <- list(na.rm = TRUE)
+      }
+
+      if (statistic == "median") {
+        stat.fun <- stats::median
+        stat.args <- list(na.rm = TRUE)
+      }
+
+      if (statistic == "sd") {
+        stat.fun <- stats::sd
         stat.args <- list(na.rm = TRUE)
       }
 
@@ -273,6 +300,28 @@ trendLevel <- function(
             NA
           } else {
             max(x, ...)
+          }
+        }
+        stat.args <- list(na.rm = TRUE)
+      }
+
+      if (statistic == "min") {
+        stat.fun <- function(x, ...) {
+          if (all(is.na(x))) {
+            NA
+          } else {
+            min(x, ...)
+          }
+        }
+        stat.args <- list(na.rm = TRUE)
+      }
+
+      if (statistic == "sum") {
+        stat.fun <- function(x, ...) {
+          if (all(is.na(x))) {
+            NA
+          } else {
+            sum(x, ...)
           }
         }
         stat.args <- list(na.rm = TRUE)
@@ -289,7 +338,27 @@ trendLevel <- function(
         stat.args <- NULL
       }
 
-      stat.name <- statistic
+      if (statistic == "percentile") {
+        if (percentile < 0 | percentile > 100) {
+          cli::cli_abort("{.field percentile} outside {0}-{100}.")
+        }
+        probs <- percentile / 100
+        stat.fun <- function(x, ...) {
+          stats::quantile(x, probs = probs, names = FALSE, ...)
+        }
+        stat.args <- list(na.rm = TRUE)
+
+        lastnum <- substr(percentile, nchar(percentile), nchar(percentile))
+        numend <- dplyr::case_match(
+          lastnum,
+          "1" ~ "st",
+          "2" ~ "nd",
+          "3" ~ "rd",
+          .default = "th"
+        )
+
+        stat.name <- paste0(percentile, numend, " Perc.")
+      }
     } else {
       # user defined function handling
       # default unnamed stats to 'level'

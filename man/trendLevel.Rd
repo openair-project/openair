@@ -21,7 +21,8 @@ trendLevel(
   key = TRUE,
   labels = NA,
   breaks = NA,
-  statistic = c("mean", "max", "frequency"),
+  statistic = c("mean", "max", "min", "median", "frequency", "sum", "sd", "percentile"),
+  percentile = 95,
   stat.args = NULL,
   stat.safe.mode = TRUE,
   drop.unused.types = TRUE,
@@ -92,10 +93,17 @@ the maximum value of \code{breaks} to exceed the maximum data value to ensure it
 is within the maximum final range, e.g., 100--1000 in this case. \code{labels}
 must also be supplied.}
 
-\item{statistic}{The statistic method to be use to summarise locally binned
-\code{pollutant} measurements with. Three options are currently encoded:
-\code{"mean"} (default), \code{"max"} and \code{"frequency"}. Functions can also be sent
-directly via \code{statistic}; see 'Details' for more information.}
+\item{statistic}{The statistic to apply when aggregating the data; default is
+the mean. Can be one of \code{"mean"}, \code{"max"}, \code{"min"}, \code{"median"},
+\code{"frequency"}, \code{"sum"}, \code{"sd"}, \code{"percentile"}. Note that \code{"sd"} is the
+standard deviation, \code{"frequency"} is the number (frequency) of valid
+records in the period and \code{"data.cap"} is the percentage data capture.
+\code{"percentile"} is the percentile level (\%) between 0-100, which can be set
+using the \code{"percentile"} option. Functions can also be sent directly via
+\code{statistic}; see 'Details' for more information.}
+
+\item{percentile}{The percentile level used when \code{statistic = "percentile"}.
+The default is 95\%.}
 
 \item{stat.args}{Additional options to be used with \code{statistic} if this is a
 function. The extra options should be supplied as a list of named
