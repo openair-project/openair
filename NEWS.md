@@ -32,6 +32,8 @@
 
 - `trendLevel()` has gained new `statistic` types to match `timeAverage()`, including `"mean"`, `"median"`, `"min"`, `"max"`, `"sd"`, `"sum"`, `"frequency"` and `"percentile"`.
 
+- `trendLevel()` will now automatically generate appropriate `labels` if `breaks` are provided. The `labels` argument can still be used to provide custom labels per break.
+
 ## Bug fixes
 
 - Fixed `annotate = FALSE` in `windRose` where axes and labels were not shown

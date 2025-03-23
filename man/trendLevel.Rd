@@ -82,16 +82,15 @@ arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"}, and \
 
 \item{key}{Fine control of the scale key via \code{\link[=drawOpenKey]{drawOpenKey()}}.}
 
-\item{labels}{If a categorical colour scale is required then these labels
-will be used. Note there is one less label than break. For example, \code{labels = c("good", "bad", "very bad")}. \code{breaks} must also be supplied if labels
-are given.}
-
-\item{breaks}{If a categorical colour scale is required then these breaks
-will be used. For example, \code{breaks = c(0, 50, 100, 1000)}. In this case
-\code{"good"} corresponds to values between 0 and 50 and so on. Users should set
-the maximum value of \code{breaks} to exceed the maximum data value to ensure it
-is within the maximum final range, e.g., 100--1000 in this case. \code{labels}
-must also be supplied.}
+\item{breaks, labels}{If a categorical colour scale is required then \code{breaks}
+should be specified. These should be provided as a numeric vector, e.g.,
+\code{breaks = c(0, 50, 100, 1000)}. Users should set the maximum value of
+\code{breaks} to exceed the maximum data value to ensure it is within the
+maximum final range, e.g., 100--1000 in this case. Labels will
+automatically be generated, but can be customised by passing a character
+vector to \code{labels}, e.g., \code{labels = c("good", "bad", "very bad")}. In this
+example, \code{0 - 50} will be \code{"good"} and so on. Note there is one less label
+than break.}
 
 \item{statistic}{The statistic to apply when aggregating the data; default is
 the mean. Can be one of \code{"mean"}, \code{"max"}, \code{"min"}, \code{"median"},
@@ -154,7 +153,14 @@ parameters and sent using \code{stat.args}. For example, the encoded option
 \code{statistic = "mean"} is equivalent to \verb{statistic = mean, stat.args = list(na.rm = TRUE)} or the R command \code{mean(x, na.rm = TRUE)}. Many R
 functions and user's own code could be applied in a similar fashion, subject
 to the following restrictions: the first argument sent to the function must
-be the data series to be analysed; the name \verb{x' cannot be used for any of the extra options supplied in }stat.args\verb{; and the function should return the required answer as a numeric or }NA\verb{. Note: If the supplied function returns more than one answer, currently only the first of these is retained and used by [trendLevel()]. All other returned information will be ignored without warning. If the function terminates with an error when it is sent an empty data series, the option }stat.safe.mode\verb{should not be set to}FALSE\verb{or [trendLevel()] may fail. Note: The}stat.safe.mode = TRUE` option returns an
+be the data series to be analysed; the name 'x' cannot be used for any of the
+extra options supplied in \code{stat.args}; and the function should return the
+required answer as a numeric or \code{NA}. Note: If the supplied function returns
+more than one answer, currently only the first of these is retained and used
+by \code{\link[=trendLevel]{trendLevel()}}. All other returned information will be ignored without
+warning. If the function terminates with an error when it is sent an empty
+data series, the option \code{stat.safe.mode} should not be set to \code{FALSE} or
+\code{\link[=trendLevel]{trendLevel()}} may fail. Note: The \code{stat.safe.mode = TRUE} option returns an
 NA without warning for empty data series.
 }
 \examples{
@@ -195,5 +201,7 @@ Other time series and trend functions:
 Karl Ropkins
 
 David Carslaw
+
+Jack Davison
 }
 \concept{time series and trend functions}

@@ -16,7 +16,7 @@
 #' list(na.rm = TRUE)` or the R command `mean(x, na.rm = TRUE)`. Many R
 #' functions and user's own code could be applied in a similar fashion, subject
 #' to the following restrictions: the first argument sent to the function must
-#' be the data series to be analysed; the name `x' cannot be used for any of the
+#' be the data series to be analysed; the name 'x' cannot be used for any of the
 #' extra options supplied in `stat.args`; and the function should return the
 #' required answer as a numeric or `NA`. Note: If the supplied function returns
 #' more than one answer, currently only the first of these is retained and used
@@ -66,16 +66,15 @@
 #' @param key.position Location where the scale key should be plotted. Allowed
 #'   arguments currently include `"top"`, `"right"`, `"bottom"`, and `"left"`.
 #' @param key Fine control of the scale key via [drawOpenKey()].
-#' @param labels If a categorical colour scale is required then these labels
-#'   will be used. Note there is one less label than break. For example, `labels
-#'   = c("good", "bad", "very bad")`. `breaks` must also be supplied if labels
-#'   are given.
-#' @param breaks If a categorical colour scale is required then these breaks
-#'   will be used. For example, `breaks = c(0, 50, 100, 1000)`. In this case
-#'   `"good"` corresponds to values between 0 and 50 and so on. Users should set
-#'   the maximum value of `breaks` to exceed the maximum data value to ensure it
-#'   is within the maximum final range, e.g., 100--1000 in this case. `labels`
-#'   must also be supplied.
+#' @param breaks,labels If a categorical colour scale is required then `breaks`
+#'   should be specified. These should be provided as a numeric vector, e.g.,
+#'   `breaks = c(0, 50, 100, 1000)`. Users should set the maximum value of
+#'   `breaks` to exceed the maximum data value to ensure it is within the
+#'   maximum final range, e.g., 100--1000 in this case. Labels will
+#'   automatically be generated, but can be customised by passing a character
+#'   vector to `labels`, e.g., `labels = c("good", "bad", "very bad")`. In this
+#'   example, `0 - 50` will be `"good"` and so on. Note there is one less label
+#'   than break.
 #' @param statistic The statistic to apply when aggregating the data; default is
 #'   the mean. Can be one of `"mean"`, `"max"`, `"min"`, `"median"`,
 #'   `"frequency"`, `"sum"`, `"sd"`, `"percentile"`. Note that `"sd"` is the
@@ -113,6 +112,7 @@
 #' @return an [openair][openair-package] object.
 #' @author Karl Ropkins
 #' @author David Carslaw
+#' @author Jack Davison
 #' @family time series and trend functions
 #' @examples
 #' # basic use
@@ -234,7 +234,18 @@ trendLevel <- function(
 
   # assume pollutant scale is not a categorical value
   category <- FALSE
-  if (any(!is.na(labels)) && any(!is.na(breaks))) {
+  if (!anyNA(breaks)) {
+    # assign labels if no labels are given
+    if (anyNA(labels)) {
+      labels <- c()
+      for (i in seq_along(breaks)) {
+        lhs <- breaks[i]
+        rhs <- breaks[i + 1]
+        str <- paste(lhs, rhs, sep = " - ")
+        labels <- append(labels, str)
+      }
+      labels <- labels[-i]
+    }
     category <- TRUE
   }
 
