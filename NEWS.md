@@ -30,7 +30,8 @@
 
 - DAQI information imported using `importUKAQ(data_type = "daqi")` will be returned with the relevant DAQI band appended as an additional factor column; either "Low" (1-3), "Moderate" (4-6), "High" (7-9), or "Very High" (10). See <https://uk-air.defra.gov.uk/air-pollution/daqi> for more information.
 
- 
+- `trendLevel()` has gained new `statistic` types to match `timeAverage()`, including `"mean"`, `"median"`, `"min"`, `"max"`, `"sd"`, `"sum"`, `"frequency"` and `"percentile"`.
+
 ## Bug fixes
 
 - Fixed `annotate = FALSE` in `windRose` where axes and labels were not shown
