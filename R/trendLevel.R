@@ -234,18 +234,13 @@ trendLevel <- function(
   extra.args$ylab <- quickText(extra.args$ylab %||% y, auto.text = auto.text)
   extra.args$main <- quickText(extra.args$main %||% "", auto.text = auto.text) 
   
-  # ###############################
   # number vector handling
-  # ###############################
-  # used for rotate.axis and n.levels
   ls.check.fun <- function(vector, vector.name, len) {
     if (!is.numeric(vector)) {
-      warning(
-        paste0(
-          "\ttrendLevel ignored unrecognised '",
-          vector.name,
-          "' option.",
-          "\n\t[check ?trendLevel for details]"
+      cli::cli_warn(
+        c(
+          "!" = "{.fun trendLevel} ignored unrecognised {.field vector.name} option.",
+          "i" = "See {.fun openair::trendLevel} for more information."
         ),
         call. = FALSE
       )
@@ -260,9 +255,7 @@ trendLevel <- function(
   rotate.axis <- ls.check.fun(rotate.axis, "rotate.axis", 2)
   n.levels <- ls.check.fun(n.levels, "n.levels", 3)
 
-  # #######################
   # statistic handling
-  # #######################
   if (is.character(statistic) || is.function(statistic)) {
     if (is.character(statistic)) {
       # hardcoded statistic options
@@ -297,10 +290,8 @@ trendLevel <- function(
 
       stat.name <- statistic
     } else {
-      # ######################
       # user defined function handling
-      # ######################
-      # default unnameed stats to 'level'
+      # default unnamed stats to 'level'
 
       stat.name <- substitute(statistic)
       if (length(stat.name) != 1) stat.name <- "level"
@@ -314,26 +305,17 @@ trendLevel <- function(
       }
     }
   } else {
-    # ######################
     # early end for bad stats
-    # ######################
-    # unknown stat option
-    stop(
-      paste0(
-        "\ttrendLevel could not apply statistic option '",
-        substitute(statistic),
-        "'.\n\t[suggest valid function or character vector]",
-        "\n\t[currect character vectors options: '",
-        paste(eval(formals(trendLevel)$statistic), collapse = "', '"),
-        "']"
-      ),
-      call. = FALSE
+    cli::cli_abort(
+      c(
+        "x" = "{.fun trendLevel} could not apply given {.field statistic} option.",
+        "i" = "Please provide a valid function or character vector.",
+        "i" = "Valid character vectors: {.emph {eval(formals(trendLevel)$statistic)}}"
+      )
     )
   }
 
-  # ###########################
   # key.header, footer stat.name recovery
-  # ###########################
   if (!is.null(key.header)) {
     if (is.character(key.header)) {
       key.header <- gsub("use.stat.name", stat.name, key.header)
@@ -345,50 +327,35 @@ trendLevel <- function(
     }
   }
 
-  # ##########################
   # checkPrep
-  # ##########################
-  # keep date if about
-  temp <- if ("date" %in% names(mydata)) {
-    c("date", pollutant)
-  } else {
-    pollutant
+  temp <- c(pollutant)
+  if ("date" %in% names(mydata)) {
+    temp <- c("date", pollutant)
   }
 
   # all of x, y, temp need to be handled as type here
   mydata <- checkPrep(mydata, temp, type = c(x, y, type), remove.calm = FALSE)
 
-  # ##########################
   # cutData
-  # ##########################
-  # get pollutant value
-  # NOTE: this can be same as one of x, y, type
-  # so need a temp case
-
-  # different n.levels for axis and type
-  # is.axis applied for x and y
-  newdata <- cutData(mydata, x, n.levels = n.levels[1], is.axis = TRUE, ...)
-  newdata <- cutData(newdata, y, n.levels = n.levels[2], is.axis = TRUE, ...)
-  newdata <- cutData(newdata, type, n.levels = n.levels[3], ...)
+  # different n.levels for axis and type, axes get `is.axis = TRUE`
+  newdata <- 
+    mydata %>%
+    cutData(x, n.levels = n.levels[1], is.axis = TRUE, ...) %>%
+    cutData(y, n.levels = n.levels[2], is.axis = TRUE, ...) %>%
+    cutData(type, n.levels = n.levels[3], ...)
+  
+  # select only pollutant and axis/facet columns
   newdata <- newdata[c(pollutant, x, y, type)]
 
-  # ##########################
   # calculate statistic
-  # ##########################
-
   calc.stat <- function(...) {
     tapply(newdata[[pollutant]], newdata[c(x, y, type)], stat.fun, ...)
   }
-
-  if (is.null(stat.args)) {
-    newdata <- try(calc.stat(), silent = TRUE)
-  } else {
-    newdata <- try(do.call(calc.stat, stat.args), silent = TRUE)
-  }
-
-  # ####################
+  # if null - just turn into an empty list
+  stat.args <- stat.args %||% list()
+  newdata <- try(do.call(calc.stat, stat.args), silent = TRUE)
+  
   # error handling for stat
-  # ####################
   if (is(newdata)[1] == "try-error") {
     stop(
       paste0(
@@ -402,9 +369,7 @@ trendLevel <- function(
     )
   }
 
-  # ############################
   # restructure new data for plot
-  # ############################
   newdata <- data.frame(
     expand.grid(dimnames(newdata)),
     matrix(unlist(newdata), byrow = TRUE)
@@ -412,9 +377,7 @@ trendLevel <- function(
   pollutant <- paste(pollutant, stat.name, sep = ".")
   names(newdata)[ncol(newdata)] <- pollutant
 
-  # ############################
   # plot setup
-  # ############################
   temp <- paste(type, collapse = "+")
   myform <- formula(paste0(pollutant, " ~ ", x, " * ", y, " | ", temp))
 
@@ -474,7 +437,7 @@ trendLevel <- function(
     y = list(rot = rotate.axis[2])
   )
 
-  # categorical colour scale or not? #####################################
+  # categorical colour scale or not?
 
   if (category) {
     # check the breaks and labels are consistent
@@ -569,7 +532,7 @@ trendLevel <- function(
     legend <- makeOpenKeyLegend(key, legend, "polarPlot")
   }
 
-  # #turn off colorkey
+  # turn off colorkey
   colorkey <- FALSE
 
   # stop overlapping labels
@@ -589,10 +552,9 @@ trendLevel <- function(
     ans
   }
 
-  # ############################
   # plot
-  # ############################
-  # note: The following listUpdate steps are used to stop this falling
+
+  # The following listUpdate steps are used to stop this falling
   # over with a lattice error if the user passes any of
   # the locally defined options below as part of call.
   # If they do reset it is obviously Caveat emptor...
@@ -632,19 +594,16 @@ trendLevel <- function(
   levelplot.args <- listUpdate(levelplot.args, extra.args)
   plt <- do.call(levelplot, levelplot.args)
 
-  # ############################
   # update for two levels
-  # ############################
-  # uses iseOuterStrips in latticeExtra
   if (length(type) > 1) {
     plt <- useOuterStrips(plt, strip = strip, strip.left = strip.left)
   }
 
-  # ############################
   # openair output
-  # ############################
-  if (plot) plot(plt)
-
+  if (plot) {
+    plot(plt)
+  }
+  
   output <- list(plot = plt, data = dplyr::tibble(newdata), call = match.call())
   class(output) <- "openair"
   invisible(output)
