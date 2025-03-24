@@ -33,6 +33,8 @@
  
 ## Bug fixes
 
+- Fixed repeated day number in `calendarPlot` when `statistic = max`.
+
 - Fixed `annotate = FALSE` in `windRose` where axes and labels were not shown
 
 - Fixed an issue wherein `importUKAQ()` would drop sites if importing from `local` sites *and* another network.
