@@ -42,15 +42,13 @@ have columns for each pollutant-site combination.}
 \item{...}{Other arguments, currently unused.}
 }
 \description{
-Calculate a range of air pollution-relevant statistics by year.
-}
-\details{
 This function calculates a range of common and air pollution-specific
 statistics from a data frame. The statistics are calculated on an annual
 basis and the input is assumed to be hourly data. The function can cope with
 several sites and years e.g. using \code{type = "site"}. The user can control
 the output by setting \code{transpose} appropriately.
-
+}
+\details{
 Note that the input data is assumed to be in mass units e.g. ug/m3 for all
 species except CO (mg/m3).
 
@@ -107,7 +105,10 @@ can be rounded at several stages during the calculations.
 ## example is for illustrative purposes only
 aqStats(selectByDate(mydata, year = 2004), pollutant = "no2")
 
-
+}
+\seealso{
+\code{\link[=calcAQStats]{calcAQStats()}}, for a more verbose yet flexible way of calculating
+air quality statistics
 }
 \author{
 David Carslaw

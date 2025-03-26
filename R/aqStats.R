@@ -1,7 +1,5 @@
 #' Calculate summary statistics for air pollution data by year
 #'
-#' Calculate a range of air pollution-relevant statistics by year.
-#'
 #' This function calculates a range of common and air pollution-specific
 #' statistics from a data frame. The statistics are calculated on an annual
 #' basis and the input is assumed to be hourly data. The function can cope with
@@ -84,6 +82,9 @@
 #' ## Statistics for 2004. NOTE! these data are in ppb/ppm so the
 #' ## example is for illustrative purposes only
 #' aqStats(selectByDate(mydata, year = 2004), pollutant = "no2")
+#'
+#' @seealso [calcAQStats()], for a more verbose yet flexible way of calculating
+#'   air quality statistics
 #'
 #'
 aqStats <- function(mydata,
