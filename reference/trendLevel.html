@@ -159,7 +159,6 @@ modification.</p></dd>
 
 <dt id="arg-key-header-key-footer">key.header, key.footer<a class="anchor" aria-label="anchor" href="#arg-key-header-key-footer"></a></dt>
 <dd><p>Adds additional text labels above and/or below
-&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
 the scale key, respectively. For example, passing the options <code>key.header = "", key.footer = c("mean","nox")</code> adds the addition text as a scale footer.
 If enabled (<code>auto.text = TRUE</code>), these arguments are passed to the scale
 key (<code><a href="drawOpenKey.html">drawOpenKey()</a></code>) via <code><a href="quickText.html">quickText()</a></code> to handle formatting. The term
@@ -167,24 +166,92 @@ key (<code><a href="drawOpenKey.html">drawOpenKey()</a></code>) via <code><a hre
 and automatically adds statistic function names or defaults to <code>"level"</code>
 when unnamed functions are requested via <code>statistic</code>.</p></dd>
 
-</dl><p>=======
-the scale key, respectively. For example, passing the options
-<code>key.header = "", key.footer = c("mean","nox")</code> adds the addition text
-as a scale footer. If enabled (<code>auto.text = TRUE</code>), these arguments
-are passed to the scale key (<code>drawOpenKey</code>) via <code>quickText</code> to
-handle formatting. The term <code>"get.stat.name"</code>, used as the default
-<code>key.header</code> setting, is reserved and automatically adds statistic
-function names or defaults to <code>"level"</code> when unnamed functions are
-requested via <code>statistic</code>.</p>
-    </div>
+
+<dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
+<dd><p>Location where the scale key should be plotted. Allowed
+arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>, and <code>"left"</code>.</p></dd>
+
+
+<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
+<dd><p>Fine control of the scale key via <code><a href="drawOpenKey.html">drawOpenKey()</a></code>.</p></dd>
+
+
+<dt id="arg-breaks-labels">breaks, labels<a class="anchor" aria-label="anchor" href="#arg-breaks-labels"></a></dt>
+<dd><p>If a categorical colour scale is required then <code>breaks</code>
+should be specified. These should be provided as a numeric vector, e.g.,
+<code>breaks = c(0, 50, 100, 1000)</code>. Users should set the maximum value of
+<code>breaks</code> to exceed the maximum data value to ensure it is within the
+maximum final range, e.g., 100–1000 in this case. Labels will
+automatically be generated, but can be customised by passing a character
+vector to <code>labels</code>, e.g., <code>labels = c("good", "bad", "very bad")</code>. In this
+example, <code>0 - 50</code> will be <code>"good"</code> and so on. Note there is one less label
+than break.</p></dd>
+
+
+<dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
+<dd><p>The statistic to apply when aggregating the data; default is
+the mean. Can be one of <code>"mean"</code>, <code>"max"</code>, <code>"min"</code>, <code>"median"</code>,
+<code>"frequency"</code>, <code>"sum"</code>, <code>"sd"</code>, <code>"percentile"</code>. Note that <code>"sd"</code> is the
+standard deviation, <code>"frequency"</code> is the number (frequency) of valid
+records in the period and <code>"data.cap"</code> is the percentage data capture.
+<code>"percentile"</code> is the percentile level (%) between 0-100, which can be set
+using the <code>"percentile"</code> option. Functions can also be sent directly via
+<code>statistic</code>; see 'Details' for more information.</p></dd>
+
+
+<dt id="arg-percentile">percentile<a class="anchor" aria-label="anchor" href="#arg-percentile"></a></dt>
+<dd><p>The percentile level used when <code>statistic = "percentile"</code>.
+The default is 95%.</p></dd>
+
+
+<dt id="arg-stat-args">stat.args<a class="anchor" aria-label="anchor" href="#arg-stat-args"></a></dt>
+<dd><p>Additional options to be used with <code>statistic</code> if this is a
+function. The extra options should be supplied as a list of named
+parameters; see 'Details' for more information.</p></dd>
+
+
+<dt id="arg-stat-safe-mode">stat.safe.mode<a class="anchor" aria-label="anchor" href="#arg-stat-safe-mode"></a></dt>
+<dd><p>An addition protection applied when using functions
+directly with <code>statistic</code> that most users can ignore. This option returns
+<code>NA</code> instead of running <code>statistic</code> on binned sub samples that are empty.
+Many common functions terminate with an error message when applied to an
+empty dataset. So, this option provides a mechanism to work with such
+functions. For a very few cases, e.g., for a function that counted missing
+entries, it might need to be set to <code>FALSE</code>; see 'Details' for more
+information.</p></dd>
+
+
+<dt id="arg-drop-unused-types">drop.unused.types<a class="anchor" aria-label="anchor" href="#arg-drop-unused-types"></a></dt>
+<dd><p>Hide unused/empty <code>type</code> conditioning cases. Some
+conditioning options may generate empty cases for some data sets, e.g. a
+hour of the day when no measurements were taken. Empty <code>x</code> and <code>y</code> cases
+generate 'holes' in individual plots. However, empty <code>type</code> cases would
+produce blank panels if plotted. Therefore, the default, <code>TRUE</code>, excludes
+these empty panels from the plot. The alternative <code>FALSE</code> plots all <code>type</code>
+panels.</p></dd>
+
+
+<dt id="arg-col-na">col.na<a class="anchor" aria-label="anchor" href="#arg-col-na"></a></dt>
+<dd><p>Colour to be used to show missing data.</p></dd>
+
+
+<dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
+<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
+data to extract plot components and plotting them in other ways.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Addition options are passed on to <code><a href="cutData.html">cutData()</a></code> for <code>type</code> handling
+and <code><a href="https://rdrr.io/pkg/lattice/man/levelplot.html" class="external-link">lattice::levelplot()</a></code> for finer control of the plot itself.</p></dd>
+
+</dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>an <a href="openair-package.html">openair</a> object.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
-<code>trendLevel()</code> allows the use of third party summarising functions via the
+    <p><code>trendLevel()</code> allows the use of third party summarising functions via the
 <code>statistic</code> option. Any additional function arguments not included within a
 function called using <code>statistic</code> should be supplied as a list of named
 parameters and sent using <code>stat.args</code>. For example, the encoded option
@@ -199,18 +266,7 @@ by <code>trendLevel()</code>. All other returned information will be ignored wit
 warning. If the function terminates with an error when it is sent an empty
 data series, the option <code>stat.safe.mode</code> should not be set to <code>FALSE</code> or
 <code>trendLevel()</code> may fail. Note: The <code>stat.safe.mode = TRUE</code> option returns an
-NA without warning for empty data series.
-=======
-<code>trendLevel</code> allows the use of third party summarising functions via the
-<code>statistic</code> option. Any additional function arguments not included
-within a function called using <code>statistic</code> should be supplied as a list
-of named parameters and sent using <code>stat.args</code>. For example, the encoded
-option <code>statistic = "mean"</code> is equivalent to <code>statistic = mean, stat.args = list(na.rm = TRUE)</code> or the R command <code>mean(x, na.rm= TRUE)</code>.
-Many R functions and user's own code could be applied in a similar fashion,
-subject to the following restrictions: the first argument sent to the
-function must be the data series to be analysed; the name <code>x' cannot be used for any of the extra options supplied in </code>stat.args<code>; and the function should return the required answer as a numeric or </code>NA<code>. Note: If the supplied function returns more than one answer, currently only the first of these is retained and used by </code>trendLevel<code>. All other returned information will be ignored without warning. If the function terminates with an error when it is sent an empty data series, the option </code>stat.safe.mode<code>should not be set to</code>FALSE<code>or</code>trendLevel<code>may fail. Note: The</code>stat.safe.mode = TRUE` option returns an NA without
-warning for empty data series.
-&gt;&gt;&gt;&gt;&gt;&gt;&gt; openair-project/master</p>
+NA without warning for empty data series.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
