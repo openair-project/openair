@@ -120,39 +120,46 @@ available.</p></dd>
 <dd><p>Arguments passed on to <code><a href="cutData.html">cutData</a></code></p><dl><dt><code>x</code></dt>
 <dd><p>A data frame containing a field <code>date</code>.</p></dd>
 
+    <dt><code>names</code></dt>
+<dd><p>By default, the columns created by <code><a href="cutData.html">cutData()</a></code> are named after
+their <code>type</code> option. Specifying <code>names</code> defines other names for the columns,
+which map onto the <code>type</code> options in the same order they are given. The
+length of <code>names</code> should therefore be equal to the length of <code>type</code>.</p></dd>
+
+    <dt><code>suffix</code></dt>
+<dd><p>If <code>name</code> is not specified, <code>suffix</code> will be appended to any
+added columns that would otherwise overwrite existing columns. For example,
+<code>cutData(mydata, "nox", suffix = "_cuts")</code> would append a <code>nox_cuts</code> column
+rather than overwriting <code>nox</code>.</p></dd>
+
     <dt><code>hemisphere</code></dt>
-<dd><p>Can be <code>"northern"</code> or <code>"southern"</code>, used to
-split data into seasons.</p></dd>
+<dd><p>Can be <code>"northern"</code> or <code>"southern"</code>, used to split data
+into seasons.</p></dd>
 
     <dt><code>n.levels</code></dt>
 <dd><p>Number of quantiles to split numeric data into.</p></dd>
 
     <dt><code>start.day</code></dt>
-<dd><p>What day of the week should the <code>type = "weekday"</code>
-start on?  The user can change the start day by supplying an integer
-between 0 and 6. Sunday = 0, Monday = 1, ... For example to start the
-weekday plots on a Saturday, choose <code>start.day = 6</code>.</p></dd>
+<dd><p>What day of the week should the <code>type = "weekday"</code> start on?
+The user can change the start day by supplying an integer between 0 and 6.
+Sunday = 0, Monday = 1, ... For example to start the weekday plots on a
+Saturday, choose <code>start.day = 6</code>.</p></dd>
 
     <dt><code>is.axis</code></dt>
-<dd><p>A logical (<code>TRUE</code>/<code>FALSE</code>), used to request
-shortened cut labels for axes.</p></dd>
+<dd><p>A logical (<code>TRUE</code>/<code>FALSE</code>), used to request shortened cut
+labels for axes.</p></dd>
 
     <dt><code>local.tz</code></dt>
 <dd><p>Used for identifying whether a date has daylight savings time
 (DST) applied or not. Examples include <code>local.tz = "Europe/London"</code>,
-<code>local.tz = "America/New_York"</code> i.e. time zones that assume DST.
+<code>local.tz = "America/New_York"</code>, i.e., time zones that assume DST.
 <a href="https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones" class="external-link">https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones</a> shows time
 zones that should be valid for most systems. It is important that the
-original data are in GMT (UTC) or a fixed offset from GMT. See
-<code>import</code> and the openair manual for information on how to import data
-and ensure no DST is applied.</p></dd>
+original data are in GMT (UTC) or a fixed offset from GMT.</p></dd>
 
-    <dt><code>latitude</code></dt>
-<dd><p>The decimal latitude used in <code>type = "daylight"</code>.</p></dd>
-
-    <dt><code>longitude</code></dt>
-<dd><p>The decimal longitude. Note that locations west of Greenwich
-are negative.</p></dd>
+    <dt><code>latitude,longitude</code></dt>
+<dd><p>The decimal latitude and longitudes used when <code>type = "daylight"</code>. Note that locations west of Greenwich have negative
+longitudes.</p></dd>
 
 
 </dl></dd>
