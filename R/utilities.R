@@ -137,34 +137,12 @@ date.pad <- function(mydata, type = NULL, print.int = FALSE) {
 
   mydata
 }
-#############################################################################################
 
-
-## unitility function to convert decimal date to POSIXct
-decimalDate <- function(x, date = "date") {
-  thedata <- x
-  x <- x[, date]
-  x.year <- floor(x)
-  ## fraction of the year
-  x.frac <- x - x.year
-  ## number of seconds in each year
-  x.sec.yr <- unclass(ISOdate(x.year + 1, 1, 1, 0, 0, 0)) - unclass(ISOdate(x.year, 1, 1, 0, 0, 0))
-  ## now get the actual time
-  x.actual <- ISOdate(x.year, 1, 1, 0, 0, 0) + x.frac * x.sec.yr
-  x.actual <- as.POSIXct(trunc(x.actual, "hours"), "GMT")
-  thedata$date <- x.actual
-  thedata
-}
 
 convert.date <- function(mydata, format = "%d/%m/%Y %H:%M") {
   mydata$date <- as.POSIXct(strptime(mydata$date, format = format), "GMT")
   mydata
 }
-
-#############################################################################################
-
-## function to make it easy to use d/m/y format for subsetting by date
-
 
 #' Subset a data frame based on date
 #'
