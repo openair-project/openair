@@ -77,35 +77,42 @@
 #' # Statistics for 2004. NOTE! these data are in ppb/ppm so the
 #' # example is for illustrative purposes only
 #' aqStats(selectByDate(mydata, year = 2004), pollutant = "no2")
-aqStats <- function(mydata,
-                    pollutant = "no2",
-                    type = "default",
-                    data.thresh = 0,
-                    percentile = c(95, 99),
-                    transpose = FALSE,
-                    progress = TRUE,
-                    ...) {
+aqStats <- function(
+  mydata,
+  pollutant = "no2",
+  type = "default",
+  data.thresh = 0,
+  percentile = c(95, 99),
+  transpose = FALSE,
+  progress = TRUE,
+  ...
+) {
   # variables we need
   vars <- c("date", pollutant, type)
-  
+
   # cut data by type
   mydata <- cutData(mydata, type)
-  
+
   # check we have the variables
-  mydata <- checkPrep(mydata,
-                      vars,
-                      "default",
-                      remove.calm = FALSE,
-                      strip.white = FALSE)
-  
+  mydata <- checkPrep(
+    mydata,
+    vars,
+    "default",
+    remove.calm = FALSE,
+    strip.white = FALSE
+  )
+
   # reorganise data
   mydata <-
     mydata %>%
-    tidyr::pivot_longer(cols = dplyr::all_of(pollutant), names_to = "pollutant") %>%
+    tidyr::pivot_longer(
+      cols = dplyr::all_of(pollutant),
+      names_to = "pollutant"
+    ) %>%
     mutate(year = lubridate::year(date))
-  
+
   vars <- c(type, "pollutant", "year")
-  
+
   # calculate the statistics
   results <-
     purrr::map(
@@ -127,24 +134,24 @@ aqStats <- function(mydata,
     ) %>%
     dplyr::bind_rows() %>%
     dplyr::relocate(dplyr::all_of(vars))
-  
+
   # transpose if requested
   if (transpose) {
     unite_vars <- c(type, "pollutant")
     if (type == "default") {
       unite_vars <- c("pollutant")
     }
-    
+
     results <-
       results %>%
-      tidyr::pivot_longer(-c(vars, date)) %>% 
-      tidyr::unite(site_pol, dplyr::all_of(unite_vars)) %>% 
+      tidyr::pivot_longer(-c(vars, date)) %>%
+      tidyr::unite(site_pol, dplyr::all_of(unite_vars)) %>%
       tidyr::pivot_wider(names_from = "site_pol") %>%
       dplyr::rename_with(function(x) {
         gsub("_", " ", x)
       })
   }
-  
+
   # return
   return(results)
 }
@@ -154,27 +161,30 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
   # check to see if dates duplicate
   if (length(unique(mydata$date)) != length(mydata$date)) {
     cli::cli_warn(
-      c("!" = 'Duplicate dates detected per {.field type}.', "i" = 'Is there more than one site? Use {.code {.field type} = "site"}.'),
+      c(
+        "!" = 'Duplicate dates detected per {.field type}.',
+        "i" = 'Is there more than one site? Use {.code {.field type} = "site"}.'
+      ),
       call = NULL
     )
   }
-  
+
   # fill any missing hours
   start.date <- lubridate::floor_date(min(mydata$date), "year")
   end.date <- lubridate::ceiling_date(max(mydata$date), "year") - 3600
-  
+
   # find time interval of data and pad any missing times
   interval <- find.time.interval(mydata$date)
   all.dates <-
     data.frame(date = seq(start.date, end.date, by = interval))
-  
+
   # pad out names where needed
   if (nrow(mydata) != nrow(all.dates)) {
     mydata <- dplyr::full_join(mydata, all.dates, by = "date")
     mydata[setdiff(names(mydata), c("date", "value"))] <-
       mydata[1, setdiff(names(mydata), c("date", "value"))]
   }
-  
+
   # convenience function for basic statistics
   timeAverageYear <- function(mydata, stat, newname = stat) {
     df <-
@@ -185,16 +195,16 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
         data.thresh = data.thresh,
         print.int = FALSE
       )
-    
+
     names(df)[names(df) == "value"] <- newname
-    
+
     return(df)
   }
-  
+
   # convenience function for rolled maxes
   maxRollTimeAverage <- function(mydata, width, newname, ...) {
     purrr::map(
-      .x = split(mydata, ~ year),
+      .x = split(mydata, ~year),
       .f = function(x) {
         rlang::exec(
           rollingMean,
@@ -212,7 +222,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
     ) %>%
       dplyr::bind_rows()
   }
-  
+
   # simple stats
   Mean <- timeAverageYear(mydata, "mean")
   Min <- timeAverageYear(mydata, "min")
@@ -222,7 +232,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
     maxRollTimeAverage(mydata, width = 8L, newname = "roll_8_max", ...)
   rollMax24 <-
     maxRollTimeAverage(mydata, width = 24L, newname = "roll_24_max", ...)
-  
+
   # maximum daily mean
   maxDaily <- timeAverage(
     mydata,
@@ -232,7 +242,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
     print.int = FALSE
   ) %>%
     timeAverageYear("max", "max_daily")
-  
+
   # data capture
   dataCapture <-
     dplyr::summarise(
@@ -241,11 +251,11 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       dat.cap = 100 * mean(!is.na(.data$value)),
       .by = .data$year
     )
-  
+
   # percentiles
   Percentile <-
     purrr::imap(
-      .x = split(mydata, ~ year),
+      .x = split(mydata, ~year),
       .f = function(x, i) {
         calcPercentile(
           x,
@@ -258,26 +268,28 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       }
     ) %>%
     dplyr::bind_rows()
-  
+
   # Tables list to merge
-  tables <- list(dataCapture,
-                 Mean,
-                 Min,
-                 Max,
-                 Median,
-                 maxDaily,
-                 rollMax8,
-                 rollMax24,
-                 Percentile)
-  
+  tables <- list(
+    dataCapture,
+    Mean,
+    Min,
+    Max,
+    Median,
+    maxDaily,
+    rollMax8,
+    rollMax24,
+    Percentile
+  )
+
   # specific treatment of pollutants
-  
+
   # Ozone
   if (grepl("o3", mydata$pollutant[1], ignore.case = TRUE)) {
     # ozone greater than 100
     rollingO3 <-
       purrr::imap(
-        .x = split(mydata, ~ year),
+        .x = split(mydata, ~year),
         .f = function(x, i) {
           rlang::exec(
             rollingMean,
@@ -297,15 +309,15 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
               roll.8.O3.gt.100 = sum(.data$rolling8value > 100, na.rm = TRUE),
               roll.8.O3.gt.120 = sum(.data$rolling8value > 120, na.rm = TRUE)
             ) %>%
-            dplyr::mutate(year =  as.numeric(i))
+            dplyr::mutate(year = as.numeric(i))
         }
       ) %>%
       dplyr::bind_rows() %>%
       dplyr::mutate(date = Mean$date)
-    
+
     aot40 <-
       purrr::imap(
-        .x = split(mydata, ~ year),
+        .x = split(mydata, ~year),
         .f = function(x, i) {
           rlang::exec(
             AOT40,
@@ -315,26 +327,28 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
               ...
             )
           ) %>%
-            dplyr::mutate(year =  as.numeric(i))
+            dplyr::mutate(year = as.numeric(i))
         }
       ) %>%
       dplyr::bind_rows() %>%
       dplyr::mutate(date = Mean$date)
-    
+
     tables <- append(tables, list(rollingO3, aot40))
   }
-  
+
   # Nitrogen Dioxide
   if (grepl("no2", mydata$pollutant[1], ignore.case = TRUE)) {
     hours <-
-      dplyr::summarise(mydata,
-                       hours = sum(.data$value > 200, na.rm = TRUE),
-                       .by = .data$year) %>%
+      dplyr::summarise(
+        mydata,
+        hours = sum(.data$value > 200, na.rm = TRUE),
+        .by = .data$year
+      ) %>%
       dplyr::mutate(date = Mean$date)
-    
+
     tables <- append(tables, list(hours))
   }
-  
+
   # Particulate Matter
   if (length(grep("pm10", mydata$pollutant[1], ignore.case = TRUE)) == 1) {
     days <-
@@ -347,10 +361,10 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       ) %>%
       dplyr::summarise(days = sum(.data$value > 50, na.rm = TRUE)) %>%
       dplyr::mutate(date = Mean$date, year = mydata$year[1])
-    
+
     tables <- append(tables, list(days))
   }
-  
+
   # Combine
   purrr::reduce(
     .x = tables,
@@ -363,7 +377,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
 AOT40 <- function(mydata, pollutant, ...) {
   ## note the assumption is the O3 is in ug/m3
   daylight <- NULL
-  
+
   ## need daylight hours in growing season (April to September)
   mydata <- selectByDate(mydata, month = 4:9)
   mydata <- cutData(mydata, "daylight", ...)

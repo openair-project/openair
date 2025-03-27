@@ -698,10 +698,7 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
         col = 2
       )
     }
-  } #####################
-  # left scale
-  # size checks text see sac struff
-  # positions
+  } # positions # size checks text see sac struff # left scale #####################
   # adds ticks and borders if requested
   #####################
   else if (key$space == "left") {
@@ -898,10 +895,7 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
         col = 2
       )
     }
-  } #####################
-  # top scale
-  # positions
-  # adds ticks and borders if requested
+  } # adds ticks and borders if requested # positions # top scale #####################
   #####################
   else if (key$space == "top") {
     f.text <- f.text[as.character(f.text) != ""]
@@ -1087,10 +1081,7 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     key.gf <- placeGrob(key.gf, labelsGrob, row = 3, col = 2)
     key.gf <- placeGrob(key.gf, keyGrob, row = 2, col = 2)
     key.gf <- placeGrob(key.gf, keyGrob2, row = 1, col = 2)
-  } #####################
-  # bottom scale
-  # positions
-  # adds ticks and borders if requested
+  } # adds ticks and borders if requested # positions # bottom scale #####################
   #####################
   else if (key$space == "bottom") {
     f.text <- f.text[as.character(f.text) != ""]
