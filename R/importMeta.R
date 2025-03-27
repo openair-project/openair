@@ -18,18 +18,35 @@
 #'
 #' - `"ni"`,  The [Northern Ireland Air Quality Network](https://www.airqualityni.co.uk/).
 #'
-#' - `"local"`,  Locally managed air quality networks in England.
-#'
+#' - `"local"`,  [Locally managed](https://uk-air.defra.gov.uk/networks/network-info?view=nondefraaqmon) air quality networks in England.
 #' - `"imperial"`,  Imperial College London (formerly King's College London) networks.
-#'
 #' - `"europe"`,  Hourly European data (Air Quality e-Reporting) based on a
 #' simplified version of the `{saqgetr}` package.
 #'
 #' By default, the function will return the site latitude, longitude and site
 #' type. If the option `all = TRUE` is used, much more detailed information is
-#' returned. For most networks, this detailed information includes per-pollutant
-#' summaries, opening and closing dates of sites etc.
+#' returned. The following metadata columns are available in the complete dataset:
 #'
+#' - **source**: The network with which the site is associated. Note that some monitoring sites are part of multiple networks (e.g., the AURN & SAQN) so the same site may feature twice under different sources.
+#'
+#' - **code**: The site code, used to import data from specific sites of interest.
+#'
+#' - **site**: The site name, which is more human-readable than the site code.
+#'
+#' - **site_type**: A description of the site environment. Read more at <https://uk-air.defra.gov.uk/networks/site-types>.
+#'
+#' - **latitude** and **longitude**: The coordinates of the monitoring station, using the World Geodetic System (<https://epsg.io/4326>).
+#'
+#' - **start_date** and **end_date**: The opening and closing dates of the monitoring station. If `by_pollutant = TRUE`, these dates are instead the first and last dates at which specific pollutants were measured. A missing value, `NA`, indicates that monitoring is ongoing.
+#'
+#' - **ratified_to**: The date to which data has been ratified (i.e., 'quality checked'). Data after this date is subject to change.
+#'
+#' - **zone** and **agglomeration**: The UK is divided into agglomeration zones (large urban areas) and non-agglomeration zones for air quality assessment, which are given in these columns.
+#'
+#' - **local_authority**: The local authority in which the monitoring station is found.
+#'
+#' - **provider** and **code**: The specific provider of the locally managed dataset (e.g., `"londonair"`).
+#' 
 #' Thanks go to Trevor Davies (Ricardo), Dr Stuart Grange (EMPA) and Dr Ben
 #' Barratt (KCL) and  for making these data available.
 #' @param source One or more air quality networks for which data is available

@@ -12,6 +12,7 @@ importUKAQ(
   pollutant = "all",
   hc = FALSE,
   meta = FALSE,
+  meta_columns = c("site_type", "latitude", "longitude"),
   meteo = TRUE,
   ratified = FALSE,
   to_narrow = FALSE,
@@ -31,8 +32,8 @@ codes can be upper or lower case.}
 
 \item{source}{The network to which the \code{site}(s) belong. The default, \code{NULL},
 allows \code{\link[=importUKAQ]{importUKAQ()}} to guess the correct \code{source}, preferring national
-networks over locally managed networks. Alternatively, users can define a \code{source}.
-Providing a single network will attempt to import all of the
+networks over locally managed networks. Alternatively, users can define a
+\code{source}. Providing a single network will attempt to import all of the
 given \code{site}s from the provided network. Alternatively, a vector of sources
 can be provided of the same length as \code{site} to indicate which network each
 \code{site} individually belongs. Available networks include:
@@ -68,16 +69,22 @@ from a site. To import only NOx and NO2 for example use \code{pollutant =
 \item{hc}{Include hydrocarbon measurements in the imported data? Defaults to
 \code{FALSE} as most users will not be interested in using hydrocarbon data.}
 
-\item{meta}{Append the site type, latitude and longitude of each selected
-\code{site}? Defaults to \code{FALSE}.}
+\item{meta}{Append metadata columns to data for each selected \code{site}?
+Defaults to \code{FALSE}. Columns are defined using \code{meta_columns}.}
+
+\item{meta_columns}{The specific columns to append when \code{meta = TRUE}.
+Defaults to site type, latitude and longitude. Can be any of \code{"site_type"},
+\code{"latitude"}, \code{"longitude"}, \code{"zone"}, \code{"agglomeration"}, and
+\code{"local_authority"} (as well as \code{"provider"} for locally managed data). See
+\code{\link[=importMeta]{importMeta()}} for more complete information.}
 
 \item{meteo}{Append modelled meteorological data, if available? Defaults to
 \code{TRUE}, which will return wind speed (\code{ws}), wind direction (\code{wd}) and
 ambient temperature (\code{air_temp}). The variables are calculated from using
 the WRF model run by Ricardo Energy & Environment and are available for
 most but not all networks. Setting \code{meteo = FALSE} is useful if you have
-other meteorological data to use in preference, for example from
-the \code{worldmet} package.}
+other meteorological data to use in preference, for example from the
+\code{worldmet} package.}
 
 \item{ratified}{Append \code{qc} column(s) to hourly data indicating whether each
 species was ratified (i.e., quality-checked)?  Defaults to \code{FALSE}.}
