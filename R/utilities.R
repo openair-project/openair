@@ -1,40 +1,53 @@
-## TODO: Add comment
-#
-## Author: David Carslaw
-## useful utility functions
-## with some updates and modification by Karl Ropkins
-###############################################################################
+startYear <- function(dat) {
+  as.numeric(format(min(dat[order(dat)]), "%Y"))
+}
+endYear <- function(dat) {
+  as.numeric(format(max(dat[order(dat)]), "%Y"))
+}
+startMonth <- function(dat) {
+  as.numeric(format(min(dat[order(dat)]), "%m"))
+}
+endMonth <- function(dat) {
+  as.numeric(format(max(dat[order(dat)]), "%m"))
+}
 
-startYear <- function(dat) as.numeric(format(min(dat[order(dat)]), "%Y"))
-endYear <- function(dat) as.numeric(format(max(dat[order(dat)]), "%Y"))
-startMonth <- function(dat) as.numeric(format(min(dat[order(dat)]), "%m"))
-endMonth <- function(dat) as.numeric(format(max(dat[order(dat)]), "%m"))
-
-## these are pre-defined type that need a field "date"; used by cutData
+# these are pre-defined type that need a field "date"; used by cutData
 dateTypes <- c(
-  "year", "hour", "month", "season", "weekday", "weekend",
-  "monthyear", "gmtbst", "bstgmt", "dst", "daylight", "week",
-  "seasonyear", "yearseason"
+  "year",
+  "hour",
+  "month",
+  "season",
+  "weekday",
+  "weekend",
+  "monthyear",
+  "gmtbst",
+  "bstgmt",
+  "dst",
+  "daylight",
+  "week",
+  "seasonyear",
+  "yearseason"
 )
 
-###############################################################################
-
-## function to find averaging period of data, returns "xx sec"
-## for use in filling in gaps in time series data
-## it finds the table of values of time gaps and picks the biggest
-## can't think of better way unless user specifies what the time interval is meant to be
+# function to find averaging period of data, returns "xx sec"
+# for use in filling in gaps in time series data
+# it finds the table of values of time gaps and picks the biggest
+# can't think of better way unless user specifies what the time interval is meant to be
 
 find.time.interval <- function(dates) {
-
-  ## could have several sites, dates may be unordered
-  ## find the most common time gap in all the data
-  dates <- unique(dates) ## make sure they are unique
+  # could have several sites, dates may be unordered
+  # find the most common time gap in all the data
+  dates <- unique(dates) # make sure they are unique
 
   # work out the most common time gap of unique, ordered dates
-  id <- which.max(table(diff(as.numeric(unique(dates[order(dates)])))))
+  id <- which.max(table(diff(as.numeric(unique(
+    dates[order(dates)]
+  )))))
   seconds <- as.numeric(names(id))
 
-  if ("POSIXt" %in% class(dates)) seconds <- paste(seconds, "sec")
+  if ("POSIXt" %in% class(dates)) {
+    seconds <- paste(seconds, "sec")
+  }
 
   if (class(dates)[1] == "Date") {
     seconds <- seconds * 3600 * 24
@@ -45,9 +58,7 @@ find.time.interval <- function(dates) {
 }
 
 
-
 date.pad2 <- function(mydata, type = NULL, interval = "month") {
-
   # assume by the time we get here the data have been split into types
   # This means we just need to pad out the missing types based on first
   # line.
@@ -56,8 +67,12 @@ date.pad2 <- function(mydata, type = NULL, interval = "month") {
   end.date <- max(mydata$date, na.rm = TRUE)
 
   # interval is in seconds, so convert to days if Date class and not POSIXct
-  if (class(mydata$date)[1] == "Date")
-    interval <- paste(as.numeric(strsplit(interval, " ")[[1]][1]) / 3600 / 24, "days")
+  if (class(mydata$date)[1] == "Date") {
+    interval <- paste(
+      as.numeric(strsplit(interval, " ")[[1]][1]) / 3600 / 24,
+      "days"
+    )
+  }
 
   all.dates <- data.frame(date = seq(start.date, end.date, by = interval))
   mydata <- mydata %>% full_join(all.dates, by = "date")
@@ -74,49 +89,55 @@ date.pad2 <- function(mydata, type = NULL, interval = "month") {
 }
 
 
-## #################################################################
 # Function to pad out missing time data
 # assumes data have already been split by type, so just take first
 # tries to work out time interval of input based on most common gap
 # can print assumed gap to screen
 
 date.pad <- function(mydata, type = NULL, print.int = FALSE) {
-
   # if one line, just return
-  if (nrow(mydata) < 2) return(mydata)
+  if (nrow(mydata) < 2) {
+    return(mydata)
+  }
 
-  ## time zone of data
+  # time zone of data
   TZ <- attr(mydata$date, "tzone")
-  if (is.null(TZ)) TZ <- "GMT" ## as it is on Windows for BST
+  if (is.null(TZ)) {
+    TZ <- "GMT"
+  } # as it is on Windows for BST
 
-  ## function to fill missing data gaps
-  ## assume no missing data to begin with
+  # function to fill missing data gaps
+  # assume no missing data to begin with
 
-
-  ## pad out missing data
+  # pad out missing data
   start.date <- min(mydata$date, na.rm = TRUE)
   end.date <- max(mydata$date, na.rm = TRUE)
 
-  ## interval in seconds
+  # interval in seconds
   interval <- find.time.interval(mydata$date)
 
-  ## equivalent number of days, used to refine interval for month/year
+  # equivalent number of days, used to refine interval for month/year
   days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) /
-    24 / 3600
+    24 /
+    3600
 
-  ## find time interval of data
+  # find time interval of data
   if (class(mydata$date)[1] == "Date") {
     interval <- paste(days, "day")
   } else {
-    ## this will be in seconds
+    # this will be in seconds
     interval <- find.time.interval(mydata$date)
   }
 
-  ## better interval, most common interval in a year
-  if (days == 31) interval <- "month"
-  if (days %in% c(365, 366)) interval <- "year"
+  # better interval, most common interval in a year
+  if (days == 31) {
+    interval <- "month"
+  }
+  if (days %in% c(365, 366)) {
+    interval <- "year"
+  }
 
-  ## only pad if there are missing data
+  # only pad if there are missing data
   if (length(unique(diff(mydata$date))) != 1L) {
     all.dates <- data.frame(date = seq(start.date, end.date, by = interval))
     mydata <- mydata %>% full_join(all.dates, by = "date")
@@ -127,20 +148,16 @@ date.pad <- function(mydata, type = NULL, print.int = FALSE) {
     }
   }
 
-  ## return the same TZ that we started with
+  # return the same TZ that we started with
   attr(mydata$date, "tzone") <- TZ
 
-  if (print.int) message("Input data time interval assumed is ", interval)
+  if (print.int) {
+    message("Input data time interval assumed is ", interval)
+  }
 
   # make sure date-sorted
   mydata <- arrange(mydata, date)
 
-  mydata
-}
-
-
-convert.date <- function(mydata, format = "%d/%m/%Y %H:%M") {
-  mydata$date <- as.POSIXct(strptime(mydata$date, format = format), "GMT")
   mydata
 }
 
@@ -186,7 +203,7 @@ convert.date <- function(mydata, format = "%d/%m/%Y %H:%M") {
 #' @author David Carslaw
 #' @examples
 #'
-#' ## select all of 1999
+#' # select all of 1999
 #' data.1999 <- selectByDate(mydata, start = "1/1/1999", end = "31/12/1999")
 #' head(data.1999)
 #' tail(data.1999)
@@ -202,48 +219,51 @@ convert.date <- function(mydata, format = "%d/%m/%Y %H:%M") {
 #' sub.data <- selectByDate(mydata, day = "weekday", hour = 7:19)
 #'
 #' # select weekends between the hours of 7 am to 7 pm in winter (Dec, Jan, Feb)
-#' sub.data <- selectByDate(mydata, day = "weekend", hour = 7:19, month =
-#' c("dec", "jan", "feb"))
+#' sub.data <- selectByDate(mydata,
+#'   day = "weekend", hour = 7:19, month =
+#'     c("dec", "jan", "feb")
+#' )
 #'
-selectByDate <- function(mydata, start = "1/1/2008",
-                         end = "31/12/2008", year = 2008,
-                         month = 1, day = "weekday", hour = 1) {
-  ## extract variables of interest
+selectByDate <- function(
+  mydata,
+  start = "1/1/2008",
+  end = "31/12/2008",
+  year = 2008,
+  month = 1,
+  day = "weekday",
+  hour = 1
+) {
+  # extract variables of interest
   vars <- names(mydata)
 
-  ## check data - mostly date format
+  # check data - mostly date format
   mydata <- checkPrep(
-    mydata, vars, "default",
+    mydata,
+    vars,
+    "default",
     remove.calm = FALSE,
     strip.white = FALSE
   )
 
   weekday.names <- format(ISOdate(2000, 1, 3:9), "%A")
 
-
   if (!missing(start)) {
-
-
-    ## assume R date format
+    # assume R date format
     start <- as_date(parse_date_time(start, c("ymd", "dmy")))
 
     mydata <- subset(mydata, as_date(date) >= start)
   }
 
   if (!missing(end)) {
-
-
-    ## assume R date format
-    end <-as_date(parse_date_time(end, c("ymd", "dmy")))
+    # assume R date format
+    end <- as_date(parse_date_time(end, c("ymd", "dmy")))
 
     mydata <- subset(mydata, as_date(date) <= end)
   }
 
-
   if (!missing(year)) {
     mydata <- mydata[which(year(mydata$date) %in% year), ]
   }
-
 
   if (!missing(month)) {
     if (is.numeric(month)) {
@@ -252,17 +272,18 @@ selectByDate <- function(mydata, start = "1/1/2008",
       }
 
       mydata <- mydata[which(month(mydata$date) %in% month), ]
-    }
-
-    else {
-      mydata <- subset(mydata, substr(tolower(format(
-        date,
-        "%B"
-      )), 1, 3) %in% substr(tolower(month), 1, 3))
+    } else {
+      mydata <- subset(
+        mydata,
+        substr(tolower(format(date, "%B")), 1, 3) %in%
+          substr(tolower(month), 1, 3)
+      )
     }
   }
   if (!missing(hour)) {
-    if (any(hour < 0 | hour > 23)) stop("Hour must be between 0 to 23.")
+    if (any(hour < 0 | hour > 23)) {
+      stop("Hour must be between 0 to 23.")
+    }
 
     mydata <- mydata[which(hour(mydata$date) %in% hour), ]
   }
@@ -282,20 +303,35 @@ selectByDate <- function(mydata, start = "1/1/2008",
       if (day[1] == "weekend") {
         days <- weekday.names[6:7]
       }
-      mydata <- subset(mydata, substr(tolower(format(date, "%A")), 1, 3) %in%
-        substr(tolower(days), 1, 3))
+      mydata <- subset(
+        mydata,
+        substr(tolower(format(date, "%A")), 1, 3) %in%
+          substr(tolower(days), 1, 3)
+      )
     }
   }
   mydata
 }
 
 
-## from Deepayan Sarkar
+# from Deepayan Sarkar
 panel.smooth.spline <-
-  function(x, y,
-           w = NULL, df, spar = NULL, cv = FALSE,
-           lwd = lwd, lty = plot.line$lty, col, col.line = plot.line$col,
-           type, horizontal = FALSE, all.knots = TRUE, ...) {
+  function(
+    x,
+    y,
+    w = NULL,
+    df,
+    spar = NULL,
+    cv = FALSE,
+    lwd = lwd,
+    lty = plot.line$lty,
+    col,
+    col.line = plot.line$col,
+    type,
+    horizontal = FALSE,
+    all.knots = TRUE,
+    ...
+  ) {
     x <- as.numeric(x)
     y <- as.numeric(y)
     ok <- is.finite(x) & is.finite(y)
@@ -311,159 +347,260 @@ panel.smooth.spline <-
     if (horizontal) {
       spline <-
         smooth.spline(
-          y[ok], x[ok],
-          w = w, df = df, spar = spar, cv = cv
+          y[ok],
+          x[ok],
+          w = w,
+          df = df,
+          spar = spar,
+          cv = cv
         )
       panel.lines(
-        x = spline$y, y = spline$x, col = col.line,
-        lty = lty, lwd = lwd, ...
+        x = spline$y,
+        y = spline$x,
+        col = col.line,
+        lty = lty,
+        lwd = lwd,
+        ...
       )
-    }
-    else {
+    } else {
       spline <-
         smooth.spline(
-          x[ok], y[ok],
-          w = w, df = df, spar = spar, cv = cv
+          x[ok],
+          y[ok],
+          w = w,
+          df = df,
+          spar = spar,
+          cv = cv
         )
       panel.lines(
-        x = spline$x, y = spline$y, col = col.line,
-        lty = lty, lwd = lwd, ...
+        x = spline$x,
+        y = spline$y,
+        col = col.line,
+        lty = lty,
+        lwd = lwd,
+        ...
       )
     }
   }
 
-### panel functions for plots based on lattice ####################################################
+# panel functions for plots based on lattice #
 
-panel.gam <- function(x, y, form = y ~ x, method = "loess", k = k, Args, ..., simulate = FALSE, n.sim = 200,
-                      autocor = FALSE, se = TRUE,
-                      level = 0.95, n = 100, col = plot.line$col, col.se = col,
-                      lty = plot.line$lty, lwd = plot.line$lwd, alpha = plot.line$alpha,
-                      alpha.se = 0.20, border = NA, subscripts, group.number, group.value,
-                      type, col.line, col.symbol, fill, pch, cex, font, fontface,
-                      fontfamily) {
+panel.gam <- function(
+  x,
+  y,
+  form = y ~ x,
+  method = "loess",
+  k = k,
+  Args,
+  ...,
+  simulate = FALSE,
+  n.sim = 200,
+  autocor = FALSE,
+  se = TRUE,
+  level = 0.95,
+  n = 100,
+  col = plot.line$col,
+  col.se = col,
+  lty = plot.line$lty,
+  lwd = plot.line$lwd,
+  alpha = plot.line$alpha,
+  alpha.se = 0.20,
+  border = NA,
+  subscripts,
+  group.number,
+  group.value,
+  type,
+  col.line,
+  col.symbol,
+  fill,
+  pch,
+  cex,
+  font,
+  fontface,
+  fontfamily
+) {
+  # panel function to add a smooth line to a plot
+  # Uses a GAM (mgcv) to fit smooth
+  # Optionally can plot 95% confidence intervals and run bootstrap simulations
+  # to estimate uncertainties. Simple block bootstrap is also available for correlated data
 
-  ## panel function to add a smooth line to a plot
-  ## Uses a GAM (mgcv) to fit smooth
-  ## Optionally can plot 95% confidence intervals and run bootstrap simulations
-  ## to estimate uncertainties. Simple block bootstrap is also available for correlated data
-
-  ## get rid of R check annoyances#
+  # get rid of R check annoyances#
   plot.line <- NULL
 
   thedata <- data.frame(x = x, y = y)
   thedata <- na.omit(thedata)
 
-  tryCatch({
-    if (!simulate) {
-      if (is.null(k)) {
-        mod <- suppressWarnings(gam(y ~ s(x), select = TRUE, data = thedata, ...))
-      } else {
-        mod <- suppressWarnings(gam(y ~ s(x, k = k), select = TRUE, data = thedata, ...))
-      }
+  tryCatch(
+    {
+      if (!simulate) {
+        if (is.null(k)) {
+          mod <- suppressWarnings(gam(
+            y ~ s(x),
+            select = TRUE,
+            data = thedata,
+            ...
+          ))
+        } else {
+          mod <- suppressWarnings(gam(
+            y ~ s(x, k = k),
+            select = TRUE,
+            data = thedata,
+            ...
+          ))
+        }
 
-
-      lims <- current.panel.limits()
-      xrange <- c(max(min(lims$x), min(x, na.rm = TRUE)), min(max(lims$x), max(x, na.rm = TRUE)))
-      xseq <- seq(xrange[1], xrange[2], length = n)
-
-      ## for uncertainties
-      std <- qnorm(level / 2 + 0.5)
-
-      pred <- predict(mod, data.frame(x = xseq), se = TRUE)
-
-      panel.lines(xseq, pred$fit, col = col, alpha = alpha, lty = lty, lwd = 2)
-
-      results <- data.frame(
-        date = xseq, pred = pred$fit,
-        lower = pred$fit - std * pred$se,
-        upper = pred$fit + std * pred$se
-      )
-
-      if (se) {
-        panel.polygon(
-          x = c(xseq, rev(xseq)), y = c(pred$fit -
-            std * pred$se, rev(pred$fit + std * pred$se)),
-          col = col.se, alpha = alpha.se, border = border
+        lims <- current.panel.limits()
+        xrange <- c(
+          max(min(lims$x), min(x, na.rm = TRUE)),
+          min(max(lims$x), max(x, na.rm = TRUE))
         )
-        pred <- pred$fit
-      }
+        xseq <- seq(xrange[1], xrange[2], length = n)
 
-    } else { ## simulations required
+        # for uncertainties
+        std <- qnorm(level / 2 + 0.5)
 
-      x <- thedata$x
-      y <- thedata$y
+        pred <- predict(mod, data.frame(x = xseq), se = TRUE)
 
-      sam.size <- length(x)
+        panel.lines(
+          xseq,
+          pred$fit,
+          col = col,
+          alpha = alpha,
+          lty = lty,
+          lwd = 2
+        )
 
-      lims <- current.panel.limits()
-      xrange <- c(max(min(lims$x), min(x)), min(max(lims$x), max(x)))
-      xseq <- seq(xrange[1], xrange[2], length = sam.size)
+        results <- data.frame(
+          date = xseq,
+          pred = pred$fit,
+          lower = pred$fit - std * pred$se,
+          upper = pred$fit + std * pred$se
+        )
 
-      boot.pred <- matrix(nrow = sam.size, ncol = n.sim)
-
-      message("Taking bootstrap samples. Please wait...")
-
-      ## set up bootstrap
-      block.length <- 1
-
-      if (autocor) block.length <- round(sam.size ^ (1 / 3))
-      index <- samp.boot.block(sam.size, n.sim, block.length)
-
-      ## predict first
-      if (is.null(k)) {
-        mod <- gam(y ~ s(x), data = thedata, ...)
+        if (se) {
+          panel.polygon(
+            x = c(xseq, rev(xseq)),
+            y = c(
+              pred$fit -
+                std * pred$se,
+              rev(pred$fit + std * pred$se)
+            ),
+            col = col.se,
+            alpha = alpha.se,
+            border = border
+          )
+          pred <- pred$fit
+        }
       } else {
-        mod <- gam(y ~ s(x, k = k), data = thedata, ...)
-      }
+        # simulations required
 
-      residuals <- residuals(mod) ## residuals of the model
+        x <- thedata$x
+        y <- thedata$y
 
-      pred.input <- predict(mod, thedata)
+        sam.size <- length(x)
 
-      for (i in 1:n.sim) {
-        ## make new data
-        new.data <- data.frame(x = xseq, y = pred.input + residuals[index[, i]])
+        lims <- current.panel.limits()
+        xrange <- c(max(min(lims$x), min(x)), min(max(lims$x), max(x)))
+        xseq <- seq(xrange[1], xrange[2], length = sam.size)
 
-        mod <- gam(y ~ s(x), data = new.data, ...)
+        boot.pred <- matrix(nrow = sam.size, ncol = n.sim)
 
-        pred <- predict(mod, new.data)
+        message("Taking bootstrap samples. Please wait...")
 
-        boot.pred[, i] <- as.vector(pred)
-      }
+        # set up bootstrap
+        block.length <- 1
 
-      ## calculate percentiles
-      percentiles <- apply(boot.pred, 1, function(x) quantile(x, probs = c(0.025, 0.975)))
+        if (autocor) {
+          block.length <- round(sam.size^(1 / 3))
+        }
+        index <- samp.boot.block(sam.size, n.sim, block.length)
 
-      results <- as.data.frame(cbind(
-        pred = rowMeans(boot.pred),
-        lower = percentiles[1, ], upper = percentiles[2, ]
-      ))
+        # predict first
+        if (is.null(k)) {
+          mod <- gam(y ~ s(x), data = thedata, ...)
+        } else {
+          mod <- gam(y ~ s(x, k = k), data = thedata, ...)
+        }
 
-      if (se) {
-        panel.polygon(
-          x = c(xseq, rev(xseq)), y = c(results$lower, rev(results$upper)),
-          col = col.se, alpha = alpha.se, border = border
+        residuals <- residuals(mod) # residuals of the model
+
+        pred.input <- predict(mod, thedata)
+
+        for (i in 1:n.sim) {
+          # make new data
+          new.data <- data.frame(
+            x = xseq,
+            y = pred.input + residuals[index[, i]]
+          )
+
+          mod <- gam(y ~ s(x), data = new.data, ...)
+
+          pred <- predict(mod, new.data)
+
+          boot.pred[, i] <- as.vector(pred)
+        }
+
+        # calculate percentiles
+        percentiles <- apply(boot.pred, 1, function(x) {
+          quantile(x, probs = c(0.025, 0.975))
+        })
+
+        results <- as.data.frame(cbind(
+          pred = rowMeans(boot.pred),
+          lower = percentiles[1, ],
+          upper = percentiles[2, ]
+        ))
+
+        if (se) {
+          panel.polygon(
+            x = c(xseq, rev(xseq)),
+            y = c(results$lower, rev(results$upper)),
+            col = col.se,
+            alpha = alpha.se,
+            border = border
+          )
+        }
+
+        panel.lines(
+          xseq,
+          pred.input,
+          col = col,
+          alpha = alpha,
+          lty = lty,
+          lwd = 2
         )
       }
-
-      panel.lines(xseq, pred.input, col = col, alpha = alpha, lty = lty, lwd = 2)
+      results
+    },
+    error = function(x) {
+      return()
     }
-    results
-  }, error = function(x) return())
+  )
 }
 
 
-## version of GAM fitting not for plotting - need to rationalise both...
-fitGam <- function(thedata, x = "date", y = "conc", form = y ~ x, k = k,
-                   Args, ..., simulate = FALSE, n.sim = 200, autocor = FALSE, se = TRUE,
-                   level = 0.95, n = 100) {
+# version of GAM fitting not for plotting - need to rationalise both...
+fitGam <- function(
+  thedata,
+  x = "date",
+  y = "conc",
+  form = y ~ x,
+  k = k,
+  Args,
+  ...,
+  simulate = FALSE,
+  n.sim = 200,
+  autocor = FALSE,
+  se = TRUE,
+  level = 0.95,
+  n = 100
+) {
+  # panel function to add a smooth line to a plot
+  # Uses a GAM (mgcv) to fit smooth
+  # Optionally can plot 95% confidence intervals and run bootstrap simulations
+  # to estimate uncertainties. Simple block bootstrap is also available for correlated data
 
-  ## panel function to add a smooth line to a plot
-  ## Uses a GAM (mgcv) to fit smooth
-  ## Optionally can plot 95% confidence intervals and run bootstrap simulations
-  ## to estimate uncertainties. Simple block bootstrap is also available for correlated data
-
-  data.orig <- thedata ## return this if all else fails
+  data.orig <- thedata # return this if all else fails
 
   id <- which(names(thedata) == x)
   names(thedata)[id] <- "x"
@@ -475,92 +612,127 @@ fitGam <- function(thedata, x = "date", y = "conc", form = y ~ x, k = k,
 
   thedata$x <- as.numeric(thedata$x)
 
-  tryCatch({
-    if (!simulate) {
-      if (is.null(k)) {
-        mod <- suppressWarnings(gam(y ~ s(x), select = TRUE, data = thedata, ...))
+  tryCatch(
+    {
+      if (!simulate) {
+        if (is.null(k)) {
+          mod <- suppressWarnings(gam(
+            y ~ s(x),
+            select = TRUE,
+            data = thedata,
+            ...
+          ))
+        } else {
+          mod <- suppressWarnings(gam(
+            y ~ s(x, k = k),
+            select = TRUE,
+            data = thedata,
+            ...
+          ))
+        }
+
+        xseq <- seq(
+          min(thedata$x, na.rm = TRUE),
+          max(thedata$x, na.rm = TRUE),
+          length = n
+        )
+
+        # for uncertainties
+        std <- qnorm(level / 2 + 0.5)
+
+        pred <- predict(mod, data.frame(x = xseq), se = se)
+
+        results <- data.frame(
+          date = xseq,
+          pred = pred$fit,
+          lower = pred$fit - std * pred$se,
+          upper = pred$fit + std * pred$se
+        )
       } else {
-        mod <- suppressWarnings(gam(y ~ s(x, k = k), select = TRUE, data = thedata, ...))
+        # simulations required
+
+        sam.size <- nrow(thedata)
+
+        xseq <- seq(
+          min(thedata$x, na.rm = TRUE),
+          max(thedata$x, na.rm = TRUE),
+          length = n
+        )
+
+        boot.pred <- matrix(nrow = sam.size, ncol = n.sim)
+
+        message("Taking bootstrap samples. Please wait...")
+
+        # set up bootstrap
+        block.length <- 1
+
+        if (autocor) {
+          block.length <- round(sam.size^(1 / 3))
+        }
+        index <- samp.boot.block(sam.size, n.sim, block.length)
+
+        # predict first
+        if (is.null(k)) {
+          mod <- gam(y ~ s(x), data = thedata, ...)
+        } else {
+          mod <- gam(y ~ s(x, k = k), data = thedata, ...)
+        }
+
+        residuals <- residuals(mod) # residuals of the model
+
+        pred.input <- predict(mod, thedata)
+
+        for (i in 1:n.sim) {
+          # make new data
+          new.data <- data.frame(
+            x = xseq,
+            y = pred.input + residuals[index[, i]]
+          )
+
+          mod <- gam(y ~ s(x), data = new.data, ...)
+
+          pred <- predict(mod, new.data)
+
+          boot.pred[, i] <- as.vector(pred)
+        }
+
+        # calculate percentiles
+        percentiles <- apply(boot.pred, 1, function(x) {
+          quantile(x, probs = c(0.025, 0.975))
+        })
+
+        results <- as.data.frame(cbind(
+          pred = rowMeans(boot.pred),
+          lower = percentiles[1, ],
+          upper = percentiles[2, ]
+        ))
       }
 
-      xseq <- seq(min(thedata$x, na.rm = TRUE), max(thedata$x, na.rm = TRUE), length = n)
-
-      ## for uncertainties
-      std <- qnorm(level / 2 + 0.5)
-
-      pred <- predict(mod, data.frame(x = xseq), se = se)
-
-
-      results <- data.frame(
-        date = xseq, pred = pred$fit,
-        lower = pred$fit - std * pred$se,
-        upper = pred$fit + std * pred$se
-      )
-    } else { ## simulations required
-
-      sam.size <- nrow(thedata)
-
-      xseq <- seq(min(thedata$x, na.rm = TRUE), max(thedata$x, na.rm = TRUE), length = n)
-
-      boot.pred <- matrix(nrow = sam.size, ncol = n.sim)
-
-      message("Taking bootstrap samples. Please wait...")
-
-      ## set up bootstrap
-      block.length <- 1
-
-      if (autocor) block.length <- round(sam.size ^ (1 / 3))
-      index <- samp.boot.block(sam.size, n.sim, block.length)
-
-      ## predict first
-      if (is.null(k)) {
-        mod <- gam(y ~ s(x), data = thedata, ...)
-      } else {
-        mod <- gam(y ~ s(x, k = k), data = thedata, ...)
-      }
-
-      residuals <- residuals(mod) ## residuals of the model
-
-      pred.input <- predict(mod, thedata)
-
-      for (i in 1:n.sim) {
-        ## make new data
-        new.data <- data.frame(x = xseq, y = pred.input + residuals[index[, i]])
-
-        mod <- gam(y ~ s(x), data = new.data, ...)
-
-        pred <- predict(mod, new.data)
-
-        boot.pred[, i] <- as.vector(pred)
-      }
-
-      ## calculate percentiles
-      percentiles <- apply(boot.pred, 1, function(x) quantile(x, probs = c(0.025, 0.975)))
-
-      results <- as.data.frame(cbind(
-        pred = rowMeans(boot.pred),
-        lower = percentiles[1, ], upper = percentiles[2, ]
-      ))
+      # convert class back to original
+      class(results[[x]]) <- class_x
+      return(results)
+    },
+    error = function(x) {
+      data.orig
     }
-
-    # convert class back to original
-    class(results[[x]]) <- class_x
-    return(results)
-  }, error = function(x) {
-    data.orig
-  })
+  )
 }
 
-## list update function
-## for lattice type object structure and ... handling
+# list update function
+# for lattice type object structure and ... handling
 
-## (currently used by)
-## (all openair plots that include colorkey controlled by drawOpenKey)
+# (currently used by)
+# (all openair plots that include colorkey controlled by drawOpenKey)
 
-## listUpdate function
+# listUpdate function
 # [in development]
-listUpdate <- function(a, b, drop.dots = TRUE,
-                       subset.a = NULL, subset.b = NULL) {
+listUpdate <- function(
+  a,
+  b,
+  drop.dots = TRUE,
+  subset.a = NULL,
+  subset.b = NULL
+) {
   if (drop.dots) {
     a <- a[names(a) != "..."]
     b <- b[names(b) != "..."]
@@ -577,26 +749,31 @@ listUpdate <- function(a, b, drop.dots = TRUE,
   a
 }
 
-#############################################################################################################
 
-## makeOpenKeyLegend v0.1
+# makeOpenKeyLegend v0.1
 
-## common code for making legend list
-## objects for use with drawOpenkey outputs
+# common code for making legend list
+# objects for use with drawOpenkey outputs
 
-## uses listUpdate in utilities
+# uses listUpdate in utilities
 
 makeOpenKeyLegend <- function(key, default.key, fun.name = "function") {
   # handle logicals and lists
   if (is.logical(key)) {
-    legend <- if (key) default.key else NULL
+    legend <- if (key) {
+      default.key
+    } else {
+      NULL
+    }
   } else if (is.list(key)) {
     legend <- listUpdate(default.key, key)
   } else {
     if (!is.null(key)) {
       warning(
         paste(
-          "In ", fun.name, "(...):\n unrecognised key not exported/applied\n",
+          "In ",
+          fun.name,
+          "(...):\n unrecognised key not exported/applied\n",
           " [see ?drawOpenKey for key structure/options]",
           sep = ""
         ),
@@ -608,10 +785,13 @@ makeOpenKeyLegend <- function(key, default.key, fun.name = "function") {
 
   # structure like legend for drawOpenKey
   if (!is.null(legend)) {
-    legend <- list(right = list(
-      fun = drawOpenKey, args = list(key = legend),
-      draw = FALSE
-    ))
+    legend <- list(
+      right = list(
+        fun = drawOpenKey,
+        args = list(key = legend),
+        draw = FALSE
+      )
+    )
     if ("space" %in% names(legend$right$args$key)) {
       names(legend)[[1]] <- legend$right$args$key$space
     }
@@ -619,45 +799,60 @@ makeOpenKeyLegend <- function(key, default.key, fun.name = "function") {
   legend
 }
 
-## polygon that can deal with missing data for use in lattice plots with groups
-poly.na <- function(x1, y1, x2, y2, group.number, myColors, alpha = 0.4, border = NA) {
-  for (i in seq(2, length(x1)))
+# polygon that can deal with missing data for use in lattice plots with groups
+poly.na <- function(
+  x1,
+  y1,
+  x2,
+  y2,
+  group.number,
+  myColors,
+  alpha = 0.4,
+  border = NA
+) {
+  for (i in seq(2, length(x1))) {
     if (!any(is.na(y2[c(i - 1, i)]))) {
       lpolygon(
         c(x1[i - 1], x1[i], x2[i], x2[i - 1]),
         c(y1[i - 1], y1[i], y2[i], y2[i - 1]),
-        col = myColors[group.number], border = border, alpha = alpha
+        col = myColors[group.number],
+        border = border,
+        alpha = alpha
       )
     }
+  }
 }
 
 
-## gives names of lattice strips
+# gives names of lattice strips
 strip.fun <- function(results.grid, type, auto.text) {
-  ## proper names of labelling ###################################################
-  pol.name <- sapply(
-    levels(factor(results.grid[[type[1]]])),
-    function(x) quickText(x, auto.text)
-  )
+  # proper names of labelling #
+  pol.name <- sapply(levels(factor(results.grid[[type[1]]])), function(x) {
+    quickText(x, auto.text)
+  })
   strip <- strip.custom(factor.levels = pol.name)
 
   if (length(type) == 1) {
     strip.left <- FALSE
-  } else { ## two conditioning variables
+  } else {
+    # two conditioning variables
 
-    pol.name <- sapply(
-      levels(factor(results.grid[[type[2]]])),
-      function(x) quickText(x, auto.text)
-    )
+    pol.name <- sapply(levels(factor(results.grid[[type[2]]])), function(x) {
+      quickText(x, auto.text)
+    })
     strip.left <- strip.custom(factor.levels = pol.name)
   }
-  if (length(type) == 1 & type[1] == "default") strip <- FALSE ## remove strip
+  if (
+    length(type) == 1 &&
+      type[1] == "default"
+  ) {
+    strip <- FALSE
+  } # remove strip
   list(strip, strip.left, pol.name)
 }
 
 
-
-## from lattice
+# from lattice
 chooseFace <- function(fontface = NULL, font = 1) {
   if (is.null(fontface)) {
     font
@@ -667,45 +862,64 @@ chooseFace <- function(fontface = NULL, font = 1) {
 }
 
 
-## .smoothScatterCalcDensity() is also in graphics, but not exported.
+# .smoothScatterCalcDensity() is also in graphics, but not exported.
 .smoothScatterCalcDensity <- function(x, nbin, bandwidth, range.x) {
   if (!("KernSmooth" %in% loadedNamespaces())) {
     ns <- try(loadNamespace("KernSmooth"))
     if (isNamespace(ns)) {
       message("(loaded the KernSmooth namespace)")
     } else {
-      stop("panel.smoothScatter() requires the KernSmooth package, but unable to load KernSmooth namespace")
+      stop(
+        "panel.smoothScatter() requires the KernSmooth package, but unable to load KernSmooth namespace"
+      )
     }
   }
   if (length(nbin) == 1) {
     nbin <- c(nbin, nbin)
   }
-  if (!is.numeric(nbin) || (length(nbin) != 2)) stop("'nbin' must be numeric of length 1 or 2")
+  if (
+    !is.numeric(nbin) ||
+      (length(nbin) != 2)
+  ) {
+    stop("'nbin' must be numeric of length 1 or 2")
+  }
   if (missing(bandwidth)) {
-    bandwidth <- diff(apply(x, 2, quantile, probs = c(0.05, 0.95), na.rm = TRUE)) / 25
+    bandwidth <- diff(apply(
+      x,
+      2,
+      quantile,
+      probs = c(0.05, 0.95),
+      na.rm = TRUE
+    )) /
+      25
   } else {
-    if (!is.numeric(bandwidth)) stop("'bandwidth' must be numeric")
+    if (!is.numeric(bandwidth)) {
+      stop("'bandwidth' must be numeric")
+    }
   }
   bandwidth[bandwidth == 0] <- 1
-  ## create density map
+  # create density map
   if (missing(range.x)) {
     rv <- KernSmooth::bkde2D(x, gridsize = nbin, bandwidth = bandwidth)
   } else {
-    rv <- KernSmooth::bkde2D(x, gridsize = nbin, bandwidth = bandwidth, range.x = range.x)
+    rv <- KernSmooth::bkde2D(
+      x,
+      gridsize = nbin,
+      bandwidth = bandwidth,
+      range.x = range.x
+    )
   }
   rv$bandwidth <- bandwidth
   return(rv)
 }
 
 
-
-
-## simple rounding function from plyr
+# simple rounding function from plyr
 round_any <- function(x, accuracy, f = round) {
   f(x / accuracy) * accuracy
 }
 
-## pretty gap calculator
+# pretty gap calculator
 prettyGap <- function(x, n = 100) {
   return(diff(pretty(x, n))[1])
 }
@@ -725,8 +939,3 @@ checkNum <- function(mydata, vars) {
 
   return(mydata)
 }
-
-
-
-
-
