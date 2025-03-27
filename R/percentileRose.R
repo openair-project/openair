@@ -1,69 +1,69 @@
 #' Function to plot percentiles by wind direction
 #'
-#' \code{percentileRose} plots percentiles by wind direction with flexible
+#' `percentileRose` plots percentiles by wind direction with flexible
 #' conditioning. The plot can display multiple percentile lines or filled areas.
 #'
-#' \code{percentileRose} calculates percentile levels of a pollutant and plots
+#' `percentileRose` calculates percentile levels of a pollutant and plots
 #' them by wind direction. One or more percentile levels can be calculated and
 #' these are displayed as either filled areas or as lines.
 #'
 #' The wind directions are rounded to the nearest 10 degrees, consistent with
 #' surface data from the UK Met Office before a smooth is fitted. The levels by
 #' wind direction are optionally calculated using a cyclic smooth cubic spline
-#' using the option \code{smooth}. If \code{smooth = FALSE} then the data are
+#' using the option `smooth`. If `smooth = FALSE` then the data are
 #' shown in 10 degree sectors.
 #'
-#' The \code{percentileRose} function compliments other similar functions
-#' including \code{\link{windRose}}, \code{\link{pollutionRose}},
-#' \code{\link{polarFreq}} or \code{\link{polarPlot}}. It is most useful for
+#' The `percentileRose` function compliments other similar functions
+#' including [windRose()], [pollutionRose()],
+#' [polarFreq()] or [polarPlot()]. It is most useful for
 #' showing the distribution of concentrations by wind direction and often can
 #' reveal different sources e.g. those that only affect high percentile
 #' concentrations such as a chimney stack.
 #'
 #' Similar to other functions, flexible conditioning is available through the
-#' \code{type} option. It is easy for example to consider multiple percentile
+#' `type` option. It is easy for example to consider multiple percentile
 #' values for a pollutant by season, year and so on. See examples below.
 #'
-#' \code{percentileRose} also offers great flexibility with the scale used and
+#' `percentileRose` also offers great flexibility with the scale used and
 #' the user has fine control over both the range, interval and colour.
 #'
 #' @inheritParams polarPlot
-#' @param mydata A data frame minimally containing \code{wd} and a numeric field
-#'   to plot --- \code{pollutant}.
+#' @param mydata A data frame minimally containing `wd` and a numeric field
+#'   to plot --- `pollutant`.
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
-#'   data frame should be supplied e.g. \code{pollutant = "nox"}. More than one
-#'   pollutant can be supplied e.g. \code{pollutant = c("no2", "o3")} provided
-#'   there is only one \code{type}.
+#'   data frame should be supplied e.g. `pollutant = "nox"`. More than one
+#'   pollutant can be supplied e.g. `pollutant = c("no2", "o3")` provided
+#'   there is only one `type`.
 #' @param percentile The percentile value(s) to plot. Must be between 0--100. If
-#'   \code{percentile = NA} then only a mean line will be shown.
+#'   `percentile = NA` then only a mean line will be shown.
 #' @param smooth Should the wind direction data be smoothed using a cyclic
 #'   spline?
-#' @param method When \code{method = "default"} the supplied percentiles by wind
-#'   direction are calculated. When \code{method = "cpf"} the conditional
+#' @param method When `method = "default"` the supplied percentiles by wind
+#'   direction are calculated. When `method = "cpf"` the conditional
 #'   probability function (CPF) is plotted and a single (usually high)
 #'   percentile level is supplied. The CPF is defined as CPF = my/ny, where my
 #'   is the number of samples in the wind sector y with mixing ratios greater
-#'   than the \emph{overall} percentile concentration, and ny is the total
+#'   than the *overall* percentile concentration, and ny is the total
 #'   number of samples in the same wind sector (see Ashbaugh et al., 1985).
-#' @param angle Default angle of \dQuote{spokes} is when \code{smooth = FALSE}.
+#' @param angle Default angle of \dQuote{spokes} is when `smooth = FALSE`.
 #' @param mean Show the mean by wind direction as a line?
 #' @param mean.lty Line type for mean line.
 #' @param mean.lwd Line width for mean line.
 #' @param mean.col Line colour for mean line.
 #' @param fill Should the percentile intervals be filled (default) or should
-#'   lines be drawn (\code{fill = FALSE}).
-#' @param intervals User-supplied intervals for the scale e.g. \code{intervals =
-#'   c(0, 10, 30, 50)}
-#' @param ... Other graphical parameters are passed onto \code{cutData} and
-#'   \code{lattice:xyplot}. For example, \code{percentileRose} passes the option
-#'   \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-#'   (rather than default northern) hemisphere handling of \code{type =
-#'   "season"}. Similarly, common graphical arguments, such as \code{xlim} and
-#'   \code{ylim} for plotting ranges and \code{lwd} for line thickness when
-#'   using \code{fill = FALSE}, are passed on \code{xyplot}, although some local
+#'   lines be drawn (`fill = FALSE`).
+#' @param intervals User-supplied intervals for the scale e.g. `intervals =
+#'   c(0, 10, 30, 50)`
+#' @param ... Other graphical parameters are passed onto `cutData` and
+#'   `lattice:xyplot`. For example, `percentileRose` passes the option
+#'   `hemisphere = "southern"` on to `cutData` to provide southern
+#'   (rather than default northern) hemisphere handling of `type =
+#'   "season"`. Similarly, common graphical arguments, such as `xlim` and
+#'   `ylim` for plotting ranges and `lwd` for line thickness when
+#'   using `fill = FALSE`, are passed on `xyplot`, although some local
 #'   modifications may be applied by openair. For example, axis and title
-#'   labelling options (such as \code{xlab}, \code{ylab} and \code{main}) are
-#'   passed to \code{xyplot} via \code{quickText} to handle routine formatting.
+#'   labelling options (such as `xlab`, `ylab` and `main`) are
+#'   passed to `xyplot` via `quickText` to handle routine formatting.
 #' @export
 #' @return an [openair][openair-package] object
 #' @family polar directional analysis functions

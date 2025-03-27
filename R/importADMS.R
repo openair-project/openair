@@ -6,13 +6,13 @@
 #' to read in data, format for R and openair and apply some file structure
 #' testing.
 #'
-#' The \code{importADMS} function were developed to help import various ADMS
+#' The `importADMS` function were developed to help import various ADMS
 #' file types into openair. In most cases the parent import function should work
-#' in default configuration, e.g. \code{mydata <- importADMS()}. The function
-#' currently recognises four file formats: \code{.bgd}, \code{.met}, \code{.mop}
-#' and \code{.pst}.  Where other file extensions have been set but the file
-#' structure is known, the import call can be forced by, e.g, \code{mydata <-
-#' importADMS(file.type="bgd")}. Other options can be adjusted to provide fine
+#' in default configuration, e.g. `mydata <- importADMS()`. The function
+#' currently recognises four file formats: `.bgd`, `.met`, `.mop`
+#' and `.pst`.  Where other file extensions have been set but the file
+#' structure is known, the import call can be forced by, e.g, `mydata <-
+#' importADMS(file.type="bgd")`. Other options can be adjusted to provide fine
 #' control of the data structuring and renaming.
 #'
 #' @aliases importADMS importADMSBgd importADMSMet importADMSMop importADMSPst
@@ -24,57 +24,57 @@
 #'   the import uses the file extension to identify the file type and, where
 #'   recognised, uses this to identify the file structure and import method to
 #'   be applied. Where file extension is not recognised the choice may be forced
-#'   by setting \code{file.type} to one of the known \code{file.type} options:
+#'   by setting `file.type` to one of the known `file.type` options:
 #'   "bgd", "met", "mop" or "pst".
 #' @param drop.case Option to convert all data names to lower case. Default,
-#'   \code{TRUE}.  Alternative, \code{FALSE}, returns data with name cases as
+#'   `TRUE`.  Alternative, `FALSE`, returns data with name cases as
 #'   defined in file.
 #' @param drop.input.dates Option to remove ADMS "hour", "day", and "year" data
-#'   columns after generating openair "date" timeseries. Default, \code{TRUE}.
-#'   Alternative, \code{FALSE}, returns both "date" and the associated ADMS data
+#'   columns after generating openair "date" timeseries. Default, `TRUE`.
+#'   Alternative, `FALSE`, returns both "date" and the associated ADMS data
 #'   columns as part of openair data frame.
-#' @param keep.units Option to retain ADMS data units. Default, \code{TRUE},
+#' @param keep.units Option to retain ADMS data units. Default, `TRUE`,
 #'   retains units (if recoverable) as character vector in data frame comment if
-#'   defined in \code{file}.  Alternative, \code{FALSE}, discards units. (NOTE:
-#'   currently, only \code{.bgd} and \code{.pst} files assign units. So, this
-#'   option is ignored when importing \code{.met} or \code{.mop} files.)
+#'   defined in `file`.  Alternative, `FALSE`, discards units. (NOTE:
+#'   currently, only `.bgd` and `.pst` files assign units. So, this
+#'   option is ignored when importing `.met` or `.mop` files.)
 #' @param simplify.names Option to simplify data names in accordance with common
-#'   \code{openair} practices. Default, \code{TRUE}. Alternative, \code{FALSE},
+#'   `openair` practices. Default, `TRUE`. Alternative, `FALSE`,
 #'   returns data with names as interpreted by standard R. (NOTE: Some ADMS file
 #'   data names include symbols and structures that R does not allow as part of
-#'   a name, so some renaming is automatic regardless of \code{simplify.names}
+#'   a name, so some renaming is automatic regardless of `simplify.names`
 #'   setting.  For example, brackets or symbols are removed from names or
 #'   replaced with ".", and names in the form "1/x" may be returned as "X1.x" or
 #'   "recip.x".)
 #' @param test.file.structure Option to test file structure before trying to
-#'   import. Default, \code{TRUE}, tests for expected file structure and halts
-#'   import operation if this is not found.  Alternative, \code{FALSE}, attempts
+#'   import. Default, `TRUE`, tests for expected file structure and halts
+#'   import operation if this is not found.  Alternative, `FALSE`, attempts
 #'   import regardless of structure.
 #' @param drop.delim Option to remove delim columns from the data frame. ADMS
 #'   .mop files include two columns, "INPUT_DATA:" and "PROCESSED_DATA:", to
-#'   separate model input and output types.  Default, \code{TRUE}, removes
-#'   these. Alternative, \code{FALSE}, retains them as part of import.  (Note:
-#'   Option ignored when importing \code{.bgd}, \code{.met} or \code{.pst}
+#'   separate model input and output types.  Default, `TRUE`, removes
+#'   these. Alternative, `FALSE`, retains them as part of import.  (Note:
+#'   Option ignored when importing `.bgd`, `.met` or `.pst`
 #'   files.)
 #' @param add.prefixes Option to add prefixes to data names. ADMS .mop files
 #'   include a number of input and process data types with shared names.
 #'   Prefixes can be automatically added to these so individual data can be
-#'   readily identified in the R/openair environment. Default, \code{TRUE}, adds
+#'   readily identified in the R/openair environment. Default, `TRUE`, adds
 #'   "process." as a prefix to processed data. Other options include:
-#'   \code{FALSE} which uses no prefixes and leave all name rationalisation to
+#'   `FALSE` which uses no prefixes and leave all name rationalisation to
 #'   R, and character vectors which are treated as the required prefixes. If one
 #'   vector is sent, this is treated as processed data prefix. If two (or more)
 #'   vectors are sent, the first and second are treated as the input and
 #'   processed data prefixes, respectively. For example, the argument
-#'   (\code{add.prefixes="out"}) would add the "out" prefix to processed data
-#'   names, while the argument (\code{add.prefixes=c("in","out")}) would add
+#'   (`add.prefixes="out"`) would add the "out" prefix to processed data
+#'   names, while the argument (`add.prefixes=c("in","out")`) would add
 #'   "in" and "out" prefixes to input and output data names, respectively.
-#'   (Note: Option ignored when importing \code{.bgd}, \code{.met} or
-#'   \code{.pst} files.)
-#' @param names Option applied by \code{simplifyNamesADMS} when
-#'   \code{simplify.names} is enabled.  All names are simplified for the default
-#'   setting, \code{NULL}.
-#' @param all For .MOP files, return all variables or not. If \code{all = TRUE}
+#'   (Note: Option ignored when importing `.bgd`, `.met` or
+#'   `.pst` files.)
+#' @param names Option applied by `simplifyNamesADMS` when
+#'   `simplify.names` is enabled.  All names are simplified for the default
+#'   setting, `NULL`.
+#' @param all For .MOP files, return all variables or not. If `all = TRUE`
 #'   a large number of processed variables are returned.
 #' @inheritDotParams utils::read.csv
 #' @export
@@ -83,26 +83,26 @@
 #'   modified as follows:
 #'
 #'   Time and date information will combined in a single column "date",
-#'   formatted as a conventional timeseries (\code{as.POSIX*}). If
-#'   \code{drop.input.dates} is enabled data series combined to generated the
+#'   formatted as a conventional timeseries (`as.POSIX*`). If
+#'   `drop.input.dates` is enabled data series combined to generated the
 #'   new "date" data series will also be removed.
 #'
-#'   If \code{simplify.names} is enabled common chemical names may be
+#'   If `simplify.names` is enabled common chemical names may be
 #'   simplified, and some other parameters may be reset to openair standards
 #'   (e.g. "ws", "wd" and "temp") according to operations defined in
-#'   \code{simplifyNamesADMS}. A summary of simplification operations can be
-#'   obtained using, e.g., the call \code{importADMS(simplify.names)}.
+#'   `simplifyNamesADMS`. A summary of simplification operations can be
+#'   obtained using, e.g., the call `importADMS(simplify.names)`.
 #'
-#'   If \code{drop.case} is enabled all upper case characters in names will be
+#'   If `drop.case` is enabled all upper case characters in names will be
 #'   converted to lower case.
 #'
-#'   If \code{keep.units} is enabled data units information may also be retained
+#'   If `keep.units` is enabled data units information may also be retained
 #'   as part of the data frame comment if available.
 #'
-#'   With \code{.mop} files, input and processed data series names may also been
-#'   modified on the basis of \code{drop.delim} and \code{add.prefixes} settings
+#'   With `.mop` files, input and processed data series names may also been
+#'   modified on the basis of `drop.delim` and `add.prefixes` settings
 #' @note Times are assumed to be in GMT. Zero wind directions reset to 360 as
-#'   part of \code{.mop} file import.
+#'   part of `.mop` file import.
 #' @author Karl Ropkins, David Carslaw and Matthew Williams (CERC).
 #' @family import functions
 #' @examples

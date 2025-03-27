@@ -44,7 +44,6 @@ reference:
   contents:
   - aqStats
   - binData
-  - bootMeanDF
   - calcPercentile
   - cutData
   - rollingMean

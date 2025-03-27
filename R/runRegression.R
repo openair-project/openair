@@ -10,20 +10,20 @@
 #' concentrations changes by very little. By filtering the output for high R2
 #' values (typically more than 0.90 to 0.95), conditions where local source
 #' dilution is dominant can be isolated for post processing. The function is
-#' more fully described and used in the \code{openair} online manual, together
+#' more fully described and used in the `openair` online manual, together
 #' with examples.
 #'
-#' @param mydata A data frame with  columns for \code{date} and at least two
+#' @param mydata A data frame with  columns for `date` and at least two
 #'   variables for use in a regression.
-#' @param x The column name of the \code{x} variable for use in a linear
-#'   regression \code{y = m.x + c}.
-#' @param y The column name of the \code{y} variable for use in a linear
-#'   regression \code{y = m.x + c}.
+#' @param x The column name of the `x` variable for use in a linear
+#'   regression `y = m.x + c`.
+#' @param y The column name of the `y` variable for use in a linear
+#'   regression `y = m.x + c`.
 #' @param run.len The window width to be used for a rolling regression. A value
 #'   of 3 for example for hourly data will consider 3 one-hour time sequences.
 #' @param date.pad Should gaps in time series be filled before calculations are
 #'   made?
-#' @return A tibble with \code{date} and calculated regression coefficients and
+#' @return A tibble with `date` and calculated regression coefficients and
 #'   other information to plot dilution lines.
 #' @importFrom stats coefficients
 #' @importFrom stats .lm.fit

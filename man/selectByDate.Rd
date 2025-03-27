@@ -54,8 +54,7 @@ complex dates simply - see examples below.
 Dates are assumed to be inclusive, so \code{start = "1/1/1999"} means that
 times are selected from hour zero. Similarly, \code{end = "31/12/1999"} will
 include all hours of the 31st December. \code{start} and \code{end} can also
-be in standard R format as a string i.e. "YYYY-mm-dd", so \code{start =
-"1999-01-01"} is fine.
+be in standard R format as a string i.e. "YYYY-mm-dd", so \code{start = "1999-01-01"} is fine.
 
 All options are applied in turn making it possible to select quite complex
 dates

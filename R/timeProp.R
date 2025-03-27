@@ -3,93 +3,93 @@
 #' This function shows time series plots as stacked bar charts. The different
 #' categories in the bar chart are made up from a character or factor variable
 #' in a data frame. The function is primarily developed to support the plotting
-#' of cluster analysis output from \code{\link{polarCluster}} and
-#' \code{\link{trajCluster}} that consider local and regional (back trajectory)
+#' of cluster analysis output from [polarCluster()] and
+#' [trajCluster()] that consider local and regional (back trajectory)
 #' cluster analysis respectively. However, the function has more general use for
 #' understanding time series data.
 #'
 #' In order to plot time series in this way, some sort of time aggregation is
-#' needed, which is controlled by the option \code{avg.time}.
+#' needed, which is controlled by the option `avg.time`.
 #'
-#' The plot shows the value of \code{pollutant} on the y-axis (averaged
-#' according to \code{avg.time}). The time intervals are made up of bars split
-#' according to \code{proportion}. The bars therefore show how the total value
-#' of \code{pollutant} is made up for any time interval.
+#' The plot shows the value of `pollutant` on the y-axis (averaged
+#' according to `avg.time`). The time intervals are made up of bars split
+#' according to `proportion`. The bars therefore show how the total value
+#' of `pollutant` is made up for any time interval.
 #'
-#' @param mydata A data frame containing the fields \code{date},
-#'   \code{pollutant} and a splitting variable \code{proportion}
-#' @param pollutant Name of the pollutant to plot contained in \code{mydata}.
+#' @param mydata A data frame containing the fields `date`,
+#'   `pollutant` and a splitting variable `proportion`
+#' @param pollutant Name of the pollutant to plot contained in `mydata`.
 #' @param proportion The splitting variable that makes up the bars in the bar
-#'   chart e.g. \code{proportion = "cluster"} if the output from
-#'   \code{polarCluster} is being analysed. If \code{proportion} is a numeric
-#'   variable it is split into 4 quantiles (by default) by \code{cutData}. If
-#'   \code{proportion} is a factor or character variable then the categories are
+#'   chart e.g. `proportion = "cluster"` if the output from
+#'   `polarCluster` is being analysed. If `proportion` is a numeric
+#'   variable it is split into 4 quantiles (by default) by `cutData`. If
+#'   `proportion` is a factor or character variable then the categories are
 #'   used directly.
 #' @param avg.time This defines the time period to average to. Can be
 #'   \dQuote{sec}, \dQuote{min}, \dQuote{hour}, \dQuote{day}, \dQuote{DSTday},
 #'   \dQuote{week}, \dQuote{month}, \dQuote{quarter} or \dQuote{year}. For much
 #'   increased flexibility a number can precede these options followed by a
-#'   space. For example, a timeAverage of 2 months would be \code{period = "2
-#'   month"}.
+#'   space. For example, a timeAverage of 2 months would be `period = "2
+#'   month"`.
 #'
-#'   Note that \code{avg.time} when used in \code{timeProp} should be greater
-#'   than the time gap in the original data. For example, \code{avg.time =
-#'   "day"} for hourly data is OK, but \code{avg.time = "hour"} for daily data
+#'   Note that `avg.time` when used in `timeProp` should be greater
+#'   than the time gap in the original data. For example, `avg.time =
+#'   "day"` for hourly data is OK, but `avg.time = "hour"` for daily data
 #'   is not.
-#' @param type \code{type} determines how the data are split i.e. conditioned,
+#' @param type `type` determines how the data are split i.e. conditioned,
 #'   and then plotted. The default is will produce a single plot using the
 #'   entire data. Type can be one of the built-in types as detailed in
-#'   \code{cutData} e.g. "season", "year", "weekday" and so on. For example,
-#'   \code{type = "season"} will produce four plots --- one for each season.
+#'   `cutData` e.g. "season", "year", "weekday" and so on. For example,
+#'   `type = "season"` will produce four plots --- one for each season.
 #'
-#'   It is also possible to choose \code{type} as another variable in the data
+#'   It is also possible to choose `type` as another variable in the data
 #'   frame. If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   \code{type} must be of length one.
-#' @param normalise If \code{normalise = TRUE} then each time interval is scaled
+#'   `type` must be of length one.
+#' @param normalise If `normalise = TRUE` then each time interval is scaled
 #'   to 100. This is helpful to show the relative (percentage) contribution of
 #'   the proportions.
 #' @param cols Colours to be used for plotting. Options include
 #'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-#'   \code{RColorBrewer} colours --- see the \code{openair} \code{openColours}
+#'   `RColorBrewer` colours --- see the `openair` `openColours`
 #'   function for more details. For user defined the user can supply a list of
-#'   colour names recognised by R (type \code{colours()} to see the full list).
-#'   An example would be \code{cols = c("yellow", "green", "blue")}
+#'   colour names recognised by R (type `colours()` to see the full list).
+#'   An example would be `cols = c("yellow", "green", "blue")`
 #' @param date.breaks Number of major x-axis intervals to use. The function will
 #'   try and choose a sensible number of dates/times as well as formatting the
 #'   date/time appropriately to the range being considered.  This does not
 #'   always work as desired automatically. The user can therefore increase or
 #'   decrease the number of intervals by adjusting the value of
-#'   \code{date.breaks} up or down.
+#'   `date.breaks` up or down.
 #' @param date.format This option controls the date format on the x-axis. While
-#'   \code{timePlot} generally sets the date format sensibly there can be some
+#'   `timePlot` generally sets the date format sensibly there can be some
 #'   situations where the user wishes to have more control. For format types see
-#'   \code{strptime}. For example, to format the date like \dQuote{Jan-2012} set
-#'   \code{date.format = "\%b-\%Y"}.
+#'   `strptime`. For example, to format the date like \dQuote{Jan-2012} set
+#'   `date.format = "\%b-\%Y"`.
 #' @param key.columns Number of columns to be used in the key. With many
 #'   pollutants a single column can make to key too wide. The user can thus
-#'   choose to use several columns by setting \code{columns} to be less than the
+#'   choose to use several columns by setting `columns` to be less than the
 #'   number of pollutants.
 #' @param key.position Location where the scale key is to plotted. Allowed
 #'   arguments currently include \dQuote{top}, \dQuote{right}, \dQuote{bottom}
 #'   and \dQuote{left}.
 #' @param key.title The title of the key.
-#' @param auto.text Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
 #'   titles and axis labels etc. will automatically try and format pollutant
 #'   names and units properly e.g.  by subscripting the `2' in NO2.
-#' @param plot Should a plot be produced? \code{FALSE} can be useful when
+#' @param plot Should a plot be produced? `FALSE` can be useful when
 #'   analysing data to extract plot components and plotting them in other ways.
-#' @param ... Other graphical parameters passed onto \code{timeProp} and
-#'   \code{cutData}. For example, \code{timeProp} passes the option
-#'   \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-#'   (rather than default northern) hemisphere handling of \code{type =
-#'   "season"}. Similarly, common axis and title labelling options (such as
-#'   \code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
-#'   \code{quickText} to handle routine formatting.
+#' @param ... Other graphical parameters passed onto `timeProp` and
+#'   `cutData`. For example, `timeProp` passes the option
+#'   `hemisphere = "southern"` on to `cutData` to provide southern
+#'   (rather than default northern) hemisphere handling of `type =
+#'   "season"`. Similarly, common axis and title labelling options (such as
+#'   `xlab`, `ylab`, `main`) are passed to `xyplot` via
+#'   `quickText` to handle routine formatting.
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw

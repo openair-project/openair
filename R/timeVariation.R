@@ -10,7 +10,7 @@
 #' in the way vehicles vary by vehicles type e.g. less heavy vehicles at
 #' weekends.
 #'
-#' The \code{timeVariation} function makes it easy to see how concentrations
+#' The `timeVariation` function makes it easy to see how concentrations
 #' (and many other variable types) vary by hour of the day and day of the week.
 #'
 #' The plots also show the 95\% confidence intervals in the mean. The 95\%
@@ -18,48 +18,48 @@
 #' simulations, which will provide more robust estimates of the confidence
 #' intervals (particularly when there are relatively few data).
 #'
-#' The function can handle multiple pollutants and uses the flexible \code{type}
-#' option to provide separate panels for each 'type' --- see \code{cutData} for
-#' more details. \code{timeVariation} can also accept a \code{group} option
+#' The function can handle multiple pollutants and uses the flexible `type`
+#' option to provide separate panels for each 'type' --- see `cutData` for
+#' more details. `timeVariation` can also accept a `group` option
 #' which is useful if data are stacked. This will work in a similar way to
 #' having multiple pollutants in separate columns.
 #'
-#' The user can supply their own \code{ylim} e.g. \code{ylim = c(0, 200)} that
-#' will be used for all plots. \code{ylim} can also be a list of length four to
-#' control the y-limits on each individual plot e.g. \code{ylim =
-#' list(c(-100,500), c(200, 300), c(-400,400), c(50,70))}. These pairs
+#' The user can supply their own `ylim` e.g. `ylim = c(0, 200)` that
+#' will be used for all plots. `ylim` can also be a list of length four to
+#' control the y-limits on each individual plot e.g. `ylim =
+#' list(c(-100,500), c(200, 300), c(-400,400), c(50,70))`. These pairs
 #' correspond to the hour, weekday, month and day-hour plots respectively.
 #'
-#' The option \code{difference} will calculate the difference in means of two
+#' The option `difference` will calculate the difference in means of two
 #' pollutants together with bootstrap estimates of the 95\% confidence intervals
 #' in the difference in the mean. This works in two ways: either two pollutants
-#' are supplied in separate columns e.g. \code{pollutant = c("no2", "o3")}, or
-#' there are two unique values of \code{group}. The difference is calculated as
+#' are supplied in separate columns e.g. `pollutant = c("no2", "o3")`, or
+#' there are two unique values of `group`. The difference is calculated as
 #' the second pollutant minus the first and is labelled as such. Considering
 #' differences in this way can provide many useful insights and is particularly
 #' useful for model evaluation when information is needed about where a model
 #' differs from observations by many different time scales. The manual contains
-#' various examples of using \code{difference = TRUE}.
+#' various examples of using `difference = TRUE`.
 #'
-#' Note also that the \code{timeVariation} function works well on a subset of
+#' Note also that the `timeVariation` function works well on a subset of
 #' data and in conjunction with other plots. For example, a
-#' \code{\link{polarPlot}} may highlight an interesting feature for a particular
+#' [polarPlot()] may highlight an interesting feature for a particular
 #' wind speed/direction range. By filtering for those conditions
-#' \code{timeVariation} can help determine whether the temporal variation of
+#' `timeVariation` can help determine whether the temporal variation of
 #' that feature differs from other features --- and help with source
 #' identification.
 #'
-#' In addition, \code{timeVariation} will work well with other variables if
+#' In addition, `timeVariation` will work well with other variables if
 #' available. Examples include meteorological and traffic flow data.
 #'
 #' Depending on the choice of statistic, a subheading is added. Users can
-#' control the text in the subheading through the use of \code{sub} e.g.
-#' \code{sub = ""} will remove any subheading.
+#' control the text in the subheading through the use of `sub` e.g.
+#' `sub = ""` will remove any subheading.
 #'
 #' @param mydata A data frame of hourly (or higher temporal resolution data).
-#'   Must include a \code{date} field and at least one variable to plot.
+#'   Must include a `date` field and at least one variable to plot.
 #' @param pollutant Name of variable to plot. Two or more pollutants can be
-#'   plotted, in which case a form like \code{pollutant = c("nox", "co")} should
+#'   plotted, in which case a form like `pollutant = c("nox", "co")` should
 #'   be used.
 #' @param local.tz Should the results be calculated in local time that includes
 #'   a treatment of daylight savings time (DST)? The default is not to consider
@@ -72,90 +72,90 @@
 #'   is to express time as local time. This correction tends to produce
 #'   better-defined diurnal profiles of concentration (or other variables) and
 #'   allows a better comparison to be made with emissions/activity data. If set
-#'   to \code{FALSE} then GMT is used. Examples of usage include \code{local.tz
-#'   = "Europe/London"}, \code{local.tz = "America/New_York"}. See
-#'   \code{cutData} and \code{import} for more details.
-#' @param normalise Should variables be normalised? The default is \code{FALSE}.
-#'   If \code{TRUE} then the variable(s) are divided by their mean values. This
+#'   to `FALSE` then GMT is used. Examples of usage include `local.tz
+#'   = "Europe/London"`, `local.tz = "America/New_York"`. See
+#'   `cutData` and `import` for more details.
+#' @param normalise Should variables be normalised? The default is `FALSE`.
+#'   If `TRUE` then the variable(s) are divided by their mean values. This
 #'   helps to compare the shape of the diurnal trends for variables on very
 #'   different scales.
 #' @param xlab x-axis label; one for each sub-plot.
 #' @param name.pol Names to be given to the pollutant(s). This is useful if you
 #'   want to give a fuller description of the variables, maybe also including
 #'   subscripts etc.
-#' @param type \code{type} determines how the data are split i.e. conditioned,
+#' @param type `type` determines how the data are split i.e. conditioned,
 #'   and then plotted. The default is will produce a single plot using the
 #'   entire data. Type can be one of the built-in types as detailed in
-#'   \code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, \code{type = "season"} will produce four plots --- one for
+#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
+#'   on. For example, `type = "season"` will produce four plots --- one for
 #'   each season.
 #'
-#'   It is also possible to choose \code{type} as another variable in the data
+#'   It is also possible to choose `type` as another variable in the data
 #'   frame. If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   Only one \code{type} is allowed in\code{timeVariation}.
+#'   Only one `type` is allowed in`timeVariation`.
 #' @param group This sets the grouping variable to be used. For example, if a
-#'   data frame had a column \code{site} setting \code{group = "site"} will plot
+#'   data frame had a column `site` setting `group = "site"` will plot
 #'   all sites together in each panel. See examples below.
-#' @param difference If two pollutants are chosen then setting \code{difference
-#'   = TRUE} will also plot the difference in means between the two variables as
-#'   \code{pollutant[2] - pollutant[1]}. Bootstrap 95\% confidence intervals of
+#' @param difference If two pollutants are chosen then setting `difference
+#'   = TRUE` will also plot the difference in means between the two variables as
+#'   `pollutant[2] - pollutant[1]`. Bootstrap 95\% confidence intervals of
 #'   the difference in means are also calculated. A horizontal dashed line is
 #'   shown at y = 0. The difference can also be calculated if there is a column
-#'   that identifies two groups e.g. having used \code{splitByDate}. In this
-#'   case it is possible to call \code{timeVariation} with the option
-#'   \code{group = "split.by"} and \code{difference = TRUE}.
+#'   that identifies two groups e.g. having used `splitByDate`. In this
+#'   case it is possible to call `timeVariation` with the option
+#'   `group = "split.by"` and `difference = TRUE`.
 #' @param statistic Can be \dQuote{mean} (default) or \dQuote{median}. If the
 #'   statistic is \sQuote{mean} then the mean line and the 95\% confidence
 #'   interval in the mean are plotted by default. If the statistic is
 #'   \sQuote{median} then the median line is plotted together with the 5/95 and
 #'   25/75th quantiles are plotted. Users can control the confidence intervals
-#'   with \code{conf.int}.
-#' @param conf.int The confidence intervals to be plotted. If \code{statistic =
-#'   "mean"} then the confidence intervals in the mean are plotted. If
-#'   \code{statistic = "median"} then the \code{conf.int} and \code{1 -
-#'   conf.int} \emph{quantiles} are plotted. \code{conf.int} can be of length 2,
-#'   which is most useful for showing quantiles. For example \code{conf.int =
-#'   c(0.75, 0.99)} will yield a plot showing the median, 25/75 and 5/95th
+#'   with `conf.int`.
+#' @param conf.int The confidence intervals to be plotted. If `statistic =
+#'   "mean"` then the confidence intervals in the mean are plotted. If
+#'   `statistic = "median"` then the `conf.int` and `1 -
+#'   conf.int` *quantiles* are plotted. `conf.int` can be of length 2,
+#'   which is most useful for showing quantiles. For example `conf.int =
+#'   c(0.75, 0.99)` will yield a plot showing the median, 25/75 and 5/95th
 #'   quantiles.
 #' @param B Number of bootstrap replicates to use. Can be useful to reduce this
 #'   value when there are a large number of observations available to increase
 #'   the speed of the calculations without affecting the 95\% confidence
 #'   interval calculations by much.
-#' @param ci Should confidence intervals be shown? The default is \code{TRUE}.
-#'   Setting this to \code{FALSE} can be useful if multiple pollutants are
+#' @param ci Should confidence intervals be shown? The default is `TRUE`.
+#'   Setting this to `FALSE` can be useful if multiple pollutants are
 #'   chosen where over-lapping confidence intervals can over complicate plots.
 #' @param cols Colours to be used for plotting. Options include
 #'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-#'   \code{RColorBrewer} colours --- see the \code{openair} \code{openColours}
+#'   `RColorBrewer` colours --- see the `openair` `openColours`
 #'   function for more details. For user defined the user can supply a list of
-#'   colour names recognised by R (type \code{colours()} to see the full list).
-#'   An example would be \code{cols = c("yellow", "green", "blue")}
+#'   colour names recognised by R (type `colours()` to see the full list).
+#'   An example would be `cols = c("yellow", "green", "blue")`
 #' @param ref.y A list with details of the horizontal lines to be added
-#'   representing reference line(s). For example, \code{ref.y = list(h = 50, lty
-#'   = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-#'   e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-#'   "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
+#'   representing reference line(s). For example, `ref.y = list(h = 50, lty
+#'   = 5)` will add a dashed horizontal line at 50. Several lines can be plotted
+#'   e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
+#'   "blue"))`. See `panel.abline` in the `lattice` package for more
 #'   details on adding/controlling lines.
-#' @param key By default \code{timeVariation} produces four plots on one page.
+#' @param key By default `timeVariation` produces four plots on one page.
 #'   While it is useful to see these plots together, it is sometimes necessary
-#'   just to use one for a report. If \code{key} is \code{TRUE}, a key is added
-#'   to all plots allowing the extraction of a single plot \emph{with} key. See
+#'   just to use one for a report. If `key` is `TRUE`, a key is added
+#'   to all plots allowing the extraction of a single plot *with* key. See
 #'   below for an example.
 #' @param key.columns Number of columns to be used in the key. With many
 #'   pollutants a single column can make to key too wide. The user can thus
-#'   choose to use several columns by setting \code{columns} to be less than the
+#'   choose to use several columns by setting `columns` to be less than the
 #'   number of pollutants.
 #' @param start.day What day of the week should the plots start on? The user can
 #'   change the start day by supplying an integer between 0 and 6. Sunday = 0,
 #'   Monday = 1, \ldots For example to start the weekday plots on a Saturday,
-#'   choose \code{start.day = 6}.
+#'   choose `start.day = 6`.
 #' @param panel.gap The gap between panels in the hour-day plot.
-#' @param auto.text Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
 #'   titles and axis labels will automatically try and format pollutant names
 #'   and units properly e.g.  by subscripting the \sQuote{2} in NO2.
 #' @param alpha The alpha transparency used for plotting confidence intervals. 0
@@ -163,20 +163,20 @@
 #' @param month.last Should the order of the plots be changed so the plot
 #'   showing monthly means be the last plot for a logical hierarchy of averaging
 #'   periods?
-#' @param plot Should a plot be produced? \code{FALSE} can be useful when
+#' @param plot Should a plot be produced? `FALSE` can be useful when
 #'   analysing data to extract plot components and plotting them in other ways.
-#' @param ... Other graphical parameters passed onto \code{lattice:xyplot} and
-#'   \code{cutData}. For example, in the case of \code{cutData} the option
-#'   \code{hemisphere = "southern"}.
+#' @param ... Other graphical parameters passed onto `lattice:xyplot` and
+#'   `cutData`. For example, in the case of `cutData` the option
+#'   `hemisphere = "southern"`.
 #'
 #' @import lattice
 #' @export
 #' @return an [openair][openair-package] object. The four components of
-#'   timeVariation are: \code{day.hour}, \code{hour}, \code{day} and
-#'   \code{month}. Associated data.frames can be extracted directly using the
-#'   \code{subset} option, e.g. as in \code{plot(object, subset = "day.hour")},
-#'   \code{summary(output, subset = "hour")}, etc., for \code{output <-
-#'   timeVariation(mydata, "nox")}
+#'   timeVariation are: `day.hour`, `hour`, `day` and
+#'   `month`. Associated data.frames can be extracted directly using the
+#'   `subset` option, e.g. as in `plot(object, subset = "day.hour")`,
+#'   `summary(output, subset = "hour")`, etc., for `output <-
+#'   timeVariation(mydata, "nox")`
 #' @author David Carslaw
 #' @family time series and trend functions
 #' @examples

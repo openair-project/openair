@@ -70,12 +70,23 @@ this option off and passes any supplied labels to the plot without
 modification.}
 
 \item{key.header, key.footer}{Adds additional text labels above and/or below
+<<<<<<< HEAD
 the scale key, respectively. For example, passing the options \verb{key.header = "", key.footer = c("mean","nox")} adds the addition text as a scale footer.
 If enabled (\code{auto.text = TRUE}), these arguments are passed to the scale
 key (\code{\link[=drawOpenKey]{drawOpenKey()}}) via \code{\link[=quickText]{quickText()}} to handle formatting. The term
 \code{"get.stat.name"}, used as the default \code{key.header} setting, is reserved
 and automatically adds statistic function names or defaults to \code{"level"}
 when unnamed functions are requested via \code{statistic}.}
+=======
+the scale key, respectively. For example, passing the options
+\verb{key.header = "", key.footer = c("mean","nox")} adds the addition text
+as a scale footer. If enabled (\code{auto.text = TRUE}), these arguments
+are passed to the scale key (\code{drawOpenKey}) via \code{quickText} to
+handle formatting. The term \code{"get.stat.name"}, used as the default
+\code{key.header} setting, is reserved and automatically adds statistic
+function names or defaults to \code{"level"} when unnamed functions are
+requested via \code{statistic}.}
+>>>>>>> openair-project/master
 
 \item{key.position}{Location where the scale key should be plotted. Allowed
 arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"}, and \code{"left"}.}
@@ -146,6 +157,7 @@ and diurnal variations. However, x, y and type and summarising statistics can
 all be modified to provide a range of other similar plots.
 }
 \details{
+<<<<<<< HEAD
 \code{\link[=trendLevel]{trendLevel()}} allows the use of third party summarising functions via the
 \code{statistic} option. Any additional function arguments not included within a
 function called using \code{statistic} should be supplied as a list of named
@@ -162,6 +174,17 @@ warning. If the function terminates with an error when it is sent an empty
 data series, the option \code{stat.safe.mode} should not be set to \code{FALSE} or
 \code{\link[=trendLevel]{trendLevel()}} may fail. Note: The \code{stat.safe.mode = TRUE} option returns an
 NA without warning for empty data series.
+=======
+\code{trendLevel} allows the use of third party summarising functions via the
+\code{statistic} option. Any additional function arguments not included
+within a function called using \code{statistic} should be supplied as a list
+of named parameters and sent using \code{stat.args}. For example, the encoded
+option \code{statistic = "mean"} is equivalent to \verb{statistic = mean, stat.args = list(na.rm = TRUE)} or the R command \code{mean(x, na.rm= TRUE)}.
+Many R functions and user's own code could be applied in a similar fashion,
+subject to the following restrictions: the first argument sent to the
+function must be the data series to be analysed; the name \verb{x' cannot be used for any of the extra options supplied in }stat.args\verb{; and the function should return the required answer as a numeric or }NA\verb{. Note: If the supplied function returns more than one answer, currently only the first of these is retained and used by }trendLevel\verb{. All other returned information will be ignored without warning. If the function terminates with an error when it is sent an empty data series, the option }stat.safe.mode\verb{should not be set to}FALSE\code{or}trendLevel\verb{may fail. Note: The}stat.safe.mode = TRUE` option returns an NA without
+warning for empty data series.
+>>>>>>> openair-project/master
 }
 \examples{
 # basic use

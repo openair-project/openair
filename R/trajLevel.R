@@ -57,7 +57,7 @@
 #'   will plot the trajectory frequencies (`statistic = "frequency"`). As an
 #'   alternative way of viewing trajectory frequencies, the argument `method =
 #'   "hexbin"` can be used. In this case hexagonal binning of the trajectory
-#'   \emph{points} (i.e., a point every three hours along each back trajectory).
+#'   *points* (i.e., a point every three hours along each back trajectory).
 #'   The plot then shows the trajectory frequencies uses hexagonal binning.
 #'
 #'   There are also various ways of plotting concentrations.
@@ -100,7 +100,7 @@
 #' @param ... other arguments are passed to [cutData()] and [scatterPlot()].
 #'   This provides access to arguments used in both these functions and
 #'   functions that they in turn pass arguments on to. For example,
-#'   [trajLevel()] passes the argument \code{cex} on to [scatterPlot()] which in
+#'   [trajLevel()] passes the argument `cex` on to [scatterPlot()] which in
 #'   turn passes it on to [lattice::xyplot()] where it is applied to set the
 #'   plot symbol size.
 #' @export

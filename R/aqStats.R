@@ -5,76 +5,76 @@
 #' This function calculates a range of common and air pollution-specific
 #' statistics from a data frame. The statistics are calculated on an annual
 #' basis and the input is assumed to be hourly data. The function can cope with
-#' several sites and years e.g. using \code{type = "site"}. The user can control
-#' the output by setting \code{transpose} appropriately.
+#' several sites and years e.g. using `type = "site"`. The user can control
+#' the output by setting `transpose` appropriately.
 #'
 #' Note that the input data is assumed to be in mass units e.g. ug/m3 for all
 #' species except CO (mg/m3).
 #'
 #' The following statistics are calculated:
 #'
-#' \itemize{ \item \bold{data.capture} --- percentage data capture over a full
+#' \itemize{ \item **data.capture** --- percentage data capture over a full
 #' year.
 #'
-#' \item \bold{mean} --- annual mean.
+#' \item **mean** --- annual mean.
 #'
-#' \item \bold{minimum} --- minimum hourly value.
+#' \item **minimum** --- minimum hourly value.
 #'
-#' \item \bold{maximum} --- maximum hourly value.
+#' \item **maximum** --- maximum hourly value.
 #'
-#' \item \bold{median} --- median value.
+#' \item **median** --- median value.
 #'
-#' \item \bold{max.daily} --- maximum daily mean.
+#' \item **max.daily** --- maximum daily mean.
 #'
-#' \item \bold{max.rolling.8} --- maximum 8-hour rolling mean.
+#' \item **max.rolling.8** --- maximum 8-hour rolling mean.
 #'
-#' \item \bold{max.rolling.24} --- maximum 24-hour rolling mean.
+#' \item **max.rolling.24** --- maximum 24-hour rolling mean.
 #'
-#' \item \bold{percentile.95} --- 95th percentile. Note that several percentiles
+#' \item **percentile.95** --- 95th percentile. Note that several percentiles
 #' can be calculated.
 #'
-#' \item \bold{roll.8.O3.gt.100} --- number of days when the daily maximum
+#' \item **roll.8.O3.gt.100** --- number of days when the daily maximum
 #' rolling 8-hour mean ozone concentration is >100 ug/m3. This is the target
 #' value.
 #'
-#' \item \bold{roll.8.O3.gt.120} --- number of days when the daily maximum
+#' \item **roll.8.O3.gt.120** --- number of days when the daily maximum
 #' rolling 8-hour mean ozone concentration is >120 ug/m3. This is the Limit
 #' Value not to be exceeded > 10 days a year.
 #'
-#' \item \bold{AOT40} --- is the accumulated amount of ozone over the threshold
+#' \item **AOT40** --- is the accumulated amount of ozone over the threshold
 #' value of 40 ppb for daylight hours in the growing season (April to
-#' September). Note that \code{latitude} and \code{longitude} can also be passed
+#' September). Note that `latitude` and `longitude` can also be passed
 #' to this calculation.
 #'
-#' \item \bold{hours.gt.200} --- number of hours NO2 is more than 200 ug/m3.
+#' \item **hours.gt.200** --- number of hours NO2 is more than 200 ug/m3.
 #'
-#' \item \bold{days.gt.50} --- number of days PM10 is more than 50 ug/m3. }
+#' \item **days.gt.50** --- number of days PM10 is more than 50 ug/m3. }
 #'
-#' For the rolling means, the user can supply the option \code{align}, which can
-#' be "centre" (default), "left" or "right". See \code{rollingMean} for more
+#' For the rolling means, the user can supply the option `align`, which can
+#' be "centre" (default), "left" or "right". See `rollingMean` for more
 #' details.
 #'
 #' There can be small discrepancies with the AURN due to the treatment of
-#' rounding data. The \code{aqStats} function does not round, whereas AURN data
+#' rounding data. The `aqStats` function does not round, whereas AURN data
 #' can be rounded at several stages during the calculations.
 #'
-#' @param mydata A data frame containing a \code{date} field of hourly data.
-#' @param pollutant The name of a pollutant e.g. \code{pollutant = c("o3",
-#'   "pm10")}.
-#' @param type \code{type} allows [timeAverage()] to be applied to cases where
+#' @param mydata A data frame containing a `date` field of hourly data.
+#' @param pollutant The name of a pollutant e.g. `pollutant = c("o3",
+#'   "pm10")`.
+#' @param type `type` allows [timeAverage()] to be applied to cases where
 #'   there are groups of data that need to be split and the function applied to
 #'   each group. The most common example is data with multiple sites identified
-#'   with a column representing site name e.g. \code{type = "site"}. More
-#'   generally, \code{type} should be used where the date repeats for a
+#'   with a column representing site name e.g. `type = "site"`. More
+#'   generally, `type` should be used where the date repeats for a
 #'   particular grouping variable.
 #' @param data.thresh The data capture threshold in %. No values are calculated
 #'   if data capture over the period of interest is less than this value.
-#'   \code{data.thresh} is used for example in the calculation of daily mean
-#'   values from hourly data. If there are less than \code{data.thresh}
-#'   percentage of measurements available in a period, \code{NA} is returned.
+#'   `data.thresh` is used for example in the calculation of daily mean
+#'   values from hourly data. If there are less than `data.thresh`
+#'   percentage of measurements available in a period, `NA` is returned.
 #' @param percentile Percentile values to calculate for each pollutant.
 #' @param transpose The default is to return a data frame with columns
-#'   representing the statistics. If \code{transpose = TRUE} then the results
+#'   representing the statistics. If `transpose = TRUE` then the results
 #'   have columns for each pollutant-site combination.
 #' @param ... Other arguments, currently unused.
 #' @export

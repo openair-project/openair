@@ -76,8 +76,7 @@ quantiles.}
 \dQuote{sec}, \dQuote{min}, \dQuote{hour}, \dQuote{day}, \dQuote{DSTday},
 \dQuote{week}, \dQuote{month}, \dQuote{quarter} or \dQuote{year}. For much
 increased flexibility a number can precede these options followed by a
-space. For example, a timeAverage of 2 months would be \code{period = "2
-  month"}. See function \code{timeAverage} for further details on this. This
+space. For example, a timeAverage of 2 months would be \code{period = "2 month"}. See function \code{timeAverage} for further details on this. This
 option se useful as one method by which the number of points plotted is
 reduced i.e. by choosing a longer averaging time.}
 
@@ -95,8 +94,7 @@ the number (frequency) of valid records in the period. "percentile" is the
 percentile level (\\%) between 0-100, which can be set using the
 "percentile" option - see below. Not used if \code{avg.time = "default"}.}
 
-\item{percentile}{The percentile level in percent used when \code{statistic =
-  "percentile"} and when aggregating the data with \code{avg.time}. The
+\item{percentile}{The percentile level in percent used when \code{statistic = "percentile"} and when aggregating the data with \code{avg.time}. The
 default is 95. Not used if \code{avg.time = "default"}.}
 
 \item{type}{\code{type} determines how the data are split i.e. conditioned,
@@ -171,11 +169,9 @@ be useful for checking linearity once logged.}
 \code{FALSE}. If \code{TRUE} a well-formatted log10 scale is used. This can
 be useful for checking linearity once logged.}
 
-\item{x.inc}{The x-interval to be used for binning data when \code{method =
-"level"}.}
+\item{x.inc}{The x-interval to be used for binning data when \code{method = "level"}.}
 
-\item{y.inc}{The y-interval to be used for binning data when \code{method =
-"level"}.}
+\item{y.inc}{The y-interval to be used for binning data when \code{method = "level"}.}
 
 \item{limits}{For \code{method = "level"} the function does its best to
 choose sensible limits automatically. However, there are circumstances when
@@ -184,8 +180,7 @@ the user will wish to set different ones. The limits are set in the form
 limits to span 0-100.}
 
 \item{windflow}{This option allows a scatter plot to show the wind
-speed/direction shows as an arrow. The option is a list e.g. \code{windflow
-  = list(col = "grey", lwd = 2, scale = 0.1)}. This option requires wind
+speed/direction shows as an arrow. The option is a list e.g. \code{windflow = list(col = "grey", lwd = 2, scale = 0.1)}. This option requires wind
 speed (\code{ws}) and wind direction (\code{wd}) to be available.
 
 The maximum length of the arrow plotted is a fraction of the plot dimension
@@ -212,10 +207,8 @@ data with very different values.}
 \item{ref.x}{See \code{ref.y} for details.}
 
 \item{ref.y}{A list with details of the horizontal lines to be added
-representing reference line(s). For example, \code{ref.y = list(h = 50, lty
-  = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-  "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
+representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
 details on adding/controlling lines.}
 
 \item{k}{Smoothing parameter supplied to \code{gam} for fitting a smooth
@@ -252,11 +245,9 @@ available (see examples below).
 For \code{method = "hexbin"} it can be useful to transform the scale if it
 is dominated by a few very high values. This is possible by supplying two
 functions: one that that applies the transformation and the other that
-inverses it. For log scaling (the default) for example, \code{trans =
-  function(x) log(x)} and \code{inv = function(x) exp(x)}. For a square root
+inverses it. For log scaling (the default) for example, \code{trans = function(x) log(x)} and \code{inv = function(x) exp(x)}. For a square root
 transform use \code{trans = sqrt} and \code{inv = function(x) x^2}. To not
-carry out any transformation the options \code{trans = NULL} and \code{inv
-  = NULL} should be used.}
+carry out any transformation the options \code{trans = NULL} and \code{inv = NULL} should be used.}
 }
 \value{
 an \link[=openair-package]{openair} object
@@ -370,7 +361,7 @@ x.inc = 10, y.inc = 2, smooth = TRUE)
 }
 }
 \seealso{
-\code{\link{linearRelation}}, \code{\link{timePlot}} and
+\code{\link[=linearRelation]{linearRelation()}}, \code{\link[=timePlot]{timePlot()}} and
 \code{\link[=timeAverage]{timeAverage()}} for details on selecting averaging times and other
 statistics in a flexible way
 }

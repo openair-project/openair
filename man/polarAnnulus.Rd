@@ -38,12 +38,10 @@ pollutant.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \code{pollutant = "nox"}. There can also
-be more than one pollutant specified e.g. \code{pollutant = c("nox",
-  "no2")}. The main use of using two or more pollutants is for model
+be more than one pollutant specified e.g. \code{pollutant = c("nox", "no2")}. The main use of using two or more pollutants is for model
 evaluation where two species would be expected to have similar
 concentrations. This saves the user stacking the data and it is possible to
-work with columns of data directly. A typical use would be \code{pollutant
-  = c("obs", "mod")} to compare two columns \dQuote{obs} (the observations)
+work with columns of data directly. A typical use would be \code{pollutant = c("obs", "mod")} to compare two columns \dQuote{obs} (the observations)
 and \dQuote{mod} (modelled values).}
 
 \item{resolution}{Two plot resolutions can be set: \dQuote{normal} and
@@ -60,8 +58,7 @@ of \dQuote{smearing-out} the concentrations. Sometimes, a useful approach
 is to express time as local time. This correction tends to produce
 better-defined diurnal profiles of concentration (or other variables) and
 allows a better comparison to be made with emissions/activity data. If set
-to \code{FALSE} then GMT is used. Examples of usage include \code{local.tz
-  = "Europe/London"}, \code{local.tz = "America/New_York"}. See
+to \code{FALSE} then GMT is used. Examples of usage include \code{local.tz = "Europe/London"}, \code{local.tz = "America/New_York"}. See
 \code{cutData} and \code{import} for more details.}
 
 \item{period}{This determines the temporal period to consider. Options are
@@ -89,8 +86,7 @@ meant for situations where there are several sites. Note, when two types
 are provided the first forms the columns and the second the rows.
 
 Also note that for the \code{polarAnnulus} function some type/period
-combinations are forbidden or make little sense. For example, \code{type =
-  "season"} and \code{period = "trend"} (which would result in a plot with
+combinations are forbidden or make little sense. For example, \code{type = "season"} and \code{period = "trend"} (which would result in a plot with
 too many gaps in it for sensible smoothing), or \code{type = "weekday"} and
 \code{period = "weekday"}.}
 
@@ -100,16 +96,14 @@ speed/direction bin. Can be \dQuote{mean} (default), \dQuote{median},
 deviation), \dQuote{weighted.mean} or \dQuote{cpf} (Conditional Probability
 Function). Because of the smoothing involved, the colour scale for some of
 these statistics is only to provide an indication of overall pattern and
-should not be interpreted in concentration units e.g. for \code{statistic =
-  "weighted.mean"} where the bin mean is multiplied by the bin frequency and
+should not be interpreted in concentration units e.g. for \code{statistic = "weighted.mean"} where the bin mean is multiplied by the bin frequency and
 divided by the total frequency. In many cases using \code{polarFreq} will
 be better. Setting \code{statistic = "weighted.mean"} can be useful because
 it provides an indication of the concentration * frequency of occurrence
 and will highlight the wind speed/direction conditions that dominate the
 overall mean.}
 
-\item{percentile}{If \code{statistic = "percentile"} or \code{statistic =
-  "cpf"} then \code{percentile} is used, expressed from 0 to 100. Note that
+\item{percentile}{If \code{statistic = "percentile"} or \code{statistic = "cpf"} then \code{percentile} is used, expressed from 0 to 100. Note that
 the percentile value is calculated in the wind speed, wind direction
 \sQuote{bins}. For this reason it can also be useful to set \code{min.bin}
 to ensure there are a sufficient number of points available to estimate a
@@ -181,7 +175,7 @@ concentrations for several pollutants on different scales e.g. NOx and CO.
 Often useful if more than one \code{pollutant} is chosen.}
 
 \item{key.header}{Adds additional text/labels to the scale key. For example,
-passing the options \code{key.header = "header", key.footer = "footer1"}
+passing the options \verb{key.header = "header", key.footer = "footer1"}
 adds addition text above and below the scale key. These arguments are
 passed to \code{drawOpenKey} via \code{quickText}, applying the
 \code{auto.text} argument, to handle formatting.}
@@ -210,8 +204,7 @@ analysing data to extract plot components and plotting them in other ways.}
 \item{...}{Other graphical parameters passed onto \code{lattice:levelplot}
 and \code{cutData}. For example, \code{polarAnnulus} passes the option
 \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type =
-  "season"}. Similarly, common axis and title labelling options (such as
+(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common axis and title labelling options (such as
 \code{xlab}, \code{ylab}, \code{main}) are passed to \code{levelplot} via
 \code{quickText} to handle routine formatting.}
 }

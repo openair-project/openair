@@ -3,7 +3,7 @@
 #' Function to import pre-calculated back trajectories using the NOAA HYSPLIT
 #' model. The trajectories have been calculated for a select range of locations
 #' which will expand in time. They cover the last 20 years or so and can be used
-#' together with other \code{openair} functions.
+#' together with other `openair` functions.
 #'
 #' This function imports pre-calculated back trajectories using the HYSPLIT
 #' trajectory model (Hybrid Single Particle Lagrangian Integrated Trajectory
@@ -41,7 +41,7 @@
 #'
 #' \describe{ \item{date}{This is the arrival point time and is repeated the
 #' number of times equal to the length of the back trajectory --- typically 96
-#' hours (except early on in the file). The format is \code{POSIXct}. It is this
+#' hours (except early on in the file). The format is `POSIXct`. It is this
 #' field that should be used to link with air quality data. See example below.}
 #' \item{receptor}{Receptor number, currently only 1.} \item{year}{The year}
 #' \item{month}{Month 1-12} \item{day}{Day of the month 1-31} \item{hour}{Hour
@@ -93,14 +93,14 @@
 #' @param progress Show a progress bar when many receptors/years are being
 #'   imported? Defaults to `TRUE`.
 #' @param year Year or years to import. To import a sequence of years from
-#'   1990 to 2000 use \code{year = 1990:2000}. To import several specific years
-#'   use \code{year = c(1990, 1995, 2000)} for example.
+#'   1990 to 2000 use `year = 1990:2000`. To import several specific years
+#'   use `year = c(1990, 1995, 2000)` for example.
 #'
 #' @param local File path to .RData trajectory files run by user and
 #' not stored on the Ricardo web server. These files would have been
 #' generated from the Hysplit trajectory code shown in the appendix
-#' of the openair manual. An example would be \code{local =
-#' 'c:/users/david/TrajFiles/'}.
+#' of the openair manual. An example would be `local =
+#' 'c:/users/david/TrajFiles/'`.
 #' @export
 #' @return Returns a data frame with pre-calculated back trajectories.
 #' @author David Carslaw
