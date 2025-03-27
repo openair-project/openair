@@ -65,6 +65,7 @@
 <li><p>When <code>n</code> isn’t defined for a qualitative palette (e.g., “Dark2”), the full qualitative palette will be returned. Previously this errored with the default of <code>100</code>.</p></li>
 <li><p><code><a href="../reference/openColours.html">openColours()</a></code> will now check whether the provided <code>scheme</code> is either a known scheme name <em>or</em> a vector of valid R colours, and provide an informative error if this is not the case.</p></li>
 </ul></li>
+<li><p><code><a href="../reference/bootMeans.html">binData()</a></code> has gained the <code>type</code>, <code>B</code> and <code>conf.int</code> arguments. The first is passed to <code><a href="../reference/cutData.html">cutData()</a></code> and the latter two to <code><a href="../reference/bootMeans.html">bootMeanDF()</a></code>.</p></li>
 <li>
 <p>Added new features for <code><a href="../reference/calcPercentile.html">calcPercentile()</a></code>:</p>
 <ul><li><p>Added the <code>type</code> argument, in line with <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
