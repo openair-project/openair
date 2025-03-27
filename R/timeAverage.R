@@ -168,10 +168,21 @@
 #' # or just average all the data, dropping site/code
 #' timeAverage(dat, avg.time = "year")
 #' }
-timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
-                        statistic = "mean", type = "default", percentile = NA,
-                        start.date = NA, end.date = NA, interval = NA,
-                        vector.ws = FALSE, fill = FALSE, progress = TRUE, ...) {
+timeAverage <- function(
+  mydata,
+  avg.time = "day",
+  data.thresh = 0,
+  statistic = "mean",
+  type = "default",
+  percentile = NA,
+  start.date = NA,
+  end.date = NA,
+  interval = NA,
+  vector.ws = FALSE,
+  fill = FALSE,
+  progress = TRUE,
+  ...
+) {
   ## get rid of R check annoyances
   year <- season <- month <- Uu <- Vv <- site <- default <- wd <- ws <- NULL
 
@@ -181,8 +192,11 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
   ## whether a time series has already been padded to fill time gaps
   padded <- FALSE
 
-  mydata <- checkPrep(mydata, vars,
-    type = "default", remove.calm = FALSE,
+  mydata <- checkPrep(
+    mydata,
+    vars,
+    type = "default",
+    remove.calm = FALSE,
     strip.white = FALSE
   )
 
@@ -192,17 +206,29 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
 
   if (!is.na(percentile)) {
     percentile <- percentile / 100
-    if (percentile < 0 | percentile > 100) stop("Percentile range outside 0-100")
+    if (percentile < 0 | percentile > 100)
+      stop("Percentile range outside 0-100")
   }
-  if (data.thresh < 0 | data.thresh > 100) stop("Data capture range outside 0-100")
+  if (data.thresh < 0 | data.thresh > 100)
+    stop("Data capture range outside 0-100")
 
   ## make data.thresh a number between 0 and 1
   data.thresh <- data.thresh / 100
 
-  if (!statistic %in% c(
-    "mean", "median", "frequency", "max", "min", "sum",
-    "sd", "percentile", "data.cap"
-  )) {
+  if (
+    !statistic %in%
+      c(
+        "mean",
+        "median",
+        "frequency",
+        "max",
+        "min",
+        "sum",
+        "sd",
+        "percentile",
+        "data.cap"
+      )
+  ) {
     stop("Statistic not recognised")
   }
 
@@ -239,7 +265,8 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
     }
   }
 
-  calc.mean <- function(mydata, start.date) { ## function to calculate means
+  calc.mean <- function(mydata, start.date) {
+    ## function to calculate means
 
     ## need to check whether avg.time is > or < actual time gap of data
     ## then data will be expanded or aggregated accordingly
@@ -301,7 +328,6 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
     if (length(by2) > 1) seconds <- as.numeric(by2[1])
     units <- by2[length(by2)]
 
-
     if (units == "sec") int <- 1
     if (units == "min") int <- 60
     if (units == "hour") int <- 3600
@@ -325,7 +351,8 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
 
       ## equivalent number of days, used to refine interval for month/year
       days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) /
-        24 / 3600
+        24 /
+        3600
 
       ## find time interval of data
       if (class(mydata$date)[1] == "Date") {
@@ -357,7 +384,9 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
         ## number of additional lines to fill
         inflateFac <- timeDiff / seconds
         if (timeDiff %% seconds != 0) {
-          stop("Non-regular time expansion selected, or non-regular input time series.")
+          stop(
+            "Non-regular time expansion selected, or non-regular input time series."
+          )
         }
 
         ## ids of original dates in new dates
@@ -377,19 +406,19 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
       return(mydata)
     }
 
-
-
     ## calculate wind components
     if ("wd" %in% names(mydata)) {
       if (is.numeric(mydata$wd) && "ws" %in% names(mydata)) {
-        mydata <- transform(mydata,
+        mydata <- transform(
+          mydata,
           Uu = ws * sin(2 * pi * wd / 360),
           Vv = ws * cos(2 * pi * wd / 360)
         )
       }
 
       if (is.numeric(mydata$wd) && !"ws" %in% names(mydata)) {
-        mydata <- transform(mydata,
+        mydata <- transform(
+          mydata,
           Uu = sin(2 * pi * wd / 360),
           Vv = cos(2 * pi * wd / 360)
         )
@@ -409,19 +438,17 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
       mydata <- mydata[!is.na(mydata$season), ]
 
       ## calculate year
-      mydata <- mutate(mydata,
-        year = year(date),
-        month = month(date)
-      )
+      mydata <- mutate(mydata, year = year(date), month = month(date))
 
       ## ids where month = 12, make December part of following year's season
       ids <- which(mydata$month == 12)
       mydata$year[ids] <- mydata$year[ids] + 1
 
       ## find mean date in year-season
-      mydata <- transform(mydata, date = ave(date, list(year, season),
-        FUN = mean
-      ))
+      mydata <- transform(
+        mydata,
+        date = ave(date, list(year, season), FUN = mean)
+      )
 
       mydata <- subset(mydata, select = -c(year, month))
     }
@@ -433,7 +460,8 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
 
     if (avg.time == "season") vars <- unique(c(vars, "season"))
 
-    if (data.thresh != 0) { ## take account of data capture
+    if (data.thresh != 0) {
+      ## take account of data capture
 
       ## need to make sure all data are present..
       ## print out time interval assumed for input time series
@@ -444,10 +472,14 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
 
       if (avg.time != "season") {
         mydata$date <-
-          lubridate::as_datetime(as.character(cut(mydata$date, avg.time)), tz = TZ)
+          lubridate::as_datetime(
+            as.character(cut(mydata$date, avg.time)),
+            tz = TZ
+          )
       }
 
-      if (statistic == "mean") { ## faster for some reason?
+      if (statistic == "mean") {
+        ## faster for some reason?
 
         avmet <- mydata %>%
           group_by(across(vars)) %>%
@@ -479,7 +511,10 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
       ## faster if do not need data capture
       if (avg.time != "season") {
         mydata$date <-
-          lubridate::as_datetime(as.character(cut(mydata$date, avg.time)), tz = TZ)
+          lubridate::as_datetime(
+            as.character(cut(mydata$date, avg.time)),
+            tz = TZ
+          )
         # mydata$date <- as.POSIXct(cut(mydata$date, avg.time), tz = TZ)
       }
 
@@ -497,13 +532,10 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
       }
     }
 
-
     if ("wd" %in% names(mydata) && statistic != "data.cap") {
       if (is.numeric(mydata$wd)) {
         ## mean wd
-        avmet <- transform(avmet,
-          wd = as.vector(atan2(Uu, Vv) * 360 / 2 / pi)
-        )
+        avmet <- transform(avmet, wd = as.vector(atan2(Uu, Vv) * 360 / 2 / pi))
 
         ## correct for negative wind directions
         ids <- which(avmet$wd < 0) ## ids where wd < 0
@@ -538,9 +570,9 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
   )
   mydata <- mydata[, unique(ids)]
 
-
   ## some LAQN data seem to have the odd missing site name
-  if ("site" %in% names(mydata)) { ## split by site
+  if ("site" %in% names(mydata)) {
+    ## split by site
 
     ## remove any NA sites
     if (anyNA(mydata$site)) {
@@ -556,10 +588,7 @@ timeAverage <- function(mydata, avg.time = "day", data.thresh = 0,
   mydata <- mydata %>%
     group_by(across(type)) %>%
     group_split() %>%
-    purrr::map(calc.mean,
-      start.date = start.date,
-      .progress = progress
-    ) %>%
+    purrr::map(calc.mean, start.date = start.date, .progress = progress) %>%
     purrr::list_rbind() %>%
     as_tibble()
 

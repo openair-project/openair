@@ -98,13 +98,23 @@
 #' @examples
 #' ## monthly plot of SO2 showing the contribution by wind sector
 #' timeProp(mydata, pollutant = "so2", avg.time = "month", proportion = "wd")
-timeProp <- function(mydata, pollutant = "nox", proportion = "cluster",
-                     avg.time = "day", type = "default",
-                     normalise = FALSE, cols = "Set1", date.breaks = 7,
-                     date.format = NULL, key.columns = 1,
-                     key.position = "right", key.title = proportion,
-                     auto.text = TRUE, plot = TRUE, ...) {
-
+timeProp <- function(
+  mydata,
+  pollutant = "nox",
+  proportion = "cluster",
+  avg.time = "day",
+  type = "default",
+  normalise = FALSE,
+  cols = "Set1",
+  date.breaks = 7,
+  date.format = NULL,
+  key.columns = 1,
+  key.position = "right",
+  key.title = proportion,
+  auto.text = TRUE,
+  plot = TRUE,
+  ...
+) {
   ## keep check happy
   sums <- NULL
   freq <- NULL
@@ -134,7 +144,6 @@ timeProp <- function(mydata, pollutant = "nox", proportion = "cluster",
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
-
     fontsize = current.font
   ))
 
@@ -195,29 +204,36 @@ timeProp <- function(mydata, pollutant = "nox", proportion = "cluster",
   # add the most common non-zero time interval
 
   results <- mydata %>%
-    mutate(xleft = as.POSIXct(cut(date, avg.time), tz = tzone),
-           xright = xleft + median(diff(xleft)[diff(xleft) != 0])) %>%
+    mutate(
+      xleft = as.POSIXct(cut(date, avg.time), tz = tzone),
+      xright = xleft + median(diff(xleft)[diff(xleft) != 0])
+    ) %>%
     group_by(across(group_1)) %>% # group by type and date interval to get overall average
     mutate(mean_value = mean(.data[[pollutant]], na.rm = TRUE)) %>%
     group_by(across(group_2)) %>%
-    summarise({{ pollutant }} := mean(.data[[pollutant]], na.rm = TRUE),
-              mean_value = mean(mean_value, na.rm = TRUE),
-              n = length(date)) %>%
+    summarise(
+      {{ pollutant }} := mean(.data[[pollutant]], na.rm = TRUE),
+      mean_value = mean(mean_value, na.rm = TRUE),
+      n = length(date)
+    ) %>%
     group_by(across(group_1)) %>%
-    mutate(weighted_mean = .data[[pollutant]] * n / sum(n),
-           Var1 = replace_na(weighted_mean, 0),
-           var2 = cumsum(Var1),
-           date = xleft)
+    mutate(
+      weighted_mean = .data[[pollutant]] * n / sum(n),
+      Var1 = replace_na(weighted_mean, 0),
+      var2 = cumsum(Var1),
+      date = xleft
+    )
 
-   ## normlaise to 100 if needed
+  ## normlaise to 100 if needed
   vars <- c(type, "date")
-   if (normalise) {
-     results <- results %>%
-       group_by(across(vars)) %>%
-       mutate(Var1 = Var1 * (100 / sum(Var1, na.rm = TRUE)),
-              var2 = cumsum(Var1))
-   }
-
+  if (normalise) {
+    results <- results %>%
+      group_by(across(vars)) %>%
+      mutate(
+        Var1 = Var1 * (100 / sum(Var1, na.rm = TRUE)),
+        var2 = cumsum(Var1)
+      )
+  }
 
   ## proper names of labelling ###################################################
   strip.dat <- strip.fun(results, type, auto.text)
@@ -261,7 +277,7 @@ timeProp <- function(mydata, pollutant = "nox", proportion = "cluster",
   results[[proportion]] <- factor(results[[proportion]], levels = thelevels)
 
   # remove missing so we can do a cumsum
-#  results <- na.omit(results)
+  #  results <- na.omit(results)
 
   # y values for plotting rectangles
   # results <- results %>%
@@ -296,7 +312,6 @@ timeProp <- function(mydata, pollutant = "nox", proportion = "cluster",
 
   sub <- "contribution weighted by mean"
 
-
   plt <- xyplot(
     myform,
     data = results,
@@ -314,27 +329,37 @@ timeProp <- function(mydata, pollutant = "nox", proportion = "cluster",
       text = list(labs),
       space = key.position,
       title = quickText(key.title, auto.text),
-      cex.title = 1, columns = key.columns
+      cex.title = 1,
+      columns = key.columns
     ),
-    par.strip.text = list(cex = 0.8), ...,
+    par.strip.text = list(cex = 0.8),
+    ...,
     panel = function(..., col, subscripts) {
       panel.grid(-1, 0)
       panel.abline(v = dates, col = "grey95", ...)
-      split(results[subscripts, ], results$date[subscripts]) %>% lapply(., panelBar)
+      split(results[subscripts, ], results$date[subscripts]) %>%
+        lapply(., panelBar)
     }
   )
 
   ## update extra args; usual method does not seem to work...
-  plt <- modifyList(plt, list(
-    ylab = ylab, xlab = xlab,
-    x.limits = xlim, y.limits = ylim, main = main
-  ))
+  plt <- modifyList(
+    plt,
+    list(
+      ylab = ylab,
+      xlab = xlab,
+      x.limits = xlim,
+      y.limits = ylim,
+      main = main
+    )
+  )
 
   if (plot) print(plt)
 
   output <- list(
     plot = plt,
-    data = results, call = match.call()
+    data = results,
+    call = match.call()
   )
   class(output) <- "openair"
   invisible(output)
@@ -352,6 +377,8 @@ panelBar <- function(dat) {
     xleft = xleft,
     ybottom = ybottom,
     xright = xright,
-    ytop = ytop, fill = dat$cols, border = NA
+    ytop = ytop,
+    fill = dat$cols,
+    border = NA
   )
 }

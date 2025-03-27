@@ -20,61 +20,72 @@ is.openair <- function(x, full.test = TRUE, ...) {
 
 #' @author Karl Ropkins
 #' @noRd
-openairApply <- function(object,
-                         fun = summary,
-                         subset = "all",
-                         ...,
-                         fun.name = deparse(substitute(fun))) {
+openairApply <- function(
+  object,
+  fun = summary,
+  subset = "all",
+  ...,
+  fun.name = deparse(substitute(fun))
+) {
   if (!is.openair(object)) {
     return(invisible(NULL))
   }
   fun.name <- if (grepl("[(]", fun.name) == TRUE) {
     "function"
   }
-  
+
   # openair header
   cli::cli_par(id = "opening")
   cli::cli_h1("{.pkg openair} object")
   cli::cli_inform("Created by:")
   cli::cli_inform("{cli::symbol$play} {.code \t{deparse(object$call)}}")
   cli::cli_end(id = "opening")
-  
+
   # test for subsets
   check <- "subsets" %in% names(object$data)
   if (check) test <- object$data$subsets
-  
+
   if (!check) {
     ans <- fun(object$data, ...)
     print(ans)
     return(invisible(ans))
   }
-  
+
   if (is.null(subset) || any(subset == "all")) {
     temp <- test
   } else {
     temp <- subset[subset %in% test]
     if (length(temp) < 1) {
       cli::cli_abort(
-        c("x" = "In {.code {fun.name}}: requested subset(s) not found",
-          "i" = "Suggest one (or more) of {.field {test}}"),
+        c(
+          "x" = "In {.code {fun.name}}: requested subset(s) not found",
+          "i" = "Suggest one (or more) of {.field {test}}"
+        ),
         call = NULL
       )
     }
-    
+
     if (length(temp) < length(subset)) {
-      cli::cli_abort(c(
-        "x" = "In {.code {fun.name}}: some requested subset(s) not found, so ignored.",
-        "i" = "Ignored subset(s): {.field {subset[subset != temp]}}",
-        "i" = "Available subset(s): {.field {test}}"
-      ), call = NULL)
+      cli::cli_abort(
+        c(
+          "x" = "In {.code {fun.name}}: some requested subset(s) not found, so ignored.",
+          "i" = "Ignored subset(s): {.field {subset[subset != temp]}}",
+          "i" = "Available subset(s): {.field {test}}"
+        ),
+        call = NULL
+      )
     }
   }
-  
-  ans <- sapply(temp, function(y) {
-    fun(object$data[[y]], ...)
-  },
-  simplify = FALSE, USE.NAMES = TRUE)
-  
+
+  ans <- sapply(
+    temp,
+    function(y) {
+      fun(object$data[[y]], ...)
+    },
+    simplify = FALSE,
+    USE.NAMES = TRUE
+  )
+
   print(ans)
   return(invisible(ans))
 }
@@ -83,11 +94,12 @@ openairApply <- function(object,
 #' @author Karl Ropkins
 #' @export
 summary.openair <- function(object, subset = "all", ...) {
-  openairApply(object,
-               fun = summary,
-               subset = subset,
-               ...,
-               fun.name = "summary"
+  openairApply(
+    object,
+    fun = summary,
+    subset = subset,
+    ...,
+    fun.name = "summary"
   )
 }
 
@@ -95,43 +107,30 @@ summary.openair <- function(object, subset = "all", ...) {
 #' @author Karl Ropkins
 #' @export
 head.openair <- function(x, subset = "all", ...) {
-  openairApply(x,
-               fun = head,
-               subset = subset,
-               ...,
-               fun.name = "head"
-  )
+  openairApply(x, fun = head, subset = subset, ..., fun.name = "head")
 }
 
 #' @method tail openair
 #' @author Karl Ropkins
 #' @export
 tail.openair <- function(x, subset = "all", ...) {
-  openairApply(x,
-               fun = tail,
-               subset = subset,
-               ...,
-               fun.name = "tail"
-  )
+  openairApply(x, fun = tail, subset = subset, ..., fun.name = "tail")
 }
 
 #' @method plot openair
 #' @author Karl Ropkins
 #' @export
-plot.openair <- function(x,
-                         subset = "all",
-                         silent = TRUE,
-                         ...) {
+plot.openair <- function(x, subset = "all", silent = TRUE, ...) {
   if (!is.openair(x)) {
     return(invisible(NULL))
   }
-  
+
   if (!silent) {
     message("\nopenair object created by: \n\t", deparse(x$call), "\n")
   }
-  
+
   test <- x$plot$subsets
-  
+
   if (is.null(test)) {
     if (!is.null(subset) && subset != "all") {
       warning(
@@ -142,8 +141,7 @@ plot.openair <- function(x,
     }
     return(plot(x$plot, ...))
   }
-  
-  
+
   if (is.null(subset) || subset == "all") {
     test <- x$main.plot
     if (is.null(test)) {
@@ -156,7 +154,7 @@ plot.openair <- function(x,
     }
     return(x$main.plot())
   }
-  
+
   # only plot 1, 1st valid
   temp <- subset[subset %in% test]
   if (length(temp) < 1) {
@@ -169,7 +167,7 @@ plot.openair <- function(x,
       call. = FALSE
     )
   }
-  
+
   if (length(temp) < length(subset)) {
     warning(
       "In plot(...): multiple subsets requested and some not found, using first valid",
@@ -177,12 +175,13 @@ plot.openair <- function(x,
     )
   } else {
     if (length(temp) > 1) {
-      warning("In plot(...): multiple subsets requested, using first valid",
-              call. = FALSE
+      warning(
+        "In plot(...): multiple subsets requested, using first valid",
+        call. = FALSE
       )
     }
   }
-  
+
   temp <- temp[1]
   # own plot style
   test <- x[[paste(temp, "plot", sep = ".")]]
@@ -201,15 +200,12 @@ plot.openair <- function(x,
 #' @method print openair
 #' @author Karl Ropkins
 #' @export
-print.openair <- function(x,
-                          silent = FALSE,
-                          plot = TRUE,
-                          ...) {
+print.openair <- function(x, silent = FALSE, plot = TRUE, ...) {
   if (!is.openair(x)) {
     return(invisible(NULL))
   }
   # must have call, data and plot elements
-  
+
   if (!silent) {
     # print function call
     cli::cli_par(id = "opening")
@@ -217,17 +213,17 @@ print.openair <- function(x,
     cli::cli_inform("Created by:")
     cli::cli_inform("{cli::symbol$play} {.code \t{deparse(x$call)}}")
     cli::cli_end(id = "opening")
-    
+
     # contains header
     cli::cli_h2("This contains:")
-    
+
     # check if subsets exist
     if ("subsets" %in% names(x$data)) {
       test <- FALSE
     } else {
       test <- TRUE
     }
-    
+
     cli::cli_par(id = "dfs")
     if (test) {
       cli::cli_inform("A single data frame:")
@@ -237,14 +233,14 @@ print.openair <- function(x,
       cli::cli_ol(paste0("$data{.field $", x$data$subsets, "}"))
     }
     cli::cli_end(id = "dfs")
-    
+
     # check if subsets exist
     if ("subsets" %in% names(x$plot)) {
       test <- FALSE
     } else {
       test <- TRUE
     }
-    
+
     cli::cli_par(id = "plots")
     if (test) {
       cli::cli_inform("A single plot:")
@@ -254,9 +250,9 @@ print.openair <- function(x,
       cli::cli_ol(paste0("$plot{.field $", x$plot$subsets, "}"))
     }
     cli::cli_end(id = "plots")
-    
+
     other <- names(x)[!names(x) %in% c("data", "call", "plot")]
-    
+
     if (length(other) > 0) {
       cli::cli_par(id = "other-stuff")
       cli::cli_inform("Other object(s):")
@@ -264,7 +260,7 @@ print.openair <- function(x,
       cli::cli_end(id = "other-stuff")
     }
   }
-  
+
   if (plot) {
     plot(x, silent = TRUE, ...)
   }
@@ -278,7 +274,7 @@ names.openair <- function(x, ...) {
   vis.elements <- c("data", "plot", "call", "clust", "clust_stats")
   # make names non-recursive
   class(x) <- "not-openair"
-  
+
   names(x)[names(x) %in% vis.elements]
 }
 
@@ -292,14 +288,11 @@ results.default <- function(object, ...) {
 }
 
 #' @export
-results.openair <- function(object,
-                            subset = "all",
-                            silent = FALSE,
-                            ...) {
+results.openair <- function(object, subset = "all", silent = FALSE, ...) {
   if (!is.openair(object)) {
     return(invisible(NULL))
   }
-  
+
   if (!silent) {
     # print function call
     cli::cli_par(id = "opening")
@@ -308,9 +301,9 @@ results.openair <- function(object,
     cli::cli_inform("{cli::symbol$play} {.code \t{deparse(object$call)}}")
     cli::cli_end(id = "opening")
   }
-  
+
   test <- object$data$subsets
-  
+
   if (is.null(test)) {
     if (!is.null(subset) && subset != "all") {
       warning(
@@ -321,8 +314,7 @@ results.openair <- function(object,
     }
     return(object$data)
   }
-  
-  
+
   if (is.null(subset) || subset == "all") {
     if (!silent) {
       message("contains", length(test), " data frame(s):")
@@ -331,7 +323,7 @@ results.openair <- function(object,
     }
     return(object$data[names(object$data) != "subsets"])
   }
-  
+
   temp <- subset[subset %in% test]
   if (length(temp) < 1) {
     stop(

@@ -136,117 +136,120 @@
 #' my1 <- importImperial(site = "my1", year = 2008, meteo = TRUE)
 #' }
 importImperial <-
-  function(site = "my1",
-           year = 2009,
-           pollutant = "all",
-           meta = FALSE,
-           meteo = FALSE,
-           extra = FALSE,
-           units = "mass",
-           to_narrow = FALSE,
-           progress = TRUE) {
+  function(
+    site = "my1",
+    year = 2009,
+    pollutant = "all",
+    meta = FALSE,
+    meteo = FALSE,
+    extra = FALSE,
+    units = "mass",
+    to_narrow = FALSE,
+    progress = TRUE
+  ) {
     ## get rid of R check annoyances
     sites <- NULL
     v10 <- NULL
     v2.5 <- NULL
-    
+
     site <- toupper(site)
-    
+
     ## rows with these site codes
     ## this preserves order of site names
     con <-
-      url((
-        paste(
+      url(
+        (paste(
           "http://www.londonair.org.uk/r_data/",
           "sites",
           ".RData",
           sep = ""
-        )
-      ))
+        ))
+      )
     load(con)
     close(con)
-    
+
     id <-
       sapply(site, function(x) {
         which(sites$SiteCode %in% toupper(x))
       })
     site.name <- sites$SiteName[id]
-    
+
     ## RData files to import
     files <- lapply(site, function(x) {
       paste(x, "_", year, sep = "")
     })
     files <- do.call(c, files)
-    
+
     loadData <- function(x) {
-      tryCatch({
-        fileName <-
-          paste("http://www.londonair.org.uk/r_data/",
-                x,
-                ".RData",
-                sep = "")
-        con <- url(fileName)
-        load(con)
-        
-        ## need to check the date starts at start of year...
-        start <- ISOdatetime(
-          year = as.numeric(format(x$date[1], "%Y")),
-          month = 1,
-          day = 1,
-          hour = 0,
-          min = 0,
-          sec = 0,
-          tz = "GMT"
-        )
-        
-        if (x$date[1] != start) {
-          ## add first row
-          x1 <- data.frame(date = start, site = x$site[1])
-          x <- bind_rows(x1, x)
+      tryCatch(
+        {
+          fileName <-
+            paste("http://www.londonair.org.uk/r_data/", x, ".RData", sep = "")
+          con <- url(fileName)
+          load(con)
+
+          ## need to check the date starts at start of year...
+          start <- ISOdatetime(
+            year = as.numeric(format(x$date[1], "%Y")),
+            month = 1,
+            day = 1,
+            hour = 0,
+            min = 0,
+            sec = 0,
+            tz = "GMT"
+          )
+
+          if (x$date[1] != start) {
+            ## add first row
+            x1 <- data.frame(date = start, site = x$site[1])
+            x <- bind_rows(x1, x)
+          }
+
+          x <- date.pad(x, type = "site") ## pad out missing dates
+          x
+        },
+        error = function(ex) {
+          warning(x, "does not exist - ignoring that one.")
+          NULL
+        },
+        finally = {
+          close(con)
         }
-        
-        x <- date.pad(x, type = "site") ## pad out missing dates
-        x
-      }, error = function(ex) {
-        warning(x, "does not exist - ignoring that one.")
-        NULL
-      }, finally = {
-        close(con)
-      })
+      )
     }
-    
+
     if (progress) {
       progress <- "Importing Air Quality Data"
     }
     thedata <-
       purrr::map(files, loadData, .progress = progress) %>%
       purrr::list_rbind()
-    
+
     if (is.null(thedata)) {
       warning("No data to import - check site codes and year.", call. = FALSE)
       return()
     }
-    
+
     if (nrow(thedata) < 1) {
       warning("No data to import - check site codes and year.", call. = FALSE)
       return()
     }
-    
+
     thedata$code <- thedata$site
-    
+
     thedata$site <-
       factor(thedata$site, labels = site.name, levels = site)
-    
+
     ## change names
     names(thedata) <- tolower(names(thedata))
-    
+
     ## if particular pollutants have been selected
     if (!missing(pollutant)) {
       if (pollutant != "all") {
         thedata <- thedata[, c("date", pollutant, "site", "code")]
       }
     }
-    
+
     ## change units to mass units, use values in ugm3Conversion table
     if (units == "mass") {
       if ("nox" %in% names(thedata)) {
@@ -267,7 +270,7 @@ importImperial <-
       if ("pm10_raw" %in% names(thedata)) {
         thedata$pm10_raw <- thedata$pm10_raw * 1.30
       }
-      
+
       msg <-
         c(
           "i" = "{.strong NOTE: Mass units are used}.",
@@ -276,32 +279,31 @@ importImperial <-
           "*" = "PM10_raw is raw data multiplied by 1.3"
         )
     }
-    
+
     ## rename PM volatile/non volatile components if present
-    
+
     if ("pmfr" %in% names(thedata)) {
       thedata <- rename(thedata, v10 = pmfr)
       thedata <- transform(thedata, v10 = -1 * v10)
     }
-    
+
     if ("p2fr" %in% names(thedata)) {
       thedata <- rename(thedata, v2.5 = p2fr)
       thedata <- transform(thedata, v2.5 = -1 * v2.5)
     }
-    
+
     if ("pmfb" %in% names(thedata)) {
       thedata <- rename(thedata, nv10 = pmfb)
     }
     if ("p2fb" %in% names(thedata)) {
       thedata <- rename(thedata, nv2.5 = p2fb)
     }
-    
-    
+
     if (units != "mass") {
       if ("pm10" %in% names(thedata)) {
         thedata$pm10_raw <- thedata$pm10_raw * 1.30
       }
-      
+
       msg <-
         c(
           "i" = "{.strong NOTE: Volume units are used}.",
@@ -310,7 +312,7 @@ importImperial <-
           "*" = "PM10_raw is raw data multiplied by 1.3"
         )
     }
-    
+
     ## don't add additional species
     if (!extra) {
       theNames <- c(
@@ -333,18 +335,18 @@ importImperial <-
       )
       thedata <- thedata[, which(names(thedata) %in% theNames)]
     }
-    
+
     if (is.null(nrow(thedata))) {
       return()
     }
-    
+
     ## warning about recent, possibly unratified data
     timeDiff <-
       difftime(Sys.time(), max(thedata$date), units = "days")
     if (timeDiff < 180) {
       warning("Some of the more recent data may not be ratified.")
     }
-    
+
     if (meteo) {
       met <- NULL
       ## merge met data
@@ -359,11 +361,11 @@ importImperial <-
       # closeAllConnections()
       thedata <- merge(thedata, met, by = "date")
     }
-    
+
     ## make sure it is in GMT
     attr(thedata$date, "tzone") <- "GMT"
     thedata <- thedata[order(thedata$site, thedata$date), ]
-    
+
     # add meta data
     if (meta) {
       meta_data <- importMeta(source = "imperial")
@@ -371,23 +373,29 @@ importImperial <-
       thedata <-
         suppressWarnings(inner_join(thedata, meta_data, by = c("code", "site")))
     }
-    
+
     if (to_narrow) {
       if (meta) {
         thedata <-
-          pivot_longer(thedata,
-                       -c(date, site, code, latitude, longitude, site.type),
-                       names_to = "pollutant") %>%
+          pivot_longer(
+            thedata,
+            -c(date, site, code, latitude, longitude, site.type),
+            names_to = "pollutant"
+          ) %>%
           arrange(site, code, pollutant, date)
       } else {
         thedata <-
-          pivot_longer(thedata, -c(date, site, code), names_to = "pollutant") %>%
+          pivot_longer(
+            thedata,
+            -c(date, site, code),
+            names_to = "pollutant"
+          ) %>%
           arrange(site, code, pollutant, date)
       }
     }
-    
+
     cli::cli_inform(msg)
-    
+
     return(as_tibble(thedata))
   }
 
@@ -395,21 +403,25 @@ importImperial <-
 #' @order 2
 #' @export
 importKCL <-
-  function(site = "my1",
-           year = 2009,
-           pollutant = "all",
-           met = FALSE,
-           units = "mass",
-           extra = FALSE,
-           meta = FALSE,
-           to_narrow = FALSE,
-           progress = TRUE) {
+  function(
+    site = "my1",
+    year = 2009,
+    pollutant = "all",
+    met = FALSE,
+    units = "mass",
+    extra = FALSE,
+    meta = FALSE,
+    to_narrow = FALSE,
+    progress = TRUE
+  ) {
     cli::cli_warn(
-      c("i" = "{.fun importKCL} has been superseded by, and is equivalent to, {.fun importImperial}. {.strong Please use {.fun importImperial} going forward.}"),
+      c(
+        "i" = "{.fun importKCL} has been superseded by, and is equivalent to, {.fun importImperial}. {.strong Please use {.fun importImperial} going forward.}"
+      ),
       .frequency = "regularly",
       .frequency_id = "imperial"
     )
-    
+
     importImperial(
       site = site,
       year = year,

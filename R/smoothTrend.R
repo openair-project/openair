@@ -143,28 +143,58 @@
 #' smoothTrend(mydata, pollutant = "nox")
 #'
 #' # trend plot by each of 8 wind sectors
-#' \dontrun{smoothTrend(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")}
+#' \dontrun{
+#' smoothTrend(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
+#' }
 #'
 #' # several pollutants, no plotting symbol
-#' \dontrun{smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), pch = NA)}
+#' \dontrun{
+#' smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), pch = NA)
+#' }
 #'
 #' # percentiles
-#' \dontrun{smoothTrend(mydata, pollutant = "o3", statistic = "percentile",
-#' percentile = 95)}
+#' \dontrun{
+#' smoothTrend(mydata,
+#'   pollutant = "o3", statistic = "percentile",
+#'   percentile = 95
+#' )
+#' }
 #'
 #' # several percentiles with control over lines used
-#' \dontrun{smoothTrend(mydata, pollutant = "o3", statistic = "percentile",
-#' percentile = c(5, 50, 95), lwd = c(1, 2, 1), lty = c(5, 1, 5))}
-smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
-                        type = "default", statistic = "mean", avg.time = "month",
-                        percentile = NA, data.thresh = 0, simulate = FALSE,
-                        n = 200, autocor = FALSE, cols = "brewer1",
-                        shade = "grey95", xlab = "year",
-                        y.relation = "same", ref.x = NULL, ref.y = NULL,
-                        key.columns = length(percentile), name.pol = pollutant,
-                        ci = TRUE, alpha = 0.2, date.breaks = 7,
-                        auto.text = TRUE, k = NULL, plot = TRUE, ...) {
-
+#' \dontrun{
+#' smoothTrend(mydata,
+#'   pollutant = "o3", statistic = "percentile",
+#'   percentile = c(5, 50, 95), lwd = c(1, 2, 1), lty = c(5, 1, 5)
+#' )
+#' }
+smoothTrend <- function(
+  mydata,
+  pollutant = "nox",
+  deseason = FALSE,
+  type = "default",
+  statistic = "mean",
+  avg.time = "month",
+  percentile = NA,
+  data.thresh = 0,
+  simulate = FALSE,
+  n = 200,
+  autocor = FALSE,
+  cols = "brewer1",
+  shade = "grey95",
+  xlab = "year",
+  y.relation = "same",
+  ref.x = NULL,
+  ref.y = NULL,
+  key.columns = length(percentile),
+  name.pol = pollutant,
+  ci = TRUE,
+  alpha = 0.2,
+  date.breaks = 7,
+  auto.text = TRUE,
+  k = NULL,
+  plot = TRUE,
+  ...
+) {
   ## get rid of R check annoyances
   variable <- NULL
 
@@ -179,7 +209,7 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
- #
+    #
     fontsize = current.font
   ))
 
@@ -252,7 +282,8 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
 
   ## equivalent number of days, used to refine interval for month/year
   days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) /
-    24 / 3600
+    24 /
+    3600
 
   ## better interval, most common interval in a year
   if (days == 31) interval <- "month"
@@ -280,8 +311,13 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
   # in the case of mutiple percentiles, these are assinged and treated
   # like multiple pollutants
 
-  mydata <- gather(mydata, key = variable, value = value, pollutant,
-                   factor_key = TRUE)
+  mydata <- gather(
+    mydata,
+    key = variable,
+    value = value,
+    pollutant,
+    factor_key = TRUE
+  )
 
   if (length(percentile) > 1) {
     vars <- c(type, "variable")
@@ -291,17 +327,15 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
       do(calcPercentile(
         .,
         pollutant = "value",
-        avg.time = avg.time, percentile = percentile,
+        avg.time = avg.time,
+        percentile = percentile,
         data.thresh = data.thresh
       ))
 
     vars <- paste0("percentile.", percentile)
 
     mydata <- gather(mydata, key = variable, value = value, vars)
-
-
   } else {
-
     mydata <- suppressWarnings(timeAverage(
       mydata,
       type = c(type, "variable"),
@@ -319,9 +353,10 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
   }
 
   process.cond <- function(mydata) {
-
     ## return if nothing to analyse
-    if (all(is.na(mydata$value))) return(data.frame(date = NA, conc = NA))
+    if (all(is.na(mydata$value))) {
+      return(data.frame(date = NA, conc = NA))
+    }
 
     ## sometimes data have long trailing NAs, so start and end at
     ## first and last data
@@ -339,23 +374,21 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
     if (nrow(mydata) <= 24) deseason <- FALSE
 
     if (deseason) {
-
       myts <- ts(
         mydata[["value"]],
         start = c(start.year, start.month),
-        end = c(end.year, end.month), frequency = 12
+        end = c(end.year, end.month),
+        frequency = 12
       )
 
       # fill any missing data using a Kalman filter
 
       if (any(is.na(myts))) {
-
         # use forecast package to get best arima
-        fit <- ts(rowSums(tsSmooth(StructTS(myts))[,-2]))
+        fit <- ts(rowSums(tsSmooth(StructTS(myts))[, -2]))
         id <- which(is.na(myts))
 
         myts[id] <- fit[id]
-
       }
 
       ssd <- stl(myts, s.window = 11, robust = TRUE, s.degree = 1)
@@ -364,12 +397,14 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
       deseas <- as.vector(deseas)
 
       results <- data.frame(
-        date = mydata$date, conc = as.vector(deseas),
+        date = mydata$date,
+        conc = as.vector(deseas),
         stringsAsFactors = FALSE
       )
     } else {
       results <- data.frame(
-        date = mydata$date, conc = mydata[["value"]],
+        date = mydata$date,
+        conc = mydata[["value"]],
         stringsAsFactors = FALSE
       )
     }
@@ -443,10 +478,14 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
 
   ## use pollutant names or user-supplied names
   if (!missing(name.pol)) {
-    key.lab <- sapply(seq_along(name.pol), function(x)
-      quickText(name.pol[x], auto.text))
+    key.lab <- sapply(seq_along(name.pol), function(x) {
+      quickText(name.pol[x], auto.text)
+    })
   } else {
-    key.lab <- sapply(seq_along(npol), function(x) quickText(npol[x], auto.text))
+    key.lab <- sapply(
+      seq_along(npol),
+      function(x) quickText(npol[x], auto.text)
+    )
   }
 
   if (length(npol) > 1) {
@@ -457,10 +496,14 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
     key <- list(
       lines = list(
         col = myColors[1:length(npol)],
-        lty = Args$lty, lwd = Args$lwd,
-        pch = Args$pch, type = "b", cex = Args$cex
+        lty = Args$lty,
+        lwd = Args$lwd,
+        pch = Args$pch,
+        type = "b",
+        cex = Args$cex
       ),
-      text = list(lab = key.lab), space = "bottom",
+      text = list(lab = key.lab),
+      space = "bottom",
       columns = key.columns
     )
 
@@ -490,7 +533,9 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
   if (is.null(xlim)) xlim <- range(mydata$date) + c(-1 * gap, gap)
 
   xyplot.args <- list(
-    x = myform, data = res, groups = res$variable,
+    x = myform,
+    data = res,
+    groups = res$variable,
     as.table = TRUE,
     strip = strip,
     strip.left = strip.left,
@@ -503,23 +548,27 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
       y = list(relation = y.relation, rot = 0)
     ),
     panel = panel.superpose,
-    panel.groups = function(x,
-                            y,
-                            group.number,
-                            lwd,
-                            lty,
-                            pch,
-                            col,
-                            col.line,
-                            col.symbol,
-                            subscripts,
-                            type = "b",
-                            ...) {
+    panel.groups = function(
+      x,
+      y,
+      group.number,
+      lwd,
+      lty,
+      pch,
+      col,
+      col.line,
+      col.symbol,
+      subscripts,
+      type = "b",
+      ...
+    ) {
       if (group.number == 1) {
         ## otherwise this is called every time
 
         panel.shade(
-          res, start.year, end.year,
+          res,
+          start.year,
+          end.year,
           ylim = current.panel.limits()$ylim,
           shade
         )
@@ -527,20 +576,30 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
       }
 
       panel.xyplot(
-        x, y,
-        type = "b", lwd = lwd,
-        lty = lty, pch = pch,
+        x,
+        y,
+        type = "b",
+        lwd = lwd,
+        lty = lty,
+        pch = pch,
         col.line = myColors[group.number],
-        col.symbol = myColors[group.number], ...
+        col.symbol = myColors[group.number],
+        ...
       )
 
       panel.gam(
-        x, y,
+        x,
+        y,
         col = myColors[group.number],
-        k = k, myColors[group.number],
-        simulate = simulate, n.sim = n,
-        autocor = autocor, lty = 1, lwd = 1,
-        se = ci, ...
+        k = k,
+        myColors[group.number],
+        simulate = simulate,
+        n.sim = n,
+        autocor = autocor,
+        lty = 1,
+        lwd = 1,
+        se = ci,
+        ...
       )
 
       ## add reference lines
@@ -557,7 +616,8 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
 
   newdata <- res
   output <- list(
-    plot = plt, data = list(data = newdata, fit = fit),
+    plot = plt,
+    data = list(data = newdata, fit = fit),
     call = match.call()
   )
   class(output) <- "openair"

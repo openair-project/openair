@@ -113,13 +113,26 @@
 #'
 #' modStats(mydata, mod = "no2", obs = "nox", type = "season")
 #'
-#'
-modStats <- function(mydata, mod = "mod", obs = "obs",
-                     statistic = c(
-                       "n", "FAC2", "MB", "MGE", "NMB",
-                       "NMGE", "RMSE", "r", "COE", "IOA"
-                     ),
-                     type = "default", rank.name = NULL, ...) {
+modStats <- function(
+  mydata,
+  mod = "mod",
+  obs = "obs",
+  statistic = c(
+    "n",
+    "FAC2",
+    "MB",
+    "MGE",
+    "NMB",
+    "NMGE",
+    "RMSE",
+    "r",
+    "COE",
+    "IOA"
+  ),
+  type = "default",
+  rank.name = NULL,
+  ...
+) {
   ## function to calculate model evaluation statistics
   ## the default is to use the entire data set.
   ## Requires a field "date" and optional conditioning variables representing measured and modelled values
@@ -130,8 +143,16 @@ modStats <- function(mydata, mod = "mod", obs = "obs",
   if (any(type %in% dateTypes)) vars <- c("date", vars)
 
   theStats <- c(
-    "n", "FAC2", "MB", "MGE", "NMB", "NMGE", "RMSE",
-    "r", "COE", "IOA"
+    "n",
+    "FAC2",
+    "MB",
+    "MGE",
+    "NMB",
+    "NMGE",
+    "RMSE",
+    "r",
+    "COE",
+    "IOA"
   )
 
   matching <- statistic %in% theStats
@@ -143,7 +164,9 @@ modStats <- function(mydata, mod = "mod", obs = "obs",
 
   ## check the data
   mydata <- checkPrep(
-    mydata, vars, type,
+    mydata,
+    vars,
+    type,
     remove.calm = FALSE,
     strip.white = FALSE
   )
@@ -232,16 +255,26 @@ modStats <- function(mydata, mod = "mod", obs = "obs",
     res.IOA <- NULL
   }
 
-
   ## merge them all into one data frame
   results <- list(
-    res.n, res.FAC, res.MB, res.MGE, res.NMB, res.NMGE, res.RMSE, res.r,
-    res.COE, res.IOA
+    res.n,
+    res.FAC,
+    res.MB,
+    res.MGE,
+    res.NMB,
+    res.NMGE,
+    res.RMSE,
+    res.r,
+    res.COE,
+    res.IOA
   )
 
   ## remove NULLs from lits
   results <- results[!sapply(results, is.null)]
-  results <- Reduce(function(x, y, by = type) merge(x, y, by = type, all = TRUE), results)
+  results <- Reduce(
+    function(x, y, by = type) merge(x, y, by = type, all = TRUE),
+    results
+  )
 
   results <- sortDataFrame(results, key = type)
 
@@ -276,7 +309,6 @@ sortDataFrame <- function(x, key, ...) {
 
 
 rankModels <- function(mydata, rank.name = "group") {
-
   ## sort by COE
   mydata <- sortDataFrame(mydata, "COE", decreasing = TRUE)
 }
@@ -333,7 +365,7 @@ NMGE <- function(x, mod = "mod", obs = "obs") {
 ## root mean square error
 RMSE <- function(x, mod = "mod", obs = "obs") {
   x <- na.omit(x[, c(mod, obs)])
-  res <- mean((x[[mod]] - x[[obs]]) ^ 2) ^ 0.5
+  res <- mean((x[[mod]] - x[[obs]])^2)^0.5
   data.frame(RMSE = res)
 }
 

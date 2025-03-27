@@ -55,54 +55,69 @@
 #'   geom_pointrange() +
 #'   facet_wrap(vars(weekend))
 #' }
-#' 
-binData <- function(mydata,
-                    bin = "nox",
-                    uncer = "no2",
-                    type = "default",
-                    n = 40,
-                    interval = NA,
-                    breaks = NA,
-                    conf.int = 0.95,
-                    B = 250,
-                    ...) {
+#'
+binData <- function(
+  mydata,
+  bin = "nox",
+  uncer = "no2",
+  type = "default",
+  n = 40,
+  interval = NA,
+  breaks = NA,
+  conf.int = 0.95,
+  B = 250,
+  ...
+) {
   if (!is.na(interval)) {
-    mydata$interval <- cut(mydata[[bin]], sort(unique(round_any(
-      mydata[[bin]], interval
-    ))), include.lowest = TRUE)
+    mydata$interval <- cut(
+      mydata[[bin]],
+      sort(unique(round_any(
+        mydata[[bin]],
+        interval
+      ))),
+      include.lowest = TRUE
+    )
   } else if (!anyNA(breaks)) {
-    mydata$interval <- cut(mydata[[bin]], breaks = breaks, include.lowest = TRUE)
+    mydata$interval <- cut(
+      mydata[[bin]],
+      breaks = breaks,
+      include.lowest = TRUE
+    )
   } else {
     mydata$interval <- cut(mydata[[bin]], breaks = n)
   }
-  
+
   # cut for type
   mydata <- cutData(mydata, type = type, ...)
-  
+
   # remove any missing intervals
   mydata <- mydata[!is.na(mydata$interval), ]
-  
+
   # calculate 95% CI in mean
-  uncert <- dplyr::reframe(mydata,
-                           bootMeanDF(.data[[uncer]], conf.int = conf.int, B = B),
-                           .by = dplyr::all_of(c("interval", type)))
-  
+  uncert <- dplyr::reframe(
+    mydata,
+    bootMeanDF(.data[[uncer]], conf.int = conf.int, B = B),
+    .by = dplyr::all_of(c("interval", type))
+  )
+
   # calculate mean for other variables
-  means <- dplyr::summarise(mydata,
-                            dplyr::across(dplyr::where(is.numeric), function(x) {
-                              mean(x, na.rm = TRUE)
-                            }),
-                            .by = dplyr::all_of(c("interval", type)))
-  
+  means <- dplyr::summarise(
+    mydata,
+    dplyr::across(dplyr::where(is.numeric), function(x) {
+      mean(x, na.rm = TRUE)
+    }),
+    .by = dplyr::all_of(c("interval", type))
+  )
+
   # join dataframes
   by <- c("interval", type)
   mydata <- dplyr::inner_join(means, uncert, by = by)
-  
+
   # drop type column if default
   if (type == "default") {
     mydata$default <- NULL
   }
-  
+
   # return
   return(mydata)
 }
@@ -114,9 +129,12 @@ binData <- function(mydata,
 #' @export
 bootMeanDF <- function(x, conf.int = 0.95, B = 1000) {
   if (!is.vector(x)) {
-    cli::cli_abort(c("x" = "{.field x} should be a vector.", "i" = "{.field x} is a {class(x)}."))
+    cli::cli_abort(c(
+      "x" = "{.field x} should be a vector.",
+      "i" = "{.field x} is a {class(x)}."
+    ))
   }
-  
+
   res <- bootMean(x = x, conf.int = conf.int, B = B)
   res <- data.frame(
     mean = res[1],
@@ -140,9 +158,15 @@ bootMean <- function(x, conf.int = 0.95, B = 1000, ...) {
       Upper = NA
     ))
   }
-  z <- unlist(lapply(1:B, function(i, x, N) {
-    sum(x[(sample.int(N, N, TRUE, NULL))])
-  }, x = x, N = n)) / n
+  z <- unlist(lapply(
+    1:B,
+    function(i, x, N) {
+      sum(x[(sample.int(N, N, TRUE, NULL))])
+    },
+    x = x,
+    N = n
+  )) /
+    n
   quant <- quantile(z, c((1 - conf.int) / 2, (1 + conf.int) / 2))
   names(quant) <- NULL
   res <- c(
@@ -156,12 +180,14 @@ bootMean <- function(x, conf.int = 0.95, B = 1000, ...) {
 
 #' difference between bootmeans
 #' @noRd
-bootMeanDiff <- function(mydata,
-                         x = "x",
-                         y = "y",
-                         conf.int = 0.95,
-                         B = 1000,
-                         na.rm = FALSE) {
+bootMeanDiff <- function(
+  mydata,
+  x = "x",
+  y = "y",
+  conf.int = 0.95,
+  B = 1000,
+  na.rm = FALSE
+) {
   ## calculates bootstrap mean differences
   ## assumes y - x
   x.name <- x
@@ -202,9 +228,21 @@ bootMeanDiff <- function(mydata,
 
   x <- bootMean(x, B = B)
   y <- bootMean(y, B = B)
-  quant1 <- quantile(x, c((1 - conf.int) / 2, (1 + conf.int) / 2), na.rm = na.rm)
-  quant2 <- quantile(y, c((1 - conf.int) / 2, (1 + conf.int) / 2), na.rm = na.rm)
-  quant <- quantile(y - x, c((1 - conf.int) / 2, (1 + conf.int) / 2), na.rm = na.rm)
+  quant1 <- quantile(
+    x,
+    c((1 - conf.int) / 2, (1 + conf.int) / 2),
+    na.rm = na.rm
+  )
+  quant2 <- quantile(
+    y,
+    c((1 - conf.int) / 2, (1 + conf.int) / 2),
+    na.rm = na.rm
+  )
+  quant <- quantile(
+    y - x,
+    c((1 - conf.int) / 2, (1 + conf.int) / 2),
+    na.rm = na.rm
+  )
   names(quant1) <- NULL
   names(quant2) <- NULL
   names(quant) <- NULL

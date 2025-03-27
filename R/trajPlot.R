@@ -109,28 +109,46 @@
 #' lond <- importTraj("london", 2010)
 #' # well, HYSPLIT seems to think there certainly were conditions where trajectories
 #' # orginated from Iceland...
-#' trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"))}
+#' trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"))
+#' }
 #'
 #' # plot by day, need a column that makes a date
 #' \dontrun{
 #' lond$day <- as.Date(lond$date)
 #' trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
-#' type = "day")
+#'   type = "day"
+#' )
 #' }
 #'
 #' # or show each day grouped by colour, with some other options set
 #' \dontrun{
-#'  trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
-#' group = "day", col = "turbo", lwd = 2, key.pos = "right", key.col = 1)
+#' trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
+#'   group = "day", col = "turbo", lwd = 2, key.pos = "right", key.col = 1
+#' )
 #' }
 #' # more examples to follow linking with concentration measurements...
 #'
-trajPlot <- function(mydata, lon = "lon", lat = "lat", pollutant = "height",
-                     type = "default", map = TRUE, group = NA, map.fill = TRUE,
-                     map.res = "default", map.cols = "grey40",
-                     map.alpha = 0.4, projection = "lambert",
-                     parameters = c(51, 51), orientation = c(90, 0, 0),
-                     grid.col = "deepskyblue", npoints = 12, origin = TRUE, plot = TRUE,...) {
+trajPlot <- function(
+  mydata,
+  lon = "lon",
+  lat = "lat",
+  pollutant = "height",
+  type = "default",
+  map = TRUE,
+  group = NA,
+  map.fill = TRUE,
+  map.res = "default",
+  map.cols = "grey40",
+  map.alpha = 0.4,
+  projection = "lambert",
+  parameters = c(51, 51),
+  orientation = c(90, 0, 0),
+  grid.col = "deepskyblue",
+  npoints = 12,
+  origin = TRUE,
+  plot = TRUE,
+  ...
+) {
   len <- NULL
   hour.inc <- NULL ## silence R check
 
@@ -189,7 +207,6 @@ trajPlot <- function(mydata, lon = "lon", lat = "lat", pollutant = "height",
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
-
     fontsize = current.font
   ))
 
@@ -240,8 +257,8 @@ trajPlot <- function(mydata, lon = "lon", lat = "lat", pollutant = "height",
   mydata[["lon"]] <- tmp$x
   mydata[["lat"]] <- tmp$y
 
-
-  if (missing(pollutant)) { ## don't need key
+  if (missing(pollutant)) {
+    ## don't need key
 
     if (is.na(group)) key <- FALSE else key <- TRUE
 
@@ -251,15 +268,26 @@ trajPlot <- function(mydata, lon = "lon", lat = "lat", pollutant = "height",
 
     scatterPlot.args <- list(
       mydata,
-      x = lon, y = lat, z = NA,
-      type = type, method = method,
-      map = map, key = key, group = group,
-      map.fill = map.fill, map.res = map.res,
-      map.cols = map.cols, map.alpha = map.alpha,
-      traj = TRUE, projection = projection,
-      parameters = parameters, orientation = orientation,
-      grid.col = grid.col, trajLims = trajLims,
-      receptor = receptor, npoints = npoints,
+      x = lon,
+      y = lat,
+      z = NA,
+      type = type,
+      method = method,
+      map = map,
+      key = key,
+      group = group,
+      map.fill = map.fill,
+      map.res = map.res,
+      map.cols = map.cols,
+      map.alpha = map.alpha,
+      traj = TRUE,
+      projection = projection,
+      parameters = parameters,
+      orientation = orientation,
+      grid.col = grid.col,
+      trajLims = trajLims,
+      receptor = receptor,
+      npoints = npoints,
       origin = origin
     )
   } else {
@@ -269,15 +297,25 @@ trajPlot <- function(mydata, lon = "lon", lat = "lat", pollutant = "height",
 
     scatterPlot.args <- list(
       mydata,
-      x = lon, y = lat, z = pollutant,
-      type = type, method = method,
-      map = map, group = group,
-      map.fill = map.fill, map.res = map.res,
+      x = lon,
+      y = lat,
+      z = pollutant,
+      type = type,
+      method = method,
+      map = map,
+      group = group,
+      map.fill = map.fill,
+      map.res = map.res,
       map.cols = map.cols,
-      map.alpha = map.alpha, traj = TRUE, projection = projection,
-      parameters = parameters, orientation = orientation,
-      grid.col = grid.col, trajLims = trajLims,
-      receptor = receptor, npoints = npoints,
+      map.alpha = map.alpha,
+      traj = TRUE,
+      projection = projection,
+      parameters = parameters,
+      orientation = orientation,
+      grid.col = grid.col,
+      trajLims = trajLims,
+      receptor = receptor,
+      npoints = npoints,
       origin = origin
     )
   }
@@ -288,19 +326,20 @@ trajPlot <- function(mydata, lon = "lon", lat = "lat", pollutant = "height",
 
   # plot
   plt <- do.call(scatterPlot, scatterPlot.args)
-  
+
   output <-
-    list(plot = plt$plot,
-         data = dplyr::tibble(mydata),
-         call = match.call())
+    list(
+      plot = plt$plot,
+      data = dplyr::tibble(mydata),
+      call = match.call()
+    )
   class(output) <- "openair"
-  
+
   invisible(output)
 }
 
 
 setTrajLims <- function(mydata, Args, projection, parameters, orientation) {
-
   ## xlim and ylim set by user
   if ("xlim" %in% names(Args) & !all(is.na(Args$xlim))) {
     x1 <- Args$xlim[1]
@@ -321,18 +360,25 @@ setTrajLims <- function(mydata, Args, projection, parameters, orientation) {
   n <- 40 ## number of points along each vertex
 
   X <- c(
-    seq(x1, x1, length.out = n), seq(x1, x2, length.out = n),
-    seq(x2, x2, length.out = n), seq(x2, x1, length.out = n)
+    seq(x1, x1, length.out = n),
+    seq(x1, x2, length.out = n),
+    seq(x2, x2, length.out = n),
+    seq(x2, x1, length.out = n)
   )
 
   Y <- c(
-    seq(y1, y2, length.out = n), seq(y2, y2, length.out = n),
-    seq(y2, y1, length.out = n), seq(y1, y1, length.out = n)
+    seq(y1, y2, length.out = n),
+    seq(y2, y2, length.out = n),
+    seq(y2, y1, length.out = n),
+    seq(y1, y1, length.out = n)
   )
 
   tmp <- mapproject(
-    x = X, y = Y, projection = projection,
-    parameters = parameters, orientation = orientation
+    x = X,
+    y = Y,
+    projection = projection,
+    parameters = parameters,
+    orientation = orientation
   )
 
   Args$xlim <- tmp$range[1:2]
@@ -341,10 +387,21 @@ setTrajLims <- function(mydata, Args, projection, parameters, orientation) {
 }
 
 ## function from mapproj to add grid lines to a map
-map.grid2 <- function(lim, nx = 9, ny = 9, labels = TRUE, pretty = TRUE,
-                      cex = 1, col = "deepskyblue", lty = 2, font = 1,
-                      projection = "rectangular", parameters = 52,
-                      orientation = c(90, 0, 0), ...) {
+map.grid2 <- function(
+  lim,
+  nx = 9,
+  ny = 9,
+  labels = TRUE,
+  pretty = TRUE,
+  cex = 1,
+  col = "deepskyblue",
+  lty = 2,
+  font = 1,
+  projection = "rectangular",
+  parameters = 52,
+  orientation = c(90, 0, 0),
+  ...
+) {
   pretty.range <- function(lim, ...) {
     x <- pretty(lim, ...)
     if (abs(x[1] - lim[1]) > abs(x[2] - lim[1])) {
@@ -379,31 +436,41 @@ map.grid2 <- function(lim, nx = 9, ny = 9, labels = TRUE, pretty = TRUE,
   if (pretty) {
     x <- pretty.range(lim[1:2], n = nx)
     y <- pretty.range(lim[3:4], n = ny)
-  }
-  else {
+  } else {
     x <- seq(lim[1], lim[2], len = nx)
     y <- seq(lim[3], lim[4], len = ny)
   }
   p <- mapproject(
-    expand.grid(x = c(
-      seq(lim[1], lim[2], len = 100),
-      NA
-    ), y = y),
+    expand.grid(
+      x = c(
+        seq(lim[1], lim[2], len = 100),
+        NA
+      ),
+      y = y
+    ),
     projection = projection,
     parameters = parameters,
     orientation = orientation
   )
   p <- maps::map.wrap(p)
   llines(p, col = col, lty = lty, ...)
-  llines(mapproject(
-    expand.grid(y = c(
-      seq(lim[3], lim[4], len = 100),
-      NA
-    ), x = x),
-    projection = projection,
-    parameters = parameters,
-    orientation = orientation
-  ), col = col, lty = lty, ...)
+  llines(
+    mapproject(
+      expand.grid(
+        y = c(
+          seq(lim[3], lim[4], len = 100),
+          NA
+        ),
+        x = x
+      ),
+      projection = projection,
+      parameters = parameters,
+      orientation = orientation
+    ),
+    col = col,
+    lty = lty,
+    ...
+  )
   if (labels) {
     tx <- x[2]
     xinc <- median(diff(x))
@@ -411,25 +478,39 @@ map.grid2 <- function(lim, nx = 9, ny = 9, labels = TRUE, pretty = TRUE,
     yinc <- median(diff(y))
     ltext(
       mapproject(
-        expand.grid(x = x + xinc * 0.05, y = ty +
-          yinc * 0.5),
+        expand.grid(
+          x = x + xinc * 0.05,
+          y = ty +
+            yinc * 0.5
+        ),
         projection = projection,
         parameters = parameters,
         orientation = orientation
       ),
-      labels = auto.format(x), cex = cex,
-      adj = c(0, 0), col = col, font = font, ...
+      labels = auto.format(x),
+      cex = cex,
+      adj = c(0, 0),
+      col = col,
+      font = font,
+      ...
     )
     ltext(
       mapproject(
-        expand.grid(x = tx + xinc * 0.5, y = y +
-          yinc * 0.05),
+        expand.grid(
+          x = tx + xinc * 0.5,
+          y = y +
+            yinc * 0.05
+        ),
         projection = projection,
         parameters = parameters,
         orientation = orientation
       ),
-      labels = auto.format(y), cex = cex,
-      adj = c(0, 0), col = col, font = font, ...
+      labels = auto.format(y),
+      cex = cex,
+      adj = c(0, 0),
+      col = col,
+      font = font,
+      ...
     )
   }
 }

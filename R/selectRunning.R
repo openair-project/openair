@@ -46,32 +46,38 @@
 #' \dontrun{
 #' polarPlot(mydata, pollutant = "nox", type = "criterion")
 #' }
-selectRunning <- function(mydata,
-                          pollutant = "nox",
-                          criterion = ">",
-                          run.len = 5L,
-                          threshold = 500,
-                          type = "default",
-                          name = "criterion",
-                          result = c("yes", "no"),
-                          mode = c("flag", "filter"),
-                          ...) {
+selectRunning <- function(
+  mydata,
+  pollutant = "nox",
+  criterion = ">",
+  run.len = 5L,
+  threshold = 500,
+  type = "default",
+  name = "criterion",
+  result = c("yes", "no"),
+  mode = c("flag", "filter"),
+  ...
+) {
   # check inputs are valid
   mode <- rlang::arg_match(mode)
-  criterion <- rlang::arg_match(criterion, c("<", ">", "<=", ">=", "==", "!="), multiple = FALSE)
-  
+  criterion <- rlang::arg_match(
+    criterion,
+    c("<", ">", "<=", ">=", "==", "!="),
+    multiple = FALSE
+  )
+
   # construct expression
   expr <- paste(pollutant, criterion, threshold)
-  
+
   # handle type
   mydata <- cutData(mydata, type = type, ...)
-  
+
   # pad out missing data
   thedata <- date.pad(mydata, type = type)
-  
+
   # save input for later
   mydata <- thedata
-  
+
   # check input data - ensures `date` are in correct order
   vars <- unique(c("date", names(mydata)))
   thedata <- checkPrep(
@@ -80,7 +86,7 @@ selectRunning <- function(mydata,
     type = type,
     remove.calm = FALSE
   )
-  
+
   # calculate run lengths
   thedata <-
     thedata %>%
@@ -104,21 +110,21 @@ selectRunning <- function(mydata,
         missing = FALSE
       )
     )
-  
+
   # format outputs
   if (mode == "filter") {
     mydata <- mydata[thedata$`__flag__`, ]
   }
-  
+
   if (mode == "flag") {
     mydata[[name]] <- thedata$`__flag__`
     mydata[[name]] <- ifelse(mydata[[name]], result[1], result[2])
   }
-  
+
   if (type == "default") {
     mydata$default <- NULL
   }
-  
+
   # return
   return(mydata)
 }

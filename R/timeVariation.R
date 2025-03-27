@@ -188,35 +188,48 @@
 #' # for a subset of conditions
 #' \dontrun{
 #' timeVariation(subset(mydata, ws > 3 & wd > 100 & wd < 270),
-#' pollutant = "pm10", ylab = "pm10 (ug/m3)")
+#'   pollutant = "pm10", ylab = "pm10 (ug/m3)"
+#' )
 #' }
 #'
 #' # multiple pollutants with concentrations normalised
-#' \dontrun{timeVariation(mydata, pollutant = c("nox", "co"), normalise = TRUE)}
+#' \dontrun{
+#' timeVariation(mydata, pollutant = c("nox", "co"), normalise = TRUE)
+#' }
 #'
 #' # show BST/GMT variation (see ?cutData for more details)
 #' # the NOx plot shows the profiles are very similar when expressed in
 #' # local time, showing that the profile is dominated by a local source
 #' # that varies by local time and not by GMT i.e. road vehicle emissions
 #'
-#' \dontrun{timeVariation(mydata, pollutant = "nox", type = "dst", local.tz = "Europe/London")}
+#' \dontrun{
+#' timeVariation(mydata, pollutant = "nox", type = "dst", local.tz = "Europe/London")
+#' }
 #'
 #' ## In this case it is better to group the results for clarity:
-#' \dontrun{timeVariation(mydata, pollutant = "nox", group = "dst", local.tz = "Europe/London")}
+#' \dontrun{
+#' timeVariation(mydata, pollutant = "nox", group = "dst", local.tz = "Europe/London")
+#' }
 #'
 #' # By contrast, a variable such as wind speed shows a clear shift when
 #' #  expressed in local time. These two plots can help show whether the
 #' #  variation is dominated by man-made influences or natural processes
 #'
-#' \dontrun{timeVariation(mydata, pollutant = "ws", group = "dst", local.tz = "Europe/London")}
+#' \dontrun{
+#' timeVariation(mydata, pollutant = "ws", group = "dst", local.tz = "Europe/London")
+#' }
 #'
 #' ## It is also possible to plot several variables and set type. For
 #' ## example, consider the NOx and NO2 split by levels of O3:
 #'
-#' \dontrun{timeVariation(mydata, pollutant = c("nox", "no2"), type = "o3", normalise = TRUE)}
+#' \dontrun{
+#' timeVariation(mydata, pollutant = c("nox", "no2"), type = "o3", normalise = TRUE)
+#' }
 #'
 #' ## difference in concentrations
-#' \dontrun{timeVariation(mydata, poll= c("pm25", "pm10"), difference = TRUE)}
+#' \dontrun{
+#' timeVariation(mydata, poll = c("pm25", "pm10"), difference = TRUE)
+#' }
 #'
 #' # It is also useful to consider how concentrations vary by
 #' # considering two different periods e.g. in intervention
@@ -226,7 +239,7 @@
 #' # day of the week
 #'
 #' \dontrun{
-#' mydata <- splitByDate(mydata, dates= "1/1/2003", labels = c("before Jan. 2003", "After Jan. 2003"))
+#' mydata <- splitByDate(mydata, dates = "1/1/2003", labels = c("before Jan. 2003", "After Jan. 2003"))
 #' timeVariation(mydata, pollutant = "no2", group = "split.by", difference = TRUE)
 #' }
 #'
@@ -250,25 +263,46 @@
 #'
 #' ## plot quantiles and median
 #' \dontrun{
-#' timeVariation(mydata, stati="median", poll="pm10", col = "firebrick")
+#' timeVariation(mydata, stati = "median", poll = "pm10", col = "firebrick")
 #'
 #' ## with different intervals
-#' timeVariation(mydata, stati="median", poll="pm10", conf.int = c(0.75, 0.99),
-#' col = "firebrick")
+#' timeVariation(mydata,
+#'   stati = "median", poll = "pm10", conf.int = c(0.75, 0.99),
+#'   col = "firebrick"
+#' )
 #' }
 #'
-timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
-                          normalise = FALSE, xlab = c(
-                            "hour", "hour", "month",
-                            "weekday"
-                          ), name.pol = pollutant,
-                          type = "default", group = NULL, difference = FALSE,
-                          statistic = "mean", conf.int = 0.95, B = 100, ci = TRUE, cols = "hue",
-                          ref.y = NULL, key = NULL, key.columns = 1, start.day = 1,
-                          panel.gap = 0.2,
-                          auto.text = TRUE, alpha = 0.4, month.last = FALSE, plot = TRUE,
-                          ...) {
-
+timeVariation <- function(
+  mydata,
+  pollutant = "nox",
+  local.tz = NULL,
+  normalise = FALSE,
+  xlab = c(
+    "hour",
+    "hour",
+    "month",
+    "weekday"
+  ),
+  name.pol = pollutant,
+  type = "default",
+  group = NULL,
+  difference = FALSE,
+  statistic = "mean",
+  conf.int = 0.95,
+  B = 100,
+  ci = TRUE,
+  cols = "hue",
+  ref.y = NULL,
+  key = NULL,
+  key.columns = 1,
+  start.day = 1,
+  panel.gap = 0.2,
+  auto.text = TRUE,
+  alpha = 0.4,
+  month.last = FALSE,
+  plot = TRUE,
+  ...
+) {
   ## get rid of R check annoyances
   variable <- NULL
 
@@ -283,7 +317,6 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
-
     fontsize = current.font
   ))
 
@@ -313,26 +346,36 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
   ## sub heading stat info
   if (statistic == "mean") {
     sub.text <- paste(
-      "mean and ", 100 * conf.int[1], "% confidence interval in mean",
+      "mean and ",
+      100 * conf.int[1],
+      "% confidence interval in mean",
       sep = ""
     )
   } else {
     if (length(conf.int) == 1L) {
       sub.text <- paste(
-        "median and ", 100 * (1 - conf.int[1]), "/", 100 * conf.int[1],
+        "median and ",
+        100 * (1 - conf.int[1]),
+        "/",
+        100 * conf.int[1],
         "th quantiles",
         sep = ""
       )
     } else {
       sub.text <- paste(
-        "median, ", 100 * (1 - conf.int[1]), "/", 100 * conf.int[1],
-        " and ", 100 * (1 - conf.int[2]), "/", 100 * conf.int[2],
+        "median, ",
+        100 * (1 - conf.int[1]),
+        "/",
+        100 * conf.int[1],
+        " and ",
+        100 * (1 - conf.int[2]),
+        "/",
+        100 * conf.int[2],
         "th quantiles",
         sep = ""
       )
     }
   }
-
 
   extra.args$sub <- if ("sub" %in% names(extra.args)) {
     quickText(extra.args$sub, auto.text)
@@ -347,7 +390,6 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
   } else {
     TRUE
   }
-
 
   ## if user supplies separate ylims for each plot
   ylimList <- FALSE
@@ -365,16 +407,20 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
   ##  various check to make sure all the data are available ####################
 
   if (!missing(group) & length(pollutant) > 1) {
-    stop("Can only have one pollutant with a grouping variable, or several pollutants and no grouping variable.")
+    stop(
+      "Can only have one pollutant with a grouping variable, or several pollutants and no grouping variable."
+    )
   }
 
   ## only one type for now
   if (length(type) > 1) stop("Can only have one type for timeVariation.")
 
-  if (type %in% pollutant) stop("Cannot have type the same as a pollutant name.")
+  if (type %in% pollutant)
+    stop("Cannot have type the same as a pollutant name.")
 
   if (!missing(group)) {
-    if (group %in% pollutant) stop("Cannot have group the same as a pollutant name.")
+    if (group %in% pollutant)
+      stop("Cannot have group the same as a pollutant name.")
   }
 
   ## if differences between two pollutants are calculated
@@ -414,11 +460,10 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
     }
   }
 
-
-
   ## data checks
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-  if (!missing(group)) mydata <- cutData(mydata, group, local.tz = local.tz, ...)
+  if (!missing(group))
+    mydata <- cutData(mydata, group, local.tz = local.tz, ...)
   mydata <- cutData(mydata, type, local.tz = local.tz, ...)
 
   ## put in local time if needed
@@ -432,20 +477,22 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
 
   ## labels for pollutants, can be user-defined, special handling when difference = TRUE
   poll.orig <- pollutant
-  if (difference && missing(group)) pollutant <- c(pollutant, paste(pollutant[2], "-", pollutant[1]))
+  if (difference && missing(group))
+    pollutant <- c(pollutant, paste(pollutant[2], "-", pollutant[1]))
 
   if (missing(name.pol)) {
-    mylab <- sapply(seq_along(pollutant), function(x)
-      quickText(pollutant[x], auto.text))
+    mylab <- sapply(seq_along(pollutant), function(x) {
+      quickText(pollutant[x], auto.text)
+    })
   }
 
   if (!missing(name.pol)) {
-    mylab <- sapply(seq_along(name.pol), function(x)
-      quickText(name.pol[x], auto.text))
+    mylab <- sapply(seq_along(name.pol), function(x) {
+      quickText(name.pol[x], auto.text)
+    })
   }
 
   if (missing(group)) {
-
     mydata <- gather(mydata, key = variable, value = value, poll.orig)
     mydata$variable <- factor(mydata$variable, levels = pollutant) ## drop unused factor levels
   } else {
@@ -458,14 +505,17 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
     mydata$variable <- factor(mydata$variable) ## drop unused factor levels
     the.names <- levels(mydata[["variable"]])
     if (difference) {
-      the.names <- c(the.names, paste(
-        levels(mydata$variable)[2], "-",
-        levels(mydata$variable)[1]
-      ))
+      the.names <- c(
+        the.names,
+        paste(
+          levels(mydata$variable)[2],
+          "-",
+          levels(mydata$variable)[1]
+        )
+      )
     }
     mylab <- sapply(the.names, function(x) quickText(x, auto.text))
   }
-
 
   ## function to normalise
   divide.by.mean <- function(x) {
@@ -485,24 +535,26 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
 
   if (start.day > 0) {
     day.ord <- c(days[(1 + start.day):7], days[1:(1 + start.day - 1)])
-    day.ord.abb <- c(days.abb[(1 + start.day):7], days.abb[1:(1 + start.day - 1)])
+    day.ord.abb <- c(
+      days.abb[(1 + start.day):7],
+      days.abb[1:(1 + start.day - 1)]
+    )
   } else {
     day.ord <- days
     day.ord.abb <- days.abb
   }
 
   ## calculate temporal components
-  mydata <- mutate(mydata,
-                   wkday = wday(date, label = TRUE, abbr = FALSE),
-                   wkday = ordered(wkday, levels = day.ord),
-                   hour= hour(date),
-                   mnth = month(date)
+  mydata <- mutate(
+    mydata,
+    wkday = wday(date, label = TRUE, abbr = FALSE),
+    wkday = ordered(wkday, levels = day.ord),
+    hour = hour(date),
+    mnth = month(date)
   )
-
 
   ## y range taking account of expanded uncertainties
   rng <- function(x) {
-
     ## if no CI information, just return
     if (all(is.na(x[, c("Lower", "Upper")]))) {
       lims <- NULL
@@ -540,8 +592,11 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
   ## for individual plot keys - useful if only one of the plots is extracted after printing
   if (!is.null(key)) {
     key <- list(
-      rectangles = list(col = myColors[1:npol], border = NA), title = "",
-      text = list(lab = mylab), space = "bottom", columns = key.columns,
+      rectangles = list(col = myColors[1:npol], border = NA),
+      title = "",
+      text = list(lab = mylab),
+      space = "bottom",
+      columns = key.columns,
       lines.title = 1
     )
 
@@ -551,24 +606,30 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
   # data frame of confidence intervals
   conf_int <- data.frame(ci = conf.int)
 
-
   ## hour ############################################################################
 
   if (difference) {
     data.hour <- errorDiff(
       mydata,
-      vars = "hour", type = type, poll1 = poll1,
-      poll2 = poll2, B = B, conf.int = conf.int
+      vars = "hour",
+      type = type,
+      poll1 = poll1,
+      poll2 = poll2,
+      B = B,
+      conf.int = conf.int
     )
   } else {
     data.hour <- group_by(conf_int, ci) %>%
       do(proc(
-        .$ci, mydata,
-        vars = "hour", pollutant, type, B = B,
+        .$ci,
+        mydata,
+        vars = "hour",
+        pollutant,
+        type,
+        B = B,
         statistic = statistic
       ))
   }
-
 
   if (normalise) {
     data.hour <- group_by(data.hour, variable) %>%
@@ -579,7 +640,10 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
 
   ## proper names of labelling ##########################################################
   if (type != "default") {
-    stripName <- sapply(levels(factor(data.hour[[type]])), function(x) quickText(x, auto.text))
+    stripName <- sapply(
+      levels(factor(data.hour[[type]])),
+      function(x) quickText(x, auto.text)
+    )
     strip <- strip.custom(factor.levels = stripName)
   } else {
     strip <- FALSE
@@ -601,7 +665,9 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
 
   ## plot
   xy.args <- list(
-    x = myform, data = data.hour, groups = data.hour$variable,
+    x = myform,
+    data = data.hour,
+    groups = data.hour$variable,
     as.table = TRUE,
     xlab = xlab[2],
     xlim = c(0, 23),
@@ -614,23 +680,37 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
       panel.grid(-1, 0)
       panel.abline(v = c(0, 6, 12, 18, 23), col = "grey85")
       panel.superpose(
-        x, y, ...,
-        panel.groups = function(x, y, col.line, type,
-                                group.number, subscripts, ...) {
+        x,
+        y,
+        ...,
+        panel.groups = function(
+          x,
+          y,
+          col.line,
+          type,
+          group.number,
+          subscripts,
+          ...
+        ) {
           if (difference) panel.abline(h = 0, lty = 5)
           ## plot once
           id <- which(data.hour$ci[subscripts] == data.hour$ci[1])
           panel.xyplot(
-            x[id], y[id],
+            x[id],
+            y[id],
             type = "l",
-            col.line = myColors[group.number], ...
+            col.line = myColors[group.number],
+            ...
           )
 
           if (ci) {
             mkpoly(
               data.hour[subscripts, ],
-              x = "hour", y = "Mean",
-              group.number, myColors, alpha
+              x = "hour",
+              y = "Mean",
+              group.number,
+              myColors,
+              alpha
             )
           }
           ## reference line(s)
@@ -651,14 +731,22 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
   if (difference) {
     data.weekday <- errorDiff(
       mydata,
-      vars = "wkday", type = type, poll1 = poll1,
-      poll2 = poll2, B = B, conf.int = conf.int
+      vars = "wkday",
+      type = type,
+      poll1 = poll1,
+      poll2 = poll2,
+      B = B,
+      conf.int = conf.int
     )
   } else {
     data.weekday <- group_by(conf_int, ci) %>%
       do(proc(
-        .$ci, mydata,
-        vars = "wkday", pollutant, type, B = B,
+        .$ci,
+        mydata,
+        vars = "wkday",
+        pollutant,
+        type,
+        B = B,
         statistic = statistic
       ))
   }
@@ -689,7 +777,9 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
 
   ## plot
   xy.args <- list(
-    x = myform, data = data.weekday, groups = data.weekday$variable,
+    x = myform,
+    data = data.weekday,
+    groups = data.weekday$variable,
     as.table = TRUE,
     par.settings = simpleTheme(col = myColors, pch = 16),
     scales = list(x = list(at = 1:7, labels = day.ord.abb)),
@@ -701,24 +791,38 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
       panel.grid(-1, 0)
       panel.abline(v = 1:7, col = "grey85")
       panel.superpose(
-        x, y, ...,
-        panel.groups = function(x, y, col.line, type, group.number,
-                                subscripts, ...) {
+        x,
+        y,
+        ...,
+        panel.groups = function(
+          x,
+          y,
+          col.line,
+          type,
+          group.number,
+          subscripts,
+          ...
+        ) {
           if (difference) panel.abline(h = 0, lty = 5)
 
           ## only plot median once if 2 conf.int
           id <- which(data.weekday$ci[subscripts] == data.weekday$ci[1])
           panel.xyplot(
-            x[id], y[id],
+            x[id],
+            y[id],
             type = "l",
-            col.line = myColors[group.number], ...
+            col.line = myColors[group.number],
+            ...
           )
 
           if (ci) {
             mkrect(
               data.weekday[subscripts, ],
               x = "wkday",
-              y = "Mean", group.number, myColors, alpha
+              y = "Mean",
+              group.number,
+              myColors,
+              alpha
             )
           }
           ## refrence line(s)
@@ -738,14 +842,22 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
   if (difference) {
     data.month <- errorDiff(
       mydata,
-      vars = "mnth", type = type, poll1 = poll1,
-      poll2 = poll2, B = B, conf.int = conf.int
+      vars = "mnth",
+      type = type,
+      poll1 = poll1,
+      poll2 = poll2,
+      B = B,
+      conf.int = conf.int
     )
   } else {
     data.month <- group_by(conf_int, ci) %>%
       do(proc(
-        .$ci, mydata,
-        vars = "mnth", pollutant, type, B = B,
+        .$ci,
+        mydata,
+        vars = "mnth",
+        pollutant,
+        type,
+        B = B,
         statistic = statistic
       ))
   }
@@ -754,7 +866,6 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
     data.month <- group_by(data.month, variable) %>%
       do(divide.by.mean(.))
   }
-
 
   if (is.null(xlab[3]) | is.na(xlab[3])) xlab[3] <- "month"
 
@@ -774,7 +885,9 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
   ## plot
   xy.args <-
     list(
-      x = myform, data = data.month, groups = data.month$variable,
+      x = myform,
+      data = data.month,
+      groups = data.month$variable,
       as.table = TRUE,
       xlab = xlab[3],
       xlim = c(0.5, 12.5),
@@ -782,23 +895,39 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
       strip = strip,
       par.strip.text = list(cex = 0.8),
       par.settings = simpleTheme(col = myColors, pch = 16),
-      scales = list(x = list(
-        at = 1:12,
-        labels = substr(format(
-          seq(
-            as_date("2000-01-01"),
-            as_date("2000-12-31"), "month"
-          ),
-          "%B"
-        ), 1, 1)
-      )),
+      scales = list(
+        x = list(
+          at = 1:12,
+          labels = substr(
+            format(
+              seq(
+                as_date("2000-01-01"),
+                as_date("2000-12-31"),
+                "month"
+              ),
+              "%B"
+            ),
+            1,
+            1
+          )
+        )
+      ),
       panel = function(x, y, ...) {
         panel.grid(-1, 0)
         panel.abline(v = 1:12, col = "grey85")
         panel.superpose(
-          x, y, ...,
-          panel.groups = function(x, y, col.line, type,
-                                  group.number, subscripts, ...) {
+          x,
+          y,
+          ...,
+          panel.groups = function(
+            x,
+            y,
+            col.line,
+            type,
+            group.number,
+            subscripts,
+            ...
+          ) {
             if (difference) panel.abline(h = 0, lty = 5)
 
             ## a line won't work for a single point
@@ -811,9 +940,11 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
             ## lines not needed if split by season
             if (group != "season" || is.null(group)) {
               panel.xyplot(
-                x[id], y[id],
+                x[id],
+                y[id],
                 type = pltType,
-                col.line = myColors[group.number], ...
+                col.line = myColors[group.number],
+                ...
               )
             }
 
@@ -821,7 +952,10 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
               mkrect(
                 data.month[subscripts, ],
                 x = "mnth",
-                y = "Mean", group.number, myColors, alpha
+                y = "Mean",
+                group.number,
+                myColors,
+                alpha
               )
             }
             ## refrence line(s)
@@ -842,14 +976,22 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
   if (difference) {
     data.day.hour <- errorDiff(
       mydata,
-      vars = "day.hour", type = type, poll1 = poll1,
-      poll2 = poll2, B = B, conf.int = conf.int
+      vars = "day.hour",
+      type = type,
+      poll1 = poll1,
+      poll2 = poll2,
+      B = B,
+      conf.int = conf.int
     )
   } else {
     data.day.hour <- group_by(conf_int, ci) %>%
       do(proc(
-        .$ci, mydata,
-        vars = "day.hour", pollutant, type, B = B,
+        .$ci,
+        mydata,
+        vars = "day.hour",
+        pollutant,
+        type,
+        B = B,
         statistic = statistic
       ))
   }
@@ -871,13 +1013,16 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
 
   strip <- strip.custom(par.strip.text = list(cex = 0.8))
 
-
   if (type == "default") {
     strip.left <- FALSE
     layout <- c(length(unique(mydata$wkday)), 1)
-  } else { ## two conditioning variables
+  } else {
+    ## two conditioning variables
 
-    stripName <- sapply(levels(factor(data.day.hour[[type]])), function(x) quickText(x, auto.text))
+    stripName <- sapply(
+      levels(factor(data.day.hour[[type]])),
+      function(x) quickText(x, auto.text)
+    )
     strip.left <- strip.custom(factor.levels = stripName)
     layout <- NULL
   }
@@ -900,10 +1045,11 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
     extra.args$ylim <- ylim.list[[4]]
   }
 
-
   ## plot
   xy.args <- list(
-    x = myform, data = data.day.hour, groups = data.day.hour$variable,
+    x = myform,
+    data = data.day.hour,
+    groups = data.day.hour$variable,
     as.table = TRUE,
     xlim = c(0, 23),
     xlab = xlab[1],
@@ -919,25 +1065,39 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
       panel.grid(-1, 0)
       panel.abline(v = c(0, 6, 12, 18, 23), col = "grey85")
       panel.superpose(
-        x, y, ...,
-        panel.groups = function(x, y, col.line, type, group.number,
-                                subscripts, ...) {
+        x,
+        y,
+        ...,
+        panel.groups = function(
+          x,
+          y,
+          col.line,
+          type,
+          group.number,
+          subscripts,
+          ...
+        ) {
           if (difference) panel.abline(h = 0, lty = 5)
 
           ## only plot median once if 2 conf.int
           id <- which(data.day.hour$ci[subscripts] == data.day.hour$ci[1])
 
           panel.xyplot(
-            x[id], y[id],
+            x[id],
+            y[id],
             type = "l",
-            col.line = myColors[group.number], ...
+            col.line = myColors[group.number],
+            ...
           )
 
           if (ci) {
             mkpoly(
               data.day.hour[subscripts, ],
               x = "hour",
-              y = "Mean", group.number, myColors, alpha
+              y = "Mean",
+              group.number,
+              myColors,
+              alpha
             )
           }
           ## refrence line(s)
@@ -966,24 +1126,37 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
 
   main.plot <- function(...) {
     if (type == "default") {
-      print(update(
-        day.hour,
-        key = list(
-          rectangles = list(col = myColors[1:npol], border = NA),
-          text = list(lab = mylab), space = "bottom",
-          columns = key.columns,
-          title = "", lines.title = 1
-        )
-      ), position = c(0, 0.5, 1, y.upp), more = TRUE)
+      print(
+        update(
+          day.hour,
+          key = list(
+            rectangles = list(col = myColors[1:npol], border = NA),
+            text = list(lab = mylab),
+            space = "bottom",
+            columns = key.columns,
+            title = "",
+            lines.title = 1
+          )
+        ),
+        position = c(0, 0.5, 1, y.upp),
+        more = TRUE
+      )
     } else {
-      print(update(
-        useOuterStrips(day.hour, strip = strip, strip.left = strip.left),
-        key = list(
-          rectangles = list(col = myColors[1:npol], border = NA),
-          text = list(lab = mylab), space = "bottom", columns = key.columns,
-          title = "", lines.title = 1
-        )
-      ), position = c(0, 0.5, 1, y.upp), more = TRUE)
+      print(
+        update(
+          useOuterStrips(day.hour, strip = strip, strip.left = strip.left),
+          key = list(
+            rectangles = list(col = myColors[1:npol], border = NA),
+            text = list(lab = mylab),
+            space = "bottom",
+            columns = key.columns,
+            title = "",
+            lines.title = 1
+          )
+        ),
+        position = c(0, 0.5, 1, y.upp),
+        more = TRUE
+      )
     }
 
     # Build the plot panels in different orders
@@ -1006,18 +1179,33 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
   }
 
   ind.plot <- function(x, ...) {
-    plot(update(x, key = list(
-      rectangles = list(col = myColors[1:npol], border = NA),
-      text = list(lab = mylab), space = "top", columns = key.columns
-    )), ...)
+    plot(
+      update(
+        x,
+        key = list(
+          rectangles = list(col = myColors[1:npol], border = NA),
+          text = list(lab = mylab),
+          space = "top",
+          columns = key.columns
+        )
+      ),
+      ...
+    )
   }
 
   if (plot) main.plot()
   output <- list(
     plot = list(day.hour, hour, day, month, subsets = subsets),
-    data = list(data.day.hour, data.hour, data.weekday, data.month, subsets = subsets),
+    data = list(
+      data.day.hour,
+      data.hour,
+      data.weekday,
+      data.month,
+      subsets = subsets
+    ),
     call = match.call(),
-    main.plot = main.plot, ind.plot = ind.plot
+    main.plot = main.plot,
+    ind.plot = ind.plot
   )
   names(output$data)[1:4] <- subsets
   names(output$plot)[1:4] <- subsets
@@ -1026,9 +1214,15 @@ timeVariation <- function(mydata, pollutant = "nox", local.tz = NULL,
   invisible(output)
 }
 
-proc <- function(conf.int = conf.int, mydata, vars = "day.hour", pollutant, type, B = B,
-                 statistic = statistic) {
-
+proc <- function(
+  conf.int = conf.int,
+  mydata,
+  vars = "day.hour",
+  pollutant,
+  type,
+  B = B,
+  statistic = statistic
+) {
   ## get rid of R check annoyances
   variable <- value <- NULL
 
@@ -1038,19 +1232,33 @@ proc <- function(conf.int = conf.int, mydata, vars = "day.hour", pollutant, type
     stat <- median_hilow
   }
 
-  summary.values <- function(conf.int = conf.int, mydata, vars = vars, FUN, type = type, B = B,
-                             statistic = statistic) {
-    if (vars == "hour") myform <- formula(paste("value ~ variable + hour +", type))
+  summary.values <- function(
+    conf.int = conf.int,
+    mydata,
+    vars = vars,
+    FUN,
+    type = type,
+    B = B,
+    statistic = statistic
+  ) {
+    if (vars == "hour")
+      myform <- formula(paste("value ~ variable + hour +", type))
 
-    if (vars == "day.hour") myform <- formula(paste("value ~ variable + wkday + hour +", type))
+    if (vars == "day.hour")
+      myform <- formula(paste("value ~ variable + wkday + hour +", type))
 
-    if (vars == "wkday") myform <- formula(paste("value ~ variable + wkday +", type))
+    if (vars == "wkday")
+      myform <- formula(paste("value ~ variable + wkday +", type))
 
-    if (vars == "mnth") myform <- formula(paste("value ~ variable + mnth +", type))
+    if (vars == "mnth")
+      myform <- formula(paste("value ~ variable + mnth +", type))
 
     mydata <- aggregate(
       myform,
-      data = mydata, FUN, B = B, statistic = statistic,
+      data = mydata,
+      FUN,
+      B = B,
+      statistic = statistic,
       conf.int = conf.int
     )
     mydata
@@ -1060,8 +1268,12 @@ proc <- function(conf.int = conf.int, mydata, vars = "day.hour", pollutant, type
   if (any(!pollutant %in% "wd")) {
     data1 <- subset(mydata, variable != "wd")
     data1 <- summary.values(
-      data1, vars, stat, type,
-      B = B, statistic = statistic,
+      data1,
+      vars,
+      stat,
+      type,
+      B = B,
+      statistic = statistic,
       conf.int = conf.int
     )
     data1 <- data.frame(subset(data1, select = -value), data1$value)
@@ -1070,13 +1282,19 @@ proc <- function(conf.int = conf.int, mydata, vars = "day.hour", pollutant, type
   if ("wd" %in% pollutant) {
     if (length(pollutant) > 1) mydata <- subset(mydata, variable == "wd")
     data2 <- summary.values(
-      conf.int, mydata, vars, wd.smean.normal, type,
-      B = B, statistic = statistic
+      conf.int,
+      mydata,
+      vars,
+      wd.smean.normal,
+      type,
+      B = B,
+      statistic = statistic
     )
     data2 <- data.frame(subset(data2, select = -value), data2$value)
   }
 
-  if (length(pollutant) > 1 & "wd" %in% pollutant) data2 <- bind_rows(data1, data2)
+  if (length(pollutant) > 1 & "wd" %in% pollutant)
+    data2 <- bind_rows(data1, data2)
 
   if (!"wd" %in% pollutant) data2 <- data1
 
@@ -1119,25 +1337,25 @@ wd.smean.normal <- function(wd, B = B, statistic, conf.int) {
   c(Mean = Mean, Lower = Mean - diff.wd, Upper = Mean + diff.wd)
 }
 
-errorDiff <- function(mydata, vars = "day.hour", poll1, poll2, type, B = B,
-                      conf.int = conf.int) {
-
+errorDiff <- function(
+  mydata,
+  vars = "day.hour",
+  poll1,
+  poll2,
+  type,
+  B = B,
+  conf.int = conf.int
+) {
   ## bootstrap mean difference confidence intervals
   ## rearrange data
 
   # it could be dates duplicate e.g. run function over several sites
 
-
   if (anyDuplicated(mydata$date) > 0) {
-
     mydata$rowid <- 1:nrow(mydata)
-
   }
 
-  mydata <- pivot_wider(mydata,
-                        names_from = "variable",
-                        values_from = "value")
-
+  mydata <- pivot_wider(mydata, names_from = "variable", values_from = "value")
 
   if (vars == "hour") splits <- c("hour", type)
   if (vars == "day.hour") splits <- c("hour", "wkday", type)
@@ -1180,21 +1398,36 @@ mkpoly <- function(dat, x = "hour", y = "Mean", group.number, myColors, alpha) {
   }
 
   poly.na(
-    dat[[x]][id1], dat$Lower[id1], dat[[x]][id1], dat$Upper[id1],
-    group.number, myColors,
+    dat[[x]][id1],
+    dat$Lower[id1],
+    dat[[x]][id1],
+    dat$Upper[id1],
+    group.number,
+    myColors,
     alpha = fac * alpha / 2
   )
 
   if (len == 2L) {
     poly.na(
-      dat[[x]][id2], dat$Lower[id2], dat[[x]][id2], dat$Upper[id2],
-      group.number, myColors,
+      dat[[x]][id2],
+      dat$Lower[id2],
+      dat[[x]][id2],
+      dat$Upper[id2],
+      group.number,
+      myColors,
       alpha = alpha
     )
   }
 }
 
-mkrect <- function(dat, x = "wkday", y = "Mean", group.number, myColors, alpha) {
+mkrect <- function(
+  dat,
+  x = "wkday",
+  y = "Mean",
+  group.number,
+  myColors,
+  alpha
+) {
   len <- length(unique(dat$ci)) ## number of confidence intervals to consider
   ci <- sort(unique(dat$ci))
 
@@ -1209,18 +1442,24 @@ mkrect <- function(dat, x = "wkday", y = "Mean", group.number, myColors, alpha) 
   }
 
   panel.rect(
-    dat[[x]][id1] - 0.15 * fac, dat$Lower[id1], dat[[x]][id1] + 0.15 * fac,
+    dat[[x]][id1] - 0.15 * fac,
+    dat$Lower[id1],
+    dat[[x]][id1] + 0.15 * fac,
     dat$Upper[id1],
     fill = myColors[group.number],
-    border = NA, alpha = fac * alpha / 2
+    border = NA,
+    alpha = fac * alpha / 2
   )
 
   if (len == 2L) {
     panel.rect(
-      dat[[x]][id2] - 0.3, dat$Lower[id2], dat[[x]][id2] + 0.3,
+      dat[[x]][id2] - 0.3,
+      dat$Lower[id2],
+      dat[[x]][id2] + 0.3,
       dat$Upper[id2],
       fill = myColors[group.number],
-      border = NA, alpha = alpha
+      border = NA,
+      alpha = alpha
     )
   }
 }

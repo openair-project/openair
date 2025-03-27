@@ -62,8 +62,8 @@
 #' @references Most reference details are given under the specific functions.
 #'   The principal reference is below.
 #'
-#'    -  Carslaw, D.C. and K. Ropkins, (2012) openair --- an R package for 
-#'    air quality data analysis.  Environmental Modelling & Software. 
+#'    -  Carslaw, D.C. and K. Ropkins, (2012) openair --- an R package for
+#'    air quality data analysis.  Environmental Modelling & Software.
 #'    Volume 27-28, 52-61.
 #'
 #' @seealso See <https://openair-project.github.io/openair/> for up to date
@@ -93,8 +93,10 @@
 #'
 #' # could, e.g., re-plot in {ggplot2}
 #' library(ggplot2)
-#' ggplot(polar_nox$data, aes(u, v, fill = z)) + geom_tile() + coord_equal() +
-#' scale_fill_gradientn(colours = openair::openColours(), na.value = NA)
+#' ggplot(polar_nox$data, aes(u, v, fill = z)) +
+#'   geom_tile() +
+#'   coord_equal() +
+#'   scale_fill_gradientn(colours = openair::openColours(), na.value = NA)
 #' }
 #'
 #' @keywords internal

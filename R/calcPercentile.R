@@ -39,15 +39,17 @@
 #'
 #' head(percentiles)
 #' }
-calcPercentile <- function(mydata,
-                           pollutant = "o3",
-                           avg.time = "month",
-                           percentile = 50,
-                           type = "default",
-                           data.thresh = 0,
-                           start.date = NA,
-                           end.date = NA,
-                           prefix = "percentile.") {
+calcPercentile <- function(
+  mydata,
+  pollutant = "o3",
+  avg.time = "month",
+  percentile = 50,
+  type = "default",
+  data.thresh = 0,
+  start.date = NA,
+  end.date = NA,
+  prefix = "percentile."
+) {
   # check pollutant is valid
   if (!pollutant %in% names(mydata)) {
     cli::cli_abort(
@@ -93,15 +95,17 @@ calcPercentile <- function(mydata,
 
 #' Use timeAverage to calculate percentiles, with some custom naming
 #' @noRd
-make.percentile <- function(mydata,
-                            pollutant,
-                            avg.time,
-                            percentile,
-                            type,
-                            data.thresh,
-                            start.date,
-                            end.date,
-                            prefix) {
+make.percentile <- function(
+  mydata,
+  pollutant,
+  avg.time,
+  percentile,
+  type,
+  data.thresh,
+  start.date,
+  end.date,
+  prefix
+) {
   # summarise percentiles with timeAverage
   mydata <- timeAverage(
     mydata,
