@@ -130,16 +130,21 @@
 #' \dontrun{
 #' conditionalQuantile(mydata, obs = "nox", mod = "mod", type = "season")
 #' }
-conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
-                                type = "default",
-                                bins = 31,
-                                min.bin = c(10, 20),
-                                xlab = "predicted value",
-                                ylab = "observed value",
-                                col = brewer.pal(5, "YlOrRd"),
-                                key.columns = 2,
-                                key.position = "bottom",
-                                auto.text = TRUE, ...) {
+conditionalQuantile <- function(
+  mydata,
+  obs = "obs",
+  mod = "mod",
+  type = "default",
+  bins = 31,
+  min.bin = c(10, 20),
+  xlab = "predicted value",
+  ylab = "observed value",
+  col = brewer.pal(5, "YlOrRd"),
+  key.columns = 2,
+  key.position = "bottom",
+  auto.text = TRUE,
+  ...
+) {
   ## partly based on from Wilks (2005) and package verification, with many modifications
   # keep R check quite
   data <- second <- third <- NULL
@@ -170,14 +175,13 @@ conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
     trellis.par.set(fontsize = list(text = extra.args$fontsize))
   }
 
-
   if (length(col) == 1 && col == "greyscale") {
     trellis.par.set(list(strip.background = list(col = "white")))
     # other local colours
     ideal.col <- "black"
-    col.1 <- grey(0.75)
-    col.2 <- grey(0.5)
-    col.5 <- grey(0.25)
+    col.1 <- grDevices::grey(0.75)
+    col.2 <- grDevices::grey(0.5)
+    col.5 <- grDevices::grey(0.25)
   } else {
     ideal.col <- "#0080ff"
     col.1 <- col[1]
@@ -194,8 +198,6 @@ conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
   mydata <- na.omit(mydata)
   mydata <- cutData(mydata, type)
 
-
-
   procData <- function(mydata) {
     mydata <- select_if(mydata, is.numeric)
     obs <- mydata[[obs]]
@@ -210,14 +212,16 @@ conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
     labs <- b + 0.5 * diff(bins)
     obs.cut <- cut(
       obs,
-      breaks = bins, include.lowest = TRUE,
+      breaks = bins,
+      include.lowest = TRUE,
       labels = labs
     )
     obs.cut[is.na(obs.cut)] <- labs[1]
     obs.cut <- as.numeric(as.character(obs.cut))
     pred.cut <- cut(
       pred,
-      breaks = bins, include.lowest = TRUE,
+      breaks = bins,
+      include.lowest = TRUE,
       labels = labs
     )
     pred.cut[is.na(pred.cut)] <- labs[1]
@@ -234,16 +238,26 @@ conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
     q3[lng <= min.bin[2]] <- NA
     q4[lng <= min.bin[2]] <- NA
 
-    results <- data.frame(x = as.numeric(levels(pred.cut)), lng, med, q1, q2, q3, q4)
+    results <- data.frame(
+      x = as.numeric(levels(pred.cut)),
+      lng,
+      med,
+      q1,
+      q2,
+      q3,
+      q4
+    )
 
-    results.cut <- data.frame(pred.cut = as.numeric(as.character(pred.cut)), obs.cut = obs)
+    results.cut <- data.frame(
+      pred.cut = as.numeric(as.character(pred.cut)),
+      obs.cut = obs
+    )
 
     ## range taken by observations
     results.obs <- data.frame(min = min(obs), max = max(obs))
     results <- list(results, results.cut, results.obs)
     results
   }
-
 
   lo <- min(mydata[c(mod, obs)])
   hi <- max(mydata[c(mod, obs)])
@@ -255,7 +269,6 @@ conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
       results = map(data, procData),
       .keep = "unused"
     )
-
 
   results <- all.results %>%
     mutate(first = map(results, 1)) %>%
@@ -273,15 +286,22 @@ conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
     dplyr::select(-"results")
 
   ## proper names of labelling #################################################
-  pol.name <- sapply(levels(results[[type[1]]]), function(x) quickText(x, auto.text))
+  pol.name <- sapply(
+    levels(results[[type[1]]]),
+    function(x) quickText(x, auto.text)
+  )
   strip <- strip.custom(factor.levels = pol.name)
 
   if (length(type) == 1) {
     strip.left <- FALSE
     if (type == "default") strip <- FALSE
-  } else { ## two conditioning variables
+  } else {
+    ## two conditioning variables
 
-    pol.name <- sapply(levels(results[[type[2]]]), function(x) quickText(x, auto.text))
+    pol.name <- sapply(
+      levels(results[[type[2]]]),
+      function(x) quickText(x, auto.text)
+    )
     strip.left <- strip.custom(factor.levels = pol.name)
   }
   ## ###########################################################################
@@ -290,7 +310,8 @@ conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
   myform <- formula(paste("x ~ med | ", temp, sep = ""))
 
   xyplot.args <- list(
-    x = myform, data = results,
+    x = myform,
+    data = results,
     xlim = c(lo, hi * 1.05),
     ylim = c(lo, hi * 1.05),
     ylab = quickText(ylab, auto.text),
@@ -304,12 +325,16 @@ conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
         col = c(col.1, col.2, col.5, ideal.col),
         lwd = c(15, 15, 2, 1)
       ),
-      lines.title = 1, title = "", text = list(lab = c(
-        "25/75th percentile",
-        "10/90th percentile",
-        "median",
-        "perfect model"
-      )),
+      lines.title = 1,
+      title = "",
+      text = list(
+        lab = c(
+          "25/75th percentile",
+          "10/90th percentile",
+          "median",
+          "perfect model"
+        )
+      ),
       space = key.position,
       columns = key.columns
     ),
@@ -318,31 +343,39 @@ conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
       panel.grid(-1, -1, col = "grey95")
 
       poly.na(
-        results$x[subscripts], results$q3[subscripts],
+        results$x[subscripts],
+        results$q3[subscripts],
         results$x[subscripts],
         results$q4[subscripts],
-        myColors = col.2, alpha = 1
+        myColors = col.2,
+        alpha = 1
       )
       poly.na(
-        results$x[subscripts], results$q1[subscripts],
+        results$x[subscripts],
+        results$q1[subscripts],
         results$x[subscripts],
         results$q2[subscripts],
-        myColors = col.1, alpha = 1
+        myColors = col.1,
+        alpha = 1
       )
 
       # draw line of where observations lie
       theSubset <- inner_join(obs.results, results[subscripts[1], ], by = type)
 
       panel.lines(
-        c(theSubset$min, theSubset$max), c(
+        c(theSubset$min, theSubset$max),
+        c(
           theSubset$min,
           theSubset$max
         ),
-        col = ideal.col, lwd = 1.5
+        col = ideal.col,
+        lwd = 1.5
       )
       panel.lines(
-        results$x[subscripts], results$med[subscripts],
-        col = col.5, lwd = 2
+        results$x[subscripts],
+        results$med[subscripts],
+        col = col.5,
+        lwd = 2
       )
     }
   )
@@ -362,21 +395,33 @@ conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
 
   histo <- histogram(
     myform,
-    data = hist.results, breaks = bins, type = "count",
+    data = hist.results,
+    breaks = bins,
+    type = "count",
     as.table = TRUE,
     strip = strip,
     strip.left = strip.left,
-    col = "black", alpha = 0.1, border = NA,
+    col = "black",
+    alpha = 0.1,
+    border = NA,
     par.strip.text = list(cex = 0.8),
     ylab = "sample size for histograms",
-    panel = function(x = pred.cut, col = "black", border = NA,
-                     alpha = 0.2,
-                     subscripts, ...) {
+    panel = function(
+      x = pred.cut,
+      col = "black",
+      border = NA,
+      alpha = 0.2,
+      subscripts,
+      ...
+    ) {
       ## histogram of observations
       panel.histogram(
         x = hist.results[["obs.cut"]][subscripts],
-        col = NA, alpha = 0.5, lwd = 0.5,
-        border = ideal.col, ...
+        col = NA,
+        alpha = 0.5,
+        lwd = 0.5,
+        border = ideal.col,
+        ...
       )
       ## histogram of modelled values
       panel.histogram(x = x, col = "black", border, alpha = 0.15, ...)
@@ -385,7 +430,10 @@ conditionalQuantile <- function(mydata, obs = "obs", mod = "mod",
 
   ## supress scaling warnings
   thePlot <- latticeExtra::doubleYScale(scatter, histo, add.ylab2 = TRUE)
-  thePlot <- update(thePlot, par.settings = simpleTheme(col = c("black", "black")))
+  thePlot <- update(
+    thePlot,
+    par.settings = simpleTheme(col = c("black", "black"))
+  )
 
   if (length(type) <= 1) {
     plot(thePlot)

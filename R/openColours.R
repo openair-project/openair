@@ -89,10 +89,10 @@
 #' @return A character vector of hex codes
 #' @author David Carslaw
 #' @author Jack Davison
-#' @references \url{https://colorbrewer2.org/}
-#' @references \url{https://uk-air.defra.gov.uk/air-pollution/daqi}
+#' @references <https://colorbrewer2.org/>
+#' @references <https://uk-air.defra.gov.uk/air-pollution/daqi>
 #' @references
-#' \url{https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/}
+#' <https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/>
 #' @examples
 #'
 #' # to return 5 colours from the "jet" scheme:
@@ -204,7 +204,7 @@ openColours <- function(scheme = "default", n = 100) {
       cols <- huePalette(n)
     }
     if (scheme == "greyscale") {
-      cols <- grey(seq(0.9, 0.1, length = n))
+      cols <- grDevices::grey(seq(0.9, 0.1, length = n))
     }
     if (scheme %in% seq_schemes) {
       cols <- seqPalette(n, scheme = scheme)
@@ -224,14 +224,16 @@ openColours <- function(scheme = "default", n = 100) {
     if (any(!check)) {
       bad_cols <- unique(names(check[!check]))
       cli::cli_abort(
-        c("x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openColours} palettes: {.field {bad_cols}}"),
+        c(
+          "x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openColours} palettes: {.field {bad_cols}}"
+        ),
         call = NULL
       )
     }
 
     if (length(scheme) > 1) {
       # interpolate
-      user.cols <- colorRampPalette(scheme)
+      user.cols <- grDevices::colorRampPalette(scheme)
       cols <- user.cols(n)
     } else {
       cols <- rep(scheme, n)
@@ -260,7 +262,10 @@ brewerPalette <- function(n, scheme, brewer.col, brewer.n) {
     brewer.pal(n, scheme)
   } else {
     thefun <-
-      suppressWarnings(colorRampPalette(brewer.pal(n.brew, scheme), interpolate = "spline"))
+      suppressWarnings(grDevices::colorRampPalette(
+        brewer.pal(n.brew, scheme),
+        interpolate = "spline"
+      ))
     thefun(n)
   }
 }
@@ -568,7 +573,7 @@ seqPalette <- function(n, scheme) {
     cols <- c("#12436D", "#2073BC", "#6BACE6")
   }
 
-  fun <- colorRampPalette(colors = cols, interpolate = interpolate)
+  fun <- grDevices::colorRampPalette(colors = cols, interpolate = interpolate)
 
   cols <- fun(n)
 
@@ -580,7 +585,7 @@ seqPalette <- function(n, scheme) {
 areColors <- function(x) {
   sapply(x, function(X) {
     tryCatch(
-      is.matrix(col2rgb(X)),
+      is.matrix(grDevices::col2rgb(X)),
       error = function(e) {
         FALSE
       }

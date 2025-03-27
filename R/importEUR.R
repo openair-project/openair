@@ -56,10 +56,14 @@ importEurope <- function(site = "debw118",
     "http://aq-data.ricardo-aea.com/R_data/saqgetr/observations"
   
   # Produce file names
-  file_remote <- crossing(site = site,
-                          year = year) %>%
-    arrange(site,
-            year) %>%
+  file_remote <- crossing(
+    site = site,
+    year = year
+  ) %>%
+    arrange(
+      site,
+      year
+    ) %>%
     mutate(
       file_remote = paste0(
         remote_path,
@@ -76,11 +80,14 @@ importEurope <- function(site = "debw118",
     pull(file_remote)
   
   # Load files
-  if (progress)
+  if (progress) {
     progress <- "Importing Air Quality Data"
-  df <- purrr::map(file_remote,
-                   ~ get_saq_observations_worker(file = .x, tz = tz),
-                   .progress = progress) %>%
+  }
+  df <- purrr::map(
+    file_remote,
+    ~ get_saq_observations_worker(file = .x, tz = tz),
+    .progress = progress
+  ) %>%
     purrr::list_rbind()
   
   if (nrow(df) == 0L) {
@@ -145,24 +152,26 @@ read_saq_observations <- function(file, tz = tz, verbose) {
   con <- file %>%
     url() %>%
     gzcon()
-  
-  df <- tryCatch({
-    # Read and parse dates, quiet supresses time zone conversion messages and
-    # warning supression is for when url does not exist
-    suppressWarnings(
-      readr::read_csv(con, col_types = col_types, progress = FALSE) %>%
-        mutate(
-          date = lubridate::ymd_hms(date, tz = tz, quiet = TRUE),
-          date_end = lubridate::ymd_hms(date_end, tz = tz, quiet = TRUE)
-        )
-    )
-  },
-  error = function(e) {
-    # Close the connection on error
-    close.connection(con)
-    tibble()
-  })
-  
+
+  df <- tryCatch(
+    {
+      # Read and parse dates, quiet supresses time zone conversion messages and
+      # warning supression is for when url does not exist
+      suppressWarnings(
+        readr::read_csv(con, col_types = col_types, progress = FALSE) %>%
+          mutate(
+            date = lubridate::ymd_hms(date, tz = tz, quiet = TRUE),
+            date_end = lubridate::ymd_hms(date_end, tz = tz, quiet = TRUE)
+          )
+      )
+    },
+    error = function(e) {
+      # Close the connection on error
+      close.connection(con)
+      tibble()
+    }
+  )
+
   if (nrow(df) == 0) {
     warning(paste(basename(file), "is missing."))
   }
@@ -172,31 +181,34 @@ read_saq_observations <- function(file, tz = tz, verbose) {
 
 
 make_saq_observations_wider <- function(df) {
-  tryCatch({
-    df %>%
-      select(date,
-             date_end,
-             site,
-             variable,
-             value) %>%
-      spread(variable, value)
-  },
-  error = function(e) {
-    warning(
-      "Duplicated date-site-variable combinations detected, observations have been removed...",
-      call. = FALSE
-    )
-    
-    df %>%
-      select(date,
-             date_end,
-             site,
-             variable,
-             value) %>%
-      distinct(date,
-               site,
-               variable,
-               .keep_all = TRUE) %>%
-      spread(variable, value)
-  })
+  tryCatch(
+    {
+      df %>%
+        select(
+          date,
+          date_end,
+          site,
+          variable,
+          value
+        ) %>%
+        spread(variable, value)
+    },
+    error = function(e) {
+      warning(
+        "Duplicated date-site-variable combinations detected, observations have been removed...",
+        call. = FALSE
+      )
+
+      df %>%
+        select(
+          date,
+          date_end,
+          site,
+          variable,
+          value
+        ) %>%
+        distinct(date, site, variable, .keep_all = TRUE) %>%
+        spread(variable, value)
+    }
+  )
 }

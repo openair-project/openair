@@ -1,76 +1,76 @@
 #' Trajectory line plots with conditioning
 #'
 #' This function plots back trajectories. This function requires that data are
-#' imported using the \code{importTraj} function.
+#' imported using the `importTraj` function.
 #'
-#' Several types of trajectory plot are available. \code{trajPlot} by default
+#' Several types of trajectory plot are available. `trajPlot` by default
 #' will plot each lat/lon location showing the origin of each trajectory, if no
-#' \code{pollutant} is supplied.
+#' `pollutant` is supplied.
 #'
 #' If a pollutant is given, by merging the trajectory data with concentration
 #' data (see example below), the trajectories are colour-coded by the
-#' concentration of \code{pollutant}. With a long time series there can be lots
+#' concentration of `pollutant`. With a long time series there can be lots
 #' of overplotting making it difficult to gauge the overall concentration
-#' pattern. In these cases setting \code{alpha} to a low value e.g. 0.1 can
+#' pattern. In these cases setting `alpha` to a low value e.g. 0.1 can
 #' help.
 #'
-#' The user can also show points instead of lines by \code{plot.type = "p"}.
+#' The user can also show points instead of lines by `plot.type = "p"`.
 #'
-#' Note that \code{trajPlot} will plot only the full length trajectories. This
+#' Note that `trajPlot` will plot only the full length trajectories. This
 #' should be remembered when selecting only part of a year to plot.
 #'
 #'
 #' @param mydata Data frame, the result of importing a trajectory file using
-#'   \code{importTraj}.
+#'   `importTraj`.
 #' @param lon Column containing the longitude, as a decimal.
 #' @param lat Column containing the latitude, as a decimal.
 #' @param pollutant Pollutant to be plotted. By default the trajectory height is
 #'   used.
-#' @param type \code{type} determines how the data are split, i.e., conditioned,
+#' @param type `type` determines how the data are split, i.e., conditioned,
 #'   and then plotted. The default is will produce a single plot using the
 #'   entire data. Type can be one of the built-in types as detailed in
-#'   \code{cutData} e.g. "season", "year", "weekday" and so on. For example,
-#'   \code{type = "season"} will produce four plots --- one for each season.
+#'   `cutData` e.g. "season", "year", "weekday" and so on. For example,
+#'   `type = "season"` will produce four plots --- one for each season.
 #'
-#'   It is also possible to choose \code{type} as another variable in the data
+#'   It is also possible to choose `type` as another variable in the data
 #'   frame. If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   \code{type} can be up length two e.g. \code{type = c("season", "weekday")}
+#'   `type` can be up length two e.g. `type = c("season", "weekday")`
 #'   will produce a 2x2 plot split by season and day of the week. Note, when two
 #'   types are provided the first forms the columns and the second the rows.
-#' @param map Should a base map be drawn? If \code{TRUE} the world base map from
-#'   the \code{maps} package is used.
+#' @param map Should a base map be drawn? If `TRUE` the world base map from
+#'   the `maps` package is used.
 #' @param group It is sometimes useful to group and colour trajectories
 #'   according to a grouping variable. See example below.
 #' @param map.fill Should the base map be a filled polygon? Default is to fill
 #'   countries.
 #' @param map.res The resolution of the base map. By default the function uses
-#'   the \sQuote{world} map from the \code{maps} package. If \code{map.res =
-#'   "hires"} then the (much) more detailed base map \sQuote{worldHires} from
-#'   the \code{mapdata} package is used. Use \code{library(mapdata)}. Also
-#'   available is a map showing the US states. In this case \code{map.res =
-#'   "state"} should be used.
-#' @param map.cols If \code{map.fill = TRUE} \code{map.cols} controls the fill
-#'   colour. Examples include \code{map.fill = "grey40"} and \code{map.fill =
-#'   openColours("default", 10)}. The latter colours the countries and can help
+#'   the \sQuote{world} map from the `maps` package. If `map.res =
+#'   "hires"` then the (much) more detailed base map \sQuote{worldHires} from
+#'   the `mapdata` package is used. Use `library(mapdata)`. Also
+#'   available is a map showing the US states. In this case `map.res =
+#'   "state"` should be used.
+#' @param map.cols If `map.fill = TRUE` `map.cols` controls the fill
+#'   colour. Examples include `map.fill = "grey40"` and `map.fill =
+#'   openColours("default", 10)`. The latter colours the countries and can help
 #'   differentiate them.
 #' @param map.alpha The transparency level of the filled map which takes values
 #'   from 0 (full transparency) to 1 (full opacity). Setting it below 1 can help
-#'   view trajectories, trajectory surfaces etc. \emph{and} a filled base map.
+#'   view trajectories, trajectory surfaces etc. *and* a filled base map.
 #' @param projection The map projection to be used. Different map projections
-#'   are possible through the \code{mapproj} package. See \code{?mapproject} for
+#'   are possible through the `mapproj` package. See `?mapproject` for
 #'   extensive details and information on setting other parameters and
 #'   orientation (see below).
-#' @param parameters From the \code{mapproj} package. Optional numeric vector of
+#' @param parameters From the `mapproj` package. Optional numeric vector of
 #'   parameters for use with the projection argument. This argument is optional
 #'   only in the sense that certain projections do not require additional
 #'   parameters. If a projection does not require additional parameters then set
-#'   to null i.e. \code{parameters = NULL}.
-#' @param orientation From the \code{mapproj} package. An optional vector
+#'   to null i.e. `parameters = NULL`.
+#' @param orientation From the `mapproj` package. An optional vector
 #'   c(latitude, longitude, rotation) which describes where the "North Pole"
 #'   should be when computing the projection. Normally this is c(90, 0), which
 #'   is appropriate for cylindrical and conic projections. For a planar
@@ -78,23 +78,23 @@
 #'   value is a clockwise rotation (in degrees), which defaults to the midrange
 #'   of the longitude coordinates in the map.
 #' @param grid.col The colour of the map grid to be used. To remove the grid set
-#'   \code{grid.col = "transparent"}.
-#' @param npoints A dot is placed every \code{npoints} along each full
+#'   `grid.col = "transparent"`.
+#' @param npoints A dot is placed every `npoints` along each full
 #'   trajectory. For hourly back trajectories points are plotted every
-#'   \code{npoint} hours. This helps to understand where the air masses were at
+#'   `npoint` hours. This helps to understand where the air masses were at
 #'   particular times and get a feel for the speed of the air (points closer
-#'   together correspond to slower moving air masses). If \code{npoints = NA}
+#'   together correspond to slower moving air masses). If `npoints = NA`
 #'   then no points are added.
 #' @param origin If true a filled circle dot is shown to mark the receptor
 #'   point.
 #' @param plot Should a plot be produced? `FALSE` can be useful when analysing
 #'   data to extract plot components and plotting them in other ways.
-#' @param ... other arguments are passed to \code{cutData} and
-#'   \code{scatterPlot}. This provides access to arguments used in both these
+#' @param ... other arguments are passed to `cutData` and
+#'   `scatterPlot`. This provides access to arguments used in both these
 #'   functions and functions that they in turn pass arguments on to. For
-#'   example, \code{plotTraj} passes the argument \code{cex} on to
-#'   \code{scatterPlot} which in turn passes it on to the \code{lattice}
-#'   function \code{xyplot} where it is applied to set the plot symbol size.
+#'   example, `plotTraj` passes the argument `cex` on to
+#'   `scatterPlot` which in turn passes it on to the `lattice`
+#'   function `xyplot` where it is applied to set the plot symbol size.
 #' @export
 #' @family trajectory analysis functions
 #' @author David Carslaw
@@ -109,28 +109,46 @@
 #' lond <- importTraj("london", 2010)
 #' # well, HYSPLIT seems to think there certainly were conditions where trajectories
 #' # orginated from Iceland...
-#' trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"))}
+#' trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"))
+#' }
 #'
 #' # plot by day, need a column that makes a date
 #' \dontrun{
 #' lond$day <- as.Date(lond$date)
 #' trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
-#' type = "day")
+#'   type = "day"
+#' )
 #' }
 #'
 #' # or show each day grouped by colour, with some other options set
 #' \dontrun{
-#'  trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
-#' group = "day", col = "turbo", lwd = 2, key.pos = "right", key.col = 1)
+#' trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
+#'   group = "day", col = "turbo", lwd = 2, key.pos = "right", key.col = 1
+#' )
 #' }
 #' # more examples to follow linking with concentration measurements...
 #'
-trajPlot <- function(mydata, lon = "lon", lat = "lat", pollutant = "height",
-                     type = "default", map = TRUE, group = NA, map.fill = TRUE,
-                     map.res = "default", map.cols = "grey40",
-                     map.alpha = 0.4, projection = "lambert",
-                     parameters = c(51, 51), orientation = c(90, 0, 0),
-                     grid.col = "deepskyblue", npoints = 12, origin = TRUE, plot = TRUE,...) {
+trajPlot <- function(
+  mydata,
+  lon = "lon",
+  lat = "lat",
+  pollutant = "height",
+  type = "default",
+  map = TRUE,
+  group = NA,
+  map.fill = TRUE,
+  map.res = "default",
+  map.cols = "grey40",
+  map.alpha = 0.4,
+  projection = "lambert",
+  parameters = c(51, 51),
+  orientation = c(90, 0, 0),
+  grid.col = "deepskyblue",
+  npoints = 12,
+  origin = TRUE,
+  plot = TRUE,
+  ...
+) {
   len <- NULL
   hour.inc <- NULL ## silence R check
 
@@ -189,7 +207,6 @@ trajPlot <- function(mydata, lon = "lon", lat = "lat", pollutant = "height",
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
-
     fontsize = current.font
   ))
 
@@ -240,8 +257,8 @@ trajPlot <- function(mydata, lon = "lon", lat = "lat", pollutant = "height",
   mydata[["lon"]] <- tmp$x
   mydata[["lat"]] <- tmp$y
 
-
-  if (missing(pollutant)) { ## don't need key
+  if (missing(pollutant)) {
+    ## don't need key
 
     if (is.na(group)) key <- FALSE else key <- TRUE
 
@@ -251,15 +268,26 @@ trajPlot <- function(mydata, lon = "lon", lat = "lat", pollutant = "height",
 
     scatterPlot.args <- list(
       mydata,
-      x = lon, y = lat, z = NA,
-      type = type, method = method,
-      map = map, key = key, group = group,
-      map.fill = map.fill, map.res = map.res,
-      map.cols = map.cols, map.alpha = map.alpha,
-      traj = TRUE, projection = projection,
-      parameters = parameters, orientation = orientation,
-      grid.col = grid.col, trajLims = trajLims,
-      receptor = receptor, npoints = npoints,
+      x = lon,
+      y = lat,
+      z = NA,
+      type = type,
+      method = method,
+      map = map,
+      key = key,
+      group = group,
+      map.fill = map.fill,
+      map.res = map.res,
+      map.cols = map.cols,
+      map.alpha = map.alpha,
+      traj = TRUE,
+      projection = projection,
+      parameters = parameters,
+      orientation = orientation,
+      grid.col = grid.col,
+      trajLims = trajLims,
+      receptor = receptor,
+      npoints = npoints,
       origin = origin
     )
   } else {
@@ -269,15 +297,25 @@ trajPlot <- function(mydata, lon = "lon", lat = "lat", pollutant = "height",
 
     scatterPlot.args <- list(
       mydata,
-      x = lon, y = lat, z = pollutant,
-      type = type, method = method,
-      map = map, group = group,
-      map.fill = map.fill, map.res = map.res,
+      x = lon,
+      y = lat,
+      z = pollutant,
+      type = type,
+      method = method,
+      map = map,
+      group = group,
+      map.fill = map.fill,
+      map.res = map.res,
       map.cols = map.cols,
-      map.alpha = map.alpha, traj = TRUE, projection = projection,
-      parameters = parameters, orientation = orientation,
-      grid.col = grid.col, trajLims = trajLims,
-      receptor = receptor, npoints = npoints,
+      map.alpha = map.alpha,
+      traj = TRUE,
+      projection = projection,
+      parameters = parameters,
+      orientation = orientation,
+      grid.col = grid.col,
+      trajLims = trajLims,
+      receptor = receptor,
+      npoints = npoints,
       origin = origin
     )
   }
@@ -288,19 +326,20 @@ trajPlot <- function(mydata, lon = "lon", lat = "lat", pollutant = "height",
 
   # plot
   plt <- do.call(scatterPlot, scatterPlot.args)
-  
+
   output <-
-    list(plot = plt$plot,
-         data = dplyr::tibble(mydata),
-         call = match.call())
+    list(
+      plot = plt$plot,
+      data = dplyr::tibble(mydata),
+      call = match.call()
+    )
   class(output) <- "openair"
-  
+
   invisible(output)
 }
 
 
 setTrajLims <- function(mydata, Args, projection, parameters, orientation) {
-
   ## xlim and ylim set by user
   if ("xlim" %in% names(Args) & !all(is.na(Args$xlim))) {
     x1 <- Args$xlim[1]
@@ -321,18 +360,25 @@ setTrajLims <- function(mydata, Args, projection, parameters, orientation) {
   n <- 40 ## number of points along each vertex
 
   X <- c(
-    seq(x1, x1, length.out = n), seq(x1, x2, length.out = n),
-    seq(x2, x2, length.out = n), seq(x2, x1, length.out = n)
+    seq(x1, x1, length.out = n),
+    seq(x1, x2, length.out = n),
+    seq(x2, x2, length.out = n),
+    seq(x2, x1, length.out = n)
   )
 
   Y <- c(
-    seq(y1, y2, length.out = n), seq(y2, y2, length.out = n),
-    seq(y2, y1, length.out = n), seq(y1, y1, length.out = n)
+    seq(y1, y2, length.out = n),
+    seq(y2, y2, length.out = n),
+    seq(y2, y1, length.out = n),
+    seq(y1, y1, length.out = n)
   )
 
   tmp <- mapproject(
-    x = X, y = Y, projection = projection,
-    parameters = parameters, orientation = orientation
+    x = X,
+    y = Y,
+    projection = projection,
+    parameters = parameters,
+    orientation = orientation
   )
 
   Args$xlim <- tmp$range[1:2]
@@ -341,10 +387,21 @@ setTrajLims <- function(mydata, Args, projection, parameters, orientation) {
 }
 
 ## function from mapproj to add grid lines to a map
-map.grid2 <- function(lim, nx = 9, ny = 9, labels = TRUE, pretty = TRUE,
-                      cex = 1, col = "deepskyblue", lty = 2, font = 1,
-                      projection = "rectangular", parameters = 52,
-                      orientation = c(90, 0, 0), ...) {
+map.grid2 <- function(
+  lim,
+  nx = 9,
+  ny = 9,
+  labels = TRUE,
+  pretty = TRUE,
+  cex = 1,
+  col = "deepskyblue",
+  lty = 2,
+  font = 1,
+  projection = "rectangular",
+  parameters = 52,
+  orientation = c(90, 0, 0),
+  ...
+) {
   pretty.range <- function(lim, ...) {
     x <- pretty(lim, ...)
     if (abs(x[1] - lim[1]) > abs(x[2] - lim[1])) {
@@ -379,31 +436,41 @@ map.grid2 <- function(lim, nx = 9, ny = 9, labels = TRUE, pretty = TRUE,
   if (pretty) {
     x <- pretty.range(lim[1:2], n = nx)
     y <- pretty.range(lim[3:4], n = ny)
-  }
-  else {
+  } else {
     x <- seq(lim[1], lim[2], len = nx)
     y <- seq(lim[3], lim[4], len = ny)
   }
   p <- mapproject(
-    expand.grid(x = c(
-      seq(lim[1], lim[2], len = 100),
-      NA
-    ), y = y),
+    expand.grid(
+      x = c(
+        seq(lim[1], lim[2], len = 100),
+        NA
+      ),
+      y = y
+    ),
     projection = projection,
     parameters = parameters,
     orientation = orientation
   )
   p <- maps::map.wrap(p)
   llines(p, col = col, lty = lty, ...)
-  llines(mapproject(
-    expand.grid(y = c(
-      seq(lim[3], lim[4], len = 100),
-      NA
-    ), x = x),
-    projection = projection,
-    parameters = parameters,
-    orientation = orientation
-  ), col = col, lty = lty, ...)
+  llines(
+    mapproject(
+      expand.grid(
+        y = c(
+          seq(lim[3], lim[4], len = 100),
+          NA
+        ),
+        x = x
+      ),
+      projection = projection,
+      parameters = parameters,
+      orientation = orientation
+    ),
+    col = col,
+    lty = lty,
+    ...
+  )
   if (labels) {
     tx <- x[2]
     xinc <- median(diff(x))
@@ -411,25 +478,39 @@ map.grid2 <- function(lim, nx = 9, ny = 9, labels = TRUE, pretty = TRUE,
     yinc <- median(diff(y))
     ltext(
       mapproject(
-        expand.grid(x = x + xinc * 0.05, y = ty +
-          yinc * 0.5),
+        expand.grid(
+          x = x + xinc * 0.05,
+          y = ty +
+            yinc * 0.5
+        ),
         projection = projection,
         parameters = parameters,
         orientation = orientation
       ),
-      labels = auto.format(x), cex = cex,
-      adj = c(0, 0), col = col, font = font, ...
+      labels = auto.format(x),
+      cex = cex,
+      adj = c(0, 0),
+      col = col,
+      font = font,
+      ...
     )
     ltext(
       mapproject(
-        expand.grid(x = tx + xinc * 0.5, y = y +
-          yinc * 0.05),
+        expand.grid(
+          x = tx + xinc * 0.5,
+          y = y +
+            yinc * 0.05
+        ),
         projection = projection,
         parameters = parameters,
         orientation = orientation
       ),
-      labels = auto.format(y), cex = cex,
-      adj = c(0, 0), col = col, font = font, ...
+      labels = auto.format(y),
+      cex = cex,
+      adj = c(0, 0),
+      col = col,
+      font = font,
+      ...
     )
   }
 }

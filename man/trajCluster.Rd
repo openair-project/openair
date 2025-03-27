@@ -57,8 +57,7 @@ have been applied to the whole data set.}
 countries.}
 
 \item{map.cols}{If \code{map.fill = TRUE} \code{map.cols} controls the fill
-colour. Examples include \code{map.fill = "grey40"} and \code{map.fill =
-  openColours("default", 10)}. The latter colours the countries and can help
+colour. Examples include \code{map.fill = "grey40"} and \code{map.fill = openColours("default", 10)}. The latter colours the countries and can help
 differentiate them.}
 
 \item{map.alpha}{The transparency level of the filled map which takes values

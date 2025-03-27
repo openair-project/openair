@@ -7,14 +7,15 @@
 dateBreaks <- function(x, n = 5, min.n = n %/% 2, ...) {
   ## get rid of R check annoyances
 
-
   isDate <- inherits(x, "Date")
   x <- as.POSIXct(x)
-  if (isDate) { # the timezone *does* matter
+  if (isDate) {
+    # the timezone *does* matter
     attr(x, "tzone") <- "GMT"
   }
   zz <- range(x, na.rm = TRUE)
-  if (diff(as.numeric(zz)) == 0) { # one value only
+  if (diff(as.numeric(zz)) == 0) {
+    # one value only
     zz <- zz + c(0, 60)
   }
 
@@ -116,7 +117,8 @@ dateBreaks <- function(x, n = 5, min.n = n %/% 2, ...) {
     list(major = ans, format = s$format)
     #  ans
   }
-  if (init.n == n) { ## perfect
+  if (init.n == n) {
+    ## perfect
     return(makeOutput(init.at, steps[[init.i]]))
   }
   if (init.n > n) {
@@ -142,18 +144,29 @@ dateBreaks <- function(x, n = 5, min.n = n %/% 2, ...) {
 }
 ## utility function, extending the base function of same name
 dateTrunc <-
-  function(x, units = c(
-           "secs", "mins", "hours", "days",
-           "weeks", "months", "years", "decades", "centuries"
-         ),
-         start.on.monday = TRUE) {
+  function(
+    x,
+    units = c(
+      "secs",
+      "mins",
+      "hours",
+      "days",
+      "weeks",
+      "months",
+      "years",
+      "decades",
+      "centuries"
+    ),
+    start.on.monday = TRUE
+  ) {
     x <- as.POSIXlt(x)
     if (units %in% c("secs", "mins", "hours", "days")) {
       return(base::trunc.POSIXt(x, units))
     }
     x <- base::trunc.POSIXt(x, "days")
     if (length(x$sec)) {
-      switch(units,
+      switch(
+        units,
         weeks = {
           x$mday <- x$mday - x$wday
           if (start.on.monday) {
@@ -182,45 +195,61 @@ dateTrunc <-
     x
   }
 
-dateCeil <- function(x, units = c(
-                     "secs", "mins", "hours", "days", "months",
-                     "years"
-                   ), ...) {
+dateCeil <- function(
+  x,
+  units = c(
+    "secs",
+    "mins",
+    "hours",
+    "days",
+    "months",
+    "years"
+  ),
+  ...
+) {
   units <- match.arg(units)
   x <- as.POSIXlt(x)
   isdst <- x$isdst
   if (length(x$sec) > 0 && x != dateTrunc(x, units = units)) {
-    switch(units, secs = {
-      x$sec <- ceiling(x$sec)
-    }, mins = {
-      x$sec <- 0
-      x$min <- x$min + 1
-    }, hours = {
-      x$sec <- 0
-      x$min <- 0
-      x$hour <- x$hour + 1
-    }, days = {
-      x$sec <- 0
-      x$min <- 0
-      x$hour <- 0
-      x$mday <- x$mday + 1
-      isdst <- x$isdst <- -1
-    }, months = {
-      x$sec <- 0
-      x$min <- 0
-      x$hour <- 0
-      x$mday <- 1
-      x$mon <- x$mon + 1
-      isdst <- x$isdst <- -1
-    }, years = {
-      x$sec <- 0
-      x$min <- 0
-      x$hour <- 0
-      x$mday <- 1
-      x$mon <- 0
-      x$year <- x$year + 1
-      isdst <- x$isdst <- -1
-    })
+    switch(
+      units,
+      secs = {
+        x$sec <- ceiling(x$sec)
+      },
+      mins = {
+        x$sec <- 0
+        x$min <- x$min + 1
+      },
+      hours = {
+        x$sec <- 0
+        x$min <- 0
+        x$hour <- x$hour + 1
+      },
+      days = {
+        x$sec <- 0
+        x$min <- 0
+        x$hour <- 0
+        x$mday <- x$mday + 1
+        isdst <- x$isdst <- -1
+      },
+      months = {
+        x$sec <- 0
+        x$min <- 0
+        x$hour <- 0
+        x$mday <- 1
+        x$mon <- x$mon + 1
+        isdst <- x$isdst <- -1
+      },
+      years = {
+        x$sec <- 0
+        x$min <- 0
+        x$hour <- 0
+        x$mday <- 1
+        x$mon <- 0
+        x$year <- x$year + 1
+        isdst <- x$isdst <- -1
+      }
+    )
     x <- as.POSIXlt(as.POSIXct(x))
     if (isdst == -1) {
       x$isdst <- -1
