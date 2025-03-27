@@ -82,10 +82,26 @@
 <li><p>The <code>formula.label</code> argument of <code><a href="../reference/polarPlot.html">polarPlot()</a></code> will now control whether concentration information is printed when <code>statistic = "cpf"</code>.</p></li>
 <li><p>add <code>calm.thresh</code> as an option to <code>windRose</code>. This change allows users to set a non-zero wind speed threshold that is considered as calm.</p></li>
 <li><p>DAQI information imported using <code>importUKAQ(data_type = "daqi")</code> will be returned with the relevant DAQI band appended as an additional factor column; either “Low” (1-3), “Moderate” (4-6), “High” (7-9), or “Very High” (10). See <a href="https://uk-air.defra.gov.uk/air-pollution/daqi" class="external-link uri">https://uk-air.defra.gov.uk/air-pollution/daqi</a> for more information.</p></li>
-<li><p>Added <code><a href="../reference/importImperial.html">importImperial()</a></code>, a new version of <code><a href="../reference/importImperial.html">importKCL()</a></code> which more accurately describes the origin of its data and has arguments more similar to <code><a href="../reference/importUKAQ.html">importUKAQ()</a></code>. <code><a href="../reference/importImperial.html">importKCL()</a></code> still exists for back-compatibility reasons, but new users should use <code><a href="../reference/importImperial.html">importImperial()</a></code>.</p></li>
-</ul></div>
-<div class="section level3">
-<h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+</ul><p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD - <code><a href="../reference/trendLevel.html">trendLevel()</a></code> has gained new <code>statistic</code> types to match <code><a href="../reference/timeAverage.html">timeAverage()</a></code>, including <code>"mean"</code>, <code>"median"</code>, <code>"min"</code>, <code>"max"</code>, <code>"sd"</code>, <code>"sum"</code>, <code>"frequency"</code> and <code>"percentile"</code>.</p>
+<ul><li>
+<code><a href="../reference/trendLevel.html">trendLevel()</a></code> will now automatically generate appropriate <code>labels</code> if <code>breaks</code> are provided. The <code>labels</code> argument can still be used to provide custom labels per break.</li>
+</ul><p>=======</p>
+<ul><li>Added <code><a href="../reference/importImperial.html">importImperial()</a></code>, a new version of <code><a href="../reference/importImperial.html">importKCL()</a></code> which more accurately describes the origin of its data and has arguments more similar to <code><a href="../reference/importUKAQ.html">importUKAQ()</a></code>. <code><a href="../reference/importImperial.html">importKCL()</a></code> still exists for back-compatibility reasons, but new users should use <code><a href="../reference/importImperial.html">importImperial()</a></code>.</li>
+</ul><blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>openair-project/master ## Bug fixes</p>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
+</blockquote>
 <ul><li><p>Fixed repeated day number in <code>calendarPlot</code> when <code>statistic = max</code>.</p></li>
 <li><p>Fixed <code>annotate = FALSE</code> in <code>windRose</code> where axes and labels were not shown</p></li>
 <li><p>Fixed an issue wherein <code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> would drop sites if importing from <code>local</code> sites <em>and</em> another network.</p></li>
