@@ -283,7 +283,6 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
   )
 
   # specific treatment of pollutants
-
   # Ozone
   if (grepl("o3", mydata$pollutant[1], ignore.case = TRUE)) {
     # ozone greater than 100
