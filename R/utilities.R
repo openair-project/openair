@@ -17,21 +17,6 @@ dateTypes <- c(
   "seasonyear", "yearseason"
 )
 
-## sets up how openair graphics look by default and resets on exit
-
-setGraphics <- function(fontsize = 5) {
-  current.strip <- trellis.par.get("strip.background")
-  trellis.par.set(fontsize = list(text = fontsize))
-
-  ## reset graphic parameters
-  font.orig <- trellis.par.get("fontsize")$text
-  on.exit(trellis.par.set(
-
-    fontsize = list(text = font.orig)
-  ))
-}
-
-
 # function to test of a suggested package is available and warn if not
 try_require <- function(package, fun) {
   if (requireNamespace(package, quietly = TRUE)) {
