@@ -33,8 +33,13 @@
 - add `calm.thresh` as an option to `windRose`. This change allows users to set a non-zero wind speed threshold that is considered as calm.
 
 - DAQI information imported using `importUKAQ(data_type = "daqi")` will be returned with the relevant DAQI band appended as an additional factor column; either "Low" (1-3), "Moderate" (4-6), "High" (7-9), or "Very High" (10). See <https://uk-air.defra.gov.uk/air-pollution/daqi> for more information.
+
  
 ## Bug fixes
+
+- Fixed repeated day number in `calendarPlot` when `statistic = max`.
+
+- Fixed `annotate = FALSE` in `windRose` where axes and labels were not shown
 
 - Fixed an issue wherein `importUKAQ()` would drop sites if importing from `local` sites *and* another network.
 

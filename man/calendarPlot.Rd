@@ -19,6 +19,7 @@ calendarPlot(
   col.arrow = "black",
   font.lim = c(1, 2),
   cex.lim = c(0.6, 1),
+  cex.date = 0.6,
   digits = 0,
   data.thresh = 0,
   labels = NA,
@@ -92,6 +93,8 @@ bold text.}
 \item{cex.lim}{For the annotation of concentration labels on each day. The
 first sets the size of the text below \code{lim} and the second sets the size of
 the text above \code{lim}.}
+
+\item{cex.date}{The base size of the annotation text for the date.}
 
 \item{digits}{The number of digits used to display concentration values when
 \code{annotate = "value"}.}
