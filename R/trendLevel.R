@@ -8,113 +8,113 @@
 #' and diurnal variations. However, x, y and type and summarising statistics can
 #' all be modified to provide a range of other similar plots.
 #'
-#' \code{trendLevel} allows the use of third party summarising functions via the
-#' \code{statistic} option. Any additional function arguments not included
-#' within a function called using \code{statistic} should be supplied as a list
-#' of named parameters and sent using \code{stat.args}. For example, the encoded
-#' option \code{statistic = "mean"} is equivalent to \code{statistic = mean,
-#' stat.args = list(na.rm = TRUE)} or the R command \code{mean(x, na.rm= TRUE)}.
+#' `trendLevel` allows the use of third party summarising functions via the
+#' `statistic` option. Any additional function arguments not included
+#' within a function called using `statistic` should be supplied as a list
+#' of named parameters and sent using `stat.args`. For example, the encoded
+#' option `statistic = "mean"` is equivalent to `statistic = mean,
+#' stat.args = list(na.rm = TRUE)` or the R command `mean(x, na.rm= TRUE)`.
 #' Many R functions and user's own code could be applied in a similar fashion,
 #' subject to the following restrictions: the first argument sent to the
 #' function must be the data series to be analysed; the name `x' cannot be used
-#' for any of the extra options supplied in \code{stat.args}; and the function
-#' should return the required answer as a numeric or \code{NA}. Note: If the
+#' for any of the extra options supplied in `stat.args`; and the function
+#' should return the required answer as a numeric or `NA`. Note: If the
 #' supplied function returns more than one answer, currently only the first of
-#' these is retained and used by \code{trendLevel}. All other returned
+#' these is retained and used by `trendLevel`. All other returned
 #' information will be ignored without warning. If the function terminates with
 #' an error when it is sent an empty data series, the option
-#' \code{stat.safe.mode} should not be set to \code{FALSE} or \code{trendLevel}
-#' may fail. Note: The \code{stat.safe.mode = TRUE} option returns an NA without
+#' `stat.safe.mode` should not be set to `FALSE` or `trendLevel`
+#' may fail. Note: The `stat.safe.mode = TRUE` option returns an NA without
 #' warning for empty data series.
 #'
-#' @param mydata The openair data frame to use to generate the \code{trendLevel}
+#' @param mydata The openair data frame to use to generate the `trendLevel`
 #'   plot.
-#' @param pollutant The name of the data series in \code{mydata} to sample to
-#'   produce the \code{trendLevel} plot.
-#' @param x The name of the data series to use as the \code{trendLevel} x-axis.
-#'   This is used with the \code{y} and \code{type} options to bin the data
-#'   before applying \code{statistic} (see below). Other data series in
-#'   \code{mydata} can also be used. (Note: \code{trendLevel} does not allow
-#'   duplication in \code{x}, \code{y} and \code{type} options within a call.)
-#' @param y The names of the data series to use as the \code{trendLevel} y-axis
-#'   and for additional conditioning, respectively. As \code{x} above.
-#' @param type See \code{y}.
-#' @param rotate.axis The rotation to be applied to \code{trendLevel} \code{x}
-#'   and \code{y} axes. The default, \code{c(90, 0)}, rotates the x axis by 90
+#' @param pollutant The name of the data series in `mydata` to sample to
+#'   produce the `trendLevel` plot.
+#' @param x The name of the data series to use as the `trendLevel` x-axis.
+#'   This is used with the `y` and `type` options to bin the data
+#'   before applying `statistic` (see below). Other data series in
+#'   `mydata` can also be used. (Note: `trendLevel` does not allow
+#'   duplication in `x`, `y` and `type` options within a call.)
+#' @param y The names of the data series to use as the `trendLevel` y-axis
+#'   and for additional conditioning, respectively. As `x` above.
+#' @param type See `y`.
+#' @param rotate.axis The rotation to be applied to `trendLevel` `x`
+#'   and `y` axes. The default, `c(90, 0)`, rotates the x axis by 90
 #'   degrees but does not rotate the y axis. (Note: If only one value is
 #'   supplied, this is applied to both axes; if more than two values are
 #'   supplied, only the first two are used.)
-#' @param n.levels The number of levels to split \code{x}, \code{y} and
-#'   \code{type} data into if numeric. The default, \code{c(10, 10, 4)}, cuts
-#'   numeric \code{x} and \code{y} data into ten levels and numeric \code{type}
+#' @param n.levels The number of levels to split `x`, `y` and
+#'   `type` data into if numeric. The default, `c(10, 10, 4)`, cuts
+#'   numeric `x` and `y` data into ten levels and numeric `type`
 #'   data into four levels. (Notes: This option is ignored for date conditioning
 #'   and factors.  If less than three values are supplied, three values are
 #'   determined by recursion; if more than three values are supplied, only the
 #'   first three are used.)
 #' @param limits The colour scale range to use when generating the
-#'   \code{trendLevel} plot.
-#' @param cols The colour set to use to colour the \code{trendLevel} surface.
-#'   \code{cols} is passed to \code{openColours} for evaluation. See
-#'   \code{?openColours} for more details.
-#' @param auto.text Automatic routine text formatting. \code{auto.text = TRUE}
-#'   passes common \code{lattice} labelling terms (e.g. \code{xlab} for the
-#'   x-axis, \code{ylab} for the y-axis and \code{main} for the title) to the
-#'   plot via \code{quickText} to provide common text formatting.  The
-#'   alternative \code{auto.text = FALSE} turns this option off and passes any
+#'   `trendLevel` plot.
+#' @param cols The colour set to use to colour the `trendLevel` surface.
+#'   `cols` is passed to `openColours` for evaluation. See
+#'   `?openColours` for more details.
+#' @param auto.text Automatic routine text formatting. `auto.text = TRUE`
+#'   passes common `lattice` labelling terms (e.g. `xlab` for the
+#'   x-axis, `ylab` for the y-axis and `main` for the title) to the
+#'   plot via `quickText` to provide common text formatting.  The
+#'   alternative `auto.text = FALSE` turns this option off and passes any
 #'   supplied labels to the plot without modification.
 #' @param key.header,key.footer Adds additional text labels above and/or below
 #'   the scale key, respectively. For example, passing the options
-#'   \code{key.header = "", key.footer = c("mean","nox")} adds the addition text
-#'   as a scale footer. If enabled (\code{auto.text = TRUE}), these arguments
-#'   are passed to the scale key (\code{drawOpenKey}) via \code{quickText} to
-#'   handle formatting. The term \code{"get.stat.name"}, used as the default
-#'   \code{key.header} setting, is reserved and automatically adds statistic
-#'   function names or defaults to \code{"level"} when unnamed functions are
-#'   requested via \code{statistic}.
+#'   `key.header = "", key.footer = c("mean","nox")` adds the addition text
+#'   as a scale footer. If enabled (`auto.text = TRUE`), these arguments
+#'   are passed to the scale key (`drawOpenKey`) via `quickText` to
+#'   handle formatting. The term `"get.stat.name"`, used as the default
+#'   `key.header` setting, is reserved and automatically adds statistic
+#'   function names or defaults to `"level"` when unnamed functions are
+#'   requested via `statistic`.
 #' @param key.position Location where the scale key should be plotted.  Allowed
 #'   arguments currently include \dQuote{top}, \dQuote{right}, \dQuote{bottom}
 #'   and \dQuote{left}.
-#' @param key Fine control of the scale key via \code{drawOpenKey}. See
-#'   \code{?drawOpenKey} for further details.
+#' @param key Fine control of the scale key via `drawOpenKey`. See
+#'   `?drawOpenKey` for further details.
 #' @param labels If a categorical colour scale is required then these labels
 #'   will be used. Note there is one less label than break. For example,
-#'   \code{labels = c("good", "bad", "very bad")}. \code{breaks} must also be
+#'   `labels = c("good", "bad", "very bad")`. `breaks` must also be
 #'   supplied if labels are given.
 #' @param breaks If a categorical colour scale is required then these breaks
-#'   will be used. For example, \code{breaks = c(0, 50, 100, 1000)}. In this
+#'   will be used. For example, `breaks = c(0, 50, 100, 1000)`. In this
 #'   case \dQuote{good} corresponds to values between 0 and 50 and so on. Users
-#'   should set the maximum value of \code{breaks} to exceed the maximum data
+#'   should set the maximum value of `breaks` to exceed the maximum data
 #'   value to ensure it is within the maximum final range e.g. 100--1000 in this
-#'   case. \code{labels} must also be supplied.
+#'   case. `labels` must also be supplied.
 #' @param statistic The statistic method to be use to summarise locally binned
-#'   \code{pollutant} measurements with. Three options are currently encoded:
+#'   `pollutant` measurements with. Three options are currently encoded:
 #'   \dQuote{mean} (default), \dQuote{max} and \dQuote{frequency}. (Note:
-#'   Functions can also be sent directly via \code{statistic}.  However, this
+#'   Functions can also be sent directly via `statistic`.  However, this
 #'   option is still in development and should be used with caution. See Details
 #'   below.)
-#' @param stat.args Additional options to be used with \code{statistic} if this
+#' @param stat.args Additional options to be used with `statistic` if this
 #'   is a function. The extra options should be supplied as a list of named
 #'   parameters. (see Details below.)
 #' @param stat.safe.mode An addition protection applied when using functions
-#'   directly with \code{statistic} that most users can ignore. This option
-#'   returns \code{NA} instead of running \code{statistic} on binned subsamples
+#'   directly with `statistic` that most users can ignore. This option
+#'   returns `NA` instead of running `statistic` on binned subsamples
 #'   that are empty. Many common functions terminate with an error message when
 #'   applied to an empty dataset. So, this option provides a mechanism to work
 #'   with such functions. For a very few cases, e.g. for a function that counted
-#'   missing entries, it might need to be set to \code{FALSE} (see Details
+#'   missing entries, it might need to be set to `FALSE` (see Details
 #'   below.)
-#' @param drop.unused.types Hide unused/empty \code{type} conditioning cases.
+#' @param drop.unused.types Hide unused/empty `type` conditioning cases.
 #'   Some conditioning options may generate empty cases for some data sets, e.g.
-#'   a hour of the day when no measurements were taken. Empty \code{x} and
-#'   \code{y} cases generate 'holes' in individual plots. However, empty
-#'   \code{type} cases would produce blank panels if plotted. Therefore, the
-#'   default, \code{TRUE}, excludes these empty panels from the plot. The
-#'   alternative \code{FALSE} plots all \code{type} panels.
+#'   a hour of the day when no measurements were taken. Empty `x` and
+#'   `y` cases generate 'holes' in individual plots. However, empty
+#'   `type` cases would produce blank panels if plotted. Therefore, the
+#'   default, `TRUE`, excludes these empty panels from the plot. The
+#'   alternative `FALSE` plots all `type` panels.
 #' @param col.na Colour to be used to show missing data.
-#' @param plot Should a plot be produced? \code{FALSE} can be useful when
+#' @param plot Should a plot be produced? `FALSE` can be useful when
 #'   analysing data to extract plot components and plotting them in other ways.
-#' @param ... Addition options are passed on to \code{cutData} for \code{type}
-#'   handling and \code{levelplot} in \code{lattice} for finer control of the
+#' @param ... Addition options are passed on to `cutData` for `type`
+#'   handling and `levelplot` in `lattice` for finer control of the
 #'   plot itself.
 #' @export
 #' @return an [openair][openair-package] object.

@@ -12,54 +12,54 @@
 #' regression is useful to test the strength of the relationship. However,
 #' considerably more information can be gleaned by considering different time
 #' periods, such as how the relationship between two pollutants vary over time,
-#' by day of the week, diurnally and so on. The \code{linearRelation} function
+#' by day of the week, diurnally and so on. The `linearRelation` function
 #' does just that - it fits a linear relationship between two pollutants over a
-#' wide range of time periods determined by \code{period}.
+#' wide range of time periods determined by `period`.
 #'
-#' \code{linearRelation} function is particularly useful if background
+#' `linearRelation` function is particularly useful if background
 #' concentrations are first removed from roadside concentrations, as the
 #' increment will relate more directly with changes in emissions. In this
-#' respect, using \code{linearRelation} can provide valuable information on how
+#' respect, using `linearRelation` can provide valuable information on how
 #' emissions may have changed over time, by hour of the day etc. Using the
 #' function in this way will require users to do some basic manipulation with
 #' their data first.
 #'
-#' If a data frame is supplied that contains \code{nox}, \code{no2} and
-#' \code{o3}, the \code{y} can be chosen as \code{y = "ox"}. In function will
+#' If a data frame is supplied that contains `nox`, `no2` and
+#' `o3`, the `y` can be chosen as `y = "ox"`. In function will
 #' therefore consider total oxidant slope (sum of NO2 + O3), which can provide
 #' valuable information on likely vehicle primary NO emissions. Note, however,
 #' that most roadside sites do not have ozone measurements and
-#' \code{\link{calcFno2}} is the alternative.
+#' [calcFno2()] is the alternative.
 #'
-#' @param mydata A data frame minimally containing \code{date} and two
+#' @param mydata A data frame minimally containing `date` and two
 #'   pollutants.
 #' @param x First pollutant that when plotted would appear on the x-axis of a
-#'   relationship e.g. \code{x = "nox"}.
+#'   relationship e.g. `x = "nox"`.
 #' @param y Second pollutant that when plotted would appear on the y-axis of a
-#'   relationship e.g. \code{y = "pm10"}.
+#'   relationship e.g. `y = "pm10"`.
 #' @param period A range of different time periods can be analysed. The default
-#'   is \code{month} but can be \code{year} and \code{week}. For increased
-#'   flexibility an integer can be used e.g. for 3-month values \code{period =
-#'   "3 month"}. Other cases include \code{"hour"} will show the diurnal
-#'   relationship between \code{x} and \code{y} and \dQuote{weekday} the day of
-#'   the week relationship between \code{x} and \code{y}. \dQuote{day.hour} will
+#'   is `month` but can be `year` and `week`. For increased
+#'   flexibility an integer can be used e.g. for 3-month values `period =
+#'   "3 month"`. Other cases include `"hour"` will show the diurnal
+#'   relationship between `x` and `y` and \dQuote{weekday} the day of
+#'   the week relationship between `x` and `y`. \dQuote{day.hour} will
 #'   plot the relationship by weekday and hour of the day.
-#' @param condition For \code{period = "hour"}, \code{period = "day"} and
-#'   \code{period = "day.hour"}, setting \code{condition = TRUE} will plot the
+#' @param condition For `period = "hour"`, `period = "day"` and
+#'   `period = "day.hour"`, setting `condition = TRUE` will plot the
 #'   relationships split by year. This is useful for seeing how the
 #'   relationships may be changing over time.
 #' @param n The minimum number of points to be sent to the linear model.
 #'   Because there may only be a few points e.g. hours where two pollutants are
-#'   available over one week, \code{n} can be set to ensure that at least
-#'   \code{n} points are sent to the linear model. If a period has hours <
-#'   \code{n} that period will be ignored.
+#'   available over one week, `n` can be set to ensure that at least
+#'   `n` points are sent to the linear model. If a period has hours <
+#'   `n` that period will be ignored.
 #' @param rsq.thresh The minimum correlation coefficient (R2) allowed. If the
-#'   relationship between \code{x} and \code{y} is not very good for a
-#'   particular period, setting \code{rsq.thresh} can help to remove those
+#'   relationship between `x` and `y` is not very good for a
+#'   particular period, setting `rsq.thresh` can help to remove those
 #'   periods where the relationship is not strong. Any R2 values below
-#'   \code{rsq.thresh} will not be plotted.
+#'   `rsq.thresh` will not be plotted.
 #' @param ylab y-axis title, specified by the user.
-#' @param auto.text Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
 #'   titles and axis labels will automatically try and format pollutant names
 #'   and units properly e.g.  by subscripting the \sQuote{2} in NO2.
 #' @param cols Colour for the points and uncertainty intervals.
@@ -68,11 +68,11 @@
 #'   date/time appropriately to the range being considered.  This does not
 #'   always work as desired automatically. The user can therefore increase or
 #'   decrease the number of intervals by adjusting the value of
-#'   \code{date.breaks} up or down.
-#' @param plot Should a plot be produced? \code{FALSE} can be useful when
+#'   `date.breaks` up or down.
+#' @param plot Should a plot be produced? `FALSE` can be useful when
 #'   analysing data to extract plot components and plotting them in other ways.
 #' @param ... Other graphical parameters. A useful one to remove the strip with
-#'   the date range on at the top of the plot is to set \code{strip = FALSE}.
+#'   the date range on at the top of the plot is to set `strip = FALSE`.
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw

@@ -78,7 +78,7 @@ supplied labels to the plot without modification.}
 
 \item{key.header, key.footer}{Adds additional text labels above and/or below
 the scale key, respectively. For example, passing the options
-\code{key.header = "", key.footer = c("mean","nox")} adds the addition text
+\verb{key.header = "", key.footer = c("mean","nox")} adds the addition text
 as a scale footer. If enabled (\code{auto.text = TRUE}), these arguments
 are passed to the scale key (\code{drawOpenKey}) via \code{quickText} to
 handle formatting. The term \code{"get.stat.name"}, used as the default
@@ -159,19 +159,10 @@ all be modified to provide a range of other similar plots.
 \code{statistic} option. Any additional function arguments not included
 within a function called using \code{statistic} should be supplied as a list
 of named parameters and sent using \code{stat.args}. For example, the encoded
-option \code{statistic = "mean"} is equivalent to \code{statistic = mean,
-stat.args = list(na.rm = TRUE)} or the R command \code{mean(x, na.rm= TRUE)}.
+option \code{statistic = "mean"} is equivalent to \verb{statistic = mean, stat.args = list(na.rm = TRUE)} or the R command \code{mean(x, na.rm= TRUE)}.
 Many R functions and user's own code could be applied in a similar fashion,
 subject to the following restrictions: the first argument sent to the
-function must be the data series to be analysed; the name `x' cannot be used
-for any of the extra options supplied in \code{stat.args}; and the function
-should return the required answer as a numeric or \code{NA}. Note: If the
-supplied function returns more than one answer, currently only the first of
-these is retained and used by \code{trendLevel}. All other returned
-information will be ignored without warning. If the function terminates with
-an error when it is sent an empty data series, the option
-\code{stat.safe.mode} should not be set to \code{FALSE} or \code{trendLevel}
-may fail. Note: The \code{stat.safe.mode = TRUE} option returns an NA without
+function must be the data series to be analysed; the name \verb{x' cannot be used for any of the extra options supplied in }stat.args\verb{; and the function should return the required answer as a numeric or }NA\verb{. Note: If the supplied function returns more than one answer, currently only the first of these is retained and used by }trendLevel\verb{. All other returned information will be ignored without warning. If the function terminates with an error when it is sent an empty data series, the option }stat.safe.mode\verb{should not be set to}FALSE\code{or}trendLevel\verb{may fail. Note: The}stat.safe.mode = TRUE` option returns an NA without
 warning for empty data series.
 }
 \examples{

@@ -27,8 +27,9 @@ would not normally have access to. The functions consist of those developed
 by the authors and a growing number from other researchers.
 
 The package also provides access to a wide range of data sources including
-the UK Automatic Urban and Rural Network (AURN), networks run by King's
-College London (e.g. the LAQN) and the Scottish Air Quality Network (SAQN).
+the UK Automatic Urban and Rural Network (AURN), networks run by Imperial
+College London (e.g., the LAQN) and the Scottish Air Quality Network
+(SAQN).
 
 The package has a number of requirements for input data and these are
 discussed in the manual (available in the \code{openair} book at

@@ -4,7 +4,7 @@
 #' concentration by wind speed (or another numeric variable) and direction. Mean
 #' concentrations are calculated for wind speed-direction \sQuote{bins} (e.g.
 #' 0-1, 1-2 m/s,...  and 0-10, 10-20 degrees etc.).  To aid interpretation,
-#' \code{gam} smoothing is carried out using \code{mgcv}.
+#' `gam` smoothing is carried out using `mgcv`.
 #'
 #' The bivariate polar plot is a useful diagnostic tool for quickly gaining an
 #' idea of potential sources. Wind speed is one of the most useful variables to
@@ -23,10 +23,10 @@
 #' source emission dependent on temperature e.g. biogenic isoprene.
 #'
 #' The plots can vary considerably depending on how much smoothing is done.  The
-#' approach adopted here is based on the very flexible and capable \code{mgcv}
-#' package that uses \emph{Generalized Additive Models}. While methods do exist
+#' approach adopted here is based on the very flexible and capable `mgcv`
+#' package that uses *Generalized Additive Models*. While methods do exist
 #' to find an optimum level of smoothness, they are not necessarily useful. The
-#' principal aim of \code{polarPlot} is as a graphical analysis rather than for
+#' principal aim of `polarPlot` is as a graphical analysis rather than for
 #' quantitative purposes. In this respect the smoothing aims to strike a balance
 #' between revealing interesting (real) features and overly noisy data. The
 #' defaults used in [polarPlot()] are based on the analysis of data from many
@@ -34,11 +34,11 @@
 #' other smoothing approaches.
 #'
 #' Various statistics are possible to consider e.g. mean, maximum, median.
-#' \code{statistic = "max"} is often useful for revealing sources. Pair-wise
+#' `statistic = "max"` is often useful for revealing sources. Pair-wise
 #' statistics between two pollutants can also be calculated.
 #'
 #' The function can also be used to compare two pollutant species through a
-#' range of pair-wise statistics (see help on \code{statistic}) and Grange et
+#' range of pair-wise statistics (see help on `statistic`) and Grange et
 #' al. (2016) (open-access publication link below).
 #'
 #' Wind direction is split up into 10 degree intervals and the other variable
@@ -51,54 +51,54 @@
 #' are several ways in which this issue can be tackled. First, it is possible to
 #' avoid smoothing altogether and use [polarFreq()]. Second, the effect of
 #' setting a minimum number of measurements in each wind speed-direction bin can
-#' be examined through \code{min.bin}. It is possible that a single point at
+#' be examined through `min.bin`. It is possible that a single point at
 #' high wind speed conditions can strongly affect the surface prediction.
-#' Therefore, setting \code{min.bin = 3}, for example, will remove all wind
-#' speed-direction bins with fewer than 3 measurements \emph{before} fitting the
-#' surface. Third, consider setting \code{uncertainty = TRUE}. This option will
+#' Therefore, setting `min.bin = 3`, for example, will remove all wind
+#' speed-direction bins with fewer than 3 measurements *before* fitting the
+#' surface. Third, consider setting `uncertainty = TRUE`. This option will
 #' show the predicted surface together with upper and lower 95% confidence
 #' intervals, which take account of the frequency of measurements.
 #'
-#' Variants on \code{polarPlot} include [polarAnnulus()] and [polarFreq()].
+#' Variants on `polarPlot` include [polarAnnulus()] and [polarFreq()].
 #'
-#' @param mydata A data frame minimally containing \code{wd}, another variable
+#' @param mydata A data frame minimally containing `wd`, another variable
 #'   to plot in polar coordinates (the default is a column \dQuote{ws} --- wind
-#'   speed) and a pollutant. Should also contain \code{date} if plots by time
+#'   speed) and a pollutant. Should also contain `date` if plots by time
 #'   period are required.
 #'
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
-#'   data frame should be supplied e.g. \code{pollutant = "nox"}. There can also
-#'   be more than one pollutant specified e.g. \code{pollutant = c("nox",
-#'   "no2")}. The main use of using two or more pollutants is for model
+#'   data frame should be supplied e.g. `pollutant = "nox"`. There can also
+#'   be more than one pollutant specified e.g. `pollutant = c("nox",
+#'   "no2")`. The main use of using two or more pollutants is for model
 #'   evaluation where two species would be expected to have similar
 #'   concentrations. This saves the user stacking the data and it is possible to
-#'   work with columns of data directly. A typical use would be \code{pollutant
-#'   = c("obs", "mod")} to compare two columns \dQuote{obs} (the observations)
+#'   work with columns of data directly. A typical use would be `pollutant
+#'   = c("obs", "mod")` to compare two columns \dQuote{obs} (the observations)
 #'   and \dQuote{mod} (modelled values). When pair-wise statistics such as
 #'   Pearson correlation and regression techniques are to be plotted,
-#'   \code{pollutant} takes two elements too. For example, \code{pollutant =
-#'   c("bc", "pm25")} where \code{"bc"} is a function of \code{"pm25"}.
+#'   `pollutant` takes two elements too. For example, `pollutant =
+#'   c("bc", "pm25")` where `"bc"` is a function of `"pm25"`.
 #'
 #' @param x Name of variable to plot against wind direction in polar
 #'   coordinates, the default is wind speed, \dQuote{ws}.
 #'
 #' @param wd Name of wind direction field.
 #'
-#' @param type \code{type} determines how the data are split i.e. conditioned,
+#' @param type `type` determines how the data are split i.e. conditioned,
 #'   and then plotted. The default is will produce a single plot using the
 #'   entire data. Type can be one of the built-in types as detailed in
-#'   \code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, \code{type = "season"} will produce four plots --- one for
+#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
+#'   on. For example, `type = "season"` will produce four plots --- one for
 #'   each season.
 #'
-#'   It is also possible to choose \code{type} as another variable in the data
+#'   It is also possible to choose `type` as another variable in the data
 #'   frame. If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   Type can be up length two e.g. \code{type = c("season", "weekday")} will
+#'   Type can be up length two e.g. `type = c("season", "weekday")` will
 #'   produce a 2x2 plot split by season and day of the week. Note, when two
 #'   types are provided the first forms the columns and the second the rows.
 #'
@@ -106,9 +106,9 @@
 #'   speed/direction bin. Because of the smoothing involved, the colour scale
 #'   for some of these statistics is only to provide an indication of overall
 #'   pattern and should not be interpreted in concentration units e.g. for
-#'   \code{statistic = "weighted.mean"} where the bin mean is multiplied by the
+#'   `statistic = "weighted.mean"` where the bin mean is multiplied by the
 #'   bin frequency and divided by the total frequency. In many cases using
-#'   \code{polarFreq} will be better. Setting \code{statistic = "weighted.mean"}
+#'   `polarFreq` will be better. Setting `statistic = "weighted.mean"`
 #'   can be useful because it provides an indication of the concentration *
 #'   frequency of occurrence and will highlight the wind speed/direction
 #'   conditions that dominate the overall mean.Can be:
@@ -117,23 +117,23 @@
 #'   (maximum), \dQuote{frequency}. \dQuote{stdev} (standard deviation),
 #'   \dQuote{weighted.mean}.
 #'
-#'   \item \code{statistic = "nwr"} Implements the Non-parametric Wind
+#'   \item `statistic = "nwr"` Implements the Non-parametric Wind
 #'   Regression approach of Henry et al. (2009) that uses kernel smoothers. The
-#'   \code{openair} implementation is not identical because Gaussian kernels are
+#'   `openair` implementation is not identical because Gaussian kernels are
 #'   used for both wind direction and speed. The smoothing is controlled by
-#'   \code{ws_spread} and \code{wd_spread}.
+#'   `ws_spread` and `wd_spread`.
 #'
-#'   \item \code{statistic = "cpf"} the conditional probability function (CPF)
+#'   \item `statistic = "cpf"` the conditional probability function (CPF)
 #'   is plotted and a single (usually high) percentile level is supplied. The
 #'   CPF is defined as CPF = my/ny, where my is the number of samples in the y
 #'   bin (by default a wind direction, wind speed interval) with mixing ratios
-#'   greater than the \emph{overall} percentile concentration, and ny is the
+#'   greater than the *overall* percentile concentration, and ny is the
 #'   total number of samples in the same wind sector (see Ashbaugh et al.,
 #'   1985). Note that percentile intervals can also be considered; see
-#'   \code{percentile} for details.
+#'   `percentile` for details.
 #'
-#'   \item When \code{statistic = "r"} or \code{statistic = "Pearson"}, the
-#'   Pearson correlation coefficient is calculated for \emph{two} pollutants.
+#'   \item When `statistic = "r"` or `statistic = "Pearson"`, the
+#'   Pearson correlation coefficient is calculated for *two* pollutants.
 #'   The calculation involves a weighted Pearson correlation coefficient, which
 #'   is weighted by Gaussian kernels for wind direction an the radial variable
 #'   (by default wind speed). More weight is assigned to values close to a wind
@@ -141,8 +141,8 @@
 #'   are used rather than relying on the potentially small number of values in a
 #'   wind speed-direction interval.
 #'
-#'   \item When \code{statistic = "Spearman"}, the Spearman correlation
-#'   coefficient is calculated for \emph{two} pollutants. The calculation
+#'   \item When `statistic = "Spearman"`, the Spearman correlation
+#'   coefficient is calculated for *two* pollutants. The calculation
 #'   involves a weighted Spearman correlation coefficient, which is weighted by
 #'   Gaussian kernels for wind direction an the radial variable (by default wind
 #'   speed). More weight is assigned to values close to a wind speed-direction
@@ -150,32 +150,32 @@
 #'   than relying on the potentially small number of values in a wind
 #'   speed-direction interval.
 #'
-#'   \item \code{"robust_slope"} is another option for pair-wise statistics and
-#'   \code{"quantile.slope"}, which uses quantile regression to estimate the
-#'   slope for a particular quantile level (see also \code{tau} for setting the
+#'   \item `"robust_slope"` is another option for pair-wise statistics and
+#'   `"quantile.slope"`, which uses quantile regression to estimate the
+#'   slope for a particular quantile level (see also `tau` for setting the
 #'   quantile level).
 #'
-#'   \item \code{"york_slope"} is another option for pair-wise statistics which
-#'   uses the \emph{York regression method} to estimate the slope. In this
-#'   method the uncertainties in \code{x} and \code{y} are used in the
+#'   \item `"york_slope"` is another option for pair-wise statistics which
+#'   uses the *York regression method* to estimate the slope. In this
+#'   method the uncertainties in `x` and `y` are used in the
 #'   determination of the slope. The uncertainties are provided by
-#'   \code{x_error} and \code{y_error} --- see below.}
+#'   `x_error` and `y_error` --- see below.}
 #'
 #' @param limits The function does its best to choose sensible limits
 #'   automatically. However, there are circumstances when the user will wish to
 #'   set different ones. An example would be a series of plots showing each year
-#'   of data separately. The limits are set in the form \code{c(lower, upper)},
-#'   so \code{limits = c(0, 100)} would force the plot limits to span 0-100.
+#'   of data separately. The limits are set in the form `c(lower, upper)`,
+#'   so `limits = c(0, 100)` would force the plot limits to span 0-100.
 #'
-#' @param exclude.missing Setting this option to \code{TRUE} (the default)
+#' @param exclude.missing Setting this option to `TRUE` (the default)
 #'   removes points from the plot that are too far from the original data. The
 #'   smoothing routines will produce predictions at points where no data exist
 #'   i.e. they predict. By removing the points too far from the original data
 #'   produces a plot where it is clear where the original data lie. If set to
-#'   \code{FALSE} missing data will be interpolated.
+#'   `FALSE` missing data will be interpolated.
 #'
 #' @param uncertainty Should the uncertainty in the calculated surface be shown?
-#'   If \code{TRUE} three plots are produced on the same scale showing the
+#'   If `TRUE` three plots are produced on the same scale showing the
 #'   predicted surface together with the estimated lower and upper uncertainties
 #'   at the 95% confidence interval. Calculating the uncertainties is useful to
 #'   understand whether features are real or not.  For example, at high wind
@@ -185,23 +185,23 @@
 #'   speed-direction bin. Note that if uncertainties are calculated then the
 #'   type is set to "default".
 #'
-#' @param percentile If \code{statistic = "percentile"} then \code{percentile}
+#' @param percentile If `statistic = "percentile"` then `percentile`
 #'   is used, expressed from 0 to 100. Note that the percentile value is
 #'   calculated in the wind speed, wind direction \sQuote{bins}. For this reason
-#'   it can also be useful to set \code{min.bin} to ensure there are a
+#'   it can also be useful to set `min.bin` to ensure there are a
 #'   sufficient number of points available to estimate a percentile. See
-#'   \code{quantile} for more details of how percentiles are calculated.
+#'   `quantile` for more details of how percentiles are calculated.
 #'
-#'   \code{percentile} is also used for the Conditional Probability Function
-#'   (CPF) plots. \code{percentile} can be of length two, in which case the
-#'   percentile \emph{interval} is considered for use with CPF. For example,
-#'   \code{percentile = c(90, 100)} will plot the CPF for concentrations between
+#'   `percentile` is also used for the Conditional Probability Function
+#'   (CPF) plots. `percentile` can be of length two, in which case the
+#'   percentile *interval* is considered for use with CPF. For example,
+#'   `percentile = c(90, 100)` will plot the CPF for concentrations between
 #'   the 90 and 100th percentiles. Percentile intervals can be useful for
-#'   identifying specific sources. In addition, \code{percentile} can also be of
+#'   identifying specific sources. In addition, `percentile` can also be of
 #'   length 3. The third value is the \sQuote{trim} value to be applied. When
 #'   calculating percentile intervals many can cover very low values where there
 #'   is no useful information. The trim value ensures that values greater than
-#'   or equal to the trim * mean value are considered \emph{before} the
+#'   or equal to the trim * mean value are considered *before* the
 #'   percentile intervals are calculated. The effect is to extract more detail
 #'   from many source signatures. See the manual for examples. Finally, if the
 #'   trim value is less than zero the percentile range is interpreted as
@@ -209,147 +209,147 @@
 #'
 #' @param cols Colours to be used for plotting. Options include
 #'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-#'   \code{RColorBrewer} colours --- see the \code{openair} \code{openColours}
+#'   `RColorBrewer` colours --- see the `openair` `openColours`
 #'   function for more details. For user defined the user can supply a list of
-#'   colour names recognised by R (type \code{colours()} to see the full list).
-#'   An example would be \code{cols = c("yellow", "green", "blue")}. \code{cols}
-#'   can also take the values \code{"viridis"}, \code{"magma"},
-#'   \code{"inferno"}, or \code{"plasma"} which are the viridis colour maps
+#'   colour names recognised by R (type `colours()` to see the full list).
+#'   An example would be `cols = c("yellow", "green", "blue")`. `cols`
+#'   can also take the values `"viridis"`, `"magma"`,
+#'   `"inferno"`, or `"plasma"` which are the viridis colour maps
 #'   ported from Python's Matplotlib library.
 #'
 #' @param weights At the edges of the plot there may only be a few data points
 #'   in each wind speed-direction interval, which could in some situations
-#'   distort the plot if the concentrations are high. \code{weights} applies a
+#'   distort the plot if the concentrations are high. `weights` applies a
 #'   weighting to reduce their influence. For example and by default if only a
 #'   single data point exists then the weighting factor is 0.25 and for two
 #'   points 0.5. To not apply any weighting and use the data as is, use
-#'   \code{weights = c(1, 1, 1)}.
+#'   `weights = c(1, 1, 1)`.
 #'
 #'   An alternative to down-weighting these points they can be removed
-#'   altogether using \code{min.bin}.
+#'   altogether using `min.bin`.
 #'
 #' @param min.bin The minimum number of points allowed in a wind speed/wind
 #'   direction bin.  The default is 1. A value of two requires at least 2 valid
 #'   records in each bin an so on; bins with less than 2 valid records are set
 #'   to NA. Care should be taken when using a value > 1 because of the risk of
 #'   removing real data points. It is recommended to consider your data with
-#'   care. Also, the \code{polarFreq} function can be of use in such
+#'   care. Also, the `polarFreq` function can be of use in such
 #'   circumstances.
 #'
-#' @param mis.col When \code{min.bin} is > 1 it can be useful to show where data
+#' @param mis.col When `min.bin` is > 1 it can be useful to show where data
 #'   are removed on the plots. This is done by shading the missing data in
-#'   \code{mis.col}. To not highlight missing data when \code{min.bin} > 1
-#'   choose \code{mis.col = "transparent"}.
+#'   `mis.col`. To not highlight missing data when `min.bin` > 1
+#'   choose `mis.col = "transparent"`.
 #'
 #' @param alpha The alpha transparency to use for the plotting surface (a value
 #'   between 0 and 1 with zero being fully transparent and 1 fully opaque).
 #'   Setting a value below 1 can be useful when plotting surfaces on a map using
-#'   the package \code{openairmaps}.
+#'   the package `openairmaps`.
 #'
 #' @param upper This sets the upper limit wind speed to be used. Often there are
 #'   only a relatively few data points at very high wind speeds and plotting all
 #'   of them can reduce the useful information in the plot.
 #'
 #' @param angle.scale Sometimes the placement of the scale may interfere with an
-#'   interesting feature. The user can therefore set \code{angle.scale} to any
+#'   interesting feature. The user can therefore set `angle.scale` to any
 #'   value between 0 and 360 degrees to mitigate such problems. For example
-#'   \code{angle.scale = 45} will draw the scale heading in a NE direction.
+#'   `angle.scale = 45` will draw the scale heading in a NE direction.
 #'
 #' @param units The units shown on the polar axis scale.
 #'
-#' @param force.positive The default is \code{TRUE}. Sometimes if smoothing data
+#' @param force.positive The default is `TRUE`. Sometimes if smoothing data
 #'   with steep gradients it is possible for predicted values to be negative.
-#'   \code{force.positive = TRUE} ensures that predictions remain positive. This
+#'   `force.positive = TRUE` ensures that predictions remain positive. This
 #'   is useful for several reasons. First, with lots of missing data more
 #'   interpolation is needed and this can result in artefacts because the
 #'   predictions are too far from the original data. Second, if it is known
 #'   beforehand that the data are all positive, then this option carries that
 #'   assumption through to the prediction. The only likely time where setting
-#'   \code{force.positive = FALSE} would be if background concentrations were
+#'   `force.positive = FALSE` would be if background concentrations were
 #'   first subtracted resulting in data that is legitimately negative. For the
 #'   vast majority of situations it is expected that the user will not need to
 #'   alter the default option.
 #'
-#' @param k This is the smoothing parameter used by the \code{gam} function in
-#'   package \code{mgcv}. Typically, value of around 100 (the default) seems to
+#' @param k This is the smoothing parameter used by the `gam` function in
+#'   package `mgcv`. Typically, value of around 100 (the default) seems to
 #'   be suitable and will resolve important features in the plot. The most
-#'   appropriate choice of \code{k} is problem-dependent; but extensive testing
-#'   of polar plots for many different problems suggests a value of \code{k} of
-#'   about 100 is suitable. Setting \code{k} to higher values will not tend to
+#'   appropriate choice of `k` is problem-dependent; but extensive testing
+#'   of polar plots for many different problems suggests a value of `k` of
+#'   about 100 is suitable. Setting `k` to higher values will not tend to
 #'   affect the surface predictions by much but will add to the computation
-#'   time. Lower values of \code{k} will increase smoothing. Sometimes with few
-#'   data to plot \code{polarPlot} will fail. Under these circumstances it can
-#'   be worth lowering the value of \code{k}.
+#'   time. Lower values of `k` will increase smoothing. Sometimes with few
+#'   data to plot `polarPlot` will fail. Under these circumstances it can
+#'   be worth lowering the value of `k`.
 #'
-#' @param normalise If \code{TRUE} concentrations are normalised by dividing by
-#'   their mean value. This is done \emph{after} fitting the smooth surface.
+#' @param normalise If `TRUE` concentrations are normalised by dividing by
+#'   their mean value. This is done *after* fitting the smooth surface.
 #'   This option is particularly useful if one is interested in the patterns of
 #'   concentrations for several pollutants on different scales e.g. NOx and CO.
-#'   Often useful if more than one \code{pollutant} is chosen.
+#'   Often useful if more than one `pollutant` is chosen.
 #'
 #' @param key.header Adds additional text/labels to the scale key. For example,
-#'   passing the options \code{key.header = "header", key.footer = "footer1"}
+#'   passing the options `key.header = "header", key.footer = "footer1"`
 #'   adds addition text above and below the scale key. These arguments are
-#'   passed to \code{drawOpenKey} via \code{quickText}, applying the
-#'   \code{auto.text} argument, to handle formatting.
+#'   passed to `drawOpenKey` via `quickText`, applying the
+#'   `auto.text` argument, to handle formatting.
 #'
-#' @param key.footer see \code{key.footer}.
+#' @param key.footer see `key.footer`.
 #'
 #' @param key.position Location where the scale key is to plotted. Allowed
-#'   arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"}
-#'   and \code{"left"}.
+#'   arguments currently include `"top"`, `"right"`, `"bottom"`
+#'   and `"left"`.
 #'
-#' @param key Fine control of the scale key via \code{drawOpenKey}. See
-#'   \code{drawOpenKey} for further details.
+#' @param key Fine control of the scale key via `drawOpenKey`. See
+#'   `drawOpenKey` for further details.
 #'
-#' @param auto.text Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
 #'   titles and axis labels will automatically try and format pollutant names
 #'   and units properly e.g.  by subscripting the `2' in NO2.
 #'
 #' @param ws_spread The value of sigma used for Gaussian kernel weighting of
-#'   wind speed when \code{statistic = "nwr"} or when correlation and regression
-#'   statistics are used such as \emph{r}. Default is \code{0.5}.
+#'   wind speed when `statistic = "nwr"` or when correlation and regression
+#'   statistics are used such as *r*. Default is `0.5`.
 #'
 #' @param wd_spread The value of sigma used for Gaussian kernel weighting of
-#'   wind direction when \code{statistic = "nwr"} or when correlation and
-#'   regression statistics are used such as \emph{r}. Default is \code{4}.
+#'   wind direction when `statistic = "nwr"` or when correlation and
+#'   regression statistics are used such as *r*. Default is `4`.
 #'
-#' @param x_error The \code{x} error / uncertainty used when \code{statistic =
-#'   "york_slope"}.
+#' @param x_error The `x` error / uncertainty used when `statistic =
+#'   "york_slope"`.
 #'
-#' @param y_error The \code{y} error / uncertainty used when \code{statistic =
-#'   "york_slope"}.
+#' @param y_error The `y` error / uncertainty used when `statistic =
+#'   "york_slope"`.
 #'
 #' @param kernel Type of kernel used for the weighting procedure for when
-#'   correlation or regression techniques are used. Only \code{"gaussian"} is
+#'   correlation or regression techniques are used. Only `"gaussian"` is
 #'   supported but this may be enhanced in the future.
 #'
 #' @param formula.label When pair-wise statistics such as regression slopes are
 #'   calculated and plotted, should a formula label be displayed?
-#'   \code{formula.label} will also determine whether concentration information
-#'   is printed when \code{statistic = "cpf"}.
+#'   `formula.label` will also determine whether concentration information
+#'   is printed when `statistic = "cpf"`.
 #'
-#' @param tau The quantile to be estimated when \code{statistic} is set to
-#'   \code{"quantile.slope"}. Default is \code{0.5} which is equal to the median
-#'   and will be ignored if \code{"quantile.slope"} is not used.
+#' @param tau The quantile to be estimated when `statistic` is set to
+#'   `"quantile.slope"`. Default is `0.5` which is equal to the median
+#'   and will be ignored if `"quantile.slope"` is not used.
 #'
-#' @param plot Should a plot be produced? \code{FALSE} can be useful when
+#' @param plot Should a plot be produced? `FALSE` can be useful when
 #'   analysing data to extract plot components and plotting them in other ways.
 #'
-#' @param ... Other graphical parameters passed onto \code{lattice:levelplot}
-#'   and \code{cutData}. For example, \code{polarPlot} passes the option
-#'   \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-#'   (rather than default northern) hemisphere handling of \code{type =
-#'   "season"}. Similarly, common axis and title labelling options (such as
-#'   \code{xlab}, \code{ylab}, \code{main}) are passed to \code{levelplot} via
-#'   \code{quickText} to handle routine formatting.
+#' @param ... Other graphical parameters passed onto `lattice:levelplot`
+#'   and `cutData`. For example, `polarPlot` passes the option
+#'   `hemisphere = "southern"` on to `cutData` to provide southern
+#'   (rather than default northern) hemisphere handling of `type =
+#'   "season"`. Similarly, common axis and title labelling options (such as
+#'   `xlab`, `ylab`, `main`) are passed to `levelplot` via
+#'   `quickText` to handle routine formatting.
 #'
 #' @import lattice
 #' @import mgcv
 #' @return an [openair][openair-package] object. `data` contains four set
-#'   columns: \code{cond}, conditioning based on \code{type}; \code{u} and
-#'   \code{v}, the translational vectors based on \code{ws} and \code{wd}; and
-#'   the local \code{pollutant} estimate.
+#'   columns: `cond`, conditioning based on `type`; `u` and
+#'   `v`, the translational vectors based on `ws` and `wd`; and
+#'   the local `pollutant` estimate.
 #' @author David Carslaw
 #' @family polar directional analysis functions
 #' @references
@@ -392,7 +392,7 @@
 #' Grange, S. K., Carslaw, D. C., & Lewis, A. C. 2016. Source apportionment
 #' advances with bivariate polar plots, correlation, and regression techniques.
 #' Atmospheric Environment. 145, 128-134.
-#' \url{https://www.sciencedirect.com/science/article/pii/S1352231016307166}
+#' <https://www.sciencedirect.com/science/article/pii/S1352231016307166>
 #' @examples
 #'
 #' # Use openair 'mydata'

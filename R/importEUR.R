@@ -1,27 +1,27 @@
 #' Import air quality data from European database
 #'
-#' This function is a simplified version of the \code{saqgetr} package (see
-#' \url{https://github.com/skgrange/saqgetr}) for accessing European air quality
+#' This function is a simplified version of the `saqgetr` package (see
+#' <https://github.com/skgrange/saqgetr>) for accessing European air quality
 #' data. The function only returns valid hourly data and is meant as a fast and
 #' convenient way of accessing the most common type of hourly air quality data.
-#' The function works in the same way as other \code{openair} functions that
+#' The function works in the same way as other `openair` functions that
 #' import air quality data that generally need a site code and year to be
 #' supplied.
 #'
 #' The function can however return key site meta data.
 #'
-#' The \code{saqgetr} package is much more comprehensive and provides data at
+#' The `saqgetr` package is much more comprehensive and provides data at
 #' other time averages e.g. daily data.
 #'
 #' @param site The code of the site(s).
 #' @param year Year or years to import. To import a sequence of years from 1990
-#'   to 2000 use \code{year = 1990:2000}. To import several specific years use
-#'   \code{year = c(1990, 1995, 2000)} for example.
+#'   to 2000 use `year = 1990:2000`. To import several specific years use
+#'   `year = c(1990, 1995, 2000)` for example.
 #' @param tz Not used
-#' @param meta Should meta data be returned? If \code{TRUE} the site type,
+#' @param meta Should meta data be returned? If `TRUE` the site type,
 #'   latitude and longitude are returned.
 #' @param to_narrow By default the returned data has a column for each
-#'   pollutant/variable. When \code{to_narrow = TRUE} the data are stacked into
+#'   pollutant/variable. When `to_narrow = TRUE` the data are stacked into
 #'   a narrow format with a column identifying the pollutant name.
 #' @param progress Show a progress bar when many sites/years are being imported?
 #'   Defaults to `TRUE`.

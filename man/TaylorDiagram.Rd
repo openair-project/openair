@@ -46,8 +46,7 @@ different models and can be a factor or character. The total number of
 models compared will be equal to the number of unique values of
 \code{group}.
 
-\code{group} can also be of length two e.g. \code{group = c("model",
-  "site")}. In this case all model-site combinations will be shown but they
+\code{group} can also be of length two e.g. \code{group = c("model", "site")}. In this case all model-site combinations will be shown but they
 will only be differentiated by colour/symbol by the first grouping variable
 ("model" in this case). In essence the plot removes the differentiation by
 the second grouping variable. Because there will be different values of
@@ -92,8 +91,7 @@ include \dQuote{Accent}, \dQuote{Dark2}, \dQuote{Paired}, \dQuote{Pastel1},
 \dQuote{Pastel2}, \dQuote{Set1}, \dQuote{Set2}, \dQuote{Set3} --- but see
 ?\code{brewer.pal} for the maximum useful colours in each. For user defined
 the user can supply a list of colour names recognised by R (type
-\code{colours()} to see the full list). An example would be \code{cols =
-  c("yellow", "green", "blue")}.}
+\code{colours()} to see the full list). An example would be \code{cols = c("yellow", "green", "blue")}.}
 
 \item{rms.col}{Colour for centred-RMS lines and text.}
 
@@ -129,8 +127,7 @@ and units properly e.g.  by subscripting the `2' in NO2.}
 \item{...}{Other graphical parameters are passed onto \code{cutData} and
 \code{lattice:xyplot}. For example, \code{TaylorDiagram} passes the option
 \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type =
-  "season"}. Similarly, common graphical parameters, such as \code{layout}
+(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common graphical parameters, such as \code{layout}
 for panel arrangement and \code{pch} and \code{cex} for plot symbol type
 and size, are passed on to \code{xyplot}. Most are passed unmodified,
 although there are some special cases where \code{openair} may locally
@@ -174,29 +171,23 @@ To consider several pollutants on one plot, a column identifying the
 pollutant name can be used e.g. \code{pollutant}. Then the Taylor Diagram can
 be plotted as (assuming a data frame \code{thedata}):
 
-\code{TaylorDiagram(thedata, obs = "obs", mod = "mod", group = "model", type
-= "pollutant")}
+\code{TaylorDiagram(thedata, obs = "obs", mod = "mod", group = "model", type = "pollutant")}
 
 which will give the model performance by pollutant in each panel.
 
 Note that it is important that each panel represents data with the same mean
-observed data across different groups. Therefore \code{TaylorDiagram(mydata,
-group = "model", type = "season")} is OK, whereas \code{TaylorDiagram(mydata,
-group = "season", type = "model")} is not because each panel (representing a
+observed data across different groups. Therefore \code{TaylorDiagram(mydata, group = "model", type = "season")} is OK, whereas \code{TaylorDiagram(mydata, group = "season", type = "model")} is not because each panel (representing a
 model) will have four different mean values --- one for each season.
 Generally, the option \code{group} is either missing (one model being
 evaluated) or represents a column giving the model name. However, the data
 can be normalised using the \code{normalise} option. Normalisation is carried
 out on a per \code{group}/\code{type} basis making it possible to compare
-data on different scales e.g. \code{TaylorDiagram(mydata, group = "season",
-type = "model", normalise = TRUE)}. In this way it is possible to compare
+data on different scales e.g. \code{TaylorDiagram(mydata, group = "season", type = "model", normalise = TRUE)}. In this way it is possible to compare
 different pollutants, sites etc. in the same panel.
 
-Also note that if multiple sites are present it makes sense to use \code{type
-= "site"} to ensure that each panel represents an individual site with its
+Also note that if multiple sites are present it makes sense to use \code{type = "site"} to ensure that each panel represents an individual site with its
 own specific standard deviation etc. If this is not the case then select a
-single site from the data first e.g. \code{subset(mydata, site ==
-"Harwell")}.
+single site from the data first e.g. \code{subset(mydata, site == "Harwell")}.
 }
 \examples{
 ## in the examples below, most effort goes into making some artificial data

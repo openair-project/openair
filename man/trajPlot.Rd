@@ -64,15 +64,12 @@ according to a grouping variable. See example below.}
 countries.}
 
 \item{map.res}{The resolution of the base map. By default the function uses
-the \sQuote{world} map from the \code{maps} package. If \code{map.res =
-  "hires"} then the (much) more detailed base map \sQuote{worldHires} from
+the \sQuote{world} map from the \code{maps} package. If \code{map.res = "hires"} then the (much) more detailed base map \sQuote{worldHires} from
 the \code{mapdata} package is used. Use \code{library(mapdata)}. Also
-available is a map showing the US states. In this case \code{map.res =
-  "state"} should be used.}
+available is a map showing the US states. In this case \code{map.res = "state"} should be used.}
 
 \item{map.cols}{If \code{map.fill = TRUE} \code{map.cols} controls the fill
-colour. Examples include \code{map.fill = "grey40"} and \code{map.fill =
-  openColours("default", 10)}. The latter colours the countries and can help
+colour. Examples include \code{map.fill = "grey40"} and \code{map.fill = openColours("default", 10)}. The latter colours the countries and can help
 differentiate them.}
 
 \item{map.alpha}{The transparency level of the filled map which takes values

@@ -5,8 +5,8 @@
 #' concentrations of pollutants vary by wind direction and a time period e.g. by
 #' month, day of week.
 #'
-#' The \code{polarAnnulus} function shares many of the properties of the
-#' \code{polarPlot}. However, \code{polarAnnulus} is focussed on displaying
+#' The `polarAnnulus` function shares many of the properties of the
+#' `polarPlot`. However, `polarAnnulus` is focussed on displaying
 #' information on how concentrations of a pollutant (values of another variable)
 #' vary with wind direction and time. Plotting as an annulus helps to reduce
 #' compression of information towards the centre of the plot. The circular plot
@@ -21,25 +21,25 @@
 #' be very useful for understanding how different source influences affect a
 #' location.
 #'
-#' For \code{type = "trend"} the amount of smoothing does not vary linearly with
+#' For `type = "trend"` the amount of smoothing does not vary linearly with
 #' the length of the time series i.e. a certain amount of smoothing per unit
 #' interval in time. This is a deliberate choice because should one be
 #' interested in a subset (in time) of data, more detail will be provided for
 #' the subset compared with the full data set. This allows users to investigate
 #' specific periods in more detail. Full flexibility is given through the
-#' smoothing parameter \code{k}.
+#' smoothing parameter `k`.
 #'
 #' @inheritParams polarPlot
-#' @param mydata A data frame minimally containing \code{date}, \code{wd} and a
+#' @param mydata A data frame minimally containing `date`, `wd` and a
 #'   pollutant.
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
-#'   data frame should be supplied e.g. \code{pollutant = "nox"}. There can also
-#'   be more than one pollutant specified e.g. \code{pollutant = c("nox",
-#'   "no2")}. The main use of using two or more pollutants is for model
+#'   data frame should be supplied e.g. `pollutant = "nox"`. There can also
+#'   be more than one pollutant specified e.g. `pollutant = c("nox",
+#'   "no2")`. The main use of using two or more pollutants is for model
 #'   evaluation where two species would be expected to have similar
 #'   concentrations. This saves the user stacking the data and it is possible to
-#'   work with columns of data directly. A typical use would be \code{pollutant
-#'   = c("obs", "mod")} to compare two columns \dQuote{obs} (the observations)
+#'   work with columns of data directly. A typical use would be `pollutant
+#'   = c("obs", "mod")` to compare two columns \dQuote{obs} (the observations)
 #'   and \dQuote{mod} (modelled values).
 #' @param resolution Two plot resolutions can be set: \dQuote{normal} and
 #'   \dQuote{fine} (the default).
@@ -54,37 +54,37 @@
 #'   is to express time as local time. This correction tends to produce
 #'   better-defined diurnal profiles of concentration (or other variables) and
 #'   allows a better comparison to be made with emissions/activity data. If set
-#'   to \code{FALSE} then GMT is used. Examples of usage include \code{local.tz
-#'   = "Europe/London"}, \code{local.tz = "America/New_York"}. See
-#'   \code{cutData} and \code{import} for more details.
+#'   to `FALSE` then GMT is used. Examples of usage include `local.tz
+#'   = "Europe/London"`, `local.tz = "America/New_York"`. See
+#'   `cutData` and `import` for more details.
 #' @param period This determines the temporal period to consider. Options are
 #'   \dQuote{hour} (the default, to plot diurnal variations), \dQuote{season} to
 #'   plot variation throughout the year, \dQuote{weekday} to plot day of the
 #'   week variation and \dQuote{trend} to plot the trend by wind direction.
-#' @param type \code{type} determines how the data are split i.e. conditioned,
+#' @param type `type` determines how the data are split i.e. conditioned,
 #'   and then plotted. The default is will produce a single plot using the
 #'   entire data. Type can be one of the built-in types as detailed in
-#'   \code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, \code{type = "season"} will produce four plots --- one for
+#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
+#'   on. For example, `type = "season"` will produce four plots --- one for
 #'   each season.
 #'
-#'   It is also possible to choose \code{type} as another variable in the data
+#'   It is also possible to choose `type` as another variable in the data
 #'   frame. If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   Type can be up length two e.g. \code{type = c("season", "site")} will
+#'   Type can be up length two e.g. `type = c("season", "site")` will
 #'   produce a 2x2 plot split by season and site. The use of two types is mostly
 #'   meant for situations where there are several sites. Note, when two types
 #'   are provided the first forms the columns and the second the rows.
 #'
-#'   Also note that for the \code{polarAnnulus} function some type/period
-#'   combinations are forbidden or make little sense. For example, \code{type =
-#'   "season"} and \code{period = "trend"} (which would result in a plot with
-#'   too many gaps in it for sensible smoothing), or \code{type = "weekday"} and
-#'   \code{period = "weekday"}.
+#'   Also note that for the `polarAnnulus` function some type/period
+#'   combinations are forbidden or make little sense. For example, `type =
+#'   "season"` and `period = "trend"` (which would result in a plot with
+#'   too many gaps in it for sensible smoothing), or `type = "weekday"` and
+#'   `period = "weekday"`.
 #'
 #' @param statistic The statistic that should be applied to each wind
 #'   speed/direction bin. Can be \dQuote{mean} (default), \dQuote{median},
@@ -92,38 +92,38 @@
 #'   deviation), \dQuote{weighted.mean} or \dQuote{cpf} (Conditional Probability
 #'   Function). Because of the smoothing involved, the colour scale for some of
 #'   these statistics is only to provide an indication of overall pattern and
-#'   should not be interpreted in concentration units e.g. for \code{statistic =
-#'   "weighted.mean"} where the bin mean is multiplied by the bin frequency and
-#'   divided by the total frequency. In many cases using \code{polarFreq} will
-#'   be better. Setting \code{statistic = "weighted.mean"} can be useful because
+#'   should not be interpreted in concentration units e.g. for `statistic =
+#'   "weighted.mean"` where the bin mean is multiplied by the bin frequency and
+#'   divided by the total frequency. In many cases using `polarFreq` will
+#'   be better. Setting `statistic = "weighted.mean"` can be useful because
 #'   it provides an indication of the concentration * frequency of occurrence
 #'   and will highlight the wind speed/direction conditions that dominate the
 #'   overall mean.
-#' @param percentile If \code{statistic = "percentile"} or \code{statistic =
-#'   "cpf"} then \code{percentile} is used, expressed from 0 to 100. Note that
+#' @param percentile If `statistic = "percentile"` or `statistic =
+#'   "cpf"` then `percentile` is used, expressed from 0 to 100. Note that
 #'   the percentile value is calculated in the wind speed, wind direction
-#'   \sQuote{bins}. For this reason it can also be useful to set \code{min.bin}
+#'   \sQuote{bins}. For this reason it can also be useful to set `min.bin`
 #'   to ensure there are a sufficient number of points available to estimate a
-#'   percentile. See \code{quantile} for more details of how percentiles are
+#'   percentile. See `quantile` for more details of how percentiles are
 #'   calculated.
 #' @param width The width of the annulus; can be \dQuote{normal} (the default),
 #'   \dQuote{thin} or \dQuote{fat}.
-#' @param date.pad For \code{type = "trend"} (default), \code{date.pad = TRUE}
+#' @param date.pad For `type = "trend"` (default), `date.pad = TRUE`
 #'   will pad-out missing data to the beginning of the first year and the end of
 #'   the last year. The purpose is to ensure that the trend plot begins and ends
 #'   at the beginning or end of year.
-#' @param k The smoothing value supplied to \code{gam} for the temporal and wind
+#' @param k The smoothing value supplied to `gam` for the temporal and wind
 #'   direction components, respectively. In some cases e.g. a trend plot with
 #'   less than 1-year of data the smoothing with the default values may become
-#'   too noisy and affected more by outliers. Choosing a lower value of \code{k}
+#'   too noisy and affected more by outliers. Choosing a lower value of `k`
 #'   (say 10) may help produce a better plot.
-#' @param ... Other graphical parameters passed onto \code{lattice:levelplot}
-#'   and \code{cutData}. For example, \code{polarAnnulus} passes the option
-#'   \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-#'   (rather than default northern) hemisphere handling of \code{type =
-#'   "season"}. Similarly, common axis and title labelling options (such as
-#'   \code{xlab}, \code{ylab}, \code{main}) are passed to \code{levelplot} via
-#'   \code{quickText} to handle routine formatting.
+#' @param ... Other graphical parameters passed onto `lattice:levelplot`
+#'   and `cutData`. For example, `polarAnnulus` passes the option
+#'   `hemisphere = "southern"` on to `cutData` to provide southern
+#'   (rather than default northern) hemisphere handling of `type =
+#'   "season"`. Similarly, common axis and title labelling options (such as
+#'   `xlab`, `ylab`, `main`) are passed to `levelplot` via
+#'   `quickText` to handle routine formatting.
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
