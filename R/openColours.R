@@ -89,10 +89,10 @@
 #' @return A character vector of hex codes
 #' @author David Carslaw
 #' @author Jack Davison
-#' @references \url{https://colorbrewer2.org/}
-#' @references \url{https://uk-air.defra.gov.uk/air-pollution/daqi}
+#' @references <https://colorbrewer2.org/>
+#' @references <https://uk-air.defra.gov.uk/air-pollution/daqi>
 #' @references
-#' \url{https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/}
+#' <https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/>
 #' @examples
 #'
 #' # to return 5 colours from the "jet" scheme:

@@ -2,7 +2,7 @@
 #'
 #' This function carries out cluster analysis of HYSPLIT back trajectories. The
 #' function is specifically designed to work with the trajectories imported
-#' using the \code{openair} \code{importTraj} function, which provides
+#' using the `openair` `importTraj` function, which provides
 #' pre-calculated back trajectories at specific receptor locations.
 #'
 #' Two main methods are available to cluster the back trajectories using two
@@ -14,42 +14,42 @@
 #'
 #' The distance matrix calculations are made in C++ for speed. For data sets of
 #' up to 1 year both methods should be relatively fast, although the
-#' \code{method = "Angle"} does tend to take much longer to calculate. Further
+#' `method = "Angle"` does tend to take much longer to calculate. Further
 #' details of these methods are given in the openair manual.
 #'
 #' @inheritParams trajPlot
 #' @param traj An openair trajectory data frame resulting from the use of
-#'   \code{importTraj}.
+#'   `importTraj`.
 #' @param method Method used to calculate the distance matrix for the back
 #'   trajectories. There are two methods available: \dQuote{Euclid} and
 #'   \dQuote{Angle}.
 #' @param n.cluster Number of clusters to calculate.
-#' @param type \code{type} determines how the data are split i.e. conditioned,
+#' @param type `type` determines how the data are split i.e. conditioned,
 #'   and then plotted. The default is will produce a single plot using the
 #'   entire data. Type can be one of the built-in types as detailed in
-#'   \code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, \code{type = "season"} will produce four plots --- one for
+#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
+#'   on. For example, `type = "season"` will produce four plots --- one for
 #'   each season. Note that the cluster calculations are separately made of each
 #'   level of "type".
 #' @param cols Colours to be used for plotting. Options include
 #'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-#'   \code{RColorBrewer} colours --- see the \code{openair} \code{openColours}
+#'   `RColorBrewer` colours --- see the `openair` `openColours`
 #'   function for more details. For user defined the user can supply a list of
-#'   colour names recognised by R (type \code{colours()} to see the full list).
-#'   An example would be \code{cols = c("yellow", "green", "blue")}
-#' @param split.after For \code{type} other than \dQuote{default} e.g.
+#'   colour names recognised by R (type `colours()` to see the full list).
+#'   An example would be `cols = c("yellow", "green", "blue")`
+#' @param split.after For `type` other than \dQuote{default} e.g.
 #'   \dQuote{season}, the trajectories can either be calculated for each level
-#'   of \code{type} independently or extracted after the cluster calculations
+#'   of `type` independently or extracted after the cluster calculations
 #'   have been applied to the whole data set.
 #' @param by.type The percentage of the total number of trajectories is given
-#'   for all data by default. Setting \code{by.type = TRUE} will make each panel
+#'   for all data by default. Setting `by.type = TRUE` will make each panel
 #'   add up to 100.
-#' @param plot Should a plot be produced? \code{FALSE} can be useful when
+#' @param plot Should a plot be produced? `FALSE` can be useful when
 #'   analysing data to extract plot components and plotting them in other ways.
-#' @param ... Other graphical parameters passed onto \code{lattice:levelplot}
-#'   and \code{cutData}. Similarly, common axis and title labelling options
-#'   (such as \code{xlab}, \code{ylab}, \code{main}) are passed to
-#'   \code{levelplot} via \code{quickText} to handle routine formatting.
+#' @param ... Other graphical parameters passed onto `lattice:levelplot`
+#'   and `cutData`. Similarly, common axis and title labelling options
+#'   (such as `xlab`, `ylab`, `main`) are passed to
+#'   `levelplot` via `quickText` to handle routine formatting.
 #' @export
 #' @useDynLib openair, .registration = TRUE
 #' @import cluster

@@ -75,9 +75,7 @@ Note that for \dQuote{year}, six or more years are required. For
 Note that December is considered as belonging to winter of the following
 year.}
 
-\item{percentile}{Percentile value(s) to use if \code{statistic =
-  "percentile"} is chosen. Can be a vector of numbers e.g. \code{percentile
-  = c(5, 50, 95)} will plot the 5th, 50th and 95th percentile values
+\item{percentile}{Percentile value(s) to use if \code{statistic = "percentile"} is chosen. Can be a vector of numbers e.g. \code{percentile = c(5, 50, 95)} will plot the 5th, 50th and 95th percentile values
 together on the same plot.}
 
 \item{data.thresh}{The data capture threshold to use (\%) when aggregating
@@ -99,8 +97,7 @@ estimates? The default is \code{FALSE}. Generally, accounting for
 autocorrelation increases the uncertainty of the trend estimate sometimes
 by a large amount.}
 
-\item{cols}{Colours to use. Can be a vector of colours e.g. \code{cols =
-  c("black", "green")} or pre-defined openair colours --- see
+\item{cols}{Colours to use. Can be a vector of colours e.g. \code{cols = c("black", "green")} or pre-defined openair colours --- see
 \code{openColours} for more details.}
 
 \item{shade}{The colour used for marking alternate years. Use \dQuote{white}
@@ -112,16 +109,13 @@ or \dQuote{transparent} to remove shading.}
 ensures all panels use the same scale and "free" will use panel-specific
 scales. The latter is a useful setting when plotting data with very
 different values.  ref.x See \code{ref.y} for details. In this case the
-correct date format should be used for a vertical line e.g.  \code{ref.x =
-  list(v = as.POSIXct("2000-06-15"), lty = 5)}.}
+correct date format should be used for a vertical line e.g.  \code{ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)}.}
 
 \item{ref.x}{See \code{ref.y}.}
 
 \item{ref.y}{A list with details of the horizontal lines to be added
-representing reference line(s). For example, \code{ref.y = list(h = 50,
-  lty = 5)} will add a dashed horizontal line at 50. Several lines can be
-plotted e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col =
-  c("green", "blue"))}. See \code{panel.abline} in the \code{lattice}
+representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be
+plotted e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice}
 package for more details on adding/controlling lines.}
 
 \item{key.columns}{Number of columns used if a key is drawn when using the
@@ -161,8 +155,7 @@ ways.}
 \item{...}{Other graphical parameters are passed onto \code{cutData} and
 \code{lattice:xyplot}. For example, \code{smoothTrend} passes the option
 \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type =
-  "season"}. Similarly, common graphical arguments, such as \code{xlim} and
+(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common graphical arguments, such as \code{xlim} and
 \code{ylim} for plotting ranges and \code{pch} and \code{cex} for plot
 symbol type and size, are passed on \code{xyplot}, although some local
 modifications may be applied by openair. For example, axis and title
@@ -186,7 +179,7 @@ series. There is the option to deseasonalise the data if there is evidence
 of a seasonal cycle.
 
 \code{smoothTrend} uses a Generalized Additive Model (GAM) from the
-\code{\link{gam}} package to find the most appropriate level of smoothing.
+\code{\link[=gam]{gam()}} package to find the most appropriate level of smoothing.
 The function is particularly suited to situations where trends are not
 monotonic (see discussion with \code{\link[=TheilSen]{TheilSen()}} for more details on
 this). The \code{smoothTrend} function is particularly useful as an

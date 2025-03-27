@@ -19,16 +19,16 @@
 #' formed through these two processes by seeking the optimum level of primary
 #' NO2 that gives the least error.
 #'
-#' @param input A data frame with the following fields. \code{nox} and\code{no2}
-#'   (roadside NOX and NO2 concentrations), \code{back_nox}, \code{back_no2} and
-#'   \code{back_o3} (hourly background concentrations of each pollutant). In
-#'   addition \code{temp} (temperature in degrees Celsius) and \code{cl} (cloud
-#'   cover in Oktas). Note that if \code{temp} and \code{cl} are not available,
+#' @param input A data frame with the following fields. `nox` and`no2`
+#'   (roadside NOX and NO2 concentrations), `back_nox`, `back_no2` and
+#'   `back_o3` (hourly background concentrations of each pollutant). In
+#'   addition `temp` (temperature in degrees Celsius) and `cl` (cloud
+#'   cover in Oktas). Note that if `temp` and `cl` are not available,
 #'   typical means values of 11 deg. C and cloud = 3.5 will be used.
 #' @param tau Mixing time scale. It is unlikely the user will need to adjust
 #'   this. See details below.
 #' @param user.fno2 User-supplied f-NO2 fraction e.g. 0.1 is a NO2/NOX ratio of
-#'   10% by volume. \code{user.no2} will be applied to the whole time series and
+#'   10% by volume. `user.no2` will be applied to the whole time series and
 #'   is useful for testing "what if" questions.
 #' @param main Title of plot if required.
 #' @param xlab x-axis label.
@@ -36,7 +36,7 @@
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
-#' @seealso \code{\link{linearRelation}} if you have roadside ozone
+#' @seealso [linearRelation()] if you have roadside ozone
 #'   measurements.
 #' @references Clapp, L.J., Jenkin, M.E., 2001. Analysis of the relationship
 #'   between ambient levels of O3, NO2 and NO as a function of NOX in the UK.

@@ -50,8 +50,7 @@ of \dQuote{smearing-out} the concentrations. Sometimes, a useful approach
 is to express time as local time. This correction tends to produce
 better-defined diurnal profiles of concentration (or other variables) and
 allows a better comparison to be made with emissions/activity data. If set
-to \code{FALSE} then GMT is used. Examples of usage include \code{local.tz
-  = "Europe/London"}, \code{local.tz = "America/New_York"}. See
+to \code{FALSE} then GMT is used. Examples of usage include \code{local.tz = "Europe/London"}, \code{local.tz = "America/New_York"}. See
 \code{cutData} and \code{import} for more details.}
 
 \item{normalise}{Should variables be normalised? The default is \code{FALSE}.
@@ -85,8 +84,7 @@ Only one \code{type} is allowed in\code{timeVariation}.}
 data frame had a column \code{site} setting \code{group = "site"} will plot
 all sites together in each panel. See examples below.}
 
-\item{difference}{If two pollutants are chosen then setting \code{difference
-  = TRUE} will also plot the difference in means between the two variables as
+\item{difference}{If two pollutants are chosen then setting \code{difference = TRUE} will also plot the difference in means between the two variables as
 \code{pollutant[2] - pollutant[1]}. Bootstrap 95\\% confidence intervals of
 the difference in means are also calculated. A horizontal dashed line is
 shown at y = 0. The difference can also be calculated if there is a column
@@ -101,12 +99,9 @@ interval in the mean are plotted by default. If the statistic is
 25/75th quantiles are plotted. Users can control the confidence intervals
 with \code{conf.int}.}
 
-\item{conf.int}{The confidence intervals to be plotted. If \code{statistic =
-  "mean"} then the confidence intervals in the mean are plotted. If
-\code{statistic = "median"} then the \code{conf.int} and \code{1 -
-  conf.int} \emph{quantiles} are plotted. \code{conf.int} can be of length 2,
-which is most useful for showing quantiles. For example \code{conf.int =
-  c(0.75, 0.99)} will yield a plot showing the median, 25/75 and 5/95th
+\item{conf.int}{The confidence intervals to be plotted. If \code{statistic = "mean"} then the confidence intervals in the mean are plotted. If
+\code{statistic = "median"} then the \code{conf.int} and \code{1 - conf.int} \emph{quantiles} are plotted. \code{conf.int} can be of length 2,
+which is most useful for showing quantiles. For example \code{conf.int = c(0.75, 0.99)} will yield a plot showing the median, 25/75 and 5/95th
 quantiles.}
 
 \item{B}{Number of bootstrap replicates to use. Can be useful to reduce this
@@ -126,10 +121,8 @@ colour names recognised by R (type \code{colours()} to see the full list).
 An example would be \code{cols = c("yellow", "green", "blue")}}
 
 \item{ref.y}{A list with details of the horizontal lines to be added
-representing reference line(s). For example, \code{ref.y = list(h = 50, lty
-  = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-  "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
+representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
 details on adding/controlling lines.}
 
 \item{key}{By default \code{timeVariation} produces four plots on one page.
@@ -173,8 +166,7 @@ an \link[=openair-package]{openair} object. The four components of
 timeVariation are: \code{day.hour}, \code{hour}, \code{day} and
 \code{month}. Associated data.frames can be extracted directly using the
 \code{subset} option, e.g. as in \code{plot(object, subset = "day.hour")},
-\code{summary(output, subset = "hour")}, etc., for \code{output <-
-  timeVariation(mydata, "nox")}
+\code{summary(output, subset = "hour")}, etc., for \code{output <- timeVariation(mydata, "nox")}
 }
 \description{
 Plots the diurnal, day of the week and monthly variation for different
@@ -204,8 +196,7 @@ having multiple pollutants in separate columns.
 
 The user can supply their own \code{ylim} e.g. \code{ylim = c(0, 200)} that
 will be used for all plots. \code{ylim} can also be a list of length four to
-control the y-limits on each individual plot e.g. \code{ylim =
-list(c(-100,500), c(200, 300), c(-400,400), c(50,70))}. These pairs
+control the y-limits on each individual plot e.g. \code{ylim = list(c(-100,500), c(200, 300), c(-400,400), c(50,70))}. These pairs
 correspond to the hour, weekday, month and day-hour plots respectively.
 
 The option \code{difference} will calculate the difference in means of two
@@ -221,7 +212,7 @@ various examples of using \code{difference = TRUE}.
 
 Note also that the \code{timeVariation} function works well on a subset of
 data and in conjunction with other plots. For example, a
-\code{\link{polarPlot}} may highlight an interesting feature for a particular
+\code{\link[=polarPlot]{polarPlot()}} may highlight an interesting feature for a particular
 wind speed/direction range. By filtering for those conditions
 \code{timeVariation} can help determine whether the temporal variation of
 that feature differs from other features --- and help with source

@@ -63,8 +63,7 @@ available for locally managed monitoring networks.
 }}
 
 \item{pollutant}{Pollutants to import. If omitted will import all pollutants
-from a site. To import only NOx and NO2 for example use \code{pollutant =
-  c("nox", "no2")}. Pollutant names can be upper or lower case.}
+from a site. To import only NOx and NO2 for example use \code{pollutant = c("nox", "no2")}. Pollutant names can be upper or lower case.}
 
 \item{hc}{Include hydrocarbon measurements in the imported data? Defaults to
 \code{FALSE} as most users will not be interested in using hydrocarbon data.}

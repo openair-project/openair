@@ -121,8 +121,8 @@
 #'   more details of how the index is defined. Note that this `data_type` is not
 #'   available for locally managed monitoring networks.
 #' @param pollutant Pollutants to import. If omitted will import all pollutants
-#'   from a site. To import only NOx and NO2 for example use \code{pollutant =
-#'   c("nox", "no2")}. Pollutant names can be upper or lower case.
+#'   from a site. To import only NOx and NO2 for example use `pollutant =
+#'   c("nox", "no2")`. Pollutant names can be upper or lower case.
 #' @param hc Include hydrocarbon measurements in the imported data? Defaults to
 #'   `FALSE` as most users will not be interested in using hydrocarbon data.
 #' @param meta Append metadata columns to data for each selected `site`?

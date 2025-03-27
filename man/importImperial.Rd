@@ -38,11 +38,10 @@ to import Marylebone Road and North Kensignton for example.}
 \code{2000:2020}. To import several specific years use \code{year = c(2000, 2010, 2020)}.}
 
 \item{pollutant}{Pollutants to import. If omitted will import all pollutants
-from a site. To import only NOx and NO2 for example use \code{pollutant =
-  c("nox", "no2")}. Pollutant names can be upper or lower case.}
+from a site. To import only NOx and NO2 for example use \code{pollutant = c("nox", "no2")}. Pollutant names can be upper or lower case.}
 
-\item{meta}{Append the site type, latitude and longitude of each selected
-\code{site}? Defaults to \code{FALSE}.}
+\item{meta}{Append metadata columns to data for each selected \code{site}?
+Defaults to \code{FALSE}. Columns are defined using \code{meta_columns}.}
 
 \item{meteo, met}{Should meteorological data be added to the import data? The
 default is \code{FALSE}. If \code{TRUE} wind speed (m/s), wind direction
@@ -169,16 +168,18 @@ mary <- importImperial(site = "my1", year = 2000:2009)
 
 ## import nox, no2, o3 from Marylebone Road and North Kensington for 2000
 \dontrun{
-thedata <- 
+thedata <-
   importImperial(
-    site = c("my1", "kc1"), 
-    year = 2000, 
+    site = c("my1", "kc1"),
+    year = 2000,
     pollutant = c("nox", "no2", "o3")
   )
 }
 
 ## import met data too...
-\dontrun{my1 <- importImperial(site = "my1", year = 2008, meteo = TRUE)}
+\dontrun{
+my1 <- importImperial(site = "my1", year = 2008, meteo = TRUE)
+}
 }
 \seealso{
 Other import functions: 

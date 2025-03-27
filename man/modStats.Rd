@@ -40,8 +40,7 @@ character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-More than one type can be considered e.g. \code{type = c("season",
-  "weekday")} will produce statistics split by season and day of the week.}
+More than one type can be considered e.g. \code{type = c("season", "weekday")} will produce statistics split by season and day of the week.}
 
 \item{rank.name}{Simple model ranking can be carried out if \code{rank.name}
 is supplied. \code{rank.name} will generally refer to a column representing

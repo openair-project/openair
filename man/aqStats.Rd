@@ -17,8 +17,7 @@ aqStats(
 \arguments{
 \item{mydata}{A data frame containing a \code{date} field of hourly data.}
 
-\item{pollutant}{The name of a pollutant e.g. \code{pollutant = c("o3",
-"pm10")}.}
+\item{pollutant}{The name of a pollutant e.g. \code{pollutant = c("o3", "pm10")}.}
 
 \item{type}{\code{type} allows \code{\link[=timeAverage]{timeAverage()}} to be applied to cases where
 there are groups of data that need to be split and the function applied to
@@ -56,42 +55,42 @@ species except CO (mg/m3).
 
 The following statistics are calculated:
 
-\itemize{ \item \bold{data.capture} --- percentage data capture over a full
+\itemize{ \item \strong{data.capture} --- percentage data capture over a full
 year.
 
-\item \bold{mean} --- annual mean.
+\item \strong{mean} --- annual mean.
 
-\item \bold{minimum} --- minimum hourly value.
+\item \strong{minimum} --- minimum hourly value.
 
-\item \bold{maximum} --- maximum hourly value.
+\item \strong{maximum} --- maximum hourly value.
 
-\item \bold{median} --- median value.
+\item \strong{median} --- median value.
 
-\item \bold{max.daily} --- maximum daily mean.
+\item \strong{max.daily} --- maximum daily mean.
 
-\item \bold{max.rolling.8} --- maximum 8-hour rolling mean.
+\item \strong{max.rolling.8} --- maximum 8-hour rolling mean.
 
-\item \bold{max.rolling.24} --- maximum 24-hour rolling mean.
+\item \strong{max.rolling.24} --- maximum 24-hour rolling mean.
 
-\item \bold{percentile.95} --- 95th percentile. Note that several percentiles
+\item \strong{percentile.95} --- 95th percentile. Note that several percentiles
 can be calculated.
 
-\item \bold{roll.8.O3.gt.100} --- number of days when the daily maximum
+\item \strong{roll.8.O3.gt.100} --- number of days when the daily maximum
 rolling 8-hour mean ozone concentration is >100 ug/m3. This is the target
 value.
 
-\item \bold{roll.8.O3.gt.120} --- number of days when the daily maximum
+\item \strong{roll.8.O3.gt.120} --- number of days when the daily maximum
 rolling 8-hour mean ozone concentration is >120 ug/m3. This is the Limit
 Value not to be exceeded > 10 days a year.
 
-\item \bold{AOT40} --- is the accumulated amount of ozone over the threshold
+\item \strong{AOT40} --- is the accumulated amount of ozone over the threshold
 value of 40 ppb for daylight hours in the growing season (April to
 September). Note that \code{latitude} and \code{longitude} can also be passed
 to this calculation.
 
-\item \bold{hours.gt.200} --- number of hours NO2 is more than 200 ug/m3.
+\item \strong{hours.gt.200} --- number of hours NO2 is more than 200 ug/m3.
 
-\item \bold{days.gt.50} --- number of days PM10 is more than 50 ug/m3. }
+\item \strong{days.gt.50} --- number of days PM10 is more than 50 ug/m3. }
 
 For the rolling means, the user can supply the option \code{align}, which can
 be "centre" (default), "left" or "right". See \code{rollingMean} for more
