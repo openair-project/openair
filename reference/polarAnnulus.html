@@ -104,12 +104,10 @@ pollutant.</p></dd>
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
 <dd><p>Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. <code>pollutant = "nox"</code>. There can also
-be more than one pollutant specified e.g. <code>pollutant = c("nox",
-  "no2")</code>. The main use of using two or more pollutants is for model
+be more than one pollutant specified e.g. <code>pollutant = c("nox", "no2")</code>. The main use of using two or more pollutants is for model
 evaluation where two species would be expected to have similar
 concentrations. This saves the user stacking the data and it is possible to
-work with columns of data directly. A typical use would be <code>pollutant
-  = c("obs", "mod")</code> to compare two columns “obs” (the observations)
+work with columns of data directly. A typical use would be <code>pollutant = c("obs", "mod")</code> to compare two columns “obs” (the observations)
 and “mod” (modelled values).</p></dd>
 
 
@@ -130,8 +128,7 @@ of “smearing-out” the concentrations. Sometimes, a useful approach
 is to express time as local time. This correction tends to produce
 better-defined diurnal profiles of concentration (or other variables) and
 allows a better comparison to be made with emissions/activity data. If set
-to <code>FALSE</code> then GMT is used. Examples of usage include <code>local.tz
-  = "Europe/London"</code>, <code>local.tz = "America/New_York"</code>. See
+to <code>FALSE</code> then GMT is used. Examples of usage include <code>local.tz = "Europe/London"</code>, <code>local.tz = "America/New_York"</code>. See
 <code>cutData</code> and <code>import</code> for more details.</p></dd>
 
 
@@ -160,8 +157,7 @@ produce a 2x2 plot split by season and site. The use of two types is mostly
 meant for situations where there are several sites. Note, when two types
 are provided the first forms the columns and the second the rows.</p>
 <p>Also note that for the <code>polarAnnulus</code> function some type/period
-combinations are forbidden or make little sense. For example, <code>type =
-  "season"</code> and <code>period = "trend"</code> (which would result in a plot with
+combinations are forbidden or make little sense. For example, <code>type = "season"</code> and <code>period = "trend"</code> (which would result in a plot with
 too many gaps in it for sensible smoothing), or <code>type = "weekday"</code> and
 <code>period = "weekday"</code>.</p></dd>
 
@@ -173,8 +169,7 @@ speed/direction bin. Can be “mean” (default), “median”,
 deviation), “weighted.mean” or “cpf” (Conditional Probability
 Function). Because of the smoothing involved, the colour scale for some of
 these statistics is only to provide an indication of overall pattern and
-should not be interpreted in concentration units e.g. for <code>statistic =
-  "weighted.mean"</code> where the bin mean is multiplied by the bin frequency and
+should not be interpreted in concentration units e.g. for <code>statistic = "weighted.mean"</code> where the bin mean is multiplied by the bin frequency and
 divided by the total frequency. In many cases using <code>polarFreq</code> will
 be better. Setting <code>statistic = "weighted.mean"</code> can be useful because
 it provides an indication of the concentration * frequency of occurrence
@@ -183,8 +178,7 @@ overall mean.</p></dd>
 
 
 <dt id="arg-percentile">percentile<a class="anchor" aria-label="anchor" href="#arg-percentile"></a></dt>
-<dd><p>If <code>statistic = "percentile"</code> or <code>statistic =
-  "cpf"</code> then <code>percentile</code> is used, expressed from 0 to 100. Note that
+<dd><p>If <code>statistic = "percentile"</code> or <code>statistic = "cpf"</code> then <code>percentile</code> is used, expressed from 0 to 100. Note that
 the percentile value is calculated in the wind speed, wind direction
 ‘bins’. For this reason it can also be useful to set <code>min.bin</code>
 to ensure there are a sufficient number of points available to estimate a
@@ -319,8 +313,7 @@ analysing data to extract plot components and plotting them in other ways.</p></
 <dd><p>Other graphical parameters passed onto <code>lattice:levelplot</code>
 and <code>cutData</code>. For example, <code>polarAnnulus</code> passes the option
 <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern
-(rather than default northern) hemisphere handling of <code>type =
-  "season"</code>. Similarly, common axis and title labelling options (such as
+(rather than default northern) hemisphere handling of <code>type = "season"</code>. Similarly, common axis and title labelling options (such as
 <code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed to <code>levelplot</code> via
 <code>quickText</code> to handle routine formatting.</p></dd>
 

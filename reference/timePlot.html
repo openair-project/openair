@@ -135,8 +135,7 @@ useful too to show all time series together in one panel.</p></dd>
 “sec”, “min”, “hour”, “day”, “DSTday”,
 “week”, “month”, “quarter” or “year”. For much
 increased flexibility a number can precede these options followed by a
-space. For example, a timeAverage of 2 months would be <code>period = "2
-  month"</code>. See function <code>timeAverage</code> for further details on this.</p></dd>
+space. For example, a timeAverage of 2 months would be <code>period = "2 month"</code>. See function <code>timeAverage</code> for further details on this.</p></dd>
 
 
 <dt id="arg-data-thresh">data.thresh<a class="anchor" aria-label="anchor" href="#arg-data-thresh"></a></dt>
@@ -155,13 +154,11 @@ the mean. Can be one of “mean”, “max”, “min”,
 that “sd” is the standard deviation and “frequency” is the
 number (frequency) of valid records in the period.  “percentile” is
 the percentile level between 0-100, which can be set using the
-“percentile” option - see below. Not used if <code>avg.time =
-  "default"</code>.</p></dd>
+“percentile” option - see below. Not used if <code>avg.time = "default"</code>.</p></dd>
 
 
 <dt id="arg-percentile">percentile<a class="anchor" aria-label="anchor" href="#arg-percentile"></a></dt>
-<dd><p>The percentile level in percent used when <code>statistic =
-  "percentile"</code> and when aggregating the data with <code>avg.time</code>. More than
+<dd><p>The percentile level in percent used when <code>statistic = "percentile"</code> and when aggregating the data with <code>avg.time</code>. More than
 one percentile level is allowed for <code>type = "default"</code> e.g.
 <code>percentile = c(50, 95)</code>. Not used if <code>avg.time = "default"</code>.</p></dd>
 
@@ -220,8 +217,7 @@ together with <code>group = TRUE</code>.</p></dd>
 
 <dt id="arg-windflow">windflow<a class="anchor" aria-label="anchor" href="#arg-windflow"></a></dt>
 <dd><p>This option allows a scatter plot to show the wind
-speed/direction as an arrow. The option is a list e.g. <code>windflow =
-  list(col = "grey", lwd = 2, scale = 0.1)</code>. This option requires wind speed
+speed/direction as an arrow. The option is a list e.g. <code>windflow = list(col = "grey", lwd = 2, scale = 0.1)</code>. This option requires wind speed
 (<code>ws</code>) and wind direction (<code>wd</code>) to be available.</p>
 <p>The maximum length of the arrow plotted is a fraction of the plot dimension
 with the longest arrow being <code>scale</code> of the plot x-y dimension. Note,
@@ -253,16 +249,13 @@ different values.</p></dd>
 
 <dt id="arg-ref-x">ref.x<a class="anchor" aria-label="anchor" href="#arg-ref-x"></a></dt>
 <dd><p>See <code>ref.y</code> for details. In this case the correct date
-format should be used for a vertical line e.g. <code>ref.x = list(v =
-  as.POSIXct("2000-06-15"), lty = 5)</code>.</p></dd>
+format should be used for a vertical line e.g. <code>ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)</code>.</p></dd>
 
 
 <dt id="arg-ref-y">ref.y<a class="anchor" aria-label="anchor" href="#arg-ref-y"></a></dt>
 <dd><p>A list with details of the horizontal lines to be added
-representing reference line(s). For example, <code>ref.y = list(h = 50, lty
-  = 5)</code> will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-  "blue"))</code>. See <code>panel.abline</code> in the <code>lattice</code> package for more
+representing reference line(s). For example, <code>ref.y = list(h = 50, lty = 5)</code> will add a dashed horizontal line at 50. Several lines can be plotted
+e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))</code>. See <code>panel.abline</code> in the <code>lattice</code> package for more
 details on adding/controlling lines.</p></dd>
 
 
@@ -282,8 +275,7 @@ number of pollutants.</p></dd>
 <dd><p>This option can be used to give alternative names for the
 variables plotted. Instead of taking the column headings as names, the user
 can supply replacements. For example, if a column had the name “nox”
-and the user wanted a different description, then setting <code>name.pol =
-  "nox before change"</code> can be used. If more than one pollutant is plotted
+and the user wanted a different description, then setting <code>name.pol = "nox before change"</code> can be used. If more than one pollutant is plotted
 then use <code>c</code> e.g. <code>name.pol = c("nox here", "o3 there")</code>.</p></dd>
 
 
@@ -301,7 +293,7 @@ down.</p></dd>
 <code>timePlot</code> generally sets the date format sensibly there can be some
 situations where the user wishes to have more control. For format types see
 <code>strptime</code>. For example, to format the date like “Jan-2012” set
-<code>date.format = "%b-%Y"</code>.</p></dd>
+<code>date.format = "\%b-\%Y"</code>.</p></dd>
 
 
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
@@ -319,8 +311,7 @@ analysing data to extract plot components and plotting them in other ways.</p></
 <dd><p>Other graphical parameters are passed onto <code>cutData</code> and
 <code>lattice:xyplot</code>. For example, <code>timePlot</code> passes the option
 <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern
-(rather than default northern) hemisphere handling of <code>type =
-  "season"</code>. Similarly, most common plotting parameters, such as
+(rather than default northern) hemisphere handling of <code>type = "season"</code>. Similarly, most common plotting parameters, such as
 <code>layout</code> for panel arrangement and <code>pch</code> and <code>cex</code> for plot
 symbol type and size and <code>lty</code> and <code>lwd</code> for line type and width,
 as passed to <code>xyplot</code>, although some maybe locally managed by
@@ -393,7 +384,7 @@ is to maximise the plotting area and therefore the information shown.</p>
 <span class="r-in"><span>  <span class="va">scale</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> function (x, center = TRUE, scale = TRUE) </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> UseMethod("scale")</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55b84df301d0&gt;</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;bytecode: 0x55f7cfc7a840&gt;</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;environment: namespace:base&gt;</span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nox"</span>, <span class="st">"co"</span>, <span class="st">"pm10"</span>, <span class="st">"so2"</span><span class="op">)</span>, group <span class="op">=</span> <span class="cn">TRUE</span>, avg.time <span class="op">=</span></span></span>

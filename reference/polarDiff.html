@@ -88,16 +88,13 @@ See <code><a href="polarPlot.html">polarPlot()</a></code> for details of differe
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
 <dd><p>Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. <code>pollutant = "nox"</code>. There can also
-be more than one pollutant specified e.g. <code>pollutant = c("nox",
-  "no2")</code>. The main use of using two or more pollutants is for model
+be more than one pollutant specified e.g. <code>pollutant = c("nox", "no2")</code>. The main use of using two or more pollutants is for model
 evaluation where two species would be expected to have similar
 concentrations. This saves the user stacking the data and it is possible to
-work with columns of data directly. A typical use would be <code>pollutant
-  = c("obs", "mod")</code> to compare two columns “obs” (the observations)
+work with columns of data directly. A typical use would be <code>pollutant = c("obs", "mod")</code> to compare two columns “obs” (the observations)
 and “mod” (modelled values). When pair-wise statistics such as
 Pearson correlation and regression techniques are to be plotted,
-<code>pollutant</code> takes two elements too. For example, <code>pollutant =
-  c("bc", "pm25")</code> where <code>"bc"</code> is a function of <code>"pm25"</code>.</p></dd>
+<code>pollutant</code> takes two elements too. For example, <code>pollutant = c("bc", "pm25")</code> where <code>"bc"</code> is a function of <code>"pm25"</code>.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
@@ -362,12 +359,10 @@ wind direction when <code>statistic = "nwr"</code> or when correlation and
 regression statistics are used such as <em>r</em>. Default is <code>4</code>.</p></dd>
 
     <dt><code>x_error</code></dt>
-<dd><p>The <code>x</code> error / uncertainty used when <code>statistic =
-"york_slope"</code>.</p></dd>
+<dd><p>The <code>x</code> error / uncertainty used when <code>statistic = "york_slope"</code>.</p></dd>
 
     <dt><code>y_error</code></dt>
-<dd><p>The <code>y</code> error / uncertainty used when <code>statistic =
-"york_slope"</code>.</p></dd>
+<dd><p>The <code>y</code> error / uncertainty used when <code>statistic = "york_slope"</code>.</p></dd>
 
     <dt><code>kernel</code></dt>
 <dd><p>Type of kernel used for the weighting procedure for when

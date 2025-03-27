@@ -74,8 +74,7 @@
 
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
-<dd><p>The name of a pollutant e.g. <code>pollutant = c("o3",
-"pm10")</code>.</p></dd>
+<dd><p>The name of a pollutant e.g. <code>pollutant = c("o3", "pm10")</code>.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
@@ -119,29 +118,29 @@ the output by setting <code>transpose</code> appropriately.</p>
 <p>Note that the input data is assumed to be in mass units e.g. ug/m3 for all
 species except CO (mg/m3).</p>
 <p>The following statistics are calculated:</p>
-<ul><li><p><b>data.capture</b> — percentage data capture over a full
+<ul><li><p><strong>data.capture</strong> — percentage data capture over a full
 year.</p></li>
-<li><p><b>mean</b> — annual mean.</p></li>
-<li><p><b>minimum</b> — minimum hourly value.</p></li>
-<li><p><b>maximum</b> — maximum hourly value.</p></li>
-<li><p><b>median</b> — median value.</p></li>
-<li><p><b>max.daily</b> — maximum daily mean.</p></li>
-<li><p><b>max.rolling.8</b> — maximum 8-hour rolling mean.</p></li>
-<li><p><b>max.rolling.24</b> — maximum 24-hour rolling mean.</p></li>
-<li><p><b>percentile.95</b> — 95th percentile. Note that several percentiles
+<li><p><strong>mean</strong> — annual mean.</p></li>
+<li><p><strong>minimum</strong> — minimum hourly value.</p></li>
+<li><p><strong>maximum</strong> — maximum hourly value.</p></li>
+<li><p><strong>median</strong> — median value.</p></li>
+<li><p><strong>max.daily</strong> — maximum daily mean.</p></li>
+<li><p><strong>max.rolling.8</strong> — maximum 8-hour rolling mean.</p></li>
+<li><p><strong>max.rolling.24</strong> — maximum 24-hour rolling mean.</p></li>
+<li><p><strong>percentile.95</strong> — 95th percentile. Note that several percentiles
 can be calculated.</p></li>
-<li><p><b>roll.8.O3.gt.100</b> — number of days when the daily maximum
+<li><p><strong>roll.8.O3.gt.100</strong> — number of days when the daily maximum
 rolling 8-hour mean ozone concentration is &gt;100 ug/m3. This is the target
 value.</p></li>
-<li><p><b>roll.8.O3.gt.120</b> — number of days when the daily maximum
+<li><p><strong>roll.8.O3.gt.120</strong> — number of days when the daily maximum
 rolling 8-hour mean ozone concentration is &gt;120 ug/m3. This is the Limit
 Value not to be exceeded &gt; 10 days a year.</p></li>
-<li><p><b>AOT40</b> — is the accumulated amount of ozone over the threshold
+<li><p><strong>AOT40</strong> — is the accumulated amount of ozone over the threshold
 value of 40 ppb for daylight hours in the growing season (April to
 September). Note that <code>latitude</code> and <code>longitude</code> can also be passed
 to this calculation.</p></li>
-<li><p><b>hours.gt.200</b> — number of hours NO2 is more than 200 ug/m3.</p></li>
-<li><p><b>days.gt.50</b> — number of days PM10 is more than 50 ug/m3.</p></li>
+<li><p><strong>hours.gt.200</strong> — number of hours NO2 is more than 200 ug/m3.</p></li>
+<li><p><strong>days.gt.50</strong> — number of days PM10 is more than 50 ug/m3.</p></li>
 </ul><p>For the rolling means, the user can supply the option <code>align</code>, which can
 be "centre" (default), "left" or "right". See <code>rollingMean</code> for more
 details.</p>

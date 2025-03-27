@@ -140,9 +140,7 @@ year.</p></dd>
 
 
 <dt id="arg-percentile">percentile<a class="anchor" aria-label="anchor" href="#arg-percentile"></a></dt>
-<dd><p>Percentile value(s) to use if <code>statistic =
-  "percentile"</code> is chosen. Can be a vector of numbers e.g. <code>percentile
-  = c(5, 50, 95)</code> will plot the 5th, 50th and 95th percentile values
+<dd><p>Percentile value(s) to use if <code>statistic = "percentile"</code> is chosen. Can be a vector of numbers e.g. <code>percentile = c(5, 50, 95)</code> will plot the 5th, 50th and 95th percentile values
 together on the same plot.</p></dd>
 
 
@@ -174,8 +172,7 @@ by a large amount.</p></dd>
 
 
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
-<dd><p>Colours to use. Can be a vector of colours e.g. <code>cols =
-  c("black", "green")</code> or pre-defined openair colours — see
+<dd><p>Colours to use. Can be a vector of colours e.g. <code>cols = c("black", "green")</code> or pre-defined openair colours — see
 <code>openColours</code> for more details.</p></dd>
 
 
@@ -193,8 +190,7 @@ or “transparent” to remove shading.</p></dd>
 ensures all panels use the same scale and "free" will use panel-specific
 scales. The latter is a useful setting when plotting data with very
 different values.  ref.x See <code>ref.y</code> for details. In this case the
-correct date format should be used for a vertical line e.g.  <code>ref.x =
-  list(v = as.POSIXct("2000-06-15"), lty = 5)</code>.</p></dd>
+correct date format should be used for a vertical line e.g.  <code>ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)</code>.</p></dd>
 
 
 <dt id="arg-ref-x">ref.x<a class="anchor" aria-label="anchor" href="#arg-ref-x"></a></dt>
@@ -203,10 +199,8 @@ correct date format should be used for a vertical line e.g.  <code>ref.x =
 
 <dt id="arg-ref-y">ref.y<a class="anchor" aria-label="anchor" href="#arg-ref-y"></a></dt>
 <dd><p>A list with details of the horizontal lines to be added
-representing reference line(s). For example, <code>ref.y = list(h = 50,
-  lty = 5)</code> will add a dashed horizontal line at 50. Several lines can be
-plotted e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col =
-  c("green", "blue"))</code>. See <code>panel.abline</code> in the <code>lattice</code>
+representing reference line(s). For example, <code>ref.y = list(h = 50, lty = 5)</code> will add a dashed horizontal line at 50. Several lines can be
+plotted e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))</code>. See <code>panel.abline</code> in the <code>lattice</code>
 package for more details on adding/controlling lines.</p></dd>
 
 
@@ -264,8 +258,7 @@ ways.</p></dd>
 <dd><p>Other graphical parameters are passed onto <code>cutData</code> and
 <code>lattice:xyplot</code>. For example, <code>smoothTrend</code> passes the option
 <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern
-(rather than default northern) hemisphere handling of <code>type =
-  "season"</code>. Similarly, common graphical arguments, such as <code>xlim</code> and
+(rather than default northern) hemisphere handling of <code>type = "season"</code>. Similarly, common graphical arguments, such as <code>xlim</code> and
 <code>ylim</code> for plotting ranges and <code>pch</code> and <code>cex</code> for plot
 symbol type and size, are passed on <code>xyplot</code>, although some local
 modifications may be applied by openair. For example, axis and title
@@ -288,7 +281,7 @@ values are calculated from an hourly (or higher resolution) or daily time
 series. There is the option to deseasonalise the data if there is evidence
 of a seasonal cycle.</p>
 <p><code>smoothTrend</code> uses a Generalized Additive Model (GAM) from the
-<code>gam</code> package to find the most appropriate level of smoothing.
+<code>gam()</code> package to find the most appropriate level of smoothing.
 The function is particularly suited to situations where trends are not
 monotonic (see discussion with <code><a href="TheilSen.html">TheilSen()</a></code> for more details on
 this). The <code>smoothTrend</code> function is particularly useful as an

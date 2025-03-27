@@ -81,8 +81,8 @@ data frame with a <code>date</code> field and one other numeric variable.</p>
 
 
 <dl><dt id="arg-mydata">mydata<a class="anchor" aria-label="anchor" href="#arg-mydata"></a></dt>
-<dd><p>A data frame containing a <code>date</code> field . Can be class
-<code>POSIXct</code> or <code>Date</code>.</p></dd>
+<dd><p>A data frame containing a <code>date</code> field . Can be class <code>POSIXct</code>
+or <code>Date</code>.</p></dd>
 
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
@@ -91,24 +91,23 @@ pollutant (e.g., <code>"o3"</code>).</p></dd>
 
 
 <dt id="arg-avg-time">avg.time<a class="anchor" aria-label="anchor" href="#arg-avg-time"></a></dt>
-<dd><p>This defines the time period to average to. Can be
-“sec”, “min”, “hour”, “day”, “DSTday”,
-“week”, “month”, “quarter” or “year”. For much
-increased flexibility a number can precede these options followed by a
-space. For example, a timeAverage of 2 months would be <code>period = "2
-  month"</code>. In addition, <code>avg.time</code> can equal “season”, in which
-case 3-month seasonal values are calculated with spring defined as March,
-April, May and so on.</p>
-<p>Note that <code>avg.time</code> can be <em>less</em> than the time interval of the
-original series, in which case the series is expanded to the new time
-interval. This is useful, for example, for calculating a 15-minute time
-series from an hourly one where an hourly value is repeated for each new
-15-minute period. Note that when expanding data in this way it is necessary
-to ensure that the time interval of the original series is an exact
-multiple of <code>avg.time</code> e.g. hour to 10 minutes, day to hour. Also, the
-input time series must have consistent time gaps between successive
-intervals so that <code>timeAverage</code> can work out how much ‘padding’
-to apply. To pad-out data in this way choose <code>fill = TRUE</code>.</p></dd>
+<dd><p>This defines the time period to average to. Can be <code>"sec"</code>,
+<code>"min"</code>, <code>"hour"</code>, <code>"day"</code>, <code>"DSTday"</code>, <code>"week"</code>, <code>"month"</code>, <code>"quarter"</code> or
+<code>"year"</code>. For much increased flexibility a number can precede these options
+followed by a space. For example, a timeAverage of 2 months would be
+<code>period = "2 month"</code>. In addition, <code>avg.time</code> can equal <code>"season"</code>, in
+which case 3-month seasonal values are calculated with spring defined as
+March, April, May and so on.</p>
+<p>Note that <code>avg.time</code> can be <em>less</em> than the time interval of the original
+series, in which case the series is expanded to the new time interval. This
+is useful, for example, for calculating a 15-minute time series from an
+hourly one where an hourly value is repeated for each new 15-minute period.
+Note that when expanding data in this way it is necessary to ensure that
+the time interval of the original series is an exact multiple of <code>avg.time</code>
+e.g. hour to 10 minutes, day to hour. Also, the input time series must have
+consistent time gaps between successive intervals so that <code><a href="timeAverage.html">timeAverage()</a></code>
+can work out how much 'padding' to apply. To pad-out data in this way
+choose <code>fill = TRUE</code>.</p></dd>
 
 
 <dt id="arg-percentile">percentile<a class="anchor" aria-label="anchor" href="#arg-percentile"></a></dt>
@@ -117,14 +116,13 @@ vector, e.g., <code>percentile = c(5, 50, 95)</code> or <code>percentile = seq(0
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p><code>type</code> allows <code>timeAverage</code> to be applied to cases
-where there are groups of data that need to be split and the function
-applied to each group. The most common example is data with multiple sites
-identified with a column representing site name e.g. <code>type = "site"</code>.
-More generally, <code>type</code> should be used where the date repeats for a
-particular grouping variable. However, if type is not supplied the data
-will still be averaged but the grouping variables (character or factor)
-will be dropped.</p></dd>
+<dd><p><code>type</code> allows <code><a href="timeAverage.html">timeAverage()</a></code> to be applied to cases where there
+are groups of data that need to be split and the function applied to each
+group. The most common example is data with multiple sites identified with
+a column representing site name e.g. <code>type = "site"</code>. More generally,
+<code>type</code> should be used where the date repeats for a particular grouping
+variable. However, if type is not supplied the data will still be averaged
+but the grouping variables (character or factor) will be dropped.</p></dd>
 
 
 <dt id="arg-data-thresh">data.thresh<a class="anchor" aria-label="anchor" href="#arg-data-thresh"></a></dt>
@@ -132,31 +130,28 @@ will be dropped.</p></dd>
 means that all available data will be used in a particular period
 regardless if of the number of values available. Conversely, a value of 100
 will mean that all data will need to be present for the average to be
-calculated, else it is recorded as <code>NA</code>. See also <code>interval</code>,
-<code>start.date</code> and <code>end.date</code> to see whether it is advisable to set
-these other options.</p></dd>
+calculated, else it is recorded as <code>NA</code>. See also <code>interval</code>, <code>start.date</code>
+and <code>end.date</code> to see whether it is advisable to set these other options.</p></dd>
 
 
 <dt id="arg-start-date">start.date<a class="anchor" aria-label="anchor" href="#arg-start-date"></a></dt>
 <dd><p>A string giving a start date to use. This is sometimes
 useful if a time series starts between obvious intervals. For example, for
-a 1-minute time series that starts “2009-11-29 12:07:00” that needs
-to be averaged up to 15-minute means, the intervals would be
-“2009-11-29 12:07:00”, “2009-11-29 12:22:00” etc. Often,
-however, it is better to round down to a more obvious start point e.g.
-“2009-11-29 12:00:00” such that the sequence is then
-“2009-11-29 12:00:00”, “2009-11-29 12:15:00” ...
-<code>start.date</code> is therefore used to force this type of sequence.</p></dd>
+a 1-minute time series that starts <code>2009-11-29 12:07:00</code> that needs to be
+averaged up to 15-minute means, the intervals would be <code>2009-11-29 12:07:00</code>, <code>2009-11-29 12:22:00</code>, etc. Often, however, it is better to
+round down to a more obvious start point, e.g., <code>2009-11-29 12:00:00</code> such
+that the sequence is then <code>2009-11-29 12:00:00</code>, <code>2009-11-29 12:15:00</code>, and
+so on. <code>start.date</code> is therefore used to force this type of sequence.</p></dd>
 
 
 <dt id="arg-end-date">end.date<a class="anchor" aria-label="anchor" href="#arg-end-date"></a></dt>
 <dd><p>A string giving an end date to use. This is sometimes useful
 to make sure a time series extends to a known end point and is useful when
-<code>data.thresh</code> &gt; 0 but the input time series does not extend up to the
-final full interval. For example, if a time series ends sometime in October
-but annual means are required with a data capture of &gt;75 % then it is
-necessary to extend the time series up until the end of the year. Input in
-the format yyyy-mm-dd HH:MM.</p></dd>
+<code>data.thresh &gt; 0</code> but the input time series does not extend up to the final
+full interval. For example, if a time series ends sometime in October but
+annual means are required with a data capture of &gt;75 % then it is necessary
+to extend the time series up until the end of the year. Input in the format
+yyyy-mm-dd HH:MM.</p></dd>
 
 
 <dt id="arg-prefix">prefix<a class="anchor" aria-label="anchor" href="#arg-prefix"></a></dt>

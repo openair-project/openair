@@ -268,19 +268,10 @@ plot itself.</p></dd>
 <code>statistic</code> option. Any additional function arguments not included
 within a function called using <code>statistic</code> should be supplied as a list
 of named parameters and sent using <code>stat.args</code>. For example, the encoded
-option <code>statistic = "mean"</code> is equivalent to <code>statistic = mean,
-stat.args = list(na.rm = TRUE)</code> or the R command <code>mean(x, na.rm= TRUE)</code>.
+option <code>statistic = "mean"</code> is equivalent to <code>statistic = mean, stat.args = list(na.rm = TRUE)</code> or the R command <code>mean(x, na.rm= TRUE)</code>.
 Many R functions and user's own code could be applied in a similar fashion,
 subject to the following restrictions: the first argument sent to the
-function must be the data series to be analysed; the name `x' cannot be used
-for any of the extra options supplied in <code>stat.args</code>; and the function
-should return the required answer as a numeric or <code>NA</code>. Note: If the
-supplied function returns more than one answer, currently only the first of
-these is retained and used by <code>trendLevel</code>. All other returned
-information will be ignored without warning. If the function terminates with
-an error when it is sent an empty data series, the option
-<code>stat.safe.mode</code> should not be set to <code>FALSE</code> or <code>trendLevel</code>
-may fail. Note: The <code>stat.safe.mode = TRUE</code> option returns an NA without
+function must be the data series to be analysed; the name <code>x' cannot be used for any of the extra options supplied in </code>stat.args<code>; and the function should return the required answer as a numeric or </code>NA<code>. Note: If the supplied function returns more than one answer, currently only the first of these is retained and used by </code>trendLevel<code>. All other returned information will be ignored without warning. If the function terminates with an error when it is sent an empty data series, the option </code>stat.safe.mode<code>should not be set to</code>FALSE<code>or</code>trendLevel<code>may fail. Note: The</code>stat.safe.mode = TRUE` option returns an NA without
 warning for empty data series.</p>
     </div>
     <div class="section level2">

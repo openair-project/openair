@@ -112,8 +112,7 @@ different assumptions e.g. input data or model set up. See examples below.</p></
 different models and can be a factor or character. The total number of
 models compared will be equal to the number of unique values of
 <code>group</code>.</p>
-<p><code>group</code> can also be of length two e.g. <code>group = c("model",
-  "site")</code>. In this case all model-site combinations will be shown but they
+<p><code>group</code> can also be of length two e.g. <code>group = c("model", "site")</code>. In this case all model-site combinations will be shown but they
 will only be differentiated by colour/symbol by the first grouping variable
 ("model" in this case). In essence the plot removes the differentiation by
 the second grouping variable. Because there will be different values of
@@ -161,8 +160,7 @@ include “Accent”, “Dark2”, “Paired”, “Pastel1”,
 “Pastel2”, “Set1”, “Set2”, “Set3” — but see
 ?<code>brewer.pal</code> for the maximum useful colours in each. For user defined
 the user can supply a list of colour names recognised by R (type
-<code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list). An example would be <code>cols =
-  c("yellow", "green", "blue")</code>.</p></dd>
+<code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list). An example would be <code>cols = c("yellow", "green", "blue")</code>.</p></dd>
 
 
 <dt id="arg-rms-col">rms.col<a class="anchor" aria-label="anchor" href="#arg-rms-col"></a></dt>
@@ -222,8 +220,7 @@ and units properly e.g.  by subscripting the `2' in NO2.</p></dd>
 <dd><p>Other graphical parameters are passed onto <code>cutData</code> and
 <code>lattice:xyplot</code>. For example, <code>TaylorDiagram</code> passes the option
 <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern
-(rather than default northern) hemisphere handling of <code>type =
-  "season"</code>. Similarly, common graphical parameters, such as <code>layout</code>
+(rather than default northern) hemisphere handling of <code>type = "season"</code>. Similarly, common graphical parameters, such as <code>layout</code>
 for panel arrangement and <code>pch</code> and <code>cex</code> for plot symbol type
 and size, are passed on to <code>xyplot</code>. Most are passed unmodified,
 although there are some special cases where <code>openair</code> may locally
@@ -262,26 +259,20 @@ type etc.</p>
 <p>To consider several pollutants on one plot, a column identifying the
 pollutant name can be used e.g. <code>pollutant</code>. Then the Taylor Diagram can
 be plotted as (assuming a data frame <code>thedata</code>):</p>
-<p><code>TaylorDiagram(thedata, obs = "obs", mod = "mod", group = "model", type
-= "pollutant")</code></p>
+<p><code>TaylorDiagram(thedata, obs = "obs", mod = "mod", group = "model", type = "pollutant")</code></p>
 <p>which will give the model performance by pollutant in each panel.</p>
 <p>Note that it is important that each panel represents data with the same mean
-observed data across different groups. Therefore <code>TaylorDiagram(mydata,
-group = "model", type = "season")</code> is OK, whereas <code>TaylorDiagram(mydata,
-group = "season", type = "model")</code> is not because each panel (representing a
+observed data across different groups. Therefore <code>TaylorDiagram(mydata, group = "model", type = "season")</code> is OK, whereas <code>TaylorDiagram(mydata, group = "season", type = "model")</code> is not because each panel (representing a
 model) will have four different mean values — one for each season.
 Generally, the option <code>group</code> is either missing (one model being
 evaluated) or represents a column giving the model name. However, the data
 can be normalised using the <code>normalise</code> option. Normalisation is carried
 out on a per <code>group</code>/<code>type</code> basis making it possible to compare
-data on different scales e.g. <code>TaylorDiagram(mydata, group = "season",
-type = "model", normalise = TRUE)</code>. In this way it is possible to compare
+data on different scales e.g. <code>TaylorDiagram(mydata, group = "season", type = "model", normalise = TRUE)</code>. In this way it is possible to compare
 different pollutants, sites etc. in the same panel.</p>
-<p>Also note that if multiple sites are present it makes sense to use <code>type
-= "site"</code> to ensure that each panel represents an individual site with its
+<p>Also note that if multiple sites are present it makes sense to use <code>type = "site"</code> to ensure that each panel represents an individual site with its
 own specific standard deviation etc. If this is not the case then select a
-single site from the data first e.g. <code>subset(mydata, site ==
-"Harwell")</code>.</p>
+single site from the data first e.g. <code>subset(mydata, site == "Harwell")</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

@@ -132,8 +132,7 @@ quantiles.</p></dd>
 “sec”, “min”, “hour”, “day”, “DSTday”,
 “week”, “month”, “quarter” or “year”. For much
 increased flexibility a number can precede these options followed by a
-space. For example, a timeAverage of 2 months would be <code>period = "2
-  month"</code>. See function <code>timeAverage</code> for further details on this. This
+space. For example, a timeAverage of 2 months would be <code>period = "2 month"</code>. See function <code>timeAverage</code> for further details on this. This
 option se useful as one method by which the number of points plotted is
 reduced i.e. by choosing a longer averaging time.</p></dd>
 
@@ -154,8 +153,7 @@ percentile level (\<!-- %) between 0-100, which can be set using the -->
 "percentile" option - see below. Not used if <code>avg.time = "default"</code>.</p></dd>
 
     <dt><code>percentile</code></dt>
-<dd><p>The percentile level in percent used when <code>statistic =
-  "percentile"</code> and when aggregating the data with <code>avg.time</code>. The
+<dd><p>The percentile level in percent used when <code>statistic = "percentile"</code> and when aggregating the data with <code>avg.time</code>. The
 default is 95. Not used if <code>avg.time = "default"</code>.</p></dd>
 
     <dt><code>type</code></dt>
@@ -244,12 +242,10 @@ be useful for checking linearity once logged.</p></dd>
 be useful for checking linearity once logged.</p></dd>
 
     <dt><code>x.inc</code></dt>
-<dd><p>The x-interval to be used for binning data when <code>method =
-"level"</code>.</p></dd>
+<dd><p>The x-interval to be used for binning data when <code>method = "level"</code>.</p></dd>
 
     <dt><code>y.inc</code></dt>
-<dd><p>The y-interval to be used for binning data when <code>method =
-"level"</code>.</p></dd>
+<dd><p>The y-interval to be used for binning data when <code>method = "level"</code>.</p></dd>
 
     <dt><code>limits</code></dt>
 <dd><p>For <code>method = "level"</code> the function does its best to
@@ -260,8 +256,7 @@ limits to span 0-100.</p></dd>
 
     <dt><code>windflow</code></dt>
 <dd><p>This option allows a scatter plot to show the wind
-speed/direction shows as an arrow. The option is a list e.g. <code>windflow
-  = list(col = "grey", lwd = 2, scale = 0.1)</code>. This option requires wind
+speed/direction shows as an arrow. The option is a list e.g. <code>windflow = list(col = "grey", lwd = 2, scale = 0.1)</code>. This option requires wind
 speed (<code>ws</code>) and wind direction (<code>wd</code>) to be available.</p>
 <p>The maximum length of the arrow plotted is a fraction of the plot dimension
 with the longest arrow being <code>scale</code> of the plot x-y dimension. Note,
@@ -290,10 +285,8 @@ data with very different values.</p></dd>
 
     <dt><code>ref.y</code></dt>
 <dd><p>A list with details of the horizontal lines to be added
-representing reference line(s). For example, <code>ref.y = list(h = 50, lty
-  = 5)</code> will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-  "blue"))</code>. See <code>panel.abline</code> in the <code>lattice</code> package for more
+representing reference line(s). For example, <code>ref.y = list(h = 50, lty = 5)</code> will add a dashed horizontal line at 50. Several lines can be plotted
+e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))</code>. See <code>panel.abline</code> in the <code>lattice</code> package for more
 details on adding/controlling lines.</p></dd>
 
     <dt><code>k</code></dt>
@@ -372,7 +365,7 @@ vehicle emissions legislation consider primary NO2? Atmospheric Environment
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="linearRelation.html">linearRelation</a></code> if you have roadside ozone
+    <div class="dont-index"><p><code><a href="linearRelation.html">linearRelation()</a></code> if you have roadside ozone
 measurements.</p></div>
     </div>
     <div class="section level2">

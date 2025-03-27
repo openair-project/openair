@@ -115,8 +115,7 @@ of “smearing-out” the concentrations. Sometimes, a useful approach
 is to express time as local time. This correction tends to produce
 better-defined diurnal profiles of concentration (or other variables) and
 allows a better comparison to be made with emissions/activity data. If set
-to <code>FALSE</code> then GMT is used. Examples of usage include <code>local.tz
-  = "Europe/London"</code>, <code>local.tz = "America/New_York"</code>. See
+to <code>FALSE</code> then GMT is used. Examples of usage include <code>local.tz = "Europe/London"</code>, <code>local.tz = "America/New_York"</code>. See
 <code>cutData</code> and <code>import</code> for more details.</p></dd>
 
 
@@ -160,8 +159,7 @@ all sites together in each panel. See examples below.</p></dd>
 
 
 <dt id="arg-difference">difference<a class="anchor" aria-label="anchor" href="#arg-difference"></a></dt>
-<dd><p>If two pollutants are chosen then setting <code>difference
-  = TRUE</code> will also plot the difference in means between the two variables as
+<dd><p>If two pollutants are chosen then setting <code>difference = TRUE</code> will also plot the difference in means between the two variables as
 <code>pollutant[2] - pollutant[1]</code>. Bootstrap 95\<!-- % confidence intervals of -->
 the difference in means are also calculated. A horizontal dashed line is
 shown at y = 0. The difference can also be calculated if there is a column
@@ -180,12 +178,9 @@ with <code>conf.int</code>.</p></dd>
 
 
 <dt id="arg-conf-int">conf.int<a class="anchor" aria-label="anchor" href="#arg-conf-int"></a></dt>
-<dd><p>The confidence intervals to be plotted. If <code>statistic =
-  "mean"</code> then the confidence intervals in the mean are plotted. If
-<code>statistic = "median"</code> then the <code>conf.int</code> and <code>1 -
-  conf.int</code> <em>quantiles</em> are plotted. <code>conf.int</code> can be of length 2,
-which is most useful for showing quantiles. For example <code>conf.int =
-  c(0.75, 0.99)</code> will yield a plot showing the median, 25/75 and 5/95th
+<dd><p>The confidence intervals to be plotted. If <code>statistic = "mean"</code> then the confidence intervals in the mean are plotted. If
+<code>statistic = "median"</code> then the <code>conf.int</code> and <code>1 - conf.int</code> <em>quantiles</em> are plotted. <code>conf.int</code> can be of length 2,
+which is most useful for showing quantiles. For example <code>conf.int = c(0.75, 0.99)</code> will yield a plot showing the median, 25/75 and 5/95th
 quantiles.</p></dd>
 
 
@@ -213,10 +208,8 @@ An example would be <code>cols = c("yellow", "green", "blue")</code></p></dd>
 
 <dt id="arg-ref-y">ref.y<a class="anchor" aria-label="anchor" href="#arg-ref-y"></a></dt>
 <dd><p>A list with details of the horizontal lines to be added
-representing reference line(s). For example, <code>ref.y = list(h = 50, lty
-  = 5)</code> will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-  "blue"))</code>. See <code>panel.abline</code> in the <code>lattice</code> package for more
+representing reference line(s). For example, <code>ref.y = list(h = 50, lty = 5)</code> will add a dashed horizontal line at 50. Several lines can be plotted
+e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))</code>. See <code>panel.abline</code> in the <code>lattice</code> package for more
 details on adding/controlling lines.</p></dd>
 
 
@@ -280,8 +273,7 @@ analysing data to extract plot components and plotting them in other ways.</p></
 timeVariation are: <code>day.hour</code>, <code>hour</code>, <code>day</code> and
 <code>month</code>. Associated data.frames can be extracted directly using the
 <code>subset</code> option, e.g. as in <code>plot(object, subset = "day.hour")</code>,
-<code>summary(output, subset = "hour")</code>, etc., for <code>output &lt;-
-  timeVariation(mydata, "nox")</code></p>
+<code>summary(output, subset = "hour")</code>, etc., for <code>output &lt;- timeVariation(mydata, "nox")</code></p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -303,8 +295,7 @@ which is useful if data are stacked. This will work in a similar way to
 having multiple pollutants in separate columns.</p>
 <p>The user can supply their own <code>ylim</code> e.g. <code>ylim = c(0, 200)</code> that
 will be used for all plots. <code>ylim</code> can also be a list of length four to
-control the y-limits on each individual plot e.g. <code>ylim =
-list(c(-100,500), c(200, 300), c(-400,400), c(50,70))</code>. These pairs
+control the y-limits on each individual plot e.g. <code>ylim = list(c(-100,500), c(200, 300), c(-400,400), c(50,70))</code>. These pairs
 correspond to the hour, weekday, month and day-hour plots respectively.</p>
 <p>The option <code>difference</code> will calculate the difference in means of two
 pollutants together with bootstrap estimates of the 95\<!-- % confidence intervals -->
@@ -318,7 +309,7 @@ differs from observations by many different time scales. The manual contains
 various examples of using <code>difference = TRUE</code>.</p>
 <p>Note also that the <code>timeVariation</code> function works well on a subset of
 data and in conjunction with other plots. For example, a
-<code><a href="polarPlot.html">polarPlot</a></code> may highlight an interesting feature for a particular
+<code><a href="polarPlot.html">polarPlot()</a></code> may highlight an interesting feature for a particular
 wind speed/direction range. By filtering for those conditions
 <code>timeVariation</code> can help determine whether the temporal variation of
 that feature differs from other features — and help with source

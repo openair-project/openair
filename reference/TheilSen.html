@@ -143,8 +143,7 @@ for more details.</p></dd>
 
 
 <dt id="arg-percentile">percentile<a class="anchor" aria-label="anchor" href="#arg-percentile"></a></dt>
-<dd><p>Single percentile value to use if <code>statistic =
-"percentile"</code> is chosen.</p></dd>
+<dd><p>Single percentile value to use if <code>statistic = "percentile"</code> is chosen.</p></dd>
 
 
 <dt id="arg-data-thresh">data.thresh<a class="anchor" aria-label="anchor" href="#arg-data-thresh"></a></dt>
@@ -270,7 +269,7 @@ x-axis. While <code>TheilSen</code> generally sets the date format
 sensibly there can be some situations where the user wishes to
 have more control. For format types see <code>strptime</code>. For
 example, to format the date like “Jan-2012” set
-<code>date.format = "%b-%Y"</code>.</p></dd>
+<code>date.format = "\%b-\%Y"</code>.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
@@ -288,8 +287,7 @@ trend-fitting progress.</p></dd>
 <dd><p>Other graphical parameters passed onto <code>cutData</code> and
 <code>lattice:xyplot</code>. For example, <code>TheilSen</code> passes the option
 <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern
-(rather than default northern) hemisphere handling of <code>type =
-  "season"</code>. Similarly, common axis and title labelling options (such as
+(rather than default northern) hemisphere handling of <code>type = "season"</code>. Similarly, common axis and title labelling options (such as
 <code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed to <code>xyplot</code> via
 <code>quickText</code> to handle routine formatting.</p></dd>
 
@@ -298,8 +296,7 @@ trend-fitting progress.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>an <a href="openair-package.html">openair</a> object. The <code>data</code> component of the
 <code>TheilSen</code> output includes two subsets: <code>main.data</code>, the monthly
-data <code>res2</code> the trend statistics. For <code>output &lt;- TheilSen(mydata,
-  "nox")</code>, these can be extracted as <code>object$data$main.data</code> and
+data <code>res2</code> the trend statistics. For <code>output &lt;- TheilSen(mydata, "nox")</code>, these can be extracted as <code>object$data$main.data</code> and
 <code>object$data$res2</code>, respectively. Note: In the case of the intercept,
 it is assumed the y-axis crosses the x-axis on 1/1/1970.</p>
     </div>
@@ -315,9 +312,8 @@ one wind sector and not another, or why trends on one day of the
 week or a certain time of day are unexpected.</p>
 <p>For data that are strongly seasonal, perhaps from a background
 site, or a pollutant such as ozone, it will be important to
-deseasonalise the data (using the option <code>deseason =
-TRUE</code>.Similarly, for data that increase, then decrease, or show
-sharp changes it may be better to use <code><a href="smoothTrend.html">smoothTrend</a></code>.</p>
+deseasonalise the data (using the option <code>deseason = TRUE</code>.Similarly, for data that increase, then decrease, or show
+sharp changes it may be better to use <code><a href="smoothTrend.html">smoothTrend()</a></code>.</p>
 <p>A minimum of 6 points are required for trend estimates to be made.</p>
 <p>Note! that since version 0.5-11 openair uses Theil-Sen to derive
 the p values also for the slope. This is to ensure there is

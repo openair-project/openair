@@ -200,8 +200,7 @@ always ensure that wind speeds are displayed between 1-10, set
 <dt id="arg-offset">offset<a class="anchor" aria-label="anchor" href="#arg-offset"></a></dt>
 <dd><p><code>offset</code> controls the size of the ‘hole’ in the
 middle and is expressed as a percentage of the maximum wind speed. Setting
-a higher <code>offset</code> e.g. 50 is useful for <code>statistic =
-  "weighted.mean"</code> when <code>ws.int</code> is greater than the maximum wind
+a higher <code>offset</code> e.g. 50 is useful for <code>statistic = "weighted.mean"</code> when <code>ws.int</code> is greater than the maximum wind
 speed. See example below.</p></dd>
 
 
@@ -256,8 +255,7 @@ analysing data to extract plot components and plotting them in other ways.</p></
 <dd><p>Other graphical parameters passed onto <code>lattice:xyplot</code>
 and <code>cutData</code>. For example, <code>polarFreq</code> passes the option
 <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern
-(rather than default northern) hemisphere handling of <code>type =
-  "season"</code>. Similarly, common axis and title labelling options (such as
+(rather than default northern) hemisphere handling of <code>type = "season"</code>. Similarly, common axis and title labelling options (such as
 <code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed to <code>xyplot</code> via
 <code>quickText</code> to handle routine formatting.</p></dd>
 
@@ -270,7 +268,7 @@ and <code>cutData</code>. For example, <code>polarFreq</code> passes the option
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p><code>polarFreq</code> is its default use provides details of wind speed and
 direction frequencies. In this respect it is similar to
-<code><a href="windRose.html">windRose</a></code>, but considers wind direction intervals of 10 degrees
+<code><a href="windRose.html">windRose()</a></code>, but considers wind direction intervals of 10 degrees
 and a user-specified wind speed interval. The frequency of wind
 speeds/directions formed by these ‘bins’ is represented on a colour
 scale.</p>

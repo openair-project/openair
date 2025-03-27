@@ -119,16 +119,13 @@ period are required.</p></dd>
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
 <dd><p>Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. <code>pollutant = "nox"</code>. There can also
-be more than one pollutant specified e.g. <code>pollutant = c("nox",
-  "no2")</code>. The main use of using two or more pollutants is for model
+be more than one pollutant specified e.g. <code>pollutant = c("nox", "no2")</code>. The main use of using two or more pollutants is for model
 evaluation where two species would be expected to have similar
 concentrations. This saves the user stacking the data and it is possible to
-work with columns of data directly. A typical use would be <code>pollutant
-  = c("obs", "mod")</code> to compare two columns “obs” (the observations)
+work with columns of data directly. A typical use would be <code>pollutant = c("obs", "mod")</code> to compare two columns “obs” (the observations)
 and “mod” (modelled values). When pair-wise statistics such as
 Pearson correlation and regression techniques are to be plotted,
-<code>pollutant</code> takes two elements too. For example, <code>pollutant =
-  c("bc", "pm25")</code> where <code>"bc"</code> is a function of <code>"pm25"</code>.</p></dd>
+<code>pollutant</code> takes two elements too. For example, <code>pollutant = c("bc", "pm25")</code> where <code>"bc"</code> is a function of <code>"pm25"</code>.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
@@ -402,13 +399,11 @@ regression statistics are used such as <em>r</em>. Default is <code>4</code>.</p
 
 
 <dt id="arg-x-error">x_error<a class="anchor" aria-label="anchor" href="#arg-x-error"></a></dt>
-<dd><p>The <code>x</code> error / uncertainty used when <code>statistic =
-"york_slope"</code>.</p></dd>
+<dd><p>The <code>x</code> error / uncertainty used when <code>statistic = "york_slope"</code>.</p></dd>
 
 
 <dt id="arg-y-error">y_error<a class="anchor" aria-label="anchor" href="#arg-y-error"></a></dt>
-<dd><p>The <code>y</code> error / uncertainty used when <code>statistic =
-"york_slope"</code>.</p></dd>
+<dd><p>The <code>y</code> error / uncertainty used when <code>statistic = "york_slope"</code>.</p></dd>
 
 
 <dt id="arg-kernel">kernel<a class="anchor" aria-label="anchor" href="#arg-kernel"></a></dt>
@@ -446,8 +441,7 @@ analysing data to extract plot components and plotting them in other ways.</p></
 <dd><p>Other graphical parameters passed onto <code>lattice:levelplot</code>
 and <code>cutData</code>. For example, <code>polarPlot</code> passes the option
 <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern
-(rather than default northern) hemisphere handling of <code>type =
-  "season"</code>. Similarly, common axis and title labelling options (such as
+(rather than default northern) hemisphere handling of <code>type = "season"</code>. Similarly, common axis and title labelling options (such as
 <code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed to <code>levelplot</code> via
 <code>quickText</code> to handle routine formatting.</p></dd>
 
