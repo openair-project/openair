@@ -48,9 +48,16 @@
 
 - DAQI information imported using `importUKAQ(data_type = "daqi")` will be returned with the relevant DAQI band appended as an additional factor column; either "Low" (1-3), "Moderate" (4-6), "High" (7-9), or "Very High" (10). See <https://uk-air.defra.gov.uk/air-pollution/daqi> for more information.
 
+<<<<<<< HEAD
+- `trendLevel()` has gained new `statistic` types to match `timeAverage()`, including `"mean"`, `"median"`, `"min"`, `"max"`, `"sd"`, `"sum"`, `"frequency"` and `"percentile"`.
+
+- `trendLevel()` will now automatically generate appropriate `labels` if `breaks` are provided. The `labels` argument can still be used to provide custom labels per break.
+
+=======
  
 - Added `importImperial()`, a new version of `importKCL()` which more accurately describes the origin of its data and has arguments more similar to `importUKAQ()`. `importKCL()` still exists for back-compatibility reasons, but new users should use `importImperial()`.
  
+>>>>>>> openair-project/master
 ## Bug fixes
 
 - Fixed repeated day number in `calendarPlot` when `statistic = max`.
