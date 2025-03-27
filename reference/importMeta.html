@@ -119,15 +119,23 @@ Europe:</p><ul><li><p><code>"aurn"</code>,  The <a href="https://uk-air.defra.go
 <li><p><code>"saqn"</code>,  The <a href="https://www.scottishairquality.scot/" class="external-link">Scottish Air Quality Network</a>.</p></li>
 <li><p><code>"waqn"</code>,  The <a href="https://airquality.gov.wales/" class="external-link">Welsh Air Quality Network</a>.</p></li>
 <li><p><code>"ni"</code>,  The <a href="https://www.airqualityni.co.uk/" class="external-link">Northern Ireland Air Quality Network</a>.</p></li>
-<li><p><code>"local"</code>,  Locally managed air quality networks in England.</p></li>
+<li><p><code>"local"</code>,  <a href="https://uk-air.defra.gov.uk/networks/network-info?view=nondefraaqmon" class="external-link">Locally managed</a> air quality networks in England.</p></li>
 <li><p><code>"imperial"</code>,  Imperial College London (formerly King's College London) networks.</p></li>
 <li><p><code>"europe"</code>,  Hourly European data (Air Quality e-Reporting) based on a
 simplified version of the <code>{saqgetr}</code> package.</p></li>
 </ul><p>By default, the function will return the site latitude, longitude and site
 type. If the option <code>all = TRUE</code> is used, much more detailed information is
-returned. For most networks, this detailed information includes per-pollutant
-summaries, opening and closing dates of sites etc.</p>
-<p>Thanks go to Trevor Davies (Ricardo), Dr Stuart Grange (EMPA) and Dr Ben
+returned. The following metadata columns are available in the complete dataset:</p><ul><li><p><strong>source</strong>: The network with which the site is associated. Note that some monitoring sites are part of multiple networks (e.g., the AURN &amp; SAQN) so the same site may feature twice under different sources.</p></li>
+<li><p><strong>code</strong>: The site code, used to import data from specific sites of interest.</p></li>
+<li><p><strong>site</strong>: The site name, which is more human-readable than the site code.</p></li>
+<li><p><strong>site_type</strong>: A description of the site environment. Read more at <a href="https://uk-air.defra.gov.uk/networks/site-types" class="external-link">https://uk-air.defra.gov.uk/networks/site-types</a>.</p></li>
+<li><p><strong>latitude</strong> and <strong>longitude</strong>: The coordinates of the monitoring station, using the World Geodetic System (<a href="https://epsg.io/4326" class="external-link">https://epsg.io/4326</a>).</p></li>
+<li><p><strong>start_date</strong> and <strong>end_date</strong>: The opening and closing dates of the monitoring station. If <code>by_pollutant = TRUE</code>, these dates are instead the first and last dates at which specific pollutants were measured. A missing value, <code>NA</code>, indicates that monitoring is ongoing.</p></li>
+<li><p><strong>ratified_to</strong>: The date to which data has been ratified (i.e., 'quality checked'). Data after this date is subject to change.</p></li>
+<li><p><strong>zone</strong> and <strong>agglomeration</strong>: The UK is divided into agglomeration zones (large urban areas) and non-agglomeration zones for air quality assessment, which are given in these columns.</p></li>
+<li><p><strong>local_authority</strong>: The local authority in which the monitoring station is found.</p></li>
+<li><p><strong>provider</strong> and <strong>code</strong>: The specific provider of the locally managed dataset (e.g., <code>"londonair"</code>).</p></li>
+</ul><p>Thanks go to Trevor Davies (Ricardo), Dr Stuart Grange (EMPA) and Dr Ben
 Barratt (KCL) and  for making these data available.</p>
     </div>
     <div class="section level2">

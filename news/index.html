@@ -58,6 +58,7 @@
 <li><p>When <code>data_type</code> is one of the aggregate types (e.g., <code>"annual"</code>) and a <code>site</code> isn’t defined, a <code>source</code> must be provided.</p></li>
 <li><p>It is likely <em>slightly</em> slower for the function to assign <code>source</code> itself than for users to specify it themselves.</p></li>
 </ul></li>
+<li><p>The specific metadata columns appended when <code>importUKAQ(meta = TRUE)</code> can now be controlled using the <code>meta_columns</code> argument. For example, setting <code>meta_columns</code> to <code>c("zone", "agglomeration")</code> will append the zone/agglomeration information instead of the default site type/latitude/longitude.</p></li>
 <li>
 <p>Added new features for <code><a href="../reference/openColours.html">openColours()</a></code>:</p>
 <ul><li><p>Added new qualitative colour palettes: the “tol” family are colour-blind friendly palettes based on the work of Paul Tol (<a href="https://personal.sron.nl/~pault/" class="external-link uri">https://personal.sron.nl/~pault/</a>), and “tableau” and “observable” provide access to the “Tableau10” and “Observable10” palettes to aid in consistency with plots made in those platforms.</p></li>
