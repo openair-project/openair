@@ -22,6 +22,8 @@
     
     - `openColours()` will now check whether the provided `scheme` is either a known scheme name *or* a vector of valid R colours, and provide an informative error if this is not the case.
 
+- `binData()` has gained the `type`, `B` and `conf.int` arguments. The first is passed to `cutData()` and the latter two to `bootMeanDF()`.
+
 - Added new features for `calcPercentile()`:
 
     - Added the `type` argument, in line with `timeAverage()`.
