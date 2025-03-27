@@ -19,6 +19,13 @@
     - When `n` isn't defined for a qualitative palette (e.g., "Dark2"), the full qualitative palette will be returned. Previously this errored with the default of `100`.
     
     - `openColours()` will now check whether the provided `scheme` is either a known scheme name *or* a vector of valid R colours, and provide an informative error if this is not the case.
+
+- Added new features for `calcPercentile()`:
+
+    - Added the `type` argument, in line with `timeAverage()`.
+    
+    - Added the `prefix` argument to control the naming of the returned columns.
+ 
 - `splitByDate()` can now more consistently take `Date` / `POSIXct` inputs as well as characters, and provides more flexibility over inputs with a new `format` argument.
     
 - The `formula.label` argument of `polarPlot()` will now control whether concentration information is printed when `statistic = "cpf"`.
@@ -39,6 +46,8 @@
 - `polarCluster()` will no longer error with multiple `pollutant`s and a single `n.clusters`.
 
 - `importUKAQ()` will correctly append site meta data when `meta = TRUE`, `source` is a length greater than 1, and a single site is repeated in more than one source (e.g., `importUKAQ(source = c("waqn", "aurn"), data_type = "daqi", year = 2024L))`)
+
+- `calcPercentile()` will now correctly pass its arguments (e.g., `date.start`) to `timeAverage()`.
 
 # openair 2.18-2
 
