@@ -21,20 +21,47 @@
     - When `n` isn't defined for a qualitative palette (e.g., "Dark2"), the full qualitative palette will be returned. Previously this errored with the default of `100`.
     
     - `openColours()` will now check whether the provided `scheme` is either a known scheme name *or* a vector of valid R colours, and provide an informative error if this is not the case.
+
+- Added new features for `calcPercentile()`:
+
+    - Added the `type` argument, in line with `timeAverage()`.
+    
+    - Added the `prefix` argument to control the naming of the returned columns.
+ 
+- `splitByDate()` can now more consistently take `Date` / `POSIXct` inputs as well as characters, and provides more flexibility over inputs with a new `format` argument.
+    
+- Made refinements to `cutData()`:
+
+    - Added the `names` argument to specify the name of the appended columns. For example, `cutData(mydata, "wd", names = c("windDir"))` will append a column named "windDir".
+    
+    - Added the `suffix` argument as an alternative to `names`. If a new column would otherwise overwrite an existing column, `suffix` will be appended. For example, `cutData(mydata, c("nox", "o3"), suffix = "_cuts")` would append `nox_cuts` and `o3_cuts` columns.
+    
+    - `cutData()` is now less destructive and better cleans up after itself. For example, when `type = "yearseason"`, it will no longer leave 'year' and 'season' columns behind, or overwrite existing 'year' and 'season' columns.
+    
+    - `cutData()` will now give an informative error message if the user provides a `type` which is in neither an in-built option nor a column in their dataframe.
     
 - The `formula.label` argument of `polarPlot()` will now control whether concentration information is printed when `statistic = "cpf"`.
 
 - add `calm.thresh` as an option to `windRose`. This change allows users to set a non-zero wind speed threshold that is considered as calm.
 
 - DAQI information imported using `importUKAQ(data_type = "daqi")` will be returned with the relevant DAQI band appended as an additional factor column; either "Low" (1-3), "Moderate" (4-6), "High" (7-9), or "Very High" (10). See <https://uk-air.defra.gov.uk/air-pollution/daqi> for more information.
+
+ 
+- Added `importImperial()`, a new version of `importKCL()` which more accurately describes the origin of its data and has arguments more similar to `importUKAQ()`. `importKCL()` still exists for back-compatibility reasons, but new users should use `importImperial()`.
  
 ## Bug fixes
+
+- Fixed repeated day number in `calendarPlot` when `statistic = max`.
+
+- Fixed `annotate = FALSE` in `windRose` where axes and labels were not shown
 
 - Fixed an issue wherein `importUKAQ()` would drop sites if importing from `local` sites *and* another network.
 
 - `polarCluster()` will no longer error with multiple `pollutant`s and a single `n.clusters`.
 
 - `importUKAQ()` will correctly append site meta data when `meta = TRUE`, `source` is a length greater than 1, and a single site is repeated in more than one source (e.g., `importUKAQ(source = c("waqn", "aurn"), data_type = "daqi", year = 2024L))`)
+
+- `calcPercentile()` will now correctly pass its arguments (e.g., `date.start`) to `timeAverage()`.
 
 # openair 2.18-2
 
