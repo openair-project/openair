@@ -1645,10 +1645,8 @@ scatterPlot <- function(mydata, x = "nox", y = "no2", z = NA, method = "scatter"
 
 add.map <- function(Args, ...) {
   if (Args$map.res == "default") {
-    #try_require("maps", "scatterPlot")
     res <- "world"
   } else {
-  #  try_require("mapdata", "scatterPlot")
     res <- "worldHires"
   }
 

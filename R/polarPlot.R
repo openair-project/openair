@@ -1257,7 +1257,7 @@ simple_kernel_trend <- function(data, mydata, x = "ws",
   mydata$weight <- weight
 
   # quantreg is a Suggests package, so make sure it is there
-  try_require("quantreg", "polarPlot")
+  rlang::check_installed("quantreg")
 
   # don't fit all data - takes too long with no gain
   mydata <- filter(mydata, weight > 0.00001)
@@ -1411,7 +1411,7 @@ calculate_weighted_statistics <-
     # Quantile regression with weights
     if (grepl("quantile", statistic, ignore.case = TRUE)) {
       # quantreg is a Suggests package, so make sure it is there
-      try_require("quantreg", "polarPlot")
+      rlang::check_installed("quantreg")
 
       # Drop dplyr's data frame for formula
       thedata <- data.frame(thedata)
