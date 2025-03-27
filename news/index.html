@@ -64,6 +64,11 @@
 <li><p>When <code>n</code> isn’t defined for a qualitative palette (e.g., “Dark2”), the full qualitative palette will be returned. Previously this errored with the default of <code>100</code>.</p></li>
 <li><p><code><a href="../reference/openColours.html">openColours()</a></code> will now check whether the provided <code>scheme</code> is either a known scheme name <em>or</em> a vector of valid R colours, and provide an informative error if this is not the case.</p></li>
 </ul></li>
+<li>
+<p>Added new features for <code><a href="../reference/calcPercentile.html">calcPercentile()</a></code>:</p>
+<ul><li><p>Added the <code>type</code> argument, in line with <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
+<li><p>Added the <code>prefix</code> argument to control the naming of the returned columns.</p></li>
+</ul></li>
 <li><p><code><a href="../reference/splitByDate.html">splitByDate()</a></code> can now more consistently take <code>Date</code> / <code>POSIXct</code> inputs as well as characters, and provides more flexibility over inputs with a new <code>format</code> argument.</p></li>
 <li><p>The <code>formula.label</code> argument of <code><a href="../reference/polarPlot.html">polarPlot()</a></code> will now control whether concentration information is printed when <code>statistic = "cpf"</code>.</p></li>
 <li><p>add <code>calm.thresh</code> as an option to <code>windRose</code>. This change allows users to set a non-zero wind speed threshold that is considered as calm.</p></li>
@@ -76,6 +81,7 @@
 <li><p>Fixed an issue wherein <code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> would drop sites if importing from <code>local</code> sites <em>and</em> another network.</p></li>
 <li><p><code><a href="../reference/polarCluster.html">polarCluster()</a></code> will no longer error with multiple <code>pollutant</code>s and a single <code>n.clusters</code>.</p></li>
 <li><p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> will correctly append site meta data when <code>meta = TRUE</code>, <code>source</code> is a length greater than 1, and a single site is repeated in more than one source (e.g., <code>importUKAQ(source = c("waqn", "aurn"), data_type = "daqi", year = 2024L))</code>)</p></li>
+<li><p><code><a href="../reference/calcPercentile.html">calcPercentile()</a></code> will now correctly pass its arguments (e.g., <code>date.start</code>) to <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
