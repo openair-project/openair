@@ -551,30 +551,6 @@ fitGam <- function(thedata, x = "date", y = "conc", form = y ~ x, k = k,
   })
 }
 
-
-#########################################################################################################
-
-
-
-## error in mean from Hmisc
-
-errorInMean <- function(x, mult = qt((1 + conf.int) / 2, n - 1), conf.int = 0.95,
-                        na.rm = TRUE) {
-  if (na.rm) {
-    x <- x[!is.na(x)]
-  }
-  n <- length(x)
-  if (n < 2) {
-    return(c(Mean = mean(x), Lower = NA, Upper = NA))
-  }
-  xbar <- sum(x) / n
-  se <- sqrt(sum((x - xbar) ^ 2) / n / (n - 1))
-  c(Mean = xbar, Lower = xbar - mult * se, Upper = xbar + mult *
-    se)
-}
-
-###########################################################################################################
-
 ## list update function
 ## for lattice type object structure and ... handling
 
