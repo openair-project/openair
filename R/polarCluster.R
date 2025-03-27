@@ -128,19 +128,21 @@
 #' }
 #'
 polarCluster <-
-  function(mydata,
-           pollutant = "nox",
-           x = "ws",
-           wd = "wd",
-           n.clusters = 6,
-           after = NA,
-           cols = "Paired",
-           angle.scale = 315,
-           units = x,
-           auto.text = TRUE,
-           plot = TRUE,
-           plot.data = FALSE,
-           ...) {
+  function(
+    mydata,
+    pollutant = "nox",
+    x = "ws",
+    wd = "wd",
+    n.clusters = 6,
+    after = NA,
+    cols = "Paired",
+    angle.scale = 315,
+    units = x,
+    auto.text = TRUE,
+    plot = TRUE,
+    plot.data = FALSE,
+    ...
+  ) {
     ## avoid R check annoyances
     u <- v <- z <- strip <- strip.left <- NULL
 
@@ -255,9 +257,12 @@ polarCluster <-
     #   do(make.clust(i = .$n, results.grid))
 
     results.grid <-
-      purrr::map(.x = seq_along(n.clusters),
-               .f = make.clust,
-               results.grid = results.grid, .progress = "Calculating Clusters") %>%
+      purrr::map(
+        .x = seq_along(n.clusters),
+        .f = make.clust,
+        results.grid = results.grid,
+        .progress = "Calculating Clusters"
+      ) %>%
       purrr::list_rbind()
 
     results.grid$nclust <-
@@ -280,7 +285,8 @@ polarCluster <-
 
       mydata <- na.omit(mydata)
 
-      mydata <- transform(mydata,
+      mydata <- transform(
+        mydata,
         u = get(x) * sin(wd * pi / 180),
         v = get(x) * cos(wd * pi / 180)
       )
@@ -311,7 +317,8 @@ polarCluster <-
       if (is.data.frame((after))) {
         after <- na.omit(after)
 
-        after <- transform(after,
+        after <- transform(
+          after,
           u = get(x) * sin(wd * pi / 180),
           v = get(x) * cos(wd * pi / 180)
         )
@@ -362,9 +369,12 @@ polarCluster <-
 
     # interval
     int <-
-      as.numeric(tail(names(sort(table(
-        diff(results.grid$u)
-      ))), 1))
+      as.numeric(tail(
+        names(sort(table(
+          diff(results.grid$u)
+        ))),
+        1
+      ))
 
     # extent of grid required
     extent <- max(abs(c(results.grid$u, results.grid$v)))
@@ -373,7 +383,6 @@ polarCluster <-
       u = seq(-extent, extent, by = int),
       v = seq(-extent, extent, by = int)
     )
-
 
     levelplot.args <- list(
       x = myform,
@@ -391,10 +400,13 @@ polarCluster <-
       colorkey = FALSE,
       # legend = legend,
       key = list(
-        rectangles = list(col = openColours(
-          cols,
-          max(n.clusters)
-        ), border = NA),
+        rectangles = list(
+          col = openColours(
+            cols,
+            max(n.clusters)
+          ),
+          border = NA
+        ),
         text = list(lab = as.character(1:max(n.clusters))),
         space = "right",
         columns = 1,
@@ -428,15 +440,23 @@ polarCluster <-
         ltext(
           1.07 * intervals * sin(pi * angle.scale / 180),
           1.07 * intervals * cos(pi * angle.scale / 180),
-          sapply(paste(labels, c(
-            "", "", units, rep("", 7)
-          )), function(x) {
-            quickText(x, auto.text)
-          }),
+          sapply(
+            paste(
+              labels,
+              c(
+                "",
+                "",
+                units,
+                rep("", 7)
+              )
+            ),
+            function(x) {
+              quickText(x, auto.text)
+            }
+          ),
           cex = 0.7,
           pos = 4
         )
-
 
         ## add axis line to central polarPlot
         larrows(-upper, 0, upper, 0, code = 3, length = 0.1)
@@ -483,32 +503,26 @@ polarCluster <-
     var_percent <- paste0(pollutant, "_percent")
 
     if (length(n.clusters) == 1L && length(pollutant) == 1L) {
-
-    clust_stats <-
-      out_data %>%
-      dplyr::group_by(cluster) %>%
-      dplyr::summarise(
-        {{ var_mean }} := mean(.data[[pollutant]], na.rm = TRUE),
-        n = dplyr::n()
-      ) %>%
-      na.omit() %>%
-      dplyr::mutate(
-        n_mean = n * .data[[var_mean ]],
-        n_percent = round(100 * n / sum(n), 1),
-        {{ var_percent }} := round(100 * n_mean / sum(n_mean), 1)
-      ) %>%
-      dplyr::select(-n_mean)
-
+      clust_stats <-
+        out_data %>%
+        dplyr::group_by(cluster) %>%
+        dplyr::summarise(
+          {{ var_mean }} := mean(.data[[pollutant]], na.rm = TRUE),
+          n = dplyr::n()
+        ) %>%
+        na.omit() %>%
+        dplyr::mutate(
+          n_mean = n * .data[[var_mean]],
+          n_percent = round(100 * n / sum(n), 1),
+          {{ var_percent }} := round(100 * n_mean / sum(n_mean), 1)
+        ) %>%
+        dplyr::select(-n_mean)
     } else {
-
       clust_stats <- NULL
     }
 
-
     if (plot && length(n.clusters) == 1L) {
-
       print(clust_stats)
-
     }
 
     if (plot.data) {

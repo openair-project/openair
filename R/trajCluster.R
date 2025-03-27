@@ -76,14 +76,24 @@
 #' ## use different distance matrix calculation, and calculate by season
 #' traj <- trajCluster(traj, method = "Angle", type = "season", n.cluster = 4)
 #' }
-trajCluster <- function(traj, method = "Euclid", n.cluster = 5,
-                        type = "default",
-                        cols = "Set1", split.after = FALSE, map.fill = TRUE,
-                        map.cols = "grey40", map.alpha = 0.4,
-                        projection = "lambert",
-                        parameters = c(51, 51), orientation = c(90, 0, 0),
-                        by.type = FALSE, origin = TRUE, plot = TRUE, ...) {
-
+trajCluster <- function(
+  traj,
+  method = "Euclid",
+  n.cluster = 5,
+  type = "default",
+  cols = "Set1",
+  split.after = FALSE,
+  map.fill = TRUE,
+  map.cols = "grey40",
+  map.alpha = 0.4,
+  projection = "lambert",
+  parameters = c(51, 51),
+  orientation = c(90, 0, 0),
+  by.type = FALSE,
+  origin = TRUE,
+  plot = TRUE,
+  ...
+) {
   # silence R check
   freq <- hour.inc <- default <- NULL
 
@@ -101,7 +111,6 @@ trajCluster <- function(traj, method = "Euclid", n.cluster = 5,
     mutate(traj_len = length(date))
 
   if (length(unique(traj$traj_len)) > 1) {
- 
     ux <- unique(traj$traj_len)
     nmax <- ux[which.max(tabulate(match(traj$traj_len, ux)))]
     traj <- ungroup(traj) %>%
@@ -116,7 +125,6 @@ trajCluster <- function(traj, method = "Euclid", n.cluster = 5,
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
-
     fontsize = current.font
   ))
 
@@ -137,7 +145,6 @@ trajCluster <- function(traj, method = "Euclid", n.cluster = 5,
   }
 
   calcTraj <- function(traj) {
-
     ## make sure ordered correctly
     traj <- traj[order(traj$date, traj$hour.inc), ]
 
@@ -263,12 +270,22 @@ trajCluster <- function(traj, method = "Euclid", n.cluster = 5,
 
   plot.args <- list(
     agg,
-    x = "lon", y = "lat", group = "cluster",
-    col = cols, type = type, map = TRUE, map.fill = map.fill,
-    map.cols = map.cols, map.alpha = map.alpha,
-    projection = projection, parameters = parameters,
-    orientation = orientation, traj = TRUE, trajLims = trajLims,
-    clusters = clusters, receptor = receptor,
+    x = "lon",
+    y = "lat",
+    group = "cluster",
+    col = cols,
+    type = type,
+    map = TRUE,
+    map.fill = map.fill,
+    map.cols = map.cols,
+    map.alpha = map.alpha,
+    projection = projection,
+    parameters = parameters,
+    orientation = orientation,
+    traj = TRUE,
+    trajLims = trajLims,
+    clusters = clusters,
+    receptor = receptor,
     origin = origin
   )
 

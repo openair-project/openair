@@ -121,42 +121,57 @@
 #' @author Karl Ropkins and David Carslaw
 #' @family time series and trend functions
 #' @examples
-#' #basic use
-#' #default statistic = "mean"
+#' # basic use
+#' # default statistic = "mean"
 #' trendLevel(mydata, pollutant = "nox")
 #'
-#' #applying same as 'own' statistic
+#' # applying same as 'own' statistic
 #' my.mean <- function(x) mean(x, na.rm = TRUE)
 #' trendLevel(mydata, pollutant = "nox", statistic = my.mean)
 #'
-#' #alternative for 'third party' statistic
-#' #trendLevel(mydata, pollutant = "nox", statistic = mean,
+#' # alternative for 'third party' statistic
+#' # trendLevel(mydata, pollutant = "nox", statistic = mean,
 #' #           stat.args = list(na.rm = TRUE))
 #'
 #' \dontrun{
 #' # example with categorical scale
-#' trendLevel(mydata, pollutant = "no2",
-#' border = "white", statistic = "max",
-#' breaks = c(0, 50, 100, 500),
-#' labels = c("low", "medium", "high"),
-#' cols = c("forestgreen", "yellow", "red"))
+#' trendLevel(mydata,
+#'   pollutant = "no2",
+#'   border = "white", statistic = "max",
+#'   breaks = c(0, 50, 100, 500),
+#'   labels = c("low", "medium", "high"),
+#'   cols = c("forestgreen", "yellow", "red")
+#' )
 #' }
-trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
-                       type = "year", rotate.axis = c(90, 0), n.levels = c(10, 10, 4),
-                       limits = c(0, 100), cols = "default", auto.text = TRUE,
-                       key.header = "use.stat.name", key.footer = pollutant,
-                       key.position = "right", key = TRUE, labels = NA,
-                       breaks = NA,
-                       statistic = c("mean", "max", "frequency"),
-                       stat.args = NULL, stat.safe.mode = TRUE, drop.unused.types = TRUE,
-                       col.na = "white", plot = TRUE,
-                       ...) {
-
+trendLevel <- function(
+  mydata,
+  pollutant = "nox",
+  x = "month",
+  y = "hour",
+  type = "year",
+  rotate.axis = c(90, 0),
+  n.levels = c(10, 10, 4),
+  limits = c(0, 100),
+  cols = "default",
+  auto.text = TRUE,
+  key.header = "use.stat.name",
+  key.footer = pollutant,
+  key.position = "right",
+  key = TRUE,
+  labels = NA,
+  breaks = NA,
+  statistic = c("mean", "max", "frequency"),
+  stat.args = NULL,
+  stat.safe.mode = TRUE,
+  drop.unused.types = TRUE,
+  col.na = "white",
+  plot = TRUE,
+  ...
+) {
   ## greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
     trellis.par.set(list(strip.background = list(col = "white")))
   }
-
 
   ## set graphics
   current.strip <- trellis.par.get("strip.background")
@@ -164,14 +179,12 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
-
     fontsize = current.font
   ))
 
   category <- FALSE ## assume pollutant scale is not a categorical value
 
   if (any(!is.na(labels)) && any(!is.na(breaks))) category <- TRUE
-
 
   ## check.valid function
   check.valid <- function(a, x, y) {
@@ -180,8 +193,12 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
     if (is.null(x)) {
       stop(
         paste0(
-          "\ttrendLevel does not allow 'NULL' ", a, " option.",
-          "\n\t[suggest one of following: ", paste(y, collapse = ", "), "]"
+          "\ttrendLevel does not allow 'NULL' ",
+          a,
+          " option.",
+          "\n\t[suggest one of following: ",
+          paste(y, collapse = ", "),
+          "]"
         ),
         call. = FALSE
       )
@@ -192,8 +209,13 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
     if (is.na(out)) {
       stop(
         paste0(
-          "\ttrendLevel could not evaluate ", a, " term '", x,
-          "'.\n\t[suggest one of following: ", paste(y, collapse = ", "), "]"
+          "\ttrendLevel could not evaluate ",
+          a,
+          " term '",
+          x,
+          "'.\n\t[suggest one of following: ",
+          paste(y, collapse = ", "),
+          "]"
         ),
         call. = FALSE
       )
@@ -234,30 +256,39 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
   ## ##############################
 
   if (length(x) > 1) {
-    warning(paste(
-      "\ttrendLevel does not allow multiple 'x' values.",
-      "\n\t[ignoring all but first]",
-      sep = ""
-    ), call. = FALSE)
+    warning(
+      paste(
+        "\ttrendLevel does not allow multiple 'x' values.",
+        "\n\t[ignoring all but first]",
+        sep = ""
+      ),
+      call. = FALSE
+    )
     x <- x[1]
     xlab <- xlab[1]
   }
   if (length(y) > 1) {
-    warning(paste(
-      "\ttrendLevel does not allow multiple 'y' values.",
-      "\n\t[ignoring all but first]",
-      sep = ""
-    ), call. = FALSE)
+    warning(
+      paste(
+        "\ttrendLevel does not allow multiple 'y' values.",
+        "\n\t[ignoring all but first]",
+        sep = ""
+      ),
+      call. = FALSE
+    )
     y <- y[1]
     ylab <- ylab[1]
   }
 
   if (length(type) > 2) {
-    warning(paste(
-      "\ttrendLevel allows up to two 'type' values.",
-      "\n\t[ignoring all but first two]",
-      sep = ""
-    ), call. = FALSE)
+    warning(
+      paste(
+        "\ttrendLevel allows up to two 'type' values.",
+        "\n\t[ignoring all but first two]",
+        sep = ""
+      ),
+      call. = FALSE
+    )
     type <- type[1]
   }
 
@@ -268,13 +299,17 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
   temp <- unique(c(x, y, type)[duplicated(c(x, y, type))])
 
   if (length(temp) > 0) {
-    stop(paste0(
-      "\ttrendLevel could not rationalise plot structure.",
-      "\n\t[duplicate term(s) in pollutant, x, y, type structure]",
-      "\n\t[term(s): ", paste(temp, collapse = ", "), "]"
-    ), call. = FALSE)
+    stop(
+      paste0(
+        "\ttrendLevel could not rationalise plot structure.",
+        "\n\t[duplicate term(s) in pollutant, x, y, type structure]",
+        "\n\t[term(s): ",
+        paste(temp, collapse = ", "),
+        "]"
+      ),
+      call. = FALSE
+    )
   }
-
 
   ## ###############################
   ## number vector handling
@@ -282,10 +317,15 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
   ## used for rotate.axis and n.levels
   ls.check.fun <- function(vector, vector.name, len) {
     if (!is.numeric(vector)) {
-      warning(paste0(
-        "\ttrendLevel ignored unrecognised '", vector.name, "' option.",
-        "\n\t[check ?trendLevel for details]"
-      ), call. = FALSE)
+      warning(
+        paste0(
+          "\ttrendLevel ignored unrecognised '",
+          vector.name,
+          "' option.",
+          "\n\t[check ?trendLevel for details]"
+        ),
+        call. = FALSE
+      )
       ## use current default
       vector <- eval(formals(trendLevel)[[vector.name]])
     }
@@ -307,7 +347,8 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
       ## ########################
 
       statistic <- check.valid(
-        "statistic", statistic,
+        "statistic",
+        statistic,
         eval(formals(trendLevel)$statistic)
       )
       if (statistic == "mean") {
@@ -362,10 +403,12 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
     ## unknown stat option
     stop(
       paste0(
-        "\ttrendLevel could not apply statistic option '", substitute(statistic),
+        "\ttrendLevel could not apply statistic option '",
+        substitute(statistic),
         "'.\n\t[suggest valid function or character vector]",
         "\n\t[currect character vectors options: '",
-        paste(eval(formals(trendLevel)$statistic), collapse = "', '"), "']"
+        paste(eval(formals(trendLevel)$statistic), collapse = "', '"),
+        "']"
       ),
       call. = FALSE
     )
@@ -412,14 +455,13 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
   newdata <- cutData(newdata, type, n.levels = n.levels[3], ...)
   newdata <- newdata[c(pollutant, x, y, type)]
 
-
   ## ##########################
   ## calculate statistic
   ## ##########################
 
-  calc.stat <- function(...)
+  calc.stat <- function(...) {
     tapply(newdata[[pollutant]], newdata[c(x, y, type)], stat.fun, ...)
-
+  }
 
   if (is.null(stat.args)) {
     newdata <- try(calc.stat(), silent = TRUE)
@@ -434,12 +476,14 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
     stop(
       paste0(
         "\ttrendLevel could not complete supplied statistic operation '",
-        stat.name, "'.\n\t[R error below]", "\n\t", temp[1]
+        stat.name,
+        "'.\n\t[R error below]",
+        "\n\t",
+        temp[1]
       ),
       call. = FALSE
     )
   }
-
 
   ## ############################
   ## restructure new data for plot
@@ -451,14 +495,14 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
   pollutant <- paste(pollutant, stat.name, sep = ".")
   names(newdata)[ncol(newdata)] <- pollutant
 
-
   ## ############################
   ## plot setup
   ## ############################
   temp <- paste(type, collapse = "+")
   myform <- formula(paste0(pollutant, " ~ ", x, " * ", y, " | ", temp))
 
-  if (type == "default") myform <- formula(paste0(pollutant, " ~ ", x, " * ", y))
+  if (type == "default")
+    myform <- formula(paste0(pollutant, " ~ ", x, " * ", y))
 
   ## special case handling
   ## layout for wd
@@ -467,7 +511,10 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
 
     wds <- c("NW", "N", "NE", "W", "E", "SW", "S", "SE")
     newdata$wd <- ordered(newdata$wd, levels = wds)
-    wd.ok <- sapply(wds, function(x) if (x %in% unique(newdata$wd)) FALSE else TRUE)
+    wd.ok <- sapply(
+      wds,
+      function(x) if (x %in% unique(newdata$wd)) FALSE else TRUE
+    )
     skip <- c(wd.ok[1:4], TRUE, wd.ok[5:8])
     newdata$wd <- factor(newdata$wd)
     extra.args$layout <- c(3, 3)
@@ -484,20 +531,24 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
   temp <- sapply(temp, function(x) quickText(x, auto.text))
   if (is.factor(temp)) temp <- as.character(temp)
   strip <- strip.custom(
-    factor.levels = temp, strip.levels = c(TRUE, FALSE),
+    factor.levels = temp,
+    strip.levels = c(TRUE, FALSE),
     strip.names = FALSE
   )
 
   strip.left <- if (length(type) == 1) {
     FALSE
   } else {
-    temp <- sapply(unique(newdata[, type[2]]), function(x)
-      quickText(x, auto.text))
+    temp <- sapply(unique(newdata[, type[2]]), function(x) {
+      quickText(x, auto.text)
+    })
     if (is.factor(temp)) temp <- as.character(temp)
     strip.custom(factor.levels = temp)
   }
 
-  suppressWarnings(trellis.par.set(list(strip.background = list(col = "white"))))
+  suppressWarnings(trellis.par.set(list(
+    strip.background = list(col = "white")
+  )))
 
   scales <- list(
     x = list(rot = rotate.axis[1]),
@@ -508,12 +559,14 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
 
   if (category) {
     ## check the breaks and labels are consistent
-    if (length(labels) + 1 != length(breaks)) stop("Need one more break than labels")
+    if (length(labels) + 1 != length(breaks))
+      stop("Need one more break than labels")
 
     ## cut data into categories
     newdata$cuts <- cut(
       newdata[, pollutant],
-      breaks = breaks, labels = labels,
+      breaks = breaks,
+      labels = labels,
       include.lowest = TRUE
     )
     n <- length(levels(newdata$cuts))
@@ -521,15 +574,22 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
     col.regions <- openColours(cols, n)
     col.scale <- breaks
     legend <- list(
-      col = col.regions, space = key.position, auto.text = auto.text,
-      labels = levels(newdata$cuts), footer = key.footer,
-      header = key.header, height = 0.8, width = 1.5, fit = "scale",
+      col = col.regions,
+      space = key.position,
+      auto.text = auto.text,
+      labels = levels(newdata$cuts),
+      footer = key.footer,
+      header = key.header,
+      height = 0.8,
+      width = 1.5,
+      fit = "scale",
       plot.style = "other"
     )
 
     col.scale <- breaks
     legend <- makeOpenKeyLegend(key, legend, "windRose")
-  } else { ## continuous colour scale
+  } else {
+    ## continuous colour scale
 
     ## auto-scaling
     nlev <- 200 ## preferred number of intervals
@@ -547,7 +607,6 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
       labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
       at <- labs
     } else {
-
       ## handle user limits and clipping
       breaks <- seq(min(limits), max(limits), length.out = nlev)
       labs <- pretty(breaks, 7)
@@ -576,15 +635,19 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
     col.scale <- breaks
 
     legend <- list(
-      col = col.regions, at = col.scale,
+      col = col.regions,
+      at = col.scale,
       labels = list(labels = labs, at = at),
-      space = key.position, auto.text = auto.text,
-      footer = key.footer, header = key.header,
-      height = 1, width = 1.5, fit = "all"
+      space = key.position,
+      auto.text = auto.text,
+      footer = key.footer,
+      header = key.header,
+      height = 1,
+      width = 1.5,
+      fit = "all"
     )
     legend <- makeOpenKeyLegend(key, legend, "polarPlot")
   }
-
 
   ## #turn off colorkey
   colorkey <- FALSE
@@ -625,15 +688,21 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
 
   ## openair defaults for plot
   levelplot.args <- list(
-    x = myform, data = newdata, as.table = TRUE,
-    legend = legend, colorkey = colorkey,
-    at = breaks, col.regions = col.regions,
+    x = myform,
+    data = newdata,
+    as.table = TRUE,
+    legend = legend,
+    colorkey = colorkey,
+    at = breaks,
+    col.regions = col.regions,
     scales = scales,
     yscale.components = yscale.lp,
     xscale.components = xscale.lp,
     par.strip.text = list(cex = 0.8),
-    strip = strip, strip.left = strip.left,
-    xlim = xlim, ylim = ylim,
+    strip = strip,
+    strip.left = strip.left,
+    xlim = xlim,
+    ylim = ylim,
     panel = function(x, y, ...) {
       panel.fill(col = col.na)
       panel.levelplot(x, y, ...)
@@ -656,9 +725,11 @@ trendLevel <- function(mydata, pollutant = "nox", x = "month", y = "hour",
   ## ############################
   if (plot) plot(plt)
 
-  output <- list(plot = plt,
-                 data = dplyr::tibble(newdata),
-                 call = match.call())
+  output <- list(
+    plot = plt,
+    data = dplyr::tibble(newdata),
+    call = match.call()
+  )
   class(output) <- "openair"
   invisible(output)
 }

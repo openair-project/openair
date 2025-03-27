@@ -224,7 +224,9 @@ openColours <- function(scheme = "default", n = 100) {
     if (any(!check)) {
       bad_cols <- unique(names(check[!check]))
       cli::cli_abort(
-        c("x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openColours} palettes: {.field {bad_cols}}"),
+        c(
+          "x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openColours} palettes: {.field {bad_cols}}"
+        ),
         call = NULL
       )
     }
@@ -260,7 +262,10 @@ brewerPalette <- function(n, scheme, brewer.col, brewer.n) {
     brewer.pal(n, scheme)
   } else {
     thefun <-
-      suppressWarnings(grDevices::colorRampPalette(brewer.pal(n.brew, scheme), interpolate = "spline"))
+      suppressWarnings(grDevices::colorRampPalette(
+        brewer.pal(n.brew, scheme),
+        interpolate = "spline"
+      ))
     thefun(n)
   }
 }

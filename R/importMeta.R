@@ -46,12 +46,12 @@
 #' - **local_authority**: The local authority in which the monitoring station is found.
 #'
 #' - **provider** and **code**: The specific provider of the locally managed dataset (e.g., `"londonair"`).
-#' 
+#'
 #' Thanks go to Trevor Davies (Ricardo), Dr Stuart Grange (EMPA) and Dr Ben
 #' Barratt (KCL) and  for making these data available.
 #' @param source One or more air quality networks for which data is available
 #'   through openair. Available networks include:
-#'   
+#'
 #'   - `"aurn"`,  The UK Automatic Urban and Rural Network.
 #'   - `"aqe"`,  The Air Quality England Network.
 #'   - `"saqn"`,  The Scottish Air Quality Network.
@@ -60,9 +60,9 @@
 #'   - `"local"`,  Locally managed air quality networks in England.
 #'   - `"imperial"`, Imperial College London (formerly King's College London) networks.
 #'   - `"europe"`, European AirBase/e-reporting data.
-#'   
+#'
 #'   There are two additional options provided for convenience:
-#'   
+#'
 #'   - `"ukaq"` will return metadata for all networks for which data is imported by [importUKAQ()] (i.e., AURN, AQE, SAQN, WAQN, NI, and the local networks).
 #'   - `"all"` will import all available metadata (i.e., `"ukaq"` plus `"imperial"` and `"europe"`).
 #' @param all When `all = FALSE` only the site code, site name, latitude and
@@ -101,10 +101,7 @@
 #' meta <- importMeta(source = c("aurn", "aqe", "local"))
 #' }
 importMeta <-
-  function(source = "aurn",
-           all = FALSE,
-           year = NA,
-           duplicate = FALSE) {
+  function(source = "aurn", all = FALSE, year = NA, duplicate = FALSE) {
     ## special source arguments
     if (any(source == "ukaq")) {
       source <- c("aurn", "aqe", "saqn", "waqn", "ni", "local")
@@ -113,7 +110,7 @@ importMeta <-
       source <-
         c("aurn", "aqe", "saqn", "waqn", "ni", "local", "imperial", "europe")
     }
-    
+
     ## meta data sources
     meta.source <-
       c(
@@ -129,10 +126,10 @@ importMeta <-
         "ni",
         "europe"
       )
-    
+
     ## ensure lower case
     source <- tolower(source)
-    
+
     if (any(!source %in% meta.source)) {
       cli::cli_abort(
         c(
@@ -141,30 +138,31 @@ importMeta <-
         )
       )
     }
-    
+
     # function to import any of the source networks
     get_meta <- function(source, all) {
       if (!source %in% c("kcl", "imperial", "europe")) {
-        url <- switch(source,
-                      aurn = "https://uk-air.defra.gov.uk/openair/R_data/AURN_metadata.RData",
-                      saqn = "https://www.scottishairquality.scot/openair/R_data/SCOT_metadata.RData",
-                      saqd = "https://www.scottishairquality.scot/openair/R_data/SCOT_metadata.RData",
-                      ni = "https://www.airqualityni.co.uk/openair/R_data/NI_metadata.RData",
-                      waqn = "https://airquality.gov.wales/sites/default/files/openair/R_data/WAQ_metadata.RData",
-                      aqe = "https://airqualityengland.co.uk/assets/openair/R_data/AQE_metadata.RData",
-                      local = "https://uk-air.defra.gov.uk/openair/LMAM/R_data/LMAM_metadata.RData",
-                      lmam = "https://uk-air.defra.gov.uk/openair/LMAM/R_data/LMAM_metadata.RData"
+        url <- switch(
+          source,
+          aurn = "https://uk-air.defra.gov.uk/openair/R_data/AURN_metadata.RData",
+          saqn = "https://www.scottishairquality.scot/openair/R_data/SCOT_metadata.RData",
+          saqd = "https://www.scottishairquality.scot/openair/R_data/SCOT_metadata.RData",
+          ni = "https://www.airqualityni.co.uk/openair/R_data/NI_metadata.RData",
+          waqn = "https://airquality.gov.wales/sites/default/files/openair/R_data/WAQ_metadata.RData",
+          aqe = "https://airqualityengland.co.uk/assets/openair/R_data/AQE_metadata.RData",
+          local = "https://uk-air.defra.gov.uk/openair/LMAM/R_data/LMAM_metadata.RData",
+          lmam = "https://uk-air.defra.gov.uk/openair/LMAM/R_data/LMAM_metadata.RData"
         )
-        
+
         meta <- clean_ricardo_meta(url, all = all, year = year)
       }
-      
+
       # KCL
       if (source %in% c("kcl", "imperial")) {
         con <- url("https://www.londonair.org.uk/r_data/sites.RData")
         meta <- get(load(con))
         close(con)
-        
+
         ## rename to match imported names e.g. importKCL
         meta <- dplyr::rename(
           meta,
@@ -174,29 +172,33 @@ importMeta <-
           latitude = "Latitude",
           longitude = "Longitude"
         )
-        
+
         # select year or period when sites were open
         if (!anyNA(year)) {
           # format end_date - set "ongoing" to current date
           meta$end_year <-
             lubridate::year(as.Date(meta$ClosingDate))
           meta$end_year <-
-            ifelse(is.na(meta$end_year),
-                   as.numeric(format(Sys.Date(), "%Y")),
-                   meta$end_year
+            ifelse(
+              is.na(meta$end_year),
+              as.numeric(format(Sys.Date(), "%Y")),
+              meta$end_year
             )
           meta$start_year <- lubridate::year(meta$OpeningDate)
           meta <-
-            dplyr::filter(meta, start_year <= min(year) &
-                            end_year >= max(year))
+            dplyr::filter(
+              meta,
+              start_year <= min(year) &
+                end_year >= max(year)
+            )
         }
       }
-      
+
       # EUROPE
       if (source == "europe") {
         file <-
           "http://aq-data.ricardo-aea.com/R_data/saqgetr/helper_tables/sites_table.csv.gz"
-        
+
         # Define data types
         col_types <- cols(
           site = col_character(),
@@ -215,7 +217,7 @@ importMeta <-
           eoi_code = col_character(),
           data_source = col_character()
         )
-        
+
         # Read data and parse dates
         meta <-
           read_csv(file, col_types = col_types, progress = FALSE) %>%
@@ -223,85 +225,91 @@ importMeta <-
             date_start = lubridate::ymd_hms(.data$date_start, tz = "UTC"),
             date_end = lubridate::ymd_hms(.data$date_end, tz = "UTC")
           )
-        
+
         # select year or period when sites were open
         if (!anyNA(year)) {
           # format end_date - set "ongoing" to current date
           meta$end_year <-
             lubridate::year(as.Date(meta$date_end))
           meta$end_year <-
-            ifelse(is.na(meta$end_year),
-                   as.numeric(format(Sys.Date(), "%Y")),
-                   meta$end_year
+            ifelse(
+              is.na(meta$end_year),
+              as.numeric(format(Sys.Date(), "%Y")),
+              meta$end_year
             )
           meta$start_year <- lubridate::year(meta$date_start)
           meta <-
-            dplyr::filter(meta, start_year <= min(year) &
-                            end_year >= max(year))
+            dplyr::filter(
+              meta,
+              start_year <= min(year) &
+                end_year >= max(year)
+            )
         }
-        
+
         meta <- rename(meta, code = "site", site = "site_name")
       }
-      
+
       # return data source
       meta <-
-        dplyr::mutate(meta,
-                      source = source,
-                      .before = dplyr::everything()
-        )
-      
+        dplyr::mutate(meta, source = source, .before = dplyr::everything())
+
       return(meta)
     }
-    
+
     # import meta data
     meta <-
       purrr::map(.x = source, .f = ~ get_meta(source = .x, all = all)) %>%
       purrr::list_rbind()
-    
+
     # drop extra columns if not "all"
     if (!all) {
       meta <-
-        dplyr::select(meta, dplyr::all_of(
-          c(
-            "source",
-            "site",
-            "code",
-            "latitude",
-            "longitude",
-            "site_type"
+        dplyr::select(
+          meta,
+          dplyr::all_of(
+            c(
+              "source",
+              "site",
+              "code",
+              "latitude",
+              "longitude",
+              "site_type"
+            )
           )
-        ))
+        )
     }
-    
+
     # change some names
     if ("variable" %in% names(meta)) {
       id <- which(meta$variable == "NOXasNO2")
-      
+
       if (length(id) > 0) {
         meta$variable[id] <- "NOx"
       }
     }
-    
+
     # deal with duplicates
     if (!duplicate) {
       if (all & "variable" %in% names(meta)) {
-        meta <- dplyr::distinct(meta,
-                                .data$code,
-                                .data$latitude,
-                                .data$longitude,
-                                .data$variable,
-                                .keep_all = TRUE
+        meta <- dplyr::distinct(
+          meta,
+          .data$code,
+          .data$latitude,
+          .data$longitude,
+          .data$variable,
+          .keep_all = TRUE
         )
       } else {
-        meta <- dplyr::distinct(meta,
-                                .data$code,
-                                .data$latitude,
-                                .data$longitude,
-                                .keep_all = TRUE
+        meta <- dplyr::distinct(
+          meta,
+          .data$code,
+          .data$latitude,
+          .data$longitude,
+          .keep_all = TRUE
         )
       }
     }
-    
+
     as_tibble(meta)
   }
 
@@ -312,12 +320,12 @@ importMeta <-
 #' @noRd
 clean_ricardo_meta <- function(url, all, year) {
   tmp <- tempfile()
-  
+
   # load data
   con <- url(url)
   meta <- get(load(con))
   close(con)
-  
+
   # manipulate data
   meta <- dplyr::rename(
     .data = meta,
@@ -349,8 +357,11 @@ clean_ricardo_meta <- function(url, all, year) {
     meta$end_year <- lubridate::year(as.Date(meta$end_date))
     meta$start_year <- lubridate::year(meta$start_date)
     meta <-
-      dplyr::filter(meta, start_year <= min(year) &
-        end_year >= max(year))
+      dplyr::filter(
+        meta,
+        start_year <= min(year) &
+          end_year >= max(year)
+      )
   }
 
   ## only extract one line per site to make it easier to use file

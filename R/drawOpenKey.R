@@ -21,8 +21,6 @@
 # acknowledged
 ########################################
 
-
-
 #' Scale key handling for openair
 #'
 #' General function for producing scale keys for other openair functions.  The
@@ -158,38 +156,38 @@
 #'
 #'
 #' ##########
-#' #example 1
+#' # example 1
 #' ##########
 #'
-#' #paddle style scale key used by windRose
+#' # paddle style scale key used by windRose
 #'
-#' windRose(mydata,)
+#' windRose(mydata, )
 #'
-#' #adding text and changing style and position via key
+#' # adding text and changing style and position via key
 #'
-#' #note:
-#' #some simple key control also possible directly
-#' #For example, below does same as
-#' #windRose(mydata, key.position="right")
-#'
-#' windRose(mydata,
-#'    key =list(space="right")
-#' )
-#'
-#' #however:
-#' #more detailed control possible working with
-#' #key and drawOpenKey. For example,
+#' # note:
+#' # some simple key control also possible directly
+#' # For example, below does same as
+#' # windRose(mydata, key.position="right")
 #'
 #' windRose(mydata,
-#'    key = list(header="Title", footer="wind speed",
-#'               plot.style = c("ticks", "border"),
-#'               fit = "all", height = 1,
-#'               space = "top")
+#'   key = list(space = "right")
 #' )
 #'
+#' # however:
+#' # more detailed control possible working with
+#' # key and drawOpenKey. For example,
+#'
+#' windRose(mydata,
+#'   key = list(
+#'     header = "Title", footer = "wind speed",
+#'     plot.style = c("ticks", "border"),
+#'     fit = "all", height = 1,
+#'     space = "top"
+#'   )
+#' )
 #'
 drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
-
   ################
   # quick end if key obviously not right
   ################
@@ -238,14 +236,26 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
   # process key
   # modification of sk
   ################
-  process.key <- function(col = regions$col, alpha = regions$alpha,
-                          at, tick.number = 7, width = 2, height = 1, space = "right",
-                          plot.style = c("ticks", "border"),
-                          ...) {
+  process.key <- function(
+    col = regions$col,
+    alpha = regions$alpha,
+    at,
+    tick.number = 7,
+    width = 2,
+    height = 1,
+    space = "right",
+    plot.style = c("ticks", "border"),
+    ...
+  ) {
     regions <- trellis.par.get("regions")
     list(
-      col = col, alpha = alpha, at = at, tick.number = tick.number,
-      width = width, height = height, space = space,
+      col = col,
+      alpha = alpha,
+      at = at,
+      tick.number = tick.number,
+      width = width,
+      height = height,
+      space = space,
       plot.style = plot.style,
       ...
     )
@@ -262,11 +272,15 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
   temp <- c("right", "left", "top", "bottom")
   if (!key$space %in% temp) {
     stop(
-      " In drawOpenKey(...):", "\n\tkey.position (space) argument in key not recognised",
-      "\n\tplease use one of:\n\t\"", paste(
+      " In drawOpenKey(...):",
+      "\n\tkey.position (space) argument in key not recognised",
+      "\n\tplease use one of:\n\t\"",
+      paste(
         temp,
-        sep = "", collapse = "\", \""
-      ), "\"",
+        sep = "",
+        collapse = "\", \""
+      ),
+      "\"",
       call. = FALSE
     )
   }
@@ -279,8 +293,16 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
   check.overlap <- TRUE
   key$at <- sort(key$at)
   numcol <- length(key$at) - 1
-  key$col <- level.colors(x = seq_len(numcol) - 0.5, at = seq_len(numcol +
-    1) - 1, col.regions = key$col, colors = TRUE)
+  key$col <- level.colors(
+    x = seq_len(numcol) - 0.5,
+    at = seq_len(
+      numcol +
+        1
+    ) -
+      1,
+    col.regions = key$col,
+    colors = TRUE
+  )
   atrange <- range(key$at, finite = TRUE)
   scat <- as.numeric(key$at)
   reccentre <- (scat[-1] + scat[-length(scat)]) / 2
@@ -295,8 +317,10 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     at <- pretty(atrange, key$tick.number)
     at <- at[at >= atrange[1] & at <= atrange[2]]
     labels <- format(at, trim = TRUE)
-  } else if ((is.character(key$lab) | is.expression(key$lab) | is.numeric(key$lab))
-  && length(key$lab) == length(key$at)) {
+  } else if (
+    (is.character(key$lab) | is.expression(key$lab) | is.numeric(key$lab)) &&
+      length(key$lab) == length(key$at)
+  ) {
     check.overlap <- FALSE
     at <- key$at
     labels <- key$lab
@@ -493,19 +517,32 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     }
     # sac stuff handles spacing needed for headers, scale and footers
     sac.text <- c(
-      labels, f.text[[1]], f.text[[2]], f.text[[3]],
-      h.text[[1]], h.text[[2]], h.text[[3]]
+      labels,
+      f.text[[1]],
+      f.text[[2]],
+      f.text[[3]],
+      h.text[[1]],
+      h.text[[2]],
+      h.text[[3]]
     )
     SacGrob <- textGrob(
-      label = sac.text, x = rep(0, length(sac.text)),
-      y = at, vp = viewport(yscale = atrange), default.units = "native",
-      check.overlap = check.overlap, just = if (rot == -90) {
+      label = sac.text,
+      x = rep(0, length(sac.text)),
+      y = at,
+      vp = viewport(yscale = atrange),
+      default.units = "native",
+      check.overlap = check.overlap,
+      just = if (rot == -90) {
         c("center", "bottom")
       } else {
         c("left", "center")
-      }, rot = rot, gp = gpar(
+      },
+      rot = rot,
+      gp = gpar(
         col = col,
-        cex = cex, fontfamily = fontfamily, fontface = chooseFace(
+        cex = cex,
+        fontfamily = fontfamily,
+        fontface = chooseFace(
           fontface,
           font
         )
@@ -513,9 +550,15 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     )
     heights.x <- c(
       ((1 - key$height) / 2) - (key$height * s.offsets[1]),
-      key$height * h.slots[1], key$height * h.slots[2], key$height * h.slots[3],
-      key$height * g.slots[1], (key$height * s.slot), key$height * g.slots[2],
-      key$height * f.slots[1], key$height * f.slots[2], key$height * f.slots[3],
+      key$height * h.slots[1],
+      key$height * h.slots[2],
+      key$height * h.slots[3],
+      key$height * g.slots[1],
+      (key$height * s.slot),
+      key$height * g.slots[2],
+      key$height * f.slots[1],
+      key$height * f.slots[2],
+      key$height * f.slots[3],
       ((1 - key$height) / 2) - (key$height * s.offsets[2])
     )
     heights.units <- rep("null", 11)
@@ -523,25 +566,40 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     widths.x <- c(0.6 * key$width, temp, 1)
     widths.units <- c("lines", "lines", "grobwidth")
     widths.data <- list(NULL, NULL, SacGrob)
-    key.layout <- grid.layout(nrow = 11, ncol = 3, heights = unit(
-      heights.x,
-      heights.units
-    ), widths = unit(
-      widths.x, widths.units,
-      data = widths.data
-    ), respect = TRUE)
+    key.layout <- grid.layout(
+      nrow = 11,
+      ncol = 3,
+      heights = unit(
+        heights.x,
+        heights.units
+      ),
+      widths = unit(
+        widths.x,
+        widths.units,
+        data = widths.data
+      ),
+      respect = TRUE
+    )
     key.gf <- frameGrob(layout = key.layout, vp = vp)
     add.header.footer <- function(key.gf, text, key.row, key.col) {
       keyGrob <- textGrob(
-        label = text, x = c(0),
-        y = c(0.5), vp = viewport(yscale = c(0, 1)), default.units = "native",
-        check.overlap = check.overlap, just = if (rot == -90) {
+        label = text,
+        x = c(0),
+        y = c(0.5),
+        vp = viewport(yscale = c(0, 1)),
+        default.units = "native",
+        check.overlap = check.overlap,
+        just = if (rot == -90) {
           c("center", "bottom")
         } else {
           c("left", "center")
-        }, rot = rot, gp = gpar(
+        },
+        rot = rot,
+        gp = gpar(
           col = col,
-          cex = cex, fontfamily = fontfamily, fontface = chooseFace(
+          cex = cex,
+          fontfamily = fontfamily,
+          fontface = chooseFace(
             fontface,
             font
           )
@@ -555,52 +613,92 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     key.gf <- add.header.footer(key.gf, f.text[[1]], 8, 3)
     key.gf <- add.header.footer(key.gf, f.text[[2]], 9, 3)
     key.gf <- add.header.footer(key.gf, f.text[[3]], 10, 3)
-    key.gf <- placeGrob(key.gf, textGrob(
-      label = labels, x = rep(0, length(at)),
-      y = at, vp = viewport(yscale = atrange), default.units = "native",
-      check.overlap = check.overlap, just = if (rot == -90) {
-        c("center", "bottom")
-      } else {
-        c("left", "center")
-      }, rot = rot, gp = gpar(
-        col = col,
-        cex = cex, fontfamily = fontfamily, fontface = chooseFace(
-          fontface,
-          font
+    key.gf <- placeGrob(
+      key.gf,
+      textGrob(
+        label = labels,
+        x = rep(0, length(at)),
+        y = at,
+        vp = viewport(yscale = atrange),
+        default.units = "native",
+        check.overlap = check.overlap,
+        just = if (rot == -90) {
+          c("center", "bottom")
+        } else {
+          c("left", "center")
+        },
+        rot = rot,
+        gp = gpar(
+          col = col,
+          cex = cex,
+          fontfamily = fontfamily,
+          fontface = chooseFace(
+            fontface,
+            font
+          )
         )
-      )
-    ), row = 6, col = 3)
-    key.gf <- placeGrob(key.gf, rectGrob(
-      x = rep(0.5, length(reccentre)),
-      y = reccentre, default.units = "native", vp = viewport(yscale = atrange),
-      height = recdim, width = recwd, gp = gpar(
-        fill = key$col, col = "transparent",
-        alpha = key$alpha
-      )
-    ), row = 6, col = 1)
+      ),
+      row = 6,
+      col = 3
+    )
+    key.gf <- placeGrob(
+      key.gf,
+      rectGrob(
+        x = rep(0.5, length(reccentre)),
+        y = reccentre,
+        default.units = "native",
+        vp = viewport(yscale = atrange),
+        height = recdim,
+        width = recwd,
+        gp = gpar(
+          fill = key$col,
+          col = "transparent",
+          alpha = key$alpha
+        )
+      ),
+      row = 6,
+      col = 1
+    )
     if ("border" %in% key$plot.style) {
-      key.gf <- placeGrob(frame = key.gf, rectGrob(gp = gpar(
-        col = axis.line$col,
-        lty = axis.line$lty, lwd = axis.line$lwd, alpha = axis.line$alpha,
-        fill = "transparent"
-      )), row = 6, col = 1)
+      key.gf <- placeGrob(
+        frame = key.gf,
+        rectGrob(
+          gp = gpar(
+            col = axis.line$col,
+            lty = axis.line$lty,
+            lwd = axis.line$lwd,
+            alpha = axis.line$alpha,
+            fill = "transparent"
+          )
+        ),
+        row = 6,
+        col = 1
+      )
     }
     if ("ticks" %in% key$plot.style) {
-      key.gf <- placeGrob(frame = key.gf, segmentsGrob(
-        x0 = rep(
-          0,
-          length(labscat)
-        ), y0 = labscat, x1 = rep(0.4, length(labscat)),
-        y1 = labscat, vp = viewport(yscale = atrange), default.units = "native",
-        gp = gpar(
-          col = axis.line$col, lty = axis.line$lty,
-          lwd = axis.line$lwd
-        )
-      ), row = 6, col = 2)
+      key.gf <- placeGrob(
+        frame = key.gf,
+        segmentsGrob(
+          x0 = rep(
+            0,
+            length(labscat)
+          ),
+          y0 = labscat,
+          x1 = rep(0.4, length(labscat)),
+          y1 = labscat,
+          vp = viewport(yscale = atrange),
+          default.units = "native",
+          gp = gpar(
+            col = axis.line$col,
+            lty = axis.line$lty,
+            lwd = axis.line$lwd
+          )
+        ),
+        row = 6,
+        col = 2
+      )
     }
-  }
-
-  #####################
+  } #####################
   # left scale
   # size checks text see sac struff
   # positions
@@ -619,19 +717,32 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     }
     # sac stuff handles spacing needed for headers, scale and footers
     sac.text <- c(
-      labels, f.text[[1]], f.text[[2]], f.text[[3]],
-      h.text[[1]], h.text[[2]], h.text[[3]]
+      labels,
+      f.text[[1]],
+      f.text[[2]],
+      f.text[[3]],
+      h.text[[1]],
+      h.text[[2]],
+      h.text[[3]]
     )
     SacGrob <- textGrob(
-      label = sac.text, x = rep(0, length(sac.text)),
-      y = at, vp = viewport(yscale = atrange), default.units = "native",
-      check.overlap = check.overlap, just = if (rot == 90) {
+      label = sac.text,
+      x = rep(0, length(sac.text)),
+      y = at,
+      vp = viewport(yscale = atrange),
+      default.units = "native",
+      check.overlap = check.overlap,
+      just = if (rot == 90) {
         c("center", "bottom")
       } else {
         c("right", "center")
-      }, rot = rot, gp = gpar(
+      },
+      rot = rot,
+      gp = gpar(
         col = col,
-        cex = cex, fontfamily = fontfamily, fontface = chooseFace(
+        cex = cex,
+        fontfamily = fontfamily,
+        fontface = chooseFace(
           fontface,
           font
         )
@@ -639,9 +750,15 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     )
     heights.x <- c(
       ((1 - key$height) / 2) - (key$height * s.offsets[1]),
-      key$height * h.slots[1], key$height * h.slots[2], key$height * h.slots[3],
-      key$height * g.slots[1], (key$height * s.slot), key$height * g.slots[2],
-      key$height * f.slots[1], key$height * f.slots[2], key$height * f.slots[3],
+      key$height * h.slots[1],
+      key$height * h.slots[2],
+      key$height * h.slots[3],
+      key$height * g.slots[1],
+      (key$height * s.slot),
+      key$height * g.slots[2],
+      key$height * f.slots[1],
+      key$height * f.slots[2],
+      key$height * f.slots[3],
       ((1 - key$height) / 2) - (key$height * s.offsets[2])
     )
     heights.units <- rep("null", 11)
@@ -649,25 +766,40 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     widths.x <- c(1, temp, 0.6 * key$width)
     widths.units <- c("grobwidth", "lines", "lines")
     widths.data <- list(SacGrob, NULL, NULL)
-    key.layout <- grid.layout(nrow = 11, ncol = 3, heights = unit(
-      heights.x,
-      heights.units
-    ), widths = unit(
-      widths.x, widths.units,
-      data = widths.data
-    ), respect = TRUE)
+    key.layout <- grid.layout(
+      nrow = 11,
+      ncol = 3,
+      heights = unit(
+        heights.x,
+        heights.units
+      ),
+      widths = unit(
+        widths.x,
+        widths.units,
+        data = widths.data
+      ),
+      respect = TRUE
+    )
     key.gf <- frameGrob(layout = key.layout, vp = vp)
     add.header.footer <- function(key.gf, text, key.row, key.col) {
       keyGrob <- textGrob(
-        label = text, x = c(1),
-        y = c(0.5), vp = viewport(yscale = c(0, 1)), default.units = "native",
-        check.overlap = check.overlap, just = if (rot == 90) {
+        label = text,
+        x = c(1),
+        y = c(0.5),
+        vp = viewport(yscale = c(0, 1)),
+        default.units = "native",
+        check.overlap = check.overlap,
+        just = if (rot == 90) {
           c("center", "bottom")
         } else {
           c("right", "center")
-        }, rot = rot, gp = gpar(
+        },
+        rot = rot,
+        gp = gpar(
           col = col,
-          cex = cex, fontfamily = fontfamily, fontface = chooseFace(
+          cex = cex,
+          fontfamily = fontfamily,
+          fontface = chooseFace(
             fontface,
             font
           )
@@ -684,54 +816,89 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     key.gf <- placeGrob(
       key.gf,
       textGrob(
-        label = labels, x = rep(1, length(at)),
-        y = at, vp = viewport(yscale = atrange), default.units = "native",
-        check.overlap = check.overlap, just = if (rot == 90) {
+        label = labels,
+        x = rep(1, length(at)),
+        y = at,
+        vp = viewport(yscale = atrange),
+        default.units = "native",
+        check.overlap = check.overlap,
+        just = if (rot == 90) {
           c("center", "bottom")
         } else {
           c("right", "center")
-        }, rot = rot, gp = gpar(
+        },
+        rot = rot,
+        gp = gpar(
           col = col,
-          cex = cex, fontfamily = fontfamily, fontface = chooseFace(
+          cex = cex,
+          fontfamily = fontfamily,
+          fontface = chooseFace(
             fontface,
             font
           )
         )
-      )
-      ,
-      row = 6, col = 1
+      ),
+      row = 6,
+      col = 1
     )
-    key.gf <- placeGrob(key.gf, rectGrob(
-      x = rep(0.5, length(reccentre)),
-      y = reccentre, default.units = "native", vp = viewport(yscale = atrange),
-      height = recdim, width = recwd, gp = gpar(
-        fill = key$col, col = "transparent",
-        alpha = key$alpha
-      )
-    ), row = 6, col = 3)
+    key.gf <- placeGrob(
+      key.gf,
+      rectGrob(
+        x = rep(0.5, length(reccentre)),
+        y = reccentre,
+        default.units = "native",
+        vp = viewport(yscale = atrange),
+        height = recdim,
+        width = recwd,
+        gp = gpar(
+          fill = key$col,
+          col = "transparent",
+          alpha = key$alpha
+        )
+      ),
+      row = 6,
+      col = 3
+    )
     if ("border" %in% key$plot.style) {
-      key.gf <- placeGrob(frame = key.gf, rectGrob(gp = gpar(
-        col = axis.line$col,
-        lty = axis.line$lty, lwd = axis.line$lwd, alpha = axis.line$alpha,
-        fill = "transparent"
-      )), row = 6, col = 3)
+      key.gf <- placeGrob(
+        frame = key.gf,
+        rectGrob(
+          gp = gpar(
+            col = axis.line$col,
+            lty = axis.line$lty,
+            lwd = axis.line$lwd,
+            alpha = axis.line$alpha,
+            fill = "transparent"
+          )
+        ),
+        row = 6,
+        col = 3
+      )
     }
     if ("ticks" %in% key$plot.style) {
-      key.gf <- placeGrob(frame = key.gf, segmentsGrob(
-        x0 = rep(
-          0.5,
-          length(labscat)
-        ), y0 = labscat, x1 = rep(1, length(labscat)),
-        y1 = labscat, vp = viewport(yscale = atrange), default.units = "native",
-        gp = gpar(
-          col = axis.line$col, lty = axis.line$lty,
-          lwd = axis.line$lwd
-        )
-      ), row = 6, col = 2)
+      key.gf <- placeGrob(
+        frame = key.gf,
+        segmentsGrob(
+          x0 = rep(
+            0.5,
+            length(labscat)
+          ),
+          y0 = labscat,
+          x1 = rep(1, length(labscat)),
+          y1 = labscat,
+          vp = viewport(yscale = atrange),
+          default.units = "native",
+          gp = gpar(
+            col = axis.line$col,
+            lty = axis.line$lty,
+            lwd = axis.line$lwd
+          )
+        ),
+        row = 6,
+        col = 2
+      )
     }
-  }
-
-  #####################
+  } #####################
   # top scale
   # positions
   # adds ticks and borders if requested
@@ -750,45 +917,69 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
       as.expression(parse(text = paste(h.text, collapse = "~~")))
     }
     labelsGrob <- textGrob(
-      label = labels, y = rep(0, length(at)),
-      x = at, vp = viewport(xscale = atrange), default.units = "native",
-      check.overlap = check.overlap, just = if (rot == 0) {
+      label = labels,
+      y = rep(0, length(at)),
+      x = at,
+      vp = viewport(xscale = atrange),
+      default.units = "native",
+      check.overlap = check.overlap,
+      just = if (rot == 0) {
         c("center", "bottom")
       } else {
         c("left", "center")
-      }, rot = rot, gp = gpar(
+      },
+      rot = rot,
+      gp = gpar(
         col = col,
-        cex = cex, fontfamily = fontfamily, fontface = chooseFace(
+        cex = cex,
+        fontfamily = fontfamily,
+        fontface = chooseFace(
           fontface,
           font
         )
       )
     )
     keyGrob <- textGrob(
-      label = f.text, y = c(0),
-      x = c(0.5), vp = viewport(xscale = c(0, 1)), default.units = "native",
-      check.overlap = check.overlap, just = if (rot == 0) {
+      label = f.text,
+      y = c(0),
+      x = c(0.5),
+      vp = viewport(xscale = c(0, 1)),
+      default.units = "native",
+      check.overlap = check.overlap,
+      just = if (rot == 0) {
         c("center", "bottom")
       } else {
         c("left", "center")
-      }, rot = rot, gp = gpar(
+      },
+      rot = rot,
+      gp = gpar(
         col = col,
-        cex = cex, fontfamily = fontfamily, fontface = chooseFace(
+        cex = cex,
+        fontfamily = fontfamily,
+        fontface = chooseFace(
           fontface,
           font
         )
       )
     )
     keyGrob2 <- textGrob(
-      label = h.text, y = c(0),
-      x = c(0.5), vp = viewport(xscale = c(0, 1)), default.units = "native",
-      check.overlap = check.overlap, just = if (rot == 0) {
+      label = h.text,
+      y = c(0),
+      x = c(0.5),
+      vp = viewport(xscale = c(0, 1)),
+      default.units = "native",
+      check.overlap = check.overlap,
+      just = if (rot == 0) {
         c("center", "bottom")
       } else {
         c("left", "center")
-      }, rot = rot, gp = gpar(
+      },
+      rot = rot,
+      gp = gpar(
         col = col,
-        cex = cex, fontfamily = fontfamily, fontface = chooseFace(
+        cex = cex,
+        fontfamily = fontfamily,
+        fontface = chooseFace(
           fontface,
           font
         )
@@ -813,51 +1004,90 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
       temp[4] <- 0.6
     }
     heights.x <- c(temp[1], temp[2], temp[3], temp[4], 0.6 * key$width)
-    heights.units <- c("grobheight", "grobheight", "grobheight", "lines", "lines")
+    heights.units <- c(
+      "grobheight",
+      "grobheight",
+      "grobheight",
+      "lines",
+      "lines"
+    )
     heights.data <- list(keyGrob2, keyGrob, labelsGrob, NULL, NULL)
-    key.layout <- grid.layout(nrow = 5, ncol = 3, heights = unit(
-      heights.x,
-      heights.units,
-      data = heights.data
-    ), widths = unit(
-      widths.x,
-      widths.units
-    ), respect = TRUE)
+    key.layout <- grid.layout(
+      nrow = 5,
+      ncol = 3,
+      heights = unit(
+        heights.x,
+        heights.units,
+        data = heights.data
+      ),
+      widths = unit(
+        widths.x,
+        widths.units
+      ),
+      respect = TRUE
+    )
     key.gf <- frameGrob(layout = key.layout, vp = vp)
-    key.gf <- placeGrob(key.gf, rectGrob(
-      y = rep(0.5, length(reccentre)),
-      x = reccentre, default.units = "native", vp = viewport(xscale = atrange),
-      width = recdim, height = recwd, gp = gpar(
-        fill = key$col, col = "transparent",
-        alpha = key$alpha
-      )
-    ), row = 5, col = 2)
+    key.gf <- placeGrob(
+      key.gf,
+      rectGrob(
+        y = rep(0.5, length(reccentre)),
+        x = reccentre,
+        default.units = "native",
+        vp = viewport(xscale = atrange),
+        width = recdim,
+        height = recwd,
+        gp = gpar(
+          fill = key$col,
+          col = "transparent",
+          alpha = key$alpha
+        )
+      ),
+      row = 5,
+      col = 2
+    )
     if ("border" %in% key$plot.style) {
-      key.gf <- placeGrob(frame = key.gf, rectGrob(gp = gpar(
-        col = axis.line$col,
-        lty = axis.line$lty, lwd = axis.line$lwd, alpha = axis.line$alpha,
-        fill = "transparent"
-      )), row = 5, col = 2)
+      key.gf <- placeGrob(
+        frame = key.gf,
+        rectGrob(
+          gp = gpar(
+            col = axis.line$col,
+            lty = axis.line$lty,
+            lwd = axis.line$lwd,
+            alpha = axis.line$alpha,
+            fill = "transparent"
+          )
+        ),
+        row = 5,
+        col = 2
+      )
     }
     if ("ticks" %in% key$plot.style) {
-      key.gf <- placeGrob(frame = key.gf, segmentsGrob(
-        y0 = rep(
-          0,
-          length(labscat)
-        ), x0 = labscat, y1 = rep(0.4, length(labscat)),
-        x1 = labscat, vp = viewport(xscale = atrange), default.units = "native",
-        gp = gpar(
-          col = axis.line$col, lty = axis.line$lty,
-          lwd = axis.line$lwd
-        )
-      ), row = 4, col = 2)
+      key.gf <- placeGrob(
+        frame = key.gf,
+        segmentsGrob(
+          y0 = rep(
+            0,
+            length(labscat)
+          ),
+          x0 = labscat,
+          y1 = rep(0.4, length(labscat)),
+          x1 = labscat,
+          vp = viewport(xscale = atrange),
+          default.units = "native",
+          gp = gpar(
+            col = axis.line$col,
+            lty = axis.line$lty,
+            lwd = axis.line$lwd
+          )
+        ),
+        row = 4,
+        col = 2
+      )
     }
     key.gf <- placeGrob(key.gf, labelsGrob, row = 3, col = 2)
     key.gf <- placeGrob(key.gf, keyGrob, row = 2, col = 2)
     key.gf <- placeGrob(key.gf, keyGrob2, row = 1, col = 2)
-  }
-
-  #####################
+  } #####################
   # bottom scale
   # positions
   # adds ticks and borders if requested
@@ -892,45 +1122,69 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
       temp[1] <- 0.6
     }
     labelsGrob <- textGrob(
-      label = labels, y = rep(0, length(at)),
-      x = at, vp = viewport(xscale = atrange), default.units = "native",
-      check.overlap = check.overlap, just = if (rot == 0) {
+      label = labels,
+      y = rep(0, length(at)),
+      x = at,
+      vp = viewport(xscale = atrange),
+      default.units = "native",
+      check.overlap = check.overlap,
+      just = if (rot == 0) {
         c("center", "bottom")
       } else {
         c("left", "center")
-      }, rot = rot, gp = gpar(
+      },
+      rot = rot,
+      gp = gpar(
         col = col,
-        cex = cex, fontfamily = fontfamily, fontface = chooseFace(
+        cex = cex,
+        fontfamily = fontfamily,
+        fontface = chooseFace(
           fontface,
           font
         )
       )
     )
     keyGrob <- textGrob(
-      label = h.text, y = c(0),
-      x = c(0.5), vp = viewport(xscale = c(0, 1)), default.units = "native",
-      check.overlap = check.overlap, just = if (rot == 0) {
+      label = h.text,
+      y = c(0),
+      x = c(0.5),
+      vp = viewport(xscale = c(0, 1)),
+      default.units = "native",
+      check.overlap = check.overlap,
+      just = if (rot == 0) {
         c("center", "bottom")
       } else {
         c("left", "center")
-      }, rot = rot, gp = gpar(
+      },
+      rot = rot,
+      gp = gpar(
         col = col,
-        cex = cex, fontfamily = fontfamily, fontface = chooseFace(
+        cex = cex,
+        fontfamily = fontfamily,
+        fontface = chooseFace(
           fontface,
           font
         )
       )
     )
     keyGrob2 <- textGrob(
-      label = f.text, y = c(0),
-      x = c(0.5), vp = viewport(xscale = c(0, 1)), default.units = "native",
-      check.overlap = check.overlap, just = if (rot == 0) {
+      label = f.text,
+      y = c(0),
+      x = c(0.5),
+      vp = viewport(xscale = c(0, 1)),
+      default.units = "native",
+      check.overlap = check.overlap,
+      just = if (rot == 0) {
         c("center", "bottom")
       } else {
         c("left", "center")
-      }, rot = rot, gp = gpar(
+      },
+      rot = rot,
+      gp = gpar(
         col = col,
-        cex = cex, fontfamily = fontfamily, fontface = chooseFace(
+        cex = cex,
+        fontfamily = fontfamily,
+        fontface = chooseFace(
           fontface,
           font
         )
@@ -939,44 +1193,85 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     widths.x <- c((1 - key$height) / 2, key$height, (1 - key$height) / 2)
     widths.units <- rep("null", 3)
     heights.x <- c(0.6 * key$width, temp[1], temp[2], temp[3], temp[4])
-    heights.units <- c("lines", "lines", "grobheight", "grobheight", "grobheight")
+    heights.units <- c(
+      "lines",
+      "lines",
+      "grobheight",
+      "grobheight",
+      "grobheight"
+    )
     heights.data <- list(NULL, NULL, labelsGrob, keyGrob, keyGrob2)
-    key.layout <- grid.layout(nrow = 5, ncol = 3, heights = unit(
-      heights.x,
-      heights.units,
-      data = heights.data
-    ), widths = unit(
-      widths.x,
-      widths.units
-    ), respect = TRUE)
+    key.layout <- grid.layout(
+      nrow = 5,
+      ncol = 3,
+      heights = unit(
+        heights.x,
+        heights.units,
+        data = heights.data
+      ),
+      widths = unit(
+        widths.x,
+        widths.units
+      ),
+      respect = TRUE
+    )
     key.gf <- frameGrob(layout = key.layout, vp = vp)
-    key.gf <- placeGrob(key.gf, rectGrob(
-      y = rep(0.5, length(reccentre)),
-      x = reccentre, default.units = "native", vp = viewport(xscale = atrange),
-      width = recdim, height = recwd, gp = gpar(
-        fill = key$col, col = "transparent",
-        alpha = key$alpha
-      )
-    ), row = 1, col = 2)
-    if ("ticks" %in% key$plot.style) {
-      key.gf <- placeGrob(frame = key.gf, segmentsGrob(
-        y0 = rep(
-          1,
-          length(labscat)
-        ), x0 = labscat, y1 = rep(0.6, length(labscat)),
-        x1 = labscat, vp = viewport(xscale = atrange), default.units = "native",
+    key.gf <- placeGrob(
+      key.gf,
+      rectGrob(
+        y = rep(0.5, length(reccentre)),
+        x = reccentre,
+        default.units = "native",
+        vp = viewport(xscale = atrange),
+        width = recdim,
+        height = recwd,
         gp = gpar(
-          col = axis.line$col, lty = axis.line$lty,
-          lwd = axis.line$lwd
+          fill = key$col,
+          col = "transparent",
+          alpha = key$alpha
         )
-      ), row = 2, col = 2)
+      ),
+      row = 1,
+      col = 2
+    )
+    if ("ticks" %in% key$plot.style) {
+      key.gf <- placeGrob(
+        frame = key.gf,
+        segmentsGrob(
+          y0 = rep(
+            1,
+            length(labscat)
+          ),
+          x0 = labscat,
+          y1 = rep(0.6, length(labscat)),
+          x1 = labscat,
+          vp = viewport(xscale = atrange),
+          default.units = "native",
+          gp = gpar(
+            col = axis.line$col,
+            lty = axis.line$lty,
+            lwd = axis.line$lwd
+          )
+        ),
+        row = 2,
+        col = 2
+      )
     }
     if ("border" %in% key$plot.style) {
-      key.gf <- placeGrob(frame = key.gf, rectGrob(gp = gpar(
-        col = axis.line$col,
-        lty = axis.line$lty, lwd = axis.line$lwd, alpha = axis.line$alpha,
-        fill = "transparent"
-      )), row = 1, col = 2)
+      key.gf <- placeGrob(
+        frame = key.gf,
+        rectGrob(
+          gp = gpar(
+            col = axis.line$col,
+            lty = axis.line$lty,
+            lwd = axis.line$lwd,
+            alpha = axis.line$alpha,
+            fill = "transparent"
+          )
+        ),
+        row = 1,
+        col = 2
+      )
     }
     key.gf <- placeGrob(key.gf, labelsGrob, row = 3, col = 2)
     key.gf <- placeGrob(key.gf, keyGrob, row = 4, col = 2)

@@ -4,17 +4,17 @@ test_that("opencolours works", {
   expect_type(default, "character")
   expect_length(default, 100L)
 
-  daqi <- openColours("daqi") 
+  daqi <- openColours("daqi")
   expect_length(daqi, 10L)
-  
+
   viridis <- openColours("viridis", n = 10)
   expect_length(viridis, 10L)
-  
+
   user <- openColours(c("red", "blue", "purple"), n = 5L)
   expect_type(user, "character")
   expect_length(user, 5L)
-  
-  # error if weird combinations are given  
+
+  # error if weird combinations are given
   expect_error(openColours("something_stupid"))
   expect_error(openColours(c("viridis", "something_stupid")))
   expect_error(openColours(c("red", "blue", "viridis")))
@@ -61,10 +61,10 @@ test_that("all palettes work", {
     "Set2",
     "Set3"
   )
-  
+
   # max colours allowed for each brewer pal
   brewer.n <- c(rep(9, 18), rep(9, 9), c(8, 8, 12, 9, 8, 9, 8, 12))
-  
+
   # sequential palettes
   seq_schemes <-
     c(
@@ -80,7 +80,7 @@ test_that("all palettes work", {
       "cividis",
       "gaf.seq"
     )
-  
+
   # qualitative palettes and maximum lengths
   qual_scheme_lengths <- c(
     "okabeito" = 9,
@@ -96,10 +96,10 @@ test_that("all palettes work", {
     "tol.muted" = 10,
     "tol.light" = 9
   )
-  
+
   # names of qualitative palettes
   qual_schemes <- names(qual_scheme_lengths)
-  
+
   # combine all schemes into vector
   schemes <- c(
     seq_schemes,
@@ -109,8 +109,6 @@ test_that("all palettes work", {
     "greyscale",
     brewer.col
   )
-  
+
   expect_no_error(sapply(schemes, openColours))
 })
-
-

@@ -26,10 +26,12 @@ test_that("binData works", {
     )
   )
 
-  out_type <- binData(iris,
-                      bin = "Sepal.Length",
-                      uncer = "Petal.Length",
-                      type = "Species")
+  out_type <- binData(
+    iris,
+    bin = "Sepal.Length",
+    uncer = "Petal.Length",
+    type = "Species"
+  )
 
   expect_equal(
     names(out_type),
@@ -46,27 +48,30 @@ test_that("binData works", {
       "n"
     )
   )
-  
+
   expect_equal(
-    binData(iris,
-            bin = "Sepal.Length",
-            uncer = "Petal.Length",
-            interval = 1)$interval,
+    binData(
+      iris,
+      bin = "Sepal.Length",
+      uncer = "Petal.Length",
+      interval = 1
+    )$interval,
     factor(
       c("(5,6]", "[4,5]", "(6,7]", "(7,8]"),
       levels = c("[4,5]", "(5,6]", "(6,7]", "(7,8]")
     )
   )
-  
+
   expect_equal(
-    binData(iris,
-            bin = "Sepal.Length",
-            uncer = "Petal.Length",
-            breaks = 2)$interval,
+    binData(
+      iris,
+      bin = "Sepal.Length",
+      uncer = "Petal.Length",
+      breaks = 2
+    )$interval,
     factor(
       c("[4.3,6.1]", "(6.1,7.9]"),
       levels = c("[4.3,6.1]", "(6.1,7.9]")
     )
   )
-  
 })

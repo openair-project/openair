@@ -188,19 +188,21 @@
 #' )
 #' }
 importUKAQ <-
-  function(site = "my1",
-           year = 2022,
-           source = NULL,
-           data_type = "hourly",
-           pollutant = "all",
-           hc = FALSE,
-           meta = FALSE,
-           meta_columns = c("site_type", "latitude", "longitude"),
-           meteo = TRUE,
-           ratified = FALSE,
-           to_narrow = FALSE,
-           verbose = FALSE,
-           progress = TRUE) {
+  function(
+    site = "my1",
+    year = 2022,
+    source = NULL,
+    data_type = "hourly",
+    pollutant = "all",
+    hc = FALSE,
+    meta = FALSE,
+    meta_columns = c("site_type", "latitude", "longitude"),
+    meteo = TRUE,
+    ratified = FALSE,
+    to_narrow = FALSE,
+    verbose = FALSE,
+    progress = TRUE
+  ) {
     # warn if source == "local"
     if ("local" %in% source) {
       cli::cli_warn(
@@ -216,28 +218,32 @@ importUKAQ <-
     # guess sources
     if (is.null(source)) {
       if (data_type %in% c("annual", "monthly", "daqi") & missing(site)) {
-        cli::cli_abort("Please provide a {.field source} when {.field data_type} is '{data_type}'.")
+        cli::cli_abort(
+          "Please provide a {.field source} when {.field data_type} is '{data_type}'."
+        )
       }
       source <- guess_source(site)
     }
-    
+
     # check correct "meta_columns" are passed
     if (meta) {
-      meta_opts <- c("site_type",
-                     "latitude",
-                     "longitude",
-                     "zone",
-                     "agglomeration",
-                     "local_authority")
-      
+      meta_opts <- c(
+        "site_type",
+        "latitude",
+        "longitude",
+        "zone",
+        "agglomeration",
+        "local_authority"
+      )
+
       if ("local" %in% source) {
         meta_opts <- append(meta_opts, "provider")
       }
-      
+
       meta_columns <-
         rlang::arg_match(
           meta_columns,
-          meta_opts, 
+          meta_opts,
           multiple = TRUE
         )
     }
@@ -248,7 +254,8 @@ importUKAQ <-
       "aurn" ~ "https://uk-air.defra.gov.uk/openair/R_data/",
       "aqe" ~ "https://airqualityengland.co.uk/assets/openair/R_data/",
       "saqn" ~ "https://www.scottishairquality.scot/openair/R_data/",
-      "waqn" ~ "https://airquality.gov.wales/sites/default/files/openair/R_data/",
+      "waqn" ~
+        "https://airquality.gov.wales/sites/default/files/openair/R_data/",
       "ni" ~ "https://www.airqualityni.co.uk/openair/R_data/",
       "local" ~ "https://uk-air.defra.gov.uk/openair/LMAM/R_data/"
     )
@@ -319,7 +326,9 @@ importUKAQ <-
     # Import pre-calculated DAQI?
     if (data_type == "daqi") {
       if ("local" %in% source) {
-        cli::cli_abort(c("!" = "{.arg data_type} 'DAQI' is not available for locally managed networks"))
+        cli::cli_abort(c(
+          "!" = "{.arg data_type} 'DAQI' is not available for locally managed networks"
+        ))
       }
       if (missing(site)) {
         site <- "all"
@@ -357,7 +366,9 @@ importUKAQ <-
       if (length(source) == 1) {
         source <- rep(source, times = length(site))
       } else if (length(source) != length(site)) {
-        cli::cli_abort("Length of {.arg source} ({length(source)}) not equal to 1 or length of {.arg site} ({length(site)}).")
+        cli::cli_abort(
+          "Length of {.arg source} ({length(source)}) not equal to 1 or length of {.arg site} ({length(site)})."
+        )
       }
 
       # deal with additional paths needed for local data
@@ -375,9 +386,7 @@ importUKAQ <-
             source = source,
             url_data = url_domain
           ) %>%
-          dplyr::left_join(pcodes,
-            by = "code"
-          ) %>%
+          dplyr::left_join(pcodes, by = "code") %>%
           tidyr::crossing(year = year)
       } else {
         site_info <-
@@ -393,24 +402,28 @@ importUKAQ <-
       aq_data <-
         purrr::pmap(
           .l = site_info,
-          .f = purrr::possibly(~ readUKAQData(
-            site = ..1,
-            lmam_subfolder = ..4,
-            year = ..5,
-            data_type,
-            pollutant = pollutant,
-            hc = hc,
-            to_narrow = to_narrow,
-            source = ..2,
-            url_data = ..3,
-            verbose = verbose
-          ), quiet = !verbose),
+          .f = purrr::possibly(
+            ~ readUKAQData(
+              site = ..1,
+              lmam_subfolder = ..4,
+              year = ..5,
+              data_type,
+              pollutant = pollutant,
+              hc = hc,
+              to_narrow = to_narrow,
+              source = ..2,
+              url_data = ..3,
+              verbose = verbose
+            ),
+            quiet = !verbose
+          ),
           .progress = ifelse(progress, "Importing AQ Data", FALSE)
         ) %>%
         purrr::list_rbind()
 
       if (nrow(aq_data) == 0) {
-        cli::cli_abort("No data returned. Check {.arg site}, {.arg year} and {.arg source}.",
+        cli::cli_abort(
+          "No data returned. Check {.arg site}, {.arg year} and {.arg source}.",
           call = NULL
         )
       }
@@ -479,18 +492,20 @@ importUKAQ <-
 #' @family import functions
 #' @export
 importAURN <-
-  function(site = "my1",
-           year = 2009,
-           data_type = "hourly",
-           pollutant = "all",
-           hc = FALSE,
-           meta = FALSE,
-           meta_columns = c("site_type", "latitude", "longitude"),
-           meteo = TRUE,
-           ratified = FALSE,
-           to_narrow = FALSE,
-           verbose = FALSE,
-           progress = TRUE) {
+  function(
+    site = "my1",
+    year = 2009,
+    data_type = "hourly",
+    pollutant = "all",
+    hc = FALSE,
+    meta = FALSE,
+    meta_columns = c("site_type", "latitude", "longitude"),
+    meteo = TRUE,
+    ratified = FALSE,
+    to_narrow = FALSE,
+    verbose = FALSE,
+    progress = TRUE
+  ) {
     if (missing(site) & data_type %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
@@ -516,17 +531,19 @@ importAURN <-
 #' @order 2
 #' @export
 importAQE <-
-  function(site = "yk13",
-           year = 2018,
-           data_type = "hourly",
-           pollutant = "all",
-           meta = FALSE,
-           meta_columns = c("site_type", "latitude", "longitude"),
-           meteo = TRUE,
-           ratified = FALSE,
-           to_narrow = FALSE,
-           verbose = FALSE,
-           progress = TRUE) {
+  function(
+    site = "yk13",
+    year = 2018,
+    data_type = "hourly",
+    pollutant = "all",
+    meta = FALSE,
+    meta_columns = c("site_type", "latitude", "longitude"),
+    meteo = TRUE,
+    ratified = FALSE,
+    to_narrow = FALSE,
+    verbose = FALSE,
+    progress = TRUE
+  ) {
     if (missing(site) & data_type %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
@@ -551,17 +568,19 @@ importAQE <-
 #' @order 3
 #' @export
 importSAQN <-
-  function(site = "gla4",
-           year = 2009,
-           data_type = "hourly",
-           pollutant = "all",
-           meta = FALSE,
-           meta_columns = c("site_type", "latitude", "longitude"),
-           meteo = TRUE,
-           ratified = FALSE,
-           to_narrow = FALSE,
-           verbose = FALSE,
-           progress = TRUE) {
+  function(
+    site = "gla4",
+    year = 2009,
+    data_type = "hourly",
+    pollutant = "all",
+    meta = FALSE,
+    meta_columns = c("site_type", "latitude", "longitude"),
+    meteo = TRUE,
+    ratified = FALSE,
+    to_narrow = FALSE,
+    verbose = FALSE,
+    progress = TRUE
+  ) {
     if (missing(site) & data_type %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
@@ -586,17 +605,19 @@ importSAQN <-
 #' @order 4
 #' @export
 importWAQN <-
-  function(site = "card",
-           year = 2018,
-           data_type = "hourly",
-           pollutant = "all",
-           meta = FALSE,
-           meta_columns = c("site_type", "latitude", "longitude"),
-           meteo = TRUE,
-           ratified = FALSE,
-           to_narrow = FALSE,
-           verbose = FALSE,
-           progress = TRUE) {
+  function(
+    site = "card",
+    year = 2018,
+    data_type = "hourly",
+    pollutant = "all",
+    meta = FALSE,
+    meta_columns = c("site_type", "latitude", "longitude"),
+    meteo = TRUE,
+    ratified = FALSE,
+    to_narrow = FALSE,
+    verbose = FALSE,
+    progress = TRUE
+  ) {
     if (missing(site) & data_type %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
@@ -621,17 +642,19 @@ importWAQN <-
 #' @order 5
 #' @export
 importNI <-
-  function(site = "bel0",
-           year = 2018,
-           data_type = "hourly",
-           pollutant = "all",
-           meta = FALSE,
-           meta_columns = c("site_type", "latitude", "longitude"),
-           meteo = TRUE,
-           ratified = FALSE,
-           to_narrow = FALSE,
-           verbose = FALSE,
-           progress = TRUE) {
+  function(
+    site = "bel0",
+    year = 2018,
+    data_type = "hourly",
+    pollutant = "all",
+    meta = FALSE,
+    meta_columns = c("site_type", "latitude", "longitude"),
+    meteo = TRUE,
+    ratified = FALSE,
+    to_narrow = FALSE,
+    verbose = FALSE,
+    progress = TRUE
+  ) {
     if (missing(site) & data_type %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
@@ -656,15 +679,17 @@ importNI <-
 #' @order 6
 #' @export
 importLocal <-
-  function(site = "ad1",
-           year = 2018,
-           data_type = "hourly",
-           pollutant = "all",
-           meta = FALSE,
-           meta_columns = c("site_type", "latitude", "longitude"),
-           to_narrow = FALSE,
-           verbose = FALSE,
-           progress = TRUE) {
+  function(
+    site = "ad1",
+    year = 2018,
+    data_type = "hourly",
+    pollutant = "all",
+    meta = FALSE,
+    meta_columns = c("site_type", "latitude", "longitude"),
+    to_narrow = FALSE,
+    verbose = FALSE,
+    progress = TRUE
+  ) {
     if (missing(site) & data_type %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }

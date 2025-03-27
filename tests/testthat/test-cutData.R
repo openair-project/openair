@@ -1,25 +1,29 @@
 test_that("multiplication works", {
   testdat <- dplyr::filter(mydata, lubridate::year(date) == 2005)
   testdat <- dplyr::select(testdat, date, ws, wd, nox, no2)
-  
+
   default <- cutData(testdat)
   expect_equal(names(default), c("date", "ws", "wd", "nox", "no2", "default"))
   expect_equal(nrow(default), nrow(testdat))
-  
+
   default2 <- cutData(testdat, names = c("dateranges"))
-  expect_equal(names(default2),
-               c("date", "ws", "wd", "nox", "no2", "dateranges"))
-  
+  expect_equal(
+    names(default2),
+    c("date", "ws", "wd", "nox", "no2", "dateranges")
+  )
+
   multiple <- cutData(testdat, type = c("default", "month"))
-  expect_equal(names(multiple),
-               c("date", "ws", "wd", "nox", "no2", "default", "month"))
-  
+  expect_equal(
+    names(multiple),
+    c("date", "ws", "wd", "nox", "no2", "default", "month")
+  )
+
   expect_error(cutData(
     testdat,
     type = c("default", "month"),
     names = c("onename")
   ))
-  
+
   conds <- c(
     "default",
     "year",
@@ -39,9 +43,13 @@ test_that("multiplication works", {
     "seasonyear",
     "yearseason"
   )
-  
+
   # check all options work
-  allopts <- cutData(testdat[!is.na(testdat$wd),], type = conds, local.tz = "Europe/London")
+  allopts <- cutData(
+    testdat[!is.na(testdat$wd), ],
+    type = conds,
+    local.tz = "Europe/London"
+  )
   expect_equal(
     names(allopts),
     c(
@@ -84,20 +92,28 @@ test_that("multiplication works", {
   expect_s3_class(allopts$daylight, "factor")
   expect_s3_class(allopts$seasonyear, "ordered")
   expect_s3_class(allopts$yearseason, "ordered")
-  
+
   # don't overwrite if suffix
-  suffix <- cutData(testdat[!is.na(testdat$no2) &
-                              !is.na(testdat$nox), ], c("no2", "nox"), suffix = "_cuts")
+  suffix <- cutData(
+    testdat[
+      !is.na(testdat$no2) &
+        !is.na(testdat$nox),
+    ],
+    c("no2", "nox"),
+    suffix = "_cuts"
+  )
   expect_type(suffix$no2, "integer")
   expect_type(suffix$nox, "integer")
   expect_s3_class(suffix$no2_cuts, "factor")
   expect_s3_class(suffix$nox_cuts, "factor")
-  
+
   # error with a random string
   expect_error(cutData(testdat, "some_silly_type"))
-  
+
   # hemisphere working?
   southern <- cutData(testdat, "season", hemisphere = "southern")
-  expect_equal(levels(southern$season), c("summer (DJF)", "autumn (MAM)", "winter (JJA)"))
-  
+  expect_equal(
+    levels(southern$season),
+    c("summer (DJF)", "autumn (MAM)", "winter (JJA)")
+  )
 })

@@ -113,62 +113,64 @@
 #' @examples
 #'
 #' ## import trajectory data for London in 2009
-#' \dontrun{mytraj <- importTraj(site = "london", year = 2009)}
+#' \dontrun{
+#' mytraj <- importTraj(site = "london", year = 2009)
+#' }
 #'
 #' ## combine with measurements
-#' \dontrun{theData <- importAURN(site = "kc1", year = 2009)
-#' mytraj <- merge(mytraj, theData, by = "date")}
+#' \dontrun{
+#' theData <- importAURN(site = "kc1", year = 2009)
+#' mytraj <- merge(mytraj, theData, by = "date")
+#' }
 importTraj <-
-  function(site = "london",
-           year = 2009,
-           local = NA,
-           progress = TRUE) {
+  function(site = "london", year = 2009, local = NA, progress = TRUE) {
+    ## get rid of R check annoyances
+    traj <- NULL
 
-  ## get rid of R check annoyances
-  traj <- NULL
+    if (length(site) > 1) stop("Only one site can be imported at a time.")
+    site <- tolower(site)
 
-  if (length(site) > 1) stop("Only one site can be imported at a time.")
-  site <- tolower(site)
+    files <- lapply(site, function(x) paste(x, year, sep = ""))
+    files <- do.call(c, files)
 
-  files <- lapply(site, function(x) paste(x, year, sep = ""))
-  files <- do.call(c, files)
+    loadData <- function(x) {
+      tryCatch(
+        {
+          if (is.na(local)) {
+            fileName <- paste(
+              "http://met-data.ricardo-aea.com/trajectories/",
+              x,
+              ".RData",
+              sep = ""
+            )
 
-  loadData <- function(x) {
-    tryCatch(
-      {
-        if (is.na(local)) {
-          fileName <- paste(
-            "http://met-data.ricardo-aea.com/trajectories/", x, ".RData",
-            sep = ""
-          )
+            con <- url(fileName)
+            load(con)
+          } else {
+            ## load from local file system
 
-          con <- url(fileName)
-          load(con)
-        } else { ## load from local file system
+            con <- paste(local, x, ".RData", sep = "")
+            load(con)
+          }
 
-          con <- paste(local, x, ".RData", sep = "")
-          load(con)
+          traj
+        },
+        error = function(ex) {
+          warning(x, "does not exist - ignoring that one.\n")
+          NULL
+        },
+        finally = {
+          if (is.na(local)) close(con)
         }
+      )
+    }
 
+    if (progress) progress <- "Importing Trajectories"
+    thedata <- purrr::map(files, loadData, .progress = progress) %>%
+      purrr::list_rbind()
 
-        traj
-      },
-      error = function(ex) {
-        warning(x, "does not exist - ignoring that one.\n")
-        NULL
-      },
-      finally = {
-        if (is.na(local)) close(con)
-      }
-    )
+    ## change names
+    names(thedata) <- tolower(names(thedata))
+
+    dplyr::tibble(thedata)
   }
-
-  if (progress) progress <- "Importing Trajectories"
-  thedata <- purrr::map(files, loadData, .progress = progress) %>%
-    purrr::list_rbind()
-
-  ## change names
-  names(thedata) <- tolower(names(thedata))
-
-  dplyr::tibble(thedata)
-}

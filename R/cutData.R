@@ -115,24 +115,28 @@
 #' mydata <- cutData(mydata, type = "weekday")
 #' names(mydata)
 #' head(mydata)
-cutData <- function(x,
-                    type = "default",
-                    names = NULL,
-                    suffix = NULL,
-                    hemisphere = "northern",
-                    n.levels = 4,
-                    start.day = 1,
-                    is.axis = FALSE,
-                    local.tz = NULL,
-                    latitude = 51,
-                    longitude = -0.5,
-                    ...) {
+cutData <- function(
+  x,
+  type = "default",
+  names = NULL,
+  suffix = NULL,
+  hemisphere = "northern",
+  n.levels = 4,
+  start.day = 1,
+  is.axis = FALSE,
+  local.tz = NULL,
+  latitude = 51,
+  longitude = -0.5,
+  ...
+) {
   if (!is.null(names)) {
     if (length(names) != length(type)) {
-      cli::cli_abort("Length of {.field names} ({.val {length(names)}}) not equal to length of {.field type} ({.val {length(type)}}).")
+      cli::cli_abort(
+        "Length of {.field names} ({.val {length(names)}}) not equal to length of {.field type} ({.val {length(type)}})."
+      )
     }
   }
-  
+
   makeCond <- function(x, name = NULL, type = "default") {
     if (is.null(names)) {
       name <- type
@@ -142,7 +146,7 @@ cutData <- function(x,
         }
       }
     }
-    
+
     # reserved types
     conds <- c(
       "default",
@@ -177,7 +181,8 @@ cutData <- function(x,
     if (!type %in% conds) {
       # error if 'type' isn't in the document
       if (!type %in% names(x)) {
-        cli::cli_abort(call = NULL,
+        cli::cli_abort(
+          call = NULL,
           c(
             "x" = "{.field type} '{type}' is neither a built-in option, nor a column in {.field x}.",
             "i" = "{.emph Built-ins:} {conds}",
@@ -191,7 +196,8 @@ cutData <- function(x,
 
       # split by quantiles if numeric, else set to factor
       if (inherits(x[[type]], c("numeric", "integer"))) {
-        x[[name]] <- cutVecNumeric(x[[type]],
+        x[[name]] <- cutVecNumeric(
+          x[[type]],
           type = type,
           n.levels = n.levels,
           is.axis = is.axis
@@ -296,16 +302,18 @@ dropNAbyType <- function(x, type) {
 #' @noRd
 cutVecNumeric <- function(x, type, n.levels, is.axis) {
   temp.levels <-
-    levels(cut(x, unique(quantile(
+    levels(cut(
       x,
-      probs = seq(0, 1,
-        length =
-          n.levels + 1
-      ),
-      na.rm = TRUE
-    )), include.lowest = TRUE))
+      unique(quantile(
+        x,
+        probs = seq(0, 1, length = n.levels + 1),
+        na.rm = TRUE
+      )),
+      include.lowest = TRUE
+    ))
 
-  x <- cut(x,
+  x <- cut(
+    x,
     unique(quantile(
       x,
       probs = seq(0, 1, length = n.levels + 1),
@@ -433,7 +441,9 @@ cutVecDST <- function(x, local.tz) {
   isdst <- as.POSIXlt(x)$isdst
 
   if (any(isdst == -1)) {
-    cli::cli_abort("Not possible to identify DST for {.field local.tz} '{local.tz}'.")
+    cli::cli_abort(
+      "Not possible to identify DST for {.field local.tz} '{local.tz}'."
+    )
   }
 
   x <- dplyr::case_match(isdst, 0 ~ "Non-DST", 1 ~ "DST")
@@ -453,16 +463,20 @@ cutVecDST <- function(x, local.tz) {
 #' checking
 #'
 #' @noRd
-cutVecDaylight <- function(x,
-                           latitude = 51.522393,
-                           longitude = -0.154700,
-                           ...) {
+cutVecDaylight <- function(
+  x,
+  latitude = 51.522393,
+  longitude = -0.154700,
+  ...
+) {
   # back-compatibility
   x <- data.frame(date = x)
 
   # local hour offset
 
-  local.hour.offset <- as.numeric(lubridate::force_tz(x$date[1], "UTC") - x$date[1])
+  local.hour.offset <- as.numeric(
+    lubridate::force_tz(x$date[1], "UTC") - x$date[1]
+  )
 
   ###################
   # temp functions
@@ -492,8 +506,10 @@ cutVecDaylight <- function(x,
 
   # julian century (via julian day)
   julian.century <-
-    as.numeric(as.Date(temp, format = "%m/%d/%Y")) + 2440587.5 +
-    p.day - (local.hour.offset / 24)
+    as.numeric(as.Date(temp, format = "%m/%d/%Y")) +
+    2440587.5 +
+    p.day -
+    (local.hour.offset / 24)
   julian.century <- (julian.century - 2451545) / 36525
 
   ##################
@@ -502,7 +518,8 @@ cutVecDaylight <- function(x,
   # as of noaa
 
   geom.mean.long.sun.deg <-
-    (280.46646 + julian.century * (36000.76983 + julian.century * 0.0003032)) %% 360
+    (280.46646 + julian.century * (36000.76983 + julian.century * 0.0003032)) %%
+    360
 
   geom.mean.anom.sun.deg <-
     357.52911 + julian.century * (35999.05029 - 0.0001537 * julian.century)
@@ -518,32 +535,47 @@ cutVecDaylight <- function(x,
 
   sun.true.long.deg <- sun.eq.of.ctr + geom.mean.long.sun.deg
 
-  sun.app.long.deg <- sun.true.long.deg - 0.00569 - 0.00478 *
-    sin(rad(125.04 - 1934.136 * julian.century))
+  sun.app.long.deg <- sun.true.long.deg -
+    0.00569 -
+    0.00478 *
+      sin(rad(125.04 - 1934.136 * julian.century))
 
-  mean.obliq.ecliptic.deg <- 23 + (26 + ((
-    21.448 - julian.century *
-      (46.815 + julian.century *
-        (0.00059 - julian.century
-        * 0.001813))
-  )) / 60) / 60
+  mean.obliq.ecliptic.deg <- 23 +
+    (26 +
+      ((21.448 -
+        julian.century *
+          (46.815 +
+            julian.century *
+              (0.00059 - julian.century * 0.001813)))) /
+        60) /
+      60
 
   obliq.corr.deg <- mean.obliq.ecliptic.deg +
     0.00256 * cos(rad(125.04 - 1934.136 * julian.century))
 
-  sun.declin.deg <- degrees(asin(sin(rad(obliq.corr.deg)) *
-    sin(rad(sun.app.long.deg))))
+  sun.declin.deg <- degrees(asin(
+    sin(rad(obliq.corr.deg)) *
+      sin(rad(sun.app.long.deg))
+  ))
 
   vary <- tan(rad(obliq.corr.deg / 2)) * tan(rad(obliq.corr.deg / 2))
 
   eq.of.time.minutes <-
-    4 * degrees(
-      vary * sin(2 * rad(geom.mean.long.sun.deg)) -
+    4 *
+    degrees(
+      vary *
+        sin(2 * rad(geom.mean.long.sun.deg)) -
         2 * eccent.earth.orbit * sin(rad(geom.mean.anom.sun.deg)) +
-        4 * eccent.earth.orbit * vary * sin(rad(geom.mean.anom.sun.deg)) *
-          cos(2 * rad(geom.mean.long.sun.deg)) - 0.5 * vary * vary *
-          sin(4 * rad(geom.mean.long.sun.deg)) - 1.25 * eccent.earth.orbit *
-          eccent.earth.orbit * sin(2 * rad(geom.mean.anom.sun.deg))
+        4 *
+          eccent.earth.orbit *
+          vary *
+          sin(rad(geom.mean.anom.sun.deg)) *
+          cos(2 * rad(geom.mean.long.sun.deg)) -
+        0.5 * vary * vary * sin(4 * rad(geom.mean.long.sun.deg)) -
+        1.25 *
+          eccent.earth.orbit *
+          eccent.earth.orbit *
+          sin(2 * rad(geom.mean.anom.sun.deg))
     )
 
   # original nooa code
@@ -584,8 +616,12 @@ cutVecDaylight <- function(x,
       TRUE,
       ifelse(
         sunrise.time.lst < sunset.time.lst,
-        ifelse(p.day < sunset.time.lst &
-          p.day > sunrise.time.lst, TRUE, FALSE),
+        ifelse(
+          p.day < sunset.time.lst &
+            p.day > sunrise.time.lst,
+          TRUE,
+          FALSE
+        ),
         ifelse(
           p.day <= sunrise.time.lst &
             p.day >= sunset.time.lst,
@@ -610,20 +646,20 @@ cutVecDaylight <- function(x,
 #' @noRd
 cutVecSeason <- function(x, hemisphere) {
   hemisphere <- rlang::arg_match(hemisphere, c("northern", "southern"))
-  
+
   # need to work out month names local to the user and extract first letter
   month_names_local <-
     cutVecMonth(ISOdate(2000, 1:12, 1), is.axis = FALSE) %>%
     substr(1, 1)
-  
+
   # Function to create, e.g., 'winter (JFM)'
   make_season_name <- function(str, id) {
     paste0(str, " (", paste(month_names_local[id], collapse = ""), ")")
   }
-  
+
   # get months by number
   month_ids <- lubridate::month(x)
-  
+
   # split
   if (hemisphere == "northern") {
     x <-
@@ -634,7 +670,7 @@ cutVecSeason <- function(x, hemisphere) {
         c(6, 7, 8) ~ make_season_name("summer", c(6, 7, 8)),
         c(9, 10, 11) ~ make_season_name("autumn", c(9, 10, 11))
       )
-    
+
     seasons <-
       c(
         make_season_name("spring", c(3, 4, 5)),
@@ -642,9 +678,9 @@ cutVecSeason <- function(x, hemisphere) {
         make_season_name("autumn", c(9, 10, 11)),
         make_season_name("winter", c(12, 1, 2))
       )
-    
+
     seasons <- seasons[seasons %in% x]
-    
+
     x <- ordered(x, levels = seasons)
   } else {
     x <-
@@ -655,7 +691,7 @@ cutVecSeason <- function(x, hemisphere) {
         c(6, 7, 8) ~ make_season_name("winter", c(6, 7, 8)),
         c(9, 10, 11) ~ make_season_name("spring", c(9, 10, 11))
       )
-    
+
     seasons <-
       c(
         make_season_name("spring", c(9, 10, 11)),
@@ -663,11 +699,11 @@ cutVecSeason <- function(x, hemisphere) {
         make_season_name("autumn", c(3, 4, 5)),
         make_season_name("winter", c(6, 7, 8))
       )
-    
+
     seasons <- seasons[seasons %in% x]
-    
+
     x <- ordered(x, levels = seasons)
   }
-  
+
   return(x)
 }

@@ -195,61 +195,99 @@
 #' timePlot(mydata, pollutant = "nox")
 #'
 #' # two pollutants in separate panels
-#' \dontrun{timePlot(mydata, pollutant = c("nox", "no2"))}
+#' \dontrun{
+#' timePlot(mydata, pollutant = c("nox", "no2"))
+#' }
 #'
 #' # two pollutants in the same panel with the same scale
-#' \dontrun{timePlot(mydata, pollutant = c("nox", "no2"), group = TRUE)}
+#' \dontrun{
+#' timePlot(mydata, pollutant = c("nox", "no2"), group = TRUE)
+#' }
 #'
 #' # alternative by normalising concentrations and plotting on the same
-#'   scale
+#' scale
 #' \dontrun{
-#' timePlot(mydata, pollutant = c("nox", "co", "pm10", "so2"), group = TRUE, avg.time =
-#'   "year", normalise = "1/1/1998", lwd = 3, lty = 1)
+#' timePlot(mydata,
+#'   pollutant = c("nox", "co", "pm10", "so2"), group = TRUE, avg.time =
+#'     "year", normalise = "1/1/1998", lwd = 3, lty = 1
+#' )
 #' }
 #'
 #' # examples of selecting by date
 #'
 #' # plot for nox in 1999
-#' \dontrun{timePlot(selectByDate(mydata, year = 1999), pollutant = "nox")}
+#' \dontrun{
+#' timePlot(selectByDate(mydata, year = 1999), pollutant = "nox")
+#' }
 #'
 #' # select specific date range for two pollutants
 #' \dontrun{
 #' timePlot(selectByDate(mydata, start = "6/8/2003", end = "13/8/2003"),
-#' pollutant = c("no2", "o3"))
+#'   pollutant = c("no2", "o3")
+#' )
 #' }
 #'
 #' # choose different line styles etc
-#' \dontrun{timePlot(mydata, pollutant = c("nox", "no2"), lty = 1)}
+#' \dontrun{
+#' timePlot(mydata, pollutant = c("nox", "no2"), lty = 1)
+#' }
 #'
 #' # choose different line styles etc
 #' \dontrun{
-#' timePlot(selectByDate(mydata, year = 2004, month = 6), pollutant =
-#' c("nox", "no2"), lwd = c(1, 2), col = "black")
+#' timePlot(selectByDate(mydata, year = 2004, month = 6),
+#'   pollutant =
+#'     c("nox", "no2"), lwd = c(1, 2), col = "black"
+#' )
 #' }
 #'
 #' # different averaging times
 #'
-#' #daily mean O3
-#' \dontrun{timePlot(mydata, pollutant = "o3", avg.time = "day")}
+#' # daily mean O3
+#' \dontrun{
+#' timePlot(mydata, pollutant = "o3", avg.time = "day")
+#' }
 #'
 #' # daily mean O3 ensuring each day has data capture of at least 75%
-#' \dontrun{timePlot(mydata, pollutant = "o3", avg.time = "day", data.thresh = 75)}
+#' \dontrun{
+#' timePlot(mydata, pollutant = "o3", avg.time = "day", data.thresh = 75)
+#' }
 #'
 #' # 2-week average of O3 concentrations
-#' \dontrun{timePlot(mydata, pollutant = "o3", avg.time = "2 week")}
+#' \dontrun{
+#' timePlot(mydata, pollutant = "o3", avg.time = "2 week")
+#' }
 #'
-
-timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
-                     normalise = NULL, avg.time = "default", data.thresh = 0,
-                     statistic = "mean", percentile = NA, date.pad = FALSE,
-                     type = "default", cols = "brewer1", plot.type = "l",
-                     key = TRUE, log = FALSE, windflow = NULL, smooth = FALSE, ci = TRUE,
-                     y.relation = "same", ref.x = NULL, ref.y = NULL,
-                     key.columns = 1, key.position = "bottom",
-                     name.pol = pollutant, date.breaks = 7,
-                     date.format = NULL, auto.text = TRUE, plot = TRUE, ...) {
-
-
+timePlot <- function(
+  mydata,
+  pollutant = "nox",
+  group = FALSE,
+  stack = FALSE,
+  normalise = NULL,
+  avg.time = "default",
+  data.thresh = 0,
+  statistic = "mean",
+  percentile = NA,
+  date.pad = FALSE,
+  type = "default",
+  cols = "brewer1",
+  plot.type = "l",
+  key = TRUE,
+  log = FALSE,
+  windflow = NULL,
+  smooth = FALSE,
+  ci = TRUE,
+  y.relation = "same",
+  ref.x = NULL,
+  ref.y = NULL,
+  key.columns = 1,
+  key.position = "bottom",
+  name.pol = pollutant,
+  date.breaks = 7,
+  date.format = NULL,
+  auto.text = TRUE,
+  plot = TRUE,
+  ...
+) {
   ## basic function to plot single/multiple time series in flexible ways
   ## optionally includes several pre-deifined averaging periods
   ## can deal with wide range of date/time formats e.g. minute, 15-min, hourly, daily
@@ -280,7 +318,6 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
-
     fontsize = current.font
   ))
 
@@ -305,7 +342,6 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
   if ("main" %in% names(Args)) {
     if (!is.list(Args$main)) Args$main <- quickText(Args$main, auto.text)
   }
-
 
   if ("fontsize" %in% names(Args)) {
     trellis.par.set(fontsize = list(text = Args$fontsize))
@@ -349,7 +385,10 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
   len.unique <- length(unique(mydata$date))
 
   if (type == "default" & "site" %in% names(mydata) & len.all != len.unique) {
-    if (length(unique(factor(mydata$site))) > 1) stop("More than one site has been detected: choose type = 'site' and pollutant(s)")
+    if (length(unique(factor(mydata$site))) > 1)
+      stop(
+        "More than one site has been detected: choose type = 'site' and pollutant(s)"
+      )
   }
 
   if (length(percentile) > 1 & length(pollutant) > 1) {
@@ -387,7 +426,8 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
         group_by(across(type)) %>%
         do(calcPercentile(
           .,
-          pollutant = pollutant, avg.time = avg.time,
+          pollutant = pollutant,
+          avg.time = avg.time,
           data.thresh = data.thresh,
           percentile = percentile
         ))
@@ -399,7 +439,8 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
       mydata <- timeAverage(
         mydata,
         pollutant = pollutant,
-        type = type, statistic = statistic,
+        type = type,
+        statistic = statistic,
         avg.time = avg.time,
         data.thresh = data.thresh,
         percentile = percentile
@@ -411,10 +452,9 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
   if (type == "default") mydata$default <- "default"
 
   if (!is.null(windflow)) {
-
     mydata <- gather(mydata, key = variable, value = value, pollutant)
   } else {
- #   mydata <- melt(mydata, id.var = c("date", type))
+    #   mydata <- melt(mydata, id.var = c("date", type))
     mydata <- gather(mydata, key = variable, value = value, pollutant)
   }
 
@@ -448,9 +488,11 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
   ## not sure what was meant
 
   if (!missing(normalise)) {
-
     # preserve order of pollutants after group_by (if not factor, is alphabetic)
-    mydata <-  mutate(mydata, variable = factor(variable, levels = unique(variable)))
+    mydata <- mutate(
+      mydata,
+      variable = factor(variable, levels = unique(variable))
+    )
 
     if (is.null(Args$ylab)) {
       Args$ylab <- "normalised level"
@@ -460,33 +502,34 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
       mydata <- group_by(mydata, variable) %>%
         do(divide.by.mean(.))
     } else {
-
       ## scale value to 100 at specific date
 
-      thedate <- as.POSIXct(strptime(normalise, format = "%d/%m/%Y", tz = "GMT"))
-
+      thedate <- as.POSIXct(strptime(
+        normalise,
+        format = "%d/%m/%Y",
+        tz = "GMT"
+      ))
 
       mydata <- group_by(mydata, variable) %>%
         do(norm.by.date(., thedate = thedate))
     }
-
-
   }
-
-
 
   # set ylab as pollutant(s) if not already set
   if (is.null(Args$ylab)) {
     Args$ylab <- quickText(paste(pollutant, collapse = ", "), auto.text)
   }
 
-
-  mylab <- sapply(seq_along(pollutant), function(x) quickText(pollutant[x], auto.text))
+  mylab <- sapply(
+    seq_along(pollutant),
+    function(x) quickText(pollutant[x], auto.text)
+  )
 
   ## user-supplied names
   if (!missing(name.pol)) {
-    mylab <- sapply(seq_along(name.pol), function(x)
-      quickText(name.pol[x], auto.text))
+    mylab <- sapply(seq_along(name.pol), function(x) {
+      quickText(name.pol[x], auto.text)
+    })
   }
 
   ## set up colours
@@ -521,7 +564,8 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
 
   ## layout changes depening on plot type
 
-  if (!group) { ## sepate panels per pollutant
+  if (!group) {
+    ## sepate panels per pollutant
     if (is.null(Args$strip)) {
       strip <- FALSE
     }
@@ -532,7 +576,8 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
       strip.left <- FALSE
     } else {
       strip.left <- strip.custom(
-        par.strip.text = list(cex = 0.9), horizontal = FALSE,
+        par.strip.text = list(cex = 0.9),
+        horizontal = FALSE,
         factor.levels = mylab
       )
     }
@@ -541,7 +586,8 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
       x = list(at = dates, format = formats),
       y = list(
         relation = y.relation,
-        rot = 0, log = nlog
+        rot = 0,
+        log = nlog
       )
     )
 
@@ -563,12 +609,20 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
     }
     strip <- FALSE
     myform <- formula("value ~ date | year")
-    strip.left <- strip.custom(par.strip.text = list(cex = 0.9), horizontal = FALSE)
+    strip.left <- strip.custom(
+      par.strip.text = list(cex = 0.9),
+      horizontal = FALSE
+    )
     ##  dates <- unique(dateTrunc(mydata$date, "months")) - this does not work?
-    dates <- as.POSIXct(unique(paste(format(mydata$date, "%Y-%m"), "-01", sep = "")), "GMT")
+    dates <- as.POSIXct(
+      unique(paste(format(mydata$date, "%Y-%m"), "-01", sep = "")),
+      "GMT"
+    )
 
-    scales <- list(x = list(format = "%d-%b", relation = "sliced"), y = list(log = nlog))
-
+    scales <- list(
+      x = list(format = "%d-%b", relation = "sliced"),
+      y = list(log = nlog)
+    )
 
     xlim <- lapply(split(mydata, mydata["year"]), function(x) range(x$date))
   }
@@ -582,21 +636,28 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
     if (any(!is.na(Args$pch))) {
       key <- list(
         lines = list(
-          col = myColors[1:npol], lty = Args$lty,
+          col = myColors[1:npol],
+          lty = Args$lty,
           lwd = Args$lwd
-        ), points = list(
+        ),
+        points = list(
           pch = Args$pch,
           col = myColors[1:npol]
         ),
-        text = list(lab = mylab), space = key.position, columns = key.columns
+        text = list(lab = mylab),
+        space = key.position,
+        columns = key.columns
       )
     } else {
       key <- list(
         lines = list(
-          col = myColors[1:npol], lty = Args$lty,
+          col = myColors[1:npol],
+          lty = Args$lty,
           lwd = Args$lwd
         ),
-        text = list(lab = mylab), space = key.position, columns = key.columns
+        text = list(lab = mylab),
+        space = key.position,
+        columns = key.columns
       )
     }
   } else {
@@ -643,7 +704,9 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
 
   # the plot
   xyplot.args <- list(
-    x = myform, data = mydata, groups = mydata$variable,
+    x = myform,
+    data = mydata,
+    groups = mydata$variable,
     as.table = TRUE,
     par.strip.text = list(cex = 0.8),
     scales = scales,
@@ -654,8 +717,22 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
     windflow = windflow,
     yscale.components = yscale.components.log10ticks,
     panel = panel.superpose,
-    panel.groups = function(x, y, col.line, col.symbol, col, col.se, type,
-                            group.number, lty, lwd, pch, subscripts, windflow, ...) {
+    panel.groups = function(
+      x,
+      y,
+      col.line,
+      col.symbol,
+      col,
+      col.se,
+      type,
+      group.number,
+      lty,
+      lwd,
+      pch,
+      subscripts,
+      windflow,
+      ...
+    ) {
       if (group.number == 1) {
         panel.grid(-1, 0)
         panel.abline(v = dates, col = "grey90")
@@ -666,18 +743,26 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
       }
 
       panel.xyplot(
-        x, y,
-        type = plot.type, lty = lty, lwd = lwd, pch = pch,
+        x,
+        y,
+        type = plot.type,
+        lty = lty,
+        lwd = lwd,
+        pch = pch,
         col.line = myColors[group.number],
-        col.symbol = myColors[group.number], ...
+        col.symbol = myColors[group.number],
+        ...
       )
       ## deal with points separately - useful if missing data where line
       ## does not join consequtive points
       if (any(!is.na(Args$pch))) {
         lpoints(
-          x, y,
-          type = "p", pch = Args$pch[group.number],
-          col.symbol = myColors[group.number], ...
+          x,
+          y,
+          type = "p",
+          pch = Args$pch[group.number],
+          col.symbol = myColors[group.number],
+          ...
         )
       }
 
@@ -690,10 +775,15 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
 
       if (smooth) {
         panel.gam(
-          x, y,
+          x,
+          y,
           col = myColors[group.number],
           col.se = myColors[group.number],
-          lty = 1, lwd = 1, se = ci, k = NULL, ...
+          lty = 1,
+          lwd = 1,
+          se = ci,
+          k = NULL,
+          ...
         )
       }
 
@@ -722,8 +812,20 @@ timePlot <- function(mydata, pollutant = "nox", group = FALSE, stack = FALSE,
 
 
 ## function to plot wind flow arrows
-panel.windflow <- function(x, y, dat, subscripts, scale = 0.2, ws = "ws", wd = "wd",
-                           col = "black", lwd = 1, length = 0.1, angle = 20, ...) {
+panel.windflow <- function(
+  x,
+  y,
+  dat,
+  subscripts,
+  scale = 0.2,
+  ws = "ws",
+  wd = "wd",
+  col = "black",
+  lwd = 1,
+  length = 0.1,
+  angle = 20,
+  ...
+) {
   max.ws <- max(dat[[ws]], na.rm = TRUE)
 
   delta.x <- scale * diff(current.panel.limits()$xlim)
@@ -741,17 +843,25 @@ panel.windflow <- function(x, y, dat, subscripts, scale = 0.2, ws = "ws", wd = "
     delta.x <- delta.x * delta.y.cm / delta.x.cm
   }
 
-  x0 <- delta.x * dat[[ws]][subscripts] *
-    sin(2 * pi * dat[[wd]][subscripts] / 360) / max.ws
+  x0 <- delta.x *
+    dat[[ws]][subscripts] *
+    sin(2 * pi * dat[[wd]][subscripts] / 360) /
+    max.ws
 
-  y0 <- delta.y * dat[[ws]][subscripts] *
-    cos(2 * pi * dat[[wd]][subscripts] / 360) / max.ws
+  y0 <- delta.y *
+    dat[[ws]][subscripts] *
+    cos(2 * pi * dat[[wd]][subscripts] / 360) /
+    max.ws
 
   panel.arrows(
     x0 = x - x0 / 2,
     y0 = y - y0 / 2,
     x1 = x + x0 / 2,
-    y1 = y + y0 / 2, length = length, angle = angle, code = 1,
-    col = col, lwd = lwd
+    y1 = y + y0 / 2,
+    length = length,
+    angle = angle,
+    code = 1,
+    col = col,
+    lwd = lwd
   )
 }

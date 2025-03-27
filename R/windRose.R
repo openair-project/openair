@@ -56,8 +56,8 @@
 #'
 #' ## example of comparing 2 met sites
 #' ## first we will make some new ws/wd data with a postive bias
-#' mydata$ws2 = mydata$ws + 2 * rnorm(nrow(mydata)) + 1
-#' mydata$wd2 = mydata$wd + 30 * rnorm(nrow(mydata)) + 30
+#' mydata$ws2 <- mydata$ws + 2 * rnorm(nrow(mydata)) + 1
+#' mydata$wd2 <- mydata$wd + 30 * rnorm(nrow(mydata)) + 30
 #'
 #' ## need to correct negative wd
 #' id <- which(mydata$wd2 < 0)
@@ -299,7 +299,7 @@ pollutionRose <- function(
 #' windRose(mydata)
 #'
 #' # one windRose for each year
-#' windRose(mydata,type = "year")
+#' windRose(mydata, type = "year")
 #'
 #' # windRose in 10 degree intervals with gridlines and width adjusted
 #' \dontrun{
@@ -702,7 +702,9 @@ windRose <- function(
     # check to see if data for this type combination are rounded to 10 degrees
     # round wd so that tiny differences between integer a numeric do not arise
     wd_select <- inner_join(mydata_orig, results[1, type], by = type)
-    if (!all(round(wd_select[[wd]]) %% 10 == 0, na.rm = TRUE)) return(results)
+    if (!all(round(wd_select[[wd]]) %% 10 == 0, na.rm = TRUE)) {
+      return(results)
+    }
 
     wds <- seq(10, 360, 10)
     tmp <- angle * ceiling(wds / angle - 0.5)
@@ -855,13 +857,12 @@ windRose <- function(
     aspect = 1,
     par.strip.text = list(cex = 0.8),
     scales = list(draw = FALSE),
-
     panel = function(x, y, subscripts, ...) {
       panel.xyplot(x, y, ...)
       angles <- seq(0, 2 * pi, length = 360)
       sapply(
         seq(off.set, mymax + off.set, by = myby),
-        function(x)
+        function(x) {
           llines(
             x * sin(angles),
             x * cos(angles),
@@ -869,6 +870,7 @@ windRose <- function(
             lwd = 1,
             lty = grid.lty
           )
+        }
       )
 
       dat <- results[subscripts, ] ## subset of data

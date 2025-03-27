@@ -95,7 +95,7 @@
 #' ## plot by season ... and so on
 #' corPlot(mydata, type = "season")
 #' ## recover dendrogram when cluster = TRUE and plot it
-#' res <-corPlot(mydata)
+#' res <- corPlot(mydata)
 #' plot(res$clust)
 #' \dontrun{
 #' ## a more interesting are hydrocarbon measurements
@@ -105,18 +105,22 @@
 #' corPlot(hc)
 #' }
 #'
-#' 
-corPlot <- function(mydata, pollutants = NULL, type = "default",
-                    cluster = TRUE,
-                    method = "pearson",
-                    use = "pairwise.complete.obs",
-                    dendrogram = FALSE,
-                    lower = FALSE,
-                    cols = "default",
-                    r.thresh = 0.8, text.col = c("black", "black"),
-                    auto.text = TRUE,
-                    plot = TRUE,
-                    ...) {
+corPlot <- function(
+  mydata,
+  pollutants = NULL,
+  type = "default",
+  cluster = TRUE,
+  method = "pearson",
+  use = "pairwise.complete.obs",
+  dendrogram = FALSE,
+  lower = FALSE,
+  cols = "default",
+  r.thresh = 0.8,
+  text.col = c("black", "black"),
+  auto.text = TRUE,
+  plot = TRUE,
+  ...
+) {
   if (length(type) > 1) stop("Only one 'type' allowed in this function.")
 
   ## make sure date is present for types requiring it
@@ -135,7 +139,6 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
-
     fontsize = current.font
   ))
 
@@ -174,7 +177,9 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
   if (is.null(pollutants)) {
     pollutants <- names(mydata)
   }
-  if (is.character(pollutants) && length(pollutants) == 1 && pollutants == "all") {
+  if (
+    is.character(pollutants) && length(pollutants) == 1 && pollutants == "all"
+  ) {
     pollutants <- names(mydata)
   }
 
@@ -186,7 +191,8 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
   }
 
   mydata <- checkPrep(
-    mydata, pollutants,
+    mydata,
+    pollutants,
     type = type,
     remove.calm = FALSE
   )
@@ -245,22 +251,24 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
 
     thedata <- cbind(grid, z = thedata)
     thedata <- list(
-      thedata = thedata, pol.name = thepols, pol.ord = ord.dat,
+      thedata = thedata,
+      pol.name = thepols,
+      pol.ord = ord.dat,
       clust = clust
     )
     thedata
   }
 
   # main results in lists
-   results.grid <- mydata %>%
-     group_by(across(type)) %>%
-     group_nest() %>%
-     mutate(results = map(data, prepare.cond))
+  results.grid <- mydata %>%
+    group_by(across(type)) %>%
+    group_nest() %>%
+    mutate(results = map(data, prepare.cond))
 
   # cluster model
   clust <- results.grid %>%
     mutate(clust = map(results, 4))
-  clust <-  clust$clust[[1]]
+  clust <- clust$clust[[1]]
 
   ## recover by-type order
 
@@ -269,10 +277,12 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
 
   data.order <- lapply(data.order$out, function(x) pollutants[x])
 
-  x2 <- unlist(lapply(1:length(data.order), function(x)
-    (rep(data.order[[x]], times = length(data.order[[x]])))))
-  y2 <- unlist(lapply(1:length(data.order), function(x)
-    (rep(data.order[[x]], each = length(data.order[[x]])))))
+  x2 <- unlist(lapply(1:length(data.order), function(x) {
+    (rep(data.order[[x]], times = length(data.order[[x]])))
+  }))
+  y2 <- unlist(lapply(1:length(data.order), function(x) {
+    (rep(data.order[[x]], each = length(data.order[[x]])))
+  }))
 
   ## list of labels
 
@@ -292,7 +302,10 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
   div.col <- function(x) openColours(cols, x)
 
   ## labelleing of strips
-  pol.name <- sapply(levels(results.grid[[type]]), function(x) quickText(x, auto.text))
+  pol.name <- sapply(
+    levels(results.grid[[type]]),
+    function(x) quickText(x, auto.text)
+  )
   strip <- strip.custom(factor.levels = pol.name)
   if (type == "default") strip <- FALSE
 
@@ -327,13 +340,16 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
 
   ## plot dendrogram
   if (dendrogram && type == "default" && cluster) {
-    legend <- list(right = list(
-      fun = dendrogramGrob,
-      args = list(
-        x = as.dendrogram(clust),
-        side = "right", size = 4
+    legend <- list(
+      right = list(
+        fun = dendrogramGrob,
+        args = list(
+          x = as.dendrogram(clust),
+          side = "right",
+          size = 4
+        )
       )
-    ))
+    )
   } else {
     legend <- NULL
   }
@@ -343,7 +359,8 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
 
   ## plot via ... handler
   levelplot.args <- list(
-    x = myform, data = results.grid,
+    x = myform,
+    data = results.grid,
     at = do.breaks(c(-1.01, 1.01), 100),
     strip = strip,
     as.table = TRUE,
@@ -354,9 +371,12 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
     par.strip.text = list(cex = 0.8),
     scales = list(
       x = list(rot = 90, labels = labels, at = 1:npol),
-      y = list(labels = labels, at = 1:npol), relation = "free"
+      y = list(labels = labels, at = 1:npol),
+      relation = "free"
     ),
-    text.col = text.col, r.thresh = r.thresh, label = TRUE,
+    text.col = text.col,
+    r.thresh = r.thresh,
+    label = TRUE,
     panel = function(x, y, z, ...) {
       panel.abline(v = 1:sqrt(length(z)), col = "grey95")
       panel.abline(h = 1:sqrt(length(z)), col = "grey95")
@@ -399,8 +419,19 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
   invisible(output)
 }
 
-panel.corrgram <- function(x, y, z, subscripts, at, level = 0.9, text.col,
-                           r.thresh = r.thresh, label = FALSE, lower = lower, ...) {
+panel.corrgram <- function(
+  x,
+  y,
+  z,
+  subscripts,
+  at,
+  level = 0.9,
+  text.col,
+  r.thresh = r.thresh,
+  label = FALSE,
+  lower = lower,
+  ...
+) {
   x <- as.numeric(x)[subscripts]
   y <- as.numeric(y)[subscripts]
   z <- as.numeric(z)[subscripts]
@@ -409,24 +440,31 @@ panel.corrgram <- function(x, y, z, subscripts, at, level = 0.9, text.col,
 
   # just do lower triangle
   len <- length(z)
-  tmp <- matrix(seq_along(z), nrow = len ^ (1 / 2))
+  tmp <- matrix(seq_along(z), nrow = len^(1 / 2))
 
-  if (lower)
-    id <- which(lower.tri(tmp, diag = TRUE)) else
-      id <- 1:length(tmp)
+  if (lower) {
+    id <- which(lower.tri(tmp, diag = TRUE))
+  } else {
+    id <- 1:length(tmp)
+  }
 
   for (i in seq(along = id)) {
     ell <- ellipse(
       z[id[i]],
-      level = level, npoints = 50, scale = c(.2, .2),
+      level = level,
+      npoints = 50,
+      scale = c(.2, .2),
       centre = c(x[id[i]], y[id[i]])
     )
     panel.polygon(ell, col = zcol[id[i]], border = zcol[id[i]], ...)
   }
   if (label) {
     panel.text(
-      x = x[id], y = y[id], lab = 100 * round(z[id], 2),
-      cex = 0.8, col = ifelse(z[id] < 0, text.col[1], text.col[2]),
+      x = x[id],
+      y = y[id],
+      lab = 100 * round(z[id], 2),
+      cex = 0.8,
+      col = ifelse(z[id] < 0, text.col[1], text.col[2]),
       font = ifelse(z[id] < r.thresh, 1, 2)
     )
   }
@@ -434,8 +472,16 @@ panel.corrgram <- function(x, y, z, subscripts, at, level = 0.9, text.col,
 
 
 ## from ellipse package
-ellipse <- function(x, scale = c(1, 1), centre = c(0, 0), level = 0.95,
-                    t = sqrt(qchisq(level, 2)), which = c(1, 2), npoints = 100, ...) {
+ellipse <- function(
+  x,
+  scale = c(1, 1),
+  centre = c(0, 0),
+  level = 0.95,
+  t = sqrt(qchisq(level, 2)),
+  which = c(1, 2),
+  npoints = 100,
+  ...
+) {
   names <- c("x", "y")
   if (is.matrix(x)) {
     xind <- which[1]
@@ -449,16 +495,22 @@ ellipse <- function(x, scale = c(1, 1), centre = c(0, 0), level = 0.95,
     if (!is.null(dimnames(x)[[1]])) {
       names <- dimnames(x)[[1]][c(xind, yind)]
     }
-  }
-  else {
+  } else {
     r <- x
   }
   r <- min(max(r, -1), 1) # clamp to -1..1, in case of rounding errors
   d <- acos(r)
   a <- seq(0, 2 * pi, len = npoints)
-  matrix(c(t * scale[1] * cos(a + d / 2) + centre[1], t * scale[2] *
-    cos(a - d / 2) + centre[2]), npoints, 2, dimnames = list(
-    NULL,
-    names
-  ))
+  matrix(
+    c(
+      t * scale[1] * cos(a + d / 2) + centre[1],
+      t * scale[2] * cos(a - d / 2) + centre[2]
+    ),
+    npoints,
+    2,
+    dimnames = list(
+      NULL,
+      names
+    )
+  )
 }

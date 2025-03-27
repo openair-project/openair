@@ -1,8 +1,19 @@
 ## these are functions from Rand Wilcox, which have been slightly modified
 ## see http://www-rcf.usc.edu/~rwilcox/
 
-regci <- function(x, y, regfun = tsreg, nboot = 599, alpha = 0.05, autocor = autocor, SEED = TRUE,
-                  pr = TRUE, xout = FALSE, outfun = out, ...) {
+regci <- function(
+  x,
+  y,
+  regfun = tsreg,
+  nboot = 599,
+  alpha = 0.05,
+  autocor = autocor,
+  SEED = TRUE,
+  pr = TRUE,
+  xout = FALSE,
+  outfun = out,
+  ...
+) {
   ##
   ##   Compute a .95 confidence interval for each of the parameters of
   ##   a linear regression equation. The default regression method is
@@ -50,7 +61,7 @@ regci <- function(x, y, regfun = tsreg, nboot = 599, alpha = 0.05, autocor = aut
   ## length of block set to l^(1/3)
   ## Buhlmann and Kunsch 1994 report
   block.length <- 1
-  if (autocor) block.length <- round(length(y) ^ (1 / 3))
+  if (autocor) block.length <- round(length(y)^(1 / 3))
   ## need to transpose ...
   data <- t(samp.boot.block(length(y), nboot, block.length))
 
@@ -61,7 +72,10 @@ regci <- function(x, y, regfun = tsreg, nboot = 599, alpha = 0.05, autocor = aut
   ##                     contains the bootstrap values for first predictor, etc.
   regci <- matrix(0, p1, 5)
   VAL <- c("intercept", rep("X", ncol(x)))
-  dimnames(regci) <- list(VAL, c("ci.low", "ci.up", "Estimate", "S.E.", "p-value"))
+  dimnames(regci) <- list(
+    VAL,
+    c("ci.low", "ci.up", "Estimate", "S.E.", "p-value")
+  )
   ilow <- round((alpha / 2) * nboot)
   ihi <- nboot - ilow
   ilow <- ilow + 1
@@ -95,9 +109,11 @@ elimna <- function(m) {
   #
   m <- as.matrix(m)
   ikeep <- c(1:nrow(m))
-  for (i in 1:nrow(m)) if (sum(is.na(m[i, ]) >= 1)) {
+  for (i in 1:nrow(m)) {
+    if (sum(is.na(m[i, ]) >= 1)) {
       ikeep[i] <- 0
     }
+  }
   elimna <- m[ikeep[ikeep >= 1], ]
   elimna
 }
@@ -124,8 +140,15 @@ regboot <- function(isub, x, y, regfun, ...) {
   vals
 }
 
-tsreg <- function(x, y, xout = FALSE, outfun = out, iter = 10, varfun = pbvar,
-                  ...) {
+tsreg <- function(
+  x,
+  y,
+  xout = FALSE,
+  outfun = out,
+  iter = 10,
+  varfun = pbvar,
+  ...
+) {
   #
   #  Compute Theil-Sen regression estimator
   #
@@ -183,7 +206,12 @@ tsreg <- function(x, y, xout = FALSE, outfun = out, iter = 10, varfun = pbvar,
   # if(e.pow>=1)e.pow<-corfun(yhat,y)$cor^2
   # stre=sqrt(e.pow)
   # }
-  list(coef = coef, residuals = res, Strength.Assoc = NA, Explanatory.Power = NA)
+  list(
+    coef = coef,
+    residuals = res,
+    Strength.Assoc = NA,
+    Explanatory.Power = NA
+  )
 }
 
 tsp1reg <- function(x, y, plotit = FALSE) {

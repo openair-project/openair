@@ -20,25 +20,29 @@
 #' @examples
 #'
 #'
-#' #example 1
-#' ##see axis formatting in an openair plot, e.g.:
+#' # example 1
+#' ## see axis formatting in an openair plot, e.g.:
 #' scatterPlot(mydata, x = "no2", y = "pm10")
 #'
-#' #example 2
-#' ##using quickText in other plots
-#' plot(mydata$no2, mydata$pm10, xlab = quickText("my no2 label"),
-#'      ylab = quickText("pm10 [ ug.m-3 ]"))
-#'
+#' # example 2
+#' ## using quickText in other plots
+#' plot(mydata$no2, mydata$pm10,
+#'   xlab = quickText("my no2 label"),
+#'   ylab = quickText("pm10 [ ug.m-3 ]")
+#' )
 #'
 quickText <- function(text, auto.text = TRUE) {
-
   ## the lookup table version
 
   ## #return if auto.text false
-  if (!auto.text) return(ans <- text)
+  if (!auto.text) {
+    return(ans <- text)
+  }
 
   ## #return if already expression
-  if (is.expression(text)) return(ans <- text)
+  if (is.expression(text)) {
+    return(ans <- text)
+  }
 
   ans <- paste("expression(paste('", text, " ", sep = "")
   ans <- gsub("NO2", "' 'NO' [2] * '", ans)
@@ -52,7 +56,6 @@ quickText <- function(text, auto.text = TRUE) {
   ans <- gsub("co ", "' 'CO ' '", ans)
   ans <- gsub("co,", "' 'CO,' '", ans)
   ans <- gsub("nmhc", "' 'NMHC' '", ans)
-
 
   ans <- if (nchar(as.character(text)) == 2 && length(grep("ws", text)) > 0) {
     gsub("ws", "' 'wind spd.' '", ans)
@@ -164,12 +167,12 @@ quickText <- function(text, auto.text = TRUE) {
   if (substr(ans, (nchar(ans) - 2), (nchar(ans) - 2)) == "*") {
     a <- ans
     ans <- paste(
-      substr(a, 1, (nchar(a) - 2)), " ' ' ",
+      substr(a, 1, (nchar(a) - 2)),
+      " ' ' ",
       substr(a, (nchar(a) - 1), nchar(a)),
       sep = ""
     )
   }
-
 
   ## ###################
   ## new bit
@@ -186,12 +189,9 @@ quickText <- function(text, auto.text = TRUE) {
 
   ## ########################
 
-
-  if (inherits(try(eval(parse(text = ans)), TRUE), "try-error") ==
-    FALSE) {
+  if (inherits(try(eval(parse(text = ans)), TRUE), "try-error") == FALSE) {
     ans <- eval(parse(text = ans))
-  }
-  else {
+  } else {
     ans <- text
   }
 }

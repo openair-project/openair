@@ -36,37 +36,43 @@
 #'   pollutant = "o3", width = 8, new.name =
 #'     "rollingo3", data.thresh = 75, align = "right"
 #' )
-rollingMean <- function(mydata,
-                        pollutant = "o3",
-                        width = 8L,
-                        type = "default",
-                        data.thresh = 75,
-                        align = c("centre", "center", "left", "right"),
-                        new.name = NULL,
-                        ...) {
+rollingMean <- function(
+  mydata,
+  pollutant = "o3",
+  width = 8L,
+  type = "default",
+  data.thresh = 75,
+  align = c("centre", "center", "left", "right"),
+  new.name = NULL,
+  ...
+) {
   # check inputs
   align <- rlang::arg_match(align, multiple = FALSE)
-  
+
   # data.thresh must be between 0 & 100
   if (data.thresh < 0 || data.thresh > 100) {
-    cli::cli_abort("{.field data.thresh} must be between {.val {0L}} and {.val {100L}}.")
+    cli::cli_abort(
+      "{.field data.thresh} must be between {.val {0L}} and {.val {100L}}."
+    )
   }
-  
+
   # pollutant should be numeric
   if (!is.numeric(mydata[[pollutant]])) {
-    cli::cli_abort("mydata{.field ${pollutant}} is not numeric - it is {class(mydata[[pollutant]])}.")
+    cli::cli_abort(
+      "mydata{.field ${pollutant}} is not numeric - it is {class(mydata[[pollutant]])}."
+    )
   }
-  
+
   # create new name if not provided
   if (is.null(new.name)) {
     new.name <- paste("rolling", width, pollutant, sep = "")
   }
-  
+
   # setting width < 1 crashes R
   if (width < 1L) {
     width <- 1L
   }
-  
+
   # deal with type
   if (type == "default" & "site" %in% names(mydata)) {
     # back compatibility to avoid breaking change
@@ -76,42 +82,49 @@ rollingMean <- function(mydata,
     type <- "site"
   }
   mydata <- cutData(mydata, type = type, ...)
-  
+
   # function to perform rolling average
   calc.rolling <- function(mydata) {
     # need to know whether dates added
     dates <- mydata$date
-    
+
     # pad missing hours
     mydata <- date.pad(mydata)
-    
+
     # make sure function is not called with window width longer than data
     if (width > nrow(mydata)) {
       return(mydata)
     }
-    
+
     # call C code
-    mydata[[new.name]] <- .Call("rollMean", mydata[[pollutant]], width, data.thresh, align, PACKAGE = "openair")
-    
+    mydata[[new.name]] <- .Call(
+      "rollMean",
+      mydata[[pollutant]],
+      width,
+      data.thresh,
+      align,
+      PACKAGE = "openair"
+    )
+
     # return what was put in; avoids adding missing data e.g. for factors
     if (length(dates) != nrow(mydata)) {
       mydata <- mydata[mydata$date %in% dates, ]
     }
-    
+
     # return
     return(mydata)
   }
-  
+
   # split if several sites
   mydata <-
     purrr::map(split(mydata, mydata[[type]], drop = TRUE), calc.rolling) %>%
     purrr::list_rbind()
-  
+
   # drop default column
   if (type == "default") {
     mydata$default <- NULL
   }
-  
+
   # return
   return(mydata)
 }

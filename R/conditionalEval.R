@@ -134,23 +134,28 @@
 #' @references Wilks, D. S., 2005. Statistical Methods in the Atmospheric
 #'   Sciences, Volume 91, Second Edition (International Geophysics), 2nd
 #'   Edition. Academic Press.
-conditionalEval <- function(mydata, obs = "obs", mod = "mod",
-                            var.obs = "var.obs", var.mod = "var.mod",
-                            type = "default",
-                            bins = 31,
-                            statistic = "MB",
-                            xlab = "predicted value",
-                            ylab = "statistic",
-                            col = brewer.pal(5, "YlOrRd"),
-                            col.var = "Set1",
-                            var.names = NULL,
-                            auto.text = TRUE, ...) {
+conditionalEval <- function(
+  mydata,
+  obs = "obs",
+  mod = "mod",
+  var.obs = "var.obs",
+  var.mod = "var.mod",
+  type = "default",
+  bins = 31,
+  statistic = "MB",
+  xlab = "predicted value",
+  ylab = "statistic",
+  col = brewer.pal(5, "YlOrRd"),
+  col.var = "Set1",
+  var.names = NULL,
+  auto.text = TRUE,
+  ...
+) {
   Var1 <- NULL
   current.strip <- NULL
   hour.inc <- NULL
   .id <- NULL
   Freq <- NULL ## keep CRAN check happy
-
 
   ## statistic can be predefined one in modStats, cluster, date-based e.g. "season" or
   ## another field in the data frame
@@ -197,7 +202,6 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
 
   if (any(type %in% dateTypes)) vars <- c("date", vars)
 
-
   ## various checks
   if (length(var.obs) == 0 | length(var.mod) == 0 & !"cluster" %in% statistic) {
     stop("No variables chosen to analyse")
@@ -217,8 +221,6 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
 
   ## extra.args setup
   extra.args <- list(...)
-
-
 
   ## allowable ordinary model evaluation statistics
   the.stats <- c("MB", "NMB", "r", "COE", "MGE", "NMGE", "RMSE", "FAC2")
@@ -246,7 +248,6 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
     cluster <- TRUE
   }
 
-
   ## check the data
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
 
@@ -255,14 +256,17 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
   ## ordinary conditional quantile plot
   pltCondQ <- conditionalQuantile(
     mydata,
-    obs = obs, mod = mod, type =
-      type, bins = bins,
-    key.position = "bottom", key.columns = 1,
-    layout = c(1, NA), ...
+    obs = obs,
+    mod = mod,
+    type = type,
+    bins = bins,
+    key.position = "bottom",
+    key.columns = 1,
+    layout = c(1, NA),
+    ...
   )$plot
 
   if (any(type %in% dateTypes)) vars <- c("date", vars)
-
 
   ## for plot limits
   lo <- min(mydata[, c(mod, obs)])
@@ -272,8 +276,13 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
 
   ## function to process ordinary statistics using bootstrap confidence intervals
 
-  procData <- function(mydata, statistic = statistic, var.obs = var.obs,
-                       var.mod = var.mod, ...) {
+  procData <- function(
+    mydata,
+    statistic = statistic,
+    var.obs = var.obs,
+    var.mod = var.mod,
+    ...
+  ) {
     ## only numerics if not clustering
     if (!other) mydata <- select_if(mydata, is.numeric)
 
@@ -288,7 +297,8 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
 
     pred.cut <- cut(
       pred,
-      breaks = bins, include.lowest = TRUE,
+      breaks = bins,
+      include.lowest = TRUE,
       labels = labs
     )
     pred.cut[is.na(pred.cut)] <- labs[1]
@@ -307,7 +317,8 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
           do(tmpFun(i = .$n, x))
 
         data.frame(
-          statistic = statistic, group = var.obs,
+          statistic = statistic,
+          group = var.obs,
           mean = mean(res[[statistic]]),
           lower = quantile(res[[statistic]], probs = 0.025, na.rm = TRUE),
           upper = quantile(res[[statistic]], probs = 0.975, na.rm = TRUE),
@@ -315,7 +326,8 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
         )
       } else {
         data.frame(
-          statistic = statistic, group = var.obs,
+          statistic = statistic,
+          group = var.obs,
           mean = NA,
           lower = NA,
           upper = NA,
@@ -363,7 +375,8 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
 
     if (type == "default") {
       strip.left <- FALSE
-    } else { ## two conditioning variables
+    } else {
+      ## two conditioning variables
 
       pol.name <- sapply(levels(clust.results[, type[1]]), function(x) {
         quickText(x, auto.text)
@@ -397,8 +410,10 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
       horizontal = FALSE,
       key = list(
         rectangles = list(col = cols, border = NA),
-        text = list(levels(clust.results[[statistic]])), space = "bottom",
-        title = statistic, cex.title = 1
+        text = list(levels(clust.results[[statistic]])),
+        space = "bottom",
+        title = statistic,
+        cex.title = 1
       ),
       par.strip.text = list(cex = 0.8),
       panel = function(x, ...) {
@@ -417,11 +432,13 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
     # combinations of statistics and variables to process
     combs <- data.frame(
       expand.grid(
-        var.obs = var.obs, stat = statistic,
+        var.obs = var.obs,
+        stat = statistic,
         stringsAsFactors = FALSE
       ),
       expand.grid(
-        var.mod = var.mod, stat = statistic,
+        var.mod = var.mod,
+        stat = statistic,
         stringsAsFactors = FALSE
       )
     )
@@ -434,9 +451,12 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
 
     results <- combs %>%
       rowwise() %>%
-      do(suppressWarnings(process_data(mydata, type,
+      do(suppressWarnings(process_data(
+        mydata,
+        type,
         statistic = .$stat,
-        var.obs = .$var.obs, var.mod = .$var.mod
+        var.obs = .$var.obs,
+        var.mod = .$var.mod
       )))
 
     results$.id <- as.numeric(as.character(results$pred.cut))
@@ -449,7 +469,6 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
     results$statistic <- factor(results$statistic)
     results$group <- factor(results$group)
 
-
     ## proper names of labelling ###############################################
 
     pol.name <- sapply(
@@ -460,7 +479,8 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
 
     if (type == "default") {
       strip.left <- FALSE
-    } else { ## two conditioning variables
+    } else {
+      ## two conditioning variables
 
       pol.name <- sapply(levels(results[[type[1]]]), function(x) {
         quickText(x, auto.text)
@@ -478,13 +498,19 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
     key <- list(
       lines = list(
         col = myColors[1:length(var.obs)],
-        lty = extra.args$lty, lwd = 2
+        lty = extra.args$lty,
+        lwd = 2
       ),
-      text = list(lab = sapply(var.names, function(x) {
-        quickText(x, auto.text)
-      }), cex = 1),
-      space = "bottom", columns = 2,
-      title = quickText("variable", auto.text), cex.title = 1
+      text = list(
+        lab = sapply(var.names, function(x) {
+          quickText(x, auto.text)
+        }),
+        cex = 1
+      ),
+      space = "bottom",
+      columns = 2,
+      title = quickText("variable", auto.text),
+      cex.title = 1
     )
 
     temp <- "statistic"
@@ -497,7 +523,9 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
       map(~ c(min(.$lower, na.rm = TRUE), max(.$upper, na.rm = TRUE)))
 
     p.args <- list(
-      x = myform, data = results, groups = results$group,
+      x = myform,
+      data = results,
+      groups = results$group,
       ylim = ylim,
       xlim = c(lo, hi * 1.05),
       ylab = quickText(ylab, auto.text),
@@ -509,7 +537,8 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
       strip.left = strip.left,
       scales = list(y = list(relation = "free", rot = 0)),
       par.strip.text = list(cex = 0.8),
-      panel = panel.superpose, ...,
+      panel = panel.superpose,
+      ...,
       panel.groups = function(x, y, group.number, subscripts, ...) {
         if (group.number == 1) {
           panel.grid(-1, -1, col = "grey95")
@@ -522,13 +551,19 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
         }
 
         poly.na(
-          x, results$lower[subscripts], x,
-          results$upper[subscripts], group.number, myColors
+          x,
+          results$lower[subscripts],
+          x,
+          results$upper[subscripts],
+          group.number,
+          myColors
         )
 
         panel.lines(
-          results$.id[subscripts], results$mean[subscripts],
-          col.line = myColors[group.number], lwd = 2
+          results$.id[subscripts],
+          results$mean[subscripts],
+          col.line = myColors[group.number],
+          lwd = 2
         )
       }
     )
@@ -551,20 +586,24 @@ conditionalEval <- function(mydata, obs = "obs", mod = "mod",
   if (type == "default") {
     suppressWarnings(print(thePlot, position = c(width, 0, 1, 1), more = FALSE))
   } else {
-    suppressWarnings(print(useOuterStrips(
-      thePlot,
-      strip = strip,
-      strip.left = strip.left
-    ), position = c(width, 0, 1, 1), more = FALSE))
+    suppressWarnings(print(
+      useOuterStrips(
+        thePlot,
+        strip = strip,
+        strip.left = strip.left
+      ),
+      position = c(width, 0, 1, 1),
+      more = FALSE
+    ))
   }
-
 
   invisible(trellis.last.object())
 
   if (other) results <- clust.results
 
   output <- list(
-    plot = list(pltCondQ, trellis.last.object()), data = results,
+    plot = list(pltCondQ, trellis.last.object()),
+    data = results,
     call = match.call()
   )
   class(output) <- "openair"

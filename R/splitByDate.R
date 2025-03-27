@@ -47,27 +47,34 @@
 #'   labels = c("measured", "modelled"),
 #'   name = "data_type"
 #' )
-splitByDate <- function(mydata,
-                        dates = "1/1/2003",
-                        labels = c("before", "after"),
-                        name = "split.by",
-                        format = c("%d/%m/%Y",
-                                   "%Y/%m/%d",
-                                   "%d/%m/%Y %H:%M:%S",
-                                   "%Y/%m/%d %H:%M:%S")) {
+splitByDate <- function(
+  mydata,
+  dates = "1/1/2003",
+  labels = c("before", "after"),
+  name = "split.by",
+  format = c(
+    "%d/%m/%Y",
+    "%Y/%m/%d",
+    "%d/%m/%Y %H:%M:%S",
+    "%Y/%m/%d %H:%M:%S"
+  )
+) {
   # check data
   mydata <- checkPrep(mydata, names(mydata), "default", remove.calm = FALSE)
-  
+
   # check there are sufficent labels for number of dates
   if (length(dates) != length(labels) - 1) {
     cli::cli_abort(
-      c("x" = "There is a mis-match between the number of {.field dates} ({.val {length(dates)}}) and {.field labels} ({.val {length(labels)}}).", "i" = "There should be one more {.field label} than {.field date}.")
+      c(
+        "x" = "There is a mis-match between the number of {.field dates} ({.val {length(dates)}}) and {.field labels} ({.val {length(labels)}}).",
+        "i" = "There should be one more {.field label} than {.field date}."
+      )
     )
   }
-  
+
   # get input timezone of the input data, if date-time
   input_tz <- lubridate::tz(mydata$date)
-  
+
   # handles slightly differently for Date vs POSIXct
   if (is.character(dates)) {
     if (inherits(mydata$date, "Date")) {
@@ -103,7 +110,7 @@ splitByDate <- function(mydata,
       day = 1
     ))
   }
-  
+
   # perform cut
   mydata[[name]] <- cut(
     mydata$date,
@@ -113,7 +120,7 @@ splitByDate <- function(mydata,
     right = TRUE,
     include.lowest = TRUE
   )
-  
+
   # return data
   return(mydata)
 }
