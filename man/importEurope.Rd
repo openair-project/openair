@@ -2,7 +2,7 @@
 % Please edit documentation in R/importEUR.R
 \name{importEurope}
 \alias{importEurope}
-\title{Import air quality data from European database}
+\title{Import air quality data from European database until February 2024}
 \usage{
 importEurope(
   site = "debw118",
@@ -17,17 +17,16 @@ importEurope(
 \item{site}{The code of the site(s).}
 
 \item{year}{Year or years to import. To import a sequence of years from 1990
-to 2000 use \code{year = 1990:2000}. To import several specific years use
-\code{year = c(1990, 1995, 2000)} for example.}
+to 2000 use \code{year = 1990:2000}. To import several specific years use \code{year = c(1990, 1995, 2000)} for example.}
 
 \item{tz}{Not used}
 
-\item{meta}{Should meta data be returned? If \code{TRUE} the site type,
-latitude and longitude are returned.}
+\item{meta}{Should meta data be returned? If \code{TRUE} the site type, latitude
+and longitude are returned.}
 
 \item{to_narrow}{By default the returned data has a column for each
-pollutant/variable. When \code{to_narrow = TRUE} the data are stacked into
-a narrow format with a column identifying the pollutant name.}
+pollutant/variable. When \code{to_narrow = TRUE} the data are stacked into a
+narrow format with a column identifying the pollutant name.}
 
 \item{progress}{Show a progress bar when many sites/years are being imported?
 Defaults to \code{TRUE}.}
@@ -38,17 +37,10 @@ a \link[tibble:tibble-package]{tibble}
 \description{
 This function is a simplified version of the \code{saqgetr} package (see
 \url{https://github.com/skgrange/saqgetr}) for accessing European air quality
-data. The function only returns valid hourly data and is meant as a fast and
-convenient way of accessing the most common type of hourly air quality data.
-The function works in the same way as other \code{openair} functions that
-import air quality data that generally need a site code and year to be
-supplied.
-}
-\details{
-The function can however return key site meta data.
-
-The \code{saqgetr} package is much more comprehensive and provides data at
-other time averages e.g. daily data.
+data. As \code{saqgetr} was retired in February 2024, this function has also been
+retired, but can still access European air quality data up until that
+retirement date. Consider using the EEA Air Quality Download Service instead
+(\url{https://eeadmz1-downloads-webapp.azurewebsites.net/}).
 }
 \examples{
 

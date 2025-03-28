@@ -1,5 +1,9 @@
 # openair (development version)
 
+## Deprecations
+
+`importEurope()` relies on the same back-end database as the `saqgetr` package (<https://github.com/skgrange/saqgetr>), which was retired in February 2024. `importEurope()` will now warn users of this, and outright error if `year >= 2025`. Users are instead encouraged to use the EEA Air Quality Download Service <https://eeadmz1-downloads-webapp.azurewebsites.net> to obtain European data for the time being.
+
 ## New Features
 
 - The `source` argument of `importUKAQ()` now defaults to `NULL`. This option allows the function to assign the `source` of each `site` itself, with some caveats:
