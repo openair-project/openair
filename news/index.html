@@ -50,6 +50,10 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="openair-development-version">openair (development version)<a class="anchor" aria-label="anchor" href="#openair-development-version"></a></h2>
 <div class="section level3">
+<h3 id="deprecations-development-version">Deprecations<a class="anchor" aria-label="anchor" href="#deprecations-development-version"></a></h3>
+<p><code><a href="../reference/importEurope.html">importEurope()</a></code> relies on the same back-end database as the <code>saqgetr</code> package (<a href="https://github.com/skgrange/saqgetr" class="external-link uri">https://github.com/skgrange/saqgetr</a>), which was retired in February 2024. <code><a href="../reference/importEurope.html">importEurope()</a></code> will now warn users of this, and outright error if <code>year &gt;= 2025</code>. Users are instead encouraged to use the EEA Air Quality Download Service <a href="https://eeadmz1-downloads-webapp.azurewebsites.net" class="external-link uri">https://eeadmz1-downloads-webapp.azurewebsites.net</a> to obtain European data for the time being.</p>
+</div>
+<div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
 <ul><li>
 <p>The <code>source</code> argument of <code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> now defaults to <code>NULL</code>. This option allows the function to assign the <code>source</code> of each <code>site</code> itself, with some caveats:</p>
