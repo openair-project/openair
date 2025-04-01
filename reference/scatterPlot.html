@@ -446,8 +446,10 @@ statistics in a flexible way</p></div>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># scatterPlot by day of the week, removing key at bottom</span></span></span>
-<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">dat2004</span>, x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, type <span class="op">=</span> <span class="st">"weekday"</span>, key <span class="op">=</span></span></span>
-<span class="r-in"><span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">dat2004</span>,</span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, type <span class="op">=</span> <span class="st">"weekday"</span>, key <span class="op">=</span></span></span>
+<span class="r-in"><span>    <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="scatterPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># example of the use of continuous where colour is used to show</span></span></span>
@@ -459,20 +461,28 @@ statistics in a flexible way</p></div>
 <span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">dat2004</span>, x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, z <span class="op">=</span> <span class="st">"co"</span>, avg.time <span class="op">=</span> <span class="st">"day"</span>, pch <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># show linear fit, by year</span></span></span>
-<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>, x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, type <span class="op">=</span> <span class="st">"year"</span>, smooth <span class="op">=</span></span></span>
-<span class="r-in"><span><span class="cn">FALSE</span>, linear <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, type <span class="op">=</span> <span class="st">"year"</span>, smooth <span class="op">=</span></span></span>
+<span class="r-in"><span>    <span class="cn">FALSE</span>, linear <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># do the same, but for daily means...</span></span></span>
-<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>, x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, type <span class="op">=</span> <span class="st">"year"</span>, smooth <span class="op">=</span></span></span>
-<span class="r-in"><span><span class="cn">FALSE</span>, linear <span class="op">=</span> <span class="cn">TRUE</span>, avg.time <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, type <span class="op">=</span> <span class="st">"year"</span>, smooth <span class="op">=</span></span></span>
+<span class="r-in"><span>    <span class="cn">FALSE</span>, linear <span class="op">=</span> <span class="cn">TRUE</span>, avg.time <span class="op">=</span> <span class="st">"day"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># log scales</span></span></span>
-<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>, x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, type <span class="op">=</span> <span class="st">"year"</span>, smooth <span class="op">=</span></span></span>
-<span class="r-in"><span><span class="cn">FALSE</span>, linear <span class="op">=</span> <span class="cn">TRUE</span>, avg.time <span class="op">=</span> <span class="st">"day"</span>, log.x <span class="op">=</span> <span class="cn">TRUE</span>, log.y <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, type <span class="op">=</span> <span class="st">"year"</span>, smooth <span class="op">=</span></span></span>
+<span class="r-in"><span>    <span class="cn">FALSE</span>, linear <span class="op">=</span> <span class="cn">TRUE</span>, avg.time <span class="op">=</span> <span class="st">"day"</span>, log.x <span class="op">=</span> <span class="cn">TRUE</span>, log.y <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># also works with the x-axis in date format (alternative to timePlot)</span></span></span>
-<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>, x <span class="op">=</span> <span class="st">"date"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, avg.time <span class="op">=</span> <span class="st">"month"</span>,</span></span>
-<span class="r-in"><span>key <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="st">"date"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, avg.time <span class="op">=</span> <span class="st">"month"</span>,</span></span>
+<span class="r-in"><span>  key <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## multiple types and grouping variable and continuous colour scale</span></span></span>
 <span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>, x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, z <span class="op">=</span> <span class="st">"o3"</span>, type <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"season"</span>, <span class="st">"weekend"</span><span class="op">)</span><span class="op">)</span></span></span>
@@ -484,8 +494,10 @@ statistics in a flexible way</p></div>
 <span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>, x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, method <span class="op">=</span> <span class="st">"hexbin"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># scatterPlot by year</span></span></span>
-<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>, x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, type <span class="op">=</span> <span class="st">"year"</span>, method <span class="op">=</span></span></span>
-<span class="r-in"><span><span class="st">"hexbin"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, type <span class="op">=</span> <span class="st">"year"</span>, method <span class="op">=</span></span></span>
+<span class="r-in"><span>    <span class="st">"hexbin"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">## bin data and plot it - can see how for high NO2, O3 is also high</span></span></span>
@@ -496,8 +508,10 @@ statistics in a flexible way</p></div>
 <span class="r-in"><span><span class="co">## fit surface for clearer view of relationship - clear effect of</span></span></span>
 <span class="r-in"><span><span class="co">## increased O3</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>, x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, z <span class="op">=</span> <span class="st">"o3"</span>, method <span class="op">=</span> <span class="st">"level"</span>,</span></span>
-<span class="r-in"><span>x.inc <span class="op">=</span> <span class="fl">10</span>, y.inc <span class="op">=</span> <span class="fl">2</span>, smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, z <span class="op">=</span> <span class="st">"o3"</span>, method <span class="op">=</span> <span class="st">"level"</span>,</span></span>
+<span class="r-in"><span>  x.inc <span class="op">=</span> <span class="fl">10</span>, y.inc <span class="op">=</span> <span class="fl">2</span>, smooth <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

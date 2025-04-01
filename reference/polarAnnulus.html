@@ -365,17 +365,27 @@ smoothing parameter <code>k</code>.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># diurnal plot for PM10 at Marylebone Rd</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="fu">polarAnnulus</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"pm10"</span>,</span></span>
-<span class="r-in"><span>main <span class="op">=</span> <span class="st">"diurnal variation in pm10 at Marylebone Road"</span><span class="op">)</span> <span class="co"># \dontrun{}</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu">polarAnnulus</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  pollutant <span class="op">=</span> <span class="st">"pm10"</span>,</span></span>
+<span class="r-in"><span>  main <span class="op">=</span> <span class="st">"diurnal variation in pm10 at Marylebone Road"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># seasonal plot for PM10 at Marylebone Rd</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="fu">polarAnnulus</span><span class="op">(</span><span class="va">mydata</span>, poll<span class="op">=</span><span class="st">"pm10"</span>, period <span class="op">=</span> <span class="st">"season"</span><span class="op">)</span> <span class="co"># \dontrun{}</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu">polarAnnulus</span><span class="op">(</span><span class="va">mydata</span>, poll <span class="op">=</span> <span class="st">"pm10"</span>, period <span class="op">=</span> <span class="st">"season"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># trend in coarse particles (PMc = PM10 - PM2.5), calculate PMc first</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">mydata</span><span class="op">$</span><span class="va">pmc</span> <span class="op">&lt;-</span> <span class="va">mydata</span><span class="op">$</span><span class="va">pm10</span> <span class="op">-</span> <span class="va">mydata</span><span class="op">$</span><span class="va">pm25</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="fu">polarAnnulus</span><span class="op">(</span><span class="va">mydata</span>, poll<span class="op">=</span><span class="st">"pmc"</span>, period <span class="op">=</span> <span class="st">"trend"</span>,</span></span>
-<span class="r-in"><span>main <span class="op">=</span> <span class="st">"trend in pmc at Marylebone Road"</span><span class="op">)</span> <span class="co"># \dontrun{}</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="fu">polarAnnulus</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  poll <span class="op">=</span> <span class="st">"pmc"</span>, period <span class="op">=</span> <span class="st">"trend"</span>,</span></span>
+<span class="r-in"><span>  main <span class="op">=</span> <span class="st">"trend in pmc at Marylebone Road"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -201,38 +201,39 @@ developed by Deepayan Sarkar.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co">##########</span></span></span>
-<span class="r-in"><span><span class="co">#example 1</span></span></span>
+<span class="r-in"><span><span class="co"># example 1</span></span></span>
 <span class="r-in"><span><span class="co">##########</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#paddle style scale key used by windRose</span></span></span>
+<span class="r-in"><span><span class="co"># paddle style scale key used by windRose</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu"><a href="windRose.html">windRose</a></span><span class="op">(</span><span class="va">mydata</span>,<span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="windRose.html">windRose</a></span><span class="op">(</span><span class="va">mydata</span>, <span class="op">)</span></span></span>
 <span class="r-plt img"><img src="drawOpenKey-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#adding text and changing style and position via key</span></span></span>
+<span class="r-in"><span><span class="co"># adding text and changing style and position via key</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#note:</span></span></span>
-<span class="r-in"><span><span class="co">#some simple key control also possible directly</span></span></span>
-<span class="r-in"><span><span class="co">#For example, below does same as</span></span></span>
-<span class="r-in"><span><span class="co">#windRose(mydata, key.position="right")</span></span></span>
+<span class="r-in"><span><span class="co"># note:</span></span></span>
+<span class="r-in"><span><span class="co"># some simple key control also possible directly</span></span></span>
+<span class="r-in"><span><span class="co"># For example, below does same as</span></span></span>
+<span class="r-in"><span><span class="co"># windRose(mydata, key.position="right")</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="windRose.html">windRose</a></span><span class="op">(</span><span class="va">mydata</span>,</span></span>
-<span class="r-in"><span>   key <span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>space<span class="op">=</span><span class="st">"right"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>space <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="drawOpenKey-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">#however:</span></span></span>
-<span class="r-in"><span><span class="co">#more detailed control possible working with</span></span></span>
-<span class="r-in"><span><span class="co">#key and drawOpenKey. For example,</span></span></span>
+<span class="r-in"><span><span class="co"># however:</span></span></span>
+<span class="r-in"><span><span class="co"># more detailed control possible working with</span></span></span>
+<span class="r-in"><span><span class="co"># key and drawOpenKey. For example,</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="windRose.html">windRose</a></span><span class="op">(</span><span class="va">mydata</span>,</span></span>
-<span class="r-in"><span>   key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>header<span class="op">=</span><span class="st">"Title"</span>, footer<span class="op">=</span><span class="st">"wind speed"</span>,</span></span>
-<span class="r-in"><span>              plot.style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ticks"</span>, <span class="st">"border"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>              fit <span class="op">=</span> <span class="st">"all"</span>, height <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>              space <span class="op">=</span> <span class="st">"top"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  key <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    header <span class="op">=</span> <span class="st">"Title"</span>, footer <span class="op">=</span> <span class="st">"wind speed"</span>,</span></span>
+<span class="r-in"><span>    plot.style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ticks"</span>, <span class="st">"border"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    fit <span class="op">=</span> <span class="st">"all"</span>, height <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>    space <span class="op">=</span> <span class="st">"top"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="drawOpenKey-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

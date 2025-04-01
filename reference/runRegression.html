@@ -140,7 +140,8 @@ https://doi.org/10.1016/j.scitotenv.2023.162621.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Just use part of a year of data</span></span></span>
 <span class="r-in"><span><span class="va">output</span> <span class="op">&lt;-</span> <span class="fu">runRegression</span><span class="op">(</span><span class="fu"><a href="selectByDate.html">selectByDate</a></span><span class="op">(</span><span class="va">mydata</span>, year <span class="op">=</span> <span class="fl">2004</span>, month <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"pm10"</span>, run.len <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"pm10"</span>, run.len <span class="op">=</span> <span class="fl">3</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">output</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2,073 × 12</span></span>
