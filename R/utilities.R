@@ -206,6 +206,84 @@ convert.date <- function(mydata, format = "%d/%m/%Y %H:%M") {
   mydata
 }
 
+
+#############################################################################################
+## splits data frame into date chunks. Allows users to supply simple dates and labels
+## useful for type = "site", interventions
+
+#' Divide up a data frame by time
+#'
+#' Utility function to prepare input data for use in openair functions
+#'
+#' This function partitions a data frame up into different time segments. It
+#' produces a new column called controlled by \code{name} that can be used in many
+#' \code{openair} functions. Note that there must be one more label than there
+#' are dates. See examples below and in full \code{openair} documentation.
+#'
+#' @param mydata A data frame containing a \code{date} field in hourly or high
+#'   resolution format.
+#' @param dates A date or dates to split data by.
+#' @param labels Labels for each time partition.
+#' @param name The name to give the new column to identify the periods split
+#' @export
+#' @author David Carslaw
+#' @examples
+#'
+#' ## split data up into "before" and "after"
+#' mydata <- splitByDate(mydata, dates = "1/04/2000",
+#' labels = c("before", "after"))
+#'
+#' ## split data into 3 partitions:
+#' mydata <- splitByDate(mydata, dates = c("1/1/2000", "1/3/2003"),
+#' labels = c("before", "during", "after"))
+#'
+#'
+splitByDate <- function(
+  mydata,
+  dates = "1/1/2003",
+  labels = c("before", "after"),
+  name = "split.by"
+) {
+  ## if date in format dd/mm/yyyy hh:mm (basic check)
+  if (missing(mydata)) stop("No data frame was supplied!")
+
+  mydata <- checkPrep(mydata, names(mydata), "default", remove.calm = FALSE)
+  ## check there are sufficent labels for number of dates
+  if (length(dates) != length(labels) - 1) {
+    stop(
+      "There is a mis-match between dates and labels. There should be
+one more label than date"
+    )
+  }
+
+  if (length(grep("/", as.character(dates))) > 0) {
+    if (class(mydata$date)[1] == "Date") {
+      dates <- as_date(as.POSIXct(strptime(dates, "%d/%m/%Y"), "GMT"))
+    } else {
+      dates <- as.POSIXct(strptime(dates, "%d/%m/%Y"), "GMT")
+    }
+  } else {
+    ## asume format yyyy-mm-dd
+
+    if (class(mydata$date)[1] == "Date") {
+      dates <- as_date(dates)
+    } else {
+      dates <- as.POSIXct(dates, "GMT")
+    }
+  }
+
+  mydata[, name] <- cut(
+    as.numeric(mydata$date),
+    breaks = c(
+      0,
+      as.numeric(dates),
+      max(mydata$date)
+    ),
+    labels = labels,
+    ordered_result = TRUE
+  )
+  mydata
+}
 #############################################################################################
 
 ## function to make it easy to use d/m/y format for subsetting by date
@@ -220,33 +298,33 @@ convert.date <- function(mydata, format = "%d/%m/%Y %H:%M") {
 #' can be intimidating for new users. This function can be used to select quite
 #' complex dates simply - see examples below.
 #'
-#' Dates are assumed to be inclusive, so `start = "1/1/1999"` means that
-#' times are selected from hour zero. Similarly, `end = "31/12/1999"` will
-#' include all hours of the 31st December. `start` and `end` can also
-#' be in standard R format as a string i.e. "YYYY-mm-dd", so `start =
-#' "1999-01-01"` is fine.
+#' Dates are assumed to be inclusive, so \code{start = "1/1/1999"} means that
+#' times are selected from hour zero. Similarly, \code{end = "31/12/1999"} will
+#' include all hours of the 31st December. \code{start} and \code{end} can also
+#' be in standard R format as a string i.e. "YYYY-mm-dd", so \code{start =
+#' "1999-01-01"} is fine.
 #'
 #' All options are applied in turn making it possible to select quite complex
 #' dates
 #'
-#' @param mydata A data frame containing a `date` field in hourly or high
+#' @param mydata A data frame containing a \code{date} field in hourly or high
 #'   resolution format.
 #' @param start A start date string in the form d/m/yyyy e.g. \dQuote{1/2/1999}
 #'   or in \sQuote{R} format i.e. \dQuote{YYYY-mm-dd}, \dQuote{1999-02-01}
-#' @param end See `start` for format.
-#' @param year A year or years to select e.g. `year = 1998:2004` to select
-#'   1998-2004 inclusive or `year = c(1998, 2004)` to select 1998 and
+#' @param end See \code{start} for format.
+#' @param year A year or years to select e.g. \code{year = 1998:2004} to select
+#'   1998-2004 inclusive or \code{year = c(1998, 2004)} to select 1998 and
 #'   2004.
 #' @param month A month or months to select. Can either be numeric e.g.
-#'   `month = 1:6` to select months 1-6 (January to June), or by name e.g.
-#'   `month = c("January", "December")`. Names can be abbreviated to 3
+#'   \code{month = 1:6} to select months 1-6 (January to June), or by name e.g.
+#'   \code{month = c("January", "December")}. Names can be abbreviated to 3
 #'   letters and be in lower or upper case.
-#' @param day A day name or or days to select. `day` can be numeric (1 to
-#'   31) or character. For example `day = c("Monday", "Wednesday")` or
-#'   `day = 1:10` (to select the 1st to 10th of each month). Names can be
+#' @param day A day name or or days to select. \code{day} can be numeric (1 to
+#'   31) or character. For example \code{day = c("Monday", "Wednesday")} or
+#'   \code{day = 1:10} (to select the 1st to 10th of each month). Names can be
 #'   abbreviated to 3 letters and be in lower or upper case. Also accepts
 #'   \dQuote{weekday} (Monday - Friday) and \dQuote{weekend} for convenience.
-#' @param hour An hour or hours to select from 0-23 e.g. `hour = 0:12` to
+#' @param hour An hour or hours to select from 0-23 e.g. \code{hour = 0:12} to
 #'   select hours 0 to 12 inclusive.
 #' @export
 #' @author David Carslaw
@@ -268,10 +346,8 @@ convert.date <- function(mydata, format = "%d/%m/%Y %H:%M") {
 #' sub.data <- selectByDate(mydata, day = "weekday", hour = 7:19)
 #'
 #' # select weekends between the hours of 7 am to 7 pm in winter (Dec, Jan, Feb)
-#' sub.data <- selectByDate(mydata,
-#'   day = "weekend", hour = 7:19, month =
-#'     c("dec", "jan", "feb")
-#' )
+#' sub.data <- selectByDate(mydata, day = "weekend", hour = 7:19, month =
+#' c("dec", "jan", "feb"))
 #'
 selectByDate <- function(
   mydata,
