@@ -1,17 +1,19 @@
 #' worker function that downloads data from a range of networks run by Ricardo
 #' @noRd
 readUKAQData <-
-  function(site = "my1",
-           year = 2009,
-           data_type = "hourly",
-           pollutant = "all",
-           hc = FALSE,
-           ratified = FALSE,
-           to_narrow = FALSE,
-           verbose = FALSE,
-           source = "aurn",
-           url_data,
-           lmam_subfolder) {
+  function(
+    site = "my1",
+    year = 2009,
+    data_type = "hourly",
+    pollutant = "all",
+    hc = FALSE,
+    ratified = FALSE,
+    to_narrow = FALSE,
+    verbose = FALSE,
+    source = "aurn",
+    url_data,
+    lmam_subfolder
+  ) {
     # add to path if source = "local"
     if (source == "local") {
       url_data <- paste0(url_data, lmam_subfolder, "/")
@@ -33,7 +35,9 @@ readUKAQData <-
 
     # suppress warnings for now - unequal factors, harmless
     if (is.null(thedata)) {
-      cli::cli_abort("No data to import for {.arg site} {.field {site}} and {.arg year} {.field {year}} from {.arg source} {.field {source}}.")
+      cli::cli_abort(
+        "No data to import for {.arg site} {.field {site}} and {.arg year} {.field {year}} from {.arg source} {.field {source}}."
+      )
     }
 
     # Return if no data
@@ -55,14 +59,34 @@ readUKAQData <-
     if (!hc) {
       ## no hydrocarbons - therefore select conventional pollutants
       theNames <- c(
-        "site", "code", "date", "co", "nox", "no2", "no", "o3", "so2", "pm10",
-        "pm2.5", "v10", "v2.5", "nv10", "nv2.5", "gr_pm10", "gr_pm2.5",
-        "ws", "wd", "temp"
+        "site",
+        "code",
+        "date",
+        "co",
+        "nox",
+        "no2",
+        "no",
+        "o3",
+        "so2",
+        "pm10",
+        "pm2.5",
+        "v10",
+        "v2.5",
+        "nv10",
+        "nv2.5",
+        "gr_pm10",
+        "gr_pm2.5",
+        "ws",
+        "wd",
+        "temp"
       )
 
       thedata <- select(thedata, any_of(theNames), matches("_qc"))
     } else {
-      thedata <- dplyr::relocate(thedata, dplyr::any_of(c("site", "code", "date")))
+      thedata <- dplyr::relocate(
+        thedata,
+        dplyr::any_of(c("site", "code", "date"))
+      )
     }
 
     # rename "temp" to "air_temp" if appropriate
@@ -73,8 +97,13 @@ readUKAQData <-
     # if particular pollutants have been selected
     if (pollutant[1] != "all") {
       thedata <-
-        dplyr::select(thedata, "date", "site", "code",
-                      dplyr::any_of(c(pollutant, "ws", "wd", "air_temp")))
+        dplyr::select(
+          thedata,
+          "date",
+          "site",
+          "code",
+          dplyr::any_of(c(pollutant, "ws", "wd", "air_temp"))
+        )
     }
 
     # make sure it is in GMT
@@ -84,13 +113,20 @@ readUKAQData <-
     if (to_narrow) {
       # variables to select or not select
       the_vars <- c(
-        "date", "site", "code",
-        "latitude", "longitude", "site_type",
-        "ws", "wd", "air_temp"
+        "date",
+        "site",
+        "code",
+        "latitude",
+        "longitude",
+        "site_type",
+        "ws",
+        "wd",
+        "air_temp"
       )
 
       thedata <-
-        tidyr::pivot_longer(thedata,
+        tidyr::pivot_longer(
+          thedata,
           cols = -dplyr::any_of(the_vars),
           names_to = "pollutant"
         )
@@ -115,7 +151,8 @@ loadData <- function(x, verbose, url_data, data_type) {
     {
       # Build the file name
       fileName <- paste0(
-        url_data, x,
+        url_data,
+        x,
         ".RData"
       )
 
@@ -124,7 +161,8 @@ loadData <- function(x, verbose, url_data, data_type) {
       load(con)
 
       # Find appropriate extension per `data_type`
-      x <- switch(data_type,
+      x <- switch(
+        data_type,
         hourly = x,
         `15min` = paste0(x, "_15min"),
         daily = paste0(x, "_daily_mean"),
@@ -143,9 +181,7 @@ loadData <- function(x, verbose, url_data, data_type) {
       # if there are two daily data frames to combine
       if (data_type == "daily" & exists(x2)) {
         dat2 <- get(x2)
-        dat <- left_join(dat, dat2,
-          by = c("date", "site", "code")
-        )
+        dat <- left_join(dat, dat2, by = c("date", "site", "code"))
 
         lookup <- c(gr_pm2.5 = "GR2.5", gr_pm10 = "GR10")
 
@@ -259,13 +295,15 @@ readSummaryData <-
         select(thedata, contains("capture") | c(code, date, site)) %>%
         select(!matches("uka_code"))
 
-      values <- pivot_longer(values,
+      values <- pivot_longer(
+        values,
         -c(date, code, site),
         values_to = "value",
         names_to = "species"
       )
 
-      capture <- pivot_longer(capture,
+      capture <- pivot_longer(
+        capture,
         -c(date, code, site),
         values_to = "data_capture",
         names_to = "species"
@@ -273,7 +311,9 @@ readSummaryData <-
 
       capture$species <- gsub("_capture", "", capture$species)
 
-      thedata <- full_join(values, capture,
+      thedata <- full_join(
+        values,
+        capture,
         by = c("date", "code", "site", "species")
       )
     }
@@ -325,11 +365,16 @@ readDAQI <- function(files, year, source) {
 #' @param source network of interest (e.g., "aurn")
 #' @param aq_data imported air quality data (annual, daqi, or otherwise)
 #' @noRd
-add_meta <- function(source, aq_data) {
-  meta_data <- importMeta(source = unique(source), duplicate = TRUE)
+add_meta <- function(source, columns, aq_data) {
+  meta_data <-
+    importMeta(
+      source = unique(source),
+      all = TRUE,
+      duplicate = TRUE
+    )
 
   meta_data <- distinct(meta_data, source, site, .keep_all = TRUE) %>%
-    select(source, site, code, latitude, longitude, site_type)
+    select(source, site, code, dplyr::all_of(columns))
 
   aq_data <- left_join(aq_data, meta_data, by = c("source", "code", "site"))
 
@@ -343,10 +388,16 @@ add_ratified <- function(aq_data, source, to_narrow) {
     importMeta(unique(source), all = T) %>%
     dplyr::filter(
       code %in% aq_data$code,
-      !variable %in% c(
-        "V10", "NV10", "V2.5", "NV2.5",
-        "ws", "wd", "temp"
-      )
+      !variable %in%
+        c(
+          "V10",
+          "NV10",
+          "V2.5",
+          "NV2.5",
+          "ws",
+          "wd",
+          "temp"
+        )
     ) %>%
     dplyr::select(source, code, variable, ratified_to) %>%
     dplyr::mutate(variable = tolower(variable))
@@ -386,7 +437,13 @@ add_ratified <- function(aq_data, source, to_narrow) {
 #' Function to filter annual/DAQI stats using
 #' @param site,pollutant,to_narrow Inherits from parent function
 #' @noRd
-filter_site_pollutant <- function(aq_data, site, pollutant, to_narrow, data_type) {
+filter_site_pollutant <- function(
+  aq_data,
+  site,
+  pollutant,
+  to_narrow,
+  data_type
+) {
   # if site isn't missing, filter by sites
   if (any(site != "all")) {
     aq_data <- aq_data[tolower(aq_data$code) %in% tolower(site), ]
@@ -394,7 +451,10 @@ filter_site_pollutant <- function(aq_data, site, pollutant, to_narrow, data_type
 
   # if pollutant isn't "all", filter pollutants
   if (any(pollutant != "all")) {
-    polls <- paste(c("source", "uka_code", "code", "site", "date", "pollutant", pollutant), collapse = "|")
+    polls <- paste(
+      c("source", "uka_code", "code", "site", "date", "pollutant", pollutant),
+      collapse = "|"
+    )
     if (data_type != "daqi") {
       if (to_narrow) {
         aq_data <- aq_data[grepl(polls, aq_data$species, ignore.case = TRUE), ]
@@ -415,17 +475,27 @@ filter_site_pollutant <- function(aq_data, site, pollutant, to_narrow, data_type
 #' @noRd
 guess_source <- function(site) {
   ukaq_meta <- importMeta("ukaq") %>%
-    dplyr::mutate(source = factor(.data$source, c("aurn", "saqn", "aqe", "waqn", "ni", "local"))) %>%
+    dplyr::mutate(
+      source = factor(
+        .data$source,
+        c("aurn", "saqn", "aqe", "waqn", "ni", "local")
+      )
+    ) %>%
     dplyr::arrange(.data$source) %>%
-    dplyr::distinct(.data$site, .data$latitude, .data$longitude, .keep_all = TRUE)
-  
+    dplyr::distinct(
+      .data$site,
+      .data$latitude,
+      .data$longitude,
+      .keep_all = TRUE
+    )
+
   source_tbl <-
     data.frame(code = toupper(site)) %>%
     dplyr::left_join(ukaq_meta, by = "code")
 
   if (any(is.na(source_tbl$source))) {
     ambiguous_codes <-
-      source_tbl %>% 
+      source_tbl %>%
       dplyr::filter(is.na(.data$source)) %>%
       dplyr::pull(.data$code)
 
@@ -441,22 +511,43 @@ guess_source <- function(site) {
     source_tbl_all <- source_tbl
 
     source_tbl <- dplyr::slice_head(source_tbl, n = 1, by = "code")
-    
+
     source_tbl_other <-
-      dplyr::anti_join(source_tbl_all, source_tbl, by = join_by("code", "source", "site", "latitude", "longitude", "site_type"))
+      dplyr::anti_join(
+        source_tbl_all,
+        source_tbl,
+        by = join_by(
+          "code",
+          "source",
+          "site",
+          "latitude",
+          "longitude",
+          "site_type"
+        )
+      )
 
     alternatives <-
       source_tbl_other %>%
-      dplyr::mutate(str = paste0(.data$code, " (could also be '", .data$site, "' from the source: '", .data$source, "'.)")) %>%
+      dplyr::mutate(
+        str = paste0(
+          .data$code,
+          " (could also be '",
+          .data$site,
+          "' from the source: '",
+          .data$source,
+          "'.)"
+        )
+      ) %>%
       dplyr::pull(.data$str)
 
     msg <- c(
       "x" = "Ambiguous site codes detected. National networks are imported preferentially to locally managed networks.",
       alternatives,
-      "i" = "Specify {.field source} to import sites from specific monitoring networks.")
+      "i" = "Specify {.field source} to import sites from specific monitoring networks."
+    )
 
     names(msg)[names(msg) == ""] <- "!"
-    
+
     cli::cli_warn(msg)
   }
 

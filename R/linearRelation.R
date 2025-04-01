@@ -12,54 +12,54 @@
 #' regression is useful to test the strength of the relationship. However,
 #' considerably more information can be gleaned by considering different time
 #' periods, such as how the relationship between two pollutants vary over time,
-#' by day of the week, diurnally and so on. The \code{linearRelation} function
+#' by day of the week, diurnally and so on. The `linearRelation` function
 #' does just that - it fits a linear relationship between two pollutants over a
-#' wide range of time periods determined by \code{period}.
+#' wide range of time periods determined by `period`.
 #'
-#' \code{linearRelation} function is particularly useful if background
+#' `linearRelation` function is particularly useful if background
 #' concentrations are first removed from roadside concentrations, as the
 #' increment will relate more directly with changes in emissions. In this
-#' respect, using \code{linearRelation} can provide valuable information on how
+#' respect, using `linearRelation` can provide valuable information on how
 #' emissions may have changed over time, by hour of the day etc. Using the
 #' function in this way will require users to do some basic manipulation with
 #' their data first.
 #'
-#' If a data frame is supplied that contains \code{nox}, \code{no2} and
-#' \code{o3}, the \code{y} can be chosen as \code{y = "ox"}. In function will
+#' If a data frame is supplied that contains `nox`, `no2` and
+#' `o3`, the `y` can be chosen as `y = "ox"`. In function will
 #' therefore consider total oxidant slope (sum of NO2 + O3), which can provide
 #' valuable information on likely vehicle primary NO emissions. Note, however,
 #' that most roadside sites do not have ozone measurements and
-#' \code{\link{calcFno2}} is the alternative.
+#' [calcFno2()] is the alternative.
 #'
-#' @param mydata A data frame minimally containing \code{date} and two
+#' @param mydata A data frame minimally containing `date` and two
 #'   pollutants.
 #' @param x First pollutant that when plotted would appear on the x-axis of a
-#'   relationship e.g. \code{x = "nox"}.
+#'   relationship e.g. `x = "nox"`.
 #' @param y Second pollutant that when plotted would appear on the y-axis of a
-#'   relationship e.g. \code{y = "pm10"}.
+#'   relationship e.g. `y = "pm10"`.
 #' @param period A range of different time periods can be analysed. The default
-#'   is \code{month} but can be \code{year} and \code{week}. For increased
-#'   flexibility an integer can be used e.g. for 3-month values \code{period =
-#'   "3 month"}. Other cases include \code{"hour"} will show the diurnal
-#'   relationship between \code{x} and \code{y} and \dQuote{weekday} the day of
-#'   the week relationship between \code{x} and \code{y}. \dQuote{day.hour} will
+#'   is `month` but can be `year` and `week`. For increased
+#'   flexibility an integer can be used e.g. for 3-month values `period =
+#'   "3 month"`. Other cases include `"hour"` will show the diurnal
+#'   relationship between `x` and `y` and \dQuote{weekday} the day of
+#'   the week relationship between `x` and `y`. \dQuote{day.hour} will
 #'   plot the relationship by weekday and hour of the day.
-#' @param condition For \code{period = "hour"}, \code{period = "day"} and
-#'   \code{period = "day.hour"}, setting \code{condition = TRUE} will plot the
+#' @param condition For `period = "hour"`, `period = "day"` and
+#'   `period = "day.hour"`, setting `condition = TRUE` will plot the
 #'   relationships split by year. This is useful for seeing how the
 #'   relationships may be changing over time.
 #' @param n The minimum number of points to be sent to the linear model.
 #'   Because there may only be a few points e.g. hours where two pollutants are
-#'   available over one week, \code{n} can be set to ensure that at least
-#'   \code{n} points are sent to the linear model. If a period has hours <
-#'   \code{n} that period will be ignored.
+#'   available over one week, `n` can be set to ensure that at least
+#'   `n` points are sent to the linear model. If a period has hours <
+#'   `n` that period will be ignored.
 #' @param rsq.thresh The minimum correlation coefficient (R2) allowed. If the
-#'   relationship between \code{x} and \code{y} is not very good for a
-#'   particular period, setting \code{rsq.thresh} can help to remove those
+#'   relationship between `x` and `y` is not very good for a
+#'   particular period, setting `rsq.thresh` can help to remove those
 #'   periods where the relationship is not strong. Any R2 values below
-#'   \code{rsq.thresh} will not be plotted.
+#'   `rsq.thresh` will not be plotted.
 #' @param ylab y-axis title, specified by the user.
-#' @param auto.text Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
 #'   titles and axis labels will automatically try and format pollutant names
 #'   and units properly e.g.  by subscripting the \sQuote{2} in NO2.
 #' @param cols Colour for the points and uncertainty intervals.
@@ -68,11 +68,11 @@
 #'   date/time appropriately to the range being considered.  This does not
 #'   always work as desired automatically. The user can therefore increase or
 #'   decrease the number of intervals by adjusting the value of
-#'   \code{date.breaks} up or down.
-#' @param plot Should a plot be produced? \code{FALSE} can be useful when
+#'   `date.breaks` up or down.
+#' @param plot Should a plot be produced? `FALSE` can be useful when
 #'   analysing data to extract plot components and plotting them in other ways.
 #' @param ... Other graphical parameters. A useful one to remove the strip with
-#'   the date range on at the top of the plot is to set \code{strip = FALSE}.
+#'   the date range on at the top of the plot is to set `strip = FALSE`.
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
@@ -83,30 +83,37 @@
 #' linearRelation(mydata, x = "nox", y = "so2")
 #' # monthly relationship between NOx and SO2 - note rapid fall in
 #' # ratio at the beginning of the series
-#' \dontrun{linearRelation(mydata, x = "nox", y = "ox")}
+#' \dontrun{
+#' linearRelation(mydata, x = "nox", y = "ox")
+#' }
 #'
 #' # diurnal oxidant slope by year # clear change in magnitude
 #' # starting 2003, but the diurnal profile has also changed: the
 #' # morning and evening peak hours are more important, presumably
 #' # due to change in certain vehicle types
-#' \dontrun{linearRelation(mydata, x = "nox", y = "ox", period = "hour", condition = TRUE)}
+#' \dontrun{
+#' linearRelation(mydata, x = "nox", y = "ox", period = "hour", condition = TRUE)
+#' }
 #'
 #' # PM2.5/PM10 ratio, but only plot where monthly R2 >= 0.8
-#' \dontrun{linearRelation(mydata, x = "pm10", y = "pm25", rsq.thresh = 0.8)}
-linearRelation <- function(mydata,
-                           x = "nox",
-                           y = "no2",
-                           period = "month",
-                           condition = FALSE,
-                           n = 20,
-                           rsq.thresh = 0,
-                           ylab = paste0("slope from ", y, " = m.", x, " + c"),
-                           auto.text = TRUE,
-                           cols = "grey30",
-                           date.breaks = 5,
-                           plot = TRUE,
-                           ...) {
-
+#' \dontrun{
+#' linearRelation(mydata, x = "pm10", y = "pm25", rsq.thresh = 0.8)
+#' }
+linearRelation <- function(
+  mydata,
+  x = "nox",
+  y = "no2",
+  period = "month",
+  condition = FALSE,
+  n = 20,
+  rsq.thresh = 0,
+  ylab = paste0("slope from ", y, " = m.", x, " + c"),
+  auto.text = TRUE,
+  cols = "grey30",
+  date.breaks = 5,
+  plot = TRUE,
+  ...
+) {
   ## get rid of R check annoyances
   nox <- ox <- cond <- rsquare <- N <- r.thresh <- NULL
 
@@ -118,7 +125,6 @@ linearRelation <- function(mydata,
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
-
     fontsize = current.font
   ))
 
@@ -132,7 +138,6 @@ linearRelation <- function(mydata,
     data.col <- cols
     line.col <- "red"
   }
-
 
   ## Args setup
   Args <- list(...)
@@ -174,7 +179,6 @@ linearRelation <- function(mydata,
     trellis.par.set(fontsize = list(text = Args$fontsize))
   }
 
-
   ## prepare data
   if ("ox" %in% tolower(c(x, y))) {
     vars <- c("date", "nox", "no2", "ox")
@@ -192,33 +196,34 @@ linearRelation <- function(mydata,
   if (!condition) {
     mydata$cond <- paste(
       format(min(mydata$date), "%d/%/%m/%Y"),
-      " to ", format(max(mydata$date), "%d/%/%m/%Y")
+      " to ",
+      format(max(mydata$date), "%d/%/%m/%Y")
     )
-  } else { ## condition by year
+  } else {
+    ## condition by year
     mydata$cond <- format(mydata$date, "%Y")
   }
 
   # function to put a linear model through grouped data and extract components
   model_lm <- function(x, y, data) {
-
     # make it easy to refer to x and y
-    data <- rename(data, x = .data[[x]],
-                   y = .data[[y]])
+    data <- rename(data, x = .data[[x]], y = .data[[y]])
 
     my_lm <- function(data) lm(y ~ x, data = data)
 
     results <- data %>%
       group_nest() %>%
       mutate(fit = map(data, my_lm), sum = map(fit, summary)) %>%
-      mutate(rsquare = map_dbl(sum, "r.squared"),
-             coef = map(sum, "coefficients"),
-             intercept = map_dbl(coef, ~ .[1, 1]),
-             slope = map_dbl(coef, ~ .[2, 1]),
-             seslope = 2 * map_dbl(coef, ~ .[2, 2]),
-             N = map_dbl(data, nrow))
+      mutate(
+        rsquare = map_dbl(sum, "r.squared"),
+        coef = map(sum, "coefficients"),
+        intercept = map_dbl(coef, ~ .[1, 1]),
+        slope = map_dbl(coef, ~ .[2, 1]),
+        seslope = 2 * map_dbl(coef, ~ .[2, 2]),
+        N = map_dbl(data, nrow)
+      )
 
     return(results)
-
   }
 
   ## y range taking account of expanded uncertainties
@@ -230,13 +235,12 @@ linearRelation <- function(mydata,
   }
   ## ############################################################################
   if (period == "hour") {
-
     # xlab default
     if (is.null(Args$xlab)) {
       Args$xlab <- "hour"
     }
 
-    mydata <- mutate(mydata, cond,  hour = as.numeric(format(date, "%H"))) %>%
+    mydata <- mutate(mydata, cond, hour = as.numeric(format(date, "%H"))) %>%
       group_by(cond, hour)
 
     results <- model_lm(x = x, y = y, mydata) %>%
@@ -251,18 +255,20 @@ linearRelation <- function(mydata,
     if (!"ylim" %in% names(Args)) ylim <- rng(results)
 
     xyplot.args <- list(
-      x = eq, data = results, as.table = TRUE,
+      x = eq,
+      data = results,
+      as.table = TRUE,
       ylab = quickText(ylab, auto.text),
       scales = list(x = list(at = c(0, 6, 12, 18, 23))),
       ...,
       panel = function(x, y, pch, cex, subscripts, ...) {
         panel.grid(-1, 0)
         panel.abline(v = c(0, 6, 12, 18, 23), col = "grey85")
-        panel.xyplot(x, y,
-          col = data.col, pch = Args$pch,
-          cex = Args$cex, ...
-        )
-        panel.segments(x, y - results$seslope[subscripts], x,
+        panel.xyplot(x, y, col = data.col, pch = Args$pch, cex = Args$cex, ...)
+        panel.segments(
+          x,
+          y - results$seslope[subscripts],
+          x,
           y + results$seslope[subscripts],
           col = data.col,
           lwd = 2
@@ -280,7 +286,6 @@ linearRelation <- function(mydata,
   ## flexible time period
 
   if (!period %in% c("hour", "weekday", "day.hour")) {
-
     mydata <- mutate(mydata, cond = round_date(date, period)) %>%
       group_by(cond)
 
@@ -310,19 +315,21 @@ linearRelation <- function(mydata,
     if (!"ylim" %in% names(Args)) ylim <- rng(results)
 
     xyplot.args <- list(
-      x = slope ~ date, data = results,
+      x = slope ~ date,
+      data = results,
       scales = scales,
       xlim = xlim,
-      ylab = quickText(ylab, auto.text), ...,
+      ylab = quickText(ylab, auto.text),
+      ...,
       panel = function(x, y, pch, cex, subscripts, ...) {
         panel.grid(-1, 0)
         panel.abline(v = dates, col = "grey90")
-        panel.xyplot(x, y,
-          col = data.col, pch = Args$pch,
-          cex = Args$cex, ...
-        )
+        panel.xyplot(x, y, col = data.col, pch = Args$pch, cex = Args$cex, ...)
 
-        panel.segments(x, y - results$seslope[subscripts], x,
+        panel.segments(
+          x,
+          y - results$seslope[subscripts],
+          x,
           y + results$seslope[subscripts],
           col = data.col,
           lwd = 2
@@ -339,13 +346,12 @@ linearRelation <- function(mydata,
   ## ###############################################################################
 
   if (period == "weekday") {
-
     # xlab default
     if (is.null(Args$xlab)) {
       Args$xlab <- "weekday"
     }
 
-    mydata <- mutate(mydata, cond,  weekday = format(date, "%a")) %>%
+    mydata <- mutate(mydata, cond, weekday = format(date, "%a")) %>%
       group_by(cond, weekday)
 
     results <- model_lm(x = x, y = y, mydata) %>%
@@ -355,11 +361,11 @@ linearRelation <- function(mydata,
     results$slope <- results$slope * adj
     results$seslope <- results$seslope * adj
 
-    results$weekday <- ordered(results$weekday,
+    results$weekday <- ordered(
+      results$weekday,
       levels = format(ISOdate(2000, 1, 3:9), "%a")
     )
     if (!"ylim" %in% names(Args)) ylim <- rng(results)
-
 
     if (condition) {
       myform <- formula("x = slope ~ weekday | cond")
@@ -367,18 +373,20 @@ linearRelation <- function(mydata,
       myform <- formula("x = slope ~ weekday")
     }
 
-    xyplot.args <- list(myform,
+    xyplot.args <- list(
+      myform,
       data = results,
       ylab = quickText(ylab, auto.text),
-      as.table = TRUE, ...,
+      as.table = TRUE,
+      ...,
       panel = function(x, y, pch, cex, subscripts, ...) {
         panel.grid(-1, 0)
         panel.abline(v = 1:7, col = "grey85")
-        panel.xyplot(x, y,
-          col = data.col, pch = Args$pch,
-          cex = Args$cex, ...
-        )
-        panel.segments(x, y - results$seslope[subscripts], x,
+        panel.xyplot(x, y, col = data.col, pch = Args$pch, cex = Args$cex, ...)
+        panel.segments(
+          x,
+          y - results$seslope[subscripts],
+          x,
           y + results$seslope[subscripts],
           col = data.col,
           lwd = 2
@@ -395,14 +403,17 @@ linearRelation <- function(mydata,
   ################################################################################################
 
   if (period == "day.hour") {
-
     # xlab default
     if (is.null(Args$xlab)) {
       Args$xlab <- "hour"
     }
 
-    mydata <- mutate(mydata, cond,  weekday = format(date, "%A"),
-                     hour = as.numeric(format(date, "%H"))) %>%
+    mydata <- mutate(
+      mydata,
+      cond,
+      weekday = format(date, "%A"),
+      hour = as.numeric(format(date, "%H"))
+    ) %>%
       group_by(cond, weekday, hour)
 
     results <- model_lm(x = x, y = y, mydata) %>%
@@ -411,8 +422,10 @@ linearRelation <- function(mydata,
     results$slope <- results$slope * adj
     results$seslope <- results$seslope * adj
     results <- subset(results, rsquare >= rsq.thresh & N >= n)
-    results$weekday <- ordered(results$weekday,
-                               levels = format(ISOdate(2000, 1, 3:9), "%A"))
+    results$weekday <- ordered(
+      results$weekday,
+      levels = format(ISOdate(2000, 1, 3:9), "%A")
+    )
     if (nrow(results) == 0) stop("Note enough data to plot. Try reducing 'n'.")
 
     eq <- formula(slope ~ hour | weekday)
@@ -421,7 +434,8 @@ linearRelation <- function(mydata,
     if (!"ylim" %in% names(Args)) ylim <- rng(results)
 
     xyplot.args <- list(
-      x = eq, data = results,
+      x = eq,
+      data = results,
       as.table = TRUE,
       layout = c(7, length(unique(results$cond))),
       ylab = quickText(ylab, auto.text),
@@ -429,15 +443,14 @@ linearRelation <- function(mydata,
       panel = function(x, y, pch, cex, subscripts, ...) {
         panel.grid(-1, 0)
         panel.abline(v = c(0, 6, 12, 18, 23), col = "grey85")
-        panel.xyplot(x, y,
-          col = data.col, pch = Args$pch,
-          cex = Args$cex, ...
-        )
-        panel.segments(x,
+        panel.xyplot(x, y, col = data.col, pch = Args$pch, cex = Args$cex, ...)
+        panel.segments(
+          x,
           y - results$seslope[subscripts],
           x,
           y + results$seslope[subscripts],
-          col = data.col, lwd = 2
+          col = data.col,
+          lwd = 2
         )
       }
     )
@@ -450,11 +463,14 @@ linearRelation <- function(mydata,
   }
 
   if (plot) {
-    if (condition &
-        period == "day.hour")
+    if (
+      condition &
+        period == "day.hour"
+    ) {
       print(useOuterStrips(plt))
-    else
+    } else {
       print(plt)
+    }
   }
 
   #################
@@ -475,12 +491,16 @@ nonParSlope <- function(mydata, x, y, alpha = 0.05, nboot = 50) {
   upper <- lower <- NULL
 
   estimates <- regci(
-    x = mydata[[x]], y = mydata[[y]], alpha = alpha,
-    nboot = nboot, autocor = FALSE
+    x = mydata[[x]],
+    y = mydata[[y]],
+    alpha = alpha,
+    nboot = nboot,
+    autocor = FALSE
   )$regci
 
   results <- data.frame(
-    slope = estimates[2, 3], upper = estimates[2, 2],
+    slope = estimates[2, 3],
+    upper = estimates[2, 2],
     lower = estimates[2, 1]
   )
   results <- transform(results, error = (upper - lower) / 2)

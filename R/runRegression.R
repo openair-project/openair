@@ -10,20 +10,20 @@
 #' concentrations changes by very little. By filtering the output for high R2
 #' values (typically more than 0.90 to 0.95), conditions where local source
 #' dilution is dominant can be isolated for post processing. The function is
-#' more fully described and used in the \code{openair} online manual, together
+#' more fully described and used in the `openair` online manual, together
 #' with examples.
 #'
-#' @param mydata A data frame with  columns for \code{date} and at least two
+#' @param mydata A data frame with  columns for `date` and at least two
 #'   variables for use in a regression.
-#' @param x The column name of the \code{x} variable for use in a linear
-#'   regression \code{y = m.x + c}.
-#' @param y The column name of the \code{y} variable for use in a linear
-#'   regression \code{y = m.x + c}.
+#' @param x The column name of the `x` variable for use in a linear
+#'   regression `y = m.x + c`.
+#' @param y The column name of the `y` variable for use in a linear
+#'   regression `y = m.x + c`.
 #' @param run.len The window width to be used for a rolling regression. A value
 #'   of 3 for example for hourly data will consider 3 one-hour time sequences.
 #' @param date.pad Should gaps in time series be filled before calculations are
 #'   made?
-#' @return A tibble with \code{date} and calculated regression coefficients and
+#' @return A tibble with `date` and calculated regression coefficients and
 #'   other information to plot dilution lines.
 #' @importFrom stats coefficients
 #' @importFrom stats .lm.fit
@@ -50,11 +50,17 @@
 #' @examples
 #' # Just use part of a year of data
 #' output <- runRegression(selectByDate(mydata, year = 2004, month = 1:3),
-#' x = "nox", y = "pm10", run.len = 3)
+#'   x = "nox", y = "pm10", run.len = 3
+#' )
 #'
 #' output
-runRegression <- function(mydata, x = "nox", y = "pm10", run.len = 3,
-                          date.pad = TRUE) {
+runRegression <- function(
+  mydata,
+  x = "nox",
+  y = "pm10",
+  run.len = 3,
+  date.pad = TRUE
+) {
   ## think about it in terms of y = fn(x) e.g. pm10 = a.nox + b
 
   vars <- c("date", x, y)
@@ -62,8 +68,9 @@ runRegression <- function(mydata, x = "nox", y = "pm10", run.len = 3,
   mydata <- checkPrep(mydata, vars, type = "default")
 
   ## pad missing data
-  if (date.pad)
+  if (date.pad) {
     mydata <- date.pad(mydata)
+  }
 
   # list of rolling data frames
   mydata <-
@@ -74,27 +81,31 @@ runRegression <- function(mydata, x = "nox", y = "pm10", run.len = 3,
   ## select non-missing with run.len rows
 
   mydata <-
-    mydata[which(lapply(mydata, function(x) {
-      nrow(na.omit(x))
-    }) == run.len)]
+    mydata[which(
+      lapply(mydata, function(x) {
+        nrow(na.omit(x))
+      }) ==
+        run.len
+    )]
 
   model <- function(df) {
-   # lm(eval(paste(y, "~", x)), data = df)
+    # lm(eval(paste(y, "~", x)), data = df)
     # fast model fitting
-    fit <- .lm.fit(cbind(1, df[[x]]),df[[y]])
+    fit <- .lm.fit(cbind(1, df[[x]]), df[[y]])
 
     r.sq <- 1 - var(fit$residuals) / var(df[[y]])
 
     if (all(fit$residuals < 1e-7)) r.sq <- 1
 
-    fit$r.sq <-  r.sq
+    fit$r.sq <- r.sq
     return(fit)
-
   }
 
   # suppress warnings (perfect fit)
   rsq <- function(x) {
-    tryCatch(summary(x)$r.squared, warning = function(w) return(1))
+    tryCatch(summary(x)$r.squared, warning = function(w) {
+      return(1)
+    })
   }
 
   # und models
@@ -109,8 +120,10 @@ runRegression <- function(mydata, x = "nox", y = "pm10", run.len = 3,
     map(coefficients) %>%
     map_dbl(1)
 
- # r_squared <- models %>% map_dbl(rsq)
-  r_squared <- models %>% map("r.sq") %>% map_dbl(1)
+  # r_squared <- models %>% map_dbl(rsq)
+  r_squared <- models %>%
+    map("r.sq") %>%
+    map_dbl(1)
   date <- mydata %>% map_vec(~ median(.x$date)) # use median date
   date_start <- mydata %>% map_vec(~ min(.x$date))
   date_end <- mydata %>% map_vec(~ max(.x$date))

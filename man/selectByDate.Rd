@@ -40,9 +40,28 @@ abbreviated to 3 letters and be in lower or upper case. Also accepts
 select hours 0 to 12 inclusive.}
 }
 \description{
+<<<<<<< HEAD
 Utility function to filter a data frame by a date range or specific date
 periods (month, year, etc.). All options are applied in turn, meaning this
 function can be used to select quite complex dates simply.
+=======
+Utility function to make it easier to select periods from a data frame
+before sending to a function
+}
+\details{
+This function makes it much easier to select periods of interest from a data
+frame based on dates in a British format. Selecting date/times in R format
+can be intimidating for new users. This function can be used to select quite
+complex dates simply - see examples below.
+
+Dates are assumed to be inclusive, so \code{start = "1/1/1999"} means that
+times are selected from hour zero. Similarly, \code{end = "31/12/1999"} will
+include all hours of the 31st December. \code{start} and \code{end} can also
+be in standard R format as a string i.e. "YYYY-mm-dd", so \code{start = "1999-01-01"} is fine.
+
+All options are applied in turn making it possible to select quite complex
+dates
+>>>>>>> origin/master
 }
 \examples{
 

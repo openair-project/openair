@@ -14,3 +14,5 @@ README_cache/*
 docs
 *.html
 inst/doc
+
+/.quarto/

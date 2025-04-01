@@ -23,11 +23,11 @@
 #' \item \eqn{RMSE}, the root mean squared error.
 #'
 #' \item \eqn{r}, the Pearson correlation coefficient. Note, can also supply and
-#' argument \code{method} e.g. \code{method = "spearman"}. Also returned is the
+#' argument `method` e.g. `method = "spearman"`. Also returned is the
 #' P value of the correlation coefficient, \eqn{P}, which may present as `0` for
 #' very low values.
 #'
-#' \item \eqn{COE}, the \emph{Coefficient of Efficiency} based on Legates and
+#' \item \eqn{COE}, the *Coefficient of Efficiency* based on Legates and
 #' McCabe (1999, 2012). There have been many suggestions for measuring model
 #' performance over the years, but the COE is a simple formulation which is easy
 #' to interpret.
@@ -55,36 +55,36 @@
 #' observed variability - so some caution is needed when the IOA approaches -1.
 #' }
 #'
-#' All statistics are based on complete pairs of \code{mod} and \code{obs}.
+#' All statistics are based on complete pairs of `mod` and `obs`.
 #'
-#' Conditioning is possible through setting \code{type}, which can be a vector
-#' e.g. \code{type = c("weekday", "season")}.
+#' Conditioning is possible through setting `type`, which can be a vector
+#' e.g. `type = c("weekday", "season")`.
 #'
 #' @param mydata A data frame.
-#' @param mod Name of a variable in \code{mydata} that represents modelled
+#' @param mod Name of a variable in `mydata` that represents modelled
 #'   values.
-#' @param obs Name of a variable in \code{mydata} that represents measured
+#' @param obs Name of a variable in `mydata` that represents measured
 #'   values.
 #' @param statistic The statistic to be calculated. See details below for a
 #'   description of each.
-#' @param type \code{type} determines how the data are split i.e. conditioned,
+#' @param type `type` determines how the data are split i.e. conditioned,
 #'   and then plotted. The default is will produce statistics using the entire
-#'   data. \code{type} can be one of the built-in types as detailed in
-#'   \code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, \code{type = "season"} will produce four sets of
+#'   data. `type` can be one of the built-in types as detailed in
+#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
+#'   on. For example, `type = "season"` will produce four sets of
 #'   statistics --- one for each season.
 #'
-#'   It is also possible to choose \code{type} as another variable in the data
+#'   It is also possible to choose `type` as another variable in the data
 #'   frame. If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   More than one type can be considered e.g. \code{type = c("season",
-#'   "weekday")} will produce statistics split by season and day of the week.
-#' @param rank.name Simple model ranking can be carried out if \code{rank.name}
-#'   is supplied. \code{rank.name} will generally refer to a column representing
+#'   More than one type can be considered e.g. `type = c("season",
+#'   "weekday")` will produce statistics split by season and day of the week.
+#' @param rank.name Simple model ranking can be carried out if `rank.name`
+#'   is supplied. `rank.name` will generally refer to a column representing
 #'   a model name, which is to ranked. The ranking is based the COE performance,
 #'   as that indicator is arguably the best single model performance indicator
 #'   available.
@@ -113,13 +113,26 @@
 #'
 #' modStats(mydata, mod = "no2", obs = "nox", type = "season")
 #'
-#'
-modStats <- function(mydata, mod = "mod", obs = "obs",
-                     statistic = c(
-                       "n", "FAC2", "MB", "MGE", "NMB",
-                       "NMGE", "RMSE", "r", "COE", "IOA"
-                     ),
-                     type = "default", rank.name = NULL, ...) {
+modStats <- function(
+  mydata,
+  mod = "mod",
+  obs = "obs",
+  statistic = c(
+    "n",
+    "FAC2",
+    "MB",
+    "MGE",
+    "NMB",
+    "NMGE",
+    "RMSE",
+    "r",
+    "COE",
+    "IOA"
+  ),
+  type = "default",
+  rank.name = NULL,
+  ...
+) {
   ## function to calculate model evaluation statistics
   ## the default is to use the entire data set.
   ## Requires a field "date" and optional conditioning variables representing measured and modelled values
@@ -130,8 +143,16 @@ modStats <- function(mydata, mod = "mod", obs = "obs",
   if (any(type %in% dateTypes)) vars <- c("date", vars)
 
   theStats <- c(
-    "n", "FAC2", "MB", "MGE", "NMB", "NMGE", "RMSE",
-    "r", "COE", "IOA"
+    "n",
+    "FAC2",
+    "MB",
+    "MGE",
+    "NMB",
+    "NMGE",
+    "RMSE",
+    "r",
+    "COE",
+    "IOA"
   )
 
   matching <- statistic %in% theStats
@@ -143,7 +164,9 @@ modStats <- function(mydata, mod = "mod", obs = "obs",
 
   ## check the data
   mydata <- checkPrep(
-    mydata, vars, type,
+    mydata,
+    vars,
+    type,
     remove.calm = FALSE,
     strip.white = FALSE
   )
@@ -232,16 +255,26 @@ modStats <- function(mydata, mod = "mod", obs = "obs",
     res.IOA <- NULL
   }
 
-
   ## merge them all into one data frame
   results <- list(
-    res.n, res.FAC, res.MB, res.MGE, res.NMB, res.NMGE, res.RMSE, res.r,
-    res.COE, res.IOA
+    res.n,
+    res.FAC,
+    res.MB,
+    res.MGE,
+    res.NMB,
+    res.NMGE,
+    res.RMSE,
+    res.r,
+    res.COE,
+    res.IOA
   )
 
   ## remove NULLs from lits
   results <- results[!sapply(results, is.null)]
-  results <- Reduce(function(x, y, by = type) merge(x, y, by = type, all = TRUE), results)
+  results <- Reduce(
+    function(x, y, by = type) merge(x, y, by = type, all = TRUE),
+    results
+  )
 
   results <- sortDataFrame(results, key = type)
 
@@ -276,7 +309,6 @@ sortDataFrame <- function(x, key, ...) {
 
 
 rankModels <- function(mydata, rank.name = "group") {
-
   ## sort by COE
   mydata <- sortDataFrame(mydata, "COE", decreasing = TRUE)
 }
@@ -333,7 +365,7 @@ NMGE <- function(x, mod = "mod", obs = "obs") {
 ## root mean square error
 RMSE <- function(x, mod = "mod", obs = "obs") {
   x <- na.omit(x[, c(mod, obs)])
-  res <- mean((x[[mod]] - x[[obs]]) ^ 2) ^ 0.5
+  res <- mean((x[[mod]] - x[[obs]])^2)^0.5
   data.frame(RMSE = res)
 }
 

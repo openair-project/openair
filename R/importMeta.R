@@ -2,7 +2,7 @@
 #'
 #' Function to import meta data for air quality monitoring sites. By default,
 #' the function will return the site latitude, longitude and site type, as well
-#' as the code used in functions like [importUKAQ()], [importKCL()] and
+#' as the code used in functions like [importUKAQ()], [importImperial()] and
 #' [importEurope()]. Additional information may optionally be returned.
 #'
 #' This function imports site meta data from several networks in the UK and
@@ -18,33 +18,53 @@
 #'
 #' - `"ni"`,  The [Northern Ireland Air Quality Network](https://www.airqualityni.co.uk/).
 #'
-#' - `"local"`,  Locally managed air quality networks in England.
-#'
-#' - `"kcl"`,  King's College London networks.
-#'
+#' - `"local"`,  [Locally managed](https://uk-air.defra.gov.uk/networks/network-info?view=nondefraaqmon) air quality networks in England.
+#' - `"imperial"`,  Imperial College London (formerly King's College London) networks.
 #' - `"europe"`,  Hourly European data (Air Quality e-Reporting) based on a
 #' simplified version of the `{saqgetr}` package.
 #'
 #' By default, the function will return the site latitude, longitude and site
 #' type. If the option `all = TRUE` is used, much more detailed information is
-#' returned. For most networks, this detailed information includes per-pollutant
-#' summaries, opening and closing dates of sites etc.
+#' returned. The following metadata columns are available in the complete dataset:
+#'
+#' - **source**: The network with which the site is associated. Note that some monitoring sites are part of multiple networks (e.g., the AURN & SAQN) so the same site may feature twice under different sources.
+#'
+#' - **code**: The site code, used to import data from specific sites of interest.
+#'
+#' - **site**: The site name, which is more human-readable than the site code.
+#'
+#' - **site_type**: A description of the site environment. Read more at <https://uk-air.defra.gov.uk/networks/site-types>.
+#'
+#' - **latitude** and **longitude**: The coordinates of the monitoring station, using the World Geodetic System (<https://epsg.io/4326>).
+#'
+#' - **start_date** and **end_date**: The opening and closing dates of the monitoring station. If `by_pollutant = TRUE`, these dates are instead the first and last dates at which specific pollutants were measured. A missing value, `NA`, indicates that monitoring is ongoing.
+#'
+#' - **ratified_to**: The date to which data has been ratified (i.e., 'quality checked'). Data after this date is subject to change.
+#'
+#' - **zone** and **agglomeration**: The UK is divided into agglomeration zones (large urban areas) and non-agglomeration zones for air quality assessment, which are given in these columns.
+#'
+#' - **local_authority**: The local authority in which the monitoring station is found.
+#'
+#' - **provider** and **code**: The specific provider of the locally managed dataset (e.g., `"londonair"`).
 #'
 #' Thanks go to Trevor Davies (Ricardo), Dr Stuart Grange (EMPA) and Dr Ben
 #' Barratt (KCL) and  for making these data available.
 #' @param source One or more air quality networks for which data is available
 #'   through openair. Available networks include:
+#'
 #'   - `"aurn"`,  The UK Automatic Urban and Rural Network.
 #'   - `"aqe"`,  The Air Quality England Network.
 #'   - `"saqn"`,  The Scottish Air Quality Network.
 #'   - `"waqn"`,  The Welsh Air Quality Network.
 #'   - `"ni"`,  The Northern Ireland Air Quality Network.
 #'   - `"local"`,  Locally managed air quality networks in England.
-#'   - `"kcl"`, King's College London networks.
+#'   - `"imperial"`, Imperial College London (formerly King's College London) networks.
 #'   - `"europe"`, European AirBase/e-reporting data.
+#'
 #'   There are two additional options provided for convenience:
+#'
 #'   - `"ukaq"` will return metadata for all networks for which data is imported by [importUKAQ()] (i.e., AURN, AQE, SAQN, WAQN, NI, and the local networks).
-#'   - `"all"` will import all available metadata (i.e., `"ukaq"` plus `"kcl"` and `"europe"`).
+#'   - `"all"` will import all available metadata (i.e., `"ukaq"` plus `"imperial"` and `"europe"`).
 #' @param all When `all = FALSE` only the site code, site name, latitude and
 #'   longitude and site type are imported. Setting `all = TRUE` will import all
 #'   available meta data and provide details (when available) or the individual
@@ -58,7 +78,7 @@
 #'   a sequence e.g. `year = 2010:2020` or of length 2 e.g. `year =
 #'   c(2010, 2020)`, which will return only sites that were open over the
 #'   duration. Note that `year` is ignored when the `source` is either
-#'   `"kcl"` or `"europe"`.
+#'   `"imperial"` or `"europe"`.
 #' @return A data frame with meta data.
 #' @author David Carslaw
 #' @family import functions
@@ -81,17 +101,14 @@
 #' meta <- importMeta(source = c("aurn", "aqe", "local"))
 #' }
 importMeta <-
-  function(source = "aurn",
-           all = FALSE,
-           year = NA,
-           duplicate = FALSE) {
+  function(source = "aurn", all = FALSE, year = NA, duplicate = FALSE) {
     ## special source arguments
     if (any(source == "ukaq")) {
       source <- c("aurn", "aqe", "saqn", "waqn", "ni", "local")
     }
     if (any(source == "all")) {
       source <-
-        c("aurn", "aqe", "saqn", "waqn", "ni", "local", "kcl", "europe")
+        c("aurn", "aqe", "saqn", "waqn", "ni", "local", "imperial", "europe")
     }
 
     ## meta data sources
@@ -99,6 +116,7 @@ importMeta <-
       c(
         "aurn",
         "kcl",
+        "imperial",
         "saqn",
         "saqd",
         "waqn",
@@ -123,8 +141,9 @@ importMeta <-
 
     # function to import any of the source networks
     get_meta <- function(source, all) {
-      if (!source %in% c("kcl", "europe")) {
-        url <- switch(source,
+      if (!source %in% c("kcl", "imperial", "europe")) {
+        url <- switch(
+          source,
           aurn = "https://uk-air.defra.gov.uk/openair/R_data/AURN_metadata.RData",
           saqn = "https://www.scottishairquality.scot/openair/R_data/SCOT_metadata.RData",
           saqd = "https://www.scottishairquality.scot/openair/R_data/SCOT_metadata.RData",
@@ -139,7 +158,7 @@ importMeta <-
       }
 
       # KCL
-      if (source == "kcl") {
+      if (source %in% c("kcl", "imperial")) {
         con <- url("https://www.londonair.org.uk/r_data/sites.RData")
         meta <- get(load(con))
         close(con)
@@ -160,14 +179,18 @@ importMeta <-
           meta$end_year <-
             lubridate::year(as.Date(meta$ClosingDate))
           meta$end_year <-
-            ifelse(is.na(meta$end_year),
+            ifelse(
+              is.na(meta$end_year),
               as.numeric(format(Sys.Date(), "%Y")),
               meta$end_year
             )
           meta$start_year <- lubridate::year(meta$OpeningDate)
           meta <-
-            dplyr::filter(meta, start_year <= min(year) &
-              end_year >= max(year))
+            dplyr::filter(
+              meta,
+              start_year <= min(year) &
+                end_year >= max(year)
+            )
         }
       }
 
@@ -209,14 +232,18 @@ importMeta <-
           meta$end_year <-
             lubridate::year(as.Date(meta$date_end))
           meta$end_year <-
-            ifelse(is.na(meta$end_year),
+            ifelse(
+              is.na(meta$end_year),
               as.numeric(format(Sys.Date(), "%Y")),
               meta$end_year
             )
           meta$start_year <- lubridate::year(meta$date_start)
           meta <-
-            dplyr::filter(meta, start_year <= min(year) &
-              end_year >= max(year))
+            dplyr::filter(
+              meta,
+              start_year <= min(year) &
+                end_year >= max(year)
+            )
         }
 
         meta <- rename(meta, code = "site", site = "site_name")
@@ -224,10 +251,7 @@ importMeta <-
 
       # return data source
       meta <-
-        dplyr::mutate(meta,
-          source = source,
-          .before = dplyr::everything()
-        )
+        dplyr::mutate(meta, source = source, .before = dplyr::everything())
 
       return(meta)
     }
@@ -240,16 +264,19 @@ importMeta <-
     # drop extra columns if not "all"
     if (!all) {
       meta <-
-        dplyr::select(meta, dplyr::all_of(
-          c(
-            "source",
-            "site",
-            "code",
-            "latitude",
-            "longitude",
-            "site_type"
+        dplyr::select(
+          meta,
+          dplyr::all_of(
+            c(
+              "source",
+              "site",
+              "code",
+              "latitude",
+              "longitude",
+              "site_type"
+            )
           )
-        ))
+        )
     }
 
     # change some names
@@ -264,7 +291,8 @@ importMeta <-
     # deal with duplicates
     if (!duplicate) {
       if (all & "variable" %in% names(meta)) {
-        meta <- dplyr::distinct(meta,
+        meta <- dplyr::distinct(
+          meta,
           .data$code,
           .data$latitude,
           .data$longitude,
@@ -272,7 +300,8 @@ importMeta <-
           .keep_all = TRUE
         )
       } else {
-        meta <- dplyr::distinct(meta,
+        meta <- dplyr::distinct(
+          meta,
           .data$code,
           .data$latitude,
           .data$longitude,
@@ -328,8 +357,11 @@ clean_ricardo_meta <- function(url, all, year) {
     meta$end_year <- lubridate::year(as.Date(meta$end_date))
     meta$start_year <- lubridate::year(meta$start_date)
     meta <-
-      dplyr::filter(meta, start_year <= min(year) &
-        end_year >= max(year))
+      dplyr::filter(
+        meta,
+        start_year <= min(year) &
+          end_year >= max(year)
+      )
   }
 
   ## only extract one line per site to make it easier to use file

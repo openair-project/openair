@@ -4,11 +4,11 @@
 #' primary purpose is as a tool for exploratory data analysis. Hierarchical
 #' clustering is used to group similar variables.
 #'
-#' The \code{corPlot} function plots correlation matrices. The implementation
+#' The `corPlot` function plots correlation matrices. The implementation
 #' relies heavily on that shown in Sarkar (2007), with a few extensions.
 #'
 #' Correlation matrices are a very effective way of understating relationships
-#' between many variables. The \code{corPlot} shows the correlation coded in
+#' between many variables. The `corPlot` shows the correlation coded in
 #' three ways: by shape (ellipses), colour and the numeric value. The ellipses
 #' can be thought of as visual representations of scatter plot. With a perfect
 #' positive correlation a line at 45 degrees positive slope is drawn. For zero
@@ -18,71 +18,71 @@
 #' between variables, i.e., which variables tend to behave most like one
 #' another. For this reason hierarchical clustering is applied to the
 #' correlation matrices to group variables that are most similar to one another
-#' (if \code{cluster = TRUE}).
+#' (if `cluster = TRUE`).
 #'
 #' If clustering is chosen it is also possible to add a dendrogram using the
-#' option \code{dendrogram = TRUE}. Note that dendrogramscan only be plotted for
-#' \code{type = "default"} i.e. when there is only a single panel. The
+#' option `dendrogram = TRUE`. Note that dendrogramscan only be plotted for
+#' `type = "default"` i.e. when there is only a single panel. The
 #' dendrogram can also be recovered from the plot object itself and plotted more
 #' clearly; see examples below.
 #'
-#' It is also possible to use the \code{openair} type option to condition the
+#' It is also possible to use the `openair` type option to condition the
 #' data in many flexible ways, although this may become difficult to visualise
 #' with too many panels.
 #'
 #' @param mydata A data frame which should consist of some numeric columns.
-#' @param pollutants the names of data-series in \code{mydata} to be plotted by
-#'   \code{corPlot}. The default option \code{NULL} and the alternative
+#' @param pollutants the names of data-series in `mydata` to be plotted by
+#'   `corPlot`. The default option `NULL` and the alternative
 #'   \dQuote{all} use all available valid (numeric) data.
-#' @param type \code{type} determines how the data are split i.e. conditioned,
+#' @param type `type` determines how the data are split i.e. conditioned,
 #'   and then plotted. The default is will produce a single plot using the
 #'   entire data. Type can be one of the built-in types as detailed in
-#'   \code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, \code{type = "season"} will produce four plots --- one for
+#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
+#'   on. For example, `type = "season"` will produce four plots --- one for
 #'   each season.
 #'
-#'   It is also possible to choose \code{type} as another variable in the data
+#'   It is also possible to choose `type` as another variable in the data
 #'   frame. If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #' @param cluster Should the data be ordered according to cluster analysis. If
-#'   \code{TRUE} hierarchical clustering is applied to the correlation matrices
-#'   using \code{hclust} to group similar variables together. With many
+#'   `TRUE` hierarchical clustering is applied to the correlation matrices
+#'   using `hclust` to group similar variables together. With many
 #'   variables clustering can greatly assist interpretation.
 #' @param method The correlation method to use. Can be \dQuote{pearson},
 #'   \dQuote{spearman} or \dQuote{kendall}.
 #' @param use How to handle missing values in the `cor` function. The default is
 #'   "pairwise.complete.obs". Care should be taken with the choice of how to
 #'   handle missing data when considering pair-wise correlations.
-#' @param dendrogram Should a dendrogram be plotted? When \code{TRUE} a
+#' @param dendrogram Should a dendrogram be plotted? When `TRUE` a
 #'   dendrogram is shown on the right of the plot. Note that this will only work
-#'   for \code{type = "default"}.
+#'   for `type = "default"`.
 #' @param lower Should only the lower triangle be plotted?
 #' @param cols Colours to be used for plotting. Options include
 #'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{spectral},
-#'   \dQuote{hue}, \dQuote{greyscale} and user defined (see \code{openColours}
+#'   \dQuote{hue}, \dQuote{greyscale} and user defined (see `openColours`
 #'   for more details).
-#' @param r.thresh Values of greater than \code{r.thresh} will be shown in bold
+#' @param r.thresh Values of greater than `r.thresh` will be shown in bold
 #'   type. This helps to highlight high correlations.
 #' @param text.col The colour of the text used to show the correlation values.
 #'   The first value controls the colour of negative correlations and the second
 #'   positive.
-#' @param auto.text Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
 #'   titles and axis labels will automatically try and format pollutant names
 #'   and units properly e.g.  by subscripting the `2' in NO2.
-#' @param plot Should a plot be produced? \code{FALSE} can be useful when
+#' @param plot Should a plot be produced? `FALSE` can be useful when
 #'   analysing data to extract corPlot components and plotting them in other
 #'   ways.
-#' @param ... Other graphical parameters passed onto \code{lattice:levelplot},
-#'   with common axis and title labelling options (such as \code{xlab},
-#'   \code{ylab}, \code{main}) being passed via \code{quickText} to handle
+#' @param ... Other graphical parameters passed onto `lattice:levelplot`,
+#'   with common axis and title labelling options (such as `xlab`,
+#'   `ylab`, `main`) being passed via `quickText` to handle
 #'   routine formatting.
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw --- but mostly based on code contained in Sarkar (2007)
-#' @seealso \code{taylor.diagram} from the \code{plotrix} package from which
+#' @seealso `taylor.diagram` from the `plotrix` package from which
 #'   some of the annotation code was used.
 #' @references Sarkar, D. (2007). Lattice Multivariate Data Visualization with
 #'   R. New York: Springer.
@@ -95,7 +95,7 @@
 #' ## plot by season ... and so on
 #' corPlot(mydata, type = "season")
 #' ## recover dendrogram when cluster = TRUE and plot it
-#' res <-corPlot(mydata)
+#' res <- corPlot(mydata)
 #' plot(res$clust)
 #' \dontrun{
 #' ## a more interesting are hydrocarbon measurements
@@ -105,18 +105,22 @@
 #' corPlot(hc)
 #' }
 #'
-#' 
-corPlot <- function(mydata, pollutants = NULL, type = "default",
-                    cluster = TRUE,
-                    method = "pearson",
-                    use = "pairwise.complete.obs",
-                    dendrogram = FALSE,
-                    lower = FALSE,
-                    cols = "default",
-                    r.thresh = 0.8, text.col = c("black", "black"),
-                    auto.text = TRUE,
-                    plot = TRUE,
-                    ...) {
+corPlot <- function(
+  mydata,
+  pollutants = NULL,
+  type = "default",
+  cluster = TRUE,
+  method = "pearson",
+  use = "pairwise.complete.obs",
+  dendrogram = FALSE,
+  lower = FALSE,
+  cols = "default",
+  r.thresh = 0.8,
+  text.col = c("black", "black"),
+  auto.text = TRUE,
+  plot = TRUE,
+  ...
+) {
   if (length(type) > 1) stop("Only one 'type' allowed in this function.")
 
   ## make sure date is present for types requiring it
@@ -135,7 +139,6 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
-
     fontsize = current.font
   ))
 
@@ -174,7 +177,9 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
   if (is.null(pollutants)) {
     pollutants <- names(mydata)
   }
-  if (is.character(pollutants) && length(pollutants) == 1 && pollutants == "all") {
+  if (
+    is.character(pollutants) && length(pollutants) == 1 && pollutants == "all"
+  ) {
     pollutants <- names(mydata)
   }
 
@@ -186,7 +191,8 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
   }
 
   mydata <- checkPrep(
-    mydata, pollutants,
+    mydata,
+    pollutants,
     type = type,
     remove.calm = FALSE
   )
@@ -245,22 +251,24 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
 
     thedata <- cbind(grid, z = thedata)
     thedata <- list(
-      thedata = thedata, pol.name = thepols, pol.ord = ord.dat,
+      thedata = thedata,
+      pol.name = thepols,
+      pol.ord = ord.dat,
       clust = clust
     )
     thedata
   }
 
   # main results in lists
-   results.grid <- mydata %>%
-     group_by(across(type)) %>%
-     group_nest() %>%
-     mutate(results = map(data, prepare.cond))
+  results.grid <- mydata %>%
+    group_by(across(type)) %>%
+    group_nest() %>%
+    mutate(results = map(data, prepare.cond))
 
   # cluster model
   clust <- results.grid %>%
     mutate(clust = map(results, 4))
-  clust <-  clust$clust[[1]]
+  clust <- clust$clust[[1]]
 
   ## recover by-type order
 
@@ -269,10 +277,12 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
 
   data.order <- lapply(data.order$out, function(x) pollutants[x])
 
-  x2 <- unlist(lapply(1:length(data.order), function(x)
-    (rep(data.order[[x]], times = length(data.order[[x]])))))
-  y2 <- unlist(lapply(1:length(data.order), function(x)
-    (rep(data.order[[x]], each = length(data.order[[x]])))))
+  x2 <- unlist(lapply(1:length(data.order), function(x) {
+    (rep(data.order[[x]], times = length(data.order[[x]])))
+  }))
+  y2 <- unlist(lapply(1:length(data.order), function(x) {
+    (rep(data.order[[x]], each = length(data.order[[x]])))
+  }))
 
   ## list of labels
 
@@ -292,7 +302,10 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
   div.col <- function(x) openColours(cols, x)
 
   ## labelleing of strips
-  pol.name <- sapply(levels(results.grid[[type]]), function(x) quickText(x, auto.text))
+  pol.name <- sapply(
+    levels(results.grid[[type]]),
+    function(x) quickText(x, auto.text)
+  )
   strip <- strip.custom(factor.levels = pol.name)
   if (type == "default") strip <- FALSE
 
@@ -327,13 +340,16 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
 
   ## plot dendrogram
   if (dendrogram && type == "default" && cluster) {
-    legend <- list(right = list(
-      fun = dendrogramGrob,
-      args = list(
-        x = as.dendrogram(clust),
-        side = "right", size = 4
+    legend <- list(
+      right = list(
+        fun = dendrogramGrob,
+        args = list(
+          x = as.dendrogram(clust),
+          side = "right",
+          size = 4
+        )
       )
-    ))
+    )
   } else {
     legend <- NULL
   }
@@ -343,7 +359,8 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
 
   ## plot via ... handler
   levelplot.args <- list(
-    x = myform, data = results.grid,
+    x = myform,
+    data = results.grid,
     at = do.breaks(c(-1.01, 1.01), 100),
     strip = strip,
     as.table = TRUE,
@@ -354,9 +371,12 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
     par.strip.text = list(cex = 0.8),
     scales = list(
       x = list(rot = 90, labels = labels, at = 1:npol),
-      y = list(labels = labels, at = 1:npol), relation = "free"
+      y = list(labels = labels, at = 1:npol),
+      relation = "free"
     ),
-    text.col = text.col, r.thresh = r.thresh, label = TRUE,
+    text.col = text.col,
+    r.thresh = r.thresh,
+    label = TRUE,
     panel = function(x, y, z, ...) {
       panel.abline(v = 1:sqrt(length(z)), col = "grey95")
       panel.abline(h = 1:sqrt(length(z)), col = "grey95")
@@ -399,8 +419,19 @@ corPlot <- function(mydata, pollutants = NULL, type = "default",
   invisible(output)
 }
 
-panel.corrgram <- function(x, y, z, subscripts, at, level = 0.9, text.col,
-                           r.thresh = r.thresh, label = FALSE, lower = lower, ...) {
+panel.corrgram <- function(
+  x,
+  y,
+  z,
+  subscripts,
+  at,
+  level = 0.9,
+  text.col,
+  r.thresh = r.thresh,
+  label = FALSE,
+  lower = lower,
+  ...
+) {
   x <- as.numeric(x)[subscripts]
   y <- as.numeric(y)[subscripts]
   z <- as.numeric(z)[subscripts]
@@ -409,24 +440,31 @@ panel.corrgram <- function(x, y, z, subscripts, at, level = 0.9, text.col,
 
   # just do lower triangle
   len <- length(z)
-  tmp <- matrix(seq_along(z), nrow = len ^ (1 / 2))
+  tmp <- matrix(seq_along(z), nrow = len^(1 / 2))
 
-  if (lower)
-    id <- which(lower.tri(tmp, diag = TRUE)) else
-      id <- 1:length(tmp)
+  if (lower) {
+    id <- which(lower.tri(tmp, diag = TRUE))
+  } else {
+    id <- 1:length(tmp)
+  }
 
   for (i in seq(along = id)) {
     ell <- ellipse(
       z[id[i]],
-      level = level, npoints = 50, scale = c(.2, .2),
+      level = level,
+      npoints = 50,
+      scale = c(.2, .2),
       centre = c(x[id[i]], y[id[i]])
     )
     panel.polygon(ell, col = zcol[id[i]], border = zcol[id[i]], ...)
   }
   if (label) {
     panel.text(
-      x = x[id], y = y[id], lab = 100 * round(z[id], 2),
-      cex = 0.8, col = ifelse(z[id] < 0, text.col[1], text.col[2]),
+      x = x[id],
+      y = y[id],
+      lab = 100 * round(z[id], 2),
+      cex = 0.8,
+      col = ifelse(z[id] < 0, text.col[1], text.col[2]),
       font = ifelse(z[id] < r.thresh, 1, 2)
     )
   }
@@ -434,8 +472,16 @@ panel.corrgram <- function(x, y, z, subscripts, at, level = 0.9, text.col,
 
 
 ## from ellipse package
-ellipse <- function(x, scale = c(1, 1), centre = c(0, 0), level = 0.95,
-                    t = sqrt(qchisq(level, 2)), which = c(1, 2), npoints = 100, ...) {
+ellipse <- function(
+  x,
+  scale = c(1, 1),
+  centre = c(0, 0),
+  level = 0.95,
+  t = sqrt(qchisq(level, 2)),
+  which = c(1, 2),
+  npoints = 100,
+  ...
+) {
   names <- c("x", "y")
   if (is.matrix(x)) {
     xind <- which[1]
@@ -449,16 +495,22 @@ ellipse <- function(x, scale = c(1, 1), centre = c(0, 0), level = 0.95,
     if (!is.null(dimnames(x)[[1]])) {
       names <- dimnames(x)[[1]][c(xind, yind)]
     }
-  }
-  else {
+  } else {
     r <- x
   }
   r <- min(max(r, -1), 1) # clamp to -1..1, in case of rounding errors
   d <- acos(r)
   a <- seq(0, 2 * pi, len = npoints)
-  matrix(c(t * scale[1] * cos(a + d / 2) + centre[1], t * scale[2] *
-    cos(a - d / 2) + centre[2]), npoints, 2, dimnames = list(
-    NULL,
-    names
-  ))
+  matrix(
+    c(
+      t * scale[1] * cos(a + d / 2) + centre[1],
+      t * scale[2] * cos(a - d / 2) + centre[2]
+    ),
+    npoints,
+    2,
+    dimnames = list(
+      NULL,
+      names
+    )
+  )
 }

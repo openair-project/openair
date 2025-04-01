@@ -2,54 +2,54 @@
 #'
 #' Use non-parametric methods to calculate time series trends
 #'
-#' The \code{smoothTrend} function provides a flexible way of estimating the
+#' The `smoothTrend` function provides a flexible way of estimating the
 #' trend in the concentration of a pollutant or other variable. Monthly mean
 #' values are calculated from an hourly (or higher resolution) or daily time
 #' series. There is the option to deseasonalise the data if there is evidence
 #' of a seasonal cycle.
 #'
-#' \code{smoothTrend} uses a Generalized Additive Model (GAM) from the
-#' \code{\link{gam}} package to find the most appropriate level of smoothing.
+#' `smoothTrend` uses a Generalized Additive Model (GAM) from the
+#' [gam()] package to find the most appropriate level of smoothing.
 #' The function is particularly suited to situations where trends are not
 #' monotonic (see discussion with [TheilSen()] for more details on
-#' this). The \code{smoothTrend} function is particularly useful as an
+#' this). The `smoothTrend` function is particularly useful as an
 #' exploratory technique e.g. to check how linear or non-linear trends are.
 #'
 #' 95% confidence intervals are shown by shading. Bootstrap estimates of the
-#' confidence intervals are also available through the \code{simulate} option.
+#' confidence intervals are also available through the `simulate` option.
 #' Residual resampling is used.
 #'
 #' Trends can be considered in a very wide range of ways, controlled by setting
-#' \code{type} - see examples below.
+#' `type` - see examples below.
 #'
-#' @param mydata A data frame containing the field \code{date} and at least one
+#' @param mydata A data frame containing the field `date` and at least one
 #'   other parameter for which a trend test is required; typically (but not
 #'   necessarily) a pollutant.
 #' @param pollutant The parameter for which a trend test is required.
 #'   Mandatory.
-#' @param deseason Should the data be de-deasonalized first? If \code{TRUE} the
-#'   function \code{stl} is used (seasonal trend decomposition using loess).
-#'   Note that if \code{TRUE} missing data are first imputed using a
+#' @param deseason Should the data be de-deasonalized first? If `TRUE` the
+#'   function `stl` is used (seasonal trend decomposition using loess).
+#'   Note that if `TRUE` missing data are first imputed using a
 #'   Kalman filter and Kalman smooth.
-#' @param type \code{type} determines how the data are split i.e. conditioned,
+#' @param type `type` determines how the data are split i.e. conditioned,
 #'   and then plotted. The default is will produce a single plot using the
 #'   entire data. Type can be one of the built-in types as detailed in
-#'   \code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and
-#'   so on. For example, \code{type = "season"} will produce four plots --- one
+#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and
+#'   so on. For example, `type = "season"` will produce four plots --- one
 #'   for each season.
 #'
-#'   It is also possible to choose \code{type} as another variable in the data
+#'   It is also possible to choose `type` as another variable in the data
 #'   frame. If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   Type can be up length two e.g. \code{type = c("season", "weekday")} will
+#'   Type can be up length two e.g. `type = c("season", "weekday")` will
 #'   produce a 2x2 plot split by season and day of the week. Note, when two
 #'   types are provided the first forms the columns and the second the rows.
 #' @param statistic Statistic used for calculating monthly values. Default is
-#'   \dQuote{mean}, but can also be \dQuote{percentile}. See \code{timeAverage}
+#'   \dQuote{mean}, but can also be \dQuote{percentile}. See `timeAverage`
 #'   for more details.
 #' @param avg.time Can be \dQuote{month} (the default), \dQuote{season} or
 #'   \dQuote{year}. Determines the time over which data should be averaged.
@@ -57,51 +57,51 @@
 #'   \dQuote{season} the data are plit up into spring: March, April, May etc.
 #'   Note that December is considered as belonging to winter of the following
 #'   year.
-#' @param percentile Percentile value(s) to use if \code{statistic =
-#'   "percentile"} is chosen. Can be a vector of numbers e.g. \code{percentile
-#'   = c(5, 50, 95)} will plot the 5th, 50th and 95th percentile values
+#' @param percentile Percentile value(s) to use if `statistic =
+#'   "percentile"` is chosen. Can be a vector of numbers e.g. `percentile
+#'   = c(5, 50, 95)` will plot the 5th, 50th and 95th percentile values
 #'   together on the same plot.
 #' @param data.thresh The data capture threshold to use (%) when aggregating
-#'   the data using \code{avg.time}. A value of zero means that all available
+#'   the data using `avg.time`. A value of zero means that all available
 #'   data will be used in a particular period regardless if of the number of
 #'   values available. Conversely, a value of 100 will mean that all data will
 #'   need to be present for the average to be calculated, else it is recorded
-#'   as \code{NA}. Not used if \code{avg.time = "default"}.
+#'   as `NA`. Not used if `avg.time = "default"`.
 #' @param simulate Should simulations be carried out to determine the
-#'   Mann-Kendall tau and p-value. The default is \code{FALSE}. If \code{TRUE},
+#'   Mann-Kendall tau and p-value. The default is `FALSE`. If `TRUE`,
 #'   bootstrap simulations are undertaken, which also account for
 #'   autocorrelation.
-#' @param n Number of bootstrap simulations if \code{simulate = TRUE}.
+#' @param n Number of bootstrap simulations if `simulate = TRUE`.
 #' @param autocor Should autocorrelation be considered in the trend uncertainty
-#'   estimates? The default is \code{FALSE}. Generally, accounting for
+#'   estimates? The default is `FALSE`. Generally, accounting for
 #'   autocorrelation increases the uncertainty of the trend estimate sometimes
 #'   by a large amount.
-#' @param cols Colours to use. Can be a vector of colours e.g. \code{cols =
-#'   c("black", "green")} or pre-defined openair colours --- see
-#'   \code{openColours} for more details.
+#' @param cols Colours to use. Can be a vector of colours e.g. `cols =
+#'   c("black", "green")` or pre-defined openair colours --- see
+#'   `openColours` for more details.
 #' @param shade The colour used for marking alternate years. Use \dQuote{white}
 #'   or \dQuote{transparent} to remove shading.
 #' @param xlab x-axis label, by default \dQuote{year}.
 #' @param y.relation This determines how the y-axis scale is plotted. "same"
 #'   ensures all panels use the same scale and "free" will use panel-specific
 #'   scales. The latter is a useful setting when plotting data with very
-#'   different values.  ref.x See \code{ref.y} for details. In this case the
-#'   correct date format should be used for a vertical line e.g.  \code{ref.x =
-#'   list(v = as.POSIXct("2000-06-15"), lty = 5)}.
-#' @param ref.x See \code{ref.y}.
+#'   different values.  ref.x See `ref.y` for details. In this case the
+#'   correct date format should be used for a vertical line e.g.  `ref.x =
+#'   list(v = as.POSIXct("2000-06-15"), lty = 5)`.
+#' @param ref.x See `ref.y`.
 #' @param ref.y A list with details of the horizontal lines to be added
-#'   representing reference line(s). For example, \code{ref.y = list(h = 50,
-#'   lty = 5)} will add a dashed horizontal line at 50. Several lines can be
-#'   plotted e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col =
-#'   c("green", "blue"))}. See \code{panel.abline} in the \code{lattice}
+#'   representing reference line(s). For example, `ref.y = list(h = 50,
+#'   lty = 5)` will add a dashed horizontal line at 50. Several lines can be
+#'   plotted e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col =
+#'   c("green", "blue"))`. See `panel.abline` in the `lattice`
 #'   package for more details on adding/controlling lines.
 #' @param key.columns Number of columns used if a key is drawn when using the
-#'   option \code{statistic = "percentile"}.
+#'   option `statistic = "percentile"`.
 #' @param name.pol Names to be given to the pollutant(s). This is useful if you
 #'   want to give a fuller description of the variables, maybe also including
 #'   subscripts etc.
 #' @param ci Should confidence intervals be plotted? The default is
-#'   \code{FALSE}.
+#'   `FALSE`.
 #' @param alpha The alpha transparency of shaded confidence intervals - if
 #'   plotted. A value of 0 is fully transparent and 1 is fully opaque.
 #' @param date.breaks Number of major x-axis intervals to use. The function
@@ -109,31 +109,31 @@
 #'   the date/time appropriately to the range being considered. This does not
 #'   always work as desired automatically. The user can therefore increase or
 #'   decrease the number of intervals by adjusting the value of
-#'   \code{date.breaks} up or down.
-#' @param auto.text Either \code{TRUE} (default) or \code{FALSE}. If
-#'   \code{TRUE} titles and axis labels will automatically try and format
+#'   `date.breaks` up or down.
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If
+#'   `TRUE` titles and axis labels will automatically try and format
 #'   pollutant names and units properly e.g.  by subscripting the \sQuote{2} in
 #'   NO2.
-#' @param k This is the smoothing parameter used by the \code{gam} function in
-#'   package \code{mgcv}. By default it is not used and the amount of smoothing
+#' @param k This is the smoothing parameter used by the `gam` function in
+#'   package `mgcv`. By default it is not used and the amount of smoothing
 #'   is optimised automatically. However, sometimes it is useful to set the
-#'   smoothing amount manually using \code{k}.
-#' @param plot Should a plot be produced? \code{FALSE} can be useful when
+#'   smoothing amount manually using `k`.
+#' @param plot Should a plot be produced? `FALSE` can be useful when
 #'   analysing data to extract plot components and plotting them in other
 #'   ways.
-#' @param ... Other graphical parameters are passed onto \code{cutData} and
-#'   \code{lattice:xyplot}. For example, \code{smoothTrend} passes the option
-#'   \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-#'   (rather than default northern) hemisphere handling of \code{type =
-#'   "season"}. Similarly, common graphical arguments, such as \code{xlim} and
-#'   \code{ylim} for plotting ranges and \code{pch} and \code{cex} for plot
-#'   symbol type and size, are passed on \code{xyplot}, although some local
+#' @param ... Other graphical parameters are passed onto `cutData` and
+#'   `lattice:xyplot`. For example, `smoothTrend` passes the option
+#'   `hemisphere = "southern"` on to `cutData` to provide southern
+#'   (rather than default northern) hemisphere handling of `type =
+#'   "season"`. Similarly, common graphical arguments, such as `xlim` and
+#'   `ylim` for plotting ranges and `pch` and `cex` for plot
+#'   symbol type and size, are passed on `xyplot`, although some local
 #'   modifications may be applied by openair. For example, axis and title
-#'   labelling options (such as \code{xlab}, \code{ylab} and \code{main}) are
-#'   passed to \code{xyplot} via \code{quickText} to handle routine formatting.
+#'   labelling options (such as `xlab`, `ylab` and `main`) are
+#'   passed to `xyplot` via `quickText` to handle routine formatting.
 #'   One special case here is that many graphical parameters can be vectors
-#'   when used with \code{statistic = "percentile"} and a vector of
-#'   \code{percentile} values, see examples below.
+#'   when used with `statistic = "percentile"` and a vector of
+#'   `percentile` values, see examples below.
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
@@ -143,28 +143,58 @@
 #' smoothTrend(mydata, pollutant = "nox")
 #'
 #' # trend plot by each of 8 wind sectors
-#' \dontrun{smoothTrend(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")}
+#' \dontrun{
+#' smoothTrend(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
+#' }
 #'
 #' # several pollutants, no plotting symbol
-#' \dontrun{smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), pch = NA)}
+#' \dontrun{
+#' smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), pch = NA)
+#' }
 #'
 #' # percentiles
-#' \dontrun{smoothTrend(mydata, pollutant = "o3", statistic = "percentile",
-#' percentile = 95)}
+#' \dontrun{
+#' smoothTrend(mydata,
+#'   pollutant = "o3", statistic = "percentile",
+#'   percentile = 95
+#' )
+#' }
 #'
 #' # several percentiles with control over lines used
-#' \dontrun{smoothTrend(mydata, pollutant = "o3", statistic = "percentile",
-#' percentile = c(5, 50, 95), lwd = c(1, 2, 1), lty = c(5, 1, 5))}
-smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
-                        type = "default", statistic = "mean", avg.time = "month",
-                        percentile = NA, data.thresh = 0, simulate = FALSE,
-                        n = 200, autocor = FALSE, cols = "brewer1",
-                        shade = "grey95", xlab = "year",
-                        y.relation = "same", ref.x = NULL, ref.y = NULL,
-                        key.columns = length(percentile), name.pol = pollutant,
-                        ci = TRUE, alpha = 0.2, date.breaks = 7,
-                        auto.text = TRUE, k = NULL, plot = TRUE, ...) {
-
+#' \dontrun{
+#' smoothTrend(mydata,
+#'   pollutant = "o3", statistic = "percentile",
+#'   percentile = c(5, 50, 95), lwd = c(1, 2, 1), lty = c(5, 1, 5)
+#' )
+#' }
+smoothTrend <- function(
+  mydata,
+  pollutant = "nox",
+  deseason = FALSE,
+  type = "default",
+  statistic = "mean",
+  avg.time = "month",
+  percentile = NA,
+  data.thresh = 0,
+  simulate = FALSE,
+  n = 200,
+  autocor = FALSE,
+  cols = "brewer1",
+  shade = "grey95",
+  xlab = "year",
+  y.relation = "same",
+  ref.x = NULL,
+  ref.y = NULL,
+  key.columns = length(percentile),
+  name.pol = pollutant,
+  ci = TRUE,
+  alpha = 0.2,
+  date.breaks = 7,
+  auto.text = TRUE,
+  k = NULL,
+  plot = TRUE,
+  ...
+) {
   ## get rid of R check annoyances
   variable <- NULL
 
@@ -179,7 +209,7 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
- #
+    #
     fontsize = current.font
   ))
 
@@ -252,7 +282,8 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
 
   ## equivalent number of days, used to refine interval for month/year
   days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) /
-    24 / 3600
+    24 /
+    3600
 
   ## better interval, most common interval in a year
   if (days == 31) interval <- "month"
@@ -280,8 +311,13 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
   # in the case of mutiple percentiles, these are assinged and treated
   # like multiple pollutants
 
-  mydata <- gather(mydata, key = variable, value = value, pollutant,
-                   factor_key = TRUE)
+  mydata <- gather(
+    mydata,
+    key = variable,
+    value = value,
+    pollutant,
+    factor_key = TRUE
+  )
 
   if (length(percentile) > 1) {
     vars <- c(type, "variable")
@@ -291,17 +327,15 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
       do(calcPercentile(
         .,
         pollutant = "value",
-        avg.time = avg.time, percentile = percentile,
+        avg.time = avg.time,
+        percentile = percentile,
         data.thresh = data.thresh
       ))
 
     vars <- paste0("percentile.", percentile)
 
     mydata <- gather(mydata, key = variable, value = value, vars)
-
-
   } else {
-
     mydata <- suppressWarnings(timeAverage(
       mydata,
       type = c(type, "variable"),
@@ -319,9 +353,10 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
   }
 
   process.cond <- function(mydata) {
-
     ## return if nothing to analyse
-    if (all(is.na(mydata$value))) return(data.frame(date = NA, conc = NA))
+    if (all(is.na(mydata$value))) {
+      return(data.frame(date = NA, conc = NA))
+    }
 
     ## sometimes data have long trailing NAs, so start and end at
     ## first and last data
@@ -339,23 +374,21 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
     if (nrow(mydata) <= 24) deseason <- FALSE
 
     if (deseason) {
-
       myts <- ts(
         mydata[["value"]],
         start = c(start.year, start.month),
-        end = c(end.year, end.month), frequency = 12
+        end = c(end.year, end.month),
+        frequency = 12
       )
 
       # fill any missing data using a Kalman filter
 
       if (any(is.na(myts))) {
-
         # use forecast package to get best arima
-        fit <- ts(rowSums(tsSmooth(StructTS(myts))[,-2]))
+        fit <- ts(rowSums(tsSmooth(StructTS(myts))[, -2]))
         id <- which(is.na(myts))
 
         myts[id] <- fit[id]
-
       }
 
       ssd <- stl(myts, s.window = 11, robust = TRUE, s.degree = 1)
@@ -364,12 +397,14 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
       deseas <- as.vector(deseas)
 
       results <- data.frame(
-        date = mydata$date, conc = as.vector(deseas),
+        date = mydata$date,
+        conc = as.vector(deseas),
         stringsAsFactors = FALSE
       )
     } else {
       results <- data.frame(
-        date = mydata$date, conc = mydata[["value"]],
+        date = mydata$date,
+        conc = mydata[["value"]],
         stringsAsFactors = FALSE
       )
     }
@@ -443,10 +478,14 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
 
   ## use pollutant names or user-supplied names
   if (!missing(name.pol)) {
-    key.lab <- sapply(seq_along(name.pol), function(x)
-      quickText(name.pol[x], auto.text))
+    key.lab <- sapply(seq_along(name.pol), function(x) {
+      quickText(name.pol[x], auto.text)
+    })
   } else {
-    key.lab <- sapply(seq_along(npol), function(x) quickText(npol[x], auto.text))
+    key.lab <- sapply(
+      seq_along(npol),
+      function(x) quickText(npol[x], auto.text)
+    )
   }
 
   if (length(npol) > 1) {
@@ -457,10 +496,14 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
     key <- list(
       lines = list(
         col = myColors[1:length(npol)],
-        lty = Args$lty, lwd = Args$lwd,
-        pch = Args$pch, type = "b", cex = Args$cex
+        lty = Args$lty,
+        lwd = Args$lwd,
+        pch = Args$pch,
+        type = "b",
+        cex = Args$cex
       ),
-      text = list(lab = key.lab), space = "bottom",
+      text = list(lab = key.lab),
+      space = "bottom",
       columns = key.columns
     )
 
@@ -490,7 +533,9 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
   if (is.null(xlim)) xlim <- range(mydata$date) + c(-1 * gap, gap)
 
   xyplot.args <- list(
-    x = myform, data = res, groups = res$variable,
+    x = myform,
+    data = res,
+    groups = res$variable,
     as.table = TRUE,
     strip = strip,
     strip.left = strip.left,
@@ -503,23 +548,27 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
       y = list(relation = y.relation, rot = 0)
     ),
     panel = panel.superpose,
-    panel.groups = function(x,
-                            y,
-                            group.number,
-                            lwd,
-                            lty,
-                            pch,
-                            col,
-                            col.line,
-                            col.symbol,
-                            subscripts,
-                            type = "b",
-                            ...) {
+    panel.groups = function(
+      x,
+      y,
+      group.number,
+      lwd,
+      lty,
+      pch,
+      col,
+      col.line,
+      col.symbol,
+      subscripts,
+      type = "b",
+      ...
+    ) {
       if (group.number == 1) {
         ## otherwise this is called every time
 
         panel.shade(
-          res, start.year, end.year,
+          res,
+          start.year,
+          end.year,
           ylim = current.panel.limits()$ylim,
           shade
         )
@@ -527,20 +576,30 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
       }
 
       panel.xyplot(
-        x, y,
-        type = "b", lwd = lwd,
-        lty = lty, pch = pch,
+        x,
+        y,
+        type = "b",
+        lwd = lwd,
+        lty = lty,
+        pch = pch,
         col.line = myColors[group.number],
-        col.symbol = myColors[group.number], ...
+        col.symbol = myColors[group.number],
+        ...
       )
 
       panel.gam(
-        x, y,
+        x,
+        y,
         col = myColors[group.number],
-        k = k, myColors[group.number],
-        simulate = simulate, n.sim = n,
-        autocor = autocor, lty = 1, lwd = 1,
-        se = ci, ...
+        k = k,
+        myColors[group.number],
+        simulate = simulate,
+        n.sim = n,
+        autocor = autocor,
+        lty = 1,
+        lwd = 1,
+        se = ci,
+        ...
       )
 
       ## add reference lines
@@ -557,7 +616,8 @@ smoothTrend <- function(mydata, pollutant = "nox", deseason = FALSE,
 
   newdata <- res
   output <- list(
-    plot = plt, data = list(data = newdata, fit = fit),
+    plot = plt,
+    data = list(data = newdata, fit = fit),
     call = match.call()
   )
   class(output) <- "openair"

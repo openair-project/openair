@@ -14,8 +14,9 @@
 #'   by the authors and a growing number from other researchers.
 #'
 #'   The package also provides access to a wide range of data sources including
-#'   the UK Automatic Urban and Rural Network (AURN), networks run by King's
-#'   College London (e.g. the LAQN) and the Scottish Air Quality Network (SAQN).
+#'   the UK Automatic Urban and Rural Network (AURN), networks run by Imperial
+#'   College London (e.g., the LAQN) and the Scottish Air Quality Network
+#'   (SAQN).
 #'
 #'   The package has a number of requirements for input data and these are
 #'   discussed in the manual (available in the `openair` book at
@@ -61,8 +62,8 @@
 #' @references Most reference details are given under the specific functions.
 #'   The principal reference is below.
 #'
-#'    -  Carslaw, D.C. and K. Ropkins, (2012) openair --- an R package for 
-#'    air quality data analysis.  Environmental Modelling & Software. 
+#'    -  Carslaw, D.C. and K. Ropkins, (2012) openair --- an R package for
+#'    air quality data analysis.  Environmental Modelling & Software.
 #'    Volume 27-28, 52-61.
 #'
 #' @seealso See <https://openair-project.github.io/openair/> for up to date
@@ -92,8 +93,10 @@
 #'
 #' # could, e.g., re-plot in {ggplot2}
 #' library(ggplot2)
-#' ggplot(polar_nox$data, aes(u, v, fill = z)) + geom_tile() + coord_equal() +
-#' scale_fill_gradientn(colours = openair::openColours(), na.value = NA)
+#' ggplot(polar_nox$data, aes(u, v, fill = z)) +
+#'   geom_tile() +
+#'   coord_equal() +
+#'   scale_fill_gradientn(colours = openair::openColours(), na.value = NA)
 #' }
 #'
 #' @keywords internal
@@ -115,6 +118,7 @@
 #' @importFrom lubridate year
 #' @importFrom methods is
 #' @importFrom Rcpp evalCpp
+#' @importFrom rlang %||%
 #' @importFrom rlang .data
 #' @importFrom stats aggregate
 #' @importFrom stats approx

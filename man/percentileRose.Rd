@@ -97,8 +97,7 @@ ported from Python's Matplotlib library.}
 \item{fill}{Should the percentile intervals be filled (default) or should
 lines be drawn (\code{fill = FALSE}).}
 
-\item{intervals}{User-supplied intervals for the scale e.g. \code{intervals =
-c(0, 10, 30, 50)}}
+\item{intervals}{User-supplied intervals for the scale e.g. \code{intervals = c(0, 10, 30, 50)}}
 
 \item{angle.scale}{Sometimes the placement of the scale may interfere with an
 interesting feature. The user can therefore set \code{angle.scale} to any
@@ -110,7 +109,7 @@ titles and axis labels will automatically try and format pollutant names
 and units properly e.g.  by subscripting the `2' in NO2.}
 
 \item{key.header}{Adds additional text/labels to the scale key. For example,
-passing the options \code{key.header = "header", key.footer = "footer1"}
+passing the options \verb{key.header = "header", key.footer = "footer1"}
 adds addition text above and below the scale key. These arguments are
 passed to \code{drawOpenKey} via \code{quickText}, applying the
 \code{auto.text} argument, to handle formatting.}
@@ -135,8 +134,7 @@ analysing data to extract plot components and plotting them in other ways.}
 \item{...}{Other graphical parameters are passed onto \code{cutData} and
 \code{lattice:xyplot}. For example, \code{percentileRose} passes the option
 \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type =
-  "season"}. Similarly, common graphical arguments, such as \code{xlim} and
+(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common graphical arguments, such as \code{xlim} and
 \code{ylim} for plotting ranges and \code{lwd} for line thickness when
 using \code{fill = FALSE}, are passed on \code{xyplot}, although some local
 modifications may be applied by openair. For example, axis and title
@@ -162,8 +160,8 @@ using the option \code{smooth}. If \code{smooth = FALSE} then the data are
 shown in 10 degree sectors.
 
 The \code{percentileRose} function compliments other similar functions
-including \code{\link{windRose}}, \code{\link{pollutionRose}},
-\code{\link{polarFreq}} or \code{\link{polarPlot}}. It is most useful for
+including \code{\link[=windRose]{windRose()}}, \code{\link[=pollutionRose]{pollutionRose()}},
+\code{\link[=polarFreq]{polarFreq()}} or \code{\link[=polarPlot]{polarPlot()}}. It is most useful for
 showing the distribution of concentrations by wind direction and often can
 reveal different sources e.g. those that only affect high percentile
 concentrations such as a chimney stack.

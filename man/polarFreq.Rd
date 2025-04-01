@@ -114,8 +114,7 @@ always ensure that wind speeds are displayed between 1-10, set
 
 \item{offset}{\code{offset} controls the size of the \sQuote{hole} in the
 middle and is expressed as a percentage of the maximum wind speed. Setting
-a higher \code{offset} e.g. 50 is useful for \code{statistic =
-  "weighted.mean"} when \code{ws.int} is greater than the maximum wind
+a higher \code{offset} e.g. 50 is useful for \code{statistic = "weighted.mean"} when \code{ws.int} is greater than the maximum wind
 speed. See example below.}
 
 \item{border.col}{The colour of the boundary of each wind speed/direction
@@ -123,7 +122,7 @@ bin. The default is transparent. Another useful choice sometimes is
 "white".}
 
 \item{key.header}{Adds additional text/labels to the scale key. For example,
-passing the options \code{key.header = "header", key.footer = "footer1"}
+passing the options \verb{key.header = "header", key.footer = "footer1"}
 adds addition text above and below the scale key. These arguments are
 passed to \code{drawOpenKey} via \code{quickText}, applying the
 \code{auto.text} argument, to handle formatting.}
@@ -152,8 +151,7 @@ analysing data to extract plot components and plotting them in other ways.}
 \item{\dots}{Other graphical parameters passed onto \code{lattice:xyplot}
 and \code{cutData}. For example, \code{polarFreq} passes the option
 \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type =
-  "season"}. Similarly, common axis and title labelling options (such as
+(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common axis and title labelling options (such as
 \code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
 \code{quickText} to handle routine formatting.}
 }
@@ -169,7 +167,7 @@ using a range of commonly used statistics.
 \details{
 \code{polarFreq} is its default use provides details of wind speed and
 direction frequencies. In this respect it is similar to
-\code{\link{windRose}}, but considers wind direction intervals of 10 degrees
+\code{\link[=windRose]{windRose()}}, but considers wind direction intervals of 10 degrees
 and a user-specified wind speed interval. The frequency of wind
 speeds/directions formed by these \sQuote{bins} is represented on a colour
 scale.

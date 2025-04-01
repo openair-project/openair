@@ -9,59 +9,108 @@ calcPercentile(
   pollutant = "o3",
   avg.time = "month",
   percentile = 50,
+  type = "default",
   data.thresh = 0,
-  start = NA
+  start.date = NA,
+  end.date = NA,
+  prefix = "percentile."
 )
 }
 \arguments{
-\item{mydata}{A data frame of data with a \code{date} field in the format
-\code{Date} or \code{POSIXct}. Must have one variable to apply calculations
-to.}
+\item{mydata}{A data frame containing a \code{date} field . Can be class \code{POSIXct}
+or \code{Date}.}
 
-\item{pollutant}{Name of variable to process. Mandatory.}
+\item{pollutant}{Name of column containing variable to summarise, likely a
+pollutant (e.g., \code{"o3"}).}
 
-\item{avg.time}{Averaging period to use. See \code{\link[=timeAverage]{timeAverage()}} for details.}
+\item{avg.time}{This defines the time period to average to. Can be \code{"sec"},
+\code{"min"}, \code{"hour"}, \code{"day"}, \code{"DSTday"}, \code{"week"}, \code{"month"}, \code{"quarter"} or
+\code{"year"}. For much increased flexibility a number can precede these options
+followed by a space. For example, a timeAverage of 2 months would be
+\code{period = "2 month"}. In addition, \code{avg.time} can equal \code{"season"}, in
+which case 3-month seasonal values are calculated with spring defined as
+March, April, May and so on.
 
-\item{percentile}{A vector of percentile values. For example \code{percentile
-  = 50} for median values, \code{percentile = c(5, 50, 95} for multiple
-percentile values.}
+Note that \code{avg.time} can be \emph{less} than the time interval of the original
+series, in which case the series is expanded to the new time interval. This
+is useful, for example, for calculating a 15-minute time series from an
+hourly one where an hourly value is repeated for each new 15-minute period.
+Note that when expanding data in this way it is necessary to ensure that
+the time interval of the original series is an exact multiple of \code{avg.time}
+e.g. hour to 10 minutes, day to hour. Also, the input time series must have
+consistent time gaps between successive intervals so that \code{\link[=timeAverage]{timeAverage()}}
+can work out how much 'padding' to apply. To pad-out data in this way
+choose \code{fill = TRUE}.}
 
-\item{data.thresh}{Data threshold to apply when aggregating data. See
-\code{\link[=timeAverage]{timeAverage()}} for details.}
+\item{percentile}{A vector of percentile values; for example, \code{percentile = 50} will calculate median values. Multiple values may also be provided as a
+vector, e.g., \code{percentile = c(5, 50, 95)} or \code{percentile = seq(0, 100, 10)}.}
 
-\item{start}{Start date to use - see \code{\link[=timeAverage]{timeAverage()}} for details.}
+\item{type}{\code{type} allows \code{\link[=timeAverage]{timeAverage()}} to be applied to cases where there
+are groups of data that need to be split and the function applied to each
+group. The most common example is data with multiple sites identified with
+a column representing site name e.g. \code{type = "site"}. More generally,
+\code{type} should be used where the date repeats for a particular grouping
+variable. However, if type is not supplied the data will still be averaged
+but the grouping variables (character or factor) will be dropped.}
+
+\item{data.thresh}{The data capture threshold to use (\%). A value of zero
+means that all available data will be used in a particular period
+regardless if of the number of values available. Conversely, a value of 100
+will mean that all data will need to be present for the average to be
+calculated, else it is recorded as \code{NA}. See also \code{interval}, \code{start.date}
+and \code{end.date} to see whether it is advisable to set these other options.}
+
+\item{start.date}{A string giving a start date to use. This is sometimes
+useful if a time series starts between obvious intervals. For example, for
+a 1-minute time series that starts \verb{2009-11-29 12:07:00} that needs to be
+averaged up to 15-minute means, the intervals would be \verb{2009-11-29 12:07:00}, \verb{2009-11-29 12:22:00}, etc. Often, however, it is better to
+round down to a more obvious start point, e.g., \verb{2009-11-29 12:00:00} such
+that the sequence is then \verb{2009-11-29 12:00:00}, \verb{2009-11-29 12:15:00}, and
+so on. \code{start.date} is therefore used to force this type of sequence.}
+
+\item{end.date}{A string giving an end date to use. This is sometimes useful
+to make sure a time series extends to a known end point and is useful when
+\code{data.thresh > 0} but the input time series does not extend up to the final
+full interval. For example, if a time series ends sometime in October but
+annual means are required with a data capture of >75 \% then it is necessary
+to extend the time series up until the end of the year. Input in the format
+yyyy-mm-dd HH:MM.}
+
+\item{prefix}{Each new column is named by appending a \code{prefix} to
+\code{percentile}. For example, the default \code{"percentile."} will name the new
+column as \code{percentile.95} when \code{percentile = 95}.}
 }
 \value{
-Returns a data frame with new columns for each percentile level. New
-columns are given names like percentile.95 e.g. when percentile = 95 is
-chosen. See examples below.
+Returns a \code{data.frame} with a \code{date} column plus an additional
+column for each given \code{percentile}.
 }
 \description{
 Calculates multiple percentile values from a time series, with flexible time
-aggregation.
-}
-\details{
-This is a utility function to calculate percentiles and is used in, for
-example, \code{timePlot}. Given a data frame with a \code{date} field and one
-other numeric variable, percentiles are calculated.
+aggregation. This function is a wrapper for \code{\link[=timeAverage]{timeAverage()}}, making it easier
+to calculate several percentiles at once. Like \code{\link[=timeAverage]{timeAverage()}}, it requires a
+data frame with a \code{date} field and one other numeric variable.
 }
 \examples{
 # 95th percentile monthly o3 concentrations
-percentiles <- calcPercentile(mydata, pollutant ="o3",
-avg.time = "month", percentile = 95)
+percentiles <- calcPercentile(mydata,
+  pollutant = "o3",
+  avg.time = "month", percentile = 95
+)
 
 head(percentiles)
 
 # 5, 50, 95th percentile monthly o3 concentrations
 \dontrun{
-percentiles <- calcPercentile(mydata, pollutant ="o3",
-avg.time = "month", percentile = c(5, 50, 95))
+percentiles <- calcPercentile(mydata,
+  pollutant = "o3",
+  avg.time = "month", percentile = c(5, 50, 95)
+)
 
 head(percentiles)
 }
 }
 \seealso{
-\code{\link{timePlot}}, \code{\link[=timeAverage]{timeAverage()}}
+\code{\link[=timePlot]{timePlot()}}, \code{\link[=timeAverage]{timeAverage()}}
 }
 \author{
 David Carslaw
