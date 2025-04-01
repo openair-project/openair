@@ -167,15 +167,15 @@ part of \code{.mop} file import.
 }
 \examples{
 ##########
-#example 1
+# example 1
 ##########
-#To be confirmed
+# To be confirmed
 
-#all current simplify.names operations
+# all current simplify.names operations
 importADMS(simplify.names)
 
-#to see what simplify.names does to adms data series name PHI
-new.name <- importADMS(simplify.names, names="PHI")
+# to see what simplify.names does to adms data series name PHI
+new.name <- importADMS(simplify.names, names = "PHI")
 new.name
 }
 \seealso{

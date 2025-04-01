@@ -307,8 +307,10 @@ scatterPlot(mydata, x = "nox", y = "no2", type = "year")
 }
 
 # scatterPlot by day of the week, removing key at bottom
-scatterPlot(dat2004, x = "nox", y = "no2", type = "weekday", key =
-FALSE)
+scatterPlot(dat2004,
+  x = "nox", y = "no2", type = "weekday", key =
+    FALSE
+)
 
 # example of the use of continuous where colour is used to show
 # different levels of a third (numeric) variable
@@ -319,20 +321,28 @@ FALSE)
 scatterPlot(dat2004, x = "nox", y = "no2", z = "co", avg.time = "day", pch = 16)
 
 # show linear fit, by year
-scatterPlot(mydata, x = "nox", y = "no2", type = "year", smooth =
-FALSE, linear = TRUE)
+scatterPlot(mydata,
+  x = "nox", y = "no2", type = "year", smooth =
+    FALSE, linear = TRUE
+)
 
 # do the same, but for daily means...
-scatterPlot(mydata, x = "nox", y = "no2", type = "year", smooth =
-FALSE, linear = TRUE, avg.time = "day")
+scatterPlot(mydata,
+  x = "nox", y = "no2", type = "year", smooth =
+    FALSE, linear = TRUE, avg.time = "day"
+)
 
 # log scales
-scatterPlot(mydata, x = "nox", y = "no2", type = "year", smooth =
-FALSE, linear = TRUE, avg.time = "day", log.x = TRUE, log.y = TRUE)
+scatterPlot(mydata,
+  x = "nox", y = "no2", type = "year", smooth =
+    FALSE, linear = TRUE, avg.time = "day", log.x = TRUE, log.y = TRUE
+)
 
 # also works with the x-axis in date format (alternative to timePlot)
-scatterPlot(mydata, x = "date", y = "no2", avg.time = "month",
-key = FALSE)
+scatterPlot(mydata,
+  x = "date", y = "no2", avg.time = "month",
+  key = FALSE
+)
 
 ## multiple types and grouping variable and continuous colour scale
 scatterPlot(mydata, x = "nox", y = "no2", z = "o3", type = c("season", "weekend"))
@@ -344,8 +354,10 @@ library(hexbin)
 scatterPlot(mydata, x = "nox", y = "no2", method = "hexbin")
 
 # scatterPlot by year
-scatterPlot(mydata, x = "nox", y = "no2", type = "year", method =
-"hexbin")
+scatterPlot(mydata,
+  x = "nox", y = "no2", type = "year", method =
+    "hexbin"
+)
 
 
 ## bin data and plot it - can see how for high NO2, O3 is also high
@@ -356,8 +368,10 @@ scatterPlot(mydata, x = "nox", y = "no2", z = "o3", method = "level", dist = 0.0
 ## fit surface for clearer view of relationship - clear effect of
 ## increased O3
 
-scatterPlot(mydata, x = "nox", y = "no2", z = "o3", method = "level",
-x.inc = 10, y.inc = 2, smooth = TRUE)
+scatterPlot(mydata,
+  x = "nox", y = "no2", z = "o3", method = "level",
+  x.inc = 10, y.inc = 2, smooth = TRUE
+)
 }
 }
 \seealso{

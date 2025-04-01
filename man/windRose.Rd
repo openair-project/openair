@@ -242,7 +242,7 @@ produce scale keys.
 windRose(mydata)
 
 # one windRose for each year
-windRose(mydata,type = "year")
+windRose(mydata, type = "year")
 
 # windRose in 10 degree intervals with gridlines and width adjusted
 \dontrun{

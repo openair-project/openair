@@ -234,35 +234,48 @@ timeVariation(mydata, pollutant = "nox")
 # for a subset of conditions
 \dontrun{
 timeVariation(subset(mydata, ws > 3 & wd > 100 & wd < 270),
-pollutant = "pm10", ylab = "pm10 (ug/m3)")
+  pollutant = "pm10", ylab = "pm10 (ug/m3)"
+)
 }
 
 # multiple pollutants with concentrations normalised
-\dontrun{timeVariation(mydata, pollutant = c("nox", "co"), normalise = TRUE)}
+\dontrun{
+timeVariation(mydata, pollutant = c("nox", "co"), normalise = TRUE)
+}
 
 # show BST/GMT variation (see ?cutData for more details)
 # the NOx plot shows the profiles are very similar when expressed in
 # local time, showing that the profile is dominated by a local source
 # that varies by local time and not by GMT i.e. road vehicle emissions
 
-\dontrun{timeVariation(mydata, pollutant = "nox", type = "dst", local.tz = "Europe/London")}
+\dontrun{
+timeVariation(mydata, pollutant = "nox", type = "dst", local.tz = "Europe/London")
+}
 
 ## In this case it is better to group the results for clarity:
-\dontrun{timeVariation(mydata, pollutant = "nox", group = "dst", local.tz = "Europe/London")}
+\dontrun{
+timeVariation(mydata, pollutant = "nox", group = "dst", local.tz = "Europe/London")
+}
 
 # By contrast, a variable such as wind speed shows a clear shift when
 #  expressed in local time. These two plots can help show whether the
 #  variation is dominated by man-made influences or natural processes
 
-\dontrun{timeVariation(mydata, pollutant = "ws", group = "dst", local.tz = "Europe/London")}
+\dontrun{
+timeVariation(mydata, pollutant = "ws", group = "dst", local.tz = "Europe/London")
+}
 
 ## It is also possible to plot several variables and set type. For
 ## example, consider the NOx and NO2 split by levels of O3:
 
-\dontrun{timeVariation(mydata, pollutant = c("nox", "no2"), type = "o3", normalise = TRUE)}
+\dontrun{
+timeVariation(mydata, pollutant = c("nox", "no2"), type = "o3", normalise = TRUE)
+}
 
 ## difference in concentrations
-\dontrun{timeVariation(mydata, poll= c("pm25", "pm10"), difference = TRUE)}
+\dontrun{
+timeVariation(mydata, poll = c("pm25", "pm10"), difference = TRUE)
+}
 
 # It is also useful to consider how concentrations vary by
 # considering two different periods e.g. in intervention
@@ -272,7 +285,7 @@ pollutant = "pm10", ylab = "pm10 (ug/m3)")
 # day of the week
 
 \dontrun{
-mydata <- splitByDate(mydata, dates= "1/1/2003", labels = c("before Jan. 2003", "After Jan. 2003"))
+mydata <- splitByDate(mydata, dates = "1/1/2003", labels = c("before Jan. 2003", "After Jan. 2003"))
 timeVariation(mydata, pollutant = "no2", group = "split.by", difference = TRUE)
 }
 
@@ -296,11 +309,13 @@ plot(myplot, subset = "day.hour") # top weekday and plot
 
 ## plot quantiles and median
 \dontrun{
-timeVariation(mydata, stati="median", poll="pm10", col = "firebrick")
+timeVariation(mydata, stati = "median", poll = "pm10", col = "firebrick")
 
 ## with different intervals
-timeVariation(mydata, stati="median", poll="pm10", conf.int = c(0.75, 0.99),
-col = "firebrick")
+timeVariation(mydata,
+  stati = "median", poll = "pm10", conf.int = c(0.75, 0.99),
+  col = "firebrick"
+)
 }
 
 }

@@ -244,17 +244,27 @@ smoothing parameter \code{k}.
 }
 \examples{
 # diurnal plot for PM10 at Marylebone Rd
-\dontrun{polarAnnulus(mydata, pollutant = "pm10",
-main = "diurnal variation in pm10 at Marylebone Road")}
+\dontrun{
+polarAnnulus(mydata,
+  pollutant = "pm10",
+  main = "diurnal variation in pm10 at Marylebone Road"
+)
+}
 
 # seasonal plot for PM10 at Marylebone Rd
-\dontrun{polarAnnulus(mydata, poll="pm10", period = "season")}
+\dontrun{
+polarAnnulus(mydata, poll = "pm10", period = "season")
+}
 
 # trend in coarse particles (PMc = PM10 - PM2.5), calculate PMc first
 
 mydata$pmc <- mydata$pm10 - mydata$pm25
-\dontrun{polarAnnulus(mydata, poll="pmc", period = "trend",
-main = "trend in pmc at Marylebone Road")}
+\dontrun{
+polarAnnulus(mydata,
+  poll = "pmc", period = "trend",
+  main = "trend in pmc at Marylebone Road"
+)
+}
 }
 \seealso{
 Other polar directional analysis functions: 

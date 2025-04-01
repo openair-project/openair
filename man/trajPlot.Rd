@@ -150,19 +150,22 @@ should be remembered when selecting only part of a year to plot.
 lond <- importTraj("london", 2010)
 # well, HYSPLIT seems to think there certainly were conditions where trajectories
 # orginated from Iceland...
-trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"))}
+trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"))
+}
 
 # plot by day, need a column that makes a date
 \dontrun{
 lond$day <- as.Date(lond$date)
 trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
-type = "day")
+  type = "day"
+)
 }
 
 # or show each day grouped by colour, with some other options set
 \dontrun{
- trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
-group = "day", col = "turbo", lwd = 2, key.pos = "right", key.col = 1)
+trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
+  group = "day", col = "turbo", lwd = 2, key.pos = "right", key.col = 1
+)
 }
 # more examples to follow linking with concentration measurements...
 

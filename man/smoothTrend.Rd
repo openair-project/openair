@@ -197,18 +197,30 @@ Trends can be considered in a very wide range of ways, controlled by setting
 smoothTrend(mydata, pollutant = "nox")
 
 # trend plot by each of 8 wind sectors
-\dontrun{smoothTrend(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")}
+\dontrun{
+smoothTrend(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
+}
 
 # several pollutants, no plotting symbol
-\dontrun{smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), pch = NA)}
+\dontrun{
+smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), pch = NA)
+}
 
 # percentiles
-\dontrun{smoothTrend(mydata, pollutant = "o3", statistic = "percentile",
-percentile = 95)}
+\dontrun{
+smoothTrend(mydata,
+  pollutant = "o3", statistic = "percentile",
+  percentile = 95
+)
+}
 
 # several percentiles with control over lines used
-\dontrun{smoothTrend(mydata, pollutant = "o3", statistic = "percentile",
-percentile = c(5, 50, 95), lwd = c(1, 2, 1), lty = c(5, 1, 5))}
+\dontrun{
+smoothTrend(mydata,
+  pollutant = "o3", statistic = "percentile",
+  percentile = c(5, 50, 95), lwd = c(1, 2, 1), lty = c(5, 1, 5)
+)
+}
 }
 \seealso{
 Other time series and trend functions: 

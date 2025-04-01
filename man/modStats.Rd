@@ -155,7 +155,6 @@ modStats(mydata, mod = "no2", obs = "nox")
 
 modStats(mydata, mod = "no2", obs = "nox", type = "season")
 
-
 }
 \references{
 Legates DR, McCabe GJ. (1999). Evaluating the use of

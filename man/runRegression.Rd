@@ -44,7 +44,8 @@ with examples.
 \examples{
 # Just use part of a year of data
 output <- runRegression(selectByDate(mydata, year = 2004, month = 1:3),
-x = "nox", y = "pm10", run.len = 3)
+  x = "nox", y = "pm10", run.len = 3
+)
 
 output
 }

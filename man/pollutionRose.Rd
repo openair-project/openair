@@ -201,8 +201,8 @@ pollutionRose(mydata, pollutant = "pm10", type = "year", statistic = "prop.mean"
 
 ## example of comparing 2 met sites
 ## first we will make some new ws/wd data with a postive bias
-mydata$ws2 = mydata$ws + 2 * rnorm(nrow(mydata)) + 1
-mydata$wd2 = mydata$wd + 30 * rnorm(nrow(mydata)) + 30
+mydata$ws2 <- mydata$ws + 2 * rnorm(nrow(mydata)) + 1
+mydata$wd2 <- mydata$wd + 30 * rnorm(nrow(mydata)) + 30
 
 ## need to correct negative wd
 id <- which(mydata$wd2 < 0)

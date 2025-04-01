@@ -125,11 +125,15 @@ large and care should be exercised when importing several years and/or sites.
 \examples{
 
 ## import trajectory data for London in 2009
-\dontrun{mytraj <- importTraj(site = "london", year = 2009)}
+\dontrun{
+mytraj <- importTraj(site = "london", year = 2009)
+}
 
 ## combine with measurements
-\dontrun{theData <- importAURN(site = "kc1", year = 2009)
-mytraj <- merge(mytraj, theData, by = "date")}
+\dontrun{
+theData <- importAURN(site = "kc1", year = 2009)
+mytraj <- merge(mytraj, theData, by = "date")
+}
 }
 \seealso{
 Other import functions: 
