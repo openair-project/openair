@@ -173,7 +173,7 @@ timeAverage <- function(
   avg.time = "day",
   data.thresh = 0,
   statistic = "mean",
-  type = "default",
+  type = NULL,
   percentile = NA,
   start.date = NA,
   end.date = NA,
@@ -304,7 +304,7 @@ timeAverage <- function(
     ## if interval specified, then use it
     if (!is.na(interval)) {
       mydata <- mydata %>%
-        group_by(across(type)) %>%
+        group_by(across(any_of(type))) %>%
         do(date.pad2(., type = type, interval = interval))
 
       ## make sure missing types are inserted
@@ -460,96 +460,50 @@ timeAverage <- function(
 
     if (avg.time == "season") vars <- unique(c(vars, "season"))
 
-    if (data.thresh != 0) {
-      ## take account of data capture
-
-      ## need to make sure all data are present..
-      ## print out time interval assumed for input time series
-      ## useful for debugging
-      if (!padded) {
-        mydata <- date.pad(mydata, type = type)
-      }
-
-      if (avg.time != "season") {
-        mydata$date <-
-          lubridate::as_datetime(
-            as.character(cut(mydata$date, avg.time)),
-            tz = TZ
-          )
-      }
-
-      if (statistic == "mean") {
-        ## faster for some reason?
-
-        avmet <- mydata %>%
-          group_by(across(vars)) %>%
-          summarise(
-            across(
-              everything(),
-              ~ if (sum(is.na(.x)) / length(.x) <= 1 - data.thresh) {
-                mean(.x, na.rm = TRUE)
-              } else {
-                NA
-              }
-            )
-          )
-      } else {
-        avmet <- mydata %>%
-          group_by(across(vars)) %>%
-          summarise(
-            across(
-              everything(),
-              ~ if (sum(is.na(.x)) / length(.x) <= 1 - data.thresh) {
-                FUN(.x)
-              } else {
-                NA
-              }
-            )
-          )
-      }
-    } else {
-      ## faster if do not need data capture
-      if (avg.time != "season") {
-        mydata$date <-
-          lubridate::as_datetime(
-            as.character(cut(mydata$date, avg.time)),
-            tz = TZ
-          )
-        # mydata$date <- as.POSIXct(cut(mydata$date, avg.time), tz = TZ)
-      }
-
-      avmet <- # select(mydata, -date) %>%
-        mydata %>%
-        group_by(across(vars))
-
-      # This is much faster for some reason
-      if (statistic == "mean") {
-        avmet <- avmet %>%
-          summarise(across(everything(), ~ mean(.x, na.rm = TRUE)))
-      } else {
-        avmet <- avmet %>%
-          summarise(across(everything(), ~ FUN(.x)))
-      }
+    ## need to make sure all data are present..
+    ## print out time interval assumed for input time series
+    ## useful for debugging
+    if (!padded) {
+      mydata <- date.pad(mydata, type = type)
     }
 
-    if ("wd" %in% names(mydata) && statistic != "data.cap") {
-      if (is.numeric(mydata$wd)) {
-        ## mean wd
-        avmet <- transform(avmet, wd = as.vector(atan2(Uu, Vv) * 360 / 2 / pi))
+    if (avg.time != "season") {
+      mydata$date <-
+        lubridate::as_datetime(
+          as.character(cut(mydata$date, avg.time)),
+          tz = TZ
+        )
+    }
 
-        ## correct for negative wind directions
-        ids <- which(avmet$wd < 0) ## ids where wd < 0
-        avmet$wd[ids] <- avmet$wd[ids] + 360
-
-        ## vector average ws
-        if ("ws" %in% names(mydata)) {
-          if (vector.ws) {
-            avmet <- transform(avmet, ws = (Uu^2 + Vv^2)^0.5)
+    avmet <- mydata %>%
+      group_by(across(vars)) %>%
+      summarise(
+        across(
+          everything(),
+          ~ if (sum(is.na(.x)) / length(.x) <= 1 - data.thresh) {
+            FUN(.x)
+          } else {
+            NA
           }
-        }
+        )
+      )
 
-        avmet <- subset(avmet, select = c(-Uu, -Vv))
+    if ("wd" %in% names(mydata) && statistic != "data.cap") {
+      ## mean wd
+      avmet <- avmet |>
+        mutate(
+          wd = as.vector(atan2(Uu, Vv) * 360 / 2 / pi),
+          wd = ifelse(wd < 0, wd + 360, wd)
+        )
+
+      ## vector average ws
+      if ("ws" %in% names(mydata)) {
+        if (vector.ws) {
+          avmet <- mutate(avmet, ws = (Uu^2 + Vv^2)^0.5)
+        }
       }
+
+      avmet <- subset(avmet, select = c(-Uu, -Vv))
     }
 
     ## fill missing gaps - but only for non-dst data
@@ -563,39 +517,18 @@ timeAverage <- function(
   ## cut data into intervals
   mydata <- cutData(mydata, type)
 
-  ## ids of numeric columns, type and date
-  ids <- c(
-    which(names(mydata) %in% c("date", type)),
-    which(sapply(mydata, function(x) !is.factor(x) && !is.character(x)))
-  )
-  mydata <- mydata[, unique(ids)]
-
-  ## some LAQN data seem to have the odd missing site name
-  if ("site" %in% names(mydata)) {
-    ## split by site
-
-    ## remove any NA sites
-    if (anyNA(mydata$site)) {
-      id <- which(is.na(mydata$site))
-      mydata <- mydata[-id, ]
-    }
-
-    mydata$site <- factor(mydata$site) ## removes empty factors
-  }
+  # can't average characters or factors, so only choose date and numerics
+  mydata <- mydata |>
+    select(any_of(c("date", type)) | where(is.numeric))
 
   ## calculate stats split by type
   if (progress) progress <- "Calculating Time Averages"
   mydata <- mydata %>%
-    group_by(across(type)) %>%
+    group_by(across(any_of(type))) %>%
     group_split() %>%
     purrr::map(calc.mean, start.date = start.date, .progress = progress) %>%
     purrr::list_rbind() %>%
     as_tibble()
-
-  ## don't need default column
-  if ("default" %in% names(mydata)) {
-    mydata <- subset(mydata, select = -default)
-  }
 
   mydata
 }
