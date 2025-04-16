@@ -506,7 +506,7 @@ timeAverage <- function(
     avmet
   }
 
-  ## cut data into intervals
+  # cut data into intervals
   mydata <- cutData(mydata, type)
 
   ## ids of numeric columns, type and date
@@ -515,19 +515,6 @@ timeAverage <- function(
     which(sapply(mydata, function(x) !is.factor(x) && !is.character(x)))
   )
   mydata <- mydata[, unique(ids)]
-
-  ## some LAQN data seem to have the odd missing site name
-  if ("site" %in% names(mydata)) {
-    ## split by site
-
-    ## remove any NA sites
-    if (anyNA(mydata$site)) {
-      id <- which(is.na(mydata$site))
-      mydata <- mydata[-id, ]
-    }
-
-    mydata$site <- factor(mydata$site) ## removes empty factors
-  }
 
   ## calculate stats split by type
   if (progress) progress <- "Calculating Time Averages"
