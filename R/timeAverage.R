@@ -183,15 +183,20 @@ timeAverage <- function(
   progress = TRUE,
   ...
 ) {
-  ## get rid of R check annoyances
-  year <- season <- month <- Uu <- Vv <- site <- default <- wd <- ws <- NULL
+  # validate function inputs
+  inputs <- validate_timeaverage_inputs(
+    data.thresh = data.thresh,
+    percentile = percentile,
+    statistic = statistic
+  )
+  data.thresh <- inputs$data.thresh
+  percentile <- inputs$percentile
 
-  ## extract variables of interest
-  vars <- unique(c("date", names(mydata)))
-
-  ## whether a time series has already been padded to fill time gaps
+  # flag whether a time series has already been padded to fill time gaps
   padded <- FALSE
 
+  # extract variables of interest
+  vars <- unique(c("date", names(mydata)))
   mydata <- checkPrep(
     mydata,
     vars,
@@ -200,70 +205,11 @@ timeAverage <- function(
     strip.white = FALSE
   )
 
-  ## time zone of data
-  TZ <- attr(mydata$date, "tzone")
-  if (is.null(TZ)) TZ <- "GMT" ## as it is on Windows for BST
+  # time zone of data (replace missing w/ GMT)
+  TZ <- attr(mydata$date, "tzone") %||% "GMT"
 
-  if (!is.na(percentile)) {
-    percentile <- percentile / 100
-    if (percentile < 0 | percentile > 100)
-      stop("Percentile range outside 0-100")
-  }
-  if (data.thresh < 0 | data.thresh > 100)
-    stop("Data capture range outside 0-100")
-
-  ## make data.thresh a number between 0 and 1
-  data.thresh <- data.thresh / 100
-
-  if (
-    !statistic %in%
-      c(
-        "mean",
-        "median",
-        "frequency",
-        "max",
-        "min",
-        "sum",
-        "sd",
-        "percentile",
-        "data.cap"
-      )
-  ) {
-    stop("Statistic not recognised")
-  }
-
-  if (statistic == "mean") FUN <- function(x) mean(x, na.rm = TRUE)
-  if (statistic == "median") FUN <- function(x) median(x, na.rm = TRUE)
-  if (statistic == "frequency") FUN <- function(x) length(na.omit(x))
-  if (statistic == "max") {
-    FUN <- function(x) {
-      if (all(is.na(x))) NA else max(x, na.rm = TRUE)
-    }
-  }
-  if (statistic == "min") FUN <- function(x) min(x, na.rm = TRUE)
-  if (statistic == "sum") {
-    FUN <- function(x) {
-      if (all(is.na(x))) NA else sum(x, na.rm = TRUE)
-    }
-  }
-
-  if (statistic == "sd") FUN <- function(x) sd(x, na.rm = TRUE)
-  if (statistic == "data.cap") {
-    FUN <- function(x) {
-      if (all(is.na(x))) {
-        res <- 0
-      } else {
-        res <- 100 * (1 - sum(is.na(x)) / length(x))
-      }
-      res
-    }
-  }
-
-  if (statistic == "percentile") {
-    FUN <- function(x) {
-      quantile(x, probs = percentile, na.rm = TRUE)
-    }
-  }
+  # get an appropriate function for the statistic
+  FUN <- get_statistic_function(statistic = statistic, percentile = percentile)
 
   calc.mean <- function(mydata, start.date) {
     ## function to calculate means
@@ -598,4 +544,105 @@ timeAverage <- function(
   }
 
   mydata
+}
+
+#' Checks relevant timeAverage inputs
+#' @noRd
+validate_timeaverage_inputs <- function(data.thresh, percentile, statistic) {
+  # Percentile
+  if (!is.na(percentile)) {
+    if (percentile < 0 | percentile > 100) {
+      cli::cli_abort("Percentile range, {percentile}, outside {0L}-{100L}")
+    }
+    percentile <- percentile / 100
+  }
+
+  # Data Threshold
+  if (data.thresh < 0 | data.thresh > 100) {
+    cli::cli_abort("Data capture range, {data.thresh}, outside {0L}-{100L}")
+  }
+  data.thresh <- data.thresh / 100
+
+  # Statistic
+  valid_stats <-
+    c(
+      "mean",
+      "median",
+      "frequency",
+      "max",
+      "min",
+      "sum",
+      "sd",
+      "percentile",
+      "data.cap"
+    )
+  statistic <- rlang::arg_match(statistic, valid_stats)
+
+  return(list(
+    data.thresh = data.thresh,
+    percentile = percentile
+  ))
+}
+
+#' Get an appropriate function for the statistic
+#' @noRd
+get_statistic_function <- function(statistic, percentile) {
+  if (statistic == "mean") {
+    return(function(x) {
+      mean(x, na.rm = TRUE)
+    })
+  }
+  if (statistic == "median") {
+    return(function(x) {
+      median(x, na.rm = TRUE)
+    })
+  }
+  if (statistic == "frequency") {
+    return(function(x) {
+      length(na.omit(x))
+    })
+  }
+  if (statistic == "max") {
+    return(function(x) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        max(x, na.rm = TRUE)
+      }
+    })
+  }
+  if (statistic == "min") {
+    return(function(x) {
+      min(x, na.rm = TRUE)
+    })
+  }
+  if (statistic == "sum") {
+    return(function(x) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        sum(x, na.rm = TRUE)
+      }
+    })
+  }
+  if (statistic == "sd") {
+    return(function(x) {
+      sd(x, na.rm = TRUE)
+    })
+  }
+  if (statistic == "data.cap") {
+    return(function(x) {
+      if (all(is.na(x))) {
+        res <- 0
+      } else {
+        res <- 100 * (1 - sum(is.na(x)) / length(x))
+      }
+      res
+    })
+  }
+  if (statistic == "percentile") {
+    return(function(x) {
+      quantile(x, probs = percentile, na.rm = TRUE)
+    })
+  }
 }
