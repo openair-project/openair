@@ -70,6 +70,8 @@
 
 - `calcPercentile()` will now correctly pass its arguments (e.g., `date.start`) to `timeAverage()`.
 
+- `timeAverage()` will now more consistently return `NA` values rather than `NaN` or `Inf` when all values are `NA`. This specifically affects the `"mean"` and `"min"` statistics.
+
 # openair 2.18-2
 
 ## New Features
