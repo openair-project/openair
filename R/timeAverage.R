@@ -41,6 +41,7 @@
 #'
 #' @param mydata A data frame containing a `date` field . Can be class `POSIXct`
 #'   or `Date`.
+#'
 #' @param avg.time This defines the time period to average to. Can be `"sec"`,
 #'   `"min"`, `"hour"`, `"day"`, `"DSTday"`, `"week"`, `"month"`, `"quarter"` or
 #'   `"year"`. For much increased flexibility a number can precede these options
@@ -59,6 +60,7 @@
 #'   consistent time gaps between successive intervals so that [timeAverage()]
 #'   can work out how much 'padding' to apply. To pad-out data in this way
 #'   choose `fill = TRUE`.
+#'  
 #' @param data.thresh The data capture threshold to use (%). A value of zero
 #'   means that all available data will be used in a particular period
 #'   regardless if of the number of values available. Conversely, a value of 100
@@ -82,8 +84,10 @@
 #'   `type` should be used where the date repeats for a particular grouping
 #'   variable. However, if type is not supplied the data will still be averaged
 #'   but the grouping variables (character or factor) will be dropped.
+#'   
 #' @param percentile The percentile level used when `statistic = "percentile"`.
 #'   The default is 95%.
+#'   
 #' @param start.date A string giving a start date to use. This is sometimes
 #'   useful if a time series starts between obvious intervals. For example, for
 #'   a 1-minute time series that starts `2009-11-29 12:07:00` that needs to be
@@ -92,6 +96,7 @@
 #'   round down to a more obvious start point, e.g., `2009-11-29 12:00:00` such
 #'   that the sequence is then `2009-11-29 12:00:00`, `2009-11-29 12:15:00`, and
 #'   so on. `start.date` is therefore used to force this type of sequence.
+#'   
 #' @param end.date A string giving an end date to use. This is sometimes useful
 #'   to make sure a time series extends to a known end point and is useful when
 #'   `data.thresh > 0` but the input time series does not extend up to the final
@@ -99,6 +104,7 @@
 #'   annual means are required with a data capture of >75 % then it is necessary
 #'   to extend the time series up until the end of the year. Input in the format
 #'   yyyy-mm-dd HH:MM.
+#'   
 #' @param interval The [timeAverage()] function tries to determine the interval
 #'   of the original time series (e.g. hourly) by calculating the most common
 #'   interval between time steps. The interval is needed for calculations where
@@ -113,6 +119,7 @@
 #'   This option can sometimes be useful with `start.date` and `end.date` to
 #'   ensure full periods are considered e.g. a full year when `avg.time =
 #'   "year"`.
+#'   
 #' @param vector.ws Should vector averaging be carried out on wind speed if
 #'   available? The default is `FALSE` and scalar averages are calculated.
 #'   Vector averaging of the wind speed is carried out on the u and v wind
@@ -122,13 +129,17 @@
 #'   simply the arithmetic average = 2m/s and the vector average is 0m/s.
 #'   Vector-averaged wind speeds will always be lower than scalar-averaged
 #'   values.
+#'   
 #' @param fill When time series are expanded, i.e., when a time interval is less
 #'   than the original time series, data are 'padded out' with `NA`. To
 #'   'pad-out' the additional data with the first row in each original time
 #'   interval, choose `fill = TRUE`.
+#'   
 #' @param progress Show a progress bar when many groups make up `type`? Defaults
 #'   to `TRUE`.
+#'   
 #' @param ... Additional arguments for other functions calling [timeAverage()].
+#' 
 #' @import dplyr
 #' @export
 #' @return Returns a data frame with date in class `POSIXct`.
@@ -251,71 +262,61 @@ timeAverage <- function(
     seconds_data_interval <- time_params$seconds_data_interval
     seconds_avgtime_interval <- time_params$seconds_avgtime_interval
 
-    ## check to see if we need to expand data rather than aggregate it
-    ## i.e. chosen time interval less than that of data
+    # check to see if we need to expand data rather than aggregate it
+    # i.e., chosen time interval less than that of data
     if (seconds_avgtime_interval < seconds_data_interval) {
-      ## original dates
+      # Store original dates for later reference
       theDates <- mydata$date
 
-      ## need to add a date to the end when expanding times
+      # Get time interval from data
       interval <- find.time.interval(mydata$date)
 
-      ## equivalent number of days, used to refine interval for month/year
-      days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) /
-        24 /
-        3600
+      # get time interval as days; used for refinement
+      days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) / 24 / 3600
 
-      ## find time interval of data
-      if (class(mydata$date)[1] == "Date") {
-        interval <- paste(days, "day")
+      # refine interval for common situations
+      interval <- if (inherits(mydata$date, "Date")) {
+        paste(days, "day")
+      } else if (days %in% c(30, 31)) {
+        "month"
+      } else if (days %in% c(365, 366)) {
+        "year"
       } else {
-        ## this will be in seconds
-        interval <- find.time.interval(mydata$date)
+        interval
       }
 
-      ## better interval, most common interval in a year
-      if (days %in% c(30, 31)) {
-        interval <- "month"
-      }
-      if (days %in% c(365, 366)) {
-        interval <- "year"
-      }
-
-      allDates <- seq(min(mydata$date), max(mydata$date), by = interval)
+      # calculate full series of dates by the data interval
+      date_range <- range(mydata$date)
+      allDates <- seq(date_range[1], date_range[2], by = interval)
       allDates <- c(allDates, max(allDates) + seconds_data_interval)
 
-      ## all data with new time interval
+      # recalculate full series of dates by the avg.time interval
       allData <- data.frame(date = seq(min(allDates), max(allDates), avg.time))
 
-      ## merge with original data, which leaves gaps to fill
-      mydata <- full_join(mydata, allData, by = "date") %>%
-        arrange(date)
+      # merge with original data, which leaves gaps to fill
+      mydata <-
+        mydata %>%
+        dplyr::full_join(allData, by = dplyr::join_by("date")) %>%
+        dplyr::arrange(date)
 
-      ## make sure missing types are inserted
-      mydata[type] <- mydata[type] <- mydata[1, type]
+      # make sure missing types are inserted
+      mydata <- tidyr::fill(
+        mydata,
+        dplyr::all_of(type),
+        .direction = c("downup")
+      )
 
+      # if `fill`, fill all other columns too
       if (fill) {
-        ## this will copy-down data to next original row of data
-        ## number of additional lines to fill
-        inflateFac <- seconds_data_interval / seconds_avgtime_interval
+        # stop if irregular time series
         if (seconds_data_interval %% seconds_avgtime_interval != 0) {
-          stop(
+          cli::cli_abort(
             "Non-regular time expansion selected, or non-regular input time series."
           )
         }
 
-        ## ids of original dates in new dates
-        ids <- which(mydata$date %in% theDates)
-
-        date <- mydata$date
-        mydata <- subset(mydata, select = -date)
-
-        for (i in 1:(inflateFac - 1)) {
-          mydata[ids + i, ] <- mydata[ids, ]
-        }
-
-        mydata <- cbind(date, mydata)
-        mydata <- mydata[seq_len(nrow(mydata)) - 1, ] ## don't need last row
+        # fill data
+        mydata <- tidyr::fill(mydata, dplyr::everything(), .direction = "down")
       }
 
       return(mydata)
@@ -391,12 +392,12 @@ timeAverage <- function(
             # correct negative wind directions
             wd = dplyr::if_else(.data$wd < 0, .data$wd + 360, .data$wd)
           )
-        
+
         ## vector average ws
         if ("ws" %in% names(mydata) && vector.ws) {
           avmet <- dplyr::mutate(avmet, ws = (.data$Uu^2 + .data$Vv^2)^0.5)
         }
-        
+
         avmet <- dplyr::select(avmet, -"Uu", -"Vv")
       }
     }
@@ -489,7 +490,11 @@ validate_timeaverage_inputs <- function(data.thresh, percentile, statistic) {
 get_statistic_function <- function(statistic, percentile) {
   if (statistic == "mean") {
     return(function(x) {
-      mean(x, na.rm = TRUE)
+      if (all(is.na(x))) {
+        NA
+      } else {
+        mean(x, na.rm = TRUE)
+      }
     })
   }
   if (statistic == "median") {
@@ -513,7 +518,11 @@ get_statistic_function <- function(statistic, percentile) {
   }
   if (statistic == "min") {
     return(function(x) {
-      min(x, na.rm = TRUE)
+      if (all(is.na(x))) {
+        NA
+      } else {
+        min(x, na.rm = TRUE)
+      }
     })
   }
   if (statistic == "sum") {
