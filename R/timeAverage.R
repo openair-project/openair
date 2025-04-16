@@ -241,38 +241,15 @@ timeAverage <- function(
       padded <- TRUE
     }
 
-    ## If interval of original time series not specified, calculate it
-    ## time diff in seconds of original data
-    timeDiff <- as.numeric(strsplit(find.time.interval(mydata$date), " ")[[1]][
-      1
-    ])
-
-    ## time diff of new interval
-    by2 <- strsplit(avg.time, " ", fixed = TRUE)[[1]]
-
-    seconds <- 1
-    if (length(by2) > 1) seconds <- as.numeric(by2[1])
-    units <- by2[length(by2)]
-
-    if (units == "sec") int <- 1
-    if (units == "min") int <- 60
-    if (units == "hour") int <- 3600
-    if (units == "day") int <- 3600 * 24
-    if (units == "week") int <- 3600 * 24 * 7
-    if (units == "month") int <- 3600 * 24 * 31 ## approx
-    if (
-      units == "quarter" ||
-        units == "season"
-    )
-      int <- 3600 * 24 * 31 * 3 ## approx
-    if (units == "year") int <- 3600 * 8784 ## approx
-
-    seconds <- seconds * int ## interval in seconds
-    if (is.na(timeDiff)) timeDiff <- seconds ## when only one row
+    # obtain time parameters; seconds in the avg.time interval and seconds in
+    # the data interval
+    time_params <- get_time_parameters(mydata = mydata, avg.time = avg.time)
+    seconds_data_interval <- time_params$seconds_data_interval
+    seconds_avgtime_interval <- time_params$seconds_avgtime_interval
 
     ## check to see if we need to expand data rather than aggregate it
     ## i.e. chosen time interval less than that of data
-    if (seconds < timeDiff) {
+    if (seconds_avgtime_interval < seconds_data_interval) {
       ## original dates
       theDates <- mydata$date
 
@@ -297,7 +274,7 @@ timeAverage <- function(
       if (days %in% c(365, 366)) interval <- "year"
 
       allDates <- seq(min(mydata$date), max(mydata$date), by = interval)
-      allDates <- c(allDates, max(allDates) + timeDiff)
+      allDates <- c(allDates, max(allDates) + seconds_data_interval)
 
       ## all data with new time interval
       allData <- data.frame(date = seq(min(allDates), max(allDates), avg.time))
@@ -312,8 +289,8 @@ timeAverage <- function(
       if (fill) {
         ## this will copy-down data to next original row of data
         ## number of additional lines to fill
-        inflateFac <- timeDiff / seconds
-        if (timeDiff %% seconds != 0) {
+        inflateFac <- seconds_data_interval / seconds_avgtime_interval
+        if (seconds_data_interval %% seconds_avgtime_interval != 0) {
           stop(
             "Non-regular time expansion selected, or non-regular input time series."
           )
@@ -686,4 +663,47 @@ pad_dates_timeavg <- function(mydata, type = NULL, interval = "month") {
   mydata <- arrange(mydata, date)
 
   return(mydata)
+}
+
+#' Get the intervals in the original data and in the avg.time period
+#' @noRd
+get_time_parameters <- function(mydata, avg.time) {
+  # Time diff in seconds of original data
+  seconds_data_interval <- as.numeric(strsplit(
+    find.time.interval(mydata$date),
+    " "
+  )[[1]][1])
+
+  # Parse time diff of new interval
+  by2 <- strsplit(avg.time, " ", fixed = TRUE)[[1]]
+
+  seconds_avgtime_interval <- 1
+  if (length(by2) > 1) {
+    seconds_avgtime_interval <- as.numeric(by2[1])
+  }
+  units <- by2[length(by2)]
+
+  # Convert units to seconds
+  int <- switch(
+    units,
+    "sec" = 1,
+    "min" = 60,
+    "hour" = 3600,
+    "day" = 3600 * 24,
+    "week" = 3600 * 24 * 7,
+    "month" = 3600 * 24 * 31,
+    "quarter" = 3600 * 24 * 31 * 3,
+    "season" = 3600 * 24 * 31 * 3,
+    "year" = 3600 * 8784
+  )
+
+  seconds_avgtime_interval <- seconds_avgtime_interval * int # interval in seconds
+  if (is.na(seconds_data_interval)) {
+    seconds_data_interval <- seconds_avgtime_interval # when only one row
+  }
+
+  return(list(
+    seconds_data_interval = seconds_data_interval,
+    seconds_avgtime_interval = seconds_avgtime_interval
+  ))
 }
