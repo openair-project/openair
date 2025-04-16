@@ -384,22 +384,19 @@ timeAverage <- function(
     if ("wd" %in% names(mydata) && statistic != "data.cap") {
       if (is.numeric(mydata$wd)) {
         ## mean wd
-        avmet <- dplyr::mutate(
-          avmet,
-          wd = as.vector(atan2(.data$Uu, .data$Vv) * 360 / 2 / pi)
-        )
-
-        ## correct for negative wind directions
-        ids <- which(avmet$wd < 0) ## ids where wd < 0
-        avmet$wd[ids] <- avmet$wd[ids] + 360
-
+        avmet <-
+          avmet %>%
+          dplyr::mutate(
+            wd = as.vector(atan2(.data$Uu, .data$Vv) * 360 / 2 / pi),
+            # correct negative wind directions
+            wd = dplyr::if_else(.data$wd < 0, .data$wd + 360, .data$wd)
+          )
+        
         ## vector average ws
-        if ("ws" %in% names(mydata)) {
-          if (vector.ws) {
-            avmet <- dplyr::mutate(avmet, ws = (.data$Uu^2 + .data$Vv^2)^0.5)
-          }
+        if ("ws" %in% names(mydata) && vector.ws) {
+          avmet <- dplyr::mutate(avmet, ws = (.data$Uu^2 + .data$Vv^2)^0.5)
         }
-
+        
         avmet <- dplyr::select(avmet, -"Uu", -"Vv")
       }
     }
