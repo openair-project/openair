@@ -211,39 +211,19 @@ timeAverage <- function(
   # get an appropriate function for the statistic
   FUN <- get_statistic_function(statistic = statistic, percentile = percentile)
 
-  calc.mean <- function(mydata, start.date) {
-    ## function to calculate means
-
-    ## need to check whether avg.time is > or < actual time gap of data
-    ## then data will be expanded or aggregated accordingly
-
-    ## start from a particular time, if given
-    if (!is.na(start.date)) {
-      firstLine <- data.frame(date = as.POSIXct(start.date, tz = TZ))
-
-      ## add in type
-      firstLine[type] <- mydata[1, type]
-      mydata <- bind_rows(firstLine, mydata)
-
-      ## for cutting data must ensure it is in GMT because combining
-      ## data frames when system is not GMT puts it in local time!...
-      ## and then cut makes a string/factor levels with tz lost...
-
-      mydata$date <- as.POSIXct(format(mydata$date), tz = TZ)
-    }
-
-    if (!is.na(end.date)) {
-      lastLine <- data.frame(date = as.POSIXct(end.date, tz = TZ))
-      lastLine[type] <- mydata[1, type]
-
-      mydata <- bind_rows(mydata, lastLine)
-
-      ## for cutting data must ensure it is in GMT because combining
-      ## data frames when system is not GMT puts it in local time!...
-      ## and then cut makes a string/factor levels with tz lost...
-
-      mydata$date <- as.POSIXct(format(mydata$date), tz = TZ)
-    }
+  # function to calculate means
+  # 
+  # need to check whether avg.time is > or < actual time gap of data
+  # then data will be expanded or aggregated accordingly
+  calc.mean <- function(mydata, start.date, end.date) {
+    # deal with start/end date arguments
+    mydata <- bind_start_and_end_dates(
+      mydata = mydata,
+      type = type,
+      start.date = start.date,
+      end.date = end.date,
+      TZ = TZ
+    )
 
     ## if interval specified, then use it
     if (!is.na(interval)) {
@@ -252,7 +232,7 @@ timeAverage <- function(
         do(date.pad2(., type = type, interval = interval))
 
       ## make sure missing types are inserted
-      mydata[type] <- mydata[type] <- mydata[1, type]
+      mydata[type] <- mydata[1, type]
 
       padded <- TRUE
     }
@@ -536,7 +516,12 @@ timeAverage <- function(
   mydata <-
     mydata %>%
     split(mydata[type], drop = TRUE) %>%
-    purrr::map(calc.mean, start.date = start.date, .progress = progress) %>%
+    purrr::map(
+      calc.mean,
+      start.date = start.date,
+      end.date = end.date,
+      .progress = progress
+    ) %>%
     purrr::list_rbind() %>%
     dplyr::as_tibble()
 
@@ -645,4 +630,24 @@ get_statistic_function <- function(statistic, percentile) {
       quantile(x, probs = percentile, na.rm = TRUE)
     })
   }
+}
+
+#' Add start.date and end.date, if they exist
+#' @noRd
+bind_start_and_end_dates <- function(mydata, type, start.date, end.date, TZ) {
+  if (!is.na(start.date)) {
+    firstLine <- data.frame(date = as.POSIXct(start.date, tz = TZ))
+    firstLine[type] <- mydata[1, type]
+    mydata <- bind_rows(firstLine, mydata)
+  }
+  
+  if (!is.na(end.date)) {
+    lastLine <- data.frame(date = as.POSIXct(end.date, tz = TZ))
+    lastLine[type] <- mydata[1, type]
+    mydata <- bind_rows(mydata, lastLine)
+  }
+  
+  mydata$date <- as.POSIXct(format(mydata$date), tz = TZ)
+  
+  return(mydata)
 }
