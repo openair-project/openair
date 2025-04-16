@@ -231,7 +231,11 @@ timeAverage <- function(
         mydata %>%
         split(mydata[type], drop = TRUE) %>%
         purrr::map(function(x) {
-          pad_dates_timeavg(mydata = x, type = type, interval = interval)
+          pad_dates_timeavg(
+            mydata = x,
+            type = type,
+            interval = interval
+          )
         }) %>%
         purrr::list_rbind()
 
@@ -270,8 +274,12 @@ timeAverage <- function(
       }
 
       ## better interval, most common interval in a year
-      if (days %in% c(30, 31)) interval <- "month"
-      if (days %in% c(365, 366)) interval <- "year"
+      if (days %in% c(30, 31)) {
+        interval <- "month"
+      }
+      if (days %in% c(365, 366)) {
+        interval <- "year"
+      }
 
       allDates <- seq(min(mydata$date), max(mydata$date), by = interval)
       allDates <- c(allDates, max(allDates) + seconds_data_interval)
@@ -329,77 +337,48 @@ timeAverage <- function(
       vars <- unique(c(vars, "season"))
     }
 
+    # if a data threshold has been set and data hasn't already been padded,
+    # pad the data to ensure that DC% calculation is accurate
+    if (data.thresh != 0 && !padded) {
+      mydata <- date.pad(mydata, type = type)
+    }
+
+    # cut date column into bins unless season (dealt w/ earlier)
+    if (avg.time != "season") {
+      mydata$date <-
+        lubridate::as_datetime(
+          as.character(cut(mydata$date, avg.time)),
+          tz = TZ
+        )
+    }
+
     if (data.thresh != 0) {
-      ## take account of data capture
-
-      ## need to make sure all data are present..
-      ## print out time interval assumed for input time series
-      ## useful for debugging
-      if (!padded) {
-        mydata <- date.pad(mydata, type = type)
-      }
-
-      if (avg.time != "season") {
-        mydata$date <-
-          lubridate::as_datetime(
-            as.character(cut(mydata$date, avg.time)),
-            tz = TZ
-          )
-      }
-
-      if (statistic == "mean") {
-        ## faster for some reason?
-
-        avmet <- mydata %>%
-          group_by(across(vars)) %>%
-          summarise(across(
-            where(function(x) !is.factor(x) && !is.character(x)),
-            ~ if (sum(is.na(.x)) / length(.x) <= 1 - data.thresh) {
-              mean(.x, na.rm = TRUE)
+      avmet <- mydata %>%
+        group_by(across(vars)) %>%
+        summarise(across(
+          where(function(x) {
+            !is.factor(x) && !is.character(x)
+          }),
+          function(x) {
+            if (sum(is.na(x)) / length(x) <= 1 - data.thresh) {
+              FUN(x)
             } else {
               NA
             }
-          ))
-      } else {
-        avmet <- mydata %>%
-          group_by(across(vars)) %>%
-          summarise(across(
-            where(function(x) !is.factor(x) && !is.character(x)),
-            ~ if (sum(is.na(.x)) / length(.x) <= 1 - data.thresh) {
-              FUN(.x)
-            } else {
-              NA
-            }
-          ))
-      }
+          }
+        ))
     } else {
-      ## faster if do not need data capture
-      if (avg.time != "season") {
-        mydata$date <-
-          lubridate::as_datetime(
-            as.character(cut(mydata$date, avg.time)),
-            tz = TZ
-          )
-      }
-
       avmet <-
         mydata %>%
-        group_by(across(vars))
-
-      # This is much faster for some reason
-      if (statistic == "mean") {
-        avmet <- avmet %>%
-          summarise(across(
-            where(function(x) !is.factor(x) && !is.character(x)),
-            ~ mean(.x, na.rm = TRUE)
-          ))
-      } else {
-        avmet <- avmet %>%
-          summarise(across(
-            where(function(x) !is.factor(x) && !is.character(x)),
-            ~ FUN(.x)
-          ))
-      }
+        group_by(across(vars)) %>%
+        summarise(across(
+          where(function(x) {
+            !is.factor(x) && !is.character(x)
+          }),
+          function(x) {
+            FUN(x)
+          }
+        ))
     }
 
     if ("wd" %in% names(mydata) && statistic != "data.cap") {
@@ -672,7 +651,7 @@ get_time_parameters <- function(mydata, avg.time) {
 #' @noRd
 calculate_wind_components <- function(mydata) {
   if ("wd" %in% names(mydata)) {
-    if (is.numeric(mydata$wd))
+    if (is.numeric(mydata$wd)) {
       if ("ws" %in% names(mydata)) {
         mydata <- dplyr::mutate(
           mydata,
@@ -686,6 +665,7 @@ calculate_wind_components <- function(mydata) {
           Vv = cos(2 * pi * .data$wd / 360)
         )
       }
+    }
   }
 
   return(mydata)
