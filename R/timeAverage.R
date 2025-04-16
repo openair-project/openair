@@ -313,63 +313,21 @@ timeAverage <- function(
       return(mydata)
     }
 
-    ## calculate wind components
-    if ("wd" %in% names(mydata)) {
-      if (is.numeric(mydata$wd) && "ws" %in% names(mydata)) {
-        mydata <- dplyr::mutate(
-          mydata,
-          Uu = .data$ws * sin(2 * pi * .data$wd / 360),
-          Vv = .data$ws * cos(2 * pi * .data$wd / 360)
-        )
-      }
+    # calculate Uu & Vv if "wd" (& "ws") are in mydata
+    mydata <- calculate_wind_components(mydata = mydata)
 
-      if (is.numeric(mydata$wd) && !"ws" %in% names(mydata)) {
-        mydata <- dplyr::mutate(
-          mydata,
-          Uu = sin(2 * pi * .data$wd / 360),
-          Vv = cos(2 * pi * .data$wd / 360)
-        )
-      }
-    }
-
+    # handle 'season' as special case
     if (avg.time == "season") {
-      # special case for season
-      # need to group specific months: Dec/Jan/Feb etc
-
-      # don't cut again if type = "season"
-      if (!"season" %in% type) {
-        mydata <- cutData(mydata, type = "season", ...)
-      }
-
-      # remove any missing seasons e.g. through type = "season"
-      mydata <- mydata[!is.na(mydata$season), ]
-
-      # calculate year
-      mydata <- mutate(mydata, year = year(date), month = month(date))
-
-      # ids where month = 12, make December part of following year's season
-      ids <- which(mydata$month == 12)
-      mydata$year[ids] <- mydata$year[ids] + 1
-
-      # find mean date in year-season
-      mydata <-
-        mydata %>%
-        dplyr::mutate(
-          date = mean(date, na.rm = TRUE),
-          .by = c("year", "season")
-        ) %>%
-        dplyr::select(
-          -"year",
-          -"month"
-        )
+      mydata <- handle_season_avgtime(mydata, type = type, ...)
     }
 
     ## Aggregate data
 
     ## variables to split by
     vars <- c(type, "date")
-
-    if (avg.time == "season") vars <- unique(c(vars, "season"))
+    if (avg.time == "season") {
+      vars <- unique(c(vars, "season"))
+    }
 
     if (data.thresh != 0) {
       ## take account of data capture
@@ -702,8 +660,63 @@ get_time_parameters <- function(mydata, avg.time) {
     seconds_data_interval <- seconds_avgtime_interval # when only one row
   }
 
-  return(list(
-    seconds_data_interval = seconds_data_interval,
-    seconds_avgtime_interval = seconds_avgtime_interval
-  ))
+  return(
+    list(
+      seconds_data_interval = seconds_data_interval,
+      seconds_avgtime_interval = seconds_avgtime_interval
+    )
+  )
+}
+
+#' Calculate Uu and Vv if wd & ws are in the data
+#' @noRd
+calculate_wind_components <- function(mydata) {
+  if ("wd" %in% names(mydata)) {
+    if (is.numeric(mydata$wd))
+      if ("ws" %in% names(mydata)) {
+        mydata <- dplyr::mutate(
+          mydata,
+          Uu = .data$ws * sin(2 * pi * .data$wd / 360),
+          Vv = .data$ws * cos(2 * pi * .data$wd / 360)
+        )
+      } else {
+        mydata <- dplyr::mutate(
+          mydata,
+          Uu = sin(2 * pi * .data$wd / 360),
+          Vv = cos(2 * pi * .data$wd / 360)
+        )
+      }
+  }
+
+  return(mydata)
+}
+
+#' Function to handle getting a mean date in year-season by shifting
+#' December into next year
+#' @noRd
+handle_season_avgtime <- function(mydata, type, ...) {
+  # don't cut again if type = "season"
+  if (!"season" %in% type) {
+    mydata <- cutData(mydata, type = "season", ...)
+  }
+
+  mydata %>%
+    # drop missing seasons
+    dplyr::filter(!is.na(.data$season)) %>%
+    # extract year/month
+    dplyr::mutate(
+      year = lubridate::year(.data$date),
+      month = lubridate::month(.data$date)
+    ) %>%
+    # nudge December into next month
+    dplyr::mutate(
+      year = dplyr::if_else(.data$month == 12, .data$year + 1, .data$year)
+    ) %>%
+    # get average date per year-season
+    dplyr::mutate(
+      date = mean(date, na.rm = TRUE),
+      .by = c("year", "season")
+    ) %>%
+    # drop year/month cols
+    dplyr::select(-"year", -"month")
 }
