@@ -375,7 +375,7 @@ calendarPlot <-
         "day",
         statistic = statistic,
         data.thresh = data.thresh
-      ) |>
+      ) %>%
         mutate(date = as_date(date))
 
       # replace with parallel max
