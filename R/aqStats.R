@@ -158,16 +158,7 @@ aqStats <- function(
 
 # function to calculate statistics
 calcStats <- function(mydata, data.thresh, percentile, ...) {
-  # check to see if dates duplicate
-  if (length(unique(mydata$date)) != length(mydata$date)) {
-    cli::cli_warn(
-      c(
-        "!" = 'Duplicate dates detected per {.field type}.',
-        "i" = 'Is there more than one site? Use {.code {.field type} = "site"}.'
-      ),
-      call = NULL
-    )
-  }
+  checkDuplicateRows(mydata, type = NULL)
 
   # fill any missing hours
   start.date <- lubridate::floor_date(min(mydata$date), "year")
