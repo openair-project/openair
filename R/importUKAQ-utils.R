@@ -479,11 +479,13 @@ guess_source <- function(site) {
       source = factor(
         .data$source,
         c("aurn", "saqn", "aqe", "waqn", "ni", "local")
-      )
+      ),
+      code = toupper(.data$code)
     ) %>%
     dplyr::arrange(.data$source) %>%
     dplyr::distinct(
       .data$site,
+      .data$code,
       .data$latitude,
       .data$longitude,
       .keep_all = TRUE
@@ -524,7 +526,8 @@ guess_source <- function(site) {
           "longitude",
           "site_type"
         )
-      )
+      ) %>%
+      dplyr::distinct()
 
     alternatives <-
       source_tbl_other %>%
