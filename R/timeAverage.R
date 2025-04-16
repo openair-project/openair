@@ -508,29 +508,33 @@ timeAverage <- function(
 
   # cut data into intervals
   mydata <- cutData(mydata, type)
+  
+  # select date, type, and all non-factor/character columns
+  mydata <-
+    dplyr::select(mydata, dplyr::all_of(c("date", type)), dplyr::where(function(x) {
+      !is.character(x) && !is.factor(x)
+    }))
 
-  ## ids of numeric columns, type and date
-  ids <- c(
-    which(names(mydata) %in% c("date", type)),
-    which(sapply(mydata, function(x) !is.factor(x) && !is.character(x)))
-  )
-  mydata <- mydata[, unique(ids)]
-
-  ## calculate stats split by type
-  if (progress) progress <- "Calculating Time Averages"
-  mydata <- mydata %>%
-    group_by(across(type)) %>%
-    group_split() %>%
+  # calculate stats split by type
+  if (progress) {
+    progress <- "Calculating Time Averages"
+  }
+  
+  # calculate averages
+  mydata <-
+    mydata %>%
+    split(mydata[type], drop = TRUE) %>%
     purrr::map(calc.mean, start.date = start.date, .progress = progress) %>%
     purrr::list_rbind() %>%
-    as_tibble()
+    dplyr::as_tibble()
 
-  ## don't need default column
+  # drop default column if it exists
   if ("default" %in% names(mydata)) {
     mydata <- subset(mydata, select = -default)
   }
 
-  mydata
+  # return 
+  return(mydata)
 }
 
 #' Checks relevant timeAverage inputs
