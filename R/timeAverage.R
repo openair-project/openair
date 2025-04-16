@@ -222,7 +222,6 @@ timeAverage <- function(
       firstLine <- data.frame(date = as.POSIXct(start.date, tz = TZ))
 
       ## add in type
-      # firstLine[[type]] <- mydata[[type]][1]
       firstLine[type] <- mydata[1, type]
       mydata <- bind_rows(firstLine, mydata)
 
@@ -235,7 +234,6 @@ timeAverage <- function(
 
     if (!is.na(end.date)) {
       lastLine <- data.frame(date = as.POSIXct(end.date, tz = TZ))
-      # lastLine[[type]] <- mydata[[type]][1]
       lastLine[type] <- mydata[1, type]
 
       mydata <- bind_rows(mydata, lastLine)
@@ -254,7 +252,6 @@ timeAverage <- function(
         do(date.pad2(., type = type, interval = interval))
 
       ## make sure missing types are inserted
-      #  mydata[[type]] <- mydata[[type]][1]
       mydata[type] <- mydata[type] <- mydata[1, type]
 
       padded <- TRUE
@@ -349,7 +346,7 @@ timeAverage <- function(
         }
 
         mydata <- cbind(date, mydata)
-        mydata <- mydata[1:nrow(mydata) - 1, ] ## don't need last row
+        mydata <- mydata[seq_len(nrow(mydata)) - 1, ] ## don't need last row
       }
 
       return(mydata)
@@ -358,48 +355,52 @@ timeAverage <- function(
     ## calculate wind components
     if ("wd" %in% names(mydata)) {
       if (is.numeric(mydata$wd) && "ws" %in% names(mydata)) {
-        mydata <- transform(
+        mydata <- dplyr::mutate(
           mydata,
-          Uu = ws * sin(2 * pi * wd / 360),
-          Vv = ws * cos(2 * pi * wd / 360)
+          Uu = .data$ws * sin(2 * pi * .data$wd / 360),
+          Vv = .data$ws * cos(2 * pi * .data$wd / 360)
         )
       }
 
       if (is.numeric(mydata$wd) && !"ws" %in% names(mydata)) {
-        mydata <- transform(
+        mydata <- dplyr::mutate(
           mydata,
-          Uu = sin(2 * pi * wd / 360),
-          Vv = cos(2 * pi * wd / 360)
+          Uu = sin(2 * pi * .data$wd / 360),
+          Vv = cos(2 * pi * .data$wd / 360)
         )
       }
     }
 
     if (avg.time == "season") {
-      ## special case for season
-      ## need to group specific months: Dec/Jan/Feb etc
+      # special case for season
+      # need to group specific months: Dec/Jan/Feb etc
 
       # don't cut again if type = "season"
       if (!"season" %in% type) {
         mydata <- cutData(mydata, type = "season", ...)
       }
 
-      ## remove any missing seasons e.g. through type = "season"
+      # remove any missing seasons e.g. through type = "season"
       mydata <- mydata[!is.na(mydata$season), ]
 
-      ## calculate year
+      # calculate year
       mydata <- mutate(mydata, year = year(date), month = month(date))
 
-      ## ids where month = 12, make December part of following year's season
+      # ids where month = 12, make December part of following year's season
       ids <- which(mydata$month == 12)
       mydata$year[ids] <- mydata$year[ids] + 1
 
-      ## find mean date in year-season
-      mydata <- transform(
-        mydata,
-        date = ave(date, list(year, season), FUN = mean)
-      )
-
-      mydata <- subset(mydata, select = -c(year, month))
+      # find mean date in year-season
+      mydata <-
+        mydata %>%
+        dplyr::mutate(
+          date = mean(date, na.rm = TRUE),
+          .by = c("year", "season")
+        ) %>%
+        dplyr::select(
+          -"year",
+          -"month"
+        )
     }
 
     ## Aggregate data
@@ -460,10 +461,9 @@ timeAverage <- function(
             as.character(cut(mydata$date, avg.time)),
             tz = TZ
           )
-        # mydata$date <- as.POSIXct(cut(mydata$date, avg.time), tz = TZ)
       }
 
-      avmet <- # select(mydata, -date) %>%
+      avmet <-
         mydata %>%
         group_by(across(vars))
 
@@ -486,7 +486,10 @@ timeAverage <- function(
     if ("wd" %in% names(mydata) && statistic != "data.cap") {
       if (is.numeric(mydata$wd)) {
         ## mean wd
-        avmet <- transform(avmet, wd = as.vector(atan2(Uu, Vv) * 360 / 2 / pi))
+        avmet <- dplyr::mutate(
+          avmet,
+          wd = as.vector(atan2(.data$Uu, .data$Vv) * 360 / 2 / pi)
+        )
 
         ## correct for negative wind directions
         ids <- which(avmet$wd < 0) ## ids where wd < 0
@@ -495,11 +498,11 @@ timeAverage <- function(
         ## vector average ws
         if ("ws" %in% names(mydata)) {
           if (vector.ws) {
-            avmet <- transform(avmet, ws = (Uu^2 + Vv^2)^0.5)
+            avmet <- dplyr::mutate(avmet, ws = (.data$Uu^2 + .data$Vv^2)^0.5)
           }
         }
 
-        avmet <- subset(avmet, select = c(-Uu, -Vv))
+        avmet <- dplyr::select(avmet, -"Uu", -"Vv")
       }
     }
 
@@ -528,7 +531,7 @@ timeAverage <- function(
   if (progress) {
     progress <- "Calculating Time Averages"
   }
-  
+
   # calculate averages
   mydata <-
     mydata %>%
@@ -539,7 +542,7 @@ timeAverage <- function(
 
   # drop default column if it exists
   if ("default" %in% names(mydata)) {
-    mydata <- subset(mydata, select = -default)
+    mydata$default <- NULL
   }
 
   # return
@@ -551,14 +554,14 @@ timeAverage <- function(
 validate_timeaverage_inputs <- function(data.thresh, percentile, statistic) {
   # Percentile
   if (!is.na(percentile)) {
-    if (percentile < 0 | percentile > 100) {
+    if (percentile < 0 || percentile > 100) {
       cli::cli_abort("Percentile range, {percentile}, outside {0L}-{100L}")
     }
     percentile <- percentile / 100
   }
 
   # Data Threshold
-  if (data.thresh < 0 | data.thresh > 100) {
+  if (data.thresh < 0 || data.thresh > 100) {
     cli::cli_abort("Data capture range, {data.thresh}, outside {0L}-{100L}")
   }
   data.thresh <- data.thresh / 100
