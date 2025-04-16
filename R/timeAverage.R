@@ -212,7 +212,7 @@ timeAverage <- function(
   FUN <- get_statistic_function(statistic = statistic, percentile = percentile)
 
   # function to calculate means
-  # 
+  #
   # need to check whether avg.time is > or < actual time gap of data
   # then data will be expanded or aggregated accordingly
   calc.mean <- function(mydata, start.date, end.date) {
@@ -225,14 +225,18 @@ timeAverage <- function(
       TZ = TZ
     )
 
-    ## if interval specified, then use it
+    # if interval specified, then use it to pad the data
     if (!is.na(interval)) {
-      mydata <- mydata %>%
-        group_by(across(type)) %>%
-        do(date.pad2(., type = type, interval = interval))
+      mydata <-
+        mydata %>%
+        split(mydata[type], drop = TRUE) %>%
+        purrr::map(function(x) {
+          pad_dates_timeavg(mydata = x, type = type, interval = interval)
+        }) %>%
+        purrr::list_rbind()
 
-      ## make sure missing types are inserted
-      mydata[type] <- mydata[1, type]
+      # make sure missing types are inserted
+      mydata[type] <- mydata[type] <- mydata[1, type]
 
       padded <- TRUE
     }
@@ -488,7 +492,7 @@ timeAverage <- function(
 
     ## fill missing gaps - but only for non-dst data
     if (avg.time != "season" && !any(dst(avmet$date))) {
-      avmet <- date.pad2(avmet, type = type, interval = avg.time)
+      avmet <- pad_dates_timeavg(avmet, type = type, interval = avg.time)
     }
 
     avmet
@@ -640,14 +644,46 @@ bind_start_and_end_dates <- function(mydata, type, start.date, end.date, TZ) {
     firstLine[type] <- mydata[1, type]
     mydata <- bind_rows(firstLine, mydata)
   }
-  
+
   if (!is.na(end.date)) {
     lastLine <- data.frame(date = as.POSIXct(end.date, tz = TZ))
     lastLine[type] <- mydata[1, type]
     mydata <- bind_rows(mydata, lastLine)
   }
-  
+
   mydata$date <- as.POSIXct(format(mydata$date), tz = TZ)
-  
+
+  return(mydata)
+}
+
+#' Pad the data
+#' @noRd
+pad_dates_timeavg <- function(mydata, type = NULL, interval = "month") {
+  # assume by the time we get here the data have been split into types
+  # This means we just need to pad out the missing types based on first
+  # line.
+
+  start.date <- min(mydata$date, na.rm = TRUE)
+  end.date <- max(mydata$date, na.rm = TRUE)
+
+  # interval is in seconds, so convert to days if Date class and not POSIXct
+  if (class(mydata$date)[1] == "Date") {
+    interval <- paste(
+      as.numeric(strsplit(interval, " ")[[1]][1]) / 3600 / 24,
+      "days"
+    )
+  }
+
+  all.dates <- data.frame(date = seq(start.date, end.date, by = interval))
+  mydata <- mydata %>% full_join(all.dates, by = "date")
+
+  # add in missing types if gaps are made
+  if (!is.null(type)) {
+    mydata[type] <- mydata[1, type]
+  }
+
+  # make sure order is correct
+  mydata <- arrange(mydata, date)
+
   return(mydata)
 }

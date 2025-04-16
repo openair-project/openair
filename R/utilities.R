@@ -86,38 +86,6 @@ find.time.interval <- function(dates) {
   seconds
 }
 
-
-date.pad2 <- function(mydata, type = NULL, interval = "month") {
-  # assume by the time we get here the data have been split into types
-  # This means we just need to pad out the missing types based on first
-  # line.
-
-  start.date <- min(mydata$date, na.rm = TRUE)
-  end.date <- max(mydata$date, na.rm = TRUE)
-
-  # interval is in seconds, so convert to days if Date class and not POSIXct
-  if (class(mydata$date)[1] == "Date") {
-    interval <- paste(
-      as.numeric(strsplit(interval, " ")[[1]][1]) / 3600 / 24,
-      "days"
-    )
-  }
-
-  all.dates <- data.frame(date = seq(start.date, end.date, by = interval))
-  mydata <- mydata %>% full_join(all.dates, by = "date")
-
-  # add in missing types if gaps are made
-  if (!is.null(type)) {
-    mydata[type] <- mydata[1, type]
-  }
-
-  # make sure order is correct
-  mydata <- arrange(mydata, date)
-
-  return(mydata)
-}
-
-
 ## #################################################################
 # Function to pad out missing time data
 # assumes data have already been split by type, so just take first
