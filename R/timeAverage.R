@@ -262,10 +262,9 @@ timeAverage <- function(
 
     ## If interval of original time series not specified, calculate it
     ## time diff in seconds of original data
-    timeDiff <- as.numeric(strsplit(
-      find.time.interval(mydata$date),
-      " "
-    )[[1]][1])
+    timeDiff <- as.numeric(strsplit(find.time.interval(mydata$date), " ")[[1]][
+      1
+    ])
 
     ## time diff of new interval
     by2 <- strsplit(avg.time, " ", fixed = TRUE)[[1]]
@@ -280,7 +279,11 @@ timeAverage <- function(
     if (units == "day") int <- 3600 * 24
     if (units == "week") int <- 3600 * 24 * 7
     if (units == "month") int <- 3600 * 24 * 31 ## approx
-    if (units == "quarter" || units == "season") int <- 3600 * 24 * 31 * 3 ## approx
+    if (
+      units == "quarter" ||
+        units == "season"
+    )
+      int <- 3600 * 24 * 31 * 3 ## approx
     if (units == "year") int <- 3600 * 8784 ## approx
 
     seconds <- seconds * int ## interval in seconds
@@ -429,29 +432,25 @@ timeAverage <- function(
 
         avmet <- mydata %>%
           group_by(across(vars)) %>%
-          summarise(
-            across(
-              everything(),
-              ~ if (sum(is.na(.x)) / length(.x) <= 1 - data.thresh) {
-                mean(.x, na.rm = TRUE)
-              } else {
-                NA
-              }
-            )
-          )
+          summarise(across(
+            where(function(x) !is.factor(x) && !is.character(x)),
+            ~ if (sum(is.na(.x)) / length(.x) <= 1 - data.thresh) {
+              mean(.x, na.rm = TRUE)
+            } else {
+              NA
+            }
+          ))
       } else {
         avmet <- mydata %>%
           group_by(across(vars)) %>%
-          summarise(
-            across(
-              everything(),
-              ~ if (sum(is.na(.x)) / length(.x) <= 1 - data.thresh) {
-                FUN(.x)
-              } else {
-                NA
-              }
-            )
-          )
+          summarise(across(
+            where(function(x) !is.factor(x) && !is.character(x)),
+            ~ if (sum(is.na(.x)) / length(.x) <= 1 - data.thresh) {
+              FUN(.x)
+            } else {
+              NA
+            }
+          ))
       }
     } else {
       ## faster if do not need data capture
@@ -471,10 +470,16 @@ timeAverage <- function(
       # This is much faster for some reason
       if (statistic == "mean") {
         avmet <- avmet %>%
-          summarise(across(everything(), ~ mean(.x, na.rm = TRUE)))
+          summarise(across(
+            where(function(x) !is.factor(x) && !is.character(x)),
+            ~ mean(.x, na.rm = TRUE)
+          ))
       } else {
         avmet <- avmet %>%
-          summarise(across(everything(), ~ FUN(.x)))
+          summarise(across(
+            where(function(x) !is.factor(x) && !is.character(x)),
+            ~ FUN(.x)
+          ))
       }
     }
 
@@ -508,12 +513,16 @@ timeAverage <- function(
 
   # cut data into intervals
   mydata <- cutData(mydata, type)
-  
+
   # select date, type, and all non-factor/character columns
   mydata <-
-    dplyr::select(mydata, dplyr::all_of(c("date", type)), dplyr::where(function(x) {
-      !is.character(x) && !is.factor(x)
-    }))
+    dplyr::select(
+      mydata,
+      dplyr::all_of(c("date", type)),
+      dplyr::where(function(x) {
+        !is.character(x) && !is.factor(x)
+      })
+    )
 
   # calculate stats split by type
   if (progress) {
@@ -533,7 +542,7 @@ timeAverage <- function(
     mydata <- subset(mydata, select = -default)
   }
 
-  # return 
+  # return
   return(mydata)
 }
 
@@ -569,10 +578,7 @@ validate_timeaverage_inputs <- function(data.thresh, percentile, statistic) {
     )
   statistic <- rlang::arg_match(statistic, valid_stats)
 
-  return(list(
-    data.thresh = data.thresh,
-    percentile = percentile
-  ))
+  return(list(data.thresh = data.thresh, percentile = percentile))
 }
 
 #' Get an appropriate function for the statistic
