@@ -550,6 +550,10 @@ get_statistic_function <- function(statistic, percentile) {
     })
   }
   if (statistic == "percentile") {
+    if (is.na(percentile)) {
+      cli::cli_abort("Please provide a {.field percentile} for use with {.code statistic = 'percentile'}.")
+    }
+    
     return(function(x) {
       quantile(x, probs = percentile, na.rm = TRUE)
     })
