@@ -81,8 +81,11 @@ rollingMean <- function(
     )
     type <- "site"
   }
+  
   mydata <- cutData(mydata, type = type, ...)
 
+  checkDuplicateRows(mydata, type)
+  
   # function to perform rolling average
   calc.rolling <- function(mydata) {
     # need to know whether dates added
