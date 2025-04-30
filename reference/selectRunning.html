@@ -154,6 +154,8 @@ particle concentrations.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># extract those hours where there are at least 5 consecutive NOx</span></span></span>
 <span class="r-in"><span><span class="co"># concentrations above 500 units</span></span></span>
 <span class="r-in"><span><span class="va">mydata</span> <span class="op">&lt;-</span> <span class="fu">selectRunning</span><span class="op">(</span><span class="va">mydata</span>, run.len <span class="op">=</span> <span class="fl">5</span>, threshold <span class="op">=</span> <span class="fl">500</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in dplyr::left_join(mydata, thedata, dplyr::join_by("date", "site")):</span> Join columns in `x` must be present in the data.</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #BB0000;">✖</span> Problem with `site`.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># make a polar plot of those conditions, which shows that those</span></span></span>
 <span class="r-in"><span><span class="co"># conditions are dominated by low wind speeds, not</span></span></span>
