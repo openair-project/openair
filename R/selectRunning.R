@@ -114,13 +114,21 @@ selectRunning <- function(
       )
     )
 
+  # just get the flag column
+  thedata <- dplyr::select(thedata, dplyr::all_of(c("date", type, "__flag__")))
+
   # format outputs
   if (mode == "filter") {
-    mydata <- mydata[thedata$`__flag__`, ]
+    mydata <- dplyr::semi_join(
+      mydata,
+      dplyr::filter(thedata, .data$`__flag__`),
+      dplyr::join_by("date", "site")
+    )
   }
 
   if (mode == "flag") {
-    mydata[[name]] <- thedata$`__flag__`
+    mydata <- dplyr::left_join(mydata, thedata, dplyr::join_by("date", "site"))
+    names(mydata)[names(mydata) == "__flag__"] <- name
     mydata[[name]] <- ifelse(mydata[[name]], result[1], result[2])
   }
 
