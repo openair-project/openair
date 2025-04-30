@@ -9,7 +9,7 @@
 #' of a seasonal cycle.
 #'
 #' `smoothTrend` uses a Generalized Additive Model (GAM) from the
-#' [gam()] package to find the most appropriate level of smoothing.
+#' [mgcv::gam()] package to find the most appropriate level of smoothing.
 #' The function is particularly suited to situations where trends are not
 #' monotonic (see discussion with [TheilSen()] for more details on
 #' this). The `smoothTrend` function is particularly useful as an

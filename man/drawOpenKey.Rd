@@ -110,7 +110,7 @@ Most \code{drawOpenKey} options are identical to those of
 \code{lattice::draw.colorkey}.  For example, scale key size and position
 are controlled via \code{height}, \code{width} and \code{space}. Likewise,
 the axis labelling can be set in and formatted by \code{labels}. See
-\code{\link[=draw.colorkey]{draw.colorkey()}} for further details.
+\code{\link[lattice:draw.colorkey]{lattice::draw.colorkey()}} for further details.
 
 Additional scale labelling may be added above and below the scale using
 \code{header} and \code{footer} options within \code{key}. As in other
@@ -176,7 +176,7 @@ version 0.18-5.  http://r-forge.r-project.org/projects/lattice/
 Functions using \code{drawOpenKey} currently include
 \code{\link[=windRose]{windRose()}}, \code{\link[=pollutionRose]{pollutionRose()}}.
 
-For details of the original function, see \code{\link[=draw.colorkey]{draw.colorkey()}}
+For details of the original function, see \code{\link[lattice:draw.colorkey]{lattice::draw.colorkey()}}
 }
 \author{
 \code{draw.colorkey} is part of the \code{lattice} package,

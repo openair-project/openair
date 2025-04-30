@@ -122,12 +122,16 @@ selectRunning <- function(
     mydata <- dplyr::semi_join(
       mydata,
       dplyr::filter(thedata, .data$`__flag__`),
-      dplyr::join_by("date", "site")
+      by = c("date", type)
     )
   }
 
   if (mode == "flag") {
-    mydata <- dplyr::left_join(mydata, thedata, dplyr::join_by("date", "site"))
+    mydata <- dplyr::left_join(
+      mydata,
+      thedata,
+      by = c("date", type)
+    )
     names(mydata)[names(mydata) == "__flag__"] <- name
     mydata[[name]] <- ifelse(mydata[[name]], result[1], result[2])
   }

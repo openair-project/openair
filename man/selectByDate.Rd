@@ -15,29 +15,28 @@ selectByDate(
 )
 }
 \arguments{
-\item{mydata}{A data frame containing a \code{date} field in Date or POSIXct format.}
+\item{mydata}{A data frame containing a \code{date} field in Date or POSIXct
+format.}
 
-\item{start}{A start date or date-time string in the form d/m/yyyy, m/d/yyyy, d/m/yyyy HH:MM,
-m/d/yyyy HH:MM, d/m/yyyy HH:MM:SS or m/d/yyyy HH:MM:SS.}
+\item{start}{A start date or date-time string in the form d/m/yyyy, m/d/yyyy,
+d/m/yyyy HH:MM, m/d/yyyy HH:MM, d/m/yyyy HH:MM:SS or m/d/yyyy HH:MM:SS.}
 
 \item{end}{See \code{start} for format.}
 
 \item{year}{A year or years to select e.g. \code{year = 1998:2004} to select
 1998-2004 inclusive or \code{year = c(1998, 2004)} to select 1998 and 2004.}
 
-\item{month}{A month or months to select. Can either be numeric e.g.
-\code{month = 1:6} to select months 1-6 (January to June), or by name e.g.
-\code{month = c("January", "December")}. Names can be abbreviated to 3
-letters and be in lower or upper case.}
+\item{month}{A month or months to select. Can either be numeric e.g. \code{month = 1:6} to select months 1-6 (January to June), or by name e.g. \code{month = c("January", "December")}. Names can be abbreviated to 3 letters and be in
+lower or upper case.}
 
-\item{day}{A day name or or days to select. \code{day} can be numeric (1 to
-31) or character. For example \code{day = c("Monday", "Wednesday")} or
-\code{day = 1:10} (to select the 1st to 10th of each month). Names can be
-abbreviated to 3 letters and be in lower or upper case. Also accepts
-\dQuote{weekday} (Monday - Friday) and \dQuote{weekend} for convenience.}
+\item{day}{A day name or or days to select. \code{day} can be numeric (1 to 31) or
+character. For example \code{day = c("Monday", "Wednesday")} or \code{day = 1:10} (to
+select the 1st to 10th of each month). Names can be abbreviated to 3
+letters and be in lower or upper case. Also accepts \code{"weekday"} (Monday -
+Friday) and \code{"weekend"} for convenience.}
 
-\item{hour}{An hour or hours to select from 0-23 e.g. \code{hour = 0:12} to
-select hours 0 to 12 inclusive.}
+\item{hour}{An hour or hours to select from 0-23 e.g. \code{hour = 0:12} to select
+hours 0 to 12 inclusive.}
 }
 \description{
 Utility function to filter a data frame by a date range or specific date
