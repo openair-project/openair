@@ -281,7 +281,7 @@ values are calculated from an hourly (or higher resolution) or daily time
 series. There is the option to deseasonalise the data if there is evidence
 of a seasonal cycle.</p>
 <p><code>smoothTrend</code> uses a Generalized Additive Model (GAM) from the
-<code>gam()</code> package to find the most appropriate level of smoothing.
+<code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam()</a></code> package to find the most appropriate level of smoothing.
 The function is particularly suited to situations where trends are not
 monotonic (see discussion with <code><a href="TheilSen.html">TheilSen()</a></code> for more details on
 this). The <code>smoothTrend</code> function is particularly useful as an
