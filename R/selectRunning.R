@@ -73,7 +73,10 @@ selectRunning <- function(
   mydata <- cutData(mydata, type = type, ...)
 
   # pad out missing data
-  thedata <- date.pad(mydata, type = type)
+  thedata <- purrr::map(split(mydata, mydata[[type]]), function(x) {
+    date.pad(x, type = type)
+  }) %>%
+    dplyr::bind_rows()
 
   # save input for later
   mydata <- thedata
