@@ -29,7 +29,9 @@ test_that("selectRunning works", {
   )
 
   date_out <- x3$date
+  attr(date_out, "tzone") <- NULL
   date_orig <- testdat2[6:8, ]$date
+  attr(date_orig, "tzone") <- NULL
 
   expect_equal(nrow(x3), 3L)
   expect_equal(date_out, date_orig)
