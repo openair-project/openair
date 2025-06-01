@@ -158,8 +158,6 @@ aqStats <- function(
 
 # function to calculate statistics
 calcStats <- function(mydata, data.thresh, percentile, ...) {
-  checkDuplicateRows(mydata, type = NULL)
-
   # fill any missing hours
   start.date <- lubridate::floor_date(min(mydata$date), "year")
   end.date <- lubridate::ceiling_date(max(mydata$date), "year") - 3600
