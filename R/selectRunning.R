@@ -73,8 +73,8 @@ selectRunning <- function(
   mydata <- cutData(mydata, type = type, ...)
 
   # check for multiple sites (for example)
-  checkDuplicateRows(mydata, type)
-  
+  checkDuplicateRows(mydata, type, fn = cli::cli_abort)
+
   # pad out missing data
   thedata <- date.pad(mydata, type = type)
 
