@@ -60,7 +60,7 @@
 #'   consistent time gaps between successive intervals so that [timeAverage()]
 #'   can work out how much 'padding' to apply. To pad-out data in this way
 #'   choose `fill = TRUE`.
-#'  
+#'
 #' @param data.thresh The data capture threshold to use (%). A value of zero
 #'   means that all available data will be used in a particular period
 #'   regardless if of the number of values available. Conversely, a value of 100
@@ -84,10 +84,10 @@
 #'   `type` should be used where the date repeats for a particular grouping
 #'   variable. However, if type is not supplied the data will still be averaged
 #'   but the grouping variables (character or factor) will be dropped.
-#'   
+#'
 #' @param percentile The percentile level used when `statistic = "percentile"`.
 #'   The default is 95%.
-#'   
+#'
 #' @param start.date A string giving a start date to use. This is sometimes
 #'   useful if a time series starts between obvious intervals. For example, for
 #'   a 1-minute time series that starts `2009-11-29 12:07:00` that needs to be
@@ -96,7 +96,7 @@
 #'   round down to a more obvious start point, e.g., `2009-11-29 12:00:00` such
 #'   that the sequence is then `2009-11-29 12:00:00`, `2009-11-29 12:15:00`, and
 #'   so on. `start.date` is therefore used to force this type of sequence.
-#'   
+#'
 #' @param end.date A string giving an end date to use. This is sometimes useful
 #'   to make sure a time series extends to a known end point and is useful when
 #'   `data.thresh > 0` but the input time series does not extend up to the final
@@ -104,7 +104,7 @@
 #'   annual means are required with a data capture of >75 % then it is necessary
 #'   to extend the time series up until the end of the year. Input in the format
 #'   yyyy-mm-dd HH:MM.
-#'   
+#'
 #' @param interval The [timeAverage()] function tries to determine the interval
 #'   of the original time series (e.g. hourly) by calculating the most common
 #'   interval between time steps. The interval is needed for calculations where
@@ -119,7 +119,7 @@
 #'   This option can sometimes be useful with `start.date` and `end.date` to
 #'   ensure full periods are considered e.g. a full year when `avg.time =
 #'   "year"`.
-#'   
+#'
 #' @param vector.ws Should vector averaging be carried out on wind speed if
 #'   available? The default is `FALSE` and scalar averages are calculated.
 #'   Vector averaging of the wind speed is carried out on the u and v wind
@@ -129,17 +129,17 @@
 #'   simply the arithmetic average = 2m/s and the vector average is 0m/s.
 #'   Vector-averaged wind speeds will always be lower than scalar-averaged
 #'   values.
-#'   
+#'
 #' @param fill When time series are expanded, i.e., when a time interval is less
 #'   than the original time series, data are 'padded out' with `NA`. To
 #'   'pad-out' the additional data with the first row in each original time
 #'   interval, choose `fill = TRUE`.
-#'   
+#'
 #' @param progress Show a progress bar when many groups make up `type`? Defaults
 #'   to `TRUE`.
-#'   
+#'
 #' @param ... Additional arguments for other functions calling [timeAverage()].
-#' 
+#'
 #' @import dplyr
 #' @export
 #' @return Returns a data frame with date in class `POSIXct`.
@@ -316,7 +316,19 @@ timeAverage <- function(
         }
 
         # fill data
-        mydata <- tidyr::fill(mydata, dplyr::everything(), .direction = "down")
+        mydata <-
+          mydata %>%
+          # find dates in original data, and assign each data chunk an ID
+          dplyr::mutate(
+            `__flag__` = .data$date %in% theDates,
+            `__id__` = ceiling(dplyr::consecutive_id(.data$`__flag__`) / 2) * 2
+          ) %>%
+          # fill within each ID
+          dplyr::group_by(.data[["__id__"]]) %>%
+          tidyr::fill(dplyr::where(is.numeric), .direction = "down") %>%
+          dplyr::ungroup() %>%
+          # remove helper columns
+          dplyr::select(-"__id__", -"__flag__")
       }
 
       return(mydata)
@@ -551,9 +563,11 @@ get_statistic_function <- function(statistic, percentile) {
   }
   if (statistic == "percentile") {
     if (is.na(percentile)) {
-      cli::cli_abort("Please provide a {.field percentile} for use with {.code statistic = 'percentile'}.")
+      cli::cli_abort(
+        "Please provide a {.field percentile} for use with {.code statistic = 'percentile'}."
+      )
     }
-    
+
     return(function(x) {
       quantile(x, probs = percentile, na.rm = TRUE)
     })
