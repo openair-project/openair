@@ -93,6 +93,9 @@ aqStats <- function(
   # cut data by type
   mydata <- cutData(mydata, type)
 
+  # check for duplicate dates
+  checkDuplicateRows(mydata, type, fn = cli::cli_abort)
+
   # check we have the variables
   mydata <- checkPrep(
     mydata,
