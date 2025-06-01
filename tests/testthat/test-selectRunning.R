@@ -1,6 +1,8 @@
 test_that("selectRunning works", {
+  startdate <- as.Date(ISOdate(2020, 01, 01, 01))
+
   testdat <- data.frame(
-    date = Sys.Date() + 1:10,
+    date = startdate + 1:10,
     nox = seq(400, 1000, length.out = 10),
     cat = c(rep("A", 5), rep("B", 5))
   )
@@ -14,7 +16,7 @@ test_that("selectRunning works", {
   expect_equal(x2$criterion, c(rep("no", 5), rep("yes", 5)))
 
   testdat2 <- data.frame(
-    date = Sys.Date() + 1:10,
+    date = startdate + 1:10,
     nox = c(1, 1, 1000, 1, 1, 1000, 1000, 1000, 1, 1)
   )
 
@@ -26,10 +28,12 @@ test_that("selectRunning works", {
     mode = "filter"
   )
 
+  date_out <- x3$date
+  attr(date_out, "tzone") <- NULL
+  date_orig <- testdat2[6:8, ]$date
+  attr(date_orig, "tzone") <- NULL
+
   expect_equal(nrow(x3), 3L)
-  expect_equal(
-    x3$date,
-    structure(c(20214, 20215, 20216), tzone = "GMT", class = "Date")
-  )
+  expect_equal(date_out, date_orig)
   expect_equal(names(x3), names(testdat2))
 })

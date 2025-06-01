@@ -144,7 +144,7 @@ aqStats <- function(
 
     results <-
       results %>%
-      tidyr::pivot_longer(-c(vars, date)) %>%
+      tidyr::pivot_longer(-dplyr::all_of(c(vars, "date"))) %>%
       tidyr::unite(site_pol, dplyr::all_of(unite_vars)) %>%
       tidyr::pivot_wider(names_from = "site_pol") %>%
       dplyr::rename_with(function(x) {
@@ -249,7 +249,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       mydata,
       date = min(.data$date, na.rm = TRUE),
       dat.cap = 100 * mean(!is.na(.data$value)),
-      .by = .data$year
+      .by = "year"
     )
 
   # percentiles
@@ -341,7 +341,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       dplyr::summarise(
         mydata,
         hours = sum(.data$value > 200, na.rm = TRUE),
-        .by = .data$year
+        .by = "year"
       ) %>%
       dplyr::mutate(date = Mean$date)
 
