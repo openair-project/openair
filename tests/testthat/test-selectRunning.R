@@ -29,6 +29,6 @@ test_that("selectRunning works", {
   )
 
   expect_equal(nrow(x3), 3L)
-  expect_equal(x3$date, testdat2$date[6:8])
+  expect_equal(x3, testdat2[6:8, ])
   expect_equal(names(x3), names(testdat2))
 })
