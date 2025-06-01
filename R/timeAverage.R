@@ -367,9 +367,9 @@ timeAverage <- function(
 
     if (data.thresh != 0) {
       avmet <- mydata %>%
-        group_by(across(vars)) %>%
-        summarise(across(
-          where(function(x) {
+        dplyr::group_by(dplyr::across(dplyr::all_of(vars))) %>%
+        dplyr::summarise(dplyr::across(
+          dplyr::where(function(x) {
             !is.factor(x) && !is.character(x)
           }),
           function(x) {
@@ -383,9 +383,9 @@ timeAverage <- function(
     } else {
       avmet <-
         mydata %>%
-        group_by(across(vars)) %>%
-        summarise(across(
-          where(function(x) {
+        dplyr::group_by(dplyr::across(dplyr::all_of(vars))) %>%
+        dplyr::summarise(dplyr::across(
+          dplyr::where(function(x) {
             !is.factor(x) && !is.character(x)
           }),
           function(x) {
