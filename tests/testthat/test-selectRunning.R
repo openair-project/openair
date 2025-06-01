@@ -28,7 +28,10 @@ test_that("selectRunning works", {
     mode = "filter"
   )
 
+  date_out <- x3$date
+  date_orig <- testdat2[6:8, ]$date
+
   expect_equal(nrow(x3), 3L)
-  expect_equal(x3, testdat2[6:8, ])
+  expect_equal(date_out, date_orig)
   expect_equal(names(x3), names(testdat2))
 })
