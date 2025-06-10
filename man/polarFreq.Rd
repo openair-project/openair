@@ -7,6 +7,8 @@
 polarFreq(
   mydata,
   pollutant = NULL,
+  ws = "ws",
+  wd = "wd",
   statistic = "frequency",
   ws.int = 1,
   wd.nint = 36,
@@ -35,6 +37,10 @@ polarFreq(
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in
 a data frame should be supplied e.g. \code{pollutant = "nox"}}
+
+\item{ws}{Name of the column representing wind speed.}
+
+\item{wd}{Name of wind direction field.}
 
 \item{statistic}{The statistic that should be applied to each wind
 speed/direction bin. Can be \dQuote{frequency}, \dQuote{mean},
