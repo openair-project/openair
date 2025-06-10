@@ -89,7 +89,9 @@ pollutionRose <- function(
     if (missing(breaks)) breaks <- NA
   }
 
-  if (is.null(breaks)) breaks <- 6
+  if (is.null(breaks)) {
+    breaks <- 6
+  }
 
   if (is.numeric(breaks) & length(breaks) == 1) {
     ## breaks from the minimum to 90th percentile, which generally gives sensible
@@ -341,7 +343,9 @@ windRose <- function(
   plot = TRUE,
   ...
 ) {
-  if (is.null(seg)) seg <- 0.9
+  if (is.null(seg)) {
+    seg <- 0.9
+  }
 
   ## greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
@@ -484,15 +488,21 @@ windRose <- function(
 
     ## fix negative wd
     id <- which(mydata$wd < 0)
-    if (length(id) > 0) mydata$wd[id] <- mydata$wd[id] + 360
+    if (length(id) > 0) {
+      mydata$wd[id] <- mydata$wd[id] + 360
+    }
 
     pollutant <- "ws"
     key.footer <- "ws"
     wd <- "wd"
     ws <- "ws"
     vars <- c("ws", "wd")
-    if (missing(angle)) angle <- 10
-    if (missing(offset)) offset <- 20
+    if (missing(angle)) {
+      angle <- 10
+    }
+    if (missing(offset)) {
+      offset <- 20
+    }
     ## set the breaks to cover all the data
     if (is.na(breaks[1])) {
       max.br <- max(ceiling(abs(c(
@@ -502,13 +512,19 @@ windRose <- function(
       breaks <- c(-1 * max.br, 0, max.br)
     }
 
-    if (missing(cols)) cols <- c("lightskyblue", "tomato")
+    if (missing(cols)) {
+      cols <- c("lightskyblue", "tomato")
+    }
     seg <- 1
   }
 
-  if (any(type %in% dateTypes)) vars <- c(vars, "date")
+  if (any(type %in% dateTypes)) {
+    vars <- c(vars, "date")
+  }
 
-  if (!is.null(pollutant)) vars <- c(vars, pollutant)
+  if (!is.null(pollutant)) {
+    vars <- c(vars, pollutant)
+  }
 
   mydata <- cutData(mydata, type, ...)
 
@@ -531,7 +547,9 @@ windRose <- function(
     mydata <- mydata[-id, ]
   }
 
-  if (is.null(pollutant)) pollutant <- ws
+  if (is.null(pollutant)) {
+    pollutant <- ws
+  }
 
   mydata$x <- mydata[[pollutant]]
 
@@ -548,7 +566,9 @@ windRose <- function(
   mydata[[wd]][mydata[, ws] < calm.thresh] <- -999 ## set wd to flag where there are calms
   ## do after rounding or -999 changes
 
-  if (length(breaks) == 1) breaks <- 0:(breaks - 1) * ws.int
+  if (length(breaks) == 1) {
+    breaks <- 0:(breaks - 1) * ws.int
+  }
 
   if (max(breaks) < max(mydata$x, na.rm = TRUE)) {
     breaks <- c(breaks, max(mydata$x, na.rm = TRUE))
@@ -629,7 +649,9 @@ windRose <- function(
       if (all(is.na(mean.wd))) {
         mean.wd <- NA
       } else {
-        if (mean.wd < 0) mean.wd <- mean.wd + 360
+        if (mean.wd < 0) {
+          mean.wd <- mean.wd + 360
+        }
         ## show as a negative (bias)
         if (mean.wd > 180) mean.wd <- mean.wd - 360
       }
@@ -709,7 +731,9 @@ windRose <- function(
     wds <- seq(10, 360, 10)
     tmp <- angle * ceiling(wds / angle - 0.5)
     id <- which(tmp == 0)
-    if (length(id > 0)) tmp[id] <- 360
+    if (length(id > 0)) {
+      tmp[id] <- 360
+    }
     tmp <- table(tmp) ## number of sectors spanned
     vars <- grep("Interval[1-9]", names(results)) ## the frequencies, without any calms
 
@@ -838,11 +862,17 @@ windRose <- function(
 
   myby <- if (is.null(grid.value)) pretty(c(0, mymax), 4)[2] else grid.value
 
-  if (myby / mymax > 0.9) myby <- mymax * 0.9
+  if (myby / mymax > 0.9) {
+    myby <- mymax * 0.9
+  }
 
   is_annotated <- any(annotate == TRUE) | any(is.character(annotate))
 
-  if (is_annotated) sub <- stat.lab else sub <- NULL
+  if (is_annotated) {
+    sub <- stat.lab
+  } else {
+    sub <- NULL
+  }
 
   xy.args <- list(
     x = myform,
