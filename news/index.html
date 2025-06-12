@@ -97,6 +97,7 @@
 <li><p><code><a href="../reference/polarCluster.html">polarCluster()</a></code> will no longer error with multiple <code>pollutant</code>s and a single <code>n.clusters</code>.</p></li>
 <li><p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> will correctly append site meta data when <code>meta = TRUE</code>, <code>source</code> is a length greater than 1, and a single site is repeated in more than one source (e.g., <code>importUKAQ(source = c("waqn", "aurn"), data_type = "daqi", year = 2024L))</code>)</p></li>
 <li><p><code><a href="../reference/calcPercentile.html">calcPercentile()</a></code> will now correctly pass its arguments (e.g., <code>date.start</code>) to <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
+<li><p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> will now correctly label a measurement as ratified when it is on the day of <code>ratified_to</code>. i.e., if a site is ratified to <code>2020/01/01</code>, the measurement at <code>2020/01/01 23:00</code> will now be labelled as ratified.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
@@ -1072,7 +1073,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
