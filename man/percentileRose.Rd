@@ -7,6 +7,7 @@
 percentileRose(
   mydata,
   pollutant = "nox",
+  ws = "ws",
   wd = "wd",
   type = "default",
   percentile = c(25, 50, 75, 90, 95),
@@ -39,6 +40,8 @@ to plot --- \code{pollutant}.}
 data frame should be supplied e.g. \code{pollutant = "nox"}. More than one
 pollutant can be supplied e.g. \code{pollutant = c("no2", "o3")} provided
 there is only one \code{type}.}
+
+\item{ws}{Name of the column representing wind speed.}
 
 \item{wd}{Name of wind direction field.}
 

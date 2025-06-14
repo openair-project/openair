@@ -56,6 +56,8 @@
 
 - `trendLevel()` will now automatically generate appropriate `labels` if `breaks` are provided. The `labels` argument can still be used to provide custom labels per break.
 
+- `polarDiff()`, `percentileRose()`, `polarFreq()` and `polarAnnulus()` all gain the `ws` and/or `wd` arguments (as appropriate), in line with `polarPlot()` and `windRose()`.
+
 ## Bug fixes
 
 - Fixed repeated day number in `calendarPlot` when `statistic = max`.
