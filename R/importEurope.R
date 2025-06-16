@@ -31,30 +31,32 @@
 #' stuttgart <- importEurope("debw118", year = 2010:2019, meta = TRUE)
 #' }
 #'
-importEurope <- function(site = "debw118",
-                         year = 2018,
-                         tz = "UTC",
-                         meta = FALSE,
-                         to_narrow = FALSE,
-                         progress = TRUE) {
+importEurope <- function(
+  site = "debw118",
+  year = 2018,
+  tz = "UTC",
+  meta = FALSE,
+  to_narrow = FALSE,
+  progress = TRUE
+) {
   # warn/error w/ deprecation
   msg <-
-    c("!" = "{.fun importEurope} has been discontinued and cannot import data after February 2024.",
-      "i" = "Consider using the EEA Air Quality Download Service instead {.url https://eeadmz1-downloads-webapp.azurewebsites.net/}")
-  if (year > 2024) {
+    c(
+      "!" = "{.fun importEurope} has been discontinued and cannot import data after February 2024.",
+      "i" = "Consider using the EEA Air Quality Download Service instead {.url https://eeadmz1-downloads-webapp.azurewebsites.net/}"
+    )
+  if (any(year > 2024)) {
     cli::cli_abort(msg)
   } else {
-    cli::cli_inform(msg,
-                    .frequency = "regularly",
-                    .frequency_id = "europe")
+    cli::cli_inform(msg, .frequency = "regularly", .frequency_id = "europe")
   }
-  
+
   site <- tolower(site)
-  
+
   # The directory
   remote_path <-
     "http://aq-data.ricardo-aea.com/R_data/saqgetr/observations"
-  
+
   # Produce file names
   file_remote <- crossing(
     site = site,
@@ -78,7 +80,7 @@ importEurope <- function(site = "debw118",
       )
     ) %>%
     pull(file_remote)
-  
+
   # Load files
   if (progress) {
     progress <- "Importing Air Quality Data"
@@ -89,32 +91,32 @@ importEurope <- function(site = "debw118",
     .progress = progress
   ) %>%
     purrr::list_rbind()
-  
+
   if (nrow(df) == 0L) {
     warning("No data available,")
     return()
   }
-  
+
   # just hourly observations
   df <- filter(df, summary == 1)
-  
+
   if (!to_narrow) {
     df <- make_saq_observations_wider(df)
   } else {
     df <- select(df, -summary, -process, -validity)
   }
-  
+
   # don't need end date
   df <- select(df, -date_end) %>%
     rename(code = site)
-  
+
   if (meta) {
     meta <- importMeta("europe")
     df <- left_join(df, meta, by = "code")
   }
-  
+
   df <- arrange(df, code, date)
-  
+
   return(df)
 }
 
@@ -122,13 +124,13 @@ importEurope <- function(site = "debw118",
 get_saq_observations_worker <- function(file, tz) {
   # Read data
   df <- read_saq_observations(file, tz)
-  
+
   if (nrow(df) == 0) {
     return()
   }
-  
+
   df <- filter(df, validity %in% c(1, 2, 3) | is.na(validity))
-  
+
   return(df)
 }
 
@@ -147,7 +149,7 @@ read_saq_observations <- function(file, tz = tz, verbose) {
     unit = col_character(),
     value = col_double()
   )
-  
+
   # Create gz connection
   con <- file %>%
     url() %>%
@@ -175,7 +177,7 @@ read_saq_observations <- function(file, tz = tz, verbose) {
   if (nrow(df) == 0) {
     warning(paste(basename(file), "is missing."))
   }
-  
+
   return(df)
 }
 
