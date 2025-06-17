@@ -8,8 +8,9 @@ polarDiff(
   before,
   after,
   pollutant = "nox",
-  type = "default",
   x = "ws",
+  wd = "wd",
+  type = "default",
   limits = NULL,
   auto.text = TRUE,
   plot = TRUE,
@@ -30,6 +31,11 @@ and \dQuote{mod} (modelled values). When pair-wise statistics such as
 Pearson correlation and regression techniques are to be plotted,
 \code{pollutant} takes two elements too. For example, \code{pollutant = c("bc", "pm25")} where \code{"bc"} is a function of \code{"pm25"}.}
 
+\item{x}{Name of variable to plot against wind direction in polar
+coordinates, the default is wind speed, \dQuote{ws}.}
+
+\item{wd}{Name of wind direction field.}
+
 \item{type}{\code{type} determines how the data are split i.e. conditioned,
 and then plotted. The default is will produce a single plot using the
 entire data. Type can be one of the built-in types as detailed in
@@ -48,9 +54,6 @@ Type can be up length two e.g. \code{type = c("season", "weekday")} will
 produce a 2x2 plot split by season and day of the week. Note, when two
 types are provided the first forms the columns and the second the rows.}
 
-\item{x}{Name of variable to plot against wind direction in polar
-coordinates, the default is wind speed, \dQuote{ws}.}
-
 \item{limits}{The function does its best to choose sensible limits
 automatically. However, there are circumstances when the user will wish to
 set different ones. An example would be a series of plots showing each year
@@ -67,7 +70,6 @@ analysing data to extract plot components and plotting them in other ways.}
 \item{...}{
   Arguments passed on to \code{\link[=polarPlot]{polarPlot}}
   \describe{
-    \item{\code{wd}}{Name of wind direction field.}
     \item{\code{statistic}}{The statistic that should be applied to each wind
 speed/direction bin. Because of the smoothing involved, the colour scale
 for some of these statistics is only to provide an indication of overall

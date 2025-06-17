@@ -36,8 +36,9 @@ polarDiff <- function(
   before,
   after,
   pollutant = "nox",
-  type = "default",
   x = "ws",
+  wd = "wd",
+  type = "default",
   limits = NULL,
   auto.text = TRUE,
   plot = TRUE,
@@ -52,9 +53,9 @@ polarDiff <- function(
 
   # variables needed, check for York regression where x and y error needed
   if (all(c("x_error", "y_error") %in% names(Args))) {
-    vars <- c(x, "wd", pollutant, Args$x_error, Args$y_error)
+    vars <- c(x, wd, pollutant, Args$x_error, Args$y_error)
   } else {
-    vars <- c(x, "wd", pollutant)
+    vars <- c(x, wd, pollutant)
   }
 
   # check variables exists
@@ -89,6 +90,7 @@ polarDiff <- function(
           theData,
           pollutant = pollutant,
           x = x,
+          wd = wd,
           type = "period",
           plot = FALSE,
           ...
@@ -108,8 +110,8 @@ polarDiff <- function(
           dplyr::mutate(
             {{ pollutant }} := after - before,
             {{ x }} := (u^2 + v^2)^0.5,
-            wd = 180 * atan2(u, v) / pi,
-            wd = ifelse(wd < 0, wd + 360, wd)
+            {{ wd }} := 180 * atan2(u, v) / pi,
+            {{ wd }} := ifelse(.data[[wd]] < 0, .data[[wd]] + 360, .data[[wd]])
           )
 
         polar_data[[type]] <- theData[[type]][1]
@@ -165,6 +167,7 @@ polarDiff <- function(
         polar_data,
         pollutant = pollutant,
         x = x,
+        wd = wd,
         plot = plot,
         cols = Args$cols,
         limits = Args$limits,
@@ -187,6 +190,7 @@ polarDiff <- function(
         polar_data,
         pollutant = pollutant,
         x = x,
+        wd = wd,
         type = "finaltype",
         plot = plot,
         cols = Args$cols,
