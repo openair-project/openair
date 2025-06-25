@@ -70,6 +70,8 @@
 
 - `calcPercentile()` will now correctly pass its arguments (e.g., `date.start`) to `timeAverage()`.
 
+- `timeAverage()` will now more consistently return `NA` values rather than `NaN` or `Inf` when all values are `NA`. This specifically affects the `"mean"` and `"min"` statistics.
+
 - `importUKAQ()` will now correctly label a measurement as ratified when it is on the day of `ratified_to`. i.e., if a site is ratified to `2020/01/01`, the measurement at `2020/01/01 23:00` will now be labelled as ratified.
 
 # openair 2.18-2
