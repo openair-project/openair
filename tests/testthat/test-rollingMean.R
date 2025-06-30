@@ -18,10 +18,10 @@ test_that("rollingMean works", {
   expect_error(rollingMean(testdat, data.thresh = 200))
   expect_no_error(rollingMean(testdat, width = 0L))
 
-  # check 'site' is identified and catered for
+  # check function errors
   testdat2 <- rbind(
     transform(testdat, site = "A"),
     transform(testdat, site = "B")
   )
-  expect_message(rollingMean(testdat2))
+  expect_error(rollingMean(testdat2))
 })
