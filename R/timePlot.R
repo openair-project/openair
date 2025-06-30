@@ -382,20 +382,6 @@ timePlot <- function(
   }
 
   ## ### warning messages and other checks ################################################
-
-  ## also ckeck that column "site" is present when type set to "default"
-  ## but also check to see if dates are duplicated, if not, OK to proceed
-  len.all <- length(mydata$date)
-  len.unique <- length(unique(mydata$date))
-
-  if (type == "default" & "site" %in% names(mydata) & len.all != len.unique) {
-    if (length(unique(factor(mydata$site))) > 1) {
-      stop(
-        "More than one site has been detected: choose type = 'site' and pollutant(s)"
-      )
-    }
-  }
-
   if (length(percentile) > 1 & length(pollutant) > 1) {
     stop("Only one pollutant allowed when considering more than one percentile")
   }
@@ -423,6 +409,8 @@ timePlot <- function(
   }
 
   mydata <- cutData(mydata, type, ...)
+
+  checkDuplicateRows(mydata, type, fn = cli::cli_abort)
 
   ## average the data if necessary (default does nothing)
   if (avg.time != "default") {
