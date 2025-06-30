@@ -147,7 +147,9 @@ a 1-minute time series that starts <code>2009-11-29 12:07:00</code> that needs t
 averaged up to 15-minute means, the intervals would be <code>2009-11-29 12:07:00</code>, <code>2009-11-29 12:22:00</code>, etc. Often, however, it is better to
 round down to a more obvious start point, e.g., <code>2009-11-29 12:00:00</code> such
 that the sequence is then <code>2009-11-29 12:00:00</code>, <code>2009-11-29 12:15:00</code>, and
-so on. <code>start.date</code> is therefore used to force this type of sequence.</p></dd>
+so on. <code>start.date</code> is therefore used to force this type of sequence. Note
+that this option does not truncate a time series if it already starts
+earlier than <code>start.date</code>; see <code><a href="selectByDate.html">selectByDate()</a></code> for that functionality.</p></dd>
 
 
 <dt id="arg-end-date">end.date<a class="anchor" aria-label="anchor" href="#arg-end-date"></a></dt>
@@ -157,7 +159,9 @@ to make sure a time series extends to a known end point and is useful when
 full interval. For example, if a time series ends sometime in October but
 annual means are required with a data capture of &gt;75 % then it is necessary
 to extend the time series up until the end of the year. Input in the format
-yyyy-mm-dd HH:MM.</p></dd>
+yyyy-mm-dd HH:MM. Note that this option does not truncate a time series if
+it already ends later than <code>end.date</code>; see <code><a href="selectByDate.html">selectByDate()</a></code> for that
+functionality.</p></dd>
 
 
 <dt id="arg-interval">interval<a class="anchor" aria-label="anchor" href="#arg-interval"></a></dt>
