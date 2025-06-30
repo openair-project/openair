@@ -425,6 +425,9 @@ timeAverage <- function(
   # cut data into intervals
   mydata <- cutData(mydata, type)
 
+  # check for duplicate dates
+  checkDuplicateRows(mydata, type, fn = cli::cli_warn)
+
   # select date, type, and all non-factor/character columns
   mydata <-
     dplyr::select(
