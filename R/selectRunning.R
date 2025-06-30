@@ -76,7 +76,10 @@ selectRunning <- function(
   checkDuplicateRows(mydata, type, fn = cli::cli_abort)
 
   # pad out missing data
-  thedata <- date.pad(mydata, type = type)
+  thedata <- purrr::map(split(mydata, mydata[[type]]), function(x) {
+    date.pad(x, type = type)
+  }) %>%
+    dplyr::bind_rows()
 
   # save input for later
   mydata <- thedata
@@ -114,13 +117,25 @@ selectRunning <- function(
       )
     )
 
+  # just get the flag column
+  thedata <- dplyr::select(thedata, dplyr::all_of(c("date", type, "__flag__")))
+
   # format outputs
   if (mode == "filter") {
-    mydata <- mydata[thedata$`__flag__`, ]
+    mydata <- dplyr::semi_join(
+      mydata,
+      dplyr::filter(thedata, .data$`__flag__`),
+      by = c("date", type)
+    )
   }
 
   if (mode == "flag") {
-    mydata[[name]] <- thedata$`__flag__`
+    mydata <- dplyr::left_join(
+      mydata,
+      thedata,
+      by = c("date", type)
+    )
+    names(mydata)[names(mydata) == "__flag__"] <- name
     mydata[[name]] <- ifelse(mydata[[name]], result[1], result[2])
   }
 

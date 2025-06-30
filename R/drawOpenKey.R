@@ -36,7 +36,7 @@
 #' `lattice::draw.colorkey`.  For example, scale key size and position
 #' are controlled via `height`, `width` and `space`. Likewise,
 #' the axis labelling can be set in and formatted by `labels`. See
-#' [draw.colorkey()] for further details.
+#' [lattice::draw.colorkey()] for further details.
 #'
 #' Additional scale labelling may be added above and below the scale using
 #' `header` and `footer` options within `key`. As in other
@@ -149,7 +149,7 @@
 #' @seealso Functions using `drawOpenKey` currently include
 #'   [windRose()], [pollutionRose()].
 #'
-#' For details of the original function, see [draw.colorkey()]
+#' For details of the original function, see [lattice::draw.colorkey()]
 #' @references Deepayan Sarkar (2010). lattice: Lattice Graphics. R package
 #'   version 0.18-5.  http://r-forge.r-project.org/projects/lattice/
 #' @examples
@@ -698,9 +698,7 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
         col = 2
       )
     }
-  } # positions # size checks text see sac struff # left scale #####################
-  # adds ticks and borders if requested
-  #####################
+  } ##################### # adds ticks and borders if requested # positions # size checks text see sac struff # left scale #####################
   else if (key$space == "left") {
     h.text <- if (is.character(h.text)) {
       lapply(h.text, function(x) quickText(x, h.auto.text))
@@ -895,9 +893,7 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
         col = 2
       )
     }
-  } # adds ticks and borders if requested # positions # top scale #####################
-  #####################
-  else if (key$space == "top") {
+  } else if (key$space == "top") { ##################### # adds ticks and borders if requested # positions # top scale #####################
     f.text <- f.text[as.character(f.text) != ""]
     f.text <- if (is.character(f.text)) {
       quickText(paste(f.text, collapse = "  "), f.auto.text)
@@ -1081,9 +1077,7 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     key.gf <- placeGrob(key.gf, labelsGrob, row = 3, col = 2)
     key.gf <- placeGrob(key.gf, keyGrob, row = 2, col = 2)
     key.gf <- placeGrob(key.gf, keyGrob2, row = 1, col = 2)
-  } # adds ticks and borders if requested # positions # bottom scale #####################
-  #####################
-  else if (key$space == "bottom") {
+  } else if (key$space == "bottom") { ##################### # adds ticks and borders if requested # positions # bottom scale #####################
     f.text <- f.text[as.character(f.text) != ""]
     f.text <- if (is.character(f.text)) {
       quickText(paste(f.text, collapse = "  "), f.auto.text)
