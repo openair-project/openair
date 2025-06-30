@@ -614,7 +614,9 @@ importADMSMop <- function(
     )
   }
 
-  if (simplify.names) check.names <- simplifyNamesADMS(check.names)
+  if (simplify.names) {
+    check.names <- simplifyNamesADMS(check.names)
+  }
 
   ## restructure names and data according to arguments and put together
   if (is.logical(add.prefixes) == TRUE) {
@@ -658,8 +660,11 @@ importADMSMop <- function(
   ## reset wd 0 to 360
   ## get current PHI terminology
   temp <- if (simplify.names) simplifyNamesADMS("PHI") else "PHI"
-  temp <- if (length(add.prefixes) > 1)
-    paste(add.prefixes[1], temp, sep = ".") else temp
+  temp <- if (length(add.prefixes) > 1) {
+    paste(add.prefixes[1], temp, sep = ".")
+  } else {
+    temp
+  }
   if (temp %in% names(ans)) {
     ans[, temp][ans[, temp] == 0] <- 360
   }

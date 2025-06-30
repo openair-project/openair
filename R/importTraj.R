@@ -127,7 +127,9 @@ importTraj <-
     ## get rid of R check annoyances
     traj <- NULL
 
-    if (length(site) > 1) stop("Only one site can be imported at a time.")
+    if (length(site) > 1) {
+      stop("Only one site can be imported at a time.")
+    }
     site <- tolower(site)
 
     files <- lapply(site, function(x) paste(x, year, sep = ""))
@@ -165,7 +167,9 @@ importTraj <-
       )
     }
 
-    if (progress) progress <- "Importing Trajectories"
+    if (progress) {
+      progress <- "Importing Trajectories"
+    }
     thedata <- purrr::map(files, loadData, .progress = progress) %>%
       purrr::list_rbind()
 

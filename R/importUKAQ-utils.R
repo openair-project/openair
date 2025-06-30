@@ -50,7 +50,9 @@ readUKAQData <-
 
     # change nox as no2
     id <- which(names(thedata) %in% "noxasno2")
-    if (length(id) == 1) names(thedata)[id] <- "nox"
+    if (length(id) == 1) {
+      names(thedata)[id] <- "nox"
+    }
 
     # change code to character
     thedata$code <- as.character(thedata$code)
@@ -409,7 +411,7 @@ add_ratified <- function(aq_data, source, to_narrow) {
     aq_data <-
       aq_data %>%
       dplyr::left_join(meta, by = dplyr::join_by(source, code, pollutant)) %>%
-      dplyr::mutate(qc = date <= .data$qc)
+      dplyr::mutate(qc = lubridate::floor_date(date, "day") <= .data$qc)
 
     return(aq_data)
   }
@@ -427,7 +429,7 @@ add_ratified <- function(aq_data, source, to_narrow) {
     aq_data %>%
     dplyr::left_join(meta, by = dplyr::join_by(source, code)) %>%
     dplyr::mutate(dplyr::across(dplyr::contains("_qc"), function(x) {
-      date <= x
+      lubridate::floor_date(date, "day") <= x
     }))
 
   return(aq_data)

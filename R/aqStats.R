@@ -47,11 +47,11 @@
 #'
 #' When `pollutant == "no2"`:
 #'
-#' - **hours.gt.200** --- number of hours NO2 is more than 200 ug/m3.
+#' - **hours** --- number of hours NO2 is more than 200 ug/m3.
 #'
 #' When `pollutant == "pm10"`:
 #'
-#' - **days.gt.50** --- number of days PM10 is more than 50 ug/m3.
+#' - **days** --- number of days PM10 is more than 50 ug/m3.
 #'
 #' For the rolling means, the user can supply the option `align`, which can be
 #' "centre" (default), "left" or "right". See [rollingMean()] for more details.
@@ -144,7 +144,7 @@ aqStats <- function(
 
     results <-
       results %>%
-      tidyr::pivot_longer(-c(vars, date)) %>%
+      tidyr::pivot_longer(-dplyr::all_of(c(vars, "date"))) %>%
       tidyr::unite(site_pol, dplyr::all_of(unite_vars)) %>%
       tidyr::pivot_wider(names_from = "site_pol") %>%
       dplyr::rename_with(function(x) {
@@ -249,7 +249,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       mydata,
       date = min(.data$date, na.rm = TRUE),
       dat.cap = 100 * mean(!is.na(.data$value)),
-      .by = .data$year
+      .by = "year"
     )
 
   # percentiles
@@ -341,7 +341,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       dplyr::summarise(
         mydata,
         hours = sum(.data$value > 200, na.rm = TRUE),
-        .by = .data$year
+        .by = "year"
       ) %>%
       dplyr::mutate(date = Mean$date)
 

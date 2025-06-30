@@ -301,7 +301,11 @@ timePlot <- function(
   variable <- year <- NULL
 
   ## # EXPERIMENTAL LOG SCALING###############################################
-  if (log) nlog <- 10 else nlog <- FALSE
+  if (log) {
+    nlog <- 10
+  } else {
+    nlog <- FALSE
+  }
 
   ## #################################################################################
 
@@ -385,10 +389,11 @@ timePlot <- function(
   len.unique <- length(unique(mydata$date))
 
   if (type == "default" & "site" %in% names(mydata) & len.all != len.unique) {
-    if (length(unique(factor(mydata$site))) > 1)
+    if (length(unique(factor(mydata$site))) > 1) {
       stop(
         "More than one site has been detected: choose type = 'site' and pollutant(s)"
       )
+    }
   }
 
   if (length(percentile) > 1 & length(pollutant) > 1) {
@@ -413,7 +418,9 @@ timePlot <- function(
 
   theStrip <- strip
 
-  if (date.pad) mydata <- date.pad(mydata, type = type)
+  if (date.pad) {
+    mydata <- date.pad(mydata, type = type)
+  }
 
   mydata <- cutData(mydata, type, ...)
 
@@ -449,7 +456,9 @@ timePlot <- function(
   }
 
   # timeAverage drops type if default
-  if (type == "default") mydata$default <- "default"
+  if (type == "default") {
+    mydata$default <- "default"
+  }
 
   if (!is.null(windflow)) {
     mydata <- gather(mydata, key = variable, value = value, pollutant)
@@ -458,13 +467,17 @@ timePlot <- function(
     mydata <- gather(mydata, key = variable, value = value, pollutant)
   }
 
-  if (type != "default") group <- TRUE ## need to group pollutants if conditioning
+  if (type != "default") {
+    group <- TRUE
+  } ## need to group pollutants if conditioning
 
   ## number of pollutants (or sites for type = "site")
   npol <- length(unique(mydata$variable)) ## number of pollutants
 
   ## layout - stack vertically
-  if (is.null(Args$layout) & !group & !stack) Args$layout <- c(1, npol)
+  if (is.null(Args$layout) & !group & !stack) {
+    Args$layout <- c(1, npol)
+  }
 
   ## function to normalise data ##################################
   divide.by.mean <- function(x) {
@@ -599,7 +612,9 @@ timePlot <- function(
     Args$lty <- 1:length(pollutant)
   }
 
-  if (type == "default") strip <- FALSE
+  if (type == "default") {
+    strip <- FALSE
+  }
 
   ## if stacking of plots by year is needed
   if (stack) {
@@ -627,7 +642,9 @@ timePlot <- function(
     xlim <- lapply(split(mydata, mydata["year"]), function(x) range(x$date))
   }
 
-  if (missing(key.columns)) key.columns <- npol
+  if (missing(key.columns)) {
+    key.columns <- npol
+  }
 
   ## keys and strips - to show or not
 
@@ -697,7 +714,9 @@ timePlot <- function(
 
   ## allow reasonable gaps at ends, default has too much padding
   gap <- difftime(max(mydata$date), min(mydata$date), units = "secs") / 80
-  if (is.null(xlim)) xlim <- range(mydata$date) + c(-1 * gap, gap)
+  if (is.null(xlim)) {
+    xlim <- range(mydata$date) + c(-1 * gap, gap)
+  }
 
   # make sure order is correct
   mydata$variable <- factor(mydata$variable, levels = pollutant)
@@ -789,7 +808,9 @@ timePlot <- function(
 
       ## add reference lines
 
-      if (!is.null(ref.x)) do.call(panel.abline, ref.x)
+      if (!is.null(ref.x)) {
+        do.call(panel.abline, ref.x)
+      }
       if (!is.null(ref.y)) do.call(panel.abline, ref.y)
     }
   )
@@ -802,7 +823,9 @@ timePlot <- function(
 
   ## output
 
-  if (plot) plot(plt)
+  if (plot) {
+    plot(plt)
+  }
   newdata <- mydata
   output <- list(plot = plt, data = newdata, call = match.call())
   class(output) <- "openair"

@@ -20,7 +20,7 @@
 
 - Added new features for `openColours()`:
 
-    - Added new qualitative colour palettes: the "tol" family are colour-blind friendly palettes based on the work of Paul Tol (<https://personal.sron.nl/~pault/>), and "tableau" and "observable" provide access to the "Tableau10" and "Observable10" palettes to aid in consistency with plots made in those platforms.
+    - Added new qualitative colour palettes: the "tol" family are colour-blind friendly palettes based on the work of Paul Tol (<https://sronpersonalpages.nl/~pault/>), and "tableau" and "observable" provide access to the "Tableau10" and "Observable10" palettes to aid in consistency with plots made in those platforms.
   
     - When `n` isn't defined for a qualitative palette (e.g., "Dark2"), the full qualitative palette will be returned. Previously this errored with the default of `100`.
     
@@ -71,6 +71,10 @@
 - `importUKAQ()` will correctly append site meta data when `meta = TRUE`, `source` is a length greater than 1, and a single site is repeated in more than one source (e.g., `importUKAQ(source = c("waqn", "aurn"), data_type = "daqi", year = 2024L))`)
 
 - `calcPercentile()` will now correctly pass its arguments (e.g., `date.start`) to `timeAverage()`.
+
+- `timeAverage()` will now more consistently return `NA` values rather than `NaN` or `Inf` when all values are `NA`. This specifically affects the `"mean"` and `"min"` statistics.
+
+- `importUKAQ()` will now correctly label a measurement as ratified when it is on the day of `ratified_to`. i.e., if a site is ratified to `2020/01/01`, the measurement at `2020/01/01 23:00` will now be labelled as ratified.
 
 # openair 2.18-2
 

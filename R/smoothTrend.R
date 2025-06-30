@@ -258,7 +258,9 @@ smoothTrend <- function(
 
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
 
-  if (!missing(percentile)) statistic <- "percentile"
+  if (!missing(percentile)) {
+    statistic <- "percentile"
+  }
 
   if (length(pollutant) > 1 & length(percentile) > 1) {
     warning(paste(
@@ -286,8 +288,12 @@ smoothTrend <- function(
     3600
 
   ## better interval, most common interval in a year
-  if (days == 31) interval <- "month"
-  if (days %in% c(365, 366)) interval <- "year"
+  if (days == 31) {
+    interval <- "month"
+  }
+  if (days %in% c(365, 366)) {
+    interval <- "year"
+  }
 
   ## for overall data and graph plotting
   start.year <- startYear(mydata$date)
@@ -371,7 +377,9 @@ smoothTrend <- function(
     end.month <- endMonth(mydata$date)
 
     ## can't deseason less than 2 years of data
-    if (nrow(mydata) <= 24) deseason <- FALSE
+    if (nrow(mydata) <= 24) {
+      deseason <- FALSE
+    }
 
     if (deseason) {
       myts <- ts(
@@ -530,7 +538,9 @@ smoothTrend <- function(
   }
 
   gap <- difftime(max(mydata$date), min(mydata$date), units = "secs") / 80
-  if (is.null(xlim)) xlim <- range(mydata$date) + c(-1 * gap, gap)
+  if (is.null(xlim)) {
+    xlim <- range(mydata$date) + c(-1 * gap, gap)
+  }
 
   xyplot.args <- list(
     x = myform,
@@ -603,7 +613,9 @@ smoothTrend <- function(
       )
 
       ## add reference lines
-      if (!is.null(ref.x)) do.call(panel.abline, ref.x)
+      if (!is.null(ref.x)) {
+        do.call(panel.abline, ref.x)
+      }
       if (!is.null(ref.y)) do.call(panel.abline, ref.y)
     }
   )

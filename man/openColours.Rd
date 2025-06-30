@@ -49,7 +49,8 @@ The following schemes are made available by \code{openColours()}:
 \item "okabeito" (or "cbPalette"), a colour-blind safe palette based on
 the work of Masataka Okabe and Kei Ito (\url{https://jfly.uni-koeln.de/color/})
 \item "tol.bright" (or "tol"), "tol.muted" and "tol.light", colour-blind safe
-palettes based on the work of Paul Tol (\url{https://personal.sron.nl/~pault/})
+palettes based on the work of Paul Tol
+(\url{https://sronpersonalpages.nl/~pault/})
 \item "tableau" and "observable", aliases for the
 "Tableau10"
 (\url{https://www.tableau.com/blog/colors-upgrade-tableau-10-56782}) and
@@ -60,8 +61,9 @@ plots and with figures made in Tableau or Observable Plot.
 
 \strong{UK Government Palettes:}
 \itemize{
-\item "daqi" and "daqi.bands", the colours associated with the UK daily air quality index; "daqi" (a palette of 10 colours, corresponding to each
-index value) or "daqi.bands" (4 colours, corresponding to each band - Low,
+\item "daqi" and "daqi.bands", the colours associated with the UK daily air
+quality index; "daqi" (a palette of 10 colours, corresponding to each index
+value) or "daqi.bands" (4 colours, corresponding to each band - Low,
 Moderate, High, and Very High). These colours were taken directly from
 \url{https://uk-air.defra.gov.uk/air-pollution/daqi} and may be useful in
 figures like \code{\link[=calendarPlot]{calendarPlot()}}.

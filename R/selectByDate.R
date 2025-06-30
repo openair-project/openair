@@ -141,7 +141,9 @@ selectByDate <- function(
     }
   }
   if (!missing(hour)) {
-    if (any(hour < 0 | hour > 23)) stop("Hour must be between 0 to 23.")
+    if (any(hour < 0 | hour > 23)) {
+      stop("Hour must be between 0 to 23.")
+    }
 
     mydata <- mydata[which(hour(mydata$date) %in% hour), ]
   }

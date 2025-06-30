@@ -149,7 +149,9 @@ conditionalQuantile <- function(
   # keep R check quite
   data <- second <- third <- NULL
 
-  if (length(type) > 2) stop("Only two types can be used with this function")
+  if (length(type) > 2) {
+    stop("Only two types can be used with this function")
+  }
 
   ## extra.args setup
   extra.args <- list(...)
@@ -191,7 +193,9 @@ conditionalQuantile <- function(
 
   vars <- c(mod, obs)
 
-  if (any(type %in% dateTypes)) vars <- c("date", vars)
+  if (any(type %in% dateTypes)) {
+    vars <- c("date", vars)
+  }
 
   ## check the data
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)

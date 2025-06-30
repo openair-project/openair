@@ -76,7 +76,9 @@ find.time.interval <- function(dates) {
   id <- which.max(table(diff(as.numeric(unique(dates[order(dates)])))))
   seconds <- as.numeric(names(id))
 
-  if ("POSIXt" %in% class(dates)) seconds <- paste(seconds, "sec")
+  if ("POSIXt" %in% class(dates)) {
+    seconds <- paste(seconds, "sec")
+  }
 
   if (class(dates)[1] == "Date") {
     seconds <- seconds * 3600 * 24
@@ -85,38 +87,6 @@ find.time.interval <- function(dates) {
 
   seconds
 }
-
-
-date.pad2 <- function(mydata, type = NULL, interval = "month") {
-  # assume by the time we get here the data have been split into types
-  # This means we just need to pad out the missing types based on first
-  # line.
-
-  start.date <- min(mydata$date, na.rm = TRUE)
-  end.date <- max(mydata$date, na.rm = TRUE)
-
-  # interval is in seconds, so convert to days if Date class and not POSIXct
-  if (class(mydata$date)[1] == "Date") {
-    interval <- paste(
-      as.numeric(strsplit(interval, " ")[[1]][1]) / 3600 / 24,
-      "days"
-    )
-  }
-
-  all.dates <- data.frame(date = seq(start.date, end.date, by = interval))
-  mydata <- mydata %>% full_join(all.dates, by = "date")
-
-  # add in missing types if gaps are made
-  if (!is.null(type)) {
-    mydata[type] <- mydata[1, type]
-  }
-
-  # make sure order is correct
-  mydata <- arrange(mydata, date)
-
-  return(mydata)
-}
-
 
 ## #################################################################
 # Function to pad out missing time data
@@ -132,7 +102,9 @@ date.pad <- function(mydata, type = NULL, print.int = FALSE) {
 
   ## time zone of data
   TZ <- attr(mydata$date, "tzone")
-  if (is.null(TZ)) TZ <- "GMT" ## as it is on Windows for BST
+  if (is.null(TZ)) {
+    TZ <- "GMT"
+  } ## as it is on Windows for BST
 
   ## function to fill missing data gaps
   ## assume no missing data to begin with
@@ -158,8 +130,12 @@ date.pad <- function(mydata, type = NULL, print.int = FALSE) {
   }
 
   ## better interval, most common interval in a year
-  if (days == 31) interval <- "month"
-  if (days %in% c(365, 366)) interval <- "year"
+  if (days == 31) {
+    interval <- "month"
+  }
+  if (days %in% c(365, 366)) {
+    interval <- "year"
+  }
 
   ## only pad if there are missing data
   if (length(unique(diff(mydata$date))) != 1L) {
@@ -175,7 +151,9 @@ date.pad <- function(mydata, type = NULL, print.int = FALSE) {
   ## return the same TZ that we started with
   attr(mydata$date, "tzone") <- TZ
 
-  if (print.int) message("Input data time interval assumed is ", interval)
+  if (print.int) {
+    message("Input data time interval assumed is ", interval)
+  }
 
   # make sure date-sorted
   mydata <- arrange(mydata, date)
@@ -405,7 +383,9 @@ panel.gam <- function(
         ## set up bootstrap
         block.length <- 1
 
-        if (autocor) block.length <- round(sam.size^(1 / 3))
+        if (autocor) {
+          block.length <- round(sam.size^(1 / 3))
+        }
         index <- samp.boot.block(sam.size, n.sim, block.length)
 
         ## predict first
@@ -561,7 +541,9 @@ fitGam <- function(
         ## set up bootstrap
         block.length <- 1
 
-        if (autocor) block.length <- round(sam.size^(1 / 3))
+        if (autocor) {
+          block.length <- round(sam.size^(1 / 3))
+        }
         index <- samp.boot.block(sam.size, n.sim, block.length)
 
         ## predict first
@@ -767,7 +749,9 @@ strip.fun <- function(results.grid, type, auto.text) {
     )
     strip.left <- strip.custom(factor.levels = pol.name)
   }
-  if (length(type) == 1 & type[1] == "default") strip <- FALSE ## remove strip
+  if (length(type) == 1 & type[1] == "default") {
+    strip <- FALSE
+  } ## remove strip
   list(strip, strip.left, pol.name)
 }
 
@@ -797,8 +781,9 @@ chooseFace <- function(fontface = NULL, font = 1) {
   if (length(nbin) == 1) {
     nbin <- c(nbin, nbin)
   }
-  if (!is.numeric(nbin) || (length(nbin) != 2))
+  if (!is.numeric(nbin) || (length(nbin) != 2)) {
     stop("'nbin' must be numeric of length 1 or 2")
+  }
   if (missing(bandwidth)) {
     bandwidth <- diff(apply(
       x,

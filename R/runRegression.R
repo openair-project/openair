@@ -95,7 +95,9 @@ runRegression <- function(
 
     r.sq <- 1 - var(fit$residuals) / var(df[[y]])
 
-    if (all(fit$residuals < 1e-7)) r.sq <- 1
+    if (all(fit$residuals < 1e-7)) {
+      r.sq <- 1
+    }
 
     fit$r.sq <- r.sq
     return(fit)

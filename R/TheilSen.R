@@ -330,8 +330,12 @@ TheilSen <- function(
     3600
 
   ## better interval, most common interval in a year
-  if (days == 31) interval <- "month"
-  if (days %in% c(365, 366)) interval <- "year"
+  if (days == 31) {
+    interval <- "month"
+  }
+  if (days %in% c(365, 366)) {
+    interval <- "year"
+  }
 
   ## data checks
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
@@ -369,7 +373,9 @@ TheilSen <- function(
   )
 
   # timeAverage drops type if default
-  if ("default" %in% type) mydata$default <- "default"
+  if ("default" %in% type) {
+    mydata$default <- "default"
+  }
 
   process.cond <- function(mydata) {
     if (all(is.na(mydata[[pollutant]]))) {
@@ -402,7 +408,9 @@ TheilSen <- function(
       deseas <- mydata[[pollutant]]
 
       ## can't deseason less than 2 years of data
-      if (nrow(mydata) <= 24) deseason <- FALSE
+      if (nrow(mydata) <= 24) {
+        deseason <- FALSE
+      }
 
       if (deseason) {
         myts <- ts(
@@ -620,7 +628,9 @@ TheilSen <- function(
   myform <- formula(paste("conc ~ date| ", temp, sep = ""))
 
   gap <- (max(split.data$date) - min(split.data$date)) / 80
-  if (is.null(xlim)) xlim <- range(split.data$date) + c(-1 * gap, gap)
+  if (is.null(xlim)) {
+    xlim <- range(split.data$date) + c(-1 * gap, gap)
+  }
 
   xyplot.args <- list(
     x = myform,
@@ -824,11 +834,21 @@ MKstats <- function(x, y, alpha, autocor, silent) {
 
   p <- estimates[2, 5]
 
-  if (p >= 0.1) stars <- ""
-  if (p < 0.1 & p >= 0.05) stars <- "+"
-  if (p < 0.05 & p >= 0.01) stars <- "*"
-  if (p < 0.01 & p >= 0.001) stars <- "**"
-  if (p < 0.001) stars <- "***"
+  if (p >= 0.1) {
+    stars <- ""
+  }
+  if (p < 0.1 & p >= 0.05) {
+    stars <- "+"
+  }
+  if (p < 0.05 & p >= 0.01) {
+    stars <- "*"
+  }
+  if (p < 0.01 & p >= 0.001) {
+    stars <- "**"
+  }
+  if (p < 0.001) {
+    stars <- "***"
+  }
 
   results <-
     data.frame(
