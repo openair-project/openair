@@ -28,6 +28,7 @@
 #' the user has fine control over both the range, interval and colour.
 #'
 #' @inheritParams polarPlot
+#' @inheritParams windRose
 #' @param mydata A data frame minimally containing `wd` and a numeric field
 #'   to plot --- `pollutant`.
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
@@ -88,6 +89,7 @@
 percentileRose <- function(
   mydata,
   pollutant = "nox",
+  ws = "ws",
   wd = "wd",
   type = "default",
   percentile = c(25, 50, 75, 90, 95),
@@ -135,8 +137,8 @@ percentileRose <- function(
   }
 
   # check to see if ws is in the data and is calm (need to remove as no wd)
-  if ("ws" %in% names(mydata)) {
-    id <- which(mydata$ws == 0 & mydata[[wd]] == 0)
+  if (ws %in% names(mydata)) {
+    id <- which(mydata[[ws]] == 0 & mydata[[wd]] == 0)
     if (length(id) > 0) {
       mydata <- mydata[-id, ]
     }

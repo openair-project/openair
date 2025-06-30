@@ -7,6 +7,7 @@
 polarAnnulus(
   mydata,
   pollutant = "nox",
+  wd = "wd",
   resolution = "fine",
   local.tz = NULL,
   period = "hour",
@@ -43,6 +44,8 @@ evaluation where two species would be expected to have similar
 concentrations. This saves the user stacking the data and it is possible to
 work with columns of data directly. A typical use would be \code{pollutant = c("obs", "mod")} to compare two columns \dQuote{obs} (the observations)
 and \dQuote{mod} (modelled values).}
+
+\item{wd}{Name of wind direction field.}
 
 \item{resolution}{Two plot resolutions can be set: \dQuote{normal} and
 \dQuote{fine} (the default).}

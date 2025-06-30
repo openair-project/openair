@@ -155,6 +155,7 @@ polarAnnulus <-
   function(
     mydata,
     pollutant = "nox",
+    wd = "wd",
     resolution = "fine",
     local.tz = NULL,
     period = "hour",
@@ -180,7 +181,7 @@ polarAnnulus <-
     ...
   ) {
     ## get rid of R check annoyances
-    wd <- u <- v <- z <- all.dates <- NULL
+    u <- v <- z <- all.dates <- NULL
 
     if (
       !statistic %in%
@@ -214,7 +215,7 @@ polarAnnulus <-
     }
 
     ## extract variables of interest
-    vars <- c("wd", "date", pollutant)
+    vars <- c(wd, "date", pollutant)
 
     if (period == "trend" & "season" %in% type) {
       stop("Cannot have same type as 'season' and period as 'trend'.")
@@ -292,10 +293,10 @@ polarAnnulus <-
     }
 
     ## add extra wds - reduces discontinuity at 0/360
-    zero.wd <- subset(mydata, wd == 360)
+    zero.wd <- mydata[mydata[[wd]] == 360, ]
 
     if (nrow(zero.wd) > 0) {
-      zero.wd$wd <- 0
+      zero.wd[[wd]] <- 0
       mydata <- rbind(mydata, zero.wd)
     }
 
@@ -409,12 +410,16 @@ polarAnnulus <-
 
       time.seq <- seq(0, 10, length = 24)
 
-      wd <- seq(from = 0, to = 360, 10) # wind directions from 10 to 360
-      ws.wd <- expand.grid(time.seq = time.seq, wd = wd)
+      vec_wd <- seq(from = 0, to = 360, 10) # wind directions from 10 to 360
+      ws.wd <- expand.grid(time.seq = time.seq, wd = vec_wd)
+      names(ws.wd)[names(ws.wd) == "wd"] <- wd
 
-      ## identify which ws and wd bins the data belong
-      ## wd.cut <- cut(mydata$wd, seq(0, 360, 10))
-      wd.cut <- cut(mydata$wd, seq(0, 360, length = 38), include.lowest = TRUE)
+      # identify which ws and wd bins the data belong
+      wd.cut <- cut(
+        mydata[[wd]],
+        seq(0, 360, length = 38),
+        include.lowest = TRUE
+      )
 
       ## divide-up the data for the annulus
       time.cut <- cut(
@@ -422,8 +427,6 @@ polarAnnulus <-
         seq(0, 10, length = 25),
         include.lowest = TRUE
       )
-
-      #   binned <- tapply(mydata[, pollutant], list(time.cut, wd.cut), mean, na.rm = TRUE)
 
       binned <- switch(
         statistic,
@@ -484,7 +487,7 @@ polarAnnulus <-
 
       ## data to predict over
       time.seq <- ws.wd$time.seq
-      wd <- ws.wd$wd
+      vec_wd <- ws.wd[[wd]]
 
       input.data <- expand.grid(
         time.seq = seq(0, 10, length = len.int),
@@ -499,7 +502,7 @@ polarAnnulus <-
         n <- 1
       }
 
-      input <- data.frame(binned, time.seq, wd)
+      input <- data.frame(binned, time.seq, wd = vec_wd)
 
       ## note use of cyclic smooth for the wind direction component
       Mgam <- gam(
@@ -509,27 +512,27 @@ polarAnnulus <-
 
       pred <- predict.gam(Mgam, input.data)
       pred <- pred^(1 / n)
+      names(pred)[names(pred) == "wd"] <- wd
 
       input.data <- cbind(input.data, pred)
 
       if (exclude.missing) {
-        ## exclude predictions too far from data (from mgcv)
+        # exclude predictions too far from data (from mgcv)
         x <- seq(0, 10, length = len.int)
         y <- seq(0, 360, length = len.int)
         res <- len.int
         wsp <- rep(x, res)
         wdp <- rep(y, rep(res, res))
 
-        #  ind <- exclude.too.far(wsp, wdp, mydata$trend, mydata$wd, dist = 0.03)
-        ## data with gaps caused by min.bin
+        # data with gaps caused by min.bin
         all.data <- na.omit(data.frame(
           time.seq = ws.wd$time.seq,
-          wd = ws.wd$wd,
+          wd = ws.wd[[wd]],
           binned
         ))
         ind <- with(
           all.data,
-          exclude.too.far(wsp, wdp, time.seq, wd, dist = 0.03)
+          exclude.too.far(wsp, wdp, time.seq, vec_wd, dist = 0.03)
         )
 
         input.data$pred[ind] <- NA
@@ -548,30 +551,38 @@ polarAnnulus <-
         wd = NA,
         time.val = NA
       )
+      names(new.data)[names(new.data) == "wd"] <- wd
 
       new.data$id <- seq(nrow(new.data))
 
       ## calculate wd and time.val in on annulus in original units (helps with debugging)
       ## essentially start with final grid (annulus) and work backwards to find original data point in
       ## original coordinates
-      new.data <- within(new.data, time.val <- (u^2 + v^2)^0.5 - upper)
-      new.data <- within(new.data, wd <- 180 * atan2(u, v) / pi)
-      new.data <- within(new.data, wd[wd < 0] <- wd[wd < 0] + 360) ## correct negative wds
+      new.data <- dplyr::mutate(
+        new.data,
+        time.val = (.data$u^2 + .data$v^2)^0.5 - upper,
+        {{ wd }} := 180 * atan2(.data$u, .data$v) / pi,
+        {{ wd }} := dplyr::if_else(
+          .data[[wd]] < 0,
+          .data[[wd]] + 360,
+          .data[[wd]]
+        )
+      ) ## correct negative wds
 
       ## remove ids outside range
       ids <- with(
         new.data,
         which((u^2 + v^2)^0.5 > d + upper | (u^2 + v^2)^0.5 < upper)
       )
-      new.data$wd[ids] <- NA
+      new.data[[wd]][ids] <- NA
       new.data$time.val[ids] <- NA
 
       ## ids where there are data
-      ids <- new.data$id[!is.na(new.data$wd)]
+      ids <- new.data$id[!is.na(new.data[[wd]])]
 
       ## indexes in original (cartesian) coordinates
       id.time <- round((2 * d / int) * new.data$time.val[ids] / 10) + 1
-      id.wd <- round((2 * d / int) * new.data$wd[ids] / 360) + 1
+      id.wd <- round((2 * d / int) * new.data[[wd]][ids] / 360) + 1
 
       ## predicted values as a matrix
       pred <- matrix(pred, nrow = len.int, ncol = len.int)

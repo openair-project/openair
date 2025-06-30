@@ -30,6 +30,7 @@
 #' user has fine control over both the range, interval and colour.
 #'
 #' @inheritParams polarPlot
+#' @inheritParams windRose
 #' @param mydata A data frame minimally containing `ws`, `wd` and
 #'   `date`.
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in
@@ -137,6 +138,8 @@
 polarFreq <- function(
   mydata,
   pollutant = NULL,
+  ws = "ws",
+  wd = "wd",
   statistic = "frequency",
   ws.int = 1,
   wd.nint = 36,
@@ -159,7 +162,7 @@ polarFreq <- function(
   ...
 ) {
   ## extract necessary data
-  vars <- c("wd", "ws")
+  vars <- c(wd, ws)
   if (any(type %in% dateTypes)) {
     vars <- c(vars, "date")
   }
@@ -213,8 +216,8 @@ polarFreq <- function(
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
 
   ## to make first interval easier to work with, set ws = 0 + e
-  ids <- which(mydata$ws == 0)
-  mydata$ws[ids] <- mydata$ws[ids] + 0.0001
+  ids <- which(mydata[[ws]] == 0)
+  mydata[[ws]][ids] <- mydata[[ws]][ids] + 0.0001
 
   ## remove all NAs
   mydata <- na.omit(mydata)
@@ -222,7 +225,7 @@ polarFreq <- function(
   mydata <- cutData(mydata, type, ...)
 
   ## if pollutant chosen but no statistic - use mean, issue warning
-  if (statistic == "frequency" & !is.null(pollutant)) {
+  if (statistic == "frequency" && !is.null(pollutant)) {
     cli::cli_warn(c(
       "x" = "{.code statistic == 'frequency'} incompatible with a defined {.field pollutant}.",
       "i" = "Setting {.field statistic} to {.code 'mean'}."
@@ -238,7 +241,7 @@ polarFreq <- function(
     ))
   }
 
-  if (!(any(is.null(breaks)) | any(is.na(breaks)))) {
+  if (!(any(is.null(breaks)) || any(is.na(breaks)))) {
     trans <- FALSE
   } ## over-ride transform if breaks supplied
 
@@ -255,7 +258,7 @@ polarFreq <- function(
 
   ## set the upper wind speed
   if (is.na(ws.upper)) {
-    max.ws <- max(mydata$ws, na.rm = TRUE)
+    max.ws <- max(mydata[[ws]], na.rm = TRUE)
   } else {
     max.ws <- ws.upper
   }
@@ -264,21 +267,23 @@ polarFreq <- function(
   offset <- (max.ws * offset) / 5 / 10
 
   ## make sure wd data are rounded to nearest 10
-  mydata$wd <- wd.int * ceiling(mydata$wd / wd.int - 0.5)
+  mydata$wd <- wd.int * ceiling(mydata[[wd]] / wd.int - 0.5)
 
   prepare.grid <- function(mydata) {
-    wd <- factor(mydata$wd)
-    ws <- factor(ws.int * ceiling(mydata$ws / ws.int))
+    vec_wd <- factor(mydata[[wd]])
+    vec_ws <- factor(ws.int * ceiling(mydata[[ws]] / ws.int))
 
     if (statistic == "frequency") {
       ## case with only ws and wd
-      weights <- tapply(mydata$ws, list(wd, ws), function(x) length(na.omit(x)))
+      weights <- tapply(mydata[[ws]], list(vec_wd, vec_ws), function(x) {
+        length(na.omit(x))
+      })
     }
 
     if (statistic == "mean") {
       weights <- tapply(
         mydata[[pollutant]],
-        list(wd, ws),
+        list(vec_wd, vec_ws),
         function(x) mean(x, na.rm = TRUE)
       )
     }
@@ -286,7 +291,7 @@ polarFreq <- function(
     if (statistic == "median") {
       weights <- tapply(
         mydata[[pollutant]],
-        list(wd, ws),
+        list(vec_wd, vec_ws),
         function(x) median(x, na.rm = TRUE)
       )
     }
@@ -294,7 +299,7 @@ polarFreq <- function(
     if (statistic == "max") {
       weights <- tapply(
         mydata[[pollutant]],
-        list(wd, ws),
+        list(vec_wd, vec_ws),
         function(x) max(x, na.rm = TRUE)
       )
     }
@@ -302,7 +307,7 @@ polarFreq <- function(
     if (statistic == "stdev") {
       weights <- tapply(
         mydata[[pollutant]],
-        list(wd, ws),
+        list(vec_wd, vec_ws),
         function(x) sd(x, na.rm = TRUE)
       )
     }
@@ -310,7 +315,7 @@ polarFreq <- function(
     if (statistic == "weighted.mean") {
       weights <- tapply(
         mydata[[pollutant]],
-        list(wd, ws),
+        list(vec_wd, vec_ws),
         function(x) (mean(x) * length(x) / nrow(mydata))
       )
 
@@ -321,15 +326,19 @@ polarFreq <- function(
     weights <- as.vector(t(weights))
 
     ## frequency - remove points with freq < min.bin
-    bin.len <- tapply(mydata$ws, list(wd, ws), function(x) length(na.omit(x)))
+    bin.len <- tapply(mydata[[ws]], list(vec_wd, vec_ws), function(x) {
+      length(na.omit(x))
+    })
     binned.len <- as.vector(t(bin.len))
     ids <- which(binned.len < min.bin)
     weights[ids] <- NA
 
     ws.wd <- expand.grid(
-      ws = as.numeric(levels(ws)),
-      wd = as.numeric(levels(wd))
+      ws = as.numeric(levels(vec_ws)),
+      wd = as.numeric(levels(vec_wd))
     )
+    names(ws.wd)[names(ws.wd) == "wd"] <- wd
+    names(ws.wd)[names(ws.wd) == "ws"] <- ws
 
     weights <- cbind(ws.wd, weights)
     weights
@@ -361,7 +370,7 @@ polarFreq <- function(
 
   nlev <- 200
   ## handle missing breaks arguments
-  if (any(is.null(breaks)) | any(is.na(breaks))) {
+  if (any(is.null(breaks)) || any(is.na(breaks))) {
     breaks <- unique(c(0, pretty(results.grid$weights, nlev)))
     br <- pretty((c(0, results.grid$weights)^coef), n = 10) ## breaks for scale
   } else {
@@ -394,7 +403,7 @@ polarFreq <- function(
   legend <- makeOpenKeyLegend(key, legend, "polarFreq")
 
   temp <- paste(type, collapse = "+")
-  myform <- formula(paste("ws ~ wd | ", temp, sep = ""))
+  myform <- formula(paste(paste0(ws, " ~ ", wd, " | "), temp, sep = ""))
 
   span <- ws.int * floor(max.ws / ws.int) + ws.int + offset
 
@@ -419,7 +428,7 @@ polarFreq <- function(
         colour <- col[as.numeric(subdata$div[i])]
         colour <- grDevices::adjustcolor(colour, alpha.f = alpha)
         #   if (subdata$weights[i] == 0) colour <- "transparent"
-        poly(subdata$wd[i], subdata$ws[i], colour)
+        poly(subdata[[wd]][i], subdata[[ws]][i], colour)
       }
 
       ## annotate
