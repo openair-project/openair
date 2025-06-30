@@ -88,12 +88,12 @@ calculation.
 
 When \code{pollutant == "no2"}:
 \itemize{
-\item \strong{hours.gt.200} --- number of hours NO2 is more than 200 ug/m3.
+\item \strong{hours} --- number of hours NO2 is more than 200 ug/m3.
 }
 
 When \code{pollutant == "pm10"}:
 \itemize{
-\item \strong{days.gt.50} --- number of days PM10 is more than 50 ug/m3.
+\item \strong{days} --- number of days PM10 is more than 50 ug/m3.
 }
 
 For the rolling means, the user can supply the option \code{align}, which can be
