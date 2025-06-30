@@ -203,17 +203,25 @@ polarAnnulus <-
       percentile <- 50
     }
 
-    if (key.header[1] == "weighted.mean") key.header <- c("weighted", "mean")
-    if (key.header[1] == "percentile")
+    if (key.header[1] == "weighted.mean") {
+      key.header <- c("weighted", "mean")
+    }
+    if (key.header[1] == "percentile") {
       key.header <- c(paste(percentile, "th", sep = ""), "percentile")
-    if (key.header[1] == "cpf") key.header <- c("CPF", "probability")
+    }
+    if (key.header[1] == "cpf") {
+      key.header <- c("CPF", "probability")
+    }
 
     ## extract variables of interest
     vars <- c("wd", "date", pollutant)
 
-    if (period == "trend" & "season" %in% type)
+    if (period == "trend" & "season" %in% type) {
       stop("Cannot have same type as 'season' and period as 'trend'.")
-    if (length(type) > 2) stop("Cannot have more than two types.")
+    }
+    if (length(type) > 2) {
+      stop("Cannot have more than two types.")
+    }
 
     ## greyscale handling
     if (length(cols) == 1 && cols == "greyscale") {
@@ -273,9 +281,15 @@ polarAnnulus <-
 
     d <- 10 ## d + upper = 1/2 width of annulus; do not need to adjust
 
-    if (width == "normal") upper <- 10
-    if (width == "thin") upper <- 15
-    if (width == "fat") upper <- 5
+    if (width == "normal") {
+      upper <- 10
+    }
+    if (width == "thin") {
+      upper <- 15
+    }
+    if (width == "fat") {
+      upper <- 5
+    }
 
     ## add extra wds - reduces discontinuity at 0/360
     zero.wd <- subset(mydata, wd == 360)
@@ -290,12 +304,20 @@ polarAnnulus <-
     mydata <- cutData(mydata, type, ...)
 
     ## convert to local time
-    if (!is.null(local.tz)) attr(mydata$date, "tzone") <- local.tz
+    if (!is.null(local.tz)) {
+      attr(mydata$date, "tzone") <- local.tz
+    }
 
     ## for resolution of grid plotting (default = 0.2; fine = 0.1)
-    if (resolution == "normal") int <- 0.2
-    if (resolution == "fine") int <- 0.1
-    if (resolution == "ultra.fine") int <- 0.05 # very large files!
+    if (resolution == "normal") {
+      int <- 0.2
+    }
+    if (resolution == "fine") {
+      int <- 0.1
+    }
+    if (resolution == "ultra.fine") {
+      int <- 0.05
+    } # very large files!
 
     len.int <- 20 / int + 1 ## number of x and y points to make up surfacexb
 
@@ -471,7 +493,11 @@ polarAnnulus <-
       ###################### Smoothing#################################################
 
       ## run GAM to make a smooth surface
-      if (force.positive) n <- 0.5 else n <- 1
+      if (force.positive) {
+        n <- 0.5
+      } else {
+        n <- 1
+      }
 
       input <- data.frame(binned, time.seq, wd)
 
@@ -771,7 +797,9 @@ polarAnnulus <-
           )
         }
 
-        if (period == "hour") label.axis(0, "0", "23", 7)
+        if (period == "hour") {
+          label.axis(0, "0", "23", 7)
+        }
 
         if (period == "weekday") {
           local.weekdays <- format(ISOdate(2000, 1, 1:14), "%A")[order(format(

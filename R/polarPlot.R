@@ -509,10 +509,14 @@ polarPlot <-
     nam.x <- x
     nam.wd <- wd
 
-    if (length(type) > 2) stop("Maximum number of types is 2.")
+    if (length(type) > 2) {
+      stop("Maximum number of types is 2.")
+    }
 
     ## can't have conditioning here
-    if (uncertainty) type <- "default"
+    if (uncertainty) {
+      type <- "default"
+    }
 
     if (uncertainty & length(pollutant) > 1) {
       stop("Can only have one pollutant when uncertainty = TRUE")
@@ -537,15 +541,23 @@ polarPlot <-
       stop(paste0("statistic '", statistic, "' not recognised."), call. = FALSE)
     }
 
-    if (length(weights) != 3) stop("weights should be of length 3.")
+    if (length(weights) != 3) {
+      stop("weights should be of length 3.")
+    }
 
-    if (key.header == "nwr") key.header <- "NWR"
-    if (key.header == "weighted_mean") key.header <- "weighted\nmean"
+    if (key.header == "nwr") {
+      key.header <- "NWR"
+    }
+    if (key.header == "weighted_mean") {
+      key.header <- "weighted\nmean"
+    }
     if (key.header == "percentile") {
       key.header <- c(paste(percentile, "th", sep = ""), "percentile")
     }
 
-    if ("cpf" %in% key.header) key.header <- c("CPF", "probability")
+    if ("cpf" %in% key.header) {
+      key.header <- c("CPF", "probability")
+    }
 
     ## greyscale handling
     if (length(cols) == 1 && cols == "greyscale") {
@@ -606,7 +618,9 @@ polarPlot <-
       vars <- c(vars, x_error, y_error)
     }
 
-    if (any(type %in% dateTypes)) vars <- c(vars, "date")
+    if (any(type %in% dateTypes)) {
+      vars <- c(vars, "date")
+    }
 
     mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
 
@@ -689,9 +703,15 @@ polarPlot <-
       if (toupper(statistic) == "NWR") wd.int <- 2 else wd.int <- 5 ## how to split wd
     }
 
-    if (toupper(statistic) == "NWR") ws_bins <- 40 else ws_bins <- 30
+    if (toupper(statistic) == "NWR") {
+      ws_bins <- 40
+    } else {
+      ws_bins <- 30
+    }
 
-    if (statistic == "nwr") k <- 200 # limit any smoothing
+    if (statistic == "nwr") {
+      k <- 200
+    } # limit any smoothing
 
     ws.seq <- seq(min.ws, max.ws, length = ws_bins)
     wd.seq <- seq(from = wd.int, to = 360, by = wd.int) ## wind directions from wd.int to 360
@@ -908,7 +928,11 @@ polarPlot <-
       # for removing missing data later
       binned.len[ids] <- NA
 
-      if (force.positive) n <- 0.5 else n <- 1
+      if (force.positive) {
+        n <- 0.5
+      } else {
+        n <- 1
+      }
 
       ## no uncertainty to calculate
       if (!uncertainty) {
@@ -987,7 +1011,9 @@ polarPlot <-
         results
       }
 
-      if (exclude.missing) results <- exclude(results)
+      if (exclude.missing) {
+        results <- exclude(results)
+      }
 
       results
     }
@@ -1023,14 +1049,18 @@ polarPlot <-
     }
 
     ## remove wind speeds > upper to make a circle
-    if (clip) res$z[(res$u^2 + res$v^2)^0.5 > upper] <- NA
+    if (clip) {
+      res$z[(res$u^2 + res$v^2)^0.5 > upper] <- NA
+    }
 
     ## proper names of labelling
     strip.dat <- strip.fun(res, type, auto.text)
     strip <- strip.dat[[1]]
     strip.left <- strip.dat[[2]]
     pol.name <- strip.dat[[3]]
-    if (uncertainty) strip <- TRUE
+    if (uncertainty) {
+      strip <- TRUE
+    }
 
     ## normalise by divining by mean conditioning value if needed
     if (normalise) {
@@ -1048,7 +1078,9 @@ polarPlot <-
       # make sure smoothing does not results in r>1 or <-1
       # sometimes happens with little data at edges
       id <- which(res$z > 1)
-      if (length(id) > 0) res$z[id] <- 1
+      if (length(id) > 0) {
+        res$z[id] <- 1
+      }
 
       id <- which(res$z < -1)
       if (length(id) > 0) res$z[id] <- -1
@@ -1060,17 +1092,25 @@ polarPlot <-
     }
 
     # Labels for correlation and regression, keep lower case like other labels
-    if (statistic %in% c("r", "Pearson"))
+    if (statistic %in% c("r", "Pearson")) {
       key.header <- expression(italic("Pearson\ncorrelation"))
+    }
 
-    if (statistic == "Spearman")
+    if (statistic == "Spearman") {
       key.header <- expression(italic("Spearman\ncorrelation"))
+    }
 
-    if (statistic == "robust_slope") key.header <- "robust\nslope"
+    if (statistic == "robust_slope") {
+      key.header <- "robust\nslope"
+    }
 
-    if (statistic == "robust_intercept") key.header <- "robust\nintercept"
+    if (statistic == "robust_intercept") {
+      key.header <- "robust\nintercept"
+    }
 
-    if (statistic == "york_slope") key.header <- "York regression\nslope"
+    if (statistic == "york_slope") {
+      key.header <- "York regression\nslope"
+    }
 
     if (statistic == "quantile_slope") {
       key.header <- paste0("quantile slope\n(tau: ", tau, ")")
@@ -1124,7 +1164,9 @@ polarPlot <-
     col.scale <- breaks
 
     ## special handling of layout for uncertainty
-    if (uncertainty & is.null(extra.args$layout)) extra.args$layout <- c(3, 1)
+    if (uncertainty & is.null(extra.args$layout)) {
+      extra.args$layout <- c(3, 1)
+    }
 
     legend <- list(
       col = col,
@@ -1444,7 +1486,9 @@ calculate_weighted_statistics <-
     # openair::scatterPlot(mydata, x = "ws", y = "wd", z = "weight", method = "level")
 
     if (statistic %in% c("r", "Pearson", "Spearman")) {
-      if (statistic == "r") statistic <- "Pearson"
+      if (statistic == "r") {
+        statistic <- "Pearson"
+      }
 
       # Weighted Pearson correlation
       stat_weighted <- contCorr(
@@ -1469,8 +1513,12 @@ calculate_weighted_statistics <-
       )
 
       # Extract statistics
-      if (statistic == "slope") stat_weighted <- fit$coefficients[2]
-      if (statistic == "intercept") stat_weighted <- fit$coefficients[1]
+      if (statistic == "slope") {
+        stat_weighted <- fit$coefficients[2]
+      }
+      if (statistic == "intercept") {
+        stat_weighted <- fit$coefficients[1]
+      }
 
       # Bind together
       result <- data.frame(ws1, wd1, stat_weighted)
@@ -1522,11 +1570,16 @@ calculate_weighted_statistics <-
       # Extract statistics
       if (!inherits(fit, "try-error")) {
         # Extract statistics
-        if (statistic == "robust_slope") stat_weighted <- fit$coefficients[2]
-        if (statistic == "robust_intercept")
+        if (statistic == "robust_slope") {
+          stat_weighted <- fit$coefficients[2]
+        }
+        if (statistic == "robust_intercept") {
           stat_weighted <- fit$coefficients[1]
+        }
       } else {
-        if (statistic == "robust_slope") stat_weighted <- NA
+        if (statistic == "robust_slope") {
+          stat_weighted <- NA
+        }
         if (statistic == "robust_intercept") stat_weighted <- NA
       }
 
@@ -1557,11 +1610,16 @@ calculate_weighted_statistics <-
 
       if (!inherits(fit, "try-error")) {
         # Extract statistics
-        if (statistic == "quantile_slope") stat_weighted <- fit$coefficients[2]
-        if (statistic == "quantile_intercept")
+        if (statistic == "quantile_slope") {
+          stat_weighted <- fit$coefficients[2]
+        }
+        if (statistic == "quantile_intercept") {
           stat_weighted <- fit$coefficients[1]
+        }
       } else {
-        if (statistic == "quantile_slope") stat_weighted <- NA
+        if (statistic == "quantile_slope") {
+          stat_weighted <- NA
+        }
         if (statistic == "quantile_intercept") stat_weighted <- NA
       }
 

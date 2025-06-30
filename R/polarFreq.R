@@ -160,7 +160,9 @@ polarFreq <- function(
 ) {
   ## extract necessary data
   vars <- c("wd", "ws")
-  if (any(type %in% dateTypes)) vars <- c(vars, "date")
+  if (any(type %in% dateTypes)) {
+    vars <- c(vars, "date")
+  }
 
   ## intervals in wind direction
   wd.int <- 360 / round(wd.nint)
@@ -203,7 +205,9 @@ polarFreq <- function(
     trellis.par.set(fontsize = list(text = extra.args$fontsize))
   }
 
-  if (!is.null(pollutant)) vars <- c(vars, pollutant)
+  if (!is.null(pollutant)) {
+    vars <- c(vars, pollutant)
+  }
 
   ## data checks
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
@@ -234,12 +238,20 @@ polarFreq <- function(
     ))
   }
 
-  if (!(any(is.null(breaks)) | any(is.na(breaks)))) trans <- FALSE ## over-ride transform if breaks supplied
+  if (!(any(is.null(breaks)) | any(is.na(breaks)))) {
+    trans <- FALSE
+  } ## over-ride transform if breaks supplied
 
-  if (key.header == "weighted.mean") key.header <- c("contribution", "(%)")
+  if (key.header == "weighted.mean") {
+    key.header <- c("contribution", "(%)")
+  }
 
   ## apply square root transform?
-  if (trans) coef <- 2 else coef <- 1
+  if (trans) {
+    coef <- 2
+  } else {
+    coef <- 1
+  }
 
   ## set the upper wind speed
   if (is.na(ws.upper)) {

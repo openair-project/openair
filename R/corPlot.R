@@ -121,7 +121,9 @@ corPlot <- function(
   plot = TRUE,
   ...
 ) {
-  if (length(type) > 1) stop("Only one 'type' allowed in this function.")
+  if (length(type) > 1) {
+    stop("Only one 'type' allowed in this function.")
+  }
 
   ## make sure date is present for types requiring it
   if (any(type %in% dateTypes)) {
@@ -213,7 +215,9 @@ corPlot <- function(
   ## number of pollutants
   npol <- length(pol.name)
 
-  if (npol < 2) stop("Need at least two valid (numeric) fields to compare")
+  if (npol < 2) {
+    stop("Need at least two valid (numeric) fields to compare")
+  }
 
   prepare.cond <- function(mydata) {
     ## calculate the correlations
@@ -307,7 +311,9 @@ corPlot <- function(
     function(x) quickText(x, auto.text)
   )
   strip <- strip.custom(factor.levels = pol.name)
-  if (type == "default") strip <- FALSE
+  if (type == "default") {
+    strip <- FALSE
+  }
 
   ## special wd layout
 
@@ -394,7 +400,9 @@ corPlot <- function(
   # output
   #################
 
-  if (plot) plot(plt)
+  if (plot) {
+    plot(plt)
+  }
 
   ## openair object
 
@@ -489,7 +497,9 @@ ellipse <- function(
     r <- x[xind, yind]
     if (missing(scale)) {
       scale <- sqrt(c(x[xind, xind], x[yind, yind]))
-      if (scale[1] > 0) r <- r / scale[1]
+      if (scale[1] > 0) {
+        r <- r / scale[1]
+      }
       if (scale[2] > 0) r <- r / scale[2]
     }
     if (!is.null(dimnames(x)[[1]])) {

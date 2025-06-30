@@ -237,9 +237,15 @@ trajLevel <- function(
   }
 
   if (!"key.header" %in% names(Args)) {
-    if (statistic == "frequency") Args$key.header <- "% trajectories"
-    if (statistic == "pscf") Args$key.header <- "PSCF \nprobability"
-    if (statistic == "sqtba") Args$key.header <- paste0("SQTBA \n", pollutant)
+    if (statistic == "frequency") {
+      Args$key.header <- "% trajectories"
+    }
+    if (statistic == "pscf") {
+      Args$key.header <- "PSCF \nprobability"
+    }
+    if (statistic == "sqtba") {
+      Args$key.header <- paste0("SQTBA \n", pollutant)
+    }
     if (statistic == "sqtba" && !is.na(.combine)) {
       Args$key.header <- paste0("SQTBA \n(Normalised)\n)", pollutant)
     }
@@ -323,9 +329,13 @@ trajLevel <- function(
     mydata[["lat"]] <- tmp$y
   }
 
-  if (method == "density") stop("Use trajPlot with method = 'density' instead")
+  if (method == "density") {
+    stop("Use trajPlot with method = 'density' instead")
+  }
 
-  if (is.list(mydata)) mydata <- bind_rows(mydata)
+  if (is.list(mydata)) {
+    mydata <- bind_rows(mydata)
+  }
 
   mydata <- cutData(mydata, type, ...)
 

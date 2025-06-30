@@ -517,19 +517,33 @@ scatterPlot <- function(
   Args$inv <- if ("inv" %in% names(Args)) Args$inv else function(x) exp(x)
 
   # For Log scaling (adapted from lattice book
-  if (log.x) nlog.x <- 10 else nlog.x <- FALSE
-  if (log.y) nlog.y <- 10 else nlog.y <- FALSE
+  if (log.x) {
+    nlog.x <- 10
+  } else {
+    nlog.x <- FALSE
+  }
+  if (log.y) {
+    nlog.y <- 10
+  } else {
+    nlog.y <- FALSE
+  }
 
   ## average the data if necessary (default does nothing)
   ## note - need to average before cutting data up etc
 
-  if (!is.na(group)) types <- c(type, group) else types <- type
+  if (!is.na(group)) {
+    types <- c(type, group)
+  } else {
+    types <- type
+  }
   if (avg.time != "default") {
     ## can't have a type or group that is date-based
     #   if (group %in% dateTypes | type  %in% dateTypes)
     #     stop ("Can't have an averging period set and a time-based 'type' or 'group'.")
     mydata <- cutData(mydata, types)
-    if ("default" %in% types) mydata$default <- 0 ## FIX ME
+    if ("default" %in% types) {
+      mydata$default <- 0
+    } ## FIX ME
 
     mydata <- timeAverage(
       mydata,
@@ -585,7 +599,9 @@ scatterPlot <- function(
     vars <- unique(c(vars, "wd", "ws"))
   }
 
-  if (!is.na(z)) vars <- c(vars, z)
+  if (!is.na(z)) {
+    vars <- c(vars, z)
+  }
   mydata <- checkPrep(mydata, unique(vars), type)
 
   ## remove missing data except for time series where we want to show gaps
@@ -625,7 +641,9 @@ scatterPlot <- function(
 
     mydata <- cutData(mydata, type, ...)
 
-    if (missing(cols)) cols <- "default" ## better default colours for this
+    if (missing(cols)) {
+      cols <- "default"
+    } ## better default colours for this
     thecol <- openColours(cols, 100)[cut(mydata[[z]], 100, label = FALSE)]
     mydata$col <- thecol
 
@@ -633,7 +651,9 @@ scatterPlot <- function(
     group <- "NewGroupVar"
     mydata$NewGroupVar <- "NewGroupVar"
 
-    if (!"pch" %in% names(Args)) Args$pch <- 16
+    if (!"pch" %in% names(Args)) {
+      Args$pch <- 16
+    }
 
     nlev <- 200
 
@@ -710,7 +730,9 @@ scatterPlot <- function(
 
     mydata <- cutData(mydata, type, ...)
 
-    if (!is.na(group)) mydata <- cutData(mydata, group, ...)
+    if (!is.na(group)) {
+      mydata <- cutData(mydata, group, ...)
+    }
 
     legend <- NULL
   }
@@ -724,7 +746,9 @@ scatterPlot <- function(
   ## number of groups
   npol <- length(levels(as.factor(mydata[[group]])))
 
-  if (!"pch" %in% names(Args)) Args$pch <- seq(npol)
+  if (!"pch" %in% names(Args)) {
+    Args$pch <- seq(npol)
+  }
 
   ## set up colours
   myColors <- openColours(cols, npol)
@@ -749,8 +773,12 @@ scatterPlot <- function(
   }
 
   ## if logs are chosen, ensure data >0 for line fitting etc
-  if (log.x) mydata <- mydata[mydata[, x] > 0, ]
-  if (log.y) mydata <- mydata[mydata[, y] > 0, ]
+  if (log.x) {
+    mydata <- mydata[mydata[, x] > 0, ]
+  }
+  if (log.y) {
+    mydata <- mydata[mydata[, y] > 0, ]
+  }
 
   pol.name <- sapply(
     levels(mydata[[group]]),
@@ -846,7 +874,9 @@ scatterPlot <- function(
   pol.name <- strip.dat[[3]]
 
   ## no strip needed for single panel
-  if (length(type) == 1 & type[1] == "default") strip <- FALSE
+  if (length(type) == 1 & type[1] == "default") {
+    strip <- FALSE
+  }
 
   ## not sure how to evaluate "group" in xyplot, so change to a fixed name
   id <- which(names(mydata) == group)
@@ -857,7 +887,9 @@ scatterPlot <- function(
   # scatter plot ------------------------------------------------------------
 
   if (method == "scatter") {
-    if (missing(k)) k <- NULL ## auto-smoothing by default
+    if (missing(k)) {
+      k <- NULL
+    } ## auto-smoothing by default
 
     ## record openair type, distinct from plot type below
     Type <- type
@@ -999,7 +1031,9 @@ scatterPlot <- function(
         }
 
         ## add reference lines
-        if (!is.null(ref.x)) do.call(panel.abline, ref.x)
+        if (!is.null(ref.x)) {
+          do.call(panel.abline, ref.x)
+        }
         if (!is.null(ref.y)) do.call(panel.abline, ref.y)
       }
     )
@@ -1046,7 +1080,9 @@ scatterPlot <- function(
       },
       ...,
       panel = function(x, subscripts, ...) {
-        if (!Args$traj) panel.grid(-1, -1)
+        if (!Args$traj) {
+          panel.grid(-1, -1)
+        }
         panel.hexbinplot(x, ...)
 
         if (mod.line) {
@@ -1086,7 +1122,9 @@ scatterPlot <- function(
         }
 
         ## add reference lines
-        if (!is.null(ref.x)) do.call(panel.abline, ref.x)
+        if (!is.null(ref.x)) {
+          do.call(panel.abline, ref.x)
+        }
         if (!is.null(ref.y)) do.call(panel.abline, ref.y)
       }
     )
@@ -1112,8 +1150,12 @@ scatterPlot <- function(
   if (method == "level") {
     # level plot --------------------------------------------------------------
 
-    if (missing(x.inc)) x.inc <- prettyGap(mydata[[x]])
-    if (missing(y.inc)) y.inc <- prettyGap(mydata[[y]])
+    if (missing(x.inc)) {
+      x.inc <- prettyGap(mydata[[x]])
+    }
+    if (missing(y.inc)) {
+      y.inc <- prettyGap(mydata[[y]])
+    }
 
     ## bin data
     mydata$ygrid <- round_any(mydata[[y]], y.inc)
@@ -1265,7 +1307,9 @@ scatterPlot <- function(
 
     nlev2 <- length(breaks)
 
-    if (missing(cols)) cols <- "default"
+    if (missing(cols)) {
+      cols <- "default"
+    }
     col <- openColours(cols, (nlev2 - 1))
     breaks <- c(breaks[1:(length(breaks) - 1)], max(mydata[[z]], na.rm = TRUE))
 
@@ -1316,7 +1360,9 @@ scatterPlot <- function(
         }
 
         ## add reference lines
-        if (!is.null(ref.x)) do.call(panel.abline, ref.x)
+        if (!is.null(ref.x)) {
+          do.call(panel.abline, ref.x)
+        }
         if (!is.null(ref.y)) do.call(panel.abline, ref.y)
       }
     )
@@ -1342,8 +1388,12 @@ scatterPlot <- function(
   # trajectory plot ---------------------------------------------------------
 
   if (method %in% c("traj", "map")) {
-    if (missing(x.inc)) x.inc <- prettyGap(mydata[[x]])
-    if (missing(y.inc)) y.inc <- prettyGap(mydata[[y]])
+    if (missing(x.inc)) {
+      x.inc <- prettyGap(mydata[[x]])
+    }
+    if (missing(y.inc)) {
+      y.inc <- prettyGap(mydata[[y]])
+    }
 
     ## bin data
     mydata$ygrid <- round_any(mydata[[y]], y.inc)
@@ -1484,7 +1534,9 @@ scatterPlot <- function(
 
     ## basic function for lattice call + defaults
     temp <- paste(type, collapse = "+")
-    if (!smooth) myform <- formula(paste(z, "~ x1 * y1 |", temp, sep = ""))
+    if (!smooth) {
+      myform <- formula(paste(z, "~ x1 * y1 |", temp, sep = ""))
+    }
 
     nlev <- 200
 
@@ -1516,7 +1568,9 @@ scatterPlot <- function(
 
     nlev2 <- length(breaks)
 
-    if (missing(cols)) cols <- "default"
+    if (missing(cols)) {
+      cols <- "default"
+    }
 
     thecol <- openColours(cols, length(breaks) - 1)[cut(
       mydata[[z]],
@@ -1645,7 +1699,9 @@ scatterPlot <- function(
         }
 
         ## add reference lines
-        if (!is.null(ref.x)) do.call(panel.abline, ref.x)
+        if (!is.null(ref.x)) {
+          do.call(panel.abline, ref.x)
+        }
         if (!is.null(ref.y)) do.call(panel.abline, ref.y)
       }
     )
@@ -1749,7 +1805,9 @@ scatterPlot <- function(
       colorkey = FALSE,
       ...,
       panel = function(x, y, z, subscripts, ...) {
-        if (!Args$traj) panel.grid(-1, -1)
+        if (!Args$traj) {
+          panel.grid(-1, -1)
+        }
         panel.levelplot(
           x,
           y,
@@ -1760,7 +1818,9 @@ scatterPlot <- function(
           ...
         )
 
-        if (mod.line) panel.modline(log.x, log.y)
+        if (mod.line) {
+          panel.modline(log.x, log.y)
+        }
 
         ## base map
         if (map) {
@@ -1768,7 +1828,9 @@ scatterPlot <- function(
         }
 
         ## add reference lines
-        if (!is.null(ref.x)) do.call(panel.abline, ref.x)
+        if (!is.null(ref.x)) {
+          do.call(panel.abline, ref.x)
+        }
         if (!is.null(ref.y)) do.call(panel.abline, ref.y)
       }
     )
@@ -1933,7 +1995,9 @@ panel.linear <- function(
   thedata <- na.omit(thedata)
 
   # make sure equation is shown
-  if (length(myColors) == 1) myColors <- "black"
+  if (length(myColors) == 1) {
+    myColors <- "black"
+  }
 
   tryCatch(
     {
@@ -1973,7 +2037,11 @@ panel.linear <- function(
       slope <- coef(mod)[2]
       intercept <- coef(mod)[1]
 
-      if (intercept >= 0) symb <- "+" else symb <- ""
+      if (intercept >= 0) {
+        symb <- "+"
+      } else {
+        symb <- ""
+      }
       panel.text(
         x,
         y,

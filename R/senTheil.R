@@ -61,7 +61,9 @@ regci <- function(
   ## length of block set to l^(1/3)
   ## Buhlmann and Kunsch 1994 report
   block.length <- 1
-  if (autocor) block.length <- round(length(y)^(1 / 3))
+  if (autocor) {
+    block.length <- round(length(y)^(1 / 3))
+  }
   ## need to transpose ...
   data <- t(samp.boot.block(length(y), nboot, block.length))
 

@@ -200,7 +200,9 @@ conditionalEval <- function(
     statistic <- "cluster"
   }
 
-  if (any(type %in% dateTypes)) vars <- c("date", vars)
+  if (any(type %in% dateTypes)) {
+    vars <- c("date", vars)
+  }
 
   ## various checks
   if (length(var.obs) == 0 | length(var.mod) == 0 & !"cluster" %in% statistic) {
@@ -243,7 +245,9 @@ conditionalEval <- function(
   cluster <- FALSE
   ## if cluster is in data frame then remove any data duplicates
   if (statistic[1] == "cluster") {
-    if ("hour.inc" %in% names(mydata)) mydata <- subset(mydata, hour.inc == 0)
+    if ("hour.inc" %in% names(mydata)) {
+      mydata <- subset(mydata, hour.inc == 0)
+    }
     vars <- c(vars, "cluster")
     cluster <- TRUE
   }
@@ -266,7 +270,9 @@ conditionalEval <- function(
     ...
   )$plot
 
-  if (any(type %in% dateTypes)) vars <- c("date", vars)
+  if (any(type %in% dateTypes)) {
+    vars <- c("date", vars)
+  }
 
   ## for plot limits
   lo <- min(mydata[, c(mod, obs)])
@@ -284,7 +290,9 @@ conditionalEval <- function(
     ...
   ) {
     ## only numerics if not clustering
-    if (!other) mydata <- select_if(mydata, is.numeric)
+    if (!other) {
+      mydata <- select_if(mydata, is.numeric)
+    }
 
     obs <- mydata[[obs]]
     pred <- mydata[[mod]]
@@ -388,7 +396,9 @@ conditionalEval <- function(
     cols <- openColours(col.var, length(unique(clust.results[[statistic]])))
 
     temp <- "statistic"
-    if (type != "default") temp <- paste(c("statistic", type), collapse = "+")
+    if (type != "default") {
+      temp <- paste(c("statistic", type), collapse = "+")
+    }
     myform <- formula(paste("Freq ~ .id | ", temp, sep = ""))
     clust.results$grp <- clust.results[[statistic]]
 
@@ -493,7 +503,9 @@ conditionalEval <- function(
     ## set up colours
     myColors <- openColours(col.var, length(var.obs))
 
-    if (is.null(var.names)) var.names <- var.obs
+    if (is.null(var.names)) {
+      var.names <- var.obs
+    }
 
     key <- list(
       lines = list(
@@ -514,7 +526,9 @@ conditionalEval <- function(
     )
 
     temp <- "statistic"
-    if (type != "default") temp <- paste(c("statistic", type), collapse = "+")
+    if (type != "default") {
+      temp <- paste(c("statistic", type), collapse = "+")
+    }
 
     myform <- formula(paste("mean ~ .id | ", temp, sep = ""))
 
@@ -599,7 +613,9 @@ conditionalEval <- function(
 
   invisible(trellis.last.object())
 
-  if (other) results <- clust.results
+  if (other) {
+    results <- clust.results
+  }
 
   output <- list(
     plot = list(pltCondQ, trellis.last.object()),

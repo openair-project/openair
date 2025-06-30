@@ -43,7 +43,9 @@ openairApply <- function(
 
   # test for subsets
   check <- "subsets" %in% names(object$data)
-  if (check) test <- object$data$subsets
+  if (check) {
+    test <- object$data$subsets
+  }
 
   if (!check) {
     ans <- fun(object$data, ...)
