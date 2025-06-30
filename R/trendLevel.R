@@ -276,7 +276,9 @@ trendLevel <- function(
       vector <- eval(formals(trendLevel)[[vector.name]])
     }
 
-    if (length(vector) < len) vector <- rep(vector, len)[1:len]
+    if (length(vector) < len) {
+      vector <- rep(vector, len)[1:len]
+    }
     # insert default if not given
     ifelse(is.na(vector), eval(formals(trendLevel)[[vector.name]]), vector)
   }
@@ -375,7 +377,9 @@ trendLevel <- function(
       # default unnamed stats to 'level'
 
       stat.name <- substitute(statistic)
-      if (length(stat.name) != 1) stat.name <- "level"
+      if (length(stat.name) != 1) {
+        stat.name <- "level"
+      }
 
       if (stat.safe.mode) {
         stat.fun <- function(x, ...) {
@@ -479,7 +483,9 @@ trendLevel <- function(
     unique(newdata[, type[1]])
   }
   temp <- sapply(temp, function(x) quickText(x, auto.text))
-  if (is.factor(temp)) temp <- as.character(temp)
+  if (is.factor(temp)) {
+    temp <- as.character(temp)
+  }
   strip <- strip.custom(
     factor.levels = temp,
     strip.levels = c(TRUE, FALSE),
@@ -493,7 +499,9 @@ trendLevel <- function(
       unique(newdata[, type[2]]),
       function(x) quickText(x, auto.text)
     )
-    if (is.factor(temp)) temp <- as.character(temp)
+    if (is.factor(temp)) {
+      temp <- as.character(temp)
+    }
     strip.custom(factor.levels = temp)
   }
 
@@ -634,8 +642,12 @@ trendLevel <- function(
 
   # lattice does not display all labels - even if requested when there are many
   # make a bit more space when there are >25
-  if (length(levels(newdata[[y]])) > 25) ylim <- ylim + c(-0.3, 0.3)
-  if (length(levels(newdata[[x]])) > 25) xlim <- xlim + c(-0.3, 0.3)
+  if (length(levels(newdata[[y]])) > 25) {
+    ylim <- ylim + c(-0.3, 0.3)
+  }
+  if (length(levels(newdata[[x]])) > 25) {
+    xlim <- xlim + c(-0.3, 0.3)
+  }
 
   # openair defaults for plot
   levelplot.args <- list(

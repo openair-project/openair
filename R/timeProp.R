@@ -128,7 +128,9 @@ timeProp <- function(
     trellis.par.set(list(strip.background = list(col = "white")))
   }
 
-  if (length(type) > 1) stop("'type' can only be of length 1.")
+  if (length(type) > 1) {
+    stop("'type' can only be of length 1.")
+  }
 
   ## if proportion is not categorical then make it so
   if (!class(mydata[[proportion]]) %in% c("factor")) {
@@ -186,7 +188,9 @@ timeProp <- function(
   ## variables needed
   vars <- c("date", pollutant, proportion)
 
-  if (any(type %in% dateTypes)) vars <- unique(c("date", vars))
+  if (any(type %in% dateTypes)) {
+    vars <- unique(c("date", vars))
+  }
 
   ## check the data
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
@@ -299,10 +303,18 @@ timeProp <- function(
 
   y.max <- max(results$var2, na.rm = TRUE)
 
-  if (is.null(xlim)) xlim <- range(c(results$xleft, results$xright))
+  if (is.null(xlim)) {
+    xlim <- range(c(results$xleft, results$xright))
+  }
 
-  if (normalise) pad <- 1 else pad <- 1.04
-  if (is.null(ylim)) ylim <- c(0, pad * y.max)
+  if (normalise) {
+    pad <- 1
+  } else {
+    pad <- 1.04
+  }
+  if (is.null(ylim)) {
+    ylim <- c(0, pad * y.max)
+  }
 
   if (normalise) {
     ylab <- quickText(paste("% contribution to", pollutant), auto.text)
@@ -354,7 +366,9 @@ timeProp <- function(
     )
   )
 
-  if (plot) print(plt)
+  if (plot) {
+    print(plt)
+  }
 
   output <- list(
     plot = plt,

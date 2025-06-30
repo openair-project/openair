@@ -184,7 +184,9 @@ linearRelation <- function(
     vars <- c("date", "nox", "no2", "ox")
     mydata$ox <- mydata$no2 + mydata$o3
     mydata <- subset(mydata, nox > 0 & ox > 0)
-    if (missing(ylab)) ylab <- "f-no2 (%) by vol."
+    if (missing(ylab)) {
+      ylab <- "f-no2 (%) by vol."
+    }
     adj <- 100
   } else {
     vars <- c("date", x, y)
@@ -251,8 +253,12 @@ linearRelation <- function(
     results <- subset(results, rsquare >= rsq.thresh & N >= n)
 
     eq <- formula(slope ~ hour)
-    if (condition) eq <- formula(slope ~ hour | cond)
-    if (!"ylim" %in% names(Args)) ylim <- rng(results)
+    if (condition) {
+      eq <- formula(slope ~ hour | cond)
+    }
+    if (!"ylim" %in% names(Args)) {
+      ylim <- rng(results)
+    }
 
     xyplot.args <- list(
       x = eq,
@@ -310,9 +316,13 @@ linearRelation <- function(
 
     ## allow reasonable gaps at ends, default has too much padding
     gap <- difftime(max(mydata$date), min(mydata$date), units = "secs") / 80
-    if (is.null(xlim)) xlim <- range(mydata$date) + c(-1 * gap, gap)
+    if (is.null(xlim)) {
+      xlim <- range(mydata$date) + c(-1 * gap, gap)
+    }
 
-    if (!"ylim" %in% names(Args)) ylim <- rng(results)
+    if (!"ylim" %in% names(Args)) {
+      ylim <- rng(results)
+    }
 
     xyplot.args <- list(
       x = slope ~ date,
@@ -365,7 +375,9 @@ linearRelation <- function(
       results$weekday,
       levels = format(ISOdate(2000, 1, 3:9), "%a")
     )
-    if (!"ylim" %in% names(Args)) ylim <- rng(results)
+    if (!"ylim" %in% names(Args)) {
+      ylim <- rng(results)
+    }
 
     if (condition) {
       myform <- formula("x = slope ~ weekday | cond")
@@ -426,12 +438,18 @@ linearRelation <- function(
       results$weekday,
       levels = format(ISOdate(2000, 1, 3:9), "%A")
     )
-    if (nrow(results) == 0) stop("Note enough data to plot. Try reducing 'n'.")
+    if (nrow(results) == 0) {
+      stop("Note enough data to plot. Try reducing 'n'.")
+    }
 
     eq <- formula(slope ~ hour | weekday)
-    if (condition) eq <- formula(slope ~ hour | weekday * cond)
+    if (condition) {
+      eq <- formula(slope ~ hour | weekday * cond)
+    }
 
-    if (!"ylim" %in% names(Args)) ylim <- rng(results)
+    if (!"ylim" %in% names(Args)) {
+      ylim <- rng(results)
+    }
 
     xyplot.args <- list(
       x = eq,

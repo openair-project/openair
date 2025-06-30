@@ -140,7 +140,9 @@ modStats <- function(
   ## extract variables of interest
   vars <- c(mod, obs)
 
-  if (any(type %in% dateTypes)) vars <- c("date", vars)
+  if (any(type %in% dateTypes)) {
+    vars <- c("date", vars)
+  }
 
   theStats <- c(
     "n",
@@ -300,7 +302,9 @@ sortDataFrame <- function(x, key, ...) {
 
   if (missing(key)) {
     rn <- rownames(x)
-    if (all(rn %in% 1:nrow(x))) rn <- as.numeric(rn)
+    if (all(rn %in% 1:nrow(x))) {
+      rn <- as.numeric(rn)
+    }
     x[order(rn, ...), , drop = FALSE]
   } else {
     x[do.call("order", c(x[key], ...)), , drop = FALSE]
@@ -394,7 +398,11 @@ IOA <- function(x, mod = "mod", obs = "obs") {
   LHS <- sum(abs(x[[mod]] - x[[obs]]))
   RHS <- 2 * sum(abs(x[[obs]] - mean(x[[obs]])))
 
-  if (LHS <= RHS) res <- 1 - LHS / RHS else res <- RHS / LHS - 1
+  if (LHS <= RHS) {
+    res <- 1 - LHS / RHS
+  } else {
+    res <- RHS / LHS - 1
+  }
 
   data.frame(IOA = res)
 }

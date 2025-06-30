@@ -174,8 +174,12 @@ calcFno2 <- function(
     ## if cl or temp are missing, fill in with default values
 
     ## check to see if cloud and temperature are present; if not, set default values
-    if (!any(names(input) %in% "temp")) input$temp <- 11
-    if (!any(names(input) %in% "cl")) input$cl <- 4.5
+    if (!any(names(input) %in% "temp")) {
+      input$temp <- 11
+    }
+    if (!any(names(input) %in% "cl")) {
+      input$cl <- 4.5
+    }
 
     input <- checkPrep(
       input,

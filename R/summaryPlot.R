@@ -250,7 +250,9 @@ summaryPlot <- function(
   dateBreaks <- dateBreaks(mydata$date, date.breaks)$major
 
   ## print data types - helps with debugging
-  if (debug) print(unlist(sapply(mydata, class)))
+  if (debug) {
+    print(unlist(sapply(mydata, class)))
+  }
 
   ## check to see if there is a field site and >1 site
   ## if several sites and no pollutant supplied, use first numeric
@@ -266,7 +268,9 @@ summaryPlot <- function(
       mydata$site <- factor(mydata$site)
       ## id of first numeric column (pollutant)
       id <- which(sapply(mydata, class) %in% c("numeric", "integer"))[1]
-      if (missing(pollutant)) pollutant <- names(mydata)[id]
+      if (missing(pollutant)) {
+        pollutant <- names(mydata)[id]
+      }
 
       if (pollutant %in% names(mydata) == FALSE) {
         stop(cat("Can't find the variable", pollutant, "\n"))
@@ -343,7 +347,9 @@ summaryPlot <- function(
     ends <- cumsum.seq[myruns] # + 1 # to get whole hour
     newindex <- ifelse(myruns > 1, myruns - 1, 0)
     starts <- cumsum.seq[newindex] + 1
-    if (0 %in% newindex) starts <- c(1, starts)
+    if (0 %in% newindex) {
+      starts <- c(1, starts)
+    }
     data.frame(starts = mydata$date[starts], ends = mydata$date[ends])
   }
 
@@ -357,9 +363,15 @@ summaryPlot <- function(
     median.dat <- round(median(value, na.rm = TRUE), 1)
     percentile <- round(quantile(value, probs = 0.95, na.rm = TRUE), 1)
 
-    if (period == "years") format.t <- "%Y"
-    if (period == "months") format.t <- "%Y-%m"
-    if (period == "days") format.t <- "%Y-%m-%d"
+    if (period == "years") {
+      format.t <- "%Y"
+    }
+    if (period == "months") {
+      format.t <- "%Y-%m"
+    }
+    if (period == "days") {
+      format.t <- "%Y-%m-%d"
+    }
 
     data.cap <- round(
       tapply(
@@ -527,9 +539,17 @@ summaryPlot <- function(
   plt1 <- do.call(xyplot, xyplot.args)
 
   ## this adjusts the space for the title to 2 lines (approx) if \n in title
-  if (!is.null(main)) main <- quickText(main, auto.text)
-  if (length(grep("atop", main) == 1)) y.upp <- 0.95 else y.upp <- 0.975
-  if (is.null(main)) y.upp <- 1
+  if (!is.null(main)) {
+    main <- quickText(main, auto.text)
+  }
+  if (length(grep("atop", main) == 1)) {
+    y.upp <- 0.95
+  } else {
+    y.upp <- 0.975
+  }
+  if (is.null(main)) {
+    y.upp <- 1
+  }
 
   ## clip data to help show interesting part of distribution
   if (clip) {
@@ -550,7 +570,9 @@ summaryPlot <- function(
     ylab[2]
   }
   if (my.ylab == "") {
-    if (type == "histogram") my.ylab <- "Percent of Total"
+    if (type == "histogram") {
+      my.ylab <- "Percent of Total"
+    }
     if (type == "density") my.ylab <- "Density"
   } else {
     my.ylab <- quickText(my.ylab, auto.text)

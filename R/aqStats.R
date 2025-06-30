@@ -47,11 +47,11 @@
 #'
 #' When `pollutant == "no2"`:
 #'
-#' - **hours.gt.200** --- number of hours NO2 is more than 200 ug/m3.
+#' - **hours** --- number of hours NO2 is more than 200 ug/m3.
 #'
 #' When `pollutant == "pm10"`:
 #'
-#' - **days.gt.50** --- number of days PM10 is more than 50 ug/m3.
+#' - **days** --- number of days PM10 is more than 50 ug/m3.
 #'
 #' For the rolling means, the user can supply the option `align`, which can be
 #' "centre" (default), "left" or "right". See [rollingMean()] for more details.

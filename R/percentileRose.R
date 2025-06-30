@@ -124,12 +124,15 @@ percentileRose <- function(
 
   if (tolower(method) == "cpf") {
     mean <- FALSE
-    if (length(percentile) > 1)
+    if (length(percentile) > 1) {
       stop("Only one percentile should be supplied when method = 'CPF'.")
+    }
   }
 
   vars <- c(wd, pollutant)
-  if (any(type %in% dateTypes)) vars <- c(vars, "date")
+  if (any(type %in% dateTypes)) {
+    vars <- c(vars, "date")
+  }
 
   # check to see if ws is in the data and is calm (need to remove as no wd)
   if ("ws" %in% names(mydata)) {
@@ -160,7 +163,9 @@ percentileRose <- function(
   }
 
   ## need lowest value if shading
-  if (fill) percentile <- unique(c(0, percentile))
+  if (fill) {
+    percentile <- unique(c(0, percentile))
+  }
 
   # number of pollutants
   npol <- length(pollutant)
@@ -365,7 +370,11 @@ percentileRose <- function(
     Mean <- purrr::map(999, mod.percentiles) %>%
       purrr::list_rbind()
 
-    if (stat == "percentile") results <- results else results <- Mean
+    if (stat == "percentile") {
+      results <- results
+    } else {
+      results <- Mean
+    }
     results
   }
 
@@ -464,7 +473,9 @@ percentileRose <- function(
 
   legend <- makeOpenKeyLegend(key, legend, "percentileRose")
 
-  if (mean.only || tolower(method) == "cpf") legend <- NULL
+  if (mean.only || tolower(method) == "cpf") {
+    legend <- NULL
+  }
 
   temp <- paste(type, collapse = "+")
   myform <- formula(paste("y ~ x | ", temp, sep = ""))
@@ -481,8 +492,9 @@ percentileRose <- function(
 
   ## nice intervals for pollutant concentrations
   tmp <- (results.grid$x^2 + results.grid$y^2)^0.5
-  if (is.null(intervals))
+  if (is.null(intervals)) {
     intervals <- pretty(c(min(tmp, na.rm = TRUE), max(tmp, na.rm = TRUE)))
+  }
 
   labs <- intervals ## the labels
 
@@ -502,7 +514,9 @@ percentileRose <- function(
   }
 
   ## re-label if CPF plot
-  if (tolower(method) == "cpf") pollutant <- "probability"
+  if (tolower(method) == "cpf") {
+    pollutant <- "probability"
+  }
 
   xyplot.args <- list(
     x = myform,

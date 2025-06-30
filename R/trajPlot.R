@@ -260,7 +260,11 @@ trajPlot <- function(
   if (missing(pollutant)) {
     ## don't need key
 
-    if (is.na(group)) key <- FALSE else key <- TRUE
+    if (is.na(group)) {
+      key <- FALSE
+    } else {
+      key <- TRUE
+    }
 
     if (!"main" %in% names(Args)) {
       Args$main <- NULL

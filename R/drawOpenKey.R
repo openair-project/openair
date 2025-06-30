@@ -505,6 +505,7 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
   # adds ticks and borders if requested
   #####################
   if (key$space == "right") {
+    ##################### # adds ticks and borders if requested # positions # size checks text see sac struff # left scale #####################
     h.text <- if (is.character(h.text)) {
       lapply(h.text, function(x) quickText(x, h.auto.text))
     } else {
@@ -698,8 +699,7 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
         col = 2
       )
     }
-  } ##################### # adds ticks and borders if requested # positions # size checks text see sac struff # left scale #####################
-  else if (key$space == "left") {
+  } else if (key$space == "left") {
     h.text <- if (is.character(h.text)) {
       lapply(h.text, function(x) quickText(x, h.auto.text))
     } else {
@@ -893,7 +893,8 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
         col = 2
       )
     }
-  } else if (key$space == "top") { ##################### # adds ticks and borders if requested # positions # top scale #####################
+  } else if (key$space == "top") {
+    ##################### # adds ticks and borders if requested # positions # top scale #####################
     f.text <- f.text[as.character(f.text) != ""]
     f.text <- if (is.character(f.text)) {
       quickText(paste(f.text, collapse = "  "), f.auto.text)
@@ -1077,7 +1078,8 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
     key.gf <- placeGrob(key.gf, labelsGrob, row = 3, col = 2)
     key.gf <- placeGrob(key.gf, keyGrob, row = 2, col = 2)
     key.gf <- placeGrob(key.gf, keyGrob2, row = 1, col = 2)
-  } else if (key$space == "bottom") { ##################### # adds ticks and borders if requested # positions # bottom scale #####################
+  } else if (key$space == "bottom") {
+    ##################### # adds ticks and borders if requested # positions # bottom scale #####################
     f.text <- f.text[as.character(f.text) != ""]
     f.text <- if (is.character(f.text)) {
       quickText(paste(f.text, collapse = "  "), f.auto.text)

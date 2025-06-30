@@ -50,7 +50,9 @@ readUKAQData <-
 
     # change nox as no2
     id <- which(names(thedata) %in% "noxasno2")
-    if (length(id) == 1) names(thedata)[id] <- "nox"
+    if (length(id) == 1) {
+      names(thedata)[id] <- "nox"
+    }
 
     # change code to character
     thedata$code <- as.character(thedata$code)

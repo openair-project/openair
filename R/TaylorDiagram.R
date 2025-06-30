@@ -315,7 +315,9 @@ TaylorDiagram <- function(
   ## check to see if two data sets are present
   combine <- FALSE
 
-  if (length(mod) == 2) combine <- TRUE
+  if (length(mod) == 2) {
+    combine <- TRUE
+  }
 
   if (any(type %in% dateTypes)) {
     vars <- c("date", obs, mod)
@@ -326,8 +328,9 @@ TaylorDiagram <- function(
   ## assume two groups do not exist
   twoGrp <- FALSE
 
-  if (!missing(group))
+  if (!missing(group)) {
     if (any(group %in% type)) stop("Can't have 'group' also in 'type'.")
+  }
 
   mydata <- cutData(mydata, type, ...)
 
@@ -354,7 +357,9 @@ TaylorDiagram <- function(
       grp1 <- group[1]
       grp2 <- group[2]
 
-      if (missing(key.title)) key.title <- grp1
+      if (missing(key.title)) {
+        key.title <- grp1
+      }
       vars <- c(vars, grp1, grp2)
       mydata$newgrp <- paste(mydata[[group[1]]], mydata[[group[2]]], sep = "-")
       group <- "newgrp"
@@ -497,7 +502,9 @@ TaylorDiagram <- function(
     levels(mydata[, type[1]]),
     function(x) quickText(x, auto.text)
   )
-  if (strip) strip <- strip.custom(factor.levels = stripName)
+  if (strip) {
+    strip <- strip.custom(factor.levels = stripName)
+  }
 
   if (length(type) == 1) {
     strip.left <- FALSE
@@ -512,7 +519,9 @@ TaylorDiagram <- function(
   ## #############################################################################
 
   ## no strip needed for single panel
-  if (length(type) == 1 & type[1] == "default") strip <- FALSE
+  if (length(type) == 1 & type[1] == "default") {
+    strip <- FALSE
+  }
 
   ## not sure how to evaluate "group" in xyplot, so change to a fixed name
   id <- which(names(results) == group)
@@ -530,8 +539,11 @@ TaylorDiagram <- function(
 
   ## xlab, ylab local management
   if (is.null(extra.args$ylab)) {
-    extra.args$ylab <- if (normalise) "standard deviation (normalised)" else
+    extra.args$ylab <- if (normalise) {
+      "standard deviation (normalised)"
+    } else {
       "standard deviation"
+    }
   }
   if (is.null(extra.args$xlab)) {
     extra.args$xlab <- extra.args$ylab
@@ -585,8 +597,11 @@ TaylorDiagram <- function(
   ## plot
   plt <- do.call(xyplot, xyplot.args)
 
-  if (length(type) == 1) plot(plt) else
+  if (length(type) == 1) {
+    plot(plt)
+  } else {
     plot(useOuterStrips(plt, strip = strip, strip.left = strip.left))
+  }
   newdata <- results
   output <- list(plot = plt, data = newdata, call = match.call())
   class(output) <- "openair"

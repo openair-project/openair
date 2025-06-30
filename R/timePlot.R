@@ -382,7 +382,6 @@ timePlot <- function(
   }
 
   ## ### warning messages and other checks ################################################
-
   if (length(percentile) > 1 & length(pollutant) > 1) {
     stop("Only one pollutant allowed when considering more than one percentile")
   }

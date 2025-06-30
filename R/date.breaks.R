@@ -99,7 +99,9 @@ dateBreaks <- function(x, n = 5, min.n = n %/% 2, ...) {
   ## bump it up if below acceptable threshold
   while (init.n < min.n) {
     init.i <- init.i - 1L
-    if (init.i == 0) stop("range too small for min.n")
+    if (init.i == 0) {
+      stop("range too small for min.n")
+    }
     init.at <- calcSteps(steps[[init.i]])
     init.n <- length(init.at) - 1L
   }
@@ -261,7 +263,9 @@ dateCeil <- function(
 ## not overlu useful yet!
 roundDate <- function(dates, avg.time = "hour", start.date = NULL) {
   TZ <- attr(dates, "tzone")
-  if (is.null(TZ)) TZ <- "GMT" ## as it is on Windows for BST
+  if (is.null(TZ)) {
+    TZ <- "GMT"
+  } ## as it is on Windows for BST
 
   if (!missing(start.date)) {
     dates <- c(as.POSIXct(start.date), dates)
