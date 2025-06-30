@@ -8,53 +8,29 @@ polarDiff(
   before,
   after,
   pollutant = "nox",
+  type = "default",
   x = "ws",
   limits = NULL,
+  auto.text = TRUE,
   plot = TRUE,
   ...
 )
 }
 \arguments{
-\item{before}{A data frame that represents the "before" case. See
-\code{\link[=polarPlot]{polarPlot()}} for details of different input requirements.}
-
-\item{after}{A data frame that represents the "after" case. See \code{\link[=polarPlot]{polarPlot()}}
-for details of different input requirements.}
+\item{before, after}{Data frames representing the "before" and "after" cases.
+See \code{\link[=polarPlot]{polarPlot()}} for details of different input requirements.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \code{pollutant = "nox"}. There can also
-be more than one pollutant specified e.g. \code{pollutant = c("nox",
-  "no2")}. The main use of using two or more pollutants is for model
+be more than one pollutant specified e.g. \code{pollutant = c("nox", "no2")}. The main use of using two or more pollutants is for model
 evaluation where two species would be expected to have similar
 concentrations. This saves the user stacking the data and it is possible to
-work with columns of data directly. A typical use would be \code{pollutant
-  = c("obs", "mod")} to compare two columns \dQuote{obs} (the observations)
+work with columns of data directly. A typical use would be \code{pollutant = c("obs", "mod")} to compare two columns \dQuote{obs} (the observations)
 and \dQuote{mod} (modelled values). When pair-wise statistics such as
 Pearson correlation and regression techniques are to be plotted,
-\code{pollutant} takes two elements too. For example, \code{pollutant =
-  c("bc", "pm25")} where \code{"bc"} is a function of \code{"pm25"}.}
+\code{pollutant} takes two elements too. For example, \code{pollutant = c("bc", "pm25")} where \code{"bc"} is a function of \code{"pm25"}.}
 
-\item{x}{Name of variable to plot against wind direction in polar
-coordinates, the default is wind speed, \dQuote{ws}.}
-
-\item{limits}{The function does its best to choose sensible limits
-automatically. However, there are circumstances when the user will wish to
-set different ones. An example would be a series of plots showing each year
-of data separately. The limits are set in the form \code{c(lower, upper)},
-so \code{limits = c(0, 100)} would force the plot limits to span 0-100.}
-
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other ways.}
-
-\item{...}{
-  Arguments passed on to \code{\link[=polarPlot]{polarPlot}}
-  \describe{
-    \item{\code{mydata}}{A data frame minimally containing \code{wd}, another variable
-to plot in polar coordinates (the default is a column \dQuote{ws} --- wind
-speed) and a pollutant. Should also contain \code{date} if plots by time
-period are required.}
-    \item{\code{wd}}{Name of wind direction field.}
-    \item{\code{type}}{\code{type} determines how the data are split i.e. conditioned,
+\item{type}{\code{type} determines how the data are split i.e. conditioned,
 and then plotted. The default is will produce a single plot using the
 entire data. Type can be one of the built-in types as detailed in
 \code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
@@ -71,6 +47,27 @@ different variables and how they depend on one another.
 Type can be up length two e.g. \code{type = c("season", "weekday")} will
 produce a 2x2 plot split by season and day of the week. Note, when two
 types are provided the first forms the columns and the second the rows.}
+
+\item{x}{Name of variable to plot against wind direction in polar
+coordinates, the default is wind speed, \dQuote{ws}.}
+
+\item{limits}{The function does its best to choose sensible limits
+automatically. However, there are circumstances when the user will wish to
+set different ones. An example would be a series of plots showing each year
+of data separately. The limits are set in the form \code{c(lower, upper)},
+so \code{limits = c(0, 100)} would force the plot limits to span 0-100.}
+
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
+titles and axis labels will automatically try and format pollutant names
+and units properly e.g.  by subscripting the `2' in NO2.}
+
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
+analysing data to extract plot components and plotting them in other ways.}
+
+\item{...}{
+  Arguments passed on to \code{\link[=polarPlot]{polarPlot}}
+  \describe{
+    \item{\code{wd}}{Name of wind direction field.}
     \item{\code{statistic}}{The statistic that should be applied to each wind
 speed/direction bin. Because of the smoothing involved, the colour scale
 for some of these statistics is only to provide an indication of overall
@@ -236,7 +233,7 @@ This option is particularly useful if one is interested in the patterns of
 concentrations for several pollutants on different scales e.g. NOx and CO.
 Often useful if more than one \code{pollutant} is chosen.}
     \item{\code{key.header}}{Adds additional text/labels to the scale key. For example,
-passing the options \code{key.header = "header", key.footer = "footer1"}
+passing the options \verb{key.header = "header", key.footer = "footer1"}
 adds addition text above and below the scale key. These arguments are
 passed to \code{drawOpenKey} via \code{quickText}, applying the
 \code{auto.text} argument, to handle formatting.}
@@ -246,24 +243,21 @@ arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"}
 and \code{"left"}.}
     \item{\code{key}}{Fine control of the scale key via \code{drawOpenKey}. See
 \code{drawOpenKey} for further details.}
-    \item{\code{auto.text}}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
-titles and axis labels will automatically try and format pollutant names
-and units properly e.g.  by subscripting the `2' in NO2.}
     \item{\code{ws_spread}}{The value of sigma used for Gaussian kernel weighting of
 wind speed when \code{statistic = "nwr"} or when correlation and regression
 statistics are used such as \emph{r}. Default is \code{0.5}.}
     \item{\code{wd_spread}}{The value of sigma used for Gaussian kernel weighting of
 wind direction when \code{statistic = "nwr"} or when correlation and
 regression statistics are used such as \emph{r}. Default is \code{4}.}
-    \item{\code{x_error}}{The \code{x} error / uncertainty used when \code{statistic =
-"york_slope"}.}
-    \item{\code{y_error}}{The \code{y} error / uncertainty used when \code{statistic =
-"york_slope"}.}
+    \item{\code{x_error}}{The \code{x} error / uncertainty used when \code{statistic = "york_slope"}.}
+    \item{\code{y_error}}{The \code{y} error / uncertainty used when \code{statistic = "york_slope"}.}
     \item{\code{kernel}}{Type of kernel used for the weighting procedure for when
 correlation or regression techniques are used. Only \code{"gaussian"} is
 supported but this may be enhanced in the future.}
     \item{\code{formula.label}}{When pair-wise statistics such as regression slopes are
-calculated and plotted, should a formula label be displayed?}
+calculated and plotted, should a formula label be displayed?
+\code{formula.label} will also determine whether concentration information
+is printed when \code{statistic = "cpf"}.}
     \item{\code{tau}}{The quantile to be estimated when \code{statistic} is set to
 \code{"quantile.slope"}. Default is \code{0.5} which is equal to the median
 and will be ignored if \code{"quantile.slope"} is not used.}
@@ -284,14 +278,12 @@ same location, it can be used for any two data sets that contain the same
 pollutant. For example, data from two sites that are close to one another, or
 two co-located instruments.
 
-The analysis works by calculating the polar plot surface for the
-\code{before} and \code{after} periods and then subtracting the \code{before}
-surface from the \code{after} surface.
+The analysis works by calculating the polar plot surface for the \code{before} and
+\code{after} periods and then subtracting the \code{before} surface from the \code{after}
+surface.
 }
 \examples{
-
 \dontrun{
-
 before_data <- selectByDate(mydata, year = 2002)
 after_data <- selectByDate(mydata, year = 2003)
 
@@ -299,7 +291,6 @@ polarDiff(before_data, after_data, pollutant = "no2")
 
 # with some options
 polarDiff(before_data, after_data, pollutant = "no2", cols = "RdYlBu", limits = c(-20, 20))
-
 }
 }
 \seealso{

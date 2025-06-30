@@ -1,13 +1,91 @@
 # openair (development version)
 
-## Bug fixes
+## Deprecations
 
-- fix date formatting issue in `aqStats`.
-- fix wrong formula for Euclidian distances in `trajCluster` that did not transform coordinates before distance matrix was calculated. Thanks to Dan Jaffe.
+`importEurope()` relies on the same back-end database as the `saqgetr` package (<https://github.com/skgrange/saqgetr>), which was retired in February 2024. `importEurope()` will now warn users of this, and outright error if `year >= 2025`. Users are instead encouraged to use the EEA Air Quality Download Service <https://eeadmz1-downloads-webapp.azurewebsites.net> to obtain European data for the time being.
 
 ## New Features
 
-- add option to `corPlot` to carry through "use" option in `cor`.
+- The `source` argument of `importUKAQ()` now defaults to `NULL`. This option allows the function to assign the `source` of each `site` itself, with some caveats:
+
+    - Ambiguous codes (e.g., `"AD1"`, which corresponds to a SAQN and locally managed site) will preferentially import from the national networks (AURN, then AQE/SAQN/WAQN/NIAQN) over locally-managed networks. To override this users should manually define `source`.
+
+    - Incorrect codes not found in `importMeta()` will error if `importUKAQ()` is left to assign the `source`.
+
+    - When `data_type` is one of the aggregate types (e.g., `"annual"`) and a `site` isn't defined, a `source` must be provided.
+
+    - It is likely *slightly* slower for the function to assign `source` itself than for users to specify it themselves.
+    
+- The specific metadata columns appended when `importUKAQ(meta = TRUE)` can now be controlled using the `meta_columns` argument. For example, setting `meta_columns` to `c("zone", "agglomeration")` will append the zone/agglomeration information instead of the default site type/latitude/longitude.
+
+- Added new features for `openColours()`:
+
+    - Added new qualitative colour palettes: the "tol" family are colour-blind friendly palettes based on the work of Paul Tol (<https://sronpersonalpages.nl/~pault/>), and "tableau" and "observable" provide access to the "Tableau10" and "Observable10" palettes to aid in consistency with plots made in those platforms.
+  
+    - When `n` isn't defined for a qualitative palette (e.g., "Dark2"), the full qualitative palette will be returned. Previously this errored with the default of `100`.
+    
+    - `openColours()` will now check whether the provided `scheme` is either a known scheme name *or* a vector of valid R colours, and provide an informative error if this is not the case.
+
+- `binData()` has gained the `type`, `B` and `conf.int` arguments. The first is passed to `cutData()` and the latter two to `bootMeanDF()`.
+
+- Added new features for `calcPercentile()`:
+
+    - Added the `type` argument, in line with `timeAverage()`.
+    
+    - Added the `prefix` argument to control the naming of the returned columns.
+ 
+- `splitByDate()` can now more consistently take `Date` / `POSIXct` inputs as well as characters, and provides more flexibility over inputs with a new `format` argument.
+    
+- Made refinements to `cutData()`:
+
+    - Added the `names` argument to specify the name of the appended columns. For example, `cutData(mydata, "wd", names = c("windDir"))` will append a column named "windDir".
+    
+    - Added the `suffix` argument as an alternative to `names`. If a new column would otherwise overwrite an existing column, `suffix` will be appended. For example, `cutData(mydata, c("nox", "o3"), suffix = "_cuts")` would append `nox_cuts` and `o3_cuts` columns.
+    
+    - `cutData()` is now less destructive and better cleans up after itself. For example, when `type = "yearseason"`, it will no longer leave 'year' and 'season' columns behind, or overwrite existing 'year' and 'season' columns.
+    
+    - `cutData()` will now give an informative error message if the user provides a `type` which is in neither an in-built option nor a column in their dataframe.
+    
+- The `formula.label` argument of `polarPlot()` will now control whether concentration information is printed when `statistic = "cpf"`.
+
+- add `calm.thresh` as an option to `windRose`. This change allows users to set a non-zero wind speed threshold that is considered as calm.
+
+- DAQI information imported using `importUKAQ(data_type = "daqi")` will be returned with the relevant DAQI band appended as an additional factor column; either "Low" (1-3), "Moderate" (4-6), "High" (7-9), or "Very High" (10). See <https://uk-air.defra.gov.uk/air-pollution/daqi> for more information.
+
+- `trendLevel()` has gained new `statistic` types to match `timeAverage()`, including `"mean"`, `"median"`, `"min"`, `"max"`, `"sd"`, `"sum"`, `"frequency"` and `"percentile"`.
+
+- `trendLevel()` will now automatically generate appropriate `labels` if `breaks` are provided. The `labels` argument can still be used to provide custom labels per break.
+
+## Bug fixes
+
+- Fixed repeated day number in `calendarPlot` when `statistic = max`.
+
+- Fixed `annotate = FALSE` in `windRose` where axes and labels were not shown
+
+- Fixed an issue wherein `importUKAQ()` would drop sites if importing from `local` sites *and* another network.
+
+- `polarCluster()` will no longer error with multiple `pollutant`s and a single `n.clusters`.
+
+- `importUKAQ()` will correctly append site meta data when `meta = TRUE`, `source` is a length greater than 1, and a single site is repeated in more than one source (e.g., `importUKAQ(source = c("waqn", "aurn"), data_type = "daqi", year = 2024L))`)
+
+- `calcPercentile()` will now correctly pass its arguments (e.g., `date.start`) to `timeAverage()`.
+
+- `timeAverage()` will now more consistently return `NA` values rather than `NaN` or `Inf` when all values are `NA`. This specifically affects the `"mean"` and `"min"` statistics.
+
+- `importUKAQ()` will now correctly label a measurement as ratified when it is on the day of `ratified_to`. i.e., if a site is ratified to `2020/01/01`, the measurement at `2020/01/01 23:00` will now be labelled as ratified.
+
+# openair 2.18-2
+
+## New Features
+
+- add option to `corPlot()` to carry through "use" option in `cor`.
+
+## Bug fixes
+
+- fix date formatting issue in `aqStats()`.
+- fix wrong formula for Euclidian distances in `trajCluster()` that did not transform coordinates before distance matrix was calculated. Thanks to Dan Jaffe.
+- "15_min" can once again be used as a `data_type` in the `importUKAQ()` family.
+- `importUKAQ()` can now be used to import annual, monthly, and DAQI statistics for multiple combinations of `source` and `year`.
 
 # openair 2.18-0
 
@@ -27,7 +105,7 @@
   
   - `importAURN()`, `importAQE()`, `importWAQN()`, `importSAQN()`, `importNI()` and `importLocal()` are still exported by `{openair}`. These are all simply wrappers around `importUKAQ()` with forced "source" arguments, and remain for back-compatibility and convenience.
   
-  - While `importKCL()` also imports uk air quality data, it is not currently made available through `importUKAQ()`. Users should continue to import KCL data via `importKCL()` for the time being.
+  - While `importKCL()` also imports UK air quality data, it is not currently made available through `importUKAQ()`. Users should continue to import KCL data via `importKCL()` for the time being.
 
 - `importMeta()` has gained two new "source" options to assist with the new `importUKAQ()` function:
 
@@ -157,7 +235,7 @@
 - add option to `TaylorDiagram` for annotation of observed data.
 - fix issue with `timevariation` when `difference = TRUE`
 - fix `trajCluster` issue to do with `dplyr`
-- access other time-averaged air quality data using `importAURN`, `importSAQN`, `importWAQN`, `importAQE` and `importNI`. New option `data_type`, which can be "hourly" (default), "annual", "monthly", "daily" and "15min" (for SO~2~). These new data sources should make it much easier to work with long-term time series with many sites. See [the openair manual](https://bookdown.org/david_carslaw/openair/sections/data-access/UK-air-quality-data.html) for more details.
+- access other time-averaged air quality data using `importAURN`, `importSAQN`, `importWAQN`, `importAQE` and `importNI`. New option `data_type`, which can be "hourly" (default), "annual", "monthly", "daily" and "15min" (for SO~2~). These new data sources should make it much easier to work with long-term time series with many sites. See [the openair manual](https://openair-project.github.io/book/sections/data-access/UK-air-quality-data.html) for more details.
 - fix terrible spelling in `selectRunning`.
 
 # openair 2.8-6
@@ -344,7 +422,7 @@
 - fix issue with `type` when used with `timeProp`
 - fix bias correction when not default type in `windRose`
 - fix pch colour bug in `timePlot`
-- add option `alpha` to `polarPlot` to control transparency of plotted surface. Mostly useful for overlaying polar plots on leaflet maps (see [openairmaps](https://github.com/davidcarslaw/openairmaps) package)
+- add option `alpha` to `polarPlot` to control transparency of plotted surface. Mostly useful for overlaying polar plots on leaflet maps (see [openairmaps](https://github.com/openair-project/openairmaps) package)
 - enhance `grid.line` option in `windRose` so that users can control grid spacing, line type and line colour
 
 # openair 1.9-9

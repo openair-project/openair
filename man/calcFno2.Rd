@@ -51,8 +51,7 @@ quantiles.}
 \dQuote{sec}, \dQuote{min}, \dQuote{hour}, \dQuote{day}, \dQuote{DSTday},
 \dQuote{week}, \dQuote{month}, \dQuote{quarter} or \dQuote{year}. For much
 increased flexibility a number can precede these options followed by a
-space. For example, a timeAverage of 2 months would be \code{period = "2
-  month"}. See function \code{timeAverage} for further details on this. This
+space. For example, a timeAverage of 2 months would be \code{period = "2 month"}. See function \code{timeAverage} for further details on this. This
 option se useful as one method by which the number of points plotted is
 reduced i.e. by choosing a longer averaging time.}
     \item{\code{data.thresh}}{The data capture threshold to use (\\%) when aggregating
@@ -67,8 +66,7 @@ the mean. Can be one of "mean", "max", "min", "median", "frequency", "sd",
 the number (frequency) of valid records in the period. "percentile" is the
 percentile level (\\%) between 0-100, which can be set using the
 "percentile" option - see below. Not used if \code{avg.time = "default"}.}
-    \item{\code{percentile}}{The percentile level in percent used when \code{statistic =
-  "percentile"} and when aggregating the data with \code{avg.time}. The
+    \item{\code{percentile}}{The percentile level in percent used when \code{statistic = "percentile"} and when aggregating the data with \code{avg.time}. The
 default is 95. Not used if \code{avg.time = "default"}.}
     \item{\code{type}}{\code{type} determines how the data are split i.e. conditioned,
 and then plotted. The default is will produce a single plot using the
@@ -127,18 +125,15 @@ be useful for checking linearity once logged.}
     \item{\code{log.y}}{Should the y-axis appear on a log scale? The default is
 \code{FALSE}. If \code{TRUE} a well-formatted log10 scale is used. This can
 be useful for checking linearity once logged.}
-    \item{\code{x.inc}}{The x-interval to be used for binning data when \code{method =
-"level"}.}
-    \item{\code{y.inc}}{The y-interval to be used for binning data when \code{method =
-"level"}.}
+    \item{\code{x.inc}}{The x-interval to be used for binning data when \code{method = "level"}.}
+    \item{\code{y.inc}}{The y-interval to be used for binning data when \code{method = "level"}.}
     \item{\code{limits}}{For \code{method = "level"} the function does its best to
 choose sensible limits automatically. However, there are circumstances when
 the user will wish to set different ones. The limits are set in the form
 \code{c(lower, upper)}, so \code{limits = c(0, 100)} would force the plot
 limits to span 0-100.}
     \item{\code{windflow}}{This option allows a scatter plot to show the wind
-speed/direction shows as an arrow. The option is a list e.g. \code{windflow
-  = list(col = "grey", lwd = 2, scale = 0.1)}. This option requires wind
+speed/direction shows as an arrow. The option is a list e.g. \code{windflow = list(col = "grey", lwd = 2, scale = 0.1)}. This option requires wind
 speed (\code{ws}) and wind direction (\code{wd}) to be available.
 
 The maximum length of the arrow plotted is a fraction of the plot dimension
@@ -161,10 +156,8 @@ use panel-specific scales. The latter is a useful setting when plotting
 data with very different values.}
     \item{\code{ref.x}}{See \code{ref.y} for details.}
     \item{\code{ref.y}}{A list with details of the horizontal lines to be added
-representing reference line(s). For example, \code{ref.y = list(h = 50, lty
-  = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-  "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
+representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
 details on adding/controlling lines.}
     \item{\code{k}}{Smoothing parameter supplied to \code{gam} for fitting a smooth
 surface when \code{method = "level"}.}
@@ -204,8 +197,6 @@ primarily determined by direct emissions of NO2 and the availability of One
 to react with NO to form NO2. The method aims to quantify the amount of NO2
 formed through these two processes by seeking the optimum level of primary
 NO2 that gives the least error.
-
-Test data is provided at \url{https://davidcarslaw.github.io/openair/}.
 }
 \references{
 Clapp, L.J., Jenkin, M.E., 2001. Analysis of the relationship
@@ -241,7 +232,7 @@ vehicle emissions legislation consider primary NO2? Atmospheric Environment
 38(8): 1233-1234.
 }
 \seealso{
-\code{\link{linearRelation}} if you have roadside ozone
+\code{\link[=linearRelation]{linearRelation()}} if you have roadside ozone
 measurements.
 }
 \author{

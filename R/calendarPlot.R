@@ -75,6 +75,7 @@
 #' @param cex.lim For the annotation of concentration labels on each day. The
 #'   first sets the size of the text below `lim` and the second sets the size of
 #'   the text above `lim`.
+#' @param cex.date The base size of the annotation text for the date.
 #' @param digits The number of digits used to display concentration values when
 #'   `annotate = "value"`.
 #' @param data.thresh Data capture threshold passed to [timeAverage()]. For
@@ -155,35 +156,38 @@
 #' )
 #' }
 calendarPlot <-
-  function(mydata,
-           pollutant = "nox",
-           year = 2003,
-           month = 1:12,
-           type = "default",
-           annotate = "date",
-           statistic = "mean",
-           cols = "heat",
-           limits = c(0, 100),
-           lim = NULL,
-           col.lim = c("grey30", "black"),
-           col.arrow = "black",
-           font.lim = c(1, 2),
-           cex.lim = c(0.6, 1),
-           digits = 0,
-           data.thresh = 0,
-           labels = NA,
-           breaks = NA,
-           w.shift = 0,
-           w.abbr.len = 1,
-           remove.empty = TRUE,
-           main = NULL,
-           key.header = "",
-           key.footer = "",
-           key.position = "right",
-           key = TRUE,
-           auto.text = TRUE,
-           plot = TRUE,
-           ...) {
+  function(
+    mydata,
+    pollutant = "nox",
+    year = 2003,
+    month = 1:12,
+    type = "default",
+    annotate = "date",
+    statistic = "mean",
+    cols = "heat",
+    limits = c(0, 100),
+    lim = NULL,
+    col.lim = c("grey30", "black"),
+    col.arrow = "black",
+    font.lim = c(1, 2),
+    cex.lim = c(0.6, 1),
+    cex.date = 0.6,
+    digits = 0,
+    data.thresh = 0,
+    labels = NA,
+    breaks = NA,
+    w.shift = 0,
+    w.abbr.len = 1,
+    remove.empty = TRUE,
+    main = NULL,
+    key.header = "",
+    key.footer = "",
+    key.position = "right",
+    key = TRUE,
+    auto.text = TRUE,
+    plot = TRUE,
+    ...
+  ) {
     conc.mat <- NULL ## keep R check quiet
 
     ## international keyboard
@@ -194,8 +198,12 @@ calendarPlot <-
     }
 
     weekday.abb <-
-      substr(format(ISOdate(2000, 1, 2:8), "%A"), 1, w.abbr.len)[((6:12) +
-        w.shift) %% 7 + 1]
+      substr(format(ISOdate(2000, 1, 2:8), "%A"), 1, w.abbr.len)[
+        ((6:12) +
+          w.shift) %%
+          7 +
+          1
+      ]
 
     ## extra args
     extra.args <- list(...)
@@ -254,7 +262,6 @@ calendarPlot <-
 
     main <- quickText(main, auto.text)
 
-
     ## themes for calendarPlot
     def.theme <- list(
       strip.background = list(col = "#ffe5cc"),
@@ -273,7 +280,8 @@ calendarPlot <-
     lattice.options(default.theme = cal.theme)
 
     ## all the days in the year
-    all.dates <- seq(as_date(floor_date(min(mydata$date), "month")),
+    all.dates <- seq(
+      as_date(floor_date(min(mydata$date), "month")),
       as_date(ceiling_date(max(mydata$date), "month")) - 1,
       by = "day"
     )
@@ -361,12 +369,15 @@ calendarPlot <-
         group_by(date) %>%
         slice(which.max(.data[[pollutant]]))
 
-      # averaged data
-      mydata <- timeAverage(mydata,
+      # averaged data, make sure Date format (max returns POSIXct)
+      mydata <- timeAverage(
+        mydata,
         "day",
         statistic = statistic,
         data.thresh = data.thresh
-      )
+      ) %>%
+        mutate(date = as_date(date))
+
       # replace with parallel max
       mydata <- left_join(
         mydata %>%
@@ -378,7 +389,8 @@ calendarPlot <-
     } else {
       ## calculate daily means
 
-      mydata <- timeAverage(mydata,
+      mydata <- timeAverage(
+        mydata,
         "day",
         statistic = statistic,
         data.thresh = data.thresh
@@ -394,7 +406,8 @@ calendarPlot <-
       left_join(data.frame(date = all.dates), mydata, by = "date")
 
     # split by year-month
-    mydata <- mutate(mydata,
+    mydata <- mutate(
+      mydata,
       cuts = format(date, "%B-%Y"),
       cuts = ordered(cuts, levels = unique(cuts))
     )
@@ -425,7 +438,6 @@ calendarPlot <-
     strip.dat <- strip.fun(mydata, type, auto.text)
     strip <- strip.dat[[1]]
 
-
     category <- FALSE ## assume pollutant is not a categorical value
 
     if (!anyNA(breaks)) {
@@ -442,11 +454,9 @@ calendarPlot <-
       }
 
       category <- TRUE
-      mydata <- mutate(mydata,
-        conc.mat = cut(conc.mat,
-          breaks = breaks,
-          labels = labels
-        )
+      mydata <- mutate(
+        mydata,
+        conc.mat = cut(conc.mat, breaks = breaks, labels = labels)
       )
     }
 
@@ -534,7 +544,6 @@ calendarPlot <-
         }
       }
 
-
       nlev2 <- length(breaks)
       col <- openColours(cols, (nlev2 - 1))
       col.scale <- breaks
@@ -554,7 +563,6 @@ calendarPlot <-
 
       legend <- makeOpenKeyLegend(key, legend, "calendarPlot")
     }
-
 
     lv.args <- list(
       x = value ~ x * y | cuts,
@@ -591,7 +599,7 @@ calendarPlot <-
             x[subscripts],
             y[subscripts],
             labels = mydata$date.mat[subscripts],
-            cex = 0.6,
+            cex = cex.date,
             col = as.character(mydata$dateColour[subscripts])
           )
         }
@@ -605,7 +613,7 @@ calendarPlot <-
             x[subscripts],
             y[subscripts],
             labels = mydata$date.mat[subscripts],
-            cex = 0.6,
+            cex = cex.date,
             col = date.col
           )
 
@@ -655,14 +663,10 @@ calendarPlot <-
 
         if (annotate == "ws") {
           larrows(
-            x + (0.5 * sin(wd$value[subscripts]) *
-              ws$value[subscripts]),
-            y + (0.5 * cos(wd$value[subscripts]) *
-              ws$value[subscripts]),
-            x + (-0.5 * sin(wd$value[subscripts]) *
-              ws$value[subscripts]),
-            y + (-0.5 * cos(wd$value[subscripts]) *
-              ws$value[subscripts]),
+            x + (0.5 * sin(wd$value[subscripts]) * ws$value[subscripts]),
+            y + (0.5 * cos(wd$value[subscripts]) * ws$value[subscripts]),
+            x + (-0.5 * sin(wd$value[subscripts]) * ws$value[subscripts]),
+            y + (-0.5 * cos(wd$value[subscripts]) * ws$value[subscripts]),
             angle = 20,
             length = 0.07,
             lwd = 0.5,
@@ -689,8 +693,11 @@ calendarPlot <-
 
     # add in ws and wd if there
     newdata <-
-      left_join(mydata, original_data %>% select(any_of(c("date", "ws", "wd"))),
-                by = "date")
+      left_join(
+        mydata,
+        original_data %>% select(any_of(c("date", "ws", "wd"))),
+        by = "date"
+      )
 
     output <- list(
       plot = plt,

@@ -3,9 +3,25 @@
 \docType{data}
 \name{mydata}
 \alias{mydata}
-\title{Example data for openair}
+\title{Example air quality monitoring data for openair}
 \format{
-Data frame with 65533 observations (rows) and 10 variables:
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 65533 rows and 10 columns.
+}
+\source{
+\code{mydata} was compiled from data archived in the London Air Quality
+Archive.  See \url{https://www.londonair.org.uk} for site details.
+}
+\usage{
+mydata
+}
+\description{
+The \code{mydata} dataset is provided as an example dataset as part of the openair
+package. The dataset contains hourly measurements of air pollutant
+concentrations, wind speed and wind direction collected at the Marylebone
+(London) air quality monitoring supersite between 1st January 1998 and 23rd
+June 2005.
+}
+\details{
 \describe{
 \item{date}{Observation date/time stamp in year-month-day hour:minute:second
 format (POSIXct).}
@@ -22,30 +38,12 @@ numeric vector.}
 vector.}
 }
 }
-\source{
-\code{mydata} was compiled from data archived in the London Air
-Quality Archive.  See \url{https://www.londonair.org.uk} for site details.
-}
-\usage{
-mydata
-}
-\description{
-The mydata dataset is provided as an example dataset as part of the openair
-package. The dataset contains hourly measurements of air pollutant
-concentrations, wind speed and wind direction collected at the Marylebone
-(London) air quality monitoring supersite between 1st January 1998 and 23rd
-June 2005. The data set is a tibble.
-}
-\details{
-\code{mydata} is supplied with the \code{openair} package as an example
-dataset for use with documented examples.
-}
 \note{
-\code{openair} functions generally require data frames with a field
-"date" that can be in either \code{POSIXct} or \code{Date} format
+\link[=openair-package]{openair} functions generally require data frames with
+a field "date" that can be in either \code{POSIXct} or \code{Date} format
 }
 \examples{
-#basic structure
+# basic structure
 head(mydata)
 }
 \keyword{datasets}

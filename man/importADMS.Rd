@@ -127,7 +127,7 @@ openair. By comparison to the original file, the resulting data frame is
 modified as follows:
 
 Time and date information will combined in a single column "date",
-formatted as a conventional timeseries (\code{as.POSIX*}). If
+formatted as a conventional timeseries (\verb{as.POSIX*}). If
 \code{drop.input.dates} is enabled data series combined to generated the
 new "date" data series will also be removed.
 
@@ -158,8 +158,7 @@ file types into openair. In most cases the parent import function should work
 in default configuration, e.g. \code{mydata <- importADMS()}. The function
 currently recognises four file formats: \code{.bgd}, \code{.met}, \code{.mop}
 and \code{.pst}.  Where other file extensions have been set but the file
-structure is known, the import call can be forced by, e.g, \code{mydata <-
-importADMS(file.type="bgd")}. Other options can be adjusted to provide fine
+structure is known, the import call can be forced by, e.g, \code{mydata <- importADMS(file.type="bgd")}. Other options can be adjusted to provide fine
 control of the data structuring and renaming.
 }
 \note{
@@ -168,22 +167,22 @@ part of \code{.mop} file import.
 }
 \examples{
 ##########
-#example 1
+# example 1
 ##########
-#To be confirmed
+# To be confirmed
 
-#all current simplify.names operations
+# all current simplify.names operations
 importADMS(simplify.names)
 
-#to see what simplify.names does to adms data series name PHI
-new.name <- importADMS(simplify.names, names="PHI")
+# to see what simplify.names does to adms data series name PHI
+new.name <- importADMS(simplify.names, names = "PHI")
 new.name
 }
 \seealso{
 Other import functions: 
 \code{\link{importAURN}()},
 \code{\link{importEurope}()},
-\code{\link{importKCL}()},
+\code{\link{importImperial}()},
 \code{\link{importMeta}()},
 \code{\link{importTraj}()},
 \code{\link{importUKAQ}()}

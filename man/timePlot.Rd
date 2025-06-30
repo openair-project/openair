@@ -67,8 +67,7 @@ useful too to show all time series together in one panel.}
 \dQuote{sec}, \dQuote{min}, \dQuote{hour}, \dQuote{day}, \dQuote{DSTday},
 \dQuote{week}, \dQuote{month}, \dQuote{quarter} or \dQuote{year}. For much
 increased flexibility a number can precede these options followed by a
-space. For example, a timeAverage of 2 months would be \code{period = "2
-  month"}. See function \code{timeAverage} for further details on this.}
+space. For example, a timeAverage of 2 months would be \code{period = "2 month"}. See function \code{timeAverage} for further details on this.}
 
 \item{data.thresh}{The data capture threshold to use when aggregating the
 data using \code{avg.time}. A value of zero means that all available data
@@ -83,11 +82,9 @@ the mean. Can be one of \dQuote{mean}, \dQuote{max}, \dQuote{min},
 that \dQuote{sd} is the standard deviation and \dQuote{frequency} is the
 number (frequency) of valid records in the period.  \dQuote{percentile} is
 the percentile level between 0-100, which can be set using the
-\dQuote{percentile} option - see below. Not used if \code{avg.time =
-  "default"}.}
+\dQuote{percentile} option - see below. Not used if \code{avg.time = "default"}.}
 
-\item{percentile}{The percentile level in percent used when \code{statistic =
-  "percentile"} and when aggregating the data with \code{avg.time}. More than
+\item{percentile}{The percentile level in percent used when \code{statistic = "percentile"} and when aggregating the data with \code{avg.time}. More than
 one percentile level is allowed for \code{type = "default"} e.g.
 \code{percentile = c(50, 95)}. Not used if \code{avg.time = "default"}.}
 
@@ -134,8 +131,7 @@ very different scales. It is therefore useful to use \code{log = TRUE}
 together with \code{group = TRUE}.}
 
 \item{windflow}{This option allows a scatter plot to show the wind
-speed/direction as an arrow. The option is a list e.g. \code{windflow =
-  list(col = "grey", lwd = 2, scale = 0.1)}. This option requires wind speed
+speed/direction as an arrow. The option is a list e.g. \code{windflow = list(col = "grey", lwd = 2, scale = 0.1)}. This option requires wind speed
 (\code{ws}) and wind direction (\code{wd}) to be available.
 
 The maximum length of the arrow plotted is a fraction of the plot dimension
@@ -161,14 +157,11 @@ scales. The latter is a useful setting when plotting data with very
 different values.}
 
 \item{ref.x}{See \code{ref.y} for details. In this case the correct date
-format should be used for a vertical line e.g. \code{ref.x = list(v =
-  as.POSIXct("2000-06-15"), lty = 5)}.}
+format should be used for a vertical line e.g. \code{ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)}.}
 
 \item{ref.y}{A list with details of the horizontal lines to be added
-representing reference line(s). For example, \code{ref.y = list(h = 50, lty
-  = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-  "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
+representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
 details on adding/controlling lines.}
 
 \item{key.columns}{Number of columns to be used in the key. With many
@@ -182,8 +175,7 @@ number of pollutants.}
 \item{name.pol}{This option can be used to give alternative names for the
 variables plotted. Instead of taking the column headings as names, the user
 can supply replacements. For example, if a column had the name \dQuote{nox}
-and the user wanted a different description, then setting \code{name.pol =
-  "nox before change"} can be used. If more than one pollutant is plotted
+and the user wanted a different description, then setting \code{name.pol = "nox before change"} can be used. If more than one pollutant is plotted
 then use \code{c} e.g. \code{name.pol = c("nox here", "o3 there")}.}
 
 \item{date.breaks}{Number of major x-axis intervals to use. The function will
@@ -197,7 +189,7 @@ down.}
 \code{timePlot} generally sets the date format sensibly there can be some
 situations where the user wishes to have more control. For format types see
 \code{strptime}. For example, to format the date like \dQuote{Jan-2012} set
-\code{date.format = "\%b-\%Y"}.}
+\code{date.format = "\\\%b-\\\%Y"}.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
 titles and axis labels will automatically try and format pollutant names
@@ -209,8 +201,7 @@ analysing data to extract plot components and plotting them in other ways.}
 \item{...}{Other graphical parameters are passed onto \code{cutData} and
 \code{lattice:xyplot}. For example, \code{timePlot} passes the option
 \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type =
-  "season"}. Similarly, most common plotting parameters, such as
+(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, most common plotting parameters, such as
 \code{layout} for panel arrangement and \code{pch} and \code{cex} for plot
 symbol type and size and \code{lty} and \code{lwd} for line type and width,
 as passed to \code{xyplot}, although some maybe locally managed by
@@ -262,48 +253,67 @@ is to maximise the plotting area and therefore the information shown.
 timePlot(mydata, pollutant = "nox")
 
 # two pollutants in separate panels
-\dontrun{timePlot(mydata, pollutant = c("nox", "no2"))}
+\dontrun{
+timePlot(mydata, pollutant = c("nox", "no2"))
+}
 
 # two pollutants in the same panel with the same scale
-\dontrun{timePlot(mydata, pollutant = c("nox", "no2"), group = TRUE)}
+\dontrun{
+timePlot(mydata, pollutant = c("nox", "no2"), group = TRUE)
+}
 
 # alternative by normalising concentrations and plotting on the same
-  scale
+scale
 \dontrun{
-timePlot(mydata, pollutant = c("nox", "co", "pm10", "so2"), group = TRUE, avg.time =
-  "year", normalise = "1/1/1998", lwd = 3, lty = 1)
+timePlot(mydata,
+  pollutant = c("nox", "co", "pm10", "so2"), group = TRUE, avg.time =
+    "year", normalise = "1/1/1998", lwd = 3, lty = 1
+)
 }
 
 # examples of selecting by date
 
 # plot for nox in 1999
-\dontrun{timePlot(selectByDate(mydata, year = 1999), pollutant = "nox")}
+\dontrun{
+timePlot(selectByDate(mydata, year = 1999), pollutant = "nox")
+}
 
 # select specific date range for two pollutants
 \dontrun{
 timePlot(selectByDate(mydata, start = "6/8/2003", end = "13/8/2003"),
-pollutant = c("no2", "o3"))
+  pollutant = c("no2", "o3")
+)
 }
 
 # choose different line styles etc
-\dontrun{timePlot(mydata, pollutant = c("nox", "no2"), lty = 1)}
+\dontrun{
+timePlot(mydata, pollutant = c("nox", "no2"), lty = 1)
+}
 
 # choose different line styles etc
 \dontrun{
-timePlot(selectByDate(mydata, year = 2004, month = 6), pollutant =
-c("nox", "no2"), lwd = c(1, 2), col = "black")
+timePlot(selectByDate(mydata, year = 2004, month = 6),
+  pollutant =
+    c("nox", "no2"), lwd = c(1, 2), col = "black"
+)
 }
 
 # different averaging times
 
-#daily mean O3
-\dontrun{timePlot(mydata, pollutant = "o3", avg.time = "day")}
+# daily mean O3
+\dontrun{
+timePlot(mydata, pollutant = "o3", avg.time = "day")
+}
 
 # daily mean O3 ensuring each day has data capture of at least 75\%
-\dontrun{timePlot(mydata, pollutant = "o3", avg.time = "day", data.thresh = 75)}
+\dontrun{
+timePlot(mydata, pollutant = "o3", avg.time = "day", data.thresh = 75)
+}
 
 # 2-week average of O3 concentrations
-\dontrun{timePlot(mydata, pollutant = "o3", avg.time = "2 week")}
+\dontrun{
+timePlot(mydata, pollutant = "o3", avg.time = "2 week")
+}
 
 }
 \seealso{

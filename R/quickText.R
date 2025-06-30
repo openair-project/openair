@@ -3,42 +3,46 @@
 #' Workhorse function that automatically applies routine text formatting to
 #' common expressions and data names used in openair.
 #'
-#' \code{quickText} is routine formatting lookup table. It screens the
-#' supplied character vector \code{text} and automatically applies formatting
+#' `quickText` is routine formatting lookup table. It screens the
+#' supplied character vector `text` and automatically applies formatting
 #' to any recognised character sub-series. The function is used in a number of
-#' \code{openair} functions and can also be used directly by users to format
+#' `openair` functions and can also be used directly by users to format
 #' text components of their own graphs (see below).
 #'
 #' @param text A character vector.
-#' @param auto.text A logical option. The default, \code{TRUE}, applies
-#'   \code{quickText} to \code{text} and returns the result. The alternative,
-#'   \code{FALSE}, returns \code{text} unchanged. (A number of \code{openair}
-#'   functions enable/disable \code{quickText} using this option.
+#' @param auto.text A logical option. The default, `TRUE`, applies
+#'   `quickText` to `text` and returns the result. The alternative,
+#'   `FALSE`, returns `text` unchanged. (A number of `openair`
+#'   functions enable/disable `quickText` using this option.
 #' @export
 #' @return The function returns an expression for graphical evaluation.
 #' @author Karl Ropkins.
 #' @examples
 #'
 #'
-#' #example 1
-#' ##see axis formatting in an openair plot, e.g.:
+#' # example 1
+#' ## see axis formatting in an openair plot, e.g.:
 #' scatterPlot(mydata, x = "no2", y = "pm10")
 #'
-#' #example 2
-#' ##using quickText in other plots
-#' plot(mydata$no2, mydata$pm10, xlab = quickText("my no2 label"),
-#'      ylab = quickText("pm10 [ ug.m-3 ]"))
-#'
+#' # example 2
+#' ## using quickText in other plots
+#' plot(mydata$no2, mydata$pm10,
+#'   xlab = quickText("my no2 label"),
+#'   ylab = quickText("pm10 [ ug.m-3 ]")
+#' )
 #'
 quickText <- function(text, auto.text = TRUE) {
-
   ## the lookup table version
 
   ## #return if auto.text false
-  if (!auto.text) return(ans <- text)
+  if (!auto.text) {
+    return(ans <- text)
+  }
 
   ## #return if already expression
-  if (is.expression(text)) return(ans <- text)
+  if (is.expression(text)) {
+    return(ans <- text)
+  }
 
   ans <- paste("expression(paste('", text, " ", sep = "")
   ans <- gsub("NO2", "' 'NO' [2] * '", ans)
@@ -52,7 +56,6 @@ quickText <- function(text, auto.text = TRUE) {
   ans <- gsub("co ", "' 'CO ' '", ans)
   ans <- gsub("co,", "' 'CO,' '", ans)
   ans <- gsub("nmhc", "' 'NMHC' '", ans)
-
 
   ans <- if (nchar(as.character(text)) == 2 && length(grep("ws", text)) > 0) {
     gsub("ws", "' 'wind spd.' '", ans)
@@ -126,6 +129,7 @@ quickText <- function(text, auto.text = TRUE) {
   ans <- gsub("g/hr", "' 'g hour' ^-1 *'", ans)
   ans <- gsub("g/m3", "' 'g m' ^-3 *'", ans)
   ans <- gsub("g/kg", "' 'g kg' ^-1 *'", ans)
+  ans <- gsub("cm-3", "' 'cm' ^-3 *'", ans)
   ans <- gsub("km/hr/s", "' 'km hr' ^-1 * ' s' ^-1 *'", ans)
   ans <- gsub("km/hour/s", "' 'km hr' ^-1 * ' s' ^-1 *'", ans)
   ans <- gsub("km/h/s", "km hr' ^-1 * ' s' ^-1 *'", ans)
@@ -163,12 +167,12 @@ quickText <- function(text, auto.text = TRUE) {
   if (substr(ans, (nchar(ans) - 2), (nchar(ans) - 2)) == "*") {
     a <- ans
     ans <- paste(
-      substr(a, 1, (nchar(a) - 2)), " ' ' ",
+      substr(a, 1, (nchar(a) - 2)),
+      " ' ' ",
       substr(a, (nchar(a) - 1), nchar(a)),
       sep = ""
     )
   }
-
 
   ## ###################
   ## new bit
@@ -185,12 +189,9 @@ quickText <- function(text, auto.text = TRUE) {
 
   ## ########################
 
-
-  if (inherits(try(eval(parse(text = ans)), TRUE), "try-error") ==
-    FALSE) {
+  if (inherits(try(eval(parse(text = ans)), TRUE), "try-error") == FALSE) {
     ans <- eval(parse(text = ans))
-  }
-  else {
+  } else {
     ans <- text
   }
 }

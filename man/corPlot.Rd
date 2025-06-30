@@ -126,7 +126,7 @@ corPlot(mydata)
 ## plot by season ... and so on
 corPlot(mydata, type = "season")
 ## recover dendrogram when cluster = TRUE and plot it
-res <-corPlot(mydata)
+res <- corPlot(mydata)
 plot(res$clust)
 \dontrun{
 ## a more interesting are hydrocarbon measurements
@@ -135,7 +135,6 @@ hc <- importAURN(site = "my1", year = 2005, hc = TRUE)
 ## similarly to one another
 corPlot(hc)
 }
-
 
 }
 \references{

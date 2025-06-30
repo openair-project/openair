@@ -13,3 +13,4 @@ README_cache
 ^\.github$
 ^pkgdown$
 ^LICENSE\.md$
+^vignettes/articles$

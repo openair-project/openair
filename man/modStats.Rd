@@ -40,8 +40,7 @@ character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-More than one type can be considered e.g. \code{type = c("season",
-  "weekday")} will produce statistics split by season and day of the week.}
+More than one type can be considered e.g. \code{type = c("season", "weekday")} will produce statistics split by season and day of the week.}
 
 \item{rank.name}{Simple model ranking can be carried out if \code{rank.name}
 is supplied. \code{rank.name} will generally refer to a column representing
@@ -53,26 +52,31 @@ available.}
   Arguments passed on to \code{\link[=cutData]{cutData}}
   \describe{
     \item{\code{x}}{A data frame containing a field \code{date}.}
-    \item{\code{hemisphere}}{Can be \code{"northern"} or \code{"southern"}, used to
-split data into seasons.}
+    \item{\code{names}}{By default, the columns created by \code{\link[=cutData]{cutData()}} are named after
+their \code{type} option. Specifying \code{names} defines other names for the columns,
+which map onto the \code{type} options in the same order they are given. The
+length of \code{names} should therefore be equal to the length of \code{type}.}
+    \item{\code{suffix}}{If \code{name} is not specified, \code{suffix} will be appended to any
+added columns that would otherwise overwrite existing columns. For example,
+\code{cutData(mydata, "nox", suffix = "_cuts")} would append a \code{nox_cuts} column
+rather than overwriting \code{nox}.}
+    \item{\code{hemisphere}}{Can be \code{"northern"} or \code{"southern"}, used to split data
+into seasons.}
     \item{\code{n.levels}}{Number of quantiles to split numeric data into.}
-    \item{\code{start.day}}{What day of the week should the \code{type = "weekday"}
-start on?  The user can change the start day by supplying an integer
-between 0 and 6. Sunday = 0, Monday = 1, \ldots For example to start the
-weekday plots on a Saturday, choose \code{start.day = 6}.}
-    \item{\code{is.axis}}{A logical (\code{TRUE}/\code{FALSE}), used to request
-shortened cut labels for axes.}
+    \item{\code{start.day}}{What day of the week should the \code{type = "weekday"} start on?
+The user can change the start day by supplying an integer between 0 and 6.
+Sunday = 0, Monday = 1, ... For example to start the weekday plots on a
+Saturday, choose \code{start.day = 6}.}
+    \item{\code{is.axis}}{A logical (\code{TRUE}/\code{FALSE}), used to request shortened cut
+labels for axes.}
     \item{\code{local.tz}}{Used for identifying whether a date has daylight savings time
 (DST) applied or not. Examples include \code{local.tz = "Europe/London"},
-\code{local.tz = "America/New_York"} i.e. time zones that assume DST.
+\code{local.tz = "America/New_York"}, i.e., time zones that assume DST.
 \url{https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones} shows time
 zones that should be valid for most systems. It is important that the
-original data are in GMT (UTC) or a fixed offset from GMT. See
-\code{import} and the openair manual for information on how to import data
-and ensure no DST is applied.}
-    \item{\code{latitude}}{The decimal latitude used in \code{type = "daylight"}.}
-    \item{\code{longitude}}{The decimal longitude. Note that locations west of Greenwich
-are negative.}
+original data are in GMT (UTC) or a fixed offset from GMT.}
+    \item{\code{latitude,longitude}}{The decimal latitude and longitudes used when \code{type = "daylight"}. Note that locations west of Greenwich have negative
+longitudes.}
   }}
 }
 \value{
@@ -150,7 +154,6 @@ modStats(mydata, mod = "no2", obs = "nox")
 ## evaluation stats by season
 
 modStats(mydata, mod = "no2", obs = "nox", type = "season")
-
 
 }
 \references{

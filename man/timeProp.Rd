@@ -39,12 +39,10 @@ used directly.}
 \dQuote{sec}, \dQuote{min}, \dQuote{hour}, \dQuote{day}, \dQuote{DSTday},
 \dQuote{week}, \dQuote{month}, \dQuote{quarter} or \dQuote{year}. For much
 increased flexibility a number can precede these options followed by a
-space. For example, a timeAverage of 2 months would be \code{period = "2
-  month"}.
+space. For example, a timeAverage of 2 months would be \code{period = "2 month"}.
 
 Note that \code{avg.time} when used in \code{timeProp} should be greater
-than the time gap in the original data. For example, \code{avg.time =
-  "day"} for hourly data is OK, but \code{avg.time = "hour"} for daily data
+than the time gap in the original data. For example, \code{avg.time = "day"} for hourly data is OK, but \code{avg.time = "hour"} for daily data
 is not.}
 
 \item{type}{\code{type} determines how the data are split i.e. conditioned,
@@ -84,7 +82,7 @@ decrease the number of intervals by adjusting the value of
 \code{timePlot} generally sets the date format sensibly there can be some
 situations where the user wishes to have more control. For format types see
 \code{strptime}. For example, to format the date like \dQuote{Jan-2012} set
-\code{date.format = "\%b-\%Y"}.}
+\code{date.format = "\\\%b-\\\%Y"}.}
 
 \item{key.columns}{Number of columns to be used in the key. With many
 pollutants a single column can make to key too wide. The user can thus
@@ -107,8 +105,7 @@ analysing data to extract plot components and plotting them in other ways.}
 \item{...}{Other graphical parameters passed onto \code{timeProp} and
 \code{cutData}. For example, \code{timeProp} passes the option
 \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type =
-  "season"}. Similarly, common axis and title labelling options (such as
+(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common axis and title labelling options (such as
 \code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
 \code{quickText} to handle routine formatting.}
 }
@@ -119,8 +116,8 @@ an \link[=openair-package]{openair} object
 This function shows time series plots as stacked bar charts. The different
 categories in the bar chart are made up from a character or factor variable
 in a data frame. The function is primarily developed to support the plotting
-of cluster analysis output from \code{\link{polarCluster}} and
-\code{\link{trajCluster}} that consider local and regional (back trajectory)
+of cluster analysis output from \code{\link[=polarCluster]{polarCluster()}} and
+\code{\link[=trajCluster]{trajCluster()}} that consider local and regional (back trajectory)
 cluster analysis respectively. However, the function has more general use for
 understanding time series data.
 }

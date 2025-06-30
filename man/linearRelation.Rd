@@ -32,8 +32,7 @@ relationship e.g. \code{y = "pm10"}.}
 
 \item{period}{A range of different time periods can be analysed. The default
 is \code{month} but can be \code{year} and \code{week}. For increased
-flexibility an integer can be used e.g. for 3-month values \code{period =
-  "3 month"}. Other cases include \code{"hour"} will show the diurnal
+flexibility an integer can be used e.g. for 3-month values \code{period = "3 month"}. Other cases include \code{"hour"} will show the diurnal
 relationship between \code{x} and \code{y} and \dQuote{weekday} the day of
 the week relationship between \code{x} and \code{y}. \dQuote{day.hour} will
 plot the relationship by weekday and hour of the day.}
@@ -110,7 +109,7 @@ If a data frame is supplied that contains \code{nox}, \code{no2} and
 therefore consider total oxidant slope (sum of NO2 + O3), which can provide
 valuable information on likely vehicle primary NO emissions. Note, however,
 that most roadside sites do not have ozone measurements and
-\code{\link{calcFno2}} is the alternative.
+\code{\link[=calcFno2]{calcFno2()}} is the alternative.
 }
 \examples{
 # monthly relationship between NOx and SO2 - note rapid fall in
@@ -118,16 +117,22 @@ that most roadside sites do not have ozone measurements and
 linearRelation(mydata, x = "nox", y = "so2")
 # monthly relationship between NOx and SO2 - note rapid fall in
 # ratio at the beginning of the series
-\dontrun{linearRelation(mydata, x = "nox", y = "ox")}
+\dontrun{
+linearRelation(mydata, x = "nox", y = "ox")
+}
 
 # diurnal oxidant slope by year # clear change in magnitude
 # starting 2003, but the diurnal profile has also changed: the
 # morning and evening peak hours are more important, presumably
 # due to change in certain vehicle types
-\dontrun{linearRelation(mydata, x = "nox", y = "ox", period = "hour", condition = TRUE)}
+\dontrun{
+linearRelation(mydata, x = "nox", y = "ox", period = "hour", condition = TRUE)
+}
 
 # PM2.5/PM10 ratio, but only plot where monthly R2 >= 0.8
-\dontrun{linearRelation(mydata, x = "pm10", y = "pm25", rsq.thresh = 0.8)}
+\dontrun{
+linearRelation(mydata, x = "pm10", y = "pm25", rsq.thresh = 0.8)
+}
 }
 \seealso{
 \code{\link[=calcFno2]{calcFno2()}}

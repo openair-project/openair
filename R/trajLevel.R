@@ -57,7 +57,7 @@
 #'   will plot the trajectory frequencies (`statistic = "frequency"`). As an
 #'   alternative way of viewing trajectory frequencies, the argument `method =
 #'   "hexbin"` can be used. In this case hexagonal binning of the trajectory
-#'   \emph{points} (i.e., a point every three hours along each back trajectory).
+#'   *points* (i.e., a point every three hours along each back trajectory).
 #'   The plot then shows the trajectory frequencies uses hexagonal binning.
 #'
 #'   There are also various ways of plotting concentrations.
@@ -100,7 +100,7 @@
 #' @param ... other arguments are passed to [cutData()] and [scatterPlot()].
 #'   This provides access to arguments used in both these functions and
 #'   functions that they in turn pass arguments on to. For example,
-#'   [trajLevel()] passes the argument \code{cex} on to [scatterPlot()] which in
+#'   [trajLevel()] passes the argument `cex` on to [scatterPlot()] which in
 #'   turn passes it on to [lattice::xyplot()] where it is applied to set the
 #'   plot symbol size.
 #' @export
@@ -157,31 +157,32 @@
 #' )
 #' }
 trajLevel <- function(
-    mydata,
-    lon = "lon",
-    lat = "lat",
-    pollutant = "height",
-    type = "default",
-    smooth = FALSE,
-    statistic = "frequency",
-    percentile = 90,
-    map = TRUE,
-    lon.inc = 1.0,
-    lat.inc = 1.0,
-    min.bin = 1,
-    .combine = NA,
-    sigma = 1.5,
-    map.fill = TRUE,
-    map.res = "default",
-    map.cols = "grey40",
-    map.alpha = 0.3,
-    projection = "lambert",
-    parameters = c(51, 51),
-    orientation = c(90, 0, 0),
-    grid.col = "deepskyblue",
-    origin = TRUE,
-    plot = TRUE,
-    ...) {
+  mydata,
+  lon = "lon",
+  lat = "lat",
+  pollutant = "height",
+  type = "default",
+  smooth = FALSE,
+  statistic = "frequency",
+  percentile = 90,
+  map = TRUE,
+  lon.inc = 1.0,
+  lat.inc = 1.0,
+  min.bin = 1,
+  .combine = NA,
+  sigma = 1.5,
+  map.fill = TRUE,
+  map.res = "default",
+  map.cols = "grey40",
+  map.alpha = 0.3,
+  projection = "lambert",
+  parameters = c(51, 51),
+  orientation = c(90, 0, 0),
+  grid.col = "deepskyblue",
+  origin = TRUE,
+  plot = TRUE,
+  ...
+) {
   ## mydata can be a list of several trajectory files; in which case combine them
   ## before averaging
   hour.inc <- N <- NULL
@@ -243,7 +244,13 @@ trajLevel <- function(
       Args$key.header <- paste0("SQTBA \n(Normalised)\n)", pollutant)
     }
     if (statistic == "difference") {
-      Args$key.header <- quickText(paste("gridded differences", "\n(", percentile, "th percentile)", sep = ""))
+      Args$key.header <- quickText(paste(
+        "gridded differences",
+        "\n(",
+        percentile,
+        "th percentile)",
+        sep = ""
+      ))
     }
   }
 
@@ -336,7 +343,15 @@ trajLevel <- function(
 
   if (statistic == "sqtba") {
     mydata <- mydata %>%
-      select(any_of(na.omit(c("date", "lon", "lat", "hour.inc", type, pollutant, .combine))))
+      select(any_of(na.omit(c(
+        "date",
+        "lon",
+        "lat",
+        "hour.inc",
+        type,
+        pollutant,
+        .combine
+      ))))
   } else {
     mydata <- mydata[, c("date", "xgrid", "ygrid", "hour.inc", type, pollutant)]
     ids <- which(names(mydata) %in% c("xgrid", "ygrid", type))
@@ -449,11 +464,13 @@ trajLevel <- function(
     # receptor grid
     # use trajectory data to determine grid size - don't go to extremes
     r_grid <- expand_grid(
-      lat = seq(round(quantile(mydata$lat, probs = 0.002)),
+      lat = seq(
+        round(quantile(mydata$lat, probs = 0.002)),
         round(quantile(mydata$lat, probs = 0.998)),
         by = lat.inc
       ),
-      lon = seq(round(quantile(mydata$lon, probs = 0.002)),
+      lon = seq(
+        round(quantile(mydata$lon, probs = 0.002)),
         round(quantile(mydata$lon, probs = 0.998)),
         by = lon.inc
       )
@@ -484,7 +501,9 @@ trajLevel <- function(
     names(mydata)[names(mydata) == "n"] <- "count"
 
     out_data <- dplyr::ungroup(mydata) %>%
-      dplyr::select(-dplyr::any_of(c("lat_rnd", "lon_rnd", "Q", "Q_c", "SQTBA"))) %>%
+      dplyr::select(
+        -dplyr::any_of(c("lat_rnd", "lon_rnd", "Q", "Q_c", "SQTBA"))
+      ) %>%
       dplyr::relocate(dplyr::any_of("count"), .before = pollutant) %>%
       dplyr::relocate("xgrid", .before = "ygrid") %>%
       dplyr::mutate(
@@ -507,7 +526,6 @@ trajLevel <- function(
 
     ## high percentile
     Q90 <- quantile(mydata[[pollutant]], probs = percentile / 100, na.rm = TRUE)
-
 
     ## calculate percentage of points for high data
     high <- mydata %>%
@@ -544,15 +562,29 @@ trajLevel <- function(
   ## the plot, note k is the smoothing parameter when surface smooth fitted
   scatterPlot.args <- list(
     mydata,
-    x = lon, y = lat, z = pollutant,
-    type = type, method = method, smooth = smooth,
-    map = map, x.inc = lon.inc, y.inc = lat.inc,
-    map.fill = map.fill, map.res = map.res,
-    map.cols = map.cols, map.alpha = map.alpha, traj = TRUE,
+    x = lon,
+    y = lat,
+    z = pollutant,
+    type = type,
+    method = method,
+    smooth = smooth,
+    map = map,
+    x.inc = lon.inc,
+    y.inc = lat.inc,
+    map.fill = map.fill,
+    map.res = map.res,
+    map.cols = map.cols,
+    map.alpha = map.alpha,
+    traj = TRUE,
     projection = projection,
-    parameters = parameters, orientation = orientation,
-    grid.col = grid.col, trajLims = trajLims,
-    receptor = receptor, origin = origin, dist = 0.05, k = 50
+    parameters = parameters,
+    orientation = orientation,
+    grid.col = grid.col,
+    trajLims = trajLims,
+    receptor = receptor,
+    origin = origin,
+    dist = 0.05,
+    k = 50
   )
 
   ## reset for Args
@@ -563,9 +595,15 @@ trajLevel <- function(
   plt <- do.call(scatterPlot, scatterPlot.args)
 
   output <-
-    list(plot = plt$plot,
-         data = if (exists("out_data")) {out_data} else {mydata},
-         call = match.call())
+    list(
+      plot = plt$plot,
+      data = if (exists("out_data")) {
+        out_data
+      } else {
+        mydata
+      },
+      call = match.call()
+    )
   class(output) <- "openair"
 
   invisible(output)
@@ -581,18 +619,26 @@ pred_Q <- function(i, traj_data, r_grid, pollutant) {
   Q_c <- Q
 
   # only calculate near receptor (within 4 degrees)
-  id <- which(r_grid[, "lat"] > y_origin - 4 &
-    r_grid[, "lat"] < y_origin + 4 &
-    r_grid[, "lon"] > x_origin - 4 &
-    r_grid[, "lon"] < x_origin + 4)
+  id <- which(
+    r_grid[, "lat"] > y_origin - 4 &
+      r_grid[, "lat"] < y_origin + 4 &
+      r_grid[, "lon"] > x_origin - 4 &
+      r_grid[, "lon"] < x_origin + 4
+  )
 
   # subtract 1E-7 from acos - numerical imprecision results in value being greater than 1
-  dist <- acos(sin(y_origin * pi / 180) * sin(r_grid[id, "lat"] * pi / 180) +
-    cos(y_origin * pi / 180) *
-      cos(r_grid[id, "lat"] * pi / 180) *
-      cos(r_grid[id, "lon"] * pi / 180 - x_origin * pi / 180) - 1e-7) * 6378.137
+  dist <- acos(
+    sin(y_origin * pi / 180) *
+      sin(r_grid[id, "lat"] * pi / 180) +
+      cos(y_origin * pi / 180) *
+        cos(r_grid[id, "lat"] * pi / 180) *
+        cos(r_grid[id, "lon"] * pi / 180 - x_origin * pi / 180) -
+      1e-7
+  ) *
+    6378.137
 
-  Q[id] <- (1 / traj_data$sigma[i]^2) * exp(-0.5 * (dist / traj_data$sigma[i])^2)
+  Q[id] <- (1 / traj_data$sigma[i]^2) *
+    exp(-0.5 * (dist / traj_data$sigma[i])^2)
   Q_c[id] <- Q[id] * traj_data[[pollutant]][i]
 
   cbind(Q, Q_c)
@@ -603,7 +649,10 @@ make_grid <- function(traj_data, r_grid, pollutant) {
   # makes probability surface
   out_grid <- purrr::map(
     2:max(abs(traj_data$hour.inc)),
-    pred_Q, traj_data, r_grid, pollutant
+    pred_Q,
+    traj_data,
+    r_grid,
+    pollutant
   )
   out_grid <- reduce(out_grid, `+`) / length(out_grid)
 

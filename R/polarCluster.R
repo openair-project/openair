@@ -3,7 +3,7 @@
 #' Function for identifying clusters in bivariate polar plots ([polarPlot()]);
 #' identifying clusters in the original data for subsequent processing.
 #'
-#' Bivariate polar plots generated using the \code{polarPlot} function provide a
+#' Bivariate polar plots generated using the `polarPlot` function provide a
 #' very useful graphical technique for identifying and characterising different
 #' air pollution sources. While bivariate polar plots provide a useful graphical
 #' indication of potential sources, their location and wind-speed or other
@@ -14,33 +14,33 @@
 #' interest. Furthermore, the identification of a feature can depend on the
 #' choice of the colour scale used, making the process somewhat arbitrary.
 #'
-#' \code{polarCluster} applies Partition Around Medoids (PAM) clustering
+#' `polarCluster` applies Partition Around Medoids (PAM) clustering
 #' techniques to [polarPlot()] surfaces to help identify potentially interesting
 #' features for further analysis. Details of PAM can be found in the
-#' \code{cluster} package (a core R package that will be pre-installed on all R
+#' `cluster` package (a core R package that will be pre-installed on all R
 #' systems). PAM clustering is similar to k-means but has several advantages
 #' e.g. is more robust to outliers. The clustering is based on the equal
 #' contribution assumed from the u and v wind components and the associated
 #' concentration. The data are standardized before clustering takes place.
 #'
 #' The function works best by first trying different numbers of clusters and
-#' plotting them. This is achieved by setting \code{n.clusters} to be of length
-#' more than 1. For example, if \code{n.clusters = 2:10} then a plot will be
+#' plotting them. This is achieved by setting `n.clusters` to be of length
+#' more than 1. For example, if `n.clusters = 2:10` then a plot will be
 #' output showing the 9 cluster levels 2 to 10.
 #'
 #' The clustering can also be applied to differences in polar plot surfaces (see
-#' [polarDiff()]). On this case a second data frame (\code{after}) should be
+#' [polarDiff()]). On this case a second data frame (`after`) should be
 #' supplied.
 #'
 #' Note that clustering is computationally intensive and the function can take a
 #' long time to run --- particularly when the number of clusters is increased.
 #' For this reason it can be a good idea to run a few clusters first to get a
-#' feel for it e.g. \code{n.clusters = 2:5}.
+#' feel for it e.g. `n.clusters = 2:5`.
 #'
 #' Once the number of clusters has been decided, the user can then run
-#' \code{polarCluster} to return the original data frame together with a new
-#' column \code{cluster}, which gives the cluster number as a character (see
-#' example). Note that any rows where the value of \code{pollutant} is \code{NA}
+#' `polarCluster` to return the original data frame together with a new
+#' column `cluster`, which gives the cluster number as a character (see
+#' example). Note that any rows where the value of `pollutant` is `NA`
 #' are ignored so that the returned data frame may have fewer rows than the
 #' original.
 #'
@@ -51,22 +51,22 @@
 #' best determined by post-processing the data. The Carslaw and Beevers (2012)
 #' paper discusses these issues in more detail.
 #'
-#' Note that unlike most other \code{openair} functions only a single
-#' \code{type} \dQuote{default} is allowed.
+#' Note that unlike most other `openair` functions only a single
+#' `type` \dQuote{default} is allowed.
 #'
 #' @inheritParams polarPlot
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
-#'   data frame should be supplied e.g. \code{pollutant = "nox"}. Only one
+#'   data frame should be supplied e.g. `pollutant = "nox"`. Only one
 #'   pollutant can be chosen.
 #' @param x Name of variable to plot against wind direction in polar
 #'   coordinates, the default is wind speed, \dQuote{ws}.
-#' @param n.clusters Number of clusters to use. If \code{n.clusters} is more
-#'   than length 1, then a \code{lattice} panel plot will be output showing the
-#'   clusters identified for each one of \code{n.clusters}.
+#' @param n.clusters Number of clusters to use. If `n.clusters` is more
+#'   than length 1, then a `lattice` panel plot will be output showing the
+#'   clusters identified for each one of `n.clusters`.
 #' @param after The function can be applied to differences between polar plot
-#'   surfaces (see \link{polarDiff} for details). If an \code{after} data frame
+#'   surfaces (see [polarDiff] for details). If an `after` data frame
 #'   is supplied, the clustering will be carried out on the differences between
-#'   \code{after} and \code{mydata} in the same way as \link{polarDiff}.
+#'   `after` and `mydata` in the same way as [polarDiff].
 #' @param plot.data By default, the `data` component of `polarCluster()`
 #'   contains the original data frame appended with a new "cluster" column. When
 #'   `plot.data = TRUE`, the `data` component instead contains data to reproduce
@@ -78,18 +78,18 @@
 #' @export
 #' @import cluster
 #' @return an [openair][openair-package] object. The object includes four main
-#'   components: \code{call}, the command used to generate the plot;
-#'   \code{data}, by default the original data frame with a new field
-#'   \code{cluster} identifying the cluster, \code{clust_stats} giving the
+#'   components: `call`, the command used to generate the plot;
+#'   `data`, by default the original data frame with a new field
+#'   `cluster` identifying the cluster, `clust_stats` giving the
 #'   contributions made by each cluster to number of measurements, their
-#'   percentage and the percentage by pollutant; and \code{plot}, the plot
-#'   itself. Note that any rows where the value of \code{pollutant} is \code{NA}
+#'   percentage and the percentage by pollutant; and `plot`, the plot
+#'   itself. Note that any rows where the value of `pollutant` is `NA`
 #'   are ignored so that the returned data frame may have fewer rows than the
 #'   original.
 #'
 #'   If the clustering is carried out considering differences, i.e., an
-#'   \code{after} data frame is supplied, the output also includes the
-#'   \code{after} data frame with cluster identified.
+#'   `after` data frame is supplied, the output also includes the
+#'   `after` data frame with cluster identified.
 #' @author David Carslaw
 #' @family polar directional analysis functions
 #' @family cluster analysis functions
@@ -128,19 +128,21 @@
 #' }
 #'
 polarCluster <-
-  function(mydata,
-           pollutant = "nox",
-           x = "ws",
-           wd = "wd",
-           n.clusters = 6,
-           after = NA,
-           cols = "Paired",
-           angle.scale = 315,
-           units = x,
-           auto.text = TRUE,
-           plot = TRUE,
-           plot.data = FALSE,
-           ...) {
+  function(
+    mydata,
+    pollutant = "nox",
+    x = "ws",
+    wd = "wd",
+    n.clusters = 6,
+    after = NA,
+    cols = "Paired",
+    angle.scale = 315,
+    units = x,
+    auto.text = TRUE,
+    plot = TRUE,
+    plot.data = FALSE,
+    ...
+  ) {
     ## avoid R check annoyances
     u <- v <- z <- strip <- strip.left <- NULL
 
@@ -255,9 +257,12 @@ polarCluster <-
     #   do(make.clust(i = .$n, results.grid))
 
     results.grid <-
-      purrr::map(.x = seq_along(n.clusters),
-               .f = make.clust,
-               results.grid = results.grid, .progress = "Calculating Clusters") %>%
+      purrr::map(
+        .x = seq_along(n.clusters),
+        .f = make.clust,
+        results.grid = results.grid,
+        .progress = "Calculating Clusters"
+      ) %>%
       purrr::list_rbind()
 
     results.grid$nclust <-
@@ -280,7 +285,8 @@ polarCluster <-
 
       mydata <- na.omit(mydata)
 
-      mydata <- transform(mydata,
+      mydata <- transform(
+        mydata,
         u = get(x) * sin(wd * pi / 180),
         v = get(x) * cos(wd * pi / 180)
       )
@@ -311,7 +317,8 @@ polarCluster <-
       if (is.data.frame((after))) {
         after <- na.omit(after)
 
-        after <- transform(after,
+        after <- transform(
+          after,
           u = get(x) * sin(wd * pi / 180),
           v = get(x) * cos(wd * pi / 180)
         )
@@ -362,9 +369,12 @@ polarCluster <-
 
     # interval
     int <-
-      as.numeric(tail(names(sort(table(
-        diff(results.grid$u)
-      ))), 1))
+      as.numeric(tail(
+        names(sort(table(
+          diff(results.grid$u)
+        ))),
+        1
+      ))
 
     # extent of grid required
     extent <- max(abs(c(results.grid$u, results.grid$v)))
@@ -373,7 +383,6 @@ polarCluster <-
       u = seq(-extent, extent, by = int),
       v = seq(-extent, extent, by = int)
     )
-
 
     levelplot.args <- list(
       x = myform,
@@ -391,10 +400,13 @@ polarCluster <-
       colorkey = FALSE,
       # legend = legend,
       key = list(
-        rectangles = list(col = openColours(
-          cols,
-          max(n.clusters)
-        ), border = NA),
+        rectangles = list(
+          col = openColours(
+            cols,
+            max(n.clusters)
+          ),
+          border = NA
+        ),
         text = list(lab = as.character(1:max(n.clusters))),
         space = "right",
         columns = 1,
@@ -428,15 +440,23 @@ polarCluster <-
         ltext(
           1.07 * intervals * sin(pi * angle.scale / 180),
           1.07 * intervals * cos(pi * angle.scale / 180),
-          sapply(paste(labels, c(
-            "", "", units, rep("", 7)
-          )), function(x) {
-            quickText(x, auto.text)
-          }),
+          sapply(
+            paste(
+              labels,
+              c(
+                "",
+                "",
+                units,
+                rep("", 7)
+              )
+            ),
+            function(x) {
+              quickText(x, auto.text)
+            }
+          ),
           cex = 0.7,
           pos = 4
         )
-
 
         ## add axis line to central polarPlot
         larrows(-upper, 0, upper, 0, code = 3, length = 0.1)
@@ -482,33 +502,27 @@ polarCluster <-
     var_mean <- paste0("mean_", pollutant)
     var_percent <- paste0(pollutant, "_percent")
 
-    if (length(n.clusters) == 1L) {
-
-    clust_stats <-
-      out_data %>%
-      dplyr::group_by(cluster) %>%
-      dplyr::summarise(
-        {{ var_mean }} := mean(.data[[pollutant]], na.rm = TRUE),
-        n = dplyr::n()
-      ) %>%
-      na.omit() %>%
-      dplyr::mutate(
-        n_mean = n * .data[[var_mean ]],
-        n_percent = round(100 * n / sum(n), 1),
-        {{ var_percent }} := round(100 * n_mean / sum(n_mean), 1)
-      ) %>%
-      dplyr::select(-n_mean)
-
+    if (length(n.clusters) == 1L && length(pollutant) == 1L) {
+      clust_stats <-
+        out_data %>%
+        dplyr::group_by(cluster) %>%
+        dplyr::summarise(
+          {{ var_mean }} := mean(.data[[pollutant]], na.rm = TRUE),
+          n = dplyr::n()
+        ) %>%
+        na.omit() %>%
+        dplyr::mutate(
+          n_mean = n * .data[[var_mean]],
+          n_percent = round(100 * n / sum(n), 1),
+          {{ var_percent }} := round(100 * n_mean / sum(n_mean), 1)
+        ) %>%
+        dplyr::select(-n_mean)
     } else {
-
       clust_stats <- NULL
     }
 
-
     if (plot && length(n.clusters) == 1L) {
-
       print(clust_stats)
-
     }
 
     if (plot.data) {

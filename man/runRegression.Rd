@@ -7,7 +7,7 @@
 runRegression(mydata, x = "nox", y = "pm10", run.len = 3, date.pad = TRUE)
 }
 \arguments{
-\item{mydata}{A data frame with  colums for \code{date} and at least two
+\item{mydata}{A data frame with  columns for \code{date} and at least two
 variables for use in a regression.}
 
 \item{x}{The column name of the \code{x} variable for use in a linear
@@ -28,7 +28,7 @@ other information to plot dilution lines.
 }
 \description{
 This function calculates rolling regressions for input data with a set window
-width. The principal use of teh function is to identify "dilution lines"
+width. The principal use of the function is to identify "dilution lines"
 where the ratio between two pollutant concentrations is invariant. The
 original idea is based on the work of Bentley (2004).
 }
@@ -38,13 +38,14 @@ consecutive points in time where the ratio between two pollutant
 concentrations changes by very little. By filtering the output for high R2
 values (typically more than 0.90 to 0.95), conditions where local source
 dilution is dominant can be isolated for post processing. The function is
-more fully descfibed and used in the \code{openair} online manual, together
+more fully described and used in the \code{openair} online manual, together
 with examples.
 }
 \examples{
 # Just use part of a year of data
 output <- runRegression(selectByDate(mydata, year = 2004, month = 1:3),
-x = "nox", y = "pm10", run.len = 3)
+  x = "nox", y = "pm10", run.len = 3
+)
 
 output
 }

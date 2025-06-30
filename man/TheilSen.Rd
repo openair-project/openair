@@ -78,8 +78,7 @@ year.}
 \dQuote{mean}, but can also be \dQuote{percentile}. See \code{timeAverage}
 for more details.}
 
-\item{percentile}{Single percentile value to use if \code{statistic =
-"percentile"} is chosen.}
+\item{percentile}{Single percentile value to use if \code{statistic = "percentile"} is chosen.}
 
 \item{data.thresh}{The data capture threshold to use (\%) when aggregating
 the data using \code{avg.time}. A value of zero means that all available
@@ -168,7 +167,7 @@ x-axis. While \code{TheilSen} generally sets the date format
 sensibly there can be some situations where the user wishes to
 have more control. For format types see \code{strptime}. For
 example, to format the date like \dQuote{Jan-2012} set
-\code{date.format = "\%b-\%Y"}.}
+\code{date.format = "\\\%b-\\\%Y"}.}
 
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when
 analysing data to extract trend components and plotting them in other
@@ -180,16 +179,14 @@ trend-fitting progress.}
 \item{...}{Other graphical parameters passed onto \code{cutData} and
 \code{lattice:xyplot}. For example, \code{TheilSen} passes the option
 \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type =
-  "season"}. Similarly, common axis and title labelling options (such as
+(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common axis and title labelling options (such as
 \code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
 \code{quickText} to handle routine formatting.}
 }
 \value{
 an \link[=openair-package]{openair} object. The \code{data} component of the
 \code{TheilSen} output includes two subsets: \code{main.data}, the monthly
-data \code{res2} the trend statistics. For \code{output <- TheilSen(mydata,
-  "nox")}, these can be extracted as \code{object$data$main.data} and
+data \code{res2} the trend statistics. For \code{output <- TheilSen(mydata, "nox")}, these can be extracted as \code{object$data$main.data} and
 \code{object$data$res2}, respectively. Note: In the case of the intercept,
 it is assumed the y-axis crosses the x-axis on 1/1/1970.
 }
@@ -208,9 +205,8 @@ week or a certain time of day are unexpected.
 
 For data that are strongly seasonal, perhaps from a background
 site, or a pollutant such as ozone, it will be important to
-deseasonalise the data (using the option \code{deseason =
-TRUE}.Similarly, for data that increase, then decrease, or show
-sharp changes it may be better to use \code{\link{smoothTrend}}.
+deseasonalise the data (using the option \code{deseason = TRUE}.Similarly, for data that increase, then decrease, or show
+sharp changes it may be better to use \code{\link[=smoothTrend]{smoothTrend()}}.
 
 A minimum of 6 points are required for trend estimates to be made.
 
@@ -244,13 +240,19 @@ TheilSen(mydata, pollutant = "nox")
 # trend plot for ozone with p=0.01 i.e. uncertainty in slope shown at
 # 99 \% confidence interval
 
-\dontrun{TheilSen(mydata, pollutant = "o3", ylab = "o3 (ppb)", alpha = 0.01)}
+\dontrun{
+TheilSen(mydata, pollutant = "o3", ylab = "o3 (ppb)", alpha = 0.01)
+}
 
 # trend plot by each of 8 wind sectors
-\dontrun{TheilSen(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")}
+\dontrun{
+TheilSen(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
+}
 
 # and for a subset of data (from year 2000 onwards)
-\dontrun{TheilSen(selectByDate(mydata, year = 2000:2005), pollutant = "o3", ylab = "o3 (ppb)")}
+\dontrun{
+TheilSen(selectByDate(mydata, year = 2000:2005), pollutant = "o3", ylab = "o3 (ppb)")
+}
 }
 \references{
 Helsel, D., Hirsch, R., 2002. Statistical methods in water resources. US

@@ -37,8 +37,7 @@ and \dQuote{left}.}
 \item{breaks}{Most commonly, the number of break points for pollutant
 concentrations. The default, 6, attempts to breaks the supplied data at
 approximately 6 sensible break points. However, \code{breaks} can also be
-used to set specific break points. For example, the argument \code{breaks =
-  c(0, 1, 10, 100)} breaks the data into segments <1, 1-10, 10-100, >100.}
+used to set specific break points. For example, the argument \code{breaks = c(0, 1, 10, 100)} breaks the data into segments <1, 1-10, 10-100, >100.}
 
 \item{paddle}{Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose
 using 'paddle' style spokes. If \code{FALSE} plots rose using 'wedge' style
@@ -92,6 +91,10 @@ different variables and how they depend on one another.
 Type can be up length two e.g. \code{type = c("season", "weekday")} will
 produce a 2x2 plot split by season and day of the week. Note, when two
 types are provided the first forms the columns and the second the rows.}
+    \item{\code{calm.thresh}}{By default, conditions are considered to be calm when the
+wind speed is zero. The user can set a different threshold for calms be
+setting \code{calm.thresh} to a higher value. For example,
+\code{calm.thresh = 0.5} will identify wind speeds \strong{below} 0.5 as calm.}
     \item{\code{bias.corr}}{When \code{angle} does not divide exactly into 360 a bias is
 introduced in the frequencies when the wind direction is already supplied
 rounded to the nearest 10 degrees, as is often the case. For example, if
@@ -103,8 +106,7 @@ frequencies.}
 \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet},
 \dQuote{hue} and user defined. For user defined the user can supply a list
 of colour names recognised by R (type \code{colours()} to see the full
-list). An example would be \code{cols = c("yellow", "green", "blue",
-  "black")}.}
+list). An example would be \code{cols = c("yellow", "green", "blue", "black")}.}
     \item{\code{grid.line}}{Grid line interval to use. If \code{NULL}, as in default,
 this is assigned based on the available data range. However, it can also be
 forced to a specific value, e.g. \code{grid.line = 10}. \code{grid.line}
@@ -142,8 +144,7 @@ each bin.}
     \item{\code{annotate}}{If \code{TRUE} then the percentage calm and mean values are
 printed in each panel together with a description of the statistic below
 the plot. If \code{" "} then only the statistic is below the plot. Custom
-annotations may be added by setting value to \code{c("annotation 1",
-  "annotation 2")}.}
+annotations may be added by setting value to \code{c("annotation 1", "annotation 2")}.}
     \item{\code{angle.scale}}{The scale is by default shown at a 315 degree angle.
 Sometimes the placement of the scale may interfere with an interesting
 feature. The user can therefore set \code{angle.scale} to another value
@@ -154,7 +155,7 @@ feature. The user can therefore set \code{angle.scale} to another value
 }
 \value{
 an \link[=openair-package]{openair} object. Summarised proportions can be
-extracted directly using the \code{$data} operator, e.g.
+extracted directly using the \verb{$data} operator, e.g.
 \code{object$data} for \code{output <- windRose(mydata)}. This returns a
 data frame with three set columns: \code{cond}, conditioning based on
 \code{type}; \code{wd}, the wind direction; and \code{calm}, the
@@ -200,8 +201,8 @@ pollutionRose(mydata, pollutant = "pm10", type = "year", statistic = "prop.mean"
 
 ## example of comparing 2 met sites
 ## first we will make some new ws/wd data with a postive bias
-mydata$ws2 = mydata$ws + 2 * rnorm(nrow(mydata)) + 1
-mydata$wd2 = mydata$wd + 30 * rnorm(nrow(mydata)) + 30
+mydata$ws2 <- mydata$ws + 2 * rnorm(nrow(mydata)) + 1
+mydata$wd2 <- mydata$wd + 30 * rnorm(nrow(mydata)) + 30
 
 ## need to correct negative wd
 id <- which(mydata$wd2 < 0)

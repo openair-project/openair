@@ -50,16 +50,13 @@ period are required.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \code{pollutant = "nox"}. There can also
-be more than one pollutant specified e.g. \code{pollutant = c("nox",
-  "no2")}. The main use of using two or more pollutants is for model
+be more than one pollutant specified e.g. \code{pollutant = c("nox", "no2")}. The main use of using two or more pollutants is for model
 evaluation where two species would be expected to have similar
 concentrations. This saves the user stacking the data and it is possible to
-work with columns of data directly. A typical use would be \code{pollutant
-  = c("obs", "mod")} to compare two columns \dQuote{obs} (the observations)
+work with columns of data directly. A typical use would be \code{pollutant = c("obs", "mod")} to compare two columns \dQuote{obs} (the observations)
 and \dQuote{mod} (modelled values). When pair-wise statistics such as
 Pearson correlation and regression techniques are to be plotted,
-\code{pollutant} takes two elements too. For example, \code{pollutant =
-  c("bc", "pm25")} where \code{"bc"} is a function of \code{"pm25"}.}
+\code{pollutant} takes two elements too. For example, \code{pollutant = c("bc", "pm25")} where \code{"bc"} is a function of \code{"pm25"}.}
 
 \item{x}{Name of variable to plot against wind direction in polar
 coordinates, the default is wind speed, \dQuote{ws}.}
@@ -265,7 +262,7 @@ concentrations for several pollutants on different scales e.g. NOx and CO.
 Often useful if more than one \code{pollutant} is chosen.}
 
 \item{key.header}{Adds additional text/labels to the scale key. For example,
-passing the options \code{key.header = "header", key.footer = "footer1"}
+passing the options \verb{key.header = "header", key.footer = "footer1"}
 adds addition text above and below the scale key. These arguments are
 passed to \code{drawOpenKey} via \code{quickText}, applying the
 \code{auto.text} argument, to handle formatting.}
@@ -291,18 +288,18 @@ statistics are used such as \emph{r}. Default is \code{0.5}.}
 wind direction when \code{statistic = "nwr"} or when correlation and
 regression statistics are used such as \emph{r}. Default is \code{4}.}
 
-\item{x_error}{The \code{x} error / uncertainty used when \code{statistic =
-"york_slope"}.}
+\item{x_error}{The \code{x} error / uncertainty used when \code{statistic = "york_slope"}.}
 
-\item{y_error}{The \code{y} error / uncertainty used when \code{statistic =
-"york_slope"}.}
+\item{y_error}{The \code{y} error / uncertainty used when \code{statistic = "york_slope"}.}
 
 \item{kernel}{Type of kernel used for the weighting procedure for when
 correlation or regression techniques are used. Only \code{"gaussian"} is
 supported but this may be enhanced in the future.}
 
 \item{formula.label}{When pair-wise statistics such as regression slopes are
-calculated and plotted, should a formula label be displayed?}
+calculated and plotted, should a formula label be displayed?
+\code{formula.label} will also determine whether concentration information
+is printed when \code{statistic = "cpf"}.}
 
 \item{tau}{The quantile to be estimated when \code{statistic} is set to
 \code{"quantile.slope"}. Default is \code{0.5} which is equal to the median
@@ -319,13 +316,12 @@ analysing data to extract plot components and plotting them in other ways.}
 \item{...}{Other graphical parameters passed onto \code{lattice:levelplot}
 and \code{cutData}. For example, \code{polarPlot} passes the option
 \code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type =
-  "season"}. Similarly, common axis and title labelling options (such as
+(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common axis and title labelling options (such as
 \code{xlab}, \code{ylab}, \code{main}) are passed to \code{levelplot} via
 \code{quickText} to handle routine formatting.}
 }
 \value{
-an \link[=openair-package]{openair} object. \code{data} contians four set
+an \link[=openair-package]{openair} object. \code{data} contains four set
 columns: \code{cond}, conditioning based on \code{type}; \code{u} and
 \code{v}, the translational vectors based on \code{ws} and \code{wd}; and
 the local \code{pollutant} estimate.

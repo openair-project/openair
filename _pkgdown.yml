@@ -1,19 +1,7 @@
-url: https://davidcarslaw.github.io/openair/
+url: https://openair-project.github.io/openair/
 template:
-  bootstrap: 5
-navbar:
-  title: openair
-  type: default
-  left:
-  - text: Functions
-    href: reference/index.html
-  - text: News
-    href: news/index.html
-  - text: Book
-    href: https://bookdown.org/david_carslaw/openair/
-  right:
-  - icon: fa-github fa-lg
-    href: https://github.com/davidcarslaw/openair
+  package: openairpkgdown
+
 reference:
 - title: Data
   desc: In-built data to demonstrate openair functions.
@@ -56,7 +44,6 @@ reference:
   contents:
   - aqStats
   - binData
-  - bootMeanDF
   - calcPercentile
   - cutData
   - rollingMean

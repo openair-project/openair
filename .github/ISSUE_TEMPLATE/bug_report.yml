@@ -6,9 +6,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for helping with the development of `{openair}` by reporting a bug.
+        Thank you for helping with the development of the openair project by reporting a bug.
         
-        If you haven't already, you might find it useful to read our [getting help guide](https://bookdown.org/david_carslaw/openair/sections/appendices/appendix-gethelp.html), which details how you can best help us help you!
+        If you haven't already, you might find it useful to read our [getting help guide](https://openair-project.github.io/book/sections/appendices/appendix-gethelp.html), which details how you can best help us help you!
 
   - type: textarea
     attributes:
@@ -23,7 +23,7 @@ body:
       label: Steps to reproduce
       description: |
         Tell us how to reproduce this bug.  
-        Please include a [minimal, fully reproducible example](https://bookdown.org/david_carslaw/openair/sections/appendices/appendix-gethelp.html#sec-reprex), ideally including code.
+        Please include a [minimal, fully reproducible example](https://openair-project.github.io/book/sections/appendices/appendix-gethelp.html#sec-reprex), ideally including code.
         If you need to attach data, you can do so in a reply to your issue after it has been submitted.
       placeholder: |
         When providing code, please contain it within code chunks using the below formatting:
@@ -35,7 +35,7 @@ body:
 
   - type: textarea
     attributes:
-      label: Openair version
+      label: Package version
       description: |
         Please provide the output of running `packageVersion("openair")` in your console.
       placeholder: |

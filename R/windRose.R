@@ -5,44 +5,44 @@
 #' substitutes other measurements, most commonly a pollutant time series, for
 #' wind speed.
 #'
-#' [pollutionRose()] is a [windRose()] wrapper which brings \code{pollutant}
+#' [pollutionRose()] is a [windRose()] wrapper which brings `pollutant`
 #' forward in the argument list, and attempts to sensibly rescale break points
-#' based on the \code{pollutant} data range by by-passing \code{ws.int}.
+#' based on the `pollutant` data range by by-passing `ws.int`.
 #'
-#' By default, [pollutionRose()] will plot a pollution rose of \code{nox} using
+#' By default, [pollutionRose()] will plot a pollution rose of `nox` using
 #' "wedge" style segments and placing the scale key to the right of the plot.
 #'
 #' It is possible to compare two wind speed-direction data sets using
 #' [pollutionRose()]. There are many reasons for doing so e.g. to see how one
 #' site compares with another or for meteorological model evaluation. In this
-#' case, \code{ws} and \code{wd} are considered to the the reference data sets
+#' case, `ws` and `wd` are considered to the the reference data sets
 #' with which a second set of wind speed and wind directions are to be compared
-#' (\code{ws2} and \code{wd2}). The first set of values is subtracted from the
-#' second and the differences compared. If for example, \code{wd2} was biased
-#' positive compared with \code{wd} then \code{pollutionRose} will show the bias
+#' (`ws2` and `wd2`). The first set of values is subtracted from the
+#' second and the differences compared. If for example, `wd2` was biased
+#' positive compared with `wd` then `pollutionRose` will show the bias
 #' in polar coordinates. In its default use, wind direction bias is colour-coded
 #' to show negative bias in one colour and positive bias in another.
 #'
 #' @inheritParams windRose
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
-#'   data frame should be supplied e.g. \code{pollutant = "nox"}.
+#'   data frame should be supplied e.g. `pollutant = "nox"`.
 #' @param breaks Most commonly, the number of break points for pollutant
 #'   concentrations. The default, 6, attempts to breaks the supplied data at
-#'   approximately 6 sensible break points. However, \code{breaks} can also be
-#'   used to set specific break points. For example, the argument \code{breaks =
-#'   c(0, 1, 10, 100)} breaks the data into segments <1, 1-10, 10-100, >100.
+#'   approximately 6 sensible break points. However, `breaks` can also be
+#'   used to set specific break points. For example, the argument `breaks =
+#'   c(0, 1, 10, 100)` breaks the data into segments <1, 1-10, 10-100, >100.
 #' @inheritDotParams windRose -pollutant -key.footer -key.position -key -breaks
 #'   -paddle -seg -normalise -plot
 #' @export
 #' @return an [openair][openair-package] object. Summarised proportions can be
-#'   extracted directly using the \code{$data} operator, e.g.
-#'   \code{object$data} for \code{output <- windRose(mydata)}. This returns a
-#'   data frame with three set columns: \code{cond}, conditioning based on
-#'   \code{type}; \code{wd}, the wind direction; and \code{calm}, the
-#'   \code{statistic} for the proportion of data unattributed to any specific
+#'   extracted directly using the `$data` operator, e.g.
+#'   `object$data` for `output <- windRose(mydata)`. This returns a
+#'   data frame with three set columns: `cond`, conditioning based on
+#'   `type`; `wd`, the wind direction; and `calm`, the
+#'   `statistic` for the proportion of data unattributed to any specific
 #'   wind direction because it was collected under calm conditions; and then
 #'   several (one for each range binned for the plot) columns giving proportions
-#'   of measurements associated with each \code{ws} or \code{pollutant} range
+#'   of measurements associated with each `ws` or `pollutant` range
 #'   plotted as a discrete panel.
 #' @family polar directional analysis functions
 #' @examples
@@ -56,8 +56,8 @@
 #'
 #' ## example of comparing 2 met sites
 #' ## first we will make some new ws/wd data with a postive bias
-#' mydata$ws2 = mydata$ws + 2 * rnorm(nrow(mydata)) + 1
-#' mydata$wd2 = mydata$wd + 30 * rnorm(nrow(mydata)) + 30
+#' mydata$ws2 <- mydata$ws + 2 * rnorm(nrow(mydata)) + 1
+#' mydata$wd2 <- mydata$wd + 30 * rnorm(nrow(mydata)) + 30
 #'
 #' ## need to correct negative wd
 #' id <- which(mydata$wd2 < 0)
@@ -66,20 +66,19 @@
 #' ## results show postive bias in wd and ws
 #' pollutionRose(mydata, ws = "ws", wd = "wd", ws2 = "ws2", wd2 = "wd2")
 pollutionRose <- function(
-    mydata,
-    pollutant = "nox",
-    key.footer = pollutant,
-    key.position = "right",
-    key = TRUE,
-    breaks = 6,
-    paddle = FALSE,
-    seg = 0.9,
-    normalise = FALSE,
-    alpha = 1,
-    plot = TRUE,
-    ...
+  mydata,
+  pollutant = "nox",
+  key.footer = pollutant,
+  key.position = "right",
+  key = TRUE,
+  breaks = 6,
+  paddle = FALSE,
+  seg = 0.9,
+  normalise = FALSE,
+  alpha = 1,
+  plot = TRUE,
+  ...
 ) {
-
   ## extra args setup
   extra <- list(...)
 
@@ -93,21 +92,30 @@ pollutionRose <- function(
   if (is.null(breaks)) breaks <- 6
 
   if (is.numeric(breaks) & length(breaks) == 1) {
-
     ## breaks from the minimum to 90th percentile, which generally gives sensible
     ## spacing for skewed data. Maximum is added later.
-    breaks <- unique(pretty(c(
-      min(mydata[[pollutant]], na.rm = TRUE),
-      quantile(mydata[[pollutant]], probs = 0.9, na.rm = TRUE)),
+    breaks <- unique(pretty(
+      c(
+        min(mydata[[pollutant]], na.rm = TRUE),
+        quantile(mydata[[pollutant]], probs = 0.9, na.rm = TRUE)
+      ),
       breaks
     ))
   }
 
   windRose(
     mydata,
-    pollutant = pollutant, paddle = paddle, seg = seg,
-    key.position = key.position, key.footer = key.footer, key = key,
-    breaks = breaks, normalise = normalise, alpha = alpha, plot = plot, ...
+    pollutant = pollutant,
+    paddle = paddle,
+    seg = seg,
+    key.position = key.position,
+    key.footer = key.footer,
+    key = key,
+    breaks = breaks,
+    normalise = normalise,
+    alpha = alpha,
+    plot = plot,
+    ...
   )
 }
 
@@ -118,25 +126,25 @@ pollutionRose <- function(
 #' substitutes other measurements, most commonly a pollutant time series, for
 #' wind speed.
 #'
-#' For \code{windRose} data are summarised by direction, typically by 45 or 30
+#' For `windRose` data are summarised by direction, typically by 45 or 30
 #' (or 10) degrees and by different wind speed categories. Typically, wind
 #' speeds are represented by different width "paddles". The plots show the
 #' proportion (here represented as a percentage) of time that the wind is from a
 #' certain angle and wind speed range.
 #'
-#' By default \code{windRose} will plot a windRose in using "paddle" style
+#' By default `windRose` will plot a windRose in using "paddle" style
 #' segments and placing the scale key below the plot.
 #'
-#' The argument \code{pollutant} uses the same plotting structure but
-#' substitutes another data series, defined by \code{pollutant}, for wind speed.
+#' The argument `pollutant` uses the same plotting structure but
+#' substitutes another data series, defined by `pollutant`, for wind speed.
 #' It is recommended to use [pollutionRose()] for plotting pollutant
 #' concentrations.
 #'
-#' The option \code{statistic = "prop.mean"} provides a measure of the relative
+#' The option `statistic = "prop.mean"` provides a measure of the relative
 #' contribution of each bin to the panel mean, and is intended for use with
-#' \code{pollutionRose}.
+#' `pollutionRose`.
 #'
-#' @param mydata A data frame containing fields \code{ws} and \code{wd}
+#' @param mydata A data frame containing fields `ws` and `wd`
 #' @param ws Name of the column representing wind speed.
 #' @param wd Name of the column representing wind direction.
 #' @param ws2,wd2 The user can supply a second set of wind speed and wind
@@ -146,59 +154,63 @@ pollutionRose <- function(
 #'   with low mean wind speeds a value of 1 or 0.5 m/s may be better.
 #' @param angle Default angle of \dQuote{spokes} is 30. Other potentially useful
 #'   angles are 45 and 10. Note that the width of the wind speed interval may
-#'   need adjusting using \code{width}.
-#' @param type \code{type} determines how the data are split i.e. conditioned,
+#'   need adjusting using `width`.
+#' @param type `type` determines how the data are split i.e. conditioned,
 #'   and then plotted. The default is will produce a single plot using the
 #'   entire data. Type can be one of the built-in types as detailed in
-#'   \code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, \code{type = "season"} will produce four plots --- one for
+#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
+#'   on. For example, `type = "season"` will produce four plots --- one for
 #'   each season.
 #'
-#'   It is also possible to choose \code{type} as another variable in the data
+#'   It is also possible to choose `type` as another variable in the data
 #'   frame. If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   Type can be up length two e.g. \code{type = c("season", "weekday")} will
+#'   Type can be up length two e.g. `type = c("season", "weekday")` will
 #'   produce a 2x2 plot split by season and day of the week. Note, when two
 #'   types are provided the first forms the columns and the second the rows.
-#' @param bias.corr When \code{angle} does not divide exactly into 360 a bias is
+#' @param calm.thresh By default, conditions are considered to be calm when the
+#'   wind speed is zero. The user can set a different threshold for calms be
+#'   setting `calm.thresh` to a higher value. For example,
+#'   `calm.thresh = 0.5` will identify wind speeds **below** 0.5 as calm.
+#' @param bias.corr When `angle` does not divide exactly into 360 a bias is
 #'   introduced in the frequencies when the wind direction is already supplied
 #'   rounded to the nearest 10 degrees, as is often the case. For example, if
-#'   \code{angle = 22.5}, N, E, S, W will include 3 wind sectors and all other
+#'   `angle = 22.5`, N, E, S, W will include 3 wind sectors and all other
 #'   angles will be two. A bias correction can made to correct for this problem.
 #'   A simple method according to Applequist (2012) is used to adjust the
 #'   frequencies.
 #' @param cols Colours to be used for plotting. Options include
 #'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet},
 #'   \dQuote{hue} and user defined. For user defined the user can supply a list
-#'   of colour names recognised by R (type \code{colours()} to see the full
-#'   list). An example would be \code{cols = c("yellow", "green", "blue",
-#'   "black")}.
-#' @param grid.line Grid line interval to use. If \code{NULL}, as in default,
+#'   of colour names recognised by R (type `colours()` to see the full
+#'   list). An example would be `cols = c("yellow", "green", "blue",
+#'   "black")`.
+#' @param grid.line Grid line interval to use. If `NULL`, as in default,
 #'   this is assigned based on the available data range. However, it can also be
-#'   forced to a specific value, e.g. \code{grid.line = 10}. \code{grid.line}
+#'   forced to a specific value, e.g. `grid.line = 10`. `grid.line`
 #'   can also be a list to control the interval, line type and colour. For
-#'   example \code{grid.line = list(value = 10, lty = 5, col = "purple")}.
-#' @param width For \code{paddle = TRUE}, the adjustment factor for width of
-#'   wind speed intervals. For example, \code{width = 1.5} will make the paddle
+#'   example `grid.line = list(value = 10, lty = 5, col = "purple")`.
+#' @param width For `paddle = TRUE`, the adjustment factor for width of
+#'   wind speed intervals. For example, `width = 1.5` will make the paddle
 #'   width 1.5 times wider.
-#' @param seg When \code{paddle = TRUE}, \code{seg} determines with width of the
-#'   segments. For example, \code{seg = 0.5} will produce segments 0.5 *
-#'   \code{angle}.
-#' @param auto.text Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
+#' @param seg When `paddle = TRUE`, `seg` determines with width of the
+#'   segments. For example, `seg = 0.5` will produce segments 0.5 *
+#'   `angle`.
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
 #'   titles and axis labels will automatically try and format pollutant names
 #'   and units properly, e.g., by subscripting the \sQuote{2} in NO2.
 #' @param breaks Most commonly, the number of break points for wind speed. With
-#'   the \code{ws.int} default of 2 m/s, the \code{breaks} default, 4, generates
-#'   the break points 2, 4, 6, 8 m/s. However, \code{breaks} can also be used to
-#'   set specific break points. For example, the argument \code{breaks = c(0, 1,
-#'   10, 100)} breaks the data into segments <1, 1-10, 10-100, >100.
+#'   the `ws.int` default of 2 m/s, the `breaks` default, 4, generates
+#'   the break points 2, 4, 6, 8 m/s. However, `breaks` can also be used to
+#'   set specific break points. For example, the argument `breaks = c(0, 1,
+#'   10, 100)` breaks the data into segments <1, 1-10, 10-100, >100.
 #' @param offset The size of the 'hole' in the middle of the plot, expressed as
 #'   a percentage of the polar axis scale, default 10.
-#' @param normalise If \code{TRUE} each wind direction segment is normalised to
+#' @param normalise If `TRUE` each wind direction segment is normalised to
 #'   equal one. This is useful for showing how the concentrations (or other
 #'   parameters) contribute to each wind sector when the proportion of time the
 #'   wind is from that direction is low. A line showing the probability that the
@@ -206,27 +218,27 @@ pollutionRose <- function(
 #' @param max.freq Controls the scaling used by setting the maximum value for
 #'   the radial limits. This is useful to ensure several plots use the same
 #'   radial limits.
-#' @param paddle Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose
-#'   using 'paddle' style spokes. If \code{FALSE} plots rose using 'wedge' style
+#' @param paddle Either `TRUE` or `FALSE`. If `TRUE` plots rose
+#'   using 'paddle' style spokes. If `FALSE` plots rose using 'wedge' style
 #'   spokes.
 #' @param key.header Adds additional text/labels above the scale key. For
-#'   example, passing \code{windRose(mydata, key.header = "ws")} adds the
+#'   example, passing `windRose(mydata, key.header = "ws")` adds the
 #'   addition text as a scale header. Note: This argument is passed to
 #'   [drawOpenKey()] via [quickText()], applying the auto.text argument, to
 #'   handle formatting.
 #' @param key.footer Adds additional text/labels below the scale key. See
-#'   \code{key.header} for further information.
+#'   `key.header` for further information.
 #' @param key.position Location where the scale key is to plotted. Allowed
 #'   arguments currently include \dQuote{top}, \dQuote{right}, \dQuote{bottom}
 #'   and \dQuote{left}.
 #' @param key Fine control of the scale key via [drawOpenKey()].
 #' @param dig.lab The number of significant figures at which scientific number
 #'   formatting is used in break point and key labelling. Default 5.
-#' @param include.lowest Logical. If \code{FALSE} (the default), the first
-#'   interval will be left exclusive and right inclusive. If \code{TRUE}, the
+#' @param include.lowest Logical. If `FALSE` (the default), the first
+#'   interval will be left exclusive and right inclusive. If `TRUE`, the
 #'   first interval will be left and right inclusive. Passed to the
-#'   \code{include.lowest} argument of [cut()].
-#' @param statistic The \code{statistic} to be applied to each data bin in the
+#'   `include.lowest` argument of [cut()].
+#' @param statistic The `statistic` to be applied to each data bin in the
 #'   plot. Options currently include \dQuote{prop.count}, \dQuote{prop.mean} and
 #'   \dQuote{abs.count}. The default \dQuote{prop.count} sizes bins according to
 #'   the proportion of the frequency of measurements.  Similarly,
@@ -234,42 +246,42 @@ pollutionRose <- function(
 #'   the mean. \dQuote{abs.count} provides the absolute count of measurements in
 #'   each bin.
 #' @param pollutant Alternative data series to be sampled instead of wind speed.
-#'   The [windRose()] default NULL is equivalent to \code{pollutant = "ws"}. Use
+#'   The [windRose()] default NULL is equivalent to `pollutant = "ws"`. Use
 #'   in [pollutionRose()].
-#' @param annotate If \code{TRUE} then the percentage calm and mean values are
+#' @param annotate If `TRUE` then the percentage calm and mean values are
 #'   printed in each panel together with a description of the statistic below
-#'   the plot. If \code{" "} then only the statistic is below the plot. Custom
-#'   annotations may be added by setting value to \code{c("annotation 1",
-#'   "annotation 2")}.
+#'   the plot. If `" "` then only the statistic is below the plot. Custom
+#'   annotations may be added by setting value to `c("annotation 1",
+#'   "annotation 2")`.
 #' @param angle.scale The scale is by default shown at a 315 degree angle.
 #'   Sometimes the placement of the scale may interfere with an interesting
-#'   feature. The user can therefore set \code{angle.scale} to another value
+#'   feature. The user can therefore set `angle.scale` to another value
 #'   (between 0 and 360 degrees) to mitigate such problems. For example
-#'   \code{angle.scale = 45} will draw the scale heading in a NE direction.
+#'   `angle.scale = 45` will draw the scale heading in a NE direction.
 #' @param border Border colour for shaded areas. Default is no border.
 #' @param alpha The alpha transparency to use for the plotting surface (a value
 #'   between 0 and 1 with zero being fully transparent and 1 fully opaque).
 #'   Setting a value below 1 can be useful when plotting surfaces on a map using
-#'   the package \code{openairmaps}.
-#' @param plot Should a plot be produced? \code{FALSE} can be useful when
+#'   the package `openairmaps`.
+#' @param plot Should a plot be produced? `FALSE` can be useful when
 #'   analysing data to extract plot components and plotting them in other ways.
-#' @param ... Other parameters that are passed on to \code{drawOpenKey},
-#'   \code{lattice:xyplot} and \code{cutData}. Axis and title labelling options
-#'   (\code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
-#'   \code{quickText} to handle routine formatting.
+#' @param ... Other parameters that are passed on to `drawOpenKey`,
+#'   `lattice:xyplot` and `cutData`. Axis and title labelling options
+#'   (`xlab`, `ylab`, `main`) are passed to `xyplot` via
+#'   `quickText` to handle routine formatting.
 #'
 #' @export
 #' @import dplyr
 #' @return an [openair][openair-package] object. Summarised proportions can be
-#'   extracted directly using the \code{$data} operator, e.g. \code{object$data}
-#'   for \code{output <- windRose(mydata)}. This returns a data frame with three
-#'   set columns: \code{cond}, conditioning based on \code{type}; \code{wd}, the
-#'   wind direction; and \code{calm}, the \code{statistic} for the proportion of
+#'   extracted directly using the `$data` operator, e.g. `object$data`
+#'   for `output <- windRose(mydata)`. This returns a data frame with three
+#'   set columns: `cond`, conditioning based on `type`; `wd`, the
+#'   wind direction; and `calm`, the `statistic` for the proportion of
 #'   data unattributed to any specific wind direction because it was collected
 #'   under calm conditions; and then several (one for each range binned for the
 #'   plot) columns giving proportions of measurements associated with each
-#'   \code{ws} or \code{pollutant} range plotted as a discrete panel.
-#' @note \code{windRose} and \code{pollutionRose} both use [drawOpenKey()] to
+#'   `ws` or `pollutant` range plotted as a discrete panel.
+#' @note `windRose` and `pollutionRose` both use [drawOpenKey()] to
 #'   produce scale keys.
 #' @author David Carslaw (with some additional contributions by Karl Ropkins)
 #' @family polar directional analysis functions
@@ -287,46 +299,47 @@ pollutionRose <- function(
 #' windRose(mydata)
 #'
 #' # one windRose for each year
-#' windRose(mydata,type = "year")
+#' windRose(mydata, type = "year")
 #'
 #' # windRose in 10 degree intervals with gridlines and width adjusted
 #' \dontrun{
 #' windRose(mydata, angle = 10, width = 0.2, grid.line = 1)
 #' }
 windRose <- function(
-    mydata,
-    ws = "ws",
-    wd = "wd",
-    ws2 = NA,
-    wd2 = NA,
-    ws.int = 2,
-    angle = 30,
-    type = "default",
-    bias.corr = TRUE,
-    cols = "default",
-    grid.line = NULL,
-    width = 1,
-    seg = NULL,
-    auto.text = TRUE,
-    breaks = 4,
-    offset = 10,
-    normalise = FALSE,
-    max.freq = NULL,
-    paddle = TRUE,
-    key.header = NULL,
-    key.footer = "(m/s)",
-    key.position = "bottom",
-    key = TRUE,
-    dig.lab = 5,
-    include.lowest = FALSE,
-    statistic = "prop.count",
-    pollutant = NULL,
-    annotate = TRUE,
-    angle.scale = 315,
-    border = NA,
-    alpha = 1,
-    plot = TRUE,
-    ...
+  mydata,
+  ws = "ws",
+  wd = "wd",
+  ws2 = NA,
+  wd2 = NA,
+  ws.int = 2,
+  angle = 30,
+  type = "default",
+  calm.thresh = 0,
+  bias.corr = TRUE,
+  cols = "default",
+  grid.line = NULL,
+  width = 1,
+  seg = NULL,
+  auto.text = TRUE,
+  breaks = 4,
+  offset = 10,
+  normalise = FALSE,
+  max.freq = NULL,
+  paddle = TRUE,
+  key.header = NULL,
+  key.footer = "(m/s)",
+  key.position = "bottom",
+  key = TRUE,
+  dig.lab = 5,
+  include.lowest = FALSE,
+  statistic = "prop.count",
+  pollutant = NULL,
+  annotate = TRUE,
+  angle.scale = 315,
+  border = NA,
+  alpha = 1,
+  plot = TRUE,
+  ...
 ) {
   if (is.null(seg)) seg <- 0.9
 
@@ -345,7 +358,6 @@ windRose <- function(
 
   ## reset graphic parameters
   on.exit(trellis.par.set(
-
     fontsize = current.font
   ))
 
@@ -391,7 +403,6 @@ windRose <- function(
   if ("fontsize" %in% names(extra)) {
     trellis.par.set(fontsize = list(text = extra$fontsize))
   }
-
 
   ## preset statitistics
 
@@ -440,7 +451,6 @@ windRose <- function(
   }
 
   if (is.list(statistic)) {
-
     ## IN DEVELOPMENT
 
     ## this section has no testing/protection
@@ -502,8 +512,13 @@ windRose <- function(
 
   mydata <- cutData(mydata, type, ...)
 
-
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE, remove.neg = rm.neg)
+  mydata <- checkPrep(
+    mydata,
+    vars,
+    type,
+    remove.calm = FALSE,
+    remove.neg = rm.neg
+  )
 
   # original data to use later
   mydata_orig <- mydata
@@ -524,7 +539,13 @@ windRose <- function(
   mydata[[wd]][mydata[[wd]] == 0] <- 360
 
   ## flag calms as negatives
-  mydata[[wd]][mydata[, ws] == 0] <- -999 ## set wd to flag where there are calms
+  if (calm.thresh == 0) {
+    mydata[[wd]][mydata[, ws] == 0] <- -999 ## set wd to flag where there are calms
+  } else {
+    mydata[[wd]][mydata[, ws] < calm.thresh] <- -999 ## Note < not <=
+  }
+
+  mydata[[wd]][mydata[, ws] < calm.thresh] <- -999 ## set wd to flag where there are calms
   ## do after rounding or -999 changes
 
   if (length(breaks) == 1) breaks <- 0:(breaks - 1) * ws.int
@@ -549,17 +570,18 @@ windRose <- function(
   labs <- gsub("[(]|[)]|[[]|[]]", "", levels(mydata$x))
   labs <- gsub("[,]", " to ", labs)
 
-
-
   ## statistic handling
 
   prepare.grid <- function(mydata) {
-
     ## these are all calms...
     if (all(is.na(mydata$x))) {
       weights <- tibble(
-        Interval1 = NA, wd = NA,
-        calm = 100, panel.fun = NA, mean.wd = NA, freqs = NA
+        Interval1 = NA,
+        wd = NA,
+        calm = 100,
+        panel.fun = NA,
+        mean.wd = NA,
+        freqs = NA
       )
     } else {
       levels(mydata$x) <- c(paste("Interval", 1:length(labs), sep = ""))
@@ -570,7 +592,8 @@ windRose <- function(
       calm <- stat.fun(calm)
 
       weights <- tapply(
-        mydata[[pollutant]], list(mydata[[wd]], mydata$x),
+        mydata[[pollutant]],
+        list(mydata[[wd]], mydata$x),
         stat.fun
       )
 
@@ -615,8 +638,10 @@ windRose <- function(
         as_tibble(weights),
         tibble(
           wd = as.numeric(row.names(weights)),
-          calm = calm, panel.fun = panel.fun,
-          mean.wd = mean.wd, freqs = freqs
+          calm = calm,
+          panel.fun = panel.fun,
+          mean.wd = mean.wd,
+          freqs = freqs
         )
       )
     }
@@ -638,19 +663,20 @@ windRose <- function(
       y3 <- len2 * cos(theta) + width * sin(theta) + y.off
       y4 <- len2 * cos(theta) - width * sin(theta) + y.off
       lpolygon(
-        c(x1, x2, x4, x3), c(y1, y2, y4, y3),
+        c(x1, x2, x4, x3),
+        c(y1, y2, y4, y3),
         col = colour,
         border = border
       )
     }
   } else {
-    poly <- function(wd, len1, len2, width, colour, x.off = 0,
-                     y.off = 0) {
+    poly <- function(wd, len1, len2, width, colour, x.off = 0, y.off = 0) {
       len1 <- len1 + off.set
       len2 <- len2 + off.set
 
       theta <- seq(
-        (wd - seg * angle / 2), (wd + seg * angle / 2),
+        (wd - seg * angle / 2),
+        (wd + seg * angle / 2),
         length.out = (angle - 2) * 10
       )
       theta <- ifelse(theta < 1, 360 - theta, theta)
@@ -663,7 +689,6 @@ windRose <- function(
     }
   }
 
-
   results <- mydata %>%
     group_by(across(type)) %>%
     do(prepare.grid(.))
@@ -674,11 +699,12 @@ windRose <- function(
 
   # function to correct bias
   corr_bias <- function(results) {
-
     # check to see if data for this type combination are rounded to 10 degrees
     # round wd so that tiny differences between integer a numeric do not arise
     wd_select <- inner_join(mydata_orig, results[1, type], by = type)
-    if (!all(round(wd_select[[wd]]) %% 10 == 0, na.rm = TRUE)) return(results)
+    if (!all(round(wd_select[[wd]]) %% 10 == 0, na.rm = TRUE)) {
+      return(results)
+    }
 
     wds <- seq(10, 360, 10)
     tmp <- angle * ceiling(wds / angle - 0.5)
@@ -691,7 +717,6 @@ windRose <- function(
     n_data <- nrow(filter(results, wd != -999))
 
     if (n_data > 0) {
-
       results[results[["wd"]] != -999, vars] <-
         results[results[["wd"]] != -999, vars] * mean(tmp) / tmp
     }
@@ -705,8 +730,6 @@ windRose <- function(
       group_by(across(type)) %>%
       do(corr_bias(.))
   }
-
-
 
   ## proper names of labelling###########################################
   strip.dat <- strip.fun(results, type, auto.text)
@@ -731,7 +754,11 @@ windRose <- function(
     ## original frequencies, so we can plot the wind frequency line
     results$freq <- results[[max(vars)]]
 
-    results$freq <- ave(results$freq, results[type], FUN = function(x) x / sum(x))
+    results$freq <- ave(
+      results$freq,
+      results[type],
+      FUN = function(x) x / sum(x)
+    )
 
     ## scale by maximum frequency
     results$norm <- results$freq / max(results$freq)
@@ -754,21 +781,27 @@ windRose <- function(
 
   off.set <- max.freq * (offset / 100)
   box.widths <- seq(
-    0.002 ^ 0.25, 0.016 ^ 0.25,
+    0.002^0.25,
+    0.016^0.25,
     length.out = length(labs)
-  ) ^ 4
+  )^4
   box.widths <- box.widths * max.freq * angle / 5
 
   ## key, colorkey, legend
   legend <- list(
-    col = legend_col, space = key.position, auto.text = auto.text,
-    labels = labs, footer = key.footer, header = key.header,
-    height = 0.60, width = 1.5, fit = "scale",
+    col = legend_col,
+    space = key.position,
+    auto.text = auto.text,
+    labels = labs,
+    footer = key.footer,
+    header = key.header,
+    height = 0.60,
+    width = 1.5,
+    fit = "scale",
     plot.style = if (paddle) "paddle" else "other"
   )
 
   legend <- makeOpenKeyLegend(key, legend, "windRose")
-
 
   temp <- paste(type, collapse = "+")
   myform <- formula(paste("Interval1 ~ wd | ", temp, sep = ""))
@@ -807,7 +840,8 @@ windRose <- function(
 
   if (myby / mymax > 0.9) myby <- mymax * 0.9
 
-  is_annotated <- !(annotate %in% c(FALSE, NA, NaN)) &&   !is.null(annotate)
+  is_annotated <- any(annotate == TRUE) | any(is.character(annotate))
+
   if (is_annotated) sub <- stat.lab else sub <- NULL
 
   xy.args <- list(
@@ -823,17 +857,20 @@ windRose <- function(
     aspect = 1,
     par.strip.text = list(cex = 0.8),
     scales = list(draw = FALSE),
-
     panel = function(x, y, subscripts, ...) {
       panel.xyplot(x, y, ...)
       angles <- seq(0, 2 * pi, length = 360)
       sapply(
         seq(off.set, mymax + off.set, by = myby),
-        function(x) llines(
-          x * sin(angles), x * cos(angles),
-          col = grid.col, lwd = 1,
-          lty = grid.lty
-        )
+        function(x) {
+          llines(
+            x * sin(angles),
+            x * cos(angles),
+            col = grid.col,
+            lwd = 1,
+            lty = grid.lty
+          )
+        }
       )
 
       dat <- results[subscripts, ] ## subset of data
@@ -844,17 +881,24 @@ windRose <- function(
       if (nrow(dat) > 0) {
         dat$Interval0 <- 0 ## make a lower bound to refer to
 
-        for (i in 1:nrow(dat)) { ## go through wind angles 30, 60, ...
+        for (i in 1:nrow(dat)) {
+          ## go through wind angles 30, 60, ...
 
-          for (j in seq_along(labs)) { ## go through paddles x1, x2, ...
+          for (j in seq_along(labs)) {
+            ## go through paddles x1, x2, ...
 
             tmp <- paste(
-              "poly(dat$wd[i], dat$Interval", j - 1,
-              "[i], dat$Interval", j, "[i], width * box.widths[",
-              j, "], col[", j, "])",
+              "poly(dat$wd[i], dat$Interval",
+              j - 1,
+              "[i], dat$Interval",
+              j,
+              "[i], width * box.widths[",
+              j,
+              "], col[",
+              j,
+              "])",
               sep = ""
             )
-
 
             eval(parse(text = tmp))
           }
@@ -866,24 +910,28 @@ windRose <- function(
       }
 
       ltext(
-        seq((myby + off.set), (mymax + off.set), myby) * sin(pi * angle.scale / 180),
-        seq((myby + off.set), (mymax + off.set), myby) * cos(pi * angle.scale / 180),
+        seq((myby + off.set), (mymax + off.set), myby) *
+          sin(pi * angle.scale / 180),
+        seq((myby + off.set), (mymax + off.set), myby) *
+          cos(pi * angle.scale / 180),
         paste(seq(myby, mymax, by = myby), stat.unit, sep = ""),
         cex = 0.7
       )
 
       # annotations
       if (annotate[1] == TRUE || length(annotate) == 2L || annotate[1] == " ") {
-
         if (annotate[1] == TRUE) {
-
           annotations_to_place <-
-            paste0(stat.lab2, " = ",
-                   dat$panel.fun[1], "\n",
-                   "calm = ", dat$calm[1], stat.unit
+            paste0(
+              stat.lab2,
+              " = ",
+              dat$panel.fun[1],
+              "\n",
+              "calm = ",
+              dat$calm[1],
+              stat.unit
             )
         }
-
 
         if (annotate[1] == " ") {
           annotations_to_place <-
@@ -891,50 +939,60 @@ windRose <- function(
         }
 
         if (length(annotate) == 2L) {
-
           annotations_to_place <-
-            paste0(annotate[1], " = ",
-                   dat$panel.fun[1], "\n",
-                   annotate[2], " = ", dat$calm[1], stat.unit
+            paste0(
+              annotate[1],
+              " = ",
+              dat$panel.fun[1],
+              "\n",
+              annotate[2],
+              " = ",
+              dat$calm[1],
+              stat.unit
             )
         }
 
         # comparing two wind roses
         if (diff) {
-
-          annotate <- c("mean_ws" , "mean_wd")
+          annotate <- c("mean_ws", "mean_wd")
           annotations_to_place <- paste0(
-            mean_ws = paste("mean ws = ", round(as.numeric(dat$panel.fun[1]), 1)),
+            mean_ws = paste(
+              "mean ws = ",
+              round(as.numeric(dat$panel.fun[1]), 1)
+            ),
             "\n",
             mean_wd = paste("mean wd = ", round(dat$mean.wd[1], 1))
           )
         }
 
         ltext(
-          max.freq + off.set, -max.freq - off.set,
-          label = annotations_to_place  ,
-          adj = c(1, 0), cex = 0.7, col = calm.col
+          max.freq + off.set,
+          -max.freq - off.set,
+          label = annotations_to_place,
+          adj = c(1, 0),
+          cex = 0.7,
+          col = calm.col
         )
-
-        ## add axis lines
-        lsegments(-upper, 0, upper, 0)
-        lsegments(0, -upper, 0, upper)
-
-        if (!is.na(ws2) & !is.na(wd2)) {
-          axislabs <- c("0", "+90", paste0("+/-", 180), "-90")
-          s_adj <- 0.1
-        } else {
-          axislabs <- c("N", "E", "S", "W")
-          s_adj <- 0.07
-        }
-
-        ltext(upper * -1 * 0.95, 0.07 * upper, axislabs[4], cex = 0.7)
-        ltext(s_adj * upper, upper * -1 * 0.95, axislabs[3], cex = 0.7)
-        ltext(0.07 * upper, upper * 0.95, axislabs[1], cex = 0.7)
-        ltext(upper * 0.95, 0.07 * upper, axislabs[2], cex = 0.7)
-
       }
-    }, legend = legend
+
+      ## add axis lines
+      lsegments(-upper, 0, upper, 0)
+      lsegments(0, -upper, 0, upper)
+
+      if (!is.na(ws2) & !is.na(wd2)) {
+        axislabs <- c("0", "+90", paste0("+/-", 180), "-90")
+        s_adj <- 0.1
+      } else {
+        axislabs <- c("N", "E", "S", "W")
+        s_adj <- 0.07
+      }
+
+      ltext(upper * -1 * 0.95, 0.07 * upper, axislabs[4], cex = 0.7)
+      ltext(s_adj * upper, upper * -1 * 0.95, axislabs[3], cex = 0.7)
+      ltext(0.07 * upper, upper * 0.95, axislabs[1], cex = 0.7)
+      ltext(upper * 0.95, 0.07 * upper, axislabs[2], cex = 0.7)
+    },
+    legend = legend
   )
 
   ## reset for extra
@@ -942,7 +1000,6 @@ windRose <- function(
 
   ## plot
   plt <- do.call(xyplot, xy.args)
-
 
   ## output ################################################################################
 
@@ -976,7 +1033,8 @@ panel.wdprob <- function(dat, seg, angle, off.set) {
 
   makeline <- function(i, dat) {
     theta <- seq(
-      (dat$wd[i] - seg * angle / 2), (dat$wd[i] + seg * angle / 2),
+      (dat$wd[i] - seg * angle / 2),
+      (dat$wd[i] + seg * angle / 2),
       length.out = (angle - 2) * 10
     )
     theta <- ifelse(theta < 1, 360 - theta, theta)
@@ -985,7 +1043,13 @@ panel.wdprob <- function(dat, seg, angle, off.set) {
     x2 <- rev((dat$norm[i] + off.set) * sin(theta) + x.off)
     y1 <- len1 * cos(theta) + x.off
     y2 <- rev((dat$norm[i] + off.set) * cos(theta) + x.off)
-    lpolygon(c(x1, x2), c(y1, y2), col = "transparent", border = "black", lwd = 2)
+    lpolygon(
+      c(x1, x2),
+      c(y1, y2),
+      col = "transparent",
+      border = "black",
+      lwd = 2
+    )
   }
 
   lapply(1:nrow(dat), makeline, dat)
