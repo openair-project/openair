@@ -159,7 +159,7 @@ importMeta <-
 
       # KCL
       if (source %in% c("kcl", "imperial")) {
-        con <- url("https://www.londonair.org.uk/r_data/sites.RData")
+        con <- url("https://londonair.org.uk/r_data/sites.RData")
         meta <- get(load(con))
         close(con)
 

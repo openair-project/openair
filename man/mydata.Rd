@@ -9,7 +9,7 @@ An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) w
 }
 \source{
 \code{mydata} was compiled from data archived in the London Air Quality
-Archive.  See \url{https://www.londonair.org.uk} for site details.
+Archive.  See \url{https://londonair.org.uk} for site details.
 }
 \usage{
 mydata
