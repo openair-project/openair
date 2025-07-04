@@ -258,7 +258,7 @@ importMeta <-
 
     # import meta data
     meta <-
-      purrr::map(.x = source, .f = ~ get_meta(source = .x, all = all)) |>
+      purrr::map(.x = source, .f = \(x) get_meta(source = x, all = all)) |>
       purrr::list_rbind()
 
     # drop extra columns if not "all"

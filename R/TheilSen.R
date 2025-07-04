@@ -562,7 +562,7 @@ TheilSen <- function(
 
   res2 <- split.data |>
     group_by(across(vars)) |>
-    summarise(across(everything(), ~ mean(.x, na.rm = TRUE)))
+    summarise(across(everything(), \(x) mean(x, na.rm = TRUE)))
 
   ## calculate percentage changes in slope and uncertainties need
   ## start and end dates (in days) to work out concentrations at those

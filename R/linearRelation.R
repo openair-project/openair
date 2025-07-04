@@ -215,7 +215,7 @@ linearRelation <- function(
 
     results <- data |>
       group_nest() |>
-      mutate(fit = map(data, my_lm), sum = map(fit, summary)) |>
+      mutate(fit = map(data, my_lm), sum = map(fit, summary)) %>%
       mutate(
         rsquare = map_dbl(sum, "r.squared"),
         coef = map(sum, "coefficients"),
