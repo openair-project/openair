@@ -9,7 +9,7 @@ imported using the importTraj function."><meta property="og:image" content="http
 
     <a class="navbar-brand me-2" href="../index.html">openair</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.18.2.9009</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.18.2.9010</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +68,10 @@ imported using the <code>importTraj</code> function.</p>
 <span>  map.fill <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  map.res <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  map.cols <span class="op">=</span> <span class="st">"grey40"</span>,</span>
+<span>  map.border <span class="op">=</span> <span class="st">"black"</span>,</span>
 <span>  map.alpha <span class="op">=</span> <span class="fl">0.4</span>,</span>
+<span>  map.lwd <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  map.lty <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  projection <span class="op">=</span> <span class="st">"lambert"</span>,</span>
 <span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">51</span>, <span class="fl">51</span><span class="op">)</span>,</span>
 <span>  orientation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">90</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
@@ -103,25 +106,25 @@ used.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p><code>type</code> determines how the data are split, i.e., conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-<code>cutData</code> e.g. "season", "year", "weekday" and so on. For example,
-<code>type = "season"</code> will produce four plots — one for each season.</p>
-<p>It is also possible to choose <code>type</code> as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+<dd><p><code>type</code> determines how the data are split, i.e., conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in <code>cutData</code> e.g.
+"season", "year", "weekday" and so on. For example, <code>type = "season"</code> will
+produce four plots — one for each season.</p>
+<p>It is also possible to choose <code>type</code> as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.</p>
-<p><code>type</code> can be up length two e.g. <code>type = c("season", "weekday")</code>
-will produce a 2x2 plot split by season and day of the week. Note, when two
+<p><code>type</code> can be up length two e.g. <code>type = c("season", "weekday")</code> will
+produce a 2x2 plot split by season and day of the week. Note, when two
 types are provided the first forms the columns and the second the rows.</p></dd>
 
 
 <dt id="arg-map">map<a class="anchor" aria-label="anchor" href="#arg-map"></a></dt>
-<dd><p>Should a base map be drawn? If <code>TRUE</code> the world base map from
-the <code>maps</code> package is used.</p></dd>
+<dd><p>Should a base map be drawn? If <code>TRUE</code> the world base map from the
+<code>maps</code> package is used.</p></dd>
 
 
 <dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
@@ -136,15 +139,21 @@ countries.</p></dd>
 
 <dt id="arg-map-res">map.res<a class="anchor" aria-label="anchor" href="#arg-map-res"></a></dt>
 <dd><p>The resolution of the base map. By default the function uses
-the ‘world’ map from the <code>maps</code> package. If <code>map.res = "hires"</code> then the (much) more detailed base map ‘worldHires’ from
-the <code>mapdata</code> package is used. Use <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library(mapdata)</a></code>. Also
-available is a map showing the US states. In this case <code>map.res = "state"</code> should be used.</p></dd>
+the ‘world’ map from the <code>maps</code> package. If <code>map.res = "hires"</code> then
+the (much) more detailed base map ‘worldHires’ from the <code>mapdata</code>
+package is used. Use <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library(mapdata)</a></code>. Also available is a map showing
+the US states. In this case <code>map.res = "state"</code> should be used.</p></dd>
 
 
 <dt id="arg-map-cols">map.cols<a class="anchor" aria-label="anchor" href="#arg-map-cols"></a></dt>
-<dd><p>If <code>map.fill = TRUE</code> <code>map.cols</code> controls the fill
-colour. Examples include <code>map.fill = "grey40"</code> and <code>map.fill = openColours("default", 10)</code>. The latter colours the countries and can help
+<dd><p>If <code>map.fill = TRUE</code> <code>map.cols</code> controls the fill colour.
+Examples include <code>map.fill = "grey40"</code> and <code>map.fill = openColours("default", 10)</code>. The latter colours the countries and can help
 differentiate them.</p></dd>
+
+
+<dt id="arg-map-border">map.border<a class="anchor" aria-label="anchor" href="#arg-map-border"></a></dt>
+<dd><p>The colour to use for the map outlines/borders. Defaults to
+<code>"black"</code>.</p></dd>
 
 
 <dt id="arg-map-alpha">map.alpha<a class="anchor" aria-label="anchor" href="#arg-map-alpha"></a></dt>
@@ -153,11 +162,23 @@ from 0 (full transparency) to 1 (full opacity). Setting it below 1 can help
 view trajectories, trajectory surfaces etc. <em>and</em> a filled base map.</p></dd>
 
 
+<dt id="arg-map-lwd">map.lwd<a class="anchor" aria-label="anchor" href="#arg-map-lwd"></a></dt>
+<dd><p>The map line width, a positive number, defaulting to <code>1</code>.</p></dd>
+
+
+<dt id="arg-map-lty">map.lty<a class="anchor" aria-label="anchor" href="#arg-map-lty"></a></dt>
+<dd><p>The map line type. Line types can either be specified as an
+integer (<code>0</code> = blank, <code>1</code> = solid (default), <code>2</code> = dashed, <code>3</code> = dotted,
+<code>4</code> = dotdash, <code>5</code> = longdash, <code>6</code> = twodash) or as one of the character
+strings "blank", "solid", "dashed", "dotted", "dotdash", "longdash", or
+"twodash", where "blank" uses 'invisible lines' (i.e., does not draw them).</p></dd>
+
+
 <dt id="arg-projection">projection<a class="anchor" aria-label="anchor" href="#arg-projection"></a></dt>
 <dd><p>The map projection to be used. Different map projections
-are possible through the <code>mapproj</code> package. See <code>?mapproject</code> for
-extensive details and information on setting other parameters and
-orientation (see below).</p></dd>
+are possible through the <code>mapproj</code> package. See <code>?mapproject</code> for extensive
+details and information on setting other parameters and orientation (see
+below).</p></dd>
 
 
 <dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
@@ -169,13 +190,13 @@ to null i.e. <code>parameters = NULL</code>.</p></dd>
 
 
 <dt id="arg-orientation">orientation<a class="anchor" aria-label="anchor" href="#arg-orientation"></a></dt>
-<dd><p>From the <code>mapproj</code> package. An optional vector
-c(latitude, longitude, rotation) which describes where the "North Pole"
-should be when computing the projection. Normally this is c(90, 0), which
-is appropriate for cylindrical and conic projections. For a planar
-projection, you should set it to the desired point of tangency. The third
-value is a clockwise rotation (in degrees), which defaults to the midrange
-of the longitude coordinates in the map.</p></dd>
+<dd><p>From the <code>mapproj</code> package. An optional vector c(latitude,
+longitude, rotation) which describes where the "North Pole" should be when
+computing the projection. Normally this is c(90, 0), which is appropriate
+for cylindrical and conic projections. For a planar projection, you should
+set it to the desired point of tangency. The third value is a clockwise
+rotation (in degrees), which defaults to the midrange of the longitude
+coordinates in the map.</p></dd>
 
 
 <dt id="arg-grid-col">grid.col<a class="anchor" aria-label="anchor" href="#arg-grid-col"></a></dt>
@@ -184,12 +205,11 @@ of the longitude coordinates in the map.</p></dd>
 
 
 <dt id="arg-npoints">npoints<a class="anchor" aria-label="anchor" href="#arg-npoints"></a></dt>
-<dd><p>A dot is placed every <code>npoints</code> along each full
-trajectory. For hourly back trajectories points are plotted every
-<code>npoint</code> hours. This helps to understand where the air masses were at
-particular times and get a feel for the speed of the air (points closer
-together correspond to slower moving air masses). If <code>npoints = NA</code>
-then no points are added.</p></dd>
+<dd><p>A dot is placed every <code>npoints</code> along each full trajectory.
+For hourly back trajectories points are plotted every <code>npoint</code> hours. This
+helps to understand where the air masses were at particular times and get a
+feel for the speed of the air (points closer together correspond to slower
+moving air masses). If <code>npoints = NA</code> then no points are added.</p></dd>
 
 
 <dt id="arg-origin">origin<a class="anchor" aria-label="anchor" href="#arg-origin"></a></dt>
@@ -203,28 +223,27 @@ data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>other arguments are passed to <code>cutData</code> and
-<code>scatterPlot</code>. This provides access to arguments used in both these
-functions and functions that they in turn pass arguments on to. For
-example, <code>plotTraj</code> passes the argument <code>cex</code> on to
-<code>scatterPlot</code> which in turn passes it on to the <code>lattice</code>
-function <code>xyplot</code> where it is applied to set the plot symbol size.</p></dd>
+<dd><p>other arguments are passed to <code>cutData</code> and <code>scatterPlot</code>. This
+provides access to arguments used in both these functions and functions
+that they in turn pass arguments on to. For example, <code>plotTraj</code> passes the
+argument <code>cex</code> on to <code>scatterPlot</code> which in turn passes it on to the
+<code>lattice</code> function <code>xyplot</code> where it is applied to set the plot symbol
+size.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Several types of trajectory plot are available. <code>trajPlot</code> by default
-will plot each lat/lon location showing the origin of each trajectory, if no
+    <p>Several types of trajectory plot are available. <code>trajPlot</code> by default will
+plot each lat/lon location showing the origin of each trajectory, if no
 <code>pollutant</code> is supplied.</p>
 <p>If a pollutant is given, by merging the trajectory data with concentration
 data (see example below), the trajectories are colour-coded by the
-concentration of <code>pollutant</code>. With a long time series there can be lots
-of overplotting making it difficult to gauge the overall concentration
-pattern. In these cases setting <code>alpha</code> to a low value e.g. 0.1 can
-help.</p>
+concentration of <code>pollutant</code>. With a long time series there can be lots of
+overplotting making it difficult to gauge the overall concentration pattern.
+In these cases setting <code>alpha</code> to a low value e.g. 0.1 can help.</p>
 <p>The user can also show points instead of lines by <code>plot.type = "p"</code>.</p>
-<p>Note that <code>trajPlot</code> will plot only the full length trajectories. This
-should be remembered when selecting only part of a year to plot.</p>
+<p>Note that <code>trajPlot</code> will plot only the full length trajectories. This should
+be remembered when selecting only part of a year to plot.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
