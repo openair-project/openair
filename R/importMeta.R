@@ -220,7 +220,7 @@ importMeta <-
 
         # Read data and parse dates
         meta <-
-          read_csv(file, col_types = col_types, progress = FALSE) %>%
+          read_csv(file, col_types = col_types, progress = FALSE) |>
           mutate(
             date_start = lubridate::ymd_hms(.data$date_start, tz = "UTC"),
             date_end = lubridate::ymd_hms(.data$date_end, tz = "UTC")
@@ -258,7 +258,7 @@ importMeta <-
 
     # import meta data
     meta <-
-      purrr::map(.x = source, .f = ~ get_meta(source = .x, all = all)) %>%
+      purrr::map(.x = source, .f = ~ get_meta(source = .x, all = all)) |>
       purrr::list_rbind()
 
     # drop extra columns if not "all"
@@ -333,7 +333,7 @@ clean_ricardo_meta <- function(url, all, year) {
     site = "site_name",
     site_type = "location_type",
     variable = "parameter"
-  ) %>%
+  ) |>
     dplyr::mutate(
       start_date = lubridate::ymd(.data$start_date, tz = "GMT"),
       site_type = gsub(

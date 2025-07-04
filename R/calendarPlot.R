@@ -364,9 +364,9 @@ calendarPlot <-
       vars <- c("ws", "wd")
 
       # max ws/wd for hour with max pollutant value
-      maxes <- mydata %>%
-        mutate(date = as_date(date)) %>%
-        group_by(date) %>%
+      maxes <- mydata |>
+        mutate(date = as_date(date)) |>
+        group_by(date) |>
         slice(which.max(.data[[pollutant]]))
 
       # averaged data, make sure Date format (max returns POSIXct)
@@ -375,14 +375,14 @@ calendarPlot <-
         "day",
         statistic = statistic,
         data.thresh = data.thresh
-      ) %>%
+      ) |>
         mutate(date = as_date(date))
 
       # replace with parallel max
       mydata <- left_join(
-        mydata %>%
+        mydata |>
           select(!any_of(vars)),
-        maxes %>%
+        maxes |>
           select(!.data[[pollutant]]),
         by = join_by(date)
       )
@@ -413,9 +413,9 @@ calendarPlot <-
     )
 
     if (remove.empty) {
-      mydata <- group_by(mydata, cuts) %>%
-        mutate(empty = all(is.na(across(pollutant)))) %>%
-        filter(empty == FALSE) %>%
+      mydata <- group_by(mydata, cuts) |>
+        mutate(empty = all(is.na(across(pollutant)))) |>
+        filter(empty == FALSE) |>
         ungroup()
     }
 
@@ -427,9 +427,9 @@ calendarPlot <-
       mydata <- selectByDate(mydata, month = month)
     }
 
-    mydata <- mydata %>%
+    mydata <- mydata |>
       group_by(across(type)) %>%
-      do(prepare.grid(., pollutant)) %>%
+      do(prepare.grid(., pollutant)) |>
       ungroup()
 
     mydata$value <-
@@ -463,9 +463,9 @@ calendarPlot <-
     if (annotate == "wd") {
       baseData$wd <- baseData$wd * 2 * pi / 360
 
-      wd <- baseData %>%
+      wd <- baseData |>
         group_by(across(type)) %>%
-        do(prepare.grid(., "wd")) %>%
+        do(prepare.grid(., "wd")) |>
         ungroup()
 
       wd$value <-
@@ -475,14 +475,14 @@ calendarPlot <-
     if (annotate == "ws") {
       baseData$wd <- baseData$wd * 2 * pi / 360
 
-      ws <- baseData %>%
+      ws <- baseData |>
         group_by(across(type)) %>%
-        do(prepare.grid(., "ws")) %>%
+        do(prepare.grid(., "ws")) |>
         ungroup()
 
-      wd <- baseData %>%
+      wd <- baseData |>
         group_by(across(type)) %>%
-        do(prepare.grid(., "wd")) %>%
+        do(prepare.grid(., "wd")) |>
         ungroup()
 
       ## normalise wind speeds to highest daily mean
@@ -695,7 +695,7 @@ calendarPlot <-
     newdata <-
       left_join(
         mydata,
-        original_data %>% select(any_of(c("date", "ws", "wd"))),
+        original_data |> select(any_of(c("date", "ws", "wd"))),
         by = "date"
       )
 

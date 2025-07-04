@@ -213,9 +213,9 @@ linearRelation <- function(
 
     my_lm <- function(data) lm(y ~ x, data = data)
 
-    results <- data %>%
-      group_nest() %>%
-      mutate(fit = map(data, my_lm), sum = map(fit, summary)) %>%
+    results <- data |>
+      group_nest() |>
+      mutate(fit = map(data, my_lm), sum = map(fit, summary)) |>
       mutate(
         rsquare = map_dbl(sum, "r.squared"),
         coef = map(sum, "coefficients"),
@@ -242,10 +242,10 @@ linearRelation <- function(
       Args$xlab <- "hour"
     }
 
-    mydata <- mutate(mydata, cond, hour = as.numeric(format(date, "%H"))) %>%
+    mydata <- mutate(mydata, cond, hour = as.numeric(format(date, "%H"))) |>
       group_by(cond, hour)
 
-    results <- model_lm(x = x, y = y, mydata) %>%
+    results <- model_lm(x = x, y = y, mydata) |>
       select(cond, hour, slope, intercept, rsquare, seslope, N)
 
     results$slope <- results$slope * adj
@@ -292,10 +292,10 @@ linearRelation <- function(
   ## flexible time period
 
   if (!period %in% c("hour", "weekday", "day.hour")) {
-    mydata <- mutate(mydata, cond = round_date(date, period)) %>%
+    mydata <- mutate(mydata, cond = round_date(date, period)) |>
       group_by(cond)
 
-    results <- model_lm(x = x, y = y, mydata) %>%
+    results <- model_lm(x = x, y = y, mydata) |>
       select(cond, slope, intercept, rsquare, seslope, N)
 
     results$slope <- results$slope * adj
@@ -361,10 +361,10 @@ linearRelation <- function(
       Args$xlab <- "weekday"
     }
 
-    mydata <- mutate(mydata, cond, weekday = format(date, "%a")) %>%
+    mydata <- mutate(mydata, cond, weekday = format(date, "%a")) |>
       group_by(cond, weekday)
 
-    results <- model_lm(x = x, y = y, mydata) %>%
+    results <- model_lm(x = x, y = y, mydata) |>
       select(cond, weekday, slope, intercept, rsquare, seslope, N)
 
     results <- subset(results, rsquare >= rsq.thresh & N >= n)
@@ -425,10 +425,10 @@ linearRelation <- function(
       cond,
       weekday = format(date, "%A"),
       hour = as.numeric(format(date, "%H"))
-    ) %>%
+    ) |>
       group_by(cond, weekday, hour)
 
-    results <- model_lm(x = x, y = y, mydata) %>%
+    results <- model_lm(x = x, y = y, mydata) |>
       select(cond, weekday, hour, slope, intercept, rsquare, seslope, N)
 
     results$slope <- results$slope * adj

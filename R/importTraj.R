@@ -170,7 +170,7 @@ importTraj <-
     if (progress) {
       progress <- "Importing Trajectories"
     }
-    thedata <- purrr::map(files, loadData, .progress = progress) %>%
+    thedata <- purrr::map(files, loadData, .progress = progress) |>
       purrr::list_rbind()
 
     ## change names

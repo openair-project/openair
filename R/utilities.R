@@ -140,7 +140,7 @@ date.pad <- function(mydata, type = NULL, print.int = FALSE) {
   ## only pad if there are missing data
   if (length(unique(diff(mydata$date))) != 1L) {
     all.dates <- data.frame(date = seq(start.date, end.date, by = interval))
-    mydata <- mydata %>% full_join(all.dates, by = "date")
+    mydata <- full_join(mydata, all.dates, by = "date")
 
     # add missing types - if type is present
     if (!is.null(type)) {

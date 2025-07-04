@@ -345,7 +345,7 @@ polarFreq <- function(
     lpolygon(c(x1, x2), c(y1, y2), col = colour, border = border.col, lwd = 0.5)
   }
 
-  results.grid <- mydata %>%
+  results.grid <- mydata |>
     group_by(across(type)) %>%
     do(prepare.grid(.))
 

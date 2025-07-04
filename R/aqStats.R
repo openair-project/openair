@@ -104,11 +104,11 @@ aqStats <- function(
 
   # reorganise data
   mydata <-
-    mydata %>%
+    mydata |>
     tidyr::pivot_longer(
       cols = dplyr::all_of(pollutant),
       names_to = "pollutant"
-    ) %>%
+    ) |>
     mutate(year = lubridate::year(date))
 
   vars <- c(type, "pollutant", "year")
@@ -131,8 +131,8 @@ aqStats <- function(
         out
       },
       .progress = progress
-    ) %>%
-    dplyr::bind_rows() %>%
+    ) |>
+    dplyr::bind_rows() |>
     dplyr::relocate(dplyr::all_of(vars))
 
   # transpose if requested
@@ -143,10 +143,10 @@ aqStats <- function(
     }
 
     results <-
-      results %>%
-      tidyr::pivot_longer(-dplyr::all_of(c(vars, "date"))) %>%
-      tidyr::unite(site_pol, dplyr::all_of(unite_vars)) %>%
-      tidyr::pivot_wider(names_from = "site_pol") %>%
+      results |>
+      tidyr::pivot_longer(-dplyr::all_of(c(vars, "date"))) |>
+      tidyr::unite(site_pol, dplyr::all_of(unite_vars)) |>
+      tidyr::pivot_wider(names_from = "site_pol") |>
       dplyr::rename_with(function(x) {
         gsub("_", " ", x)
       })
@@ -216,10 +216,10 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
             new.name = "value",
             ...
           )
-        ) %>%
+        ) |>
           timeAverageYear("max", newname)
       }
-    ) %>%
+    ) |>
       dplyr::bind_rows()
   }
 
@@ -240,7 +240,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
     statistic = "mean",
     data.thresh,
     print.int = FALSE
-  ) %>%
+  ) |>
     timeAverageYear("max", "max_daily")
 
   # data capture
@@ -263,10 +263,10 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
           pollutant = "value",
           data.thresh = data.thresh,
           percentile = percentile
-        ) %>%
+        ) |>
           dplyr::mutate(year = as.numeric(i))
       }
-    ) %>%
+    ) |>
     dplyr::bind_rows()
 
   # Tables list to merge
@@ -298,20 +298,20 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
               data.thresh = data.thresh,
               ...
             )
-          ) %>%
+          ) |>
             timeAverage(
               avg.time = "day",
               statistic = "max",
               data.thresh = data.thresh
-            ) %>%
+            ) |>
             dplyr::summarise(
               roll.8.O3.gt.100 = sum(.data$rolling8value > 100, na.rm = TRUE),
               roll.8.O3.gt.120 = sum(.data$rolling8value > 120, na.rm = TRUE)
-            ) %>%
+            ) |>
             dplyr::mutate(year = as.numeric(i))
         }
-      ) %>%
-      dplyr::bind_rows() %>%
+      ) |>
+      dplyr::bind_rows() |>
       dplyr::mutate(date = Mean$date)
 
     aot40 <-
@@ -325,11 +325,11 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
               pollutant = "value",
               ...
             )
-          ) %>%
+          ) |>
             dplyr::mutate(year = as.numeric(i))
         }
-      ) %>%
-      dplyr::bind_rows() %>%
+      ) |>
+      dplyr::bind_rows() |>
       dplyr::mutate(date = Mean$date)
 
     tables <- append(tables, list(rollingO3, aot40))
@@ -342,7 +342,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
         mydata,
         hours = sum(.data$value > 200, na.rm = TRUE),
         .by = "year"
-      ) %>%
+      ) |>
       dplyr::mutate(date = Mean$date)
 
     tables <- append(tables, list(hours))
@@ -357,8 +357,8 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
         statistic = "mean",
         data.thresh = data.thresh,
         type = "year"
-      ) %>%
-      dplyr::summarise(days = sum(.data$value > 50, na.rm = TRUE)) %>%
+      ) |>
+      dplyr::summarise(days = sum(.data$value > 50, na.rm = TRUE)) |>
       dplyr::mutate(date = Mean$date, year = mydata$year[1])
 
     tables <- append(tables, list(days))

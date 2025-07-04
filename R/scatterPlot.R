@@ -1116,22 +1116,22 @@ scatterPlot <- function(
     ) {
       if (statistic == "frequency") {
         vars_select <- c(vars, z)
-        mydata <- select(mydata, vars_select) %>%
-          group_by(across(vars)) %>%
+        mydata <- select(mydata, vars_select) |>
+          group_by(across(vars)) |>
           summarise(MN = length(.data[[z]]))
       }
 
       if (statistic == "mean") {
         vars_select <- c(vars, z)
-        mydata <- select(mydata, vars_select) %>%
-          group_by(across(vars)) %>%
+        mydata <- select(mydata, vars_select) |>
+          group_by(across(vars)) |>
           summarise(MN = mean(.data[[z]], na.rm = TRUE))
       }
 
       if (statistic == "median") {
         vars_select <- c(vars, z)
-        mydata <- select(mydata, vars_select) %>%
-          group_by(across(vars)) %>%
+        mydata <- select(mydata, vars_select) |>
+          group_by(across(vars)) |>
           summarise(MN = median(.data[[z]], na.rm = TRUE))
       }
 
@@ -1213,7 +1213,7 @@ scatterPlot <- function(
     }
 
     if (smooth) {
-      mydata <- mydata %>%
+      mydata <- mydata |>
         group_by(across(type)) %>%
         do(smooth.grid(., z))
     }
@@ -1474,7 +1474,7 @@ scatterPlot <- function(
     }
 
     if (smooth) {
-      mydata <- mydata %>%
+      mydata <- mydata |>
         group_by(across(type)) %>%
         do(smooth.grid(., z))
     }
@@ -1703,7 +1703,7 @@ scatterPlot <- function(
 
     ## ###########################################################################
 
-    results.grid <- mydata %>%
+    results.grid <- mydata |>
       group_by(across(type)) %>%
       do(prepare.grid(.))
 
@@ -1863,7 +1863,13 @@ add.map <- function(Args, ...) {
       orientation = Args$orientation
     )
     mp <- maps::map.wrap(mp)
-    llines(mp$x, mp$y, col = Args$map.border, lty = Args$map.lty, lwd = Args$map.lwd)
+    llines(
+      mp$x,
+      mp$y,
+      col = Args$map.border,
+      lty = Args$map.lty,
+      lwd = Args$map.lwd
+    )
   }
 
   map.grid2(
@@ -2113,13 +2119,13 @@ addTraj <- function(
       ## make sure we match clusters in case order mixed
       vars <- c(type, "MyGroupVar")
 
-      pnts <- mydata %>%
-        group_by(across(vars)) %>%
+      pnts <- mydata |>
+        group_by(across(vars)) |>
         dplyr::slice_head(n = 1)
 
       if (length(unique(pnts$lon)) == 1 & length(unique(pnts$lat)) == 1) {
-        pnts <- mydata %>%
-          group_by(across(vars)) %>%
+        pnts <- mydata |>
+          group_by(across(vars)) |>
           dplyr::slice_tail(n = 1)
       }
 

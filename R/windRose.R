@@ -711,7 +711,7 @@ windRose <- function(
     }
   }
 
-  results <- mydata %>%
+  results <- mydata |>
     group_by(across(type)) %>%
     do(prepare.grid(.))
 
@@ -750,7 +750,7 @@ windRose <- function(
 
   ## correction for bias when angle does not divide exactly into 360
   if (bias.corr) {
-    results <- results %>%
+    results <- results |>
       group_by(across(type)) %>%
       do(corr_bias(.))
   }

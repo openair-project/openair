@@ -1424,7 +1424,7 @@ errorDiff <- function(
   }
 
   ## warnings from dplyr seem harmless FIXME
-  res <- mydata %>%
+  res <- mydata |>
     group_by(across(splits)) %>%
     do(bootMeanDiff(., x = poll1, y = poll2, B = B, na.rm = TRUE))
 

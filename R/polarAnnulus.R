@@ -586,16 +586,16 @@ polarAnnulus <-
     }
 
     ## more compact way?  Need to test
-    results.grid <- mydata %>%
-      group_by(across(type)) %>%
-      nest() %>%
-      mutate(data = purrr::map(data, prepare.grid)) %>%
+    results.grid <- mydata |>
+      group_by(across(type)) |>
+      nest() |>
+      mutate(data = purrr::map(data, prepare.grid)) |>
       unnest(cols = c(data))
 
     ## normalise by divining by mean conditioning value if needed
     if (normalise) {
-      results.grid <- results.grid %>%
-        group_by(across(type)) %>%
+      results.grid <- results.grid |>
+        group_by(across(type)) |>
         mutate(z = z / mean(z, na.rm = TRUE))
 
       if (missing(key.footer)) key.footer <- "normalised \nlevel"

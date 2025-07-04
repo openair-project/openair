@@ -347,20 +347,21 @@ conditionalEval <- function(
     if (other) {
       vars <- c("pred.cut", statistic)
 
-      res <- res %>%
-        group_by(across(vars)) %>%
+      res <- res |>
+        group_by(across(vars)) |>
         summarise(Freq = dplyr::n())
 
       ## calculate proportions by interval
 
-      res <- ungroup(res) %>%
-        group_by(pred.cut) %>%
+      res <- ungroup(res) |>
+        group_by(pred.cut) |>
         mutate(Freq = Freq / sum(Freq))
 
       res$statistic <- factor(statistic)
     } else {
-      res <- group_by(res, pred.cut) %>% do(statFun(., statistic = statistic))
-      #  res <- do(statFun(., statistic = statistic))
+      res <- res |>
+        group_by(pred.cut) %>%
+        do(statFun(., statistic = statistic))
     }
 
     na.omit(res)
@@ -369,7 +370,7 @@ conditionalEval <- function(
   ## treat clusters specifically if present #####################################
 
   if (other) {
-    clust.results <- mydata %>%
+    clust.results <- mydata |>
       group_by(across(type)) %>%
       do(procData(., other = other, statistic = statistic))
 
@@ -454,12 +455,12 @@ conditionalEval <- function(
     )
 
     process_data <- function(mydata, type, ...) {
-      mydata <- mydata %>%
+      mydata <- mydata |>
         group_by(across(type)) %>%
         do(procData(., ...))
     }
 
-    results <- combs %>%
+    results <- combs |>
       rowwise() %>%
       do(suppressWarnings(process_data(
         mydata,
@@ -533,8 +534,8 @@ conditionalEval <- function(
     myform <- formula(paste("mean ~ .id | ", temp, sep = ""))
 
     # ylimits list
-    ylim <- split(results, results$statistic) %>%
-      map(~ c(min(.$lower, na.rm = TRUE), max(.$upper, na.rm = TRUE)))
+    ylim <- split(results, results$statistic) |>
+      map(\(x) c(min(x$lower, na.rm = TRUE), max(x$upper, na.rm = TRUE)))
 
     p.args <- list(
       x = myform,

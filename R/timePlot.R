@@ -429,15 +429,14 @@ timePlot <- function(
     ## deal with mutiple percentile values
 
     if (length(percentile) > 1) {
-      mydata <- mydata %>%
-        group_by(across(type)) %>%
-        do(calcPercentile(
-          .,
-          pollutant = pollutant,
-          avg.time = avg.time,
-          data.thresh = data.thresh,
-          percentile = percentile
-        ))
+      mydata <- calcPercentile(
+        mydata,
+        type = type,
+        pollutant = pollutant,
+        avg.time = avg.time,
+        data.thresh = data.thresh,
+        percentile = percentile
+      )
 
       pollutant <- paste("percentile.", percentile, sep = "")
 
