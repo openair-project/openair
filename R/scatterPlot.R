@@ -1863,7 +1863,7 @@ add.map <- function(Args, ...) {
       orientation = Args$orientation
     )
     mp <- maps::map.wrap(mp)
-    llines(mp$x, mp$y, col = Args$map.border)
+    llines(mp$x, mp$y, col = Args$map.border, lty = Args$map.lty, lwd = Args$map.lwd)
   }
 
   map.grid2(
