@@ -22,7 +22,10 @@ trajLevel(
   map.fill = TRUE,
   map.res = "default",
   map.cols = "grey40",
+  map.border = "black",
   map.alpha = 0.3,
+  map.lwd = 1,
+  map.lty = 1,
   projection = "lambert",
   parameters = c(51, 51),
   orientation = c(90, 0, 0),
@@ -43,21 +46,21 @@ trajLevel(
 \item{pollutant}{Pollutant to be plotted. By default the trajectory height is
 used.}
 
-\item{type}{\code{type} determines how the data are split, i.e., conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-\code{cutData} e.g. "season", "year", "weekday" and so on. For example,
-\code{type = "season"} will produce four plots --- one for each season.
+\item{type}{\code{type} determines how the data are split, i.e., conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
+"season", "year", "weekday" and so on. For example, \code{type = "season"} will
+produce four plots --- one for each season.
 
-It is also possible to choose \code{type} as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+It is also possible to choose \code{type} as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-\code{type} can be up length two e.g. \code{type = c("season", "weekday")}
-will produce a 2x2 plot split by season and day of the week. Note, when two
+\code{type} can be up length two e.g. \code{type = c("season", "weekday")} will
+produce a 2x2 plot split by season and day of the week. Note, when two
 types are provided the first forms the columns and the second the rows.}
 
 \item{smooth}{Should the trajectory surface be smoothed?}
@@ -91,8 +94,8 @@ Analysis is undertaken. This statistic method interacts with \code{.combine} and
 \item{percentile}{The percentile concentration of \code{pollutant} against which
 the all trajectories are compared.}
 
-\item{map}{Should a base map be drawn? If \code{TRUE} the world base map from
-the \code{maps} package is used.}
+\item{map}{Should a base map be drawn? If \code{TRUE} the world base map from the
+\code{maps} package is used.}
 
 \item{lon.inc, lat.inc}{The longitude and latitude intervals to be used for
 binning data.}
@@ -116,22 +119,34 @@ much noise.}
 countries.}
 
 \item{map.res}{The resolution of the base map. By default the function uses
-the \sQuote{world} map from the \code{maps} package. If \code{map.res = "hires"} then the (much) more detailed base map \sQuote{worldHires} from
-the \code{mapdata} package is used. Use \code{library(mapdata)}. Also
-available is a map showing the US states. In this case \code{map.res = "state"} should be used.}
+the \sQuote{world} map from the \code{maps} package. If \code{map.res = "hires"} then
+the (much) more detailed base map \sQuote{worldHires} from the \code{mapdata}
+package is used. Use \code{library(mapdata)}. Also available is a map showing
+the US states. In this case \code{map.res = "state"} should be used.}
 
-\item{map.cols}{If \code{map.fill = TRUE} \code{map.cols} controls the fill
-colour. Examples include \code{map.fill = "grey40"} and \code{map.fill = openColours("default", 10)}. The latter colours the countries and can help
+\item{map.cols}{If \code{map.fill = TRUE} \code{map.cols} controls the fill colour.
+Examples include \code{map.fill = "grey40"} and \code{map.fill = openColours("default", 10)}. The latter colours the countries and can help
 differentiate them.}
+
+\item{map.border}{The colour to use for the map outlines/borders. Defaults to
+\code{"black"}.}
 
 \item{map.alpha}{The transparency level of the filled map which takes values
 from 0 (full transparency) to 1 (full opacity). Setting it below 1 can help
 view trajectories, trajectory surfaces etc. \emph{and} a filled base map.}
 
+\item{map.lwd}{The map line width, a positive number, defaulting to \code{1}.}
+
+\item{map.lty}{The map line type. Line types can either be specified as an
+integer (\code{0} = blank, \code{1} = solid (default), \code{2} = dashed, \code{3} = dotted,
+\code{4} = dotdash, \code{5} = longdash, \code{6} = twodash) or as one of the character
+strings "blank", "solid", "dashed", "dotted", "dotdash", "longdash", or
+"twodash", where "blank" uses 'invisible lines' (i.e., does not draw them).}
+
 \item{projection}{The map projection to be used. Different map projections
-are possible through the \code{mapproj} package. See \code{?mapproject} for
-extensive details and information on setting other parameters and
-orientation (see below).}
+are possible through the \code{mapproj} package. See \code{?mapproject} for extensive
+details and information on setting other parameters and orientation (see
+below).}
 
 \item{parameters}{From the \code{mapproj} package. Optional numeric vector of
 parameters for use with the projection argument. This argument is optional
@@ -139,13 +154,13 @@ only in the sense that certain projections do not require additional
 parameters. If a projection does not require additional parameters then set
 to null i.e. \code{parameters = NULL}.}
 
-\item{orientation}{From the \code{mapproj} package. An optional vector
-c(latitude, longitude, rotation) which describes where the "North Pole"
-should be when computing the projection. Normally this is c(90, 0), which
-is appropriate for cylindrical and conic projections. For a planar
-projection, you should set it to the desired point of tangency. The third
-value is a clockwise rotation (in degrees), which defaults to the midrange
-of the longitude coordinates in the map.}
+\item{orientation}{From the \code{mapproj} package. An optional vector c(latitude,
+longitude, rotation) which describes where the "North Pole" should be when
+computing the projection. Normally this is c(90, 0), which is appropriate
+for cylindrical and conic projections. For a planar projection, you should
+set it to the desired point of tangency. The third value is a clockwise
+rotation (in degrees), which defaults to the midrange of the longitude
+coordinates in the map.}
 
 \item{grid.col}{The colour of the map grid to be used. To remove the grid set
 \code{grid.col = "transparent"}.}

@@ -58,6 +58,8 @@
 
 - `importImperial()` has been added, superseding `importKCL()`. They are functionally identical, but reflect that londonair is now managed by Imperial College London. Function arguments have been renamed in `importImperial()` to better match `importUKAQ()`.
 
+- Added the `map.lwd`, `map.lty` and `map.border` arguments to `trajPlot()`, `trajLevel()` and `trajCluster()` for greater control over the 'basemap' of each plot.
+
 ## Bug fixes
 
 - Fixed repeated day number in `calendarPlot` when `statistic = max`.
