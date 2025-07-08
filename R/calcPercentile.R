@@ -79,10 +79,7 @@ calcPercentile <- function(
   )
 
   # get joining columns
-  by <- "date"
-  if (any(type != "default")) {
-    by <- append(by, type)
-  }
+  by <- append("date", type[type != "default"])
 
   # bind into one
   mydata <- purrr::reduce(mydata, function(x, y) {
