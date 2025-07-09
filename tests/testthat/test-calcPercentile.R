@@ -19,4 +19,14 @@ test_that("multiplication works", {
   expect_equal(names(multiple), c("date", "p10", "p50", "p90"))
 
   expect_error(calcPercentile(testdat, pollutant = "co2"))
+
+  expect_no_error(
+    calcPercentile(
+      testdat,
+      pollutant = "so2",
+      percentile = c(10, 50, 90),
+      prefix = "p",
+      type = c("default", "month", "week")
+    )
+  )
 })
