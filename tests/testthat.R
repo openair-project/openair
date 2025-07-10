@@ -8,5 +8,6 @@
 
 library(testthat)
 library(openair)
+library(magrittr)
 
 test_check("openair")

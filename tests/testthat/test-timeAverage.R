@@ -21,7 +21,7 @@ test_that("timeaverage averages & pads", {
   # intervals
   testdat <- selectByDate(mydata, year = 1999:2000)
   padded <-
-    timeAverage(testdat, "year") |>
+    timeAverage(testdat, "year") %>%
     timeAverage("month")
   expect_length(padded$date, 24)
   expect_equal(
@@ -31,8 +31,8 @@ test_that("timeaverage averages & pads", {
 
   # ensure filling works as expected
   padded2 <-
-    selectByDate(mydata, year = 1999, month = 1, day = 1, hour = 1:10) |>
-    dplyr::mutate(co = c(1:5, rep(NA, 2), 8:10)) |>
+    selectByDate(mydata, year = 1999, month = 1, day = 1, hour = 1:10) %>%
+    dplyr::mutate(co = c(1:5, rep(NA, 2), 8:10)) %>%
     timeAverage("30 min", fill = TRUE)
   expect_length(padded2$date, 21)
   expect_equal(
@@ -115,7 +115,7 @@ test_that("different timeaverage stats", {
 })
 
 test_that("intervals work", {
-  testdat <- selectByDate(mydata, year = 2000) |>
+  testdat <- selectByDate(mydata, year = 2000) %>%
     timeAverage("month")
 
   x1 <- timeAverage(testdat, "month", interval = "hour", data.thresh = 90)
@@ -136,13 +136,22 @@ test_that("windspeed working", {
   expect_equal(round(x2$wd, 2), 238.53)
 
   # does something different w/ no ws
-  x3 <- testdat |> dplyr::select(-"ws") |> timeAverage("year")
+  x3 <- testdat %>% dplyr::select(-"ws") %>% timeAverage("year")
   expect_equal(round(x3$wd, 2), 251.97)
 })
 
 test_that("seasons working", {
   testdat <- selectByDate(mydata, year = 2000:2002)
   seasonal <- timeAverage(testdat, "season")
-  seasonal <- seasonal |> cutData("season", names = c("testseason"))
+  seasonal <- seasonal %>% cutData("season", names = c("testseason"))
   expect_equal(seasonal$season, seasonal$testseason)
+})
+
+test_that("timeaverage works with Date", {
+  testdat <-
+    selectByDate(mydata, year = 2003) %>%
+    timeAverage("day") %>%
+    dplyr::mutate(date = as.Date(date))
+
+  expect_no_error(timeAverage(testdat, "month"))
 })
