@@ -56,6 +56,16 @@
 
 - `trendLevel()` will now automatically generate appropriate `labels` if `breaks` are provided. The `labels` argument can still be used to provide custom labels per break.
 
+- Many 'data utility' functions will now either warn or error if duplicate dates are detected, which is suggestive of a mix of either sites or averaging times within the same dataframe. The following functions have new behaviour:
+
+    - `selectRunning()` and `rollingMean()` will error (duplicate dates break the logic of 'rolling window' functions). 
+    
+    - `aqStats()` will also error, as it relies on `rollingMean()`.
+    
+    - `timeAverage()` will warn the user but proceed with calculations, as averaging across different sites may be a legitimate action.
+    
+    - Functions which rely on `timeAverage()` will also warn but not error (notably `calcPercentile()` but also many plotting functions with `avg.time` arguments like `timePlot()`)
+
 - `importImperial()` has been added, superseding `importKCL()`. They are functionally identical, but reflect that londonair is now managed by Imperial College London. Function arguments have been renamed in `importImperial()` to better match `importUKAQ()`.
 
 - Added the `map.lwd`, `map.lty` and `map.border` arguments to `trajPlot()`, `trajLevel()` and `trajCluster()` for greater control over the 'basemap' of each plot.

@@ -41,6 +41,6 @@ test_that("aqstats works", {
     c("default", "year", "date", "name", "no2", "o3", "pm10", "so2")
   )
 
-  # warning
-  expect_warning(aqStats(rbind(testdat, testdat)))
+  # error if duplicate dates
+  expect_error(aqStats(rbind(testdat, testdat)))
 })

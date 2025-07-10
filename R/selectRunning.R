@@ -72,6 +72,9 @@ selectRunning <- function(
   # handle type
   mydata <- cutData(mydata, type = type, ...)
 
+  # check for multiple sites (for example)
+  checkDuplicateRows(mydata, type, fn = cli::cli_abort)
+
   # pad out missing data
   thedata <- purrr::map(split(mydata, mydata[[type]]), function(x) {
     date.pad(x, type = type)

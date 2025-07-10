@@ -73,15 +73,11 @@ rollingMean <- function(
     width <- 1L
   }
 
-  # deal with type
-  if (type == "default" & "site" %in% names(mydata)) {
-    # back compatibility to avoid breaking change
-    cli::cli_inform(
-      '{.field type} is "default" but {.code site} column identified - setting {.field type} to "site".'
-    )
-    type <- "site"
-  }
+  # cut data
   mydata <- cutData(mydata, type = type, ...)
+
+  # error if duplicate dates
+  checkDuplicateRows(mydata, type, fn = cli::cli_abort)
 
   # function to perform rolling average
   calc.rolling <- function(mydata) {

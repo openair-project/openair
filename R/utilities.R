@@ -838,3 +838,33 @@ checkNum <- function(mydata, vars) {
 
   return(mydata)
 }
+
+#' Function to check if duplicate dates are present in mydata by type
+#' @param mydata Data input
+#' @param type `type` from parent function
+#' @param fn One of `cli::cli_warn` or `cli::cli_abort`
+#' @noRd
+checkDuplicateRows <- function(mydata, type = NULL, fn = cli::cli_warn) {
+  if (is.null(type)) {
+    flag <- length(mydata$date) != length(unique(mydata$date))
+  } else {
+    flag <-
+      split(mydata, mydata[type], drop = TRUE) %>%
+      purrr::map_vec(function(x) {
+        dates <- x$date
+        unique_dates <- unique(x$date)
+        length(dates) != length(unique_dates)
+      }) %>%
+      any()
+  }
+
+  if (flag) {
+    fn(
+      c(
+        "!" = "Duplicate dates detected in mydata{.field $date}.",
+        "i" = 'Are there multiple sites in {.code mydata}? Use the {.field type} argument to condition them separately.'
+      ),
+      call = NULL
+    )
+  }
+}

@@ -93,6 +93,9 @@ aqStats <- function(
   # cut data by type
   mydata <- cutData(mydata, type)
 
+  # check for duplicate dates
+  checkDuplicateRows(mydata, type, fn = cli::cli_abort)
+
   # check we have the variables
   mydata <- checkPrep(
     mydata,
@@ -158,17 +161,6 @@ aqStats <- function(
 
 # function to calculate statistics
 calcStats <- function(mydata, data.thresh, percentile, ...) {
-  # check to see if dates duplicate
-  if (length(unique(mydata$date)) != length(mydata$date)) {
-    cli::cli_warn(
-      c(
-        "!" = 'Duplicate dates detected per {.field type}.',
-        "i" = 'Is there more than one site? Use {.code {.field type} = "site"}.'
-      ),
-      call = NULL
-    )
-  }
-
   # fill any missing hours
   start.date <- lubridate::floor_date(min(mydata$date), "year")
   end.date <- lubridate::ceiling_date(max(mydata$date), "year") - 3600
