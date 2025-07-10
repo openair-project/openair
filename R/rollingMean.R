@@ -117,7 +117,7 @@ rollingMean <- function(
     purrr::list_rbind()
 
   # drop default column
-  if (type == "default") {
+  if (any(type == "default")) {
     mydata$default <- NULL
   }
 

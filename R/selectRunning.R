@@ -76,7 +76,7 @@ selectRunning <- function(
   checkDuplicateRows(mydata, type, fn = cli::cli_abort)
 
   # pad out missing data
-  thedata <- purrr::map(split(mydata, mydata[[type]]), function(x) {
+  thedata <- purrr::map(split(mydata, mydata[type], drop = TRUE), function(x) {
     date.pad(x, type = type)
   }) %>%
     dplyr::bind_rows()
@@ -102,11 +102,12 @@ selectRunning <- function(
       `__run__` = dplyr::consecutive_id(.data[["__flag__"]]),
       .by = dplyr::all_of(type)
     ) %>%
-    # ensure runs are unique per type
-    dplyr::mutate(`__run__` = paste(.data[["__run__"]], .data[[type]])) %>%
     # count length of runs
-    dplyr::mutate(`__len__` = dplyr::n(), .by = "__run__") %>%
-    # check if run length is greather than run.len for positive flags
+    dplyr::mutate(
+      `__len__` = dplyr::n(),
+      .by = dplyr::all_of(c("__run__", type))
+    ) %>%
+    # check if run length is greater than run.len for positive flags
     dplyr::mutate(
       `__flag__` = dplyr::if_else(
         condition = .data[["__flag__"]] &
@@ -139,7 +140,7 @@ selectRunning <- function(
     mydata[[name]] <- ifelse(mydata[[name]], result[1], result[2])
   }
 
-  if (type == "default") {
+  if (any(type == "default")) {
     mydata$default <- NULL
   }
 

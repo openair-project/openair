@@ -114,7 +114,7 @@ binData <- function(
   mydata <- dplyr::inner_join(means, uncert, by = by)
 
   # drop type column if default
-  if (type == "default") {
+  if (any(type == "default")) {
     mydata$default <- NULL
   }
 

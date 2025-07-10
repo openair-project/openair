@@ -119,7 +119,7 @@ aqStats <- function(
   # calculate the statistics
   results <-
     purrr::map(
-      .x = split(mydata, mydata[vars], sep = "__"),
+      .x = split(mydata, mydata[vars], sep = "__", drop = TRUE),
       .f = function(x) {
         out <- rlang::exec(
           calcStats,
@@ -140,10 +140,7 @@ aqStats <- function(
 
   # transpose if requested
   if (transpose) {
-    unite_vars <- c(type, "pollutant")
-    if (type == "default") {
-      unite_vars <- c("pollutant")
-    }
+    unite_vars <- c(type[type != "default"], "pollutant")
 
     results <-
       results %>%
