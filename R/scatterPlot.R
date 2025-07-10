@@ -429,88 +429,35 @@ scatterPlot <- function(
     trellis.par.set(fontsize = list(text = Args$fontsize))
   }
 
-  Args$map.cols <-
-    if ("map.cols" %in% names(Args)) {
-      Args$map.cols
-    } else {
-      "grey20"
-    }
+  Args$map.cols <- Args$map.cols %||% "grey20"
 
-  Args$map.alpha <-
-    if ("map.alpha" %in% names(Args)) {
-      Args$map.alpha
-    } else {
-      0.2
-    }
+  Args$map.border <- Args$map.border %||% "black"
 
-  Args$map.fill <-
-    if ("map.fill" %in% names(Args)) {
-      Args$map.fill
-    } else {
-      TRUE
-    }
+  Args$map.alpha <- Args$map.alpha %||% 0.2
 
-  Args$map.res <-
-    if ("map.res" %in% names(Args)) {
-      Args$map.res
-    } else {
-      "default"
-    }
+  Args$map.fill <- Args$map.fill %||% TRUE
 
-  Args$traj <- if ("traj" %in% names(Args)) {
-    Args$traj
-  } else {
-    FALSE
-  }
+  Args$map.res <- Args$map.res %||% "default"
 
-  Args$projection <-
-    if ("projection" %in% names(Args)) {
-      Args$projection
-    } else {
-      "lambert"
-    }
+  Args$map.lty <- Args$map.lty %||% 1
 
-  Args$parameters <-
-    if ("parameters" %in% names(Args)) {
-      Args$parameters
-    } else {
-      c(51, 51)
-    }
+  Args$map.lwd <- Args$map.lwd %||% 1
 
-  Args$orientation <-
-    if ("orientation" %in% names(Args)) {
-      Args$orientation
-    } else {
-      c(90, 0, 0)
-    }
+  Args$traj <- Args$traj %||% FALSE
 
-  Args$grid.col <-
-    if ("grid.col" %in% names(Args)) {
-      Args$grid.col
-    } else {
-      "deepskyblue"
-    }
+  Args$projection <- Args$projection %||% "lambert"
 
-  Args$npoints <-
-    if ("npoints" %in% names(Args)) {
-      Args$npoints
-    } else {
-      12
-    }
+  Args$parameters <- Args$parameters %||% c(51, 51)
 
-  Args$origin <-
-    if ("origin" %in% names(Args)) {
-      Args$origin
-    } else {
-      TRUE
-    }
+  Args$orientation <- Args$orientation %||% c(90, 0, 0)
 
-  Args$clusters <-
-    if ("clusters" %in% names(Args)) {
-      Args$clusters
-    } else {
-      NA
-    }
+  Args$grid.col <- Args$grid.col %||% "deepskyblue"
+
+  Args$npoints <- Args$npoints %||% 12
+
+  Args$origin <- Args$origin %||% TRUE
+
+  Args$clusters <- Args$clusters %||% NA
 
   ## transform hexbin by default
   Args$trans <- if ("trans" %in% names(Args)) Args$trans else function(x) log(x)
@@ -1902,8 +1849,10 @@ add.map <- function(Args, ...) {
       mp$x,
       mp$y,
       col = Args$map.cols,
-      border = "black",
-      alpha = Args$map.alpha
+      border = Args$map.border,
+      alpha = Args$map.alpha,
+      lty = Args$map.lty,
+      lwd = Args$map.lwd
     )
   } else {
     mp <- maps::map(
@@ -1914,7 +1863,7 @@ add.map <- function(Args, ...) {
       orientation = Args$orientation
     )
     mp <- maps::map.wrap(mp)
-    llines(mp$x, mp$y, col = "black")
+    llines(mp$x, mp$y, col = Args$map.border, lty = Args$map.lty, lwd = Args$map.lwd)
   }
 
   map.grid2(

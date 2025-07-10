@@ -24,7 +24,7 @@
 #' @note [openair][openair-package] functions generally require data frames with
 #'   a field "date" that can be in either `POSIXct` or `Date` format
 #' @source `mydata` was compiled from data archived in the London Air Quality
-#'   Archive.  See <https://www.londonair.org.uk> for site details.
+#'   Archive.  See <https://londonair.org.uk> for site details.
 #' @examples
 #' # basic structure
 #' head(mydata)

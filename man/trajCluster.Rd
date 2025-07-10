@@ -13,7 +13,10 @@ trajCluster(
   split.after = FALSE,
   map.fill = TRUE,
   map.cols = "grey40",
+  map.border = "black",
   map.alpha = 0.4,
+  map.lwd = 1,
+  map.lty = 1,
   projection = "lambert",
   parameters = c(51, 51),
   orientation = c(90, 0, 0),
@@ -56,18 +59,29 @@ have been applied to the whole data set.}
 \item{map.fill}{Should the base map be a filled polygon? Default is to fill
 countries.}
 
-\item{map.cols}{If \code{map.fill = TRUE} \code{map.cols} controls the fill
-colour. Examples include \code{map.fill = "grey40"} and \code{map.fill = openColours("default", 10)}. The latter colours the countries and can help
+\item{map.cols}{If \code{map.fill = TRUE} \code{map.cols} controls the fill colour.
+Examples include \code{map.fill = "grey40"} and \code{map.fill = openColours("default", 10)}. The latter colours the countries and can help
 differentiate them.}
+
+\item{map.border}{The colour to use for the map outlines/borders. Defaults to
+\code{"black"}.}
 
 \item{map.alpha}{The transparency level of the filled map which takes values
 from 0 (full transparency) to 1 (full opacity). Setting it below 1 can help
 view trajectories, trajectory surfaces etc. \emph{and} a filled base map.}
 
+\item{map.lwd}{The map line width, a positive number, defaulting to \code{1}.}
+
+\item{map.lty}{The map line type. Line types can either be specified as an
+integer (\code{0} = blank, \code{1} = solid (default), \code{2} = dashed, \code{3} = dotted,
+\code{4} = dotdash, \code{5} = longdash, \code{6} = twodash) or as one of the character
+strings "blank", "solid", "dashed", "dotted", "dotdash", "longdash", or
+"twodash", where "blank" uses 'invisible lines' (i.e., does not draw them).}
+
 \item{projection}{The map projection to be used. Different map projections
-are possible through the \code{mapproj} package. See \code{?mapproject} for
-extensive details and information on setting other parameters and
-orientation (see below).}
+are possible through the \code{mapproj} package. See \code{?mapproject} for extensive
+details and information on setting other parameters and orientation (see
+below).}
 
 \item{parameters}{From the \code{mapproj} package. Optional numeric vector of
 parameters for use with the projection argument. This argument is optional
@@ -75,13 +89,13 @@ only in the sense that certain projections do not require additional
 parameters. If a projection does not require additional parameters then set
 to null i.e. \code{parameters = NULL}.}
 
-\item{orientation}{From the \code{mapproj} package. An optional vector
-c(latitude, longitude, rotation) which describes where the "North Pole"
-should be when computing the projection. Normally this is c(90, 0), which
-is appropriate for cylindrical and conic projections. For a planar
-projection, you should set it to the desired point of tangency. The third
-value is a clockwise rotation (in degrees), which defaults to the midrange
-of the longitude coordinates in the map.}
+\item{orientation}{From the \code{mapproj} package. An optional vector c(latitude,
+longitude, rotation) which describes where the "North Pole" should be when
+computing the projection. Normally this is c(90, 0), which is appropriate
+for cylindrical and conic projections. For a planar projection, you should
+set it to the desired point of tangency. The third value is a clockwise
+rotation (in degrees), which defaults to the midrange of the longitude
+coordinates in the map.}
 
 \item{by.type}{The percentage of the total number of trajectories is given
 for all data by default. Setting \code{by.type = TRUE} will make each panel

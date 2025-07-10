@@ -159,7 +159,7 @@ importImperial <-
     con <-
       url(
         (paste(
-          "http://www.londonair.org.uk/r_data/",
+          "http://londonair.org.uk/r_data/",
           "sites",
           ".RData",
           sep = ""
@@ -184,7 +184,7 @@ importImperial <-
       tryCatch(
         {
           fileName <-
-            paste("http://www.londonair.org.uk/r_data/", x, ".RData", sep = "")
+            paste("http://londonair.org.uk/r_data/", x, ".RData", sep = "")
           con <- url(fileName)
           load(con)
 
@@ -352,7 +352,7 @@ importImperial <-
       ## merge met data
       load(url(
         paste(
-          "http://www.londonair.org.uk/r_data/",
+          "http://londonair.org.uk/r_data/",
           "metData",
           ".RData",
           sep = ""

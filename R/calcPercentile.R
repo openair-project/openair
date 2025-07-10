@@ -79,10 +79,7 @@ calcPercentile <- function(
   )
 
   # get joining columns
-  by <- "date"
-  if (type != "default") {
-    by <- append(by, type)
-  }
+  by <- append("date", type[type != "default"])
 
   # bind into one
   mydata <- purrr::reduce(mydata, function(x, y) {
@@ -123,11 +120,8 @@ make.percentile <- function(
   new.name <- paste0(prefix, percentile)
   names(mydata)[names(mydata) == pollutant] <- new.name
 
-  if (type == "default") {
-    cols <- c("date", new.name)
-  } else {
-    cols <- c("date", type, new.name)
-  }
+  # columns to return
+  cols <- c("date", type[type != "default"], new.name)
 
   # construct new dataframe with just new column & date
   results <- mydata[, cols]

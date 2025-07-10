@@ -66,6 +66,10 @@
     
     - Functions which rely on `timeAverage()` will also warn but not error (notably `calcPercentile()` but also many plotting functions with `avg.time` arguments like `timePlot()`)
 
+- `importImperial()` has been added, superseding `importKCL()`. They are functionally identical, but reflect that londonair is now managed by Imperial College London. Function arguments have been renamed in `importImperial()` to better match `importUKAQ()`.
+
+- Added the `map.lwd`, `map.lty` and `map.border` arguments to `trajPlot()`, `trajLevel()` and `trajCluster()` for greater control over the 'basemap' of each plot.
+
 ## Bug fixes
 
 - Fixed repeated day number in `calendarPlot` when `statistic = max`.
@@ -83,6 +87,8 @@
 - `timeAverage()` will now more consistently return `NA` values rather than `NaN` or `Inf` when all values are `NA`. This specifically affects the `"mean"` and `"min"` statistics.
 
 - `importUKAQ()` will now correctly label a measurement as ratified when it is on the day of `ratified_to`. i.e., if a site is ratified to `2020/01/01`, the measurement at `2020/01/01 23:00` will now be labelled as ratified.
+
+- Fixed `importImperial()` URLs.
 
 # openair 2.18-2
 
