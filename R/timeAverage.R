@@ -665,6 +665,25 @@ get_time_parameters <- function(mydata, avg.time) {
     "year" = 3600 * 8784
   )
 
+  if (length(int) == 0L) {
+    opts <-
+      c(
+        "sec",
+        "min",
+        "hour",
+        "day",
+        "week",
+        "month",
+        "quarter",
+        "season",
+        "year"
+      )
+    cli::cli_abort(c(
+      "x" = "Date unit '{units}' not recognised.",
+      "i" = "Possible options: {.code {opts}}."
+    ))
+  }
+
   seconds_avgtime_interval <- seconds_avgtime_interval * int # interval in seconds
   if (is.na(seconds_data_interval)) {
     seconds_data_interval <- seconds_avgtime_interval # when only one row
