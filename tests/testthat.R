@@ -8,6 +8,6 @@
 
 library(testthat)
 library(openair)
-library(magrittr)
+library(dplyr)
 
 test_check("openair")
