@@ -937,7 +937,7 @@ polarPlot <-
       ## no uncertainty to calculate
       if (!uncertainty) {
         ## catch errors when not enough data to calculate surface
-        Mgam <- try(gam(binned^n ~ s(u, v, k = k), weights = W), TRUE)
+        Mgam <- try(mgcv::gam(binned^n ~ s(u, v, k = k), weights = W), TRUE)
 
         if (!inherits(Mgam, "try-error")) {
           pred <- predict.gam(Mgam, input.data)
@@ -967,13 +967,13 @@ polarPlot <-
         }
       } else {
         ## uncertainties calculated, weighted by number of points in each bin
-        Mgam <- gam(binned^n ~ s(u, v, k = k), weights = binned.len)
+        Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k), weights = binned.len)
         pred <- predict.gam(Mgam, input.data, se.fit = TRUE)
         uncer <- 2 * as.vector(pred[[2]]) ## for approx 95% CI
         pred <- as.vector(pred[[1]])^(1 / n)
 
         ## do not weight for central prediction
-        Mgam <- gam(binned^n ~ s(u, v, k = k))
+        Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k))
         pred <- predict.gam(Mgam, input.data)
         pred <- as.vector(pred)
         Lower <- (pred - uncer)^(1 / n)

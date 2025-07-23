@@ -2,18 +2,18 @@
 #'
 #' Use non-parametric methods to calculate time series trends
 #'
-#' The `smoothTrend` function provides a flexible way of estimating the
-#' trend in the concentration of a pollutant or other variable. Monthly mean
-#' values are calculated from an hourly (or higher resolution) or daily time
-#' series. There is the option to deseasonalise the data if there is evidence
-#' of a seasonal cycle.
+#' The [smoothTrend()] function provides a flexible way of estimating the trend
+#' in the concentration of a pollutant or other variable. Monthly mean values
+#' are calculated from an hourly (or higher resolution) or daily time series.
+#' There is the option to deseasonalise the data if there is evidence of a
+#' seasonal cycle.
 #'
-#' `smoothTrend` uses a Generalized Additive Model (GAM) from the
-#' [mgcv::gam()] package to find the most appropriate level of smoothing.
-#' The function is particularly suited to situations where trends are not
-#' monotonic (see discussion with [TheilSen()] for more details on
-#' this). The `smoothTrend` function is particularly useful as an
-#' exploratory technique e.g. to check how linear or non-linear trends are.
+#' [smoothTrend()] uses a Generalized Additive Model (GAM) from the
+#' [mgcv::gam()] package to find the most appropriate level of smoothing. The
+#' function is particularly suited to situations where trends are not monotonic
+#' (see discussion with [TheilSen()] for more details on this). The
+#' [smoothTrend()] function is particularly useful as an exploratory technique
+#' e.g. to check how linear or non-linear trends are.
 #'
 #' 95% confidence intervals are shown by shading. Bootstrap estimates of the
 #' confidence intervals are also available through the `simulate` option.
@@ -22,118 +22,108 @@
 #' Trends can be considered in a very wide range of ways, controlled by setting
 #' `type` - see examples below.
 #'
-#' @param mydata A data frame containing the field `date` and at least one
-#'   other parameter for which a trend test is required; typically (but not
+#' @param mydata A data frame containing the field `date` and at least one other
+#'   parameter for which a trend test is required; typically (but not
 #'   necessarily) a pollutant.
-#' @param pollutant The parameter for which a trend test is required.
-#'   Mandatory.
+#' @param pollutant The parameter for which a trend test is required. Mandatory.
 #' @param deseason Should the data be de-deasonalized first? If `TRUE` the
-#'   function `stl` is used (seasonal trend decomposition using loess).
-#'   Note that if `TRUE` missing data are first imputed using a
-#'   Kalman filter and Kalman smooth.
-#' @param type `type` determines how the data are split i.e. conditioned,
-#'   and then plotted. The default is will produce a single plot using the
-#'   entire data. Type can be one of the built-in types as detailed in
-#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and
-#'   so on. For example, `type = "season"` will produce four plots --- one
-#'   for each season.
+#'   function `stl` is used (seasonal trend decomposition using loess). Note
+#'   that if `TRUE` missing data are first imputed using a Kalman filter and
+#'   Kalman smooth.
+#' @param type `type` determines how the data are split i.e. conditioned, and
+#'   then plotted. The default is will produce a single plot using the entire
+#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
+#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+#'   `type = "season"` will produce four plots --- one for each season.
 #'
-#'   It is also possible to choose `type` as another variable in the data
-#'   frame. If that variable is numeric, then the data will be split into four
+#'   It is also possible to choose `type` as another variable in the data frame.
+#'   If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   Type can be up length two e.g. `type = c("season", "weekday")` will
-#'   produce a 2x2 plot split by season and day of the week. Note, when two
-#'   types are provided the first forms the columns and the second the rows.
+#'   Type can be up length two e.g. `type = c("season", "weekday")` will produce
+#'   a 2x2 plot split by season and day of the week. Note, when two types are
+#'   provided the first forms the columns and the second the rows.
 #' @param statistic Statistic used for calculating monthly values. Default is
-#'   \dQuote{mean}, but can also be \dQuote{percentile}. See `timeAverage`
-#'   for more details.
+#'   \dQuote{mean}, but can also be \dQuote{percentile}. See `timeAverage` for
+#'   more details.
 #' @param avg.time Can be \dQuote{month} (the default), \dQuote{season} or
-#'   \dQuote{year}. Determines the time over which data should be averaged.
-#'   Note that for \dQuote{year}, six or more years are required. For
-#'   \dQuote{season} the data are plit up into spring: March, April, May etc.
-#'   Note that December is considered as belonging to winter of the following
-#'   year.
-#' @param percentile Percentile value(s) to use if `statistic =
-#'   "percentile"` is chosen. Can be a vector of numbers e.g. `percentile
-#'   = c(5, 50, 95)` will plot the 5th, 50th and 95th percentile values
-#'   together on the same plot.
-#' @param data.thresh The data capture threshold to use (%) when aggregating
-#'   the data using `avg.time`. A value of zero means that all available
-#'   data will be used in a particular period regardless if of the number of
-#'   values available. Conversely, a value of 100 will mean that all data will
-#'   need to be present for the average to be calculated, else it is recorded
-#'   as `NA`. Not used if `avg.time = "default"`.
+#'   \dQuote{year}. Determines the time over which data should be averaged. Note
+#'   that for \dQuote{year}, six or more years are required. For \dQuote{season}
+#'   the data are plit up into spring: March, April, May etc. Note that December
+#'   is considered as belonging to winter of the following year.
+#' @param percentile Percentile value(s) to use if `statistic = "percentile"` is
+#'   chosen. Can be a vector of numbers e.g. `percentile = c(5, 50, 95)` will
+#'   plot the 5th, 50th and 95th percentile values together on the same plot.
+#' @param data.thresh The data capture threshold to use (%) when aggregating the
+#'   data using `avg.time`. A value of zero means that all available data will
+#'   be used in a particular period regardless if of the number of values
+#'   available. Conversely, a value of 100 will mean that all data will need to
+#'   be present for the average to be calculated, else it is recorded as `NA`.
+#'   Not used if `avg.time = "default"`.
 #' @param simulate Should simulations be carried out to determine the
-#'   Mann-Kendall tau and p-value. The default is `FALSE`. If `TRUE`,
-#'   bootstrap simulations are undertaken, which also account for
-#'   autocorrelation.
+#'   Mann-Kendall tau and p-value. The default is `FALSE`. If `TRUE`, bootstrap
+#'   simulations are undertaken, which also account for autocorrelation.
 #' @param n Number of bootstrap simulations if `simulate = TRUE`.
 #' @param autocor Should autocorrelation be considered in the trend uncertainty
 #'   estimates? The default is `FALSE`. Generally, accounting for
 #'   autocorrelation increases the uncertainty of the trend estimate sometimes
 #'   by a large amount.
 #' @param cols Colours to use. Can be a vector of colours e.g. `cols =
-#'   c("black", "green")` or pre-defined openair colours --- see
-#'   `openColours` for more details.
+#'   c("black", "green")` or pre-defined openair colours --- see `openColours`
+#'   for more details.
 #' @param shade The colour used for marking alternate years. Use \dQuote{white}
 #'   or \dQuote{transparent} to remove shading.
 #' @param xlab x-axis label, by default \dQuote{year}.
 #' @param y.relation This determines how the y-axis scale is plotted. "same"
 #'   ensures all panels use the same scale and "free" will use panel-specific
 #'   scales. The latter is a useful setting when plotting data with very
-#'   different values.  ref.x See `ref.y` for details. In this case the
-#'   correct date format should be used for a vertical line e.g.  `ref.x =
-#'   list(v = as.POSIXct("2000-06-15"), lty = 5)`.
+#'   different values.  ref.x See `ref.y` for details. In this case the correct
+#'   date format should be used for a vertical line e.g.  `ref.x = list(v =
+#'   as.POSIXct("2000-06-15"), lty = 5)`.
 #' @param ref.x See `ref.y`.
 #' @param ref.y A list with details of the horizontal lines to be added
-#'   representing reference line(s). For example, `ref.y = list(h = 50,
-#'   lty = 5)` will add a dashed horizontal line at 50. Several lines can be
-#'   plotted e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col =
-#'   c("green", "blue"))`. See `panel.abline` in the `lattice`
-#'   package for more details on adding/controlling lines.
+#'   representing reference line(s). For example, `ref.y = list(h = 50, lty =
+#'   5)` will add a dashed horizontal line at 50. Several lines can be plotted
+#'   e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
+#'   "blue"))`. See `panel.abline` in the `lattice` package for more details on
+#'   adding/controlling lines.
 #' @param key.columns Number of columns used if a key is drawn when using the
 #'   option `statistic = "percentile"`.
 #' @param name.pol Names to be given to the pollutant(s). This is useful if you
 #'   want to give a fuller description of the variables, maybe also including
 #'   subscripts etc.
-#' @param ci Should confidence intervals be plotted? The default is
-#'   `FALSE`.
+#' @param ci Should confidence intervals be plotted? The default is `FALSE`.
 #' @param alpha The alpha transparency of shaded confidence intervals - if
 #'   plotted. A value of 0 is fully transparent and 1 is fully opaque.
-#' @param date.breaks Number of major x-axis intervals to use. The function
-#'   will try and choose a sensible number of dates/times as well as formatting
-#'   the date/time appropriately to the range being considered. This does not
-#'   always work as desired automatically. The user can therefore increase or
-#'   decrease the number of intervals by adjusting the value of
-#'   `date.breaks` up or down.
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If
-#'   `TRUE` titles and axis labels will automatically try and format
-#'   pollutant names and units properly e.g.  by subscripting the \sQuote{2} in
-#'   NO2.
-#' @param k This is the smoothing parameter used by the `gam` function in
-#'   package `mgcv`. By default it is not used and the amount of smoothing
-#'   is optimised automatically. However, sometimes it is useful to set the
+#' @param date.breaks Number of major x-axis intervals to use. The function will
+#'   try and choose a sensible number of dates/times as well as formatting the
+#'   date/time appropriately to the range being considered. This does not always
+#'   work as desired automatically. The user can therefore increase or decrease
+#'   the number of intervals by adjusting the value of `date.breaks` up or down.
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
+#'   axis labels will automatically try and format pollutant names and units
+#'   properly e.g.  by subscripting the \sQuote{2} in NO2.
+#' @param k This is the smoothing parameter used by the [mgcv::gam()] function
+#'   in package `mgcv`. By default it is not used and the amount of smoothing is
+#'   optimised automatically. However, sometimes it is useful to set the
 #'   smoothing amount manually using `k`.
-#' @param plot Should a plot be produced? `FALSE` can be useful when
-#'   analysing data to extract plot components and plotting them in other
-#'   ways.
-#' @param ... Other graphical parameters are passed onto `cutData` and
-#'   `lattice:xyplot`. For example, `smoothTrend` passes the option
-#'   `hemisphere = "southern"` on to `cutData` to provide southern
-#'   (rather than default northern) hemisphere handling of `type =
-#'   "season"`. Similarly, common graphical arguments, such as `xlim` and
-#'   `ylim` for plotting ranges and `pch` and `cex` for plot
-#'   symbol type and size, are passed on `xyplot`, although some local
-#'   modifications may be applied by openair. For example, axis and title
-#'   labelling options (such as `xlab`, `ylab` and `main`) are
-#'   passed to `xyplot` via `quickText` to handle routine formatting.
-#'   One special case here is that many graphical parameters can be vectors
-#'   when used with `statistic = "percentile"` and a vector of
-#'   `percentile` values, see examples below.
+#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
+#'   data to extract plot components and plotting them in other ways.
+#' @param ... Other graphical parameters are passed onto [cutData()] and
+#'   [lattice::xyplot()]. For example, [smoothTrend()] passes the option
+#'   `hemisphere = "southern"` on to [cutData()] to provide southern (rather
+#'   than default northern) hemisphere handling of `type = "season"`. Similarly,
+#'   common graphical arguments, such as `xlim` and `ylim` for plotting ranges
+#'   and `pch` and `cex` for plot symbol type and size, are passed on
+#'   [lattice::xyplot()], although some local modifications may be applied by
+#'   openair. For example, axis and title labelling options (such as `xlab`,
+#'   `ylab` and `main`) are passed to [lattice::xyplot()] via [quickText()] to
+#'   handle routine formatting. One special case here is that many graphical
+#'   parameters can be vectors when used with `statistic = "percentile"` and a
+#'   vector of `percentile` values, see examples below.
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw

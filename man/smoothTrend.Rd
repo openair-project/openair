@@ -34,61 +34,58 @@ smoothTrend(
 )
 }
 \arguments{
-\item{mydata}{A data frame containing the field \code{date} and at least one
-other parameter for which a trend test is required; typically (but not
+\item{mydata}{A data frame containing the field \code{date} and at least one other
+parameter for which a trend test is required; typically (but not
 necessarily) a pollutant.}
 
-\item{pollutant}{The parameter for which a trend test is required.
-Mandatory.}
+\item{pollutant}{The parameter for which a trend test is required. Mandatory.}
 
 \item{deseason}{Should the data be de-deasonalized first? If \code{TRUE} the
-function \code{stl} is used (seasonal trend decomposition using loess).
-Note that if \code{TRUE} missing data are first imputed using a
-Kalman filter and Kalman smooth.}
+function \code{stl} is used (seasonal trend decomposition using loess). Note
+that if \code{TRUE} missing data are first imputed using a Kalman filter and
+Kalman smooth.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-\code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and
-so on. For example, \code{type = "season"} will produce four plots --- one
-for each season.
+\item{type}{\code{type} determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
+\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+\code{type = "season"} will produce four plots --- one for each season.
 
-It is also possible to choose \code{type} as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+It is also possible to choose \code{type} as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-Type can be up length two e.g. \code{type = c("season", "weekday")} will
-produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.}
+Type can be up length two e.g. \code{type = c("season", "weekday")} will produce
+a 2x2 plot split by season and day of the week. Note, when two types are
+provided the first forms the columns and the second the rows.}
 
 \item{statistic}{Statistic used for calculating monthly values. Default is
-\dQuote{mean}, but can also be \dQuote{percentile}. See \code{timeAverage}
-for more details.}
+\dQuote{mean}, but can also be \dQuote{percentile}. See \code{timeAverage} for
+more details.}
 
 \item{avg.time}{Can be \dQuote{month} (the default), \dQuote{season} or
-\dQuote{year}. Determines the time over which data should be averaged.
-Note that for \dQuote{year}, six or more years are required. For
-\dQuote{season} the data are plit up into spring: March, April, May etc.
-Note that December is considered as belonging to winter of the following
-year.}
+\dQuote{year}. Determines the time over which data should be averaged. Note
+that for \dQuote{year}, six or more years are required. For \dQuote{season}
+the data are plit up into spring: March, April, May etc. Note that December
+is considered as belonging to winter of the following year.}
 
-\item{percentile}{Percentile value(s) to use if \code{statistic = "percentile"} is chosen. Can be a vector of numbers e.g. \code{percentile = c(5, 50, 95)} will plot the 5th, 50th and 95th percentile values
-together on the same plot.}
+\item{percentile}{Percentile value(s) to use if \code{statistic = "percentile"} is
+chosen. Can be a vector of numbers e.g. \code{percentile = c(5, 50, 95)} will
+plot the 5th, 50th and 95th percentile values together on the same plot.}
 
-\item{data.thresh}{The data capture threshold to use (\%) when aggregating
-the data using \code{avg.time}. A value of zero means that all available
-data will be used in a particular period regardless if of the number of
-values available. Conversely, a value of 100 will mean that all data will
-need to be present for the average to be calculated, else it is recorded
-as \code{NA}. Not used if \code{avg.time = "default"}.}
+\item{data.thresh}{The data capture threshold to use (\%) when aggregating the
+data using \code{avg.time}. A value of zero means that all available data will
+be used in a particular period regardless if of the number of values
+available. Conversely, a value of 100 will mean that all data will need to
+be present for the average to be calculated, else it is recorded as \code{NA}.
+Not used if \code{avg.time = "default"}.}
 
 \item{simulate}{Should simulations be carried out to determine the
-Mann-Kendall tau and p-value. The default is \code{FALSE}. If \code{TRUE},
-bootstrap simulations are undertaken, which also account for
-autocorrelation.}
+Mann-Kendall tau and p-value. The default is \code{FALSE}. If \code{TRUE}, bootstrap
+simulations are undertaken, which also account for autocorrelation.}
 
 \item{n}{Number of bootstrap simulations if \code{simulate = TRUE}.}
 
@@ -97,8 +94,8 @@ estimates? The default is \code{FALSE}. Generally, accounting for
 autocorrelation increases the uncertainty of the trend estimate sometimes
 by a large amount.}
 
-\item{cols}{Colours to use. Can be a vector of colours e.g. \code{cols = c("black", "green")} or pre-defined openair colours --- see
-\code{openColours} for more details.}
+\item{cols}{Colours to use. Can be a vector of colours e.g. \code{cols = c("black", "green")} or pre-defined openair colours --- see \code{openColours}
+for more details.}
 
 \item{shade}{The colour used for marking alternate years. Use \dQuote{white}
 or \dQuote{transparent} to remove shading.}
@@ -108,15 +105,15 @@ or \dQuote{transparent} to remove shading.}
 \item{y.relation}{This determines how the y-axis scale is plotted. "same"
 ensures all panels use the same scale and "free" will use panel-specific
 scales. The latter is a useful setting when plotting data with very
-different values.  ref.x See \code{ref.y} for details. In this case the
-correct date format should be used for a vertical line e.g.  \code{ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)}.}
+different values.  ref.x See \code{ref.y} for details. In this case the correct
+date format should be used for a vertical line e.g.  \code{ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)}.}
 
 \item{ref.x}{See \code{ref.y}.}
 
 \item{ref.y}{A list with details of the horizontal lines to be added
-representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be
-plotted e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice}
-package for more details on adding/controlling lines.}
+representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more details on
+adding/controlling lines.}
 
 \item{key.columns}{Number of columns used if a key is drawn when using the
 option \code{statistic = "percentile"}.}
@@ -125,45 +122,41 @@ option \code{statistic = "percentile"}.}
 want to give a fuller description of the variables, maybe also including
 subscripts etc.}
 
-\item{ci}{Should confidence intervals be plotted? The default is
-\code{FALSE}.}
+\item{ci}{Should confidence intervals be plotted? The default is \code{FALSE}.}
 
 \item{alpha}{The alpha transparency of shaded confidence intervals - if
 plotted. A value of 0 is fully transparent and 1 is fully opaque.}
 
-\item{date.breaks}{Number of major x-axis intervals to use. The function
-will try and choose a sensible number of dates/times as well as formatting
-the date/time appropriately to the range being considered. This does not
-always work as desired automatically. The user can therefore increase or
-decrease the number of intervals by adjusting the value of
-\code{date.breaks} up or down.}
+\item{date.breaks}{Number of major x-axis intervals to use. The function will
+try and choose a sensible number of dates/times as well as formatting the
+date/time appropriately to the range being considered. This does not always
+work as desired automatically. The user can therefore increase or decrease
+the number of intervals by adjusting the value of \code{date.breaks} up or down.}
 
-\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If
-\code{TRUE} titles and axis labels will automatically try and format
-pollutant names and units properly e.g.  by subscripting the \sQuote{2} in
-NO2.}
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly e.g.  by subscripting the \sQuote{2} in NO2.}
 
-\item{k}{This is the smoothing parameter used by the \code{gam} function in
-package \code{mgcv}. By default it is not used and the amount of smoothing
-is optimised automatically. However, sometimes it is useful to set the
+\item{k}{This is the smoothing parameter used by the \code{\link[mgcv:gam]{mgcv::gam()}} function
+in package \code{mgcv}. By default it is not used and the amount of smoothing is
+optimised automatically. However, sometimes it is useful to set the
 smoothing amount manually using \code{k}.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other
-ways.}
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data to extract plot components and plotting them in other ways.}
 
-\item{...}{Other graphical parameters are passed onto \code{cutData} and
-\code{lattice:xyplot}. For example, \code{smoothTrend} passes the option
-\code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common graphical arguments, such as \code{xlim} and
-\code{ylim} for plotting ranges and \code{pch} and \code{cex} for plot
-symbol type and size, are passed on \code{xyplot}, although some local
-modifications may be applied by openair. For example, axis and title
-labelling options (such as \code{xlab}, \code{ylab} and \code{main}) are
-passed to \code{xyplot} via \code{quickText} to handle routine formatting.
-One special case here is that many graphical parameters can be vectors
-when used with \code{statistic = "percentile"} and a vector of
-\code{percentile} values, see examples below.}
+\item{...}{Other graphical parameters are passed onto \code{\link[=cutData]{cutData()}} and
+\code{\link[lattice:xyplot]{lattice::xyplot()}}. For example, \code{\link[=smoothTrend]{smoothTrend()}} passes the option
+\code{hemisphere = "southern"} on to \code{\link[=cutData]{cutData()}} to provide southern (rather
+than default northern) hemisphere handling of \code{type = "season"}. Similarly,
+common graphical arguments, such as \code{xlim} and \code{ylim} for plotting ranges
+and \code{pch} and \code{cex} for plot symbol type and size, are passed on
+\code{\link[lattice:xyplot]{lattice::xyplot()}}, although some local modifications may be applied by
+openair. For example, axis and title labelling options (such as \code{xlab},
+\code{ylab} and \code{main}) are passed to \code{\link[lattice:xyplot]{lattice::xyplot()}} via \code{\link[=quickText]{quickText()}} to
+handle routine formatting. One special case here is that many graphical
+parameters can be vectors when used with \code{statistic = "percentile"} and a
+vector of \code{percentile} values, see examples below.}
 }
 \value{
 an \link[=openair-package]{openair} object
@@ -172,18 +165,18 @@ an \link[=openair-package]{openair} object
 Use non-parametric methods to calculate time series trends
 }
 \details{
-The \code{smoothTrend} function provides a flexible way of estimating the
-trend in the concentration of a pollutant or other variable. Monthly mean
-values are calculated from an hourly (or higher resolution) or daily time
-series. There is the option to deseasonalise the data if there is evidence
-of a seasonal cycle.
+The \code{\link[=smoothTrend]{smoothTrend()}} function provides a flexible way of estimating the trend
+in the concentration of a pollutant or other variable. Monthly mean values
+are calculated from an hourly (or higher resolution) or daily time series.
+There is the option to deseasonalise the data if there is evidence of a
+seasonal cycle.
 
-\code{smoothTrend} uses a Generalized Additive Model (GAM) from the
-\code{\link[mgcv:gam]{mgcv::gam()}} package to find the most appropriate level of smoothing.
-The function is particularly suited to situations where trends are not
-monotonic (see discussion with \code{\link[=TheilSen]{TheilSen()}} for more details on
-this). The \code{smoothTrend} function is particularly useful as an
-exploratory technique e.g. to check how linear or non-linear trends are.
+\code{\link[=smoothTrend]{smoothTrend()}} uses a Generalized Additive Model (GAM) from the
+\code{\link[mgcv:gam]{mgcv::gam()}} package to find the most appropriate level of smoothing. The
+function is particularly suited to situations where trends are not monotonic
+(see discussion with \code{\link[=TheilSen]{TheilSen()}} for more details on this). The
+\code{\link[=smoothTrend]{smoothTrend()}} function is particularly useful as an exploratory technique
+e.g. to check how linear or non-linear trends are.
 
 95\% confidence intervals are shown by shading. Bootstrap estimates of the
 confidence intervals are also available through the \code{simulate} option.

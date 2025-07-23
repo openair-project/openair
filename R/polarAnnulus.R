@@ -502,7 +502,7 @@ polarAnnulus <-
       input <- data.frame(binned, time.seq, wd)
 
       ## note use of cyclic smooth for the wind direction component
-      Mgam <- gam(
+      Mgam <- mgcv::gam(
         binned^n ~ te(time.seq, wd, k = k, bs = c("tp", "cc")),
         data = input
       )

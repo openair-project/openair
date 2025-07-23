@@ -1154,7 +1154,7 @@ scatterPlot <- function(
 
       mydata <- na.omit(mydata)
 
-      Mgam <- gam(myform, data = mydata)
+      Mgam <- mgcv::gam(myform, data = mydata)
       new.data <- expand.grid(
         xgrid = seq(
           min(mydata$xgrid, na.rm = TRUE),
@@ -1422,7 +1422,7 @@ scatterPlot <- function(
         formula(paste0(z, "^0.5 ~ s(xgrid, ygrid, k = ", k, ")", sep = ""))
 
       res <- 101
-      Mgam <- gam(myform, data = mydata)
+      Mgam <- mgcv::gam(myform, data = mydata)
 
       new.data <- expand.grid(
         xgrid = seq(
@@ -1863,7 +1863,13 @@ add.map <- function(Args, ...) {
       orientation = Args$orientation
     )
     mp <- maps::map.wrap(mp)
-    llines(mp$x, mp$y, col = Args$map.border, lty = Args$map.lty, lwd = Args$map.lwd)
+    llines(
+      mp$x,
+      mp$y,
+      col = Args$map.border,
+      lty = Args$map.lty,
+      lwd = Args$map.lwd
+    )
   }
 
   map.grid2(

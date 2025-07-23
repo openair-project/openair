@@ -307,14 +307,14 @@ panel.gam <- function(
     {
       if (!simulate) {
         if (is.null(k)) {
-          mod <- suppressWarnings(gam(
+          mod <- suppressWarnings(mgcv::gam(
             y ~ s(x),
             select = TRUE,
             data = thedata,
             ...
           ))
         } else {
-          mod <- suppressWarnings(gam(
+          mod <- suppressWarnings(mgcv::gam(
             y ~ s(x, k = k),
             select = TRUE,
             data = thedata,
@@ -390,9 +390,9 @@ panel.gam <- function(
 
         ## predict first
         if (is.null(k)) {
-          mod <- gam(y ~ s(x), data = thedata, ...)
+          mod <- mgcv::gam(y ~ s(x), data = thedata, ...)
         } else {
-          mod <- gam(y ~ s(x, k = k), data = thedata, ...)
+          mod <- mgcv::gam(y ~ s(x, k = k), data = thedata, ...)
         }
 
         residuals <- residuals(mod) ## residuals of the model
@@ -406,7 +406,7 @@ panel.gam <- function(
             y = pred.input + residuals[index[, i]]
           )
 
-          mod <- gam(y ~ s(x), data = new.data, ...)
+          mod <- mgcv::gam(y ~ s(x), data = new.data, ...)
 
           pred <- predict(mod, new.data)
 
@@ -491,14 +491,14 @@ fitGam <- function(
     {
       if (!simulate) {
         if (is.null(k)) {
-          mod <- suppressWarnings(gam(
+          mod <- suppressWarnings(mgcv::gam(
             y ~ s(x),
             select = TRUE,
             data = thedata,
             ...
           ))
         } else {
-          mod <- suppressWarnings(gam(
+          mod <- suppressWarnings(mgcv::gam(
             y ~ s(x, k = k),
             select = TRUE,
             data = thedata,
@@ -548,9 +548,9 @@ fitGam <- function(
 
         ## predict first
         if (is.null(k)) {
-          mod <- gam(y ~ s(x), data = thedata, ...)
+          mod <- mgcv::gam(y ~ s(x), data = thedata, ...)
         } else {
-          mod <- gam(y ~ s(x, k = k), data = thedata, ...)
+          mod <- mgcv::gam(y ~ s(x, k = k), data = thedata, ...)
         }
 
         residuals <- residuals(mod) ## residuals of the model
@@ -564,7 +564,7 @@ fitGam <- function(
             y = pred.input + residuals[index[, i]]
           )
 
-          mod <- gam(y ~ s(x), data = new.data, ...)
+          mod <- mgcv::gam(y ~ s(x), data = new.data, ...)
 
           pred <- predict(mod, new.data)
 
