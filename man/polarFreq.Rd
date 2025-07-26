@@ -16,7 +16,7 @@ polarFreq(
   trans = TRUE,
   type = "default",
   min.bin = 1,
-  ws.upper = NA,
+  ws.upper = NULL,
   offset = 10,
   border.col = "transparent",
   key.header = statistic,
@@ -36,18 +36,23 @@ polarFreq(
 data frame should be supplied e.g. \code{pollutant = "nox"}}
 
 \item{statistic}{The statistic that should be applied to each wind
-speed/direction bin. Can be \code{"frequency"}, \code{"mean"}, \code{"median"}, \code{"max"}
-(maximum), \code{"stdev"} (standard deviation) or \code{"weighted.mean"}. The option
-\code{"frequency"} (the default) is the simplest and plots the frequency of wind
-speed/direction in different bins. The scale therefore shows the counts in
-each bin. The option \code{"mean"} will plot the mean concentration of a
-pollutant (see next point) in wind speed/direction bins, and so on.
-Finally, \code{"weighted.mean"} will plot the concentration of a pollutant
-weighted by wind speed/direction. Each segment therefore provides the
-percentage overall contribution to the total concentration. More
-information is given in the examples. Note that for options other than
-\code{"frequency"}, it is necessary to also provide the name of a pollutant. See
-function \code{\link[=cutData]{cutData()}} for further details.}
+speed/direction bin. Can be:
+\itemize{
+\item \code{"frequency"} (the default) is the simplest and plots the frequency of
+wind speed/direction in different bins. The scale therefore shows the
+counts in each bin.
+\item \code{"mean"}, the average/mean \code{pollutant} per bin
+\item \code{"median"}, the median \code{pollutant} per bin
+\item \code{"max"}, the maximum \code{pollutant} per bin
+\item \code{"min"}, the minimum \code{pollutant} per bin
+\item \code{"stdev"}, the \code{pollutant} standard deviation in each bin
+\item \code{"weighted.mean"}, will plot the concentration of the \code{pollutant} weighted
+by wind speed/direction. Each segment therefore provides the percentage
+overall contribution to the total concentration.
+}
+
+Note that for options other than \code{"frequency"}, it is necessary to also
+provide the name of a pollutant.}
 
 \item{ws.int}{Wind speed interval assumed. In some cases, e.g., a low met
 mast, an interval of \code{0.5} may be more appropriate.}

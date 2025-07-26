@@ -32,18 +32,21 @@
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
 #'   data frame should be supplied e.g. `pollutant = "nox"`
 #' @param statistic The statistic that should be applied to each wind
-#'   speed/direction bin. Can be `"frequency"`, `"mean"`, `"median"`, `"max"`
-#'   (maximum), `"stdev"` (standard deviation) or `"weighted.mean"`. The option
-#'   `"frequency"` (the default) is the simplest and plots the frequency of wind
-#'   speed/direction in different bins. The scale therefore shows the counts in
-#'   each bin. The option `"mean"` will plot the mean concentration of a
-#'   pollutant (see next point) in wind speed/direction bins, and so on.
-#'   Finally, `"weighted.mean"` will plot the concentration of a pollutant
-#'   weighted by wind speed/direction. Each segment therefore provides the
-#'   percentage overall contribution to the total concentration. More
-#'   information is given in the examples. Note that for options other than
-#'   `"frequency"`, it is necessary to also provide the name of a pollutant. See
-#'   function [cutData()] for further details.
+#'   speed/direction bin. Can be:
+#'   - `"frequency"` (the default) is the simplest and plots the frequency of
+#'   wind speed/direction in different bins. The scale therefore shows the
+#'   counts in each bin.
+#'   - `"mean"`, the average/mean `pollutant` per bin
+#'   - `"median"`, the median `pollutant` per bin
+#'   - `"max"`, the maximum `pollutant` per bin
+#'   - `"min"`, the minimum `pollutant` per bin
+#'   - `"stdev"`, the `pollutant` standard deviation in each bin
+#'   - `"weighted.mean"`, will plot the concentration of the `pollutant` weighted
+#'   by wind speed/direction. Each segment therefore provides the percentage
+#'   overall contribution to the total concentration.
+#'
+#'   Note that for options other than `"frequency"`, it is necessary to also
+#'   provide the name of a pollutant.
 #' @param ws.int Wind speed interval assumed. In some cases, e.g., a low met
 #'   mast, an interval of `0.5` may be more appropriate.
 #' @param wd.nint Number of intervals of wind direction.
@@ -125,7 +128,7 @@ polarFreq <- function(
   trans = TRUE,
   type = "default",
   min.bin = 1,
-  ws.upper = NA,
+  ws.upper = NULL,
   offset = 10,
   border.col = "transparent",
   key.header = statistic,
@@ -137,183 +140,59 @@ polarFreq <- function(
   plot = TRUE,
   ...
 ) {
+  # validate various inputs for polarFreq
+  inputs <- validate_polarfreq_args(
+    statistic = statistic,
+    pollutant = pollutant,
+    trans = trans,
+    breaks = breaks
+  )
+  statistic <- inputs$statistic
+  pollutant <- inputs$pollutant
+  coef <- inputs$coef
+
   # extract necessary data
   vars <- c("wd", "ws")
   if (any(type %in% dateTypes)) {
     vars <- c(vars, "date")
   }
-
-  # intervals in wind direction
-  wd.int <- 360 / round(wd.nint)
-
-  # greyscale handling
-  if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-  }
-
-  # set graphics
-  current.font <- trellis.par.get("fontsize")
-
-  # reset graphic parameters
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
-
-  # extra.args setup
-  extra.args <- list(...)
-
-  # label controls
-  extra.args$xlab <- if ("xlab" %in% names(extra.args)) {
-    quickText(extra.args$xlab, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
-  extra.args$ylab <- if ("ylab" %in% names(extra.args)) {
-    quickText(extra.args$ylab, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
-  extra.args$main <- if ("main" %in% names(extra.args)) {
-    quickText(extra.args$main, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
-
-  if ("fontsize" %in% names(extra.args)) {
-    trellis.par.set(fontsize = list(text = extra.args$fontsize))
-  }
-
   if (!is.null(pollutant)) {
     vars <- c(vars, pollutant)
   }
 
-  # data checks
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  # prepare data
+  mydata <-
+    mydata %>%
+    # openair data checks
+    checkPrep(vars, type, remove.calm = FALSE) %>%
+    # set ws = 0 to be a small value; makes first bin easier to deal with
+    dplyr::mutate(
+      ws = dplyr::if_else(
+        .data$ws == 0,
+        .data$ws + .Machine$double.eps,
+        .data$ws
+      )
+    ) %>%
+    # drop missing values
+    tidyr::drop_na() %>%
+    # add type columns
+    cutData(type = type, ...)
 
-  # to make first interval easier to work with, set ws = 0 + e
-  ids <- which(mydata$ws == 0)
-  mydata$ws[ids] <- mydata$ws[ids] + 0.0001
-
-  # remove all NAs
-  mydata <- na.omit(mydata)
-
-  mydata <- cutData(mydata, type, ...)
-
-  # if pollutant chosen but no statistic - use mean, issue warning
-  if (statistic == "frequency" && !is.null(pollutant)) {
-    cli::cli_warn(c(
-      "x" = "{.code statistic == 'frequency'} incompatible with a defined {.field pollutant}.",
-      "i" = "Setting {.field statistic} to {.code 'mean'}."
-    ))
-    statistic <- "mean"
-  }
-
-  # if statistic chosen but no pollutant stop
-  if (statistic != "frequency" && is.null(pollutant)) {
-    cli::cli_abort(c(
-      "x" = "No {.field pollutant} chosen",
-      "i" = "Please choose a {.field pollutant}, e.g., {.code pollutant = 'nox'}"
-    ))
-  }
-
-  if (!(any(is.null(breaks)) || any(is.na(breaks)))) {
-    trans <- FALSE
-  } # over-ride transform if breaks supplied
-
-  if (key.header == "weighted.mean") {
-    key.header <- c("contribution", "(%)")
-  }
-
-  # apply square root transform?
-  if (trans) {
-    coef <- 2
-  } else {
-    coef <- 1
-  }
-
-  # set the upper wind speed
-  if (is.na(ws.upper)) {
-    max.ws <- max(mydata$ws, na.rm = TRUE)
-  } else {
-    max.ws <- ws.upper
-  }
-
-  # offset for "hollow" middle
+  # Wind speed parameters
+  max.ws <- ws.upper %||% max(mydata$ws, na.rm = TRUE)
   offset <- (max.ws * offset) / 5 / 10
 
-  # make sure wd data are rounded to nearest 10
-  mydata$wd <- wd.int * ceiling(mydata$wd / wd.int - 0.5)
+  # Wind direction parameters
+  wd.int <- 360 / round(wd.nint)
 
-  prepare.grid <- function(mydata) {
-    wd <- factor(mydata$wd)
-    ws <- factor(ws.int * ceiling(mydata$ws / ws.int))
+  # Round wind direction to intervals
+  mydata <- dplyr::mutate(
+    mydata,
+    wd = wd.int * ceiling(.data$wd / wd.int - 0.5)
+  )
 
-    if (statistic == "frequency") {
-      # case with only ws and wd
-      weights <- tapply(mydata$ws, list(wd, ws), function(x) length(na.omit(x)))
-    }
-
-    if (statistic == "mean") {
-      weights <- tapply(
-        mydata[[pollutant]],
-        list(wd, ws),
-        function(x) mean(x, na.rm = TRUE)
-      )
-    }
-
-    if (statistic == "median") {
-      weights <- tapply(
-        mydata[[pollutant]],
-        list(wd, ws),
-        function(x) median(x, na.rm = TRUE)
-      )
-    }
-
-    if (statistic == "max") {
-      weights <- tapply(
-        mydata[[pollutant]],
-        list(wd, ws),
-        function(x) max(x, na.rm = TRUE)
-      )
-    }
-
-    if (statistic == "stdev") {
-      weights <- tapply(
-        mydata[[pollutant]],
-        list(wd, ws),
-        function(x) sd(x, na.rm = TRUE)
-      )
-    }
-
-    if (statistic == "weighted.mean") {
-      weights <- tapply(
-        mydata[[pollutant]],
-        list(wd, ws),
-        function(x) (mean(x) * length(x) / nrow(mydata))
-      )
-
-      # note sum for matrix
-      weights <- 100 * weights / sum(sum(weights, na.rm = TRUE))
-    }
-
-    weights <- as.vector(t(weights))
-
-    # frequency - remove points with freq < min.bin
-    bin.len <- tapply(mydata$ws, list(wd, ws), function(x) length(na.omit(x)))
-    binned.len <- as.vector(t(bin.len))
-    ids <- which(binned.len < min.bin)
-    weights[ids] <- NA
-
-    ws.wd <- expand.grid(
-      ws = as.numeric(levels(ws)),
-      wd = as.numeric(levels(wd))
-    )
-
-    weights <- cbind(ws.wd, weights)
-    weights
-  }
-
-  poly <- function(dir, speed, colour) {
+  # function to draw polar polygons
+  draw_polarfreq_poly <- function(dir, speed, colour) {
     # offset by 3 * ws.int so that centre is not compressed
     angle <- seq(dir - wd.int / 2, dir + wd.int / 2, length = round(wd.int))
     x1 <- (speed + offset - ws.int) * sin(pi * angle / 180)
@@ -323,39 +202,65 @@ polarFreq <- function(
     lpolygon(c(x1, x2), c(y1, y2), col = colour, border = border.col, lwd = 0.5)
   }
 
-  results.grid <- mydata %>%
-    group_by(across(type)) %>%
-    do(prepare.grid(.))
+  # prepare plotting data for lattice
+  results_grid <-
+    purrr::map(
+      .x = split(
+        mydata,
+        mydata[type],
+        drop = TRUE
+      ),
+      .f = function(x) {
+        out <- prepare_polarfreq_grid(
+          mydata = x,
+          statistic = statistic,
+          pollutant = pollutant,
+          ws.int = ws.int,
+          min.bin = min.bin
+        )
+        out[type] <- x[1, type]
+        return(out)
+      }
+    ) %>%
+    dplyr::bind_rows() %>%
+    tidyr::drop_na()
 
-  results.grid <- na.omit(results.grid)
-
-  # proper names of labelling ###################################################
-  strip.dat <- strip.fun(results.grid, type, auto.text)
+  # Setup strip labels
+  strip.dat <- strip.fun(results_grid, type, auto.text)
   strip <- strip.dat[[1]]
   strip.left <- strip.dat[[2]]
 
-  results.grid$weights <- results.grid$weights^(1 / coef)
+  # Square root transformation
+  results_grid <-
+    dplyr::mutate(results_grid, weights = .data$weights^(1 / coef))
 
-  nlev <- 200
-  # handle missing breaks arguments
+  # Handle breaks and colours
   if (any(is.null(breaks)) || any(is.na(breaks))) {
-    breaks <- unique(c(0, pretty(results.grid$weights, nlev)))
-    br <- pretty((c(0, results.grid$weights)^coef), n = 10) # breaks for scale
+    breaks <- unique(c(0, pretty(results_grid$weights, 200)))
+    br <- pretty((c(0, results_grid$weights)^coef), n = 10) # breaks for scale
   } else {
     br <- breaks
   }
+  col <- openColours(cols, (length(breaks) - 1))
 
-  nlev2 <- length(breaks)
-
-  col <- openColours(cols, (nlev2 - 1))
-
-  results.grid$div <- cut(results.grid$weights, breaks, include.lowest = TRUE)
-
-  # for pollution data
-  results.grid$weights[results.grid$weights == "NaN"] <- 0
-  results.grid$weights[which(is.na(results.grid$weights))] <- 0
+  # Categorise weights and clean data
+  results_grid <-
+    dplyr::mutate(
+      results_grid,
+      div = cut(.data$weights, breaks, include.lowest = TRUE),
+      # deal with missing weights data
+      weights = dplyr::case_when(
+        is.nan(.data$weights) ~ 0,
+        is.na(.data$weights) ~ 0,
+        .default = weights
+      )
+    )
 
   #  scale key setup ################################################################################################
+  if (key.header == "weighted.mean") {
+    key.header <- c("contribution", "(%)")
+  }
+
   legend <- list(
     col = col[1:(length(breaks) - 1)],
     at = breaks,
@@ -368,18 +273,18 @@ polarFreq <- function(
     width = 1.5,
     fit = "all"
   )
+
   legend <- makeOpenKeyLegend(key, legend, "polarFreq")
 
-  temp <- paste(type, collapse = "+")
-  myform <- formula(paste("ws ~ wd | ", temp, sep = ""))
-
+  type_formula <- paste(type, collapse = "+")
+  myform <- formula(paste0("ws ~ wd | ", type_formula))
   span <- ws.int * floor(max.ws / ws.int) + ws.int + offset
 
   xyplot.args <- list(
     x = myform,
     xlim = 1.03 * c(-span, span),
     ylim = 1.03 * c(-span, span),
-    data = results.grid,
+    data = results_grid,
     par.strip.text = list(cex = 0.8),
     type = "n",
     strip = strip,
@@ -390,12 +295,12 @@ polarFreq <- function(
     panel = function(x, y, subscripts, ...) {
       panel.xyplot(x, y, ...)
 
-      subdata <- results.grid[subscripts, ]
+      subdata <- results_grid[subscripts, ]
 
       for (i in seq_len(nrow(subdata))) {
         colour <- col[as.numeric(subdata$div[i])]
         colour <- grDevices::adjustcolor(colour, alpha.f = alpha)
-        poly(subdata$wd[i], subdata$ws[i], colour)
+        draw_polarfreq_poly(subdata$wd[i], subdata$ws[i], colour)
       }
 
       # annotate
@@ -435,15 +340,33 @@ polarFreq <- function(
     legend = legend
   )
 
-  # reset for extra.args
+  # handle extra arguments
+
+  # greyscale handling
+  if (length(cols) == 1 && cols == "greyscale") {
+    trellis.par.set(list(strip.background = list(col = "white")))
+  }
+
+  # set graphics parameters
+  current.font <- trellis.par.get("fontsize")
+  on.exit(trellis.par.set(
+    fontsize = current.font
+  ))
+
+  extra.args <- list(...)
+  extra.args$xlab <- quickText(extra.args$xlab %||% "", auto.text)
+  extra.args$ylab <- quickText(extra.args$ylab %||% "", auto.text)
+  extra.args$main <- quickText(extra.args$main %||% "", auto.text)
+
+  if ("fontsize" %in% names(extra.args)) {
+    trellis.par.set(fontsize = list(text = extra.args$fontsize))
+  }
+
   xyplot.args <- listUpdate(xyplot.args, extra.args)
 
   # plot
   plt <- do.call(xyplot, xyplot.args)
 
-  #################
-  # output
-  #################
   if (plot) {
     if (length(type) == 1) {
       plot(plt)
@@ -451,13 +374,151 @@ polarFreq <- function(
       plot(useOuterStrips(plt, strip = strip, strip.left = strip.left))
     }
   }
-  newdata <- results.grid
   output <- list(
     plot = plt,
-    data = newdata,
+    data = dplyr::tibble(results_grid),
     call = match.call()
   )
   class(output) <- "openair"
 
   invisible(output)
+}
+
+#' Validate many inputs for the polarFreq function
+#' @noRd
+validate_polarfreq_args <- function(statistic, pollutant, trans, breaks) {
+  rlang::arg_match(
+    statistic,
+    values = c(
+      "frequency",
+      "mean",
+      "median",
+      "max",
+      "min",
+      "stdev",
+      "weighted.mean"
+    )
+  )
+
+  # if pollutant chosen but no statistic - use mean, issue warning
+  if (statistic == "frequency" && !is.null(pollutant)) {
+    cli::cli_warn(c(
+      "x" = "{.code statistic == 'frequency'} incompatible with a defined {.field pollutant}.",
+      "i" = "Setting {.field statistic} to {.code 'mean'}."
+    ))
+    statistic <- "mean"
+  }
+
+  # if statistic chosen but no pollutant stop
+  if (statistic != "frequency" && is.null(pollutant)) {
+    cli::cli_abort(c(
+      "x" = "No {.field pollutant} chosen",
+      "i" = "Please choose a {.field pollutant}, e.g., {.code pollutant = 'nox'}"
+    ))
+  }
+
+  # deal with 'trans' and 'breaks' conflict
+  if (!(any(is.null(breaks)) || any(is.na(breaks)))) {
+    if (trans) {
+      cli::cli_warn(c(
+        "x" = "Providing {.arg breaks} conflicts with {.code trans = TRUE}.",
+        "i" = "Setting {.code trans = FALSE}."
+      ))
+      trans <- FALSE
+    }
+  }
+
+  # apply square root transform?
+  coef <- ifelse(trans, 2, 1)
+
+  return(list(
+    statistic = statistic,
+    pollutant = pollutant,
+    coef = coef
+  ))
+}
+
+#' Prepare data for polarFreq
+#' @noRd
+prepare_polarfreq_grid <- function(
+  mydata,
+  statistic,
+  pollutant,
+  ws.int,
+  min.bin
+) {
+  # bin the data into all wds and defined ws
+  grid_data <-
+    mydata %>%
+    dplyr::mutate(
+      wd_factor = factor(.data$wd),
+      ws_factor = factor(ws.int * ceiling(.data$ws / ws.int))
+    ) %>%
+    dplyr::filter(
+      !is.na(.data$wd),
+      !is.na(.data$ws)
+    )
+
+  # count values in each bin - needed regardless of statistic
+  bin_counts <-
+    dplyr::count(
+      grid_data,
+      .data$wd_factor,
+      .data$ws_factor,
+      .drop = FALSE,
+      name = "bin_count"
+    )
+
+  if (statistic == "frequency") {
+    # simple situation - just use weights from counts
+    weights_df <- dplyr::rename(bin_counts, weights = "bin_count")
+  } else {
+    # summarise per bin for different stats types
+    weights_df <-
+      grid_data %>%
+      dplyr::filter(!is.na(.data[[pollutant]])) %>%
+      dplyr::summarise(
+        weights = switch(
+          statistic,
+          "mean" = mean(.data[[pollutant]], na.rm = TRUE),
+          "median" = median(.data[[pollutant]], na.rm = TRUE),
+          "min" = min(.data[[pollutant]], na.rm = TRUE),
+          "max" = max(.data[[pollutant]], na.rm = TRUE),
+          "stdev" = sd(.data[[pollutant]], na.rm = TRUE),
+          "weighted.mean" = {
+            poll_mean <- mean(.data[[pollutant]], na.rm = TRUE)
+            poll_count <- dplyr::n()
+            total_count <- nrow(grid_data)
+            poll_mean * poll_count / total_count
+          }
+        ),
+        .by = c("wd_factor", "ws_factor")
+      )
+
+    # normalise weighted means
+    if (statistic == "weighted.mean") {
+      weights_df <- dplyr::mutate(
+        weights_df,
+        weights = 100 * .data$weights / sum(.data$weights)
+      )
+    }
+  }
+
+  weights_df |>
+    tidyr::complete(.data$wd_factor, .data$ws_factor) |>
+    dplyr::left_join(
+      bin_counts,
+      by = dplyr::join_by("wd_factor", "ws_factor")
+    ) |>
+    dplyr::mutate(
+      weights = dplyr::if_else(
+        .data$bin_count < min.bin,
+        NA_real_,
+        .data$weights
+      ),
+      ws = as.numeric(as.character(.data$ws_factor)),
+      wd = as.numeric(as.character(.data$wd_factor))
+    ) |>
+    dplyr::select("ws", "wd", "weights") |>
+    dplyr::arrange(.data$wd, .data$ws)
 }
