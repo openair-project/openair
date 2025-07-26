@@ -47,6 +47,8 @@
 #'
 #'   Note that for options other than `"frequency"`, it is necessary to also
 #'   provide the name of a pollutant.
+#' @param ws Name of the column representing wind speed.
+#' @param wd Name of the column representing wind direction.
 #' @param ws.int Wind speed interval assumed. In some cases, e.g., a low met
 #'   mast, an interval of `0.5` may be more appropriate.
 #' @param wd.nint Number of intervals of wind direction.
@@ -120,6 +122,8 @@ polarFreq <- function(
   mydata,
   pollutant = NULL,
   statistic = "frequency",
+  ws = "ws",
+  wd = "wd",
   ws.int = 1,
   wd.nint = 36,
   grid.line = 5,
@@ -152,7 +156,7 @@ polarFreq <- function(
   coef <- inputs$coef
 
   # extract necessary data
-  vars <- c("wd", "ws")
+  vars <- c(wd, ws)
   if (any(type %in% dateTypes)) {
     vars <- c(vars, "date")
   }
@@ -167,10 +171,10 @@ polarFreq <- function(
     checkPrep(vars, type, remove.calm = FALSE) %>%
     # set ws = 0 to be a small value; makes first bin easier to deal with
     dplyr::mutate(
-      ws = dplyr::if_else(
-        .data$ws == 0,
-        .data$ws + .Machine$double.eps,
-        .data$ws
+      {{ ws }} := dplyr::if_else(
+        .data[[ws]] == 0,
+        .data[[ws]] + .Machine$double.eps,
+        .data[[ws]]
       )
     ) %>%
     # drop missing values
@@ -179,7 +183,7 @@ polarFreq <- function(
     cutData(type = type, ...)
 
   # Wind speed parameters
-  max.ws <- ws.upper %||% max(mydata$ws, na.rm = TRUE)
+  max.ws <- ws.upper %||% max(mydata[[ws]], na.rm = TRUE)
   offset <- (max.ws * offset) / 5 / 10
 
   # Wind direction parameters
@@ -188,7 +192,7 @@ polarFreq <- function(
   # Round wind direction to intervals
   mydata <- dplyr::mutate(
     mydata,
-    wd = wd.int * ceiling(.data$wd / wd.int - 0.5)
+    {{ wd }} := wd.int * ceiling(.data[[wd]] / wd.int - 0.5)
   )
 
   # function to draw polar polygons
@@ -216,7 +220,9 @@ polarFreq <- function(
           statistic = statistic,
           pollutant = pollutant,
           ws.int = ws.int,
-          min.bin = min.bin
+          min.bin = min.bin,
+          ws = ws,
+          wd = wd
         )
         out[type] <- x[1, type]
         return(out)
@@ -277,7 +283,7 @@ polarFreq <- function(
   legend <- makeOpenKeyLegend(key, legend, "polarFreq")
 
   type_formula <- paste(type, collapse = "+")
-  myform <- formula(paste0("ws ~ wd | ", type_formula))
+  myform <- formula(paste0(ws, "~", wd, "|", type_formula))
   span <- ws.int * floor(max.ws / ws.int) + ws.int + offset
 
   xyplot.args <- list(
@@ -300,7 +306,7 @@ polarFreq <- function(
       for (i in seq_len(nrow(subdata))) {
         colour <- col[as.numeric(subdata$div[i])]
         colour <- grDevices::adjustcolor(colour, alpha.f = alpha)
-        draw_polarfreq_poly(subdata$wd[i], subdata$ws[i], colour)
+        draw_polarfreq_poly(subdata[[wd]][i], subdata[[ws]][i], colour)
       }
 
       # annotate
@@ -445,18 +451,20 @@ prepare_polarfreq_grid <- function(
   statistic,
   pollutant,
   ws.int,
-  min.bin
+  min.bin,
+  wd,
+  ws
 ) {
   # bin the data into all wds and defined ws
   grid_data <-
     mydata %>%
     dplyr::mutate(
-      wd_factor = factor(.data$wd),
-      ws_factor = factor(ws.int * ceiling(.data$ws / ws.int))
+      wd_factor = factor(.data[[wd]]),
+      ws_factor = factor(ws.int * ceiling(.data[[ws]] / ws.int))
     ) %>%
     dplyr::filter(
-      !is.na(.data$wd),
-      !is.na(.data$ws)
+      !is.na(.data[[wd]]),
+      !is.na(.data[[ws]])
     )
 
   # count values in each bin - needed regardless of statistic
@@ -516,9 +524,9 @@ prepare_polarfreq_grid <- function(
         NA_real_,
         .data$weights
       ),
-      ws = as.numeric(as.character(.data$ws_factor)),
-      wd = as.numeric(as.character(.data$wd_factor))
+      {{ ws }} := as.numeric(as.character(.data$ws_factor)),
+      {{ wd }} := as.numeric(as.character(.data$wd_factor))
     ) |>
-    dplyr::select("ws", "wd", "weights") |>
-    dplyr::arrange(.data$wd, .data$ws)
+    dplyr::select(dplyr::all_of(c(ws, wd, "weights"))) |>
+    dplyr::arrange(.data[[wd]], .data[[ws]])
 }

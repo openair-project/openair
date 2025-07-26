@@ -8,6 +8,8 @@ polarFreq(
   mydata,
   pollutant = NULL,
   statistic = "frequency",
+  ws = "ws",
+  wd = "wd",
   ws.int = 1,
   wd.nint = 36,
   grid.line = 5,
@@ -53,6 +55,10 @@ overall contribution to the total concentration.
 
 Note that for options other than \code{"frequency"}, it is necessary to also
 provide the name of a pollutant.}
+
+\item{ws}{Name of the column representing wind speed.}
+
+\item{wd}{Name of the column representing wind direction.}
 
 \item{ws.int}{Wind speed interval assumed. In some cases, e.g., a low met
 mast, an interval of \code{0.5} may be more appropriate.}
