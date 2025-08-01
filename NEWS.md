@@ -2,9 +2,11 @@
 
 ## Deprecations
 
-`importEurope()` relies on the same back-end database as the `saqgetr` package (<https://github.com/skgrange/saqgetr>), which was retired in February 2024. `importEurope()` will now warn users of this, and outright error if `year >= 2025`. Users are instead encouraged to use the EEA Air Quality Download Service <https://eeadmz1-downloads-webapp.azurewebsites.net> to obtain European data for the time being.
+`importEurope()` relies on the same back-end database as the `saqgetr` package (<https://github.com/skgrange/saqgetr>), which was retired in February 2024. `importEurope()` will now warn users of this, and outright error if `year >= 2025`. Users are instead encouraged to use the EEA Air Quality Download Service <https://eeadmz1-downloads-webapp.azurewebsites.net> to obtain European data for the time being. An R package, <https://github.com/openair-project/euroaq>, has been developed to facilitate its use.
 
 ## New Features
+
+### Data Access
 
 - The `source` argument of `importUKAQ()` now defaults to `NULL`. This option allows the function to assign the `source` of each `site` itself, with some caveats:
 
@@ -18,25 +20,13 @@
     
 - The specific metadata columns appended when `importUKAQ(meta = TRUE)` can now be controlled using the `meta_columns` argument. For example, setting `meta_columns` to `c("zone", "agglomeration")` will append the zone/agglomeration information instead of the default site type/latitude/longitude.
 
-- Added new features for `openColours()`:
+- DAQI information imported using `importUKAQ(data_type = "daqi")` will be returned with the relevant DAQI band appended as an additional factor column; either "Low" (1-3), "Moderate" (4-6), "High" (7-9), or "Very High" (10). See <https://uk-air.defra.gov.uk/air-pollution/daqi> for more information.
 
-    - Added new qualitative colour palettes: the "tol" family are colour-blind friendly palettes based on the work of Paul Tol (<https://sronpersonalpages.nl/~pault/>), and "tableau" and "observable" provide access to the "Tableau10" and "Observable10" palettes to aid in consistency with plots made in those platforms.
-  
-    - When `n` isn't defined for a qualitative palette (e.g., "Dark2"), the full qualitative palette will be returned. Previously this errored with the default of `100`.
-    
-    - `openColours()` will now check whether the provided `scheme` is either a known scheme name *or* a vector of valid R colours, and provide an informative error if this is not the case.
+- `importImperial()` has been added, superseding `importKCL()`. They are functionally identical, but reflect that londonair is now managed by Imperial College London. Function arguments have been renamed in `importImperial()` to better match `importUKAQ()`.
 
-- `binData()` has gained the `type`, `B` and `conf.int` arguments. The first is passed to `cutData()` and the latter two to `bootMeanDF()`.
+### Utility Functions
 
-- Added new features for `calcPercentile()`:
-
-    - Added the `type` argument, in line with `timeAverage()`.
-    
-    - Added the `prefix` argument to control the naming of the returned columns.
- 
-- `splitByDate()` can now more consistently take `Date` / `POSIXct` inputs as well as characters, and provides more flexibility over inputs with a new `format` argument.
-    
-- Made refinements to `cutData()`:
+- `cutData()` gained numerous new features:
 
     - Added the `names` argument to specify the name of the appended columns. For example, `cutData(mydata, "wd", names = c("windDir"))` will append a column named "windDir".
     
@@ -45,16 +35,32 @@
     - `cutData()` is now less destructive and better cleans up after itself. For example, when `type = "yearseason"`, it will no longer leave 'year' and 'season' columns behind, or overwrite existing 'year' and 'season' columns.
     
     - `cutData()` will now give an informative error message if the user provides a `type` which is in neither an in-built option nor a column in their dataframe.
+
+- `calcPercentile()` gained the following arguments:
+
+    - Added the `type` argument, in line with `timeAverage()`.
     
-- The `formula.label` argument of `polarPlot()` will now control whether concentration information is printed when `statistic = "cpf"`.
+    - Added the `prefix` argument to control the naming of the returned columns.
 
-- add `calm.thresh` as an option to `windRose`. This change allows users to set a non-zero wind speed threshold that is considered as calm.
+- `binData()` gained the following arguments:
 
-- DAQI information imported using `importUKAQ(data_type = "daqi")` will be returned with the relevant DAQI band appended as an additional factor column; either "Low" (1-3), "Moderate" (4-6), "High" (7-9), or "Very High" (10). See <https://uk-air.defra.gov.uk/air-pollution/daqi> for more information.
+    - Added the `type` argument, passed to `cutData()`.
+    
+    - Added the `B` and `conf.int` arguments, passed to `bootMeanDF()`.
+    
+- `selectRunning()` gained the following arguments:
 
-- `trendLevel()` has gained new `statistic` types to match `timeAverage()`, including `"mean"`, `"median"`, `"min"`, `"max"`, `"sd"`, `"sum"`, `"frequency"` and `"percentile"`.
+    - Added the `type` argument, passed to `cutData()`.
+    
+    - Added the `name` argument, which changes the name of the new column appended by the function.
+    
+    - Added the `mode` argument, which allows `selectRunning()` to filter the dataset rather than append a column.
 
-- `trendLevel()` will now automatically generate appropriate `labels` if `breaks` are provided. The `labels` argument can still be used to provide custom labels per break.
+- `rollingMean()` has gained the `type` argument. This will likely be of most use for distinguishing between - and calculating separate statistics for - different monitoring stations within the same data frame.
+
+- `splitByDate()` can now more consistently take `Date` / `POSIXct` inputs as well as characters, and provides more flexibility over inputs with a new `format` argument.
+
+- `aqStats()` gained the `progress` argument, in line with `timeAverage()`.
 
 - Many 'data utility' functions will now either warn or error if duplicate dates are detected, which is suggestive of a mix of either sites or averaging times within the same dataframe. The following functions have new behaviour:
 
@@ -64,17 +70,35 @@
     
     - `timeAverage()` will warn the user but proceed with calculations, as averaging across different sites may be a legitimate action.
     
-    - Functions which rely on `timeAverage()` will also warn but not error (notably `calcPercentile()` but also many plotting functions with `avg.time` arguments like `timePlot()`)
+    - Functions which rely on `timeAverage()` will also warn but not error (notably `calcPercentile()` but also many plotting functions with `avg.time` arguments).
 
-- `importImperial()` has been added, superseding `importKCL()`. They are functionally identical, but reflect that londonair is now managed by Imperial College London. Function arguments have been renamed in `importImperial()` to better match `importUKAQ()`.
+### Plotting Functions
+
+- Added new features for `openColours()`:
+
+    - Added new qualitative colour palettes: the "tol" family are colour-blind friendly palettes based on the work of Paul Tol (<https://sronpersonalpages.nl/~pault/>), and "tableau" and "observable" provide access to the "Tableau10" and "Observable10" palettes to aid in consistency with plots made in those platforms.
+  
+    - When `n` isn't defined for a qualitative palette (e.g., "Dark2"), the full qualitative palette will be returned. Previously this errored with the default of `100`.
+    
+    - `openColours()` will now check whether the provided `scheme` is either a known scheme name *or* a vector of valid R colours, and provide an informative error if this is not the case.
+
+- `polarDiff()` has gained the `type` argument, and correctly responds to `main`, `key.footer` and `key.header` via the `...` options.
+
+- `trendLevel()` has gained new `statistic` types to match `timeAverage()`, including `"mean"`, `"median"`, `"min"`, `"max"`, `"sd"`, `"sum"`, `"frequency"` and `"percentile"`.
+
+- `trendLevel()` will now automatically generate appropriate `labels` if `breaks` are provided. The `labels` argument can still be used to provide custom labels per break.
+
+- The `formula.label` argument of `polarPlot()` will now control whether concentration information is printed when `statistic = "cpf"`.
+
+- Added `calm.thresh` as an option to `windRose()`. This change allows users to set a non-zero wind speed threshold that is considered as calm.
 
 - Added the `map.lwd`, `map.lty` and `map.border` arguments to `trajPlot()`, `trajLevel()` and `trajCluster()` for greater control over the 'basemap' of each plot.
 
 ## Bug fixes
 
-- Fixed repeated day number in `calendarPlot` when `statistic = max`.
+- Fixed repeated day number in `calendarPlot()` when `statistic = max`.
 
-- Fixed `annotate = FALSE` in `windRose` where axes and labels were not shown
+- Fixed `annotate = FALSE` in `windRose()` where axes and labels were not shown
 
 - Fixed an issue wherein `importUKAQ()` would drop sites if importing from `local` sites *and* another network.
 
