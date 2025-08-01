@@ -54,10 +54,12 @@
 <h2 class="pkg-version" data-toc-text="development version" id="openair-development-version">openair (development version)<a class="anchor" aria-label="anchor" href="#openair-development-version"></a></h2>
 <div class="section level3">
 <h3 id="deprecations-development-version">Deprecations<a class="anchor" aria-label="anchor" href="#deprecations-development-version"></a></h3>
-<p><code><a href="../reference/importEurope.html">importEurope()</a></code> relies on the same back-end database as the <code>saqgetr</code> package (<a href="https://github.com/skgrange/saqgetr" class="external-link uri">https://github.com/skgrange/saqgetr</a>), which was retired in February 2024. <code><a href="../reference/importEurope.html">importEurope()</a></code> will now warn users of this, and outright error if <code>year &gt;= 2025</code>. Users are instead encouraged to use the EEA Air Quality Download Service <a href="https://eeadmz1-downloads-webapp.azurewebsites.net" class="external-link uri">https://eeadmz1-downloads-webapp.azurewebsites.net</a> to obtain European data for the time being.</p>
+<p><code><a href="../reference/importEurope.html">importEurope()</a></code> relies on the same back-end database as the <code>saqgetr</code> package (<a href="https://github.com/skgrange/saqgetr" class="external-link uri">https://github.com/skgrange/saqgetr</a>), which was retired in February 2024. <code><a href="../reference/importEurope.html">importEurope()</a></code> will now warn users of this, and outright error if <code>year &gt;= 2025</code>. Users are instead encouraged to use the EEA Air Quality Download Service <a href="https://eeadmz1-downloads-webapp.azurewebsites.net" class="external-link uri">https://eeadmz1-downloads-webapp.azurewebsites.net</a> to obtain European data for the time being. An R package, <a href="https://github.com/openair-project/euroaq" class="external-link uri">https://github.com/openair-project/euroaq</a>, has been developed to facilitate its use.</p>
 </div>
 <div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<div class="section level4">
+<h4 id="data-access-development-version">Data Access<a class="anchor" aria-label="anchor" href="#data-access-development-version"></a></h4>
 <ul><li>
 <p>The <code>source</code> argument of <code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> now defaults to <code>NULL</code>. This option allows the function to assign the <code>source</code> of each <code>site</code> itself, with some caveats:</p>
 <ul><li><p>Ambiguous codes (e.g., <code>"AD1"</code>, which corresponds to a SAQN and locally managed site) will preferentially import from the national networks (AURN, then AQE/SAQN/WAQN/NIAQN) over locally-managed networks. To override this users should manually define <code>source</code>.</p></li>
@@ -66,45 +68,65 @@
 <li><p>It is likely <em>slightly</em> slower for the function to assign <code>source</code> itself than for users to specify it themselves.</p></li>
 </ul></li>
 <li><p>The specific metadata columns appended when <code>importUKAQ(meta = TRUE)</code> can now be controlled using the <code>meta_columns</code> argument. For example, setting <code>meta_columns</code> to <code>c("zone", "agglomeration")</code> will append the zone/agglomeration information instead of the default site type/latitude/longitude.</p></li>
-<li>
-<p>Added new features for <code><a href="../reference/openColours.html">openColours()</a></code>:</p>
-<ul><li><p>Added new qualitative colour palettes: the “tol” family are colour-blind friendly palettes based on the work of Paul Tol (<a href="https://sronpersonalpages.nl/~pault/" class="external-link uri">https://sronpersonalpages.nl/~pault/</a>), and “tableau” and “observable” provide access to the “Tableau10” and “Observable10” palettes to aid in consistency with plots made in those platforms.</p></li>
-<li><p>When <code>n</code> isn’t defined for a qualitative palette (e.g., “Dark2”), the full qualitative palette will be returned. Previously this errored with the default of <code>100</code>.</p></li>
-<li><p><code><a href="../reference/openColours.html">openColours()</a></code> will now check whether the provided <code>scheme</code> is either a known scheme name <em>or</em> a vector of valid R colours, and provide an informative error if this is not the case.</p></li>
-</ul></li>
-<li><p><code><a href="../reference/bootMeans.html">binData()</a></code> has gained the <code>type</code>, <code>B</code> and <code>conf.int</code> arguments. The first is passed to <code><a href="../reference/cutData.html">cutData()</a></code> and the latter two to <code><a href="../reference/bootMeans.html">bootMeanDF()</a></code>.</p></li>
-<li>
-<p>Added new features for <code><a href="../reference/calcPercentile.html">calcPercentile()</a></code>:</p>
-<ul><li><p>Added the <code>type</code> argument, in line with <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
-<li><p>Added the <code>prefix</code> argument to control the naming of the returned columns.</p></li>
-</ul></li>
-<li><p><code><a href="../reference/splitByDate.html">splitByDate()</a></code> can now more consistently take <code>Date</code> / <code>POSIXct</code> inputs as well as characters, and provides more flexibility over inputs with a new <code>format</code> argument.</p></li>
-<li>
-<p>Made refinements to <code><a href="../reference/cutData.html">cutData()</a></code>:</p>
+<li><p>DAQI information imported using <code>importUKAQ(data_type = "daqi")</code> will be returned with the relevant DAQI band appended as an additional factor column; either “Low” (1-3), “Moderate” (4-6), “High” (7-9), or “Very High” (10). See <a href="https://uk-air.defra.gov.uk/air-pollution/daqi" class="external-link uri">https://uk-air.defra.gov.uk/air-pollution/daqi</a> for more information.</p></li>
+<li><p><code><a href="../reference/importImperial.html">importImperial()</a></code> has been added, superseding <code><a href="../reference/importImperial.html">importKCL()</a></code>. They are functionally identical, but reflect that londonair is now managed by Imperial College London. Function arguments have been renamed in <code><a href="../reference/importImperial.html">importImperial()</a></code> to better match <code><a href="../reference/importUKAQ.html">importUKAQ()</a></code>.</p></li>
+</ul></div>
+<div class="section level4">
+<h4 id="utility-functions-development-version">Utility Functions<a class="anchor" aria-label="anchor" href="#utility-functions-development-version"></a></h4>
+<ul><li>
+<p><code><a href="../reference/cutData.html">cutData()</a></code> gained numerous new features:</p>
 <ul><li><p>Added the <code>names</code> argument to specify the name of the appended columns. For example, <code>cutData(mydata, "wd", names = c("windDir"))</code> will append a column named “windDir”.</p></li>
 <li><p>Added the <code>suffix</code> argument as an alternative to <code>names</code>. If a new column would otherwise overwrite an existing column, <code>suffix</code> will be appended. For example, <code>cutData(mydata, c("nox", "o3"), suffix = "_cuts")</code> would append <code>nox_cuts</code> and <code>o3_cuts</code> columns.</p></li>
 <li><p><code><a href="../reference/cutData.html">cutData()</a></code> is now less destructive and better cleans up after itself. For example, when <code>type = "yearseason"</code>, it will no longer leave ‘year’ and ‘season’ columns behind, or overwrite existing ‘year’ and ‘season’ columns.</p></li>
 <li><p><code><a href="../reference/cutData.html">cutData()</a></code> will now give an informative error message if the user provides a <code>type</code> which is in neither an in-built option nor a column in their dataframe.</p></li>
 </ul></li>
-<li><p>The <code>formula.label</code> argument of <code><a href="../reference/polarPlot.html">polarPlot()</a></code> will now control whether concentration information is printed when <code>statistic = "cpf"</code>.</p></li>
-<li><p>add <code>calm.thresh</code> as an option to <code>windRose</code>. This change allows users to set a non-zero wind speed threshold that is considered as calm.</p></li>
-<li><p>DAQI information imported using <code>importUKAQ(data_type = "daqi")</code> will be returned with the relevant DAQI band appended as an additional factor column; either “Low” (1-3), “Moderate” (4-6), “High” (7-9), or “Very High” (10). See <a href="https://uk-air.defra.gov.uk/air-pollution/daqi" class="external-link uri">https://uk-air.defra.gov.uk/air-pollution/daqi</a> for more information.</p></li>
-<li><p><code><a href="../reference/trendLevel.html">trendLevel()</a></code> has gained new <code>statistic</code> types to match <code><a href="../reference/timeAverage.html">timeAverage()</a></code>, including <code>"mean"</code>, <code>"median"</code>, <code>"min"</code>, <code>"max"</code>, <code>"sd"</code>, <code>"sum"</code>, <code>"frequency"</code> and <code>"percentile"</code>.</p></li>
-<li><p><code><a href="../reference/trendLevel.html">trendLevel()</a></code> will now automatically generate appropriate <code>labels</code> if <code>breaks</code> are provided. The <code>labels</code> argument can still be used to provide custom labels per break.</p></li>
+<li>
+<p><code><a href="../reference/calcPercentile.html">calcPercentile()</a></code> gained the following arguments:</p>
+<ul><li><p>Added the <code>type</code> argument, in line with <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
+<li><p>Added the <code>prefix</code> argument to control the naming of the returned columns.</p></li>
+</ul></li>
+<li>
+<p><code><a href="../reference/bootMeans.html">binData()</a></code> gained the following arguments:</p>
+<ul><li><p>Added the <code>type</code> argument, passed to <code><a href="../reference/cutData.html">cutData()</a></code>.</p></li>
+<li><p>Added the <code>B</code> and <code>conf.int</code> arguments, passed to <code><a href="../reference/bootMeans.html">bootMeanDF()</a></code>.</p></li>
+</ul></li>
+<li>
+<p><code><a href="../reference/selectRunning.html">selectRunning()</a></code> gained the following arguments:</p>
+<ul><li><p>Added the <code>type</code> argument, passed to <code><a href="../reference/cutData.html">cutData()</a></code>.</p></li>
+<li><p>Added the <code>name</code> argument, which changes the name of the new column appended by the function.</p></li>
+<li><p>Added the <code>mode</code> argument, which allows <code><a href="../reference/selectRunning.html">selectRunning()</a></code> to filter the dataset rather than append a column.</p></li>
+</ul></li>
+<li><p><code><a href="../reference/rollingMean.html">rollingMean()</a></code> has gained the <code>type</code> argument. This will likely be of most use for distinguishing between - and calculating separate statistics for - different monitoring stations within the same data frame.</p></li>
+<li><p><code><a href="../reference/splitByDate.html">splitByDate()</a></code> can now more consistently take <code>Date</code> / <code>POSIXct</code> inputs as well as characters, and provides more flexibility over inputs with a new <code>format</code> argument.</p></li>
+<li><p><code><a href="../reference/aqStats.html">aqStats()</a></code> gained the <code>progress</code> argument, in line with <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
 <li>
 <p>Many ‘data utility’ functions will now either warn or error if duplicate dates are detected, which is suggestive of a mix of either sites or averaging times within the same dataframe. The following functions have new behaviour:</p>
 <ul><li><p><code><a href="../reference/selectRunning.html">selectRunning()</a></code> and <code><a href="../reference/rollingMean.html">rollingMean()</a></code> will error (duplicate dates break the logic of ‘rolling window’ functions).</p></li>
 <li><p><code><a href="../reference/aqStats.html">aqStats()</a></code> will also error, as it relies on <code><a href="../reference/rollingMean.html">rollingMean()</a></code>.</p></li>
 <li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> will warn the user but proceed with calculations, as averaging across different sites may be a legitimate action.</p></li>
-<li><p>Functions which rely on <code><a href="../reference/timeAverage.html">timeAverage()</a></code> will also warn but not error (notably <code><a href="../reference/calcPercentile.html">calcPercentile()</a></code> but also many plotting functions with <code>avg.time</code> arguments like <code><a href="../reference/timePlot.html">timePlot()</a></code>)</p></li>
+<li><p>Functions which rely on <code><a href="../reference/timeAverage.html">timeAverage()</a></code> will also warn but not error (notably <code><a href="../reference/calcPercentile.html">calcPercentile()</a></code> but also many plotting functions with <code>avg.time</code> arguments).</p></li>
 </ul></li>
-<li><p><code><a href="../reference/importImperial.html">importImperial()</a></code> has been added, superseding <code><a href="../reference/importImperial.html">importKCL()</a></code>. They are functionally identical, but reflect that londonair is now managed by Imperial College London. Function arguments have been renamed in <code><a href="../reference/importImperial.html">importImperial()</a></code> to better match <code><a href="../reference/importUKAQ.html">importUKAQ()</a></code>.</p></li>
+</ul></div>
+<div class="section level4">
+<h4 id="plotting-functions-development-version">Plotting Functions<a class="anchor" aria-label="anchor" href="#plotting-functions-development-version"></a></h4>
+<ul><li>
+<p>Added new features for <code><a href="../reference/openColours.html">openColours()</a></code>:</p>
+<ul><li><p>Added new qualitative colour palettes: the “tol” family are colour-blind friendly palettes based on the work of Paul Tol (<a href="https://sronpersonalpages.nl/~pault/" class="external-link uri">https://sronpersonalpages.nl/~pault/</a>), and “tableau” and “observable” provide access to the “Tableau10” and “Observable10” palettes to aid in consistency with plots made in those platforms.</p></li>
+<li><p>When <code>n</code> isn’t defined for a qualitative palette (e.g., “Dark2”), the full qualitative palette will be returned. Previously this errored with the default of <code>100</code>.</p></li>
+<li><p><code><a href="../reference/openColours.html">openColours()</a></code> will now check whether the provided <code>scheme</code> is either a known scheme name <em>or</em> a vector of valid R colours, and provide an informative error if this is not the case.</p></li>
+</ul></li>
+<li><p><code><a href="../reference/polarDiff.html">polarDiff()</a></code> has gained the <code>type</code> argument, and correctly responds to <code>main</code>, <code>key.footer</code> and <code>key.header</code> via the <code>...</code> options.</p></li>
+<li><p><code><a href="../reference/trendLevel.html">trendLevel()</a></code> has gained new <code>statistic</code> types to match <code><a href="../reference/timeAverage.html">timeAverage()</a></code>, including <code>"mean"</code>, <code>"median"</code>, <code>"min"</code>, <code>"max"</code>, <code>"sd"</code>, <code>"sum"</code>, <code>"frequency"</code> and <code>"percentile"</code>.</p></li>
+<li><p><code><a href="../reference/trendLevel.html">trendLevel()</a></code> will now automatically generate appropriate <code>labels</code> if <code>breaks</code> are provided. The <code>labels</code> argument can still be used to provide custom labels per break.</p></li>
+<li><p>The <code>formula.label</code> argument of <code><a href="../reference/polarPlot.html">polarPlot()</a></code> will now control whether concentration information is printed when <code>statistic = "cpf"</code>.</p></li>
+<li><p>Added <code>calm.thresh</code> as an option to <code><a href="../reference/windRose.html">windRose()</a></code>. This change allows users to set a non-zero wind speed threshold that is considered as calm.</p></li>
 <li><p>Added the <code>map.lwd</code>, <code>map.lty</code> and <code>map.border</code> arguments to <code><a href="../reference/trajPlot.html">trajPlot()</a></code>, <code><a href="../reference/trajLevel.html">trajLevel()</a></code> and <code><a href="../reference/trajCluster.html">trajCluster()</a></code> for greater control over the ‘basemap’ of each plot.</p></li>
 </ul></div>
+</div>
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
-<ul><li><p>Fixed repeated day number in <code>calendarPlot</code> when <code>statistic = max</code>.</p></li>
-<li><p>Fixed <code>annotate = FALSE</code> in <code>windRose</code> where axes and labels were not shown</p></li>
+<ul><li><p>Fixed repeated day number in <code><a href="../reference/calendarPlot.html">calendarPlot()</a></code> when <code>statistic = max</code>.</p></li>
+<li><p>Fixed <code>annotate = FALSE</code> in <code><a href="../reference/windRose.html">windRose()</a></code> where axes and labels were not shown</p></li>
 <li><p>Fixed an issue wherein <code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> would drop sites if importing from <code>local</code> sites <em>and</em> another network.</p></li>
 <li><p><code><a href="../reference/polarCluster.html">polarCluster()</a></code> will no longer error with multiple <code>pollutant</code>s and a single <code>n.clusters</code>.</p></li>
 <li><p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> will correctly append site meta data when <code>meta = TRUE</code>, <code>source</code> is a length greater than 1, and a single site is repeated in more than one source (e.g., <code>importUKAQ(source = c("waqn", "aurn"), data_type = "daqi", year = 2024L))</code>)</p></li>
