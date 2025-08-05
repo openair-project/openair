@@ -13,7 +13,7 @@ between two periods."><meta property="og:image" content="https://openair-project
 
     <a class="navbar-brand me-2" href="../index.html">openair</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.18.2.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.19.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,32 +90,34 @@ See <code><a href="polarPlot.html">polarPlot()</a></code> for details of differe
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
 <dd><p>Mandatory. A pollutant name corresponding to a variable in a
-data frame should be supplied e.g. <code>pollutant = "nox"</code>. There can also
-be more than one pollutant specified e.g. <code>pollutant = c("nox", "no2")</code>. The main use of using two or more pollutants is for model
-evaluation where two species would be expected to have similar
-concentrations. This saves the user stacking the data and it is possible to
-work with columns of data directly. A typical use would be <code>pollutant = c("obs", "mod")</code> to compare two columns “obs” (the observations)
-and “mod” (modelled values). When pair-wise statistics such as
-Pearson correlation and regression techniques are to be plotted,
-<code>pollutant</code> takes two elements too. For example, <code>pollutant = c("bc", "pm25")</code> where <code>"bc"</code> is a function of <code>"pm25"</code>.</p></dd>
+data frame should be supplied e.g. <code>pollutant = "nox"</code>. There can also be
+more than one pollutant specified e.g. <code>pollutant = c("nox", "no2")</code>. The
+main use of using two or more pollutants is for model evaluation where two
+species would be expected to have similar concentrations. This saves the
+user stacking the data and it is possible to work with columns of data
+directly. A typical use would be <code>pollutant = c("obs", "mod")</code> to compare
+two columns “obs” (the observations) and “mod” (modelled
+values). When pair-wise statistics such as Pearson correlation and
+regression techniques are to be plotted, <code>pollutant</code> takes two elements
+too. For example, <code>pollutant = c("bc", "pm25")</code> where <code>"bc"</code> is a function
+of <code>"pm25"</code>.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p><code>type</code> determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-<code>cutData</code> e.g. “season”, “year”, “weekday” and so
-on. For example, <code>type = "season"</code> will produce four plots — one for
-each season.</p>
-<p>It is also possible to choose <code>type</code> as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+<dd><p><code>type</code> determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in <code>cutData</code> e.g.
+“season”, “year”, “weekday” and so on. For example,
+<code>type = "season"</code> will produce four plots — one for each season.</p>
+<p>It is also possible to choose <code>type</code> as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.</p>
-<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will
-produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.</p></dd>
+<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will produce
+a 2x2 plot split by season and day of the week. Note, when two types are
+provided the first forms the columns and the second the rows.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
@@ -127,19 +129,19 @@ coordinates, the default is wind speed, “ws”.</p></dd>
 <dd><p>The function does its best to choose sensible limits
 automatically. However, there are circumstances when the user will wish to
 set different ones. An example would be a series of plots showing each year
-of data separately. The limits are set in the form <code>c(lower, upper)</code>,
-so <code>limits = c(0, 100)</code> would force the plot limits to span 0-100.</p></dd>
+of data separately. The limits are set in the form <code>c(lower, upper)</code>, so
+<code>limits = c(0, 100)</code> would force the plot limits to span 0-100.</p></dd>
 
 
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
-<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code>
-titles and axis labels will automatically try and format pollutant names
-and units properly e.g.  by subscripting the `2' in NO2.</p></dd>
+<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
+axis labels will automatically try and format pollutant names and units
+properly e.g.  by subscripting the `2' in NO2.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
-<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when
-analysing data to extract plot components and plotting them in other ways.</p></dd>
+<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
+data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -151,12 +153,12 @@ analysing data to extract plot components and plotting them in other ways.</p></
 speed/direction bin. Because of the smoothing involved, the colour scale
 for some of these statistics is only to provide an indication of overall
 pattern and should not be interpreted in concentration units e.g. for
-<code>statistic = "weighted.mean"</code> where the bin mean is multiplied by the
-bin frequency and divided by the total frequency. In many cases using
-<code>polarFreq</code> will be better. Setting <code>statistic = "weighted.mean"</code>
-can be useful because it provides an indication of the concentration *
-frequency of occurrence and will highlight the wind speed/direction
-conditions that dominate the overall mean.Can be:</p>
+<code>statistic = "weighted.mean"</code> where the bin mean is multiplied by the bin
+frequency and divided by the total frequency. In many cases using
+<code>polarFreq</code> will be better. Setting <code>statistic = "weighted.mean"</code> can be
+useful because it provides an indication of the concentration * frequency
+of occurrence and will highlight the wind speed/direction conditions that
+dominate the overall mean.Can be:</p>
 <ul><li><p>“mean” (default), “median”, “max”
 (maximum), “frequency”. “stdev” (standard deviation),
 “weighted.mean”.</p></li>
@@ -201,18 +203,18 @@ determination of the slope. The uncertainties are provided by
 </ul></dd>
 
     <dt><code>exclude.missing</code></dt>
-<dd><p>Setting this option to <code>TRUE</code> (the default)
-removes points from the plot that are too far from the original data. The
-smoothing routines will produce predictions at points where no data exist
-i.e. they predict. By removing the points too far from the original data
-produces a plot where it is clear where the original data lie. If set to
-<code>FALSE</code> missing data will be interpolated.</p></dd>
+<dd><p>Setting this option to <code>TRUE</code> (the default) removes
+points from the plot that are too far from the original data. The smoothing
+routines will produce predictions at points where no data exist i.e. they
+predict. By removing the points too far from the original data produces a
+plot where it is clear where the original data lie. If set to <code>FALSE</code>
+missing data will be interpolated.</p></dd>
 
     <dt><code>uncertainty</code></dt>
 <dd><p>Should the uncertainty in the calculated surface be shown?
-If <code>TRUE</code> three plots are produced on the same scale showing the
-predicted surface together with the estimated lower and upper uncertainties
-at the 95% confidence interval. Calculating the uncertainties is useful to
+If <code>TRUE</code> three plots are produced on the same scale showing the predicted
+surface together with the estimated lower and upper uncertainties at the
+95% confidence interval. Calculating the uncertainties is useful to
 understand whether features are real or not.  For example, at high wind
 speeds where there are few data there is greater uncertainty over the
 predicted values. The uncertainties are calculated using the GAM and
@@ -221,37 +223,35 @@ speed-direction bin. Note that if uncertainties are calculated then the
 type is set to "default".</p></dd>
 
     <dt><code>percentile</code></dt>
-<dd><p>If <code>statistic = "percentile"</code> then <code>percentile</code>
-is used, expressed from 0 to 100. Note that the percentile value is
-calculated in the wind speed, wind direction ‘bins’. For this reason
-it can also be useful to set <code>min.bin</code> to ensure there are a
-sufficient number of points available to estimate a percentile. See
-<code>quantile</code> for more details of how percentiles are calculated.</p>
-<p><code>percentile</code> is also used for the Conditional Probability Function
-(CPF) plots. <code>percentile</code> can be of length two, in which case the
-percentile <em>interval</em> is considered for use with CPF. For example,
-<code>percentile = c(90, 100)</code> will plot the CPF for concentrations between
-the 90 and 100th percentiles. Percentile intervals can be useful for
-identifying specific sources. In addition, <code>percentile</code> can also be of
-length 3. The third value is the ‘trim’ value to be applied. When
-calculating percentile intervals many can cover very low values where there
-is no useful information. The trim value ensures that values greater than
-or equal to the trim * mean value are considered <em>before</em> the
-percentile intervals are calculated. The effect is to extract more detail
-from many source signatures. See the manual for examples. Finally, if the
-trim value is less than zero the percentile range is interpreted as
-absolute concentration values and subsetting is carried out directly.</p></dd>
+<dd><p>If <code>statistic = "percentile"</code> then <code>percentile</code> is used,
+expressed from 0 to 100. Note that the percentile value is calculated in
+the wind speed, wind direction ‘bins’. For this reason it can also
+be useful to set <code>min.bin</code> to ensure there are a sufficient number of
+points available to estimate a percentile. See <code>quantile</code> for more details
+of how percentiles are calculated.</p>
+<p><code>percentile</code> is also used for the Conditional Probability Function (CPF)
+plots. <code>percentile</code> can be of length two, in which case the percentile
+<em>interval</em> is considered for use with CPF. For example, <code>percentile = c(90, 100)</code> will plot the CPF for concentrations between the 90 and 100th
+percentiles. Percentile intervals can be useful for identifying specific
+sources. In addition, <code>percentile</code> can also be of length 3. The third value
+is the ‘trim’ value to be applied. When calculating percentile
+intervals many can cover very low values where there is no useful
+information. The trim value ensures that values greater than or equal to
+the trim * mean value are considered <em>before</em> the percentile intervals are
+calculated. The effect is to extract more detail from many source
+signatures. See the manual for examples. Finally, if the trim value is less
+than zero the percentile range is interpreted as absolute concentration
+values and subsetting is carried out directly.</p></dd>
 
     <dt><code>cols</code></dt>
 <dd><p>Colours to be used for plotting. Options include
 “default”, “increment”, “heat”, “jet” and
-<code>RColorBrewer</code> colours — see the <code>openair</code> <code>openColours</code>
-function for more details. For user defined the user can supply a list of
-colour names recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list).
-An example would be <code>cols = c("yellow", "green", "blue")</code>. <code>cols</code>
-can also take the values <code>"viridis"</code>, <code>"magma"</code>,
-<code>"inferno"</code>, or <code>"plasma"</code> which are the viridis colour maps
-ported from Python's Matplotlib library.</p></dd>
+<code>RColorBrewer</code> colours — see the <code>openair</code> <code>openColours</code> function for
+more details. For user defined the user can supply a list of colour names
+recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list). An example would
+be <code>cols = c("yellow", "green", "blue")</code>. <code>cols</code> can also take the values
+<code>"viridis"</code>, <code>"magma"</code>, <code>"inferno"</code>, or <code>"plasma"</code> which are the viridis
+colour maps ported from Python's Matplotlib library.</p></dd>
 
     <dt><code>weights</code></dt>
 <dd><p>At the edges of the plot there may only be a few data points
@@ -259,8 +259,7 @@ in each wind speed-direction interval, which could in some situations
 distort the plot if the concentrations are high. <code>weights</code> applies a
 weighting to reduce their influence. For example and by default if only a
 single data point exists then the weighting factor is 0.25 and for two
-points 0.5. To not apply any weighting and use the data as is, use
-<code>weights = c(1, 1, 1)</code>.</p>
+points 0.5. To not apply any weighting and use the data as is, use <code>weights = c(1, 1, 1)</code>.</p>
 <p>An alternative to down-weighting these points they can be removed
 altogether using <code>min.bin</code>.</p></dd>
 
@@ -270,14 +269,12 @@ direction bin.  The default is 1. A value of two requires at least 2 valid
 records in each bin an so on; bins with less than 2 valid records are set
 to NA. Care should be taken when using a value &gt; 1 because of the risk of
 removing real data points. It is recommended to consider your data with
-care. Also, the <code>polarFreq</code> function can be of use in such
-circumstances.</p></dd>
+care. Also, the <code>polarFreq</code> function can be of use in such circumstances.</p></dd>
 
     <dt><code>mis.col</code></dt>
-<dd><p>When <code>min.bin</code> is &gt; 1 it can be useful to show where data
-are removed on the plots. This is done by shading the missing data in
-<code>mis.col</code>. To not highlight missing data when <code>min.bin</code> &gt; 1
-choose <code>mis.col = "transparent"</code>.</p></dd>
+<dd><p>When <code>min.bin</code> is &gt; 1 it can be useful to show where data are
+removed on the plots. This is done by shading the missing data in
+<code>mis.col</code>. To not highlight missing data when <code>min.bin</code> &gt; 1 choose <code>mis.col = "transparent"</code>.</p></dd>
 
     <dt><code>alpha</code></dt>
 <dd><p>The alpha transparency to use for the plotting surface (a value
@@ -292,64 +289,63 @@ of them can reduce the useful information in the plot.</p></dd>
 
     <dt><code>angle.scale</code></dt>
 <dd><p>Sometimes the placement of the scale may interfere with an
-interesting feature. The user can therefore set <code>angle.scale</code> to any
-value between 0 and 360 degrees to mitigate such problems. For example
+interesting feature. The user can therefore set <code>angle.scale</code> to any value
+between 0 and 360 degrees to mitigate such problems. For example
 <code>angle.scale = 45</code> will draw the scale heading in a NE direction.</p></dd>
 
     <dt><code>units</code></dt>
 <dd><p>The units shown on the polar axis scale.</p></dd>
 
     <dt><code>force.positive</code></dt>
-<dd><p>The default is <code>TRUE</code>. Sometimes if smoothing data
-with steep gradients it is possible for predicted values to be negative.
-<code>force.positive = TRUE</code> ensures that predictions remain positive. This
-is useful for several reasons. First, with lots of missing data more
+<dd><p>The default is <code>TRUE</code>. Sometimes if smoothing data with
+steep gradients it is possible for predicted values to be negative.
+<code>force.positive = TRUE</code> ensures that predictions remain positive. This is
+useful for several reasons. First, with lots of missing data more
 interpolation is needed and this can result in artefacts because the
 predictions are too far from the original data. Second, if it is known
 beforehand that the data are all positive, then this option carries that
 assumption through to the prediction. The only likely time where setting
-<code>force.positive = FALSE</code> would be if background concentrations were
-first subtracted resulting in data that is legitimately negative. For the
-vast majority of situations it is expected that the user will not need to
-alter the default option.</p></dd>
+<code>force.positive = FALSE</code> would be if background concentrations were first
+subtracted resulting in data that is legitimately negative. For the vast
+majority of situations it is expected that the user will not need to alter
+the default option.</p></dd>
 
     <dt><code>k</code></dt>
 <dd><p>This is the smoothing parameter used by the <code>gam</code> function in
-package <code>mgcv</code>. Typically, value of around 100 (the default) seems to
-be suitable and will resolve important features in the plot. The most
-appropriate choice of <code>k</code> is problem-dependent; but extensive testing
-of polar plots for many different problems suggests a value of <code>k</code> of
-about 100 is suitable. Setting <code>k</code> to higher values will not tend to
-affect the surface predictions by much but will add to the computation
-time. Lower values of <code>k</code> will increase smoothing. Sometimes with few
-data to plot <code>polarPlot</code> will fail. Under these circumstances it can
-be worth lowering the value of <code>k</code>.</p></dd>
+package <code>mgcv</code>. Typically, value of around 100 (the default) seems to be
+suitable and will resolve important features in the plot. The most
+appropriate choice of <code>k</code> is problem-dependent; but extensive testing of
+polar plots for many different problems suggests a value of <code>k</code> of about
+100 is suitable. Setting <code>k</code> to higher values will not tend to affect the
+surface predictions by much but will add to the computation time. Lower
+values of <code>k</code> will increase smoothing. Sometimes with few data to plot
+<code>polarPlot</code> will fail. Under these circumstances it can be worth lowering
+the value of <code>k</code>.</p></dd>
 
     <dt><code>normalise</code></dt>
-<dd><p>If <code>TRUE</code> concentrations are normalised by dividing by
-their mean value. This is done <em>after</em> fitting the smooth surface.
-This option is particularly useful if one is interested in the patterns of
-concentrations for several pollutants on different scales e.g. NOx and CO.
-Often useful if more than one <code>pollutant</code> is chosen.</p></dd>
+<dd><p>If <code>TRUE</code> concentrations are normalised by dividing by their
+mean value. This is done <em>after</em> fitting the smooth surface. This option is
+particularly useful if one is interested in the patterns of concentrations
+for several pollutants on different scales e.g. NOx and CO. Often useful if
+more than one <code>pollutant</code> is chosen.</p></dd>
 
     <dt><code>key.header</code></dt>
 <dd><p>Adds additional text/labels to the scale key. For example,
-passing the options <code>key.header = "header", key.footer = "footer1"</code>
-adds addition text above and below the scale key. These arguments are
-passed to <code>drawOpenKey</code> via <code>quickText</code>, applying the
-<code>auto.text</code> argument, to handle formatting.</p></dd>
+passing the options <code>key.header = "header", key.footer = "footer1"</code> adds
+addition text above and below the scale key. These arguments are passed to
+<code>drawOpenKey</code> via <code>quickText</code>, applying the <code>auto.text</code> argument, to handle
+formatting.</p></dd>
 
     <dt><code>key.footer</code></dt>
 <dd><p>see <code>key.footer</code>.</p></dd>
 
     <dt><code>key.position</code></dt>
 <dd><p>Location where the scale key is to plotted. Allowed
-arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>
-and <code>"left"</code>.</p></dd>
+arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code> and <code>"left"</code>.</p></dd>
 
     <dt><code>key</code></dt>
-<dd><p>Fine control of the scale key via <code>drawOpenKey</code>. See
-<code>drawOpenKey</code> for further details.</p></dd>
+<dd><p>Fine control of the scale key via <code>drawOpenKey</code>. See <code>drawOpenKey</code>
+for further details.</p></dd>
 
     <dt><code>ws_spread</code></dt>
 <dd><p>The value of sigma used for Gaussian kernel weighting of
@@ -358,8 +354,8 @@ statistics are used such as <em>r</em>. Default is <code>0.5</code>.</p></dd>
 
     <dt><code>wd_spread</code></dt>
 <dd><p>The value of sigma used for Gaussian kernel weighting of
-wind direction when <code>statistic = "nwr"</code> or when correlation and
-regression statistics are used such as <em>r</em>. Default is <code>4</code>.</p></dd>
+wind direction when <code>statistic = "nwr"</code> or when correlation and regression
+statistics are used such as <em>r</em>. Default is <code>4</code>.</p></dd>
 
     <dt><code>x_error</code></dt>
 <dd><p>The <code>x</code> error / uncertainty used when <code>statistic = "york_slope"</code>.</p></dd>
@@ -375,13 +371,13 @@ supported but this may be enhanced in the future.</p></dd>
     <dt><code>formula.label</code></dt>
 <dd><p>When pair-wise statistics such as regression slopes are
 calculated and plotted, should a formula label be displayed?
-<code>formula.label</code> will also determine whether concentration information
-is printed when <code>statistic = "cpf"</code>.</p></dd>
+<code>formula.label</code> will also determine whether concentration information is
+printed when <code>statistic = "cpf"</code>.</p></dd>
 
     <dt><code>tau</code></dt>
 <dd><p>The quantile to be estimated when <code>statistic</code> is set to
-<code>"quantile.slope"</code>. Default is <code>0.5</code> which is equal to the median
-and will be ignored if <code>"quantile.slope"</code> is not used.</p></dd>
+<code>"quantile.slope"</code>. Default is <code>0.5</code> which is equal to the median and will
+be ignored if <code>"quantile.slope"</code> is not used.</p></dd>
 
 
 </dl></dd>

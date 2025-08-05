@@ -13,7 +13,7 @@ month, day of week."><meta property="og:image" content="https://openair-project.
 
     <a class="navbar-brand me-2" href="../index.html">openair</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.18.2.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.19.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -193,20 +193,19 @@ calculated.</p></dd>
 <dd><p>The function does its best to choose sensible limits
 automatically. However, there are circumstances when the user will wish to
 set different ones. An example would be a series of plots showing each year
-of data separately. The limits are set in the form <code>c(lower, upper)</code>,
-so <code>limits = c(0, 100)</code> would force the plot limits to span 0-100.</p></dd>
+of data separately. The limits are set in the form <code>c(lower, upper)</code>, so
+<code>limits = c(0, 100)</code> would force the plot limits to span 0-100.</p></dd>
 
 
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
 <dd><p>Colours to be used for plotting. Options include
 “default”, “increment”, “heat”, “jet” and
-<code>RColorBrewer</code> colours — see the <code>openair</code> <code>openColours</code>
-function for more details. For user defined the user can supply a list of
-colour names recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list).
-An example would be <code>cols = c("yellow", "green", "blue")</code>. <code>cols</code>
-can also take the values <code>"viridis"</code>, <code>"magma"</code>,
-<code>"inferno"</code>, or <code>"plasma"</code> which are the viridis colour maps
-ported from Python's Matplotlib library.</p></dd>
+<code>RColorBrewer</code> colours — see the <code>openair</code> <code>openColours</code> function for
+more details. For user defined the user can supply a list of colour names
+recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list). An example would
+be <code>cols = c("yellow", "green", "blue")</code>. <code>cols</code> can also take the values
+<code>"viridis"</code>, <code>"magma"</code>, <code>"inferno"</code>, or <code>"plasma"</code> which are the viridis
+colour maps ported from Python's Matplotlib library.</p></dd>
 
 
 <dt id="arg-width">width<a class="anchor" aria-label="anchor" href="#arg-width"></a></dt>
@@ -220,17 +219,16 @@ direction bin.  The default is 1. A value of two requires at least 2 valid
 records in each bin an so on; bins with less than 2 valid records are set
 to NA. Care should be taken when using a value &gt; 1 because of the risk of
 removing real data points. It is recommended to consider your data with
-care. Also, the <code>polarFreq</code> function can be of use in such
-circumstances.</p></dd>
+care. Also, the <code>polarFreq</code> function can be of use in such circumstances.</p></dd>
 
 
 <dt id="arg-exclude-missing">exclude.missing<a class="anchor" aria-label="anchor" href="#arg-exclude-missing"></a></dt>
-<dd><p>Setting this option to <code>TRUE</code> (the default)
-removes points from the plot that are too far from the original data. The
-smoothing routines will produce predictions at points where no data exist
-i.e. they predict. By removing the points too far from the original data
-produces a plot where it is clear where the original data lie. If set to
-<code>FALSE</code> missing data will be interpolated.</p></dd>
+<dd><p>Setting this option to <code>TRUE</code> (the default) removes
+points from the plot that are too far from the original data. The smoothing
+routines will produce predictions at points where no data exist i.e. they
+predict. By removing the points too far from the original data produces a
+plot where it is clear where the original data lie. If set to <code>FALSE</code>
+missing data will be interpolated.</p></dd>
 
 
 <dt id="arg-date-pad">date.pad<a class="anchor" aria-label="anchor" href="#arg-date-pad"></a></dt>
@@ -241,18 +239,18 @@ at the beginning or end of year.</p></dd>
 
 
 <dt id="arg-force-positive">force.positive<a class="anchor" aria-label="anchor" href="#arg-force-positive"></a></dt>
-<dd><p>The default is <code>TRUE</code>. Sometimes if smoothing data
-with steep gradients it is possible for predicted values to be negative.
-<code>force.positive = TRUE</code> ensures that predictions remain positive. This
-is useful for several reasons. First, with lots of missing data more
+<dd><p>The default is <code>TRUE</code>. Sometimes if smoothing data with
+steep gradients it is possible for predicted values to be negative.
+<code>force.positive = TRUE</code> ensures that predictions remain positive. This is
+useful for several reasons. First, with lots of missing data more
 interpolation is needed and this can result in artefacts because the
 predictions are too far from the original data. Second, if it is known
 beforehand that the data are all positive, then this option carries that
 assumption through to the prediction. The only likely time where setting
-<code>force.positive = FALSE</code> would be if background concentrations were
-first subtracted resulting in data that is legitimately negative. For the
-vast majority of situations it is expected that the user will not need to
-alter the default option.</p></dd>
+<code>force.positive = FALSE</code> would be if background concentrations were first
+subtracted resulting in data that is legitimately negative. For the vast
+majority of situations it is expected that the user will not need to alter
+the default option.</p></dd>
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
@@ -264,19 +262,19 @@ too noisy and affected more by outliers. Choosing a lower value of <code>k</code
 
 
 <dt id="arg-normalise">normalise<a class="anchor" aria-label="anchor" href="#arg-normalise"></a></dt>
-<dd><p>If <code>TRUE</code> concentrations are normalised by dividing by
-their mean value. This is done <em>after</em> fitting the smooth surface.
-This option is particularly useful if one is interested in the patterns of
-concentrations for several pollutants on different scales e.g. NOx and CO.
-Often useful if more than one <code>pollutant</code> is chosen.</p></dd>
+<dd><p>If <code>TRUE</code> concentrations are normalised by dividing by their
+mean value. This is done <em>after</em> fitting the smooth surface. This option is
+particularly useful if one is interested in the patterns of concentrations
+for several pollutants on different scales e.g. NOx and CO. Often useful if
+more than one <code>pollutant</code> is chosen.</p></dd>
 
 
 <dt id="arg-key-header">key.header<a class="anchor" aria-label="anchor" href="#arg-key-header"></a></dt>
 <dd><p>Adds additional text/labels to the scale key. For example,
-passing the options <code>key.header = "header", key.footer = "footer1"</code>
-adds addition text above and below the scale key. These arguments are
-passed to <code>drawOpenKey</code> via <code>quickText</code>, applying the
-<code>auto.text</code> argument, to handle formatting.</p></dd>
+passing the options <code>key.header = "header", key.footer = "footer1"</code> adds
+addition text above and below the scale key. These arguments are passed to
+<code>drawOpenKey</code> via <code>quickText</code>, applying the <code>auto.text</code> argument, to handle
+formatting.</p></dd>
 
 
 <dt id="arg-key-footer">key.footer<a class="anchor" aria-label="anchor" href="#arg-key-footer"></a></dt>
@@ -285,19 +283,18 @@ passed to <code>drawOpenKey</code> via <code>quickText</code>, applying the
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
 <dd><p>Location where the scale key is to plotted. Allowed
-arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>
-and <code>"left"</code>.</p></dd>
+arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code> and <code>"left"</code>.</p></dd>
 
 
 <dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>Fine control of the scale key via <code>drawOpenKey</code>. See
-<code>drawOpenKey</code> for further details.</p></dd>
+<dd><p>Fine control of the scale key via <code>drawOpenKey</code>. See <code>drawOpenKey</code>
+for further details.</p></dd>
 
 
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
-<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code>
-titles and axis labels will automatically try and format pollutant names
-and units properly e.g.  by subscripting the `2' in NO2.</p></dd>
+<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
+axis labels will automatically try and format pollutant names and units
+properly e.g.  by subscripting the `2' in NO2.</p></dd>
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
@@ -308,8 +305,8 @@ the package <code>openairmaps</code>.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
-<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when
-analysing data to extract plot components and plotting them in other ways.</p></dd>
+<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
+data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

@@ -9,7 +9,7 @@ conditioning. The plot can display multiple percentile lines or filled areas."><
 
     <a class="navbar-brand me-2" href="../index.html">openair</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.18.2.9010</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.19.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,21 +109,20 @@ there is only one <code>type</code>.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p><code>type</code> determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-<code>cutData</code> e.g. “season”, “year”, “weekday” and so
-on. For example, <code>type = "season"</code> will produce four plots — one for
-each season.</p>
-<p>It is also possible to choose <code>type</code> as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+<dd><p><code>type</code> determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in <code>cutData</code> e.g.
+“season”, “year”, “weekday” and so on. For example,
+<code>type = "season"</code> will produce four plots — one for each season.</p>
+<p>It is also possible to choose <code>type</code> as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.</p>
-<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will
-produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.</p></dd>
+<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will produce
+a 2x2 plot split by season and day of the week. Note, when two types are
+provided the first forms the columns and the second the rows.</p></dd>
 
 
 <dt id="arg-percentile">percentile<a class="anchor" aria-label="anchor" href="#arg-percentile"></a></dt>
@@ -149,13 +148,12 @@ number of samples in the same wind sector (see Ashbaugh et al., 1985).</p></dd>
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
 <dd><p>Colours to be used for plotting. Options include
 “default”, “increment”, “heat”, “jet” and
-<code>RColorBrewer</code> colours — see the <code>openair</code> <code>openColours</code>
-function for more details. For user defined the user can supply a list of
-colour names recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list).
-An example would be <code>cols = c("yellow", "green", "blue")</code>. <code>cols</code>
-can also take the values <code>"viridis"</code>, <code>"magma"</code>,
-<code>"inferno"</code>, or <code>"plasma"</code> which are the viridis colour maps
-ported from Python's Matplotlib library.</p></dd>
+<code>RColorBrewer</code> colours — see the <code>openair</code> <code>openColours</code> function for
+more details. For user defined the user can supply a list of colour names
+recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list). An example would
+be <code>cols = c("yellow", "green", "blue")</code>. <code>cols</code> can also take the values
+<code>"viridis"</code>, <code>"magma"</code>, <code>"inferno"</code>, or <code>"plasma"</code> which are the viridis
+colour maps ported from Python's Matplotlib library.</p></dd>
 
 
 <dt id="arg-angle">angle<a class="anchor" aria-label="anchor" href="#arg-angle"></a></dt>
@@ -189,23 +187,23 @@ lines be drawn (<code>fill = FALSE</code>).</p></dd>
 
 <dt id="arg-angle-scale">angle.scale<a class="anchor" aria-label="anchor" href="#arg-angle-scale"></a></dt>
 <dd><p>Sometimes the placement of the scale may interfere with an
-interesting feature. The user can therefore set <code>angle.scale</code> to any
-value between 0 and 360 degrees to mitigate such problems. For example
+interesting feature. The user can therefore set <code>angle.scale</code> to any value
+between 0 and 360 degrees to mitigate such problems. For example
 <code>angle.scale = 45</code> will draw the scale heading in a NE direction.</p></dd>
 
 
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
-<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code>
-titles and axis labels will automatically try and format pollutant names
-and units properly e.g.  by subscripting the `2' in NO2.</p></dd>
+<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
+axis labels will automatically try and format pollutant names and units
+properly e.g.  by subscripting the `2' in NO2.</p></dd>
 
 
 <dt id="arg-key-header">key.header<a class="anchor" aria-label="anchor" href="#arg-key-header"></a></dt>
 <dd><p>Adds additional text/labels to the scale key. For example,
-passing the options <code>key.header = "header", key.footer = "footer1"</code>
-adds addition text above and below the scale key. These arguments are
-passed to <code>drawOpenKey</code> via <code>quickText</code>, applying the
-<code>auto.text</code> argument, to handle formatting.</p></dd>
+passing the options <code>key.header = "header", key.footer = "footer1"</code> adds
+addition text above and below the scale key. These arguments are passed to
+<code>drawOpenKey</code> via <code>quickText</code>, applying the <code>auto.text</code> argument, to handle
+formatting.</p></dd>
 
 
 <dt id="arg-key-footer">key.footer<a class="anchor" aria-label="anchor" href="#arg-key-footer"></a></dt>
@@ -214,13 +212,12 @@ passed to <code>drawOpenKey</code> via <code>quickText</code>, applying the
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
 <dd><p>Location where the scale key is to plotted. Allowed
-arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>
-and <code>"left"</code>.</p></dd>
+arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code> and <code>"left"</code>.</p></dd>
 
 
 <dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>Fine control of the scale key via <code>drawOpenKey</code>. See
-<code>drawOpenKey</code> for further details.</p></dd>
+<dd><p>Fine control of the scale key via <code>drawOpenKey</code>. See <code>drawOpenKey</code>
+for further details.</p></dd>
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
@@ -231,8 +228,8 @@ the package <code>openairmaps</code>.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
-<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when
-analysing data to extract plot components and plotting them in other ways.</p></dd>
+<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
+data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
