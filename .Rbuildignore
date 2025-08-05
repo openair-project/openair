@@ -14,3 +14,4 @@ README_cache
 ^pkgdown$
 ^LICENSE\.md$
 ^vignettes/articles$
+^revdep$
