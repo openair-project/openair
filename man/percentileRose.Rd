@@ -42,23 +42,22 @@ there is only one \code{type}.}
 
 \item{wd}{Name of wind direction field.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-\code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-on. For example, \code{type = "season"} will produce four plots --- one for
-each season.
+\item{type}{\code{type} determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
+\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+\code{type = "season"} will produce four plots --- one for each season.
 
-It is also possible to choose \code{type} as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+It is also possible to choose \code{type} as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-Type can be up length two e.g. \code{type = c("season", "weekday")} will
-produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.}
+Type can be up length two e.g. \code{type = c("season", "weekday")} will produce
+a 2x2 plot split by season and day of the week. Note, when two types are
+provided the first forms the columns and the second the rows.}
 
 \item{percentile}{The percentile value(s) to plot. Must be between 0--100. If
 \code{percentile = NA} then only a mean line will be shown.}
@@ -76,13 +75,12 @@ number of samples in the same wind sector (see Ashbaugh et al., 1985).}
 
 \item{cols}{Colours to be used for plotting. Options include
 \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-\code{RColorBrewer} colours --- see the \code{openair} \code{openColours}
-function for more details. For user defined the user can supply a list of
-colour names recognised by R (type \code{colours()} to see the full list).
-An example would be \code{cols = c("yellow", "green", "blue")}. \code{cols}
-can also take the values \code{"viridis"}, \code{"magma"},
-\code{"inferno"}, or \code{"plasma"} which are the viridis colour maps
-ported from Python's Matplotlib library.}
+\code{RColorBrewer} colours --- see the \code{openair} \code{openColours} function for
+more details. For user defined the user can supply a list of colour names
+recognised by R (type \code{colours()} to see the full list). An example would
+be \code{cols = c("yellow", "green", "blue")}. \code{cols} can also take the values
+\code{"viridis"}, \code{"magma"}, \code{"inferno"}, or \code{"plasma"} which are the viridis
+colour maps ported from Python's Matplotlib library.}
 
 \item{angle}{Default angle of \dQuote{spokes} is when \code{smooth = FALSE}.}
 
@@ -100,36 +98,35 @@ lines be drawn (\code{fill = FALSE}).}
 \item{intervals}{User-supplied intervals for the scale e.g. \code{intervals = c(0, 10, 30, 50)}}
 
 \item{angle.scale}{Sometimes the placement of the scale may interfere with an
-interesting feature. The user can therefore set \code{angle.scale} to any
-value between 0 and 360 degrees to mitigate such problems. For example
+interesting feature. The user can therefore set \code{angle.scale} to any value
+between 0 and 360 degrees to mitigate such problems. For example
 \code{angle.scale = 45} will draw the scale heading in a NE direction.}
 
-\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
-titles and axis labels will automatically try and format pollutant names
-and units properly e.g.  by subscripting the `2' in NO2.}
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly e.g.  by subscripting the `2' in NO2.}
 
 \item{key.header}{Adds additional text/labels to the scale key. For example,
-passing the options \verb{key.header = "header", key.footer = "footer1"}
-adds addition text above and below the scale key. These arguments are
-passed to \code{drawOpenKey} via \code{quickText}, applying the
-\code{auto.text} argument, to handle formatting.}
+passing the options \verb{key.header = "header", key.footer = "footer1"} adds
+addition text above and below the scale key. These arguments are passed to
+\code{drawOpenKey} via \code{quickText}, applying the \code{auto.text} argument, to handle
+formatting.}
 
 \item{key.footer}{see \code{key.footer}.}
 
 \item{key.position}{Location where the scale key is to plotted. Allowed
-arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"}
-and \code{"left"}.}
+arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"} and \code{"left"}.}
 
-\item{key}{Fine control of the scale key via \code{drawOpenKey}. See
-\code{drawOpenKey} for further details.}
+\item{key}{Fine control of the scale key via \code{drawOpenKey}. See \code{drawOpenKey}
+for further details.}
 
 \item{alpha}{The alpha transparency to use for the plotting surface (a value
 between 0 and 1 with zero being fully transparent and 1 fully opaque).
 Setting a value below 1 can be useful when plotting surfaces on a map using
 the package \code{openairmaps}.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other ways.}
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data to extract plot components and plotting them in other ways.}
 
 \item{...}{Other graphical parameters are passed onto \code{cutData} and
 \code{lattice:xyplot}. For example, \code{percentileRose} passes the option

@@ -1,4 +1,4 @@
-# openair (development version)
+# openair 2.19.0
 
 ## Deprecations
 
@@ -452,7 +452,7 @@
 ## Main changes
 
 - silence download progress by default in `importAURN`
-- update `polarPlot` to work with pairwise statistics to compare two pollutants. The function can consider Pearson correlation and slopes from ordinary linear regression, robust regression (using **MASS** function `rlm`) and quantile regression (requires the **quantreg** package to be installed). See [open access version](https://www.sciencedirect.com/science/article/pii/S1352231016307166) of the paper.
+- update `polarPlot` to work with pairwise statistics to compare two pollutants. The function can consider Pearson correlation and slopes from ordinary linear regression, robust regression (using **MASS** function `rlm`) and quantile regression (requires the **quantreg** package to be installed).
 - change default `polarPlot` plot resolution to "fine".
 - fix `windRose` problem with some data due to missing data
 - move `mapdata` package to Suggests
