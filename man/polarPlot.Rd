@@ -391,10 +391,8 @@ Variants on \code{polarPlot} include \code{\link[=polarAnnulus]{polarAnnulus()}}
 }
 \examples{
 
-# Use openair 'mydata'
-
 # basic plot
-polarPlot(openair::mydata, pollutant = "nox")
+polarPlot(mydata, pollutant = "nox")
 \dontrun{
 
 # polarPlots by year on same scale
@@ -462,7 +460,7 @@ Atmospheric Environment 38 (27), 4501-4507.
 Grange, S. K., Carslaw, D. C., & Lewis, A. C. 2016. Source apportionment
 advances with bivariate polar plots, correlation, and regression techniques.
 Atmospheric Environment. 145, 128-134.
-\url{https://www.sciencedirect.com/science/article/pii/S1352231016307166}
+\url{https://doi.org/10.1016/j.atmosenv.2016.09.016}
 }
 \seealso{
 Other polar directional analysis functions: 

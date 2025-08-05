@@ -49,8 +49,7 @@ The following schemes are made available by \code{openColours()}:
 \item "okabeito" (or "cbPalette"), a colour-blind safe palette based on
 the work of Masataka Okabe and Kei Ito (\url{https://jfly.uni-koeln.de/color/})
 \item "tol.bright" (or "tol"), "tol.muted" and "tol.light", colour-blind safe
-palettes based on the work of Paul Tol
-(\url{https://sronpersonalpages.nl/~pault/})
+palettes based on the work of Paul Tol.
 \item "tableau" and "observable", aliases for the
 "Tableau10"
 (\url{https://www.tableau.com/blog/colors-upgrade-tableau-10-56782}) and

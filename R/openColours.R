@@ -34,8 +34,7 @@
 #'   the work of Masataka Okabe and Kei Ito (<https://jfly.uni-koeln.de/color/>)
 #'
 #'   * "tol.bright" (or "tol"), "tol.muted" and "tol.light", colour-blind safe
-#'   palettes based on the work of Paul Tol
-#'   (<https://sronpersonalpages.nl/~pault/>)
+#'   palettes based on the work of Paul Tol.
 #'
 #'   * "tableau" and "observable", aliases for the
 #'   "Tableau10"

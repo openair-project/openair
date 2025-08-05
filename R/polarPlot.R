@@ -392,13 +392,11 @@
 #' Grange, S. K., Carslaw, D. C., & Lewis, A. C. 2016. Source apportionment
 #' advances with bivariate polar plots, correlation, and regression techniques.
 #' Atmospheric Environment. 145, 128-134.
-#' <https://www.sciencedirect.com/science/article/pii/S1352231016307166>
+#' <https://doi.org/10.1016/j.atmosenv.2016.09.016>
 #' @examples
 #'
-#' # Use openair 'mydata'
-#'
 #' # basic plot
-#' polarPlot(openair::mydata, pollutant = "nox")
+#' polarPlot(mydata, pollutant = "nox")
 #' \dontrun{
 #'
 #' # polarPlots by year on same scale
