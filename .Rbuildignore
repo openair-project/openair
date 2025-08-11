@@ -15,3 +15,4 @@ README_cache
 ^LICENSE\.md$
 ^vignettes/articles$
 ^revdep$
+^CRAN-SUBMISSION$
