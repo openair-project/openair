@@ -260,207 +260,113 @@ timePlot <- function(
   plot = TRUE,
   ...
 ) {
-  ## basic function to plot single/multiple time series in flexible ways
-  ## optionally includes several pre-deifined averaging periods
-  ## can deal with wide range of date/time formats e.g. minute, 15-min, hourly, daily
-
-  ## note that in the case of type "site", each site is thought of as a "pollutant"
-
-  ## Author: David Carslaw 11 Sep. 09
-  ## CHANGES:
-
-  ## get rid of R check annoyances
-  variable <- year <- NULL
-
-  ## # EXPERIMENTAL LOG SCALING###############################################
-  if (log) {
-    nlog <- 10
-  } else {
-    nlog <- FALSE
-  }
-
-  ## #################################################################################
-
-  vars <- c("date", pollutant)
-
-  ## greyscale handling
+  # greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
     trellis.par.set(list(strip.background = list(col = "white")))
   }
 
-  ## set graphics
-  current.strip <- trellis.par.get("strip.background")
+  # set graphics
   current.font <- trellis.par.get("fontsize")
 
-  ## reset graphic parameters
+  # reset graphic parameters
   on.exit(trellis.par.set(
     fontsize = current.font
   ))
 
-  ## ################################################################################
-
-  ## Args setup
+  # Args setup
   Args <- list(...)
 
   # label controls
-  # (further xlab handling in code body)
-  Args$xlab <- if ("xlab" %in% names(Args)) {
-    quickText(Args$xlab, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
-  Args$ylab <- if ("ylab" %in% names(Args)) {
-    quickText(Args$ylab, auto.text)
-  } else {
-    NULL
-  }
+  Args$xlab <- quickText(Args$xlab %||% "", auto.text)
+  Args$ylab <- quickText(Args$ylab %||% NULL, auto.text)
+  Args$main <- quickText(Args$main %||% NULL, auto.text)
 
-  if ("main" %in% names(Args)) {
-    if (!is.list(Args$main)) Args$main <- quickText(Args$main, auto.text)
-  }
-
+  # style controls
+  Args$pch <- Args$pch %||% NA
+  Args$lwd <- Args$lwd %||% 1
+  Args$lty <- Args$lty %||% NULL
+  Args$layout <- Args$layout %||% NULL
   if ("fontsize" %in% names(Args)) {
     trellis.par.set(fontsize = list(text = Args$fontsize))
   }
 
-  xlim <- if ("xlim" %in% names(Args)) {
-    Args$xlim
-  } else {
-    NULL
+  # global variables
+  xlim <- Args$xlim %||% NULL
+  strip <- Args$strip %||% TRUE
+
+  # warning messages and other checks #
+  if (length(percentile) > 1 && length(pollutant) > 1) {
+    cli::cli_abort(
+      "Only one {.field pollutant} allowed when considering more than one {.field percentile}."
+    )
   }
 
-  if (!"pch" %in% names(Args)) {
-    Args$pch <- NA
-  }
-  if (!"lwd" %in% names(Args)) {
-    Args$lwd <- 1
-  }
-  if (!"lty" %in% names(Args)) {
-    Args$lty <- NULL
-  }
-
-  ## layout
-  ## (type and group handling in code body)
-  if (!"layout" %in% names(Args)) {
-    Args$layout <- NULL
-  }
-
-  ## strip
-  ## extensive handling in main code body)
-  strip <- if ("strip" %in% names(Args)) {
-    Args$strip
-  } else {
-    TRUE
-  }
-
-  ## ### warning messages and other checks ################################################
-  if (length(percentile) > 1 & length(pollutant) > 1) {
-    stop("Only one pollutant allowed when considering more than one percentile")
-  }
-
-  if (!missing(statistic) & missing(avg.time)) {
-    message("No averaging time applied, using avg.time ='month'")
+  if (!missing(statistic) && missing(avg.time)) {
+    cli::cli_inform("No {.field avg.time} specified; using 'month'.")
     avg.time <- "month"
   }
 
-  ## #######################################################################################
+  # check & cut data
+  mydata <- prepare_timeplot_data(
+    mydata = mydata,
+    pollutant = pollutant,
+    type = type,
+    date.pad = date.pad,
+    windflow = windflow,
+    ...
+  )
 
-  if (!is.null(windflow)) {
-    vars <- unique(c(vars, "wd", "ws"))
-  }
-
-  ## data checks
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-
-  ## pad out any missing date/times so that line don't extend between areas of missing data
+  # time average data
+  mydata <- timeavg_timeplot_data(
+    mydata = mydata,
+    pollutant = pollutant,
+    type = type,
+    statistic = statistic,
+    avg.time = avg.time,
+    data.thresh = data.thresh,
+    percentile = percentile
+  )
 
   theStrip <- strip
 
-  if (date.pad) {
-    mydata <- date.pad(mydata, type = type)
+  # need to group pollutants if conditioning
+  if (avg.time != "default" && length(percentile) > 1L && missing(group)) {
+    group <- TRUE
   }
-
-  mydata <- cutData(mydata, type, ...)
-
-  checkDuplicateRows(mydata, type, fn = cli::cli_abort)
-
-  ## average the data if necessary (default does nothing)
-  if (avg.time != "default") {
-    ## deal with mutiple percentile values
-
-    if (length(percentile) > 1) {
-      mydata <- mydata %>%
-        group_by(across(type)) %>%
-        do(calcPercentile(
-          .,
-          pollutant = pollutant,
-          avg.time = avg.time,
-          data.thresh = data.thresh,
-          percentile = percentile
-        ))
-
-      pollutant <- paste("percentile.", percentile, sep = "")
-
-      if (missing(group)) group <- TRUE
-    } else {
-      mydata <- timeAverage(
-        mydata,
-        pollutant = pollutant,
-        type = type,
-        statistic = statistic,
-        avg.time = avg.time,
-        data.thresh = data.thresh,
-        percentile = percentile
-      )
-    }
-  }
-
-  # timeAverage drops type if default
-  if (type == "default") {
-    mydata$default <- "default"
-  }
-
-  if (!is.null(windflow)) {
-    mydata <- gather(mydata, key = variable, value = value, pollutant)
-  } else {
-    #   mydata <- melt(mydata, id.var = c("date", type))
-    mydata <- gather(mydata, key = variable, value = value, pollutant)
-  }
-
   if (type != "default") {
     group <- TRUE
-  } ## need to group pollutants if conditioning
+  }
 
-  ## number of pollutants (or sites for type = "site")
-  npol <- length(unique(mydata$variable)) ## number of pollutants
+  # number of pollutants (or sites for type = "site")
+  npol <- length(unique(mydata$variable)) # number of pollutants
 
-  ## layout - stack vertically
-  if (is.null(Args$layout) & !group & !stack) {
+  # layout - stack vertically
+  if (is.null(Args$layout) && !group && !stack) {
     Args$layout <- c(1, npol)
   }
 
-  ## function to normalise data ##################################
+  # function to normalise data #
   divide.by.mean <- function(x) {
     Mean <- mean(x$value, na.rm = TRUE)
     x$value <- x$value / Mean
     x
   }
 
-  ## function to normalise data by a specific date ##################################
+  # function to normalise data by a specific date #
   norm.by.date <- function(x, thedate) {
-    ## nearest date in time series
-    ## need to find first non-missing value
+    # nearest date in time series
+    # need to find first non-missing value
     temp <- na.omit(x)
     id <- which(abs(temp$date - thedate) == min(abs(temp$date - thedate)))
-    id <- temp$date[id] ## the nearest date for non-missing data
+    id <- temp$date[id] # the nearest date for non-missing data
     x$value <- 100 * x$value / x$value[x$date == id]
     x
   }
 
-  ## need to check the ylab handling below
-  ## not sure what was meant
+  # need to check the ylab handling below
+  # not sure what was meant
 
-  if (!missing(normalise)) {
+  if (!is.null(normalise)) {
     # preserve order of pollutants after group_by (if not factor, is alphabetic)
     mydata <- mutate(
       mydata,
@@ -475,7 +381,7 @@ timePlot <- function(
       mydata <- group_by(mydata, variable) %>%
         do(divide.by.mean(.))
     } else {
-      ## scale value to 100 at specific date
+      # scale value to 100 at specific date
 
       thedate <- as.POSIXct(strptime(
         normalise,
@@ -498,21 +404,21 @@ timePlot <- function(
     function(x) quickText(pollutant[x], auto.text)
   )
 
-  ## user-supplied names
+  # user-supplied names
   if (!missing(name.pol)) {
     mylab <- sapply(seq_along(name.pol), function(x) {
       quickText(name.pol[x], auto.text)
     })
   }
 
-  ## set up colours
+  # set up colours
   myColors <- if (length(cols) == 1 && cols == "greyscale") {
     openColours(cols, npol + 1)[-1]
   } else {
     openColours(cols, npol)
   }
 
-  ## basic function for lattice call + defaults
+  # basic function for lattice call + defaults
   myform <- formula(paste("value ~ date |", type))
 
   if (is.null(Args$strip)) {
@@ -521,13 +427,19 @@ timePlot <- function(
 
   strip.left <- FALSE
 
-  dates <- dateBreaks(mydata$date, date.breaks)$major ## for date scale
+  dates <- dateBreaks(mydata$date, date.breaks)$major # for date scale
 
-  ## date axis formating
+  # date axis formating
   if (is.null(date.format)) {
     formats <- dateBreaks(mydata$date, date.breaks)$format
   } else {
     formats <- date.format
+  }
+
+  # handle log scaling
+  nlog <- FALSE
+  if (log) {
+    nlog <- 10
   }
 
   scales <- list(
@@ -535,10 +447,10 @@ timePlot <- function(
     y = list(log = nlog, relation = y.relation, rot = 0)
   )
 
-  ## layout changes depening on plot type
+  # layout changes depening on plot type
 
   if (!group) {
-    ## sepate panels per pollutant
+    # sepate panels per pollutant
     if (is.null(Args$strip)) {
       strip <- FALSE
     }
@@ -564,19 +476,19 @@ timePlot <- function(
       )
     )
 
-    if (is.null(Args$lty)) Args$lty <- 1 ## don't need different line types here
+    if (is.null(Args$lty)) Args$lty <- 1 # don't need different line types here
   }
 
-  ## set lty if not set by this point
+  # set lty if not set by this point
   if (is.null(Args$lty)) {
-    Args$lty <- 1:length(pollutant)
+    Args$lty <- seq_along(pollutant)
   }
 
   if (type == "default") {
     strip <- FALSE
   }
 
-  ## if stacking of plots by year is needed
+  # if stacking of plots by year is needed
   if (stack) {
     mydata$year <- as.character(year(mydata$date))
     if (is.null(Args$layout)) {
@@ -588,7 +500,7 @@ timePlot <- function(
       par.strip.text = list(cex = 0.9),
       horizontal = FALSE
     )
-    ##  dates <- unique(dateTrunc(mydata$date, "months")) - this does not work?
+    #  dates <- unique(dateTrunc(mydata$date, "months")) - this does not work?
     dates <- as.POSIXct(
       unique(paste(format(mydata$date, "%Y-%m"), "-01", sep = "")),
       "GMT"
@@ -606,10 +518,10 @@ timePlot <- function(
     key.columns <- npol
   }
 
-  ## keys and strips - to show or not
+  # keys and strips - to show or not
 
   if (key) {
-    ## type of key depends on whether points are plotted or not
+    # type of key depends on whether points are plotted or not
     if (any(!is.na(Args$pch))) {
       key <- list(
         lines = list(
@@ -638,7 +550,7 @@ timePlot <- function(
       )
     }
   } else {
-    key <- NULL ## either there is a key or there is not
+    key <- NULL # either there is a key or there is not
   }
 
   if (theStrip) {
@@ -649,19 +561,19 @@ timePlot <- function(
     strip.left <- FALSE
   }
 
-  ## special layout if type = "wd"
-  if (length(type) == 1 & type[1] == "wd" & is.null(Args$layout)) {
-    ## re-order to make sensible layout
+  # special layout if type = "wd"
+  if (length(type) == 1 && type[1] == "wd" && is.null(Args$layout)) {
+    # re-order to make sensible layout
     wds <- c("NW", "N", "NE", "W", "E", "SW", "S", "SE")
     mydata$wd <- ordered(mydata$wd, levels = wds)
 
-    ## see if wd is actually there or not
+    # see if wd is actually there or not
     wd.ok <- sapply(wds, function(x) {
       if (x %in% unique(mydata$wd)) FALSE else TRUE
     })
     skip <- c(wd.ok[1:4], TRUE, wd.ok[5:8])
 
-    mydata$wd <- factor(mydata$wd) ## remove empty factor levels
+    mydata$wd <- factor(mydata$wd) # remove empty factor levels
 
     Args$layout <- c(3, 3)
     if (!"skip" %in% names(Args)) {
@@ -672,7 +584,7 @@ timePlot <- function(
     Args$skip <- FALSE
   }
 
-  ## allow reasonable gaps at ends, default has too much padding
+  # allow reasonable gaps at ends, default has too much padding
   gap <- difftime(max(mydata$date), min(mydata$date), units = "secs") / 80
   if (is.null(xlim)) {
     xlim <- range(mydata$date) + c(-1 * gap, gap)
@@ -732,8 +644,8 @@ timePlot <- function(
         col.symbol = myColors[group.number],
         ...
       )
-      ## deal with points separately - useful if missing data where line
-      ## does not join consequtive points
+      # deal with points separately - useful if missing data where line
+      # does not join consequtive points
       if (any(!is.na(Args$pch))) {
         lpoints(
           x,
@@ -766,7 +678,7 @@ timePlot <- function(
         )
       }
 
-      ## add reference lines
+      # add reference lines
 
       if (!is.null(ref.x)) {
         do.call(panel.abline, ref.x)
@@ -775,13 +687,13 @@ timePlot <- function(
     }
   )
 
-  ## reset for Args
+  # reset for Args
   xyplot.args <- listUpdate(xyplot.args, Args)
 
   # plot
   plt <- do.call(xyplot, xyplot.args)
 
-  ## output
+  # output
 
   if (plot) {
     plot(plt)
@@ -793,8 +705,91 @@ timePlot <- function(
   invisible(output)
 }
 
+#' Prepare data for the timeplot function
+#' @noRd
+prepare_timeplot_data <- function(
+  mydata,
+  pollutant,
+  type,
+  date.pad,
+  windflow,
+  ...
+) {
+  # determine necessary variables
+  vars <- c("date", pollutant)
+  if (!is.null(windflow)) {
+    vars <- unique(c(vars, "wd", "ws"))
+  }
 
-## function to plot wind flow arrows
+  # standard data checks
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+
+  # pad out any missing date/times so that line don't extend between areas of missing data
+  if (date.pad) {
+    mydata <- date.pad(mydata, type = type)
+  }
+
+  # cut data
+  mydata <- cutData(mydata, type, ...)
+
+  # check for duplicates - can't really have duplicate data in a timeplot
+  checkDuplicateRows(mydata, type, fn = cli::cli_abort)
+
+  # return data
+  return(mydata)
+}
+
+#' apply timeAverage to mydata, with reshaping
+#' @noRd
+timeavg_timeplot_data <- function(
+  mydata,
+  pollutant,
+  type,
+  statistic,
+  avg.time,
+  data.thresh,
+  percentile
+) {
+  # average the data if necessary (default does nothing)
+  if (avg.time != "default") {
+    # deal with multiple percentile values
+
+    if (length(percentile) > 1) {
+      mydata <- mydata %>%
+        group_by(across(type)) %>%
+        do(calcPercentile(
+          .,
+          pollutant = pollutant,
+          avg.time = avg.time,
+          data.thresh = data.thresh,
+          percentile = percentile
+        ))
+
+      pollutant <- paste("percentile.", percentile, sep = "")
+    } else {
+      mydata <- timeAverage(
+        mydata,
+        pollutant = pollutant,
+        type = type,
+        statistic = statistic,
+        avg.time = avg.time,
+        data.thresh = data.thresh,
+        percentile = percentile
+      )
+    }
+  }
+
+  # timeAverage drops type if default
+  if (type == "default") {
+    mydata$default <- "default"
+  }
+
+  mydata <- gather(mydata, key = variable, value = value, pollutant)
+
+  return(mydata)
+}
+
+# function to plot wind flow arrows
 panel.windflow <- function(
   x,
   y,
@@ -814,12 +809,12 @@ panel.windflow <- function(
   delta.x <- scale * diff(current.panel.limits()$xlim)
   delta.y <- scale * diff(current.panel.limits()$ylim)
 
-  ## actual shape of the plot window
+  # actual shape of the plot window
   delta.x.cm <- diff(current.panel.limits(unit = "cm")$xlim)
   delta.y.cm <- diff(current.panel.limits(unit = "cm")$ylim)
 
-  ## physical size of plot windows, correct so wd is right when plotted.
-  ## need to replot if window re-scaled by user
+  # physical size of plot windows, correct so wd is right when plotted.
+  # need to replot if window re-scaled by user
   if (delta.x.cm > delta.y.cm) {
     delta.y <- delta.y * delta.x.cm / delta.y.cm
   } else {
