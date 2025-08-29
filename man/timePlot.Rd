@@ -19,7 +19,6 @@ timePlot(
   type = "default",
   cols = "brewer1",
   plot.type = "l",
-  key = TRUE,
   log = FALSE,
   windflow = NULL,
   smooth = FALSE,
@@ -28,6 +27,7 @@ timePlot(
   y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
+  key = TRUE,
   key.columns = 1,
   key.position = "bottom",
   name.pol = pollutant,
@@ -129,8 +129,6 @@ Only one \code{type} is currently allowed in \code{timePlot}.}
 by default. Another useful option is \code{plot.type = "h"}, which draws
 vertical lines.}
 
-\item{key}{Should a key be drawn? The default is \code{TRUE}.}
-
 \item{log}{Should the y-axis appear on a log scale? The default is \code{FALSE}.
 If \code{TRUE} a well-formatted log10 scale is used. This can be useful for
 plotting data for several different pollutants that exist on very different
@@ -169,6 +167,8 @@ should be used for a vertical line e.g. \code{ref.x = list(v = as.POSIXct("2000-
 representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
 e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more details on
 adding/controlling lines.}
+
+\item{key}{Should a key be drawn? The default is \code{TRUE}.}
 
 \item{key.columns}{Number of columns to be used in the key. With many
 pollutants a single column can make to key too wide. The user can thus
