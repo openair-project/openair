@@ -162,71 +162,51 @@
 #' @family time series and trend functions
 #' @examples
 #'
-#'
 #' # basic use, single pollutant
 #' timePlot(mydata, pollutant = "nox")
 #'
 #' # two pollutants in separate panels
 #' \dontrun{
 #' timePlot(mydata, pollutant = c("nox", "no2"))
-#' }
 #'
 #' # two pollutants in the same panel with the same scale
-#' \dontrun{
 #' timePlot(mydata, pollutant = c("nox", "no2"), group = TRUE)
-#' }
 #'
-#' # alternative by normalising concentrations and plotting on the same
-#' scale
-#' \dontrun{
+#' # alternative by normalising concentrations and plotting on the same scale
 #' timePlot(mydata,
 #'   pollutant = c("nox", "co", "pm10", "so2"), group = TRUE, avg.time =
 #'     "year", normalise = "1/1/1998", lwd = 3, lty = 1
 #' )
-#' }
 #'
 #' # examples of selecting by date
 #'
 #' # plot for nox in 1999
-#' \dontrun{
 #' timePlot(selectByDate(mydata, year = 1999), pollutant = "nox")
-#' }
 #'
 #' # select specific date range for two pollutants
-#' \dontrun{
 #' timePlot(selectByDate(mydata, start = "6/8/2003", end = "13/8/2003"),
 #'   pollutant = c("no2", "o3")
 #' )
-#' }
 #'
 #' # choose different line styles etc
-#' \dontrun{
 #' timePlot(mydata, pollutant = c("nox", "no2"), lty = 1)
-#' }
 #'
 #' # choose different line styles etc
-#' \dontrun{
 #' timePlot(selectByDate(mydata, year = 2004, month = 6),
 #'   pollutant =
 #'     c("nox", "no2"), lwd = c(1, 2), col = "black"
 #' )
-#' }
 #'
 #' # different averaging times
 #'
 #' # daily mean O3
-#' \dontrun{
 #' timePlot(mydata, pollutant = "o3", avg.time = "day")
-#' }
 #'
 #' # daily mean O3 ensuring each day has data capture of at least 75%
-#' \dontrun{
 #' timePlot(mydata, pollutant = "o3", avg.time = "day", data.thresh = 75)
-#' }
 #'
 #' # 2-week average of O3 concentrations
-#' \dontrun{
-#' timePlot(mydata, pollutant = "o3", avg.time = "2 week")
+#' #' timePlot(mydata, pollutant = "o3", avg.time = "2 week")
 #' }
 #'
 timePlot <- function(
@@ -278,8 +258,16 @@ timePlot <- function(
 
   # label controls
   Args$xlab <- quickText(Args$xlab %||% "", auto.text)
-  Args$ylab <- quickText(Args$ylab %||% NULL, auto.text)
   Args$main <- quickText(Args$main %||% NULL, auto.text)
+  Args$ylab <- quickText(
+    Args$ylab %||%
+      dplyr::case_when(
+        !is.null(normalise) ~
+          paste("normalised", paste(pollutant, collapse = ", ")),
+        .default = paste(pollutant, collapse = ", ")
+      ),
+    auto.text
+  )
 
   # style controls
   Args$pch <- Args$pch %||% NA
@@ -316,8 +304,8 @@ timePlot <- function(
     ...
   )
 
-  # time average data
-  mydata <- timeavg_timeplot_data(
+  # time average & reshape data
+  mydata <- time_average_timeplot_data(
     mydata = mydata,
     pollutant = pollutant,
     type = type,
@@ -326,8 +314,8 @@ timePlot <- function(
     data.thresh = data.thresh,
     percentile = percentile
   )
-
-  theStrip <- strip
+  pollutant <- mydata$pollutant
+  mydata <- mydata$data
 
   # need to group pollutants if conditioning
   if (avg.time != "default" && length(percentile) > 1L && missing(group)) {
@@ -345,70 +333,20 @@ timePlot <- function(
     Args$layout <- c(1, npol)
   }
 
-  # function to normalise data #
-  divide.by.mean <- function(x) {
-    Mean <- mean(x$value, na.rm = TRUE)
-    x$value <- x$value / Mean
-    x
-  }
+  # normalise data (if required)
+  mydata <- normalise_timeplot_data(mydata, normalise = normalise)
 
-  # function to normalise data by a specific date #
-  norm.by.date <- function(x, thedate) {
-    # nearest date in time series
-    # need to find first non-missing value
-    temp <- na.omit(x)
-    id <- which(abs(temp$date - thedate) == min(abs(temp$date - thedate)))
-    id <- temp$date[id] # the nearest date for non-missing data
-    x$value <- 100 * x$value / x$value[x$date == id]
-    x
-  }
-
-  # need to check the ylab handling below
-  # not sure what was meant
-
-  if (!is.null(normalise)) {
-    # preserve order of pollutants after group_by (if not factor, is alphabetic)
-    mydata <- mutate(
-      mydata,
-      variable = factor(variable, levels = unique(variable))
-    )
-
-    if (is.null(Args$ylab)) {
-      Args$ylab <- "normalised level"
-    }
-
-    if (normalise == "mean") {
-      mydata <- group_by(mydata, variable) %>%
-        do(divide.by.mean(.))
-    } else {
-      # scale value to 100 at specific date
-
-      thedate <- as.POSIXct(strptime(
-        normalise,
-        format = "%d/%m/%Y",
-        tz = "GMT"
-      ))
-
-      mydata <- group_by(mydata, variable) %>%
-        do(norm.by.date(., thedate = thedate))
-    }
-  }
-
-  # set ylab as pollutant(s) if not already set
-  if (is.null(Args$ylab)) {
-    Args$ylab <- quickText(paste(pollutant, collapse = ", "), auto.text)
-  }
-
-  mylab <- sapply(
-    seq_along(pollutant),
-    function(x) quickText(pollutant[x], auto.text)
-  )
-
-  # user-supplied names
+  # get pollutant labels
   if (!missing(name.pol)) {
-    mylab <- sapply(seq_along(name.pol), function(x) {
-      quickText(name.pol[x], auto.text)
-    })
+    mylab <- sapply(
+      seq_along(name.pol),
+      function(x) quickText(name.pol[x], auto.text)
+    )
+  } else {
+    mylab <- sapply(
+      seq_along(pollutant),
+      function(x) quickText(pollutant[x], auto.text)
+    )
   }
 
   # set up colours
@@ -420,6 +358,8 @@ timePlot <- function(
 
   # basic function for lattice call + defaults
   myform <- formula(paste("value ~ date |", type))
+
+  theStrip <- strip
 
   if (is.null(Args$strip)) {
     strip <- TRUE
@@ -739,9 +679,9 @@ prepare_timeplot_data <- function(
   return(mydata)
 }
 
-#' apply timeAverage to mydata, with reshaping
+#' timeAverage and reshape timeplot data
 #' @noRd
-timeavg_timeplot_data <- function(
+time_average_timeplot_data <- function(
   mydata,
   pollutant,
   type,
@@ -755,15 +695,18 @@ timeavg_timeplot_data <- function(
     # deal with multiple percentile values
 
     if (length(percentile) > 1) {
-      mydata <- mydata %>%
-        group_by(across(type)) %>%
-        do(calcPercentile(
-          .,
+      # mydata <- mydata %>%
+      #   group_by(across(type)) %>%
+      #   do()
+      mydata <-
+        calcPercentile(
+          mydata,
+          type = type,
           pollutant = pollutant,
           avg.time = avg.time,
           data.thresh = data.thresh,
           percentile = percentile
-        ))
+        )
 
       pollutant <- paste("percentile.", percentile, sep = "")
     } else {
@@ -784,10 +727,87 @@ timeavg_timeplot_data <- function(
     mydata$default <- "default"
   }
 
-  mydata <- gather(mydata, key = variable, value = value, pollutant)
+  # reshape
+  mydata <-
+    tidyr::pivot_longer(
+      mydata,
+      cols = dplyr::all_of(pollutant),
+      names_to = "variable",
+      values_to = "value"
+    )
 
-  return(mydata)
+  # need to return pollutant as it can change
+  return(list(
+    data = mydata,
+    pollutant = pollutant
+  ))
 }
+
+#' Apply normalisation to timeplot data
+#' @noRd
+normalise_timeplot_data <-
+  function(mydata, normalise) {
+    # preserve order of pollutants
+    mydata <- dplyr::mutate(
+      mydata,
+      variable = factor(.data$variable, levels = unique(.data$variable))
+    )
+
+    # if normalise isn't given, just return the data
+    if (is.null(normalise)) {
+      return(mydata)
+    }
+
+    # handle normalisation
+    if (normalise == "mean") {
+      mydata <-
+        dplyr::mutate(
+          mydata,
+          value = .data$value / mean(.data$value, na.rm = TRUE),
+          .by = "variable"
+        )
+    } else {
+      # convert string to date
+      target_date <- as.POSIXct(strptime(
+        normalise,
+        format = "%d/%m/%Y",
+        tz = "GMT"
+      ))
+
+      if (is.na(target_date)) {
+        cli::cli_abort(c(
+          "x" = "Provided {.field normalise} option not recognised.",
+          "i" = "{.field normalise} must be either 'mean' or a string in the format 'DD/MM/YYYY'."
+        ))
+      }
+
+      # find nearest values to each date
+      target_date_values <-
+        tidyr::drop_na(mydata) %>%
+        slice_min(
+          abs(.data$date - target_date),
+          n = 1L,
+          with_ties = FALSE,
+          by = "variable"
+        ) %>%
+        dplyr::select("variable", "target_value" = "value")
+
+      # scale value to 100 at specific date
+      mydata <-
+        mydata %>%
+        dplyr::left_join(
+          target_date_values,
+          by = dplyr::join_by(variable)
+        ) %>%
+        dplyr::mutate(
+          value = 100 * (.data$value / .data$target_value)
+        ) %>%
+        dplyr::select(-"target_value")
+    }
+
+    # return input data
+    return(mydata)
+  }
 
 # function to plot wind flow arrows
 panel.windflow <- function(
