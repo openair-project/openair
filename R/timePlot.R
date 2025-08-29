@@ -240,47 +240,10 @@ timePlot <- function(
   plot = TRUE,
   ...
 ) {
-  # greyscale handling
-  if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-  }
-
-  # set graphics
-  current.font <- trellis.par.get("fontsize")
-
-  # reset graphic parameters
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
+  ## ---- Setup & Validation ----
 
   # Args setup
   Args <- list(...)
-
-  # label controls
-  Args$xlab <- quickText(Args$xlab %||% "", auto.text)
-  Args$main <- quickText(Args$main %||% NULL, auto.text)
-  Args$ylab <- quickText(
-    Args$ylab %||%
-      dplyr::case_when(
-        !is.null(normalise) ~
-          paste("normalised", paste(pollutant, collapse = ", ")),
-        .default = paste(pollutant, collapse = ", ")
-      ),
-    auto.text
-  )
-
-  # style controls
-  Args$pch <- Args$pch %||% NA
-  Args$lwd <- Args$lwd %||% 1
-  Args$lty <- Args$lty %||% NULL
-  Args$layout <- Args$layout %||% NULL
-  if ("fontsize" %in% names(Args)) {
-    trellis.par.set(fontsize = list(text = Args$fontsize))
-  }
-
-  # global variables
-  xlim <- Args$xlim %||% NULL
-  strip <- Args$strip %||% TRUE
 
   # warning messages and other checks #
   if (length(percentile) > 1 && length(pollutant) > 1) {
@@ -293,6 +256,34 @@ timePlot <- function(
     cli::cli_inform("No {.field avg.time} specified; using 'month'.")
     avg.time <- "month"
   }
+
+  ## ---- Graphics & Styling ----
+
+  # greyscale handling
+  if (length(cols) == 1 && cols == "greyscale") {
+    trellis.par.set(list(strip.background = list(col = "white")))
+  }
+
+  # set & reset graphics
+  current.font <- trellis.par.get("fontsize")
+  on.exit(trellis.par.set(
+    fontsize = current.font
+  ))
+  if ("fontsize" %in% names(Args)) {
+    trellis.par.set(fontsize = list(text = Args$fontsize))
+  }
+
+  # style controls
+  Args$pch <- Args$pch %||% NA
+  Args$lwd <- Args$lwd %||% 1
+  Args$lty <- Args$lty %||% NULL
+  Args$layout <- Args$layout %||% NULL
+
+  # global variables
+  xlim <- Args$xlim %||% NULL
+  strip <- Args$strip %||% TRUE
+
+  ## ---- Data processing ----
 
   # check & cut data
   mydata <- prepare_timeplot_data(
@@ -317,6 +308,11 @@ timePlot <- function(
   pollutant <- mydata$pollutant
   mydata <- mydata$data
 
+  # normalise data (if required)
+  mydata <- normalise_timeplot_data(mydata, normalise = normalise)
+
+  ## ---- Groups & Layout Logic ----
+
   # need to group pollutants if conditioning
   if (avg.time != "default" && length(percentile) > 1L && missing(group)) {
     group <- TRUE
@@ -333,8 +329,24 @@ timePlot <- function(
     Args$layout <- c(1, npol)
   }
 
-  # normalise data (if required)
-  mydata <- normalise_timeplot_data(mydata, normalise = normalise)
+  if (missing(key.columns)) {
+    key.columns <- npol
+  }
+
+  ## ---- Layout & Colours ----
+
+  # label controls
+  Args$xlab <- quickText(Args$xlab %||% "", auto.text)
+  Args$main <- quickText(Args$main %||% NULL, auto.text)
+  Args$ylab <- quickText(
+    Args$ylab %||%
+      dplyr::case_when(
+        !is.null(normalise) ~
+          paste("normalised", paste(pollutant, collapse = ", ")),
+        .default = paste(pollutant, collapse = ", ")
+      ),
+    auto.text
+  )
 
   # get pollutant labels
   if (!missing(name.pol)) {
@@ -356,9 +368,34 @@ timePlot <- function(
     openColours(cols, npol)
   }
 
+  ## ---- Date & Scale Config ----
+
+  # For date scale
+  dates <- dateBreaks(mydata$date, date.breaks)$major
+
+  # Date Axis Formatting
+  if (is.null(date.format)) {
+    formats <- dateBreaks(mydata$date, date.breaks)$format
+  } else {
+    formats <- date.format
+  }
+
+  # Handle log scaling
+  nlog <- FALSE
+  if (log) {
+    nlog <- 10
+  }
+
+  # Default scales
+  scales <- list(
+    x = list(at = dates, format = formats),
+    y = list(log = nlog, relation = y.relation, rot = 0)
+  )
+
+  ## ---- Plot Structure & Formula ----
+
   # basic function for lattice call + defaults
   myform <- formula(paste("value ~ date |", type))
-
   theStrip <- strip
 
   if (is.null(Args$strip)) {
@@ -367,30 +404,9 @@ timePlot <- function(
 
   strip.left <- FALSE
 
-  dates <- dateBreaks(mydata$date, date.breaks)$major # for date scale
-
-  # date axis formating
-  if (is.null(date.format)) {
-    formats <- dateBreaks(mydata$date, date.breaks)$format
-  } else {
-    formats <- date.format
-  }
-
-  # handle log scaling
-  nlog <- FALSE
-  if (log) {
-    nlog <- 10
-  }
-
-  scales <- list(
-    x = list(at = dates, format = formats),
-    y = list(log = nlog, relation = y.relation, rot = 0)
-  )
-
-  # layout changes depening on plot type
-
+  # layout changes depending on plot type
   if (!group) {
-    # sepate panels per pollutant
+    # separate panels per pollutant
     if (is.null(Args$strip)) {
       strip <- FALSE
     }
@@ -428,6 +444,8 @@ timePlot <- function(
     strip <- FALSE
   }
 
+  ## ---- Special Layouts ----
+
   # if stacking of plots by year is needed
   if (stack) {
     mydata$year <- as.character(year(mydata$date))
@@ -454,11 +472,30 @@ timePlot <- function(
     xlim <- lapply(split(mydata, mydata["year"]), function(x) range(x$date))
   }
 
-  if (missing(key.columns)) {
-    key.columns <- npol
+  # special layout if type = "wd"
+  if (length(type) == 1 && type[1] == "wd" && is.null(Args$layout)) {
+    # re-order to make sensible layout
+    wds <- c("NW", "N", "NE", "W", "E", "SW", "S", "SE")
+    mydata$wd <- ordered(mydata$wd, levels = wds)
+
+    # see if wd is actually there or not
+    wd.ok <- sapply(wds, function(x) {
+      if (x %in% unique(mydata$wd)) FALSE else TRUE
+    })
+    skip <- c(wd.ok[1:4], TRUE, wd.ok[5:8])
+
+    mydata$wd <- factor(mydata$wd) # remove empty factor levels
+
+    Args$layout <- c(3, 3)
+    if (!"skip" %in% names(Args)) {
+      Args$skip <- skip
+    }
+  }
+  if (!"skip" %in% names(Args)) {
+    Args$skip <- FALSE
   }
 
-  # keys and strips - to show or not
+  ## ---- Key & Strip Config ----
 
   if (key) {
     # type of key depends on whether points are plotted or not
@@ -501,28 +538,7 @@ timePlot <- function(
     strip.left <- FALSE
   }
 
-  # special layout if type = "wd"
-  if (length(type) == 1 && type[1] == "wd" && is.null(Args$layout)) {
-    # re-order to make sensible layout
-    wds <- c("NW", "N", "NE", "W", "E", "SW", "S", "SE")
-    mydata$wd <- ordered(mydata$wd, levels = wds)
-
-    # see if wd is actually there or not
-    wd.ok <- sapply(wds, function(x) {
-      if (x %in% unique(mydata$wd)) FALSE else TRUE
-    })
-    skip <- c(wd.ok[1:4], TRUE, wd.ok[5:8])
-
-    mydata$wd <- factor(mydata$wd) # remove empty factor levels
-
-    Args$layout <- c(3, 3)
-    if (!"skip" %in% names(Args)) {
-      Args$skip <- skip
-    }
-  }
-  if (!"skip" %in% names(Args)) {
-    Args$skip <- FALSE
-  }
+  ## ---- Final Data Prep ----
 
   # allow reasonable gaps at ends, default has too much padding
   gap <- difftime(max(mydata$date), min(mydata$date), units = "secs") / 80
@@ -532,6 +548,8 @@ timePlot <- function(
 
   # make sure order is correct
   mydata$variable <- factor(mydata$variable, levels = pollutant)
+
+  ## ---- Create Plot ----
 
   # the plot
   xyplot.args <- list(
@@ -634,7 +652,6 @@ timePlot <- function(
   plt <- do.call(xyplot, xyplot.args)
 
   # output
-
   if (plot) {
     plot(plt)
   }
@@ -695,9 +712,6 @@ time_average_timeplot_data <- function(
     # deal with multiple percentile values
 
     if (length(percentile) > 1) {
-      # mydata <- mydata %>%
-      #   group_by(across(type)) %>%
-      #   do()
       mydata <-
         calcPercentile(
           mydata,
