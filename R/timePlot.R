@@ -106,10 +106,10 @@
 #'   `FALSE`.
 #' @param ci If a smooth fit line is applied, then `ci` determines whether the
 #'   95 percent confidence intervals are shown.
-#' @param y.relation This determines how the y-axis scale is plotted. "same"
-#'   ensures all panels use the same scale and "free" will use panel-specific
-#'   scales. The latter is a useful setting when plotting data with very
-#'   different values.
+#' @param x.relation,y.relation This determines how the x- or y-axis scale is
+#'   plotted. `"same"` ensures all panels use the same scale and `"free"` will
+#'   use panel-specific scales. The latter is a useful setting when plotting
+#'   data with very different values.
 #' @param ref.x See `ref.y` for details. In this case the correct date format
 #'   should be used for a vertical line e.g. `ref.x = list(v =
 #'   as.POSIXct("2000-06-15"), lty = 5)`.
@@ -228,6 +228,7 @@ timePlot <- function(
   windflow = NULL,
   smooth = FALSE,
   ci = TRUE,
+  x.relation = "same",
   y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
@@ -371,11 +372,28 @@ timePlot <- function(
   ## ---- Date & Scale Config ----
 
   # For date scale
-  dates <- dateBreaks(mydata$date, date.breaks)$major
+  if (x.relation == "free") {
+    dates <-
+      purrr::map(
+        split(mydata, mydata[type]),
+        function(x) dateBreaks(x$date, date.breaks)$major
+      ) %>%
+      purrr::list_c() %>%
+      unique()
+  } else {
+    dates <- dateBreaks(mydata$date, date.breaks)$major
+  }
 
   # Date Axis Formatting
   if (is.null(date.format)) {
-    formats <- dateBreaks(mydata$date, date.breaks)$format
+    if (x.relation == "free") {
+      formats <- dateBreaks(
+        split(mydata, mydata[type])[[1]]$date,
+        date.breaks
+      )$format
+    } else {
+      formats <- dateBreaks(mydata$date, date.breaks)$format
+    }
   } else {
     formats <- date.format
   }
@@ -388,8 +406,8 @@ timePlot <- function(
 
   # Default scales
   scales <- list(
-    x = list(at = dates, format = formats),
-    y = list(log = nlog, relation = y.relation, rot = 0)
+    x = list(relation = x.relation, at = dates, format = formats),
+    y = list(relation = y.relation, log = nlog, rot = 0)
   )
 
   ## ---- Plot Structure & Formula ----
@@ -424,7 +442,11 @@ timePlot <- function(
     }
 
     scales <- list(
-      x = list(at = dates, format = formats),
+      x = list(
+        relation = x.relation,
+        at = dates,
+        format = formats
+      ),
       y = list(
         relation = y.relation,
         rot = 0,
@@ -465,7 +487,10 @@ timePlot <- function(
     )
 
     scales <- list(
-      x = list(format = "%d-%b", relation = "sliced"),
+      x = list(
+        format = "%d-%b",
+        relation = "sliced"
+      ),
       y = list(log = nlog)
     )
 
@@ -541,9 +566,20 @@ timePlot <- function(
   ## ---- Final Data Prep ----
 
   # allow reasonable gaps at ends, default has too much padding
-  gap <- difftime(max(mydata$date), min(mydata$date), units = "secs") / 80
   if (is.null(xlim)) {
-    xlim <- range(mydata$date) + c(-1 * gap, gap)
+    if (x.relation == "same") {
+      gap <- difftime(max(mydata$date), min(mydata$date), units = "secs") / 80
+      xlim <- range(mydata$date) + c(-1 * gap, gap)
+    } else {
+      splitvar <- type
+      if (type == "default" && length(pollutant) > 1L && !group) {
+        splitvar <- "variable"
+      }
+      xlim <- lapply(split(mydata, mydata[splitvar]), function(x) {
+        gap <- difftime(max(x$date), min(x$date), units = "secs") / 80
+        range(x$date[!is.na(x$value)]) + c(-1 * gap, gap)
+      })
+    }
   }
 
   # make sure order is correct

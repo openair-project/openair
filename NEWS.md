@@ -1,5 +1,9 @@
 # openair (development version)
 
+## New Features
+
+- `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
+
 # openair 2.19.0
 
 ## Deprecations
