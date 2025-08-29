@@ -7,81 +7,74 @@
 smoothTrend(
   mydata,
   pollutant = "nox",
-  deseason = FALSE,
-  type = "default",
-  statistic = "mean",
   avg.time = "month",
-  percentile = NA,
   data.thresh = 0,
+  statistic = "mean",
+  percentile = NA,
+  k = NULL,
+  deseason = FALSE,
   simulate = FALSE,
   n = 200,
   autocor = FALSE,
+  type = "default",
   cols = "brewer1",
-  shade = "grey95",
-  xlab = "year",
+  x.relation = "same",
   y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
-  key.columns = length(percentile),
+  key = TRUE,
+  key.columns = 1,
+  key.position = "bottom",
   name.pol = pollutant,
+  date.breaks = 7,
+  date.format = NULL,
+  auto.text = TRUE,
   ci = TRUE,
   alpha = 0.2,
-  date.breaks = 7,
-  auto.text = TRUE,
-  k = NULL,
+  shade = "grey95",
   plot = TRUE,
+  progress = TRUE,
   ...
 )
 }
 \arguments{
-\item{mydata}{A data frame containing the field \code{date} and at least one other
-parameter for which a trend test is required; typically (but not
-necessarily) a pollutant.}
+\item{mydata}{A data frame of time series. Must include a \code{date} field
+and at least one variable to plot.}
 
-\item{pollutant}{The parameter for which a trend test is required. Mandatory.}
+\item{pollutant}{Name of variable to plot. Two or more pollutants can be
+plotted, in which case a form like \code{pollutant = c("nox", "co")} should
+be used.}
 
-\item{deseason}{Should the data be de-deasonalized first? If \code{TRUE} the
-function \code{stl} is used (seasonal trend decomposition using loess). Note
-that if \code{TRUE} missing data are first imputed using a Kalman filter and
-Kalman smooth.}
+\item{avg.time}{Can be \code{"month"} (the default), \code{"season"} or \code{"year"}.
+Determines the time over which data should be averaged. Note that for
+\code{"year"}, six or more years are required. For \code{"season"} the data are plit
+up into spring: March, April, May etc. Note that December is considered as
+belonging to winter of the following year.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned, and
-then plotted. The default is will produce a single plot using the entire
-data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
-\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
-\code{type = "season"} will produce four plots --- one for each season.
-
-It is also possible to choose \code{type} as another variable in the data frame.
-If that variable is numeric, then the data will be split into four
-quantiles (if possible) and labelled accordingly. If type is an existing
-character or factor variable, then those categories/levels will be used
-directly. This offers great flexibility for understanding the variation of
-different variables and how they depend on one another.
-
-Type can be up length two e.g. \code{type = c("season", "weekday")} will produce
-a 2x2 plot split by season and day of the week. Note, when two types are
-provided the first forms the columns and the second the rows.}
+\item{data.thresh}{The data capture threshold to use when aggregating the
+data using \code{avg.time}. A value of zero means that all available data
+will be used in a particular period regardless if of the number of values
+available. Conversely, a value of 100 will mean that all data will need to
+be present for the average to be calculated, else it is recorded as
+\code{NA}. Not used if \code{avg.time = "default"}.}
 
 \item{statistic}{Statistic used for calculating monthly values. Default is
-\dQuote{mean}, but can also be \dQuote{percentile}. See \code{timeAverage} for
-more details.}
-
-\item{avg.time}{Can be \dQuote{month} (the default), \dQuote{season} or
-\dQuote{year}. Determines the time over which data should be averaged. Note
-that for \dQuote{year}, six or more years are required. For \dQuote{season}
-the data are plit up into spring: March, April, May etc. Note that December
-is considered as belonging to winter of the following year.}
+\code{"mean"}, but can also be \code{"percentile"}. See \code{\link[=timeAverage]{timeAverage()}} for more
+details.}
 
 \item{percentile}{Percentile value(s) to use if \code{statistic = "percentile"} is
 chosen. Can be a vector of numbers e.g. \code{percentile = c(5, 50, 95)} will
 plot the 5th, 50th and 95th percentile values together on the same plot.}
 
-\item{data.thresh}{The data capture threshold to use (\%) when aggregating the
-data using \code{avg.time}. A value of zero means that all available data will
-be used in a particular period regardless if of the number of values
-available. Conversely, a value of 100 will mean that all data will need to
-be present for the average to be calculated, else it is recorded as \code{NA}.
-Not used if \code{avg.time = "default"}.}
+\item{k}{This is the smoothing parameter used by the \code{\link[mgcv:gam]{mgcv::gam()}} function
+in package \code{mgcv}. By default it is not used and the amount of smoothing is
+optimised automatically. However, sometimes it is useful to set the
+smoothing amount manually using \code{k}.}
+
+\item{deseason}{Should the data be de-deasonalized first? If \code{TRUE} the
+function \code{stl} is used (seasonal trend decomposition using loess). Note
+that if \code{TRUE} missing data are first imputed using a Kalman filter and
+Kalman smooth.}
 
 \item{simulate}{Should simulations be carried out to determine the
 Mann-Kendall tau and p-value. The default is \code{FALSE}. If \code{TRUE}, bootstrap
@@ -94,56 +87,85 @@ estimates? The default is \code{FALSE}. Generally, accounting for
 autocorrelation increases the uncertainty of the trend estimate sometimes
 by a large amount.}
 
-\item{cols}{Colours to use. Can be a vector of colours e.g. \code{cols = c("black", "green")} or pre-defined openair colours --- see \code{openColours}
-for more details.}
+\item{type}{\code{type} determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in \code{\link[=cutData]{cutData()}},
+e.g., \code{"season"}, \code{"year"}, \code{"weekday"} and so on. For example, \code{type = "season"} will produce four plots --- one for each season.
 
-\item{shade}{The colour used for marking alternate years. Use \dQuote{white}
-or \dQuote{transparent} to remove shading.}
+It is also possible to choose \code{type} as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
+quantiles (if possible) and labelled accordingly. If type is an existing
+character or factor variable, then those categories/levels will be used
+directly. This offers great flexibility for understanding the variation of
+different variables and how they depend on one another.
 
-\item{xlab}{x-axis label, by default \dQuote{year}.}
+Type can be up length two e.g. \code{type = c("season", "weekday")} will produce
+a 2x2 plot split by season and day of the week. Note, when two types are
+provided the first forms the columns and the second the rows.}
 
-\item{y.relation}{This determines how the y-axis scale is plotted. "same"
-ensures all panels use the same scale and "free" will use panel-specific
-scales. The latter is a useful setting when plotting data with very
-different values.  ref.x See \code{ref.y} for details. In this case the correct
-date format should be used for a vertical line e.g.  \code{ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)}.}
+\item{cols}{Colours to be used for plotting. Options include
+\dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
+\code{RColorBrewer} colours --- see the \code{openair} \code{openColours}
+function for more details. For user defined the user can supply a list of
+colour names recognised by R (type \code{colours()} to see the full list).
+An example would be \code{cols = c("yellow", "green", "blue")}}
 
-\item{ref.x}{See \code{ref.y}.}
+\item{x.relation, y.relation}{This determines how the x- and y-axis scales are
+plotted. \code{"same"} ensures all panels use the same scale and \code{"free"} will
+use panel-specific scales. The latter is a useful setting when plotting
+data with very different values.}
+
+\item{ref.x}{See \code{ref.y} for details. In this case the correct date
+format should be used for a vertical line e.g. \code{ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)}.}
 
 \item{ref.y}{A list with details of the horizontal lines to be added
 representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more details on
-adding/controlling lines.}
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
+details on adding/controlling lines.}
 
-\item{key.columns}{Number of columns used if a key is drawn when using the
-option \code{statistic = "percentile"}.}
+\item{key}{Should a key be drawn? The default is \code{TRUE}.}
 
-\item{name.pol}{Names to be given to the pollutant(s). This is useful if you
-want to give a fuller description of the variables, maybe also including
-subscripts etc.}
+\item{key.columns}{Number of columns to be used in the key. With many
+pollutants a single column can make to key too wide. The user can thus
+choose to use several columns by setting \code{columns} to be less than the
+number of pollutants.}
 
-\item{ci}{Should confidence intervals be plotted? The default is \code{FALSE}.}
+\item{key.position}{Location where the scale key is to plotted. Can include
+\dQuote{top}, \dQuote{bottom}, \dQuote{right} and \dQuote{left}.}
 
-\item{alpha}{The alpha transparency of shaded confidence intervals - if
-plotted. A value of 0 is fully transparent and 1 is fully opaque.}
+\item{name.pol}{This option can be used to give alternative names for the
+variables plotted. Instead of taking the column headings as names, the user
+can supply replacements. For example, if a column had the name \dQuote{nox}
+and the user wanted a different description, then setting \code{name.pol = "nox before change"} can be used. If more than one pollutant is plotted
+then use \code{c} e.g. \code{name.pol = c("nox here", "o3 there")}.}
 
 \item{date.breaks}{Number of major x-axis intervals to use. The function will
 try and choose a sensible number of dates/times as well as formatting the
 date/time appropriately to the range being considered. This does not always
 work as desired automatically. The user can therefore increase or decrease
-the number of intervals by adjusting the value of \code{date.breaks} up or down.}
+the number of intervals by adjusting the value of \code{date.breaks} up or
+down.}
 
-\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
-axis labels will automatically try and format pollutant names and units
-properly e.g.  by subscripting the \sQuote{2} in NO2.}
+\item{date.format}{This option controls the date format on the x-axis. While
+\code{timePlot} generally sets the date format sensibly there can be some
+situations where the user wishes to have more control. For format types see
+\code{strptime}. For example, to format the date like \dQuote{Jan-2012} set
+\code{date.format = "\\\%b-\\\%Y"}.}
 
-\item{k}{This is the smoothing parameter used by the \code{\link[mgcv:gam]{mgcv::gam()}} function
-in package \code{mgcv}. By default it is not used and the amount of smoothing is
-optimised automatically. However, sometimes it is useful to set the
-smoothing amount manually using \code{k}.}
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
+titles and axis labels will automatically try and format pollutant names
+and units properly e.g.  by subscripting the \sQuote{2} in NO2.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
-data to extract plot components and plotting them in other ways.}
+\item{ci}{Should confidence intervals be plotted? The default is \code{TRUE}.}
+
+\item{alpha}{The alpha transparency of shaded confidence intervals - if
+plotted. A value of 0 is fully transparent and 1 is fully opaque.}
+
+\item{shade}{The colour used for marking alternate years. Use \code{"white"} or
+\code{"transparent"} to remove shading.}
+
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
+analysing data to extract plot components and plotting them in other ways.}
 
 \item{...}{Other graphical parameters are passed onto \code{\link[=cutData]{cutData()}} and
 \code{\link[lattice:xyplot]{lattice::xyplot()}}. For example, \code{\link[=smoothTrend]{smoothTrend()}} passes the option
@@ -192,23 +214,17 @@ smoothTrend(mydata, pollutant = "nox")
 # trend plot by each of 8 wind sectors
 \dontrun{
 smoothTrend(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
-}
 
 # several pollutants, no plotting symbol
-\dontrun{
 smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), pch = NA)
-}
 
 # percentiles
-\dontrun{
 smoothTrend(mydata,
   pollutant = "o3", statistic = "percentile",
   percentile = 95
 )
-}
 
 # several percentiles with control over lines used
-\dontrun{
 smoothTrend(mydata,
   pollutant = "o3", statistic = "percentile",
   percentile = c(5, 50, 95), lwd = c(1, 2, 1), lty = c(5, 1, 5)

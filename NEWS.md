@@ -1,5 +1,7 @@
 # openair (development version)
 
+- `smoothTrend()` has gained the `x.relation`, `date.format`, `key` and `key.position` arguments, in line with `timePlot()`. It has also gained the `progress` argument, passed to `timeAverage()`. 
+
 # openair 2.19.0
 
 ## Deprecations
