@@ -147,7 +147,7 @@
 #' @param plot Should a plot be produced? `FALSE` can be useful when analysing
 #'   data to extract plot components and plotting them in other ways.
 #' @param ... Other graphical parameters are passed onto [cutData()] and
-#'   [lattice:xyplot()]. For example, [timePlot()] passes the option `hemisphere
+#'   [lattice::xyplot()]. For example, [timePlot()] passes the option `hemisphere
 #'   = "southern"` on to [cutData()] to provide southern (rather than default
 #'   northern) hemisphere handling of `type = "season"`. Similarly, most common
 #'   plotting parameters, such as `layout` for panel arrangement and `pch` and
@@ -246,7 +246,7 @@ timePlot <- function(
   # Args setup
   Args <- list(...)
 
-  # warning messages and other checks #
+  # warning messages and other checks
   if (length(percentile) > 1 && length(pollutant) > 1) {
     cli::cli_abort(
       "Only one {.field pollutant} allowed when considering more than one {.field percentile}."
@@ -257,6 +257,9 @@ timePlot <- function(
     cli::cli_inform("No {.field avg.time} specified; using 'month'.")
     avg.time <- "month"
   }
+
+  rlang::arg_match(x.relation, c("same", "free"))
+  rlang::arg_match(y.relation, c("same", "free"))
 
   ## ---- Graphics & Styling ----
 
@@ -567,18 +570,22 @@ timePlot <- function(
 
   # allow reasonable gaps at ends, default has too much padding
   if (is.null(xlim)) {
+    get_xrange <- function(x) {
+      gap <- difftime(max(x$date), min(x$date), units = "secs") / 80
+      range(x$date[!is.na(x$value)]) + c(-1 * gap, gap)
+    }
+
     if (x.relation == "same") {
-      gap <- difftime(max(mydata$date), min(mydata$date), units = "secs") / 80
-      xlim <- range(mydata$date) + c(-1 * gap, gap)
+      xlim <- get_xrange(mydata)
     } else {
       splitvar <- type
       if (type == "default" && length(pollutant) > 1L && !group) {
         splitvar <- "variable"
       }
-      xlim <- lapply(split(mydata, mydata[splitvar]), function(x) {
-        gap <- difftime(max(x$date), min(x$date), units = "secs") / 80
-        range(x$date[!is.na(x$value)]) + c(-1 * gap, gap)
-      })
+      xlim <- lapply(split(mydata, mydata[splitvar]), get_xrange)
+      if (type == "default") {
+        xlim <- xlim[[1]]
+      }
     }
   }
 

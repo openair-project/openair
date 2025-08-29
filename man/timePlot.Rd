@@ -204,7 +204,7 @@ properly, e.g., by subscripting the '2' in NO2.}
 data to extract plot components and plotting them in other ways.}
 
 \item{...}{Other graphical parameters are passed onto \code{\link[=cutData]{cutData()}} and
-\code{\link[=lattice:xyplot]{lattice:xyplot()}}. For example, \code{\link[=timePlot]{timePlot()}} passes the option \code{hemisphere = "southern"} on to \code{\link[=cutData]{cutData()}} to provide southern (rather than default
+\code{\link[lattice:xyplot]{lattice::xyplot()}}. For example, \code{\link[=timePlot]{timePlot()}} passes the option \code{hemisphere = "southern"} on to \code{\link[=cutData]{cutData()}} to provide southern (rather than default
 northern) hemisphere handling of \code{type = "season"}. Similarly, most common
 plotting parameters, such as \code{layout} for panel arrangement and \code{pch} and
 \code{cex} for plot symbol type and size and \code{lty} and \code{lwd} for line type and
