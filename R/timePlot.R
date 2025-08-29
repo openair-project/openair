@@ -755,6 +755,8 @@ time_average_timeplot_data <- function(
     # deal with multiple percentile values
 
     if (length(percentile) > 1) {
+      prefix <- paste(pollutant, "percentile ")
+
       mydata <-
         calcPercentile(
           mydata,
@@ -762,10 +764,11 @@ time_average_timeplot_data <- function(
           pollutant = pollutant,
           avg.time = avg.time,
           data.thresh = data.thresh,
-          percentile = percentile
+          percentile = percentile,
+          prefix = prefix
         )
 
-      pollutant <- paste("percentile.", percentile, sep = "")
+      pollutant <- paste0(prefix, percentile)
     } else {
       mydata <- timeAverage(
         mydata,
