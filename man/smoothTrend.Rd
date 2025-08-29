@@ -167,6 +167,9 @@ plotted. A value of 0 is fully transparent and 1 is fully opaque.}
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when
 analysing data to extract plot components and plotting them in other ways.}
 
+\item{progress}{Show a progress bar when many groups make up \code{type}? Defaults
+to \code{TRUE}.}
+
 \item{...}{Other graphical parameters are passed onto \code{\link[=cutData]{cutData()}} and
 \code{\link[lattice:xyplot]{lattice::xyplot()}}. For example, \code{\link[=smoothTrend]{smoothTrend()}} passes the option
 \code{hemisphere = "southern"} on to \code{\link[=cutData]{cutData()}} to provide southern (rather

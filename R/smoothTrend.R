@@ -23,6 +23,7 @@
 #' `type` - see examples below.
 #'
 #' @inheritParams timePlot
+#' @inheritParams timeAverage
 #'
 #' @param deseason Should the data be de-deasonalized first? If `TRUE` the
 #'   function `stl` is used (seasonal trend decomposition using loess). Note
@@ -153,7 +154,7 @@ smoothTrend <- function(
   Args <- list(...)
 
   # validation checks
-  if (length(pollutant) > 1 & length(percentile) > 1) {
+  if (length(pollutant) > 1 && length(percentile) > 1) {
     cli::cli_warn(
       "You cannot choose multiple {.field percentiles} and {.field pollutants}; using {.field percentile} = {percentile[1]}."
     )
@@ -181,7 +182,6 @@ smoothTrend <- function(
   }
 
   # set & preserve graphics
-  current.strip <- trellis.par.get("strip.background")
   current.font <- trellis.par.get("fontsize")
   on.exit(trellis.par.set(
     fontsize = current.font
@@ -210,7 +210,7 @@ smoothTrend <- function(
   )
   Args$xlab <- quickText(Args$xlab %||% NULL, auto.text)
 
-  ## ---- Time intervals & date setup ----
+  ## ---- Time intervals & date set-up ----
 
   # find time interval
   # need this because if user has a data capture threshold, need to know
@@ -222,17 +222,16 @@ smoothTrend <- function(
 
   # better interval, most common interval in a year
   interval <-
-    dplyr::case_when(
-      days == 31 ~ "month",
-      days %in% c(365, 366) ~ "year",
+    dplyr::case_match(
+      days,
+      31 ~ "month",
+      c(365, 366) ~ "year",
       .default = interval
     )
 
   # for overall data and graph plotting
   start.year <- startYear(mydata$date)
   end.year <- endYear(mydata$date)
-  start.month <- startMonth(mydata$date)
-  end.month <- endMonth(mydata$date)
 
   ## ---- data processing ----
 
@@ -260,7 +259,7 @@ smoothTrend <- function(
       .f = function(x) {
         out <- deseason_smoothtrend_data(x, deseason = deseason)
         out[, vars] <- x[1, vars, drop = TRUE]
-        return(out)
+        out
       }
     ) %>%
     dplyr::bind_rows() %>%
@@ -273,7 +272,7 @@ smoothTrend <- function(
       .f = function(df) {
         out <- fit_smoothtrend_gam(df, x = "date", y = "conc", k = k, ...)
         out[, vars] <- df[1, vars, drop = TRUE]
-        return(out)
+        out
       }
     ) %>%
     dplyr::bind_rows() %>%
@@ -286,7 +285,7 @@ smoothTrend <- function(
 
   # special wd layout
   # (type field in results.grid called type not wd)
-  if (length(type) == 1 & type[1] == "wd" & is.null(Args$layout)) {
+  if (length(type) == 1 && type[1] == "wd" && is.null(Args$layout)) {
     # re-order to make sensible layout
     wds <- c("NW", "N", "NE", "W", "E", "SW", "S", "SE")
     res$wd <- ordered(res$wd, levels = wds)
@@ -320,7 +319,6 @@ smoothTrend <- function(
   strip.dat <- strip.fun(res, type, auto.text)
   strip <- strip.dat[[1]]
   strip.left <- strip.dat[[2]]
-  pol.name <- strip.dat[[3]]
 
   ## ---- colours & keys ----
 
@@ -349,7 +347,7 @@ smoothTrend <- function(
     )
   }
 
-  if (length(npol) > 1) {
+  if (length(npol) > 1L) {
     if (key) {
       if (missing(key.columns) && key.position %in% c("top", "bottom")) {
         key.columns <- length(npol)
@@ -357,7 +355,7 @@ smoothTrend <- function(
 
       key <- list(
         lines = list(
-          col = myColors[1:length(npol)],
+          col = myColors[seq_along(npol)],
           lty = Args$lty,
           lwd = Args$lwd,
           pch = Args$pch,
@@ -397,7 +395,7 @@ smoothTrend <- function(
           function(x) {
             gap <- difftime(max(x$date), min(x$date), units = "secs") / 80
             xlim <- range(x$date) + c(-1 * gap, gap)
-            return(xlim)
+            xlim
           }
         )
     } else {
@@ -599,7 +597,7 @@ prepare_smoothtrend_data <- function(
         cols = dplyr::all_of(vars),
         names_to = "variable",
         values_to = "value"
-      ) |>
+      ) %>%
       dplyr::arrange(.data$variable)
   } else {
     mydata <- suppressWarnings(timeAverage(
@@ -620,7 +618,7 @@ prepare_smoothtrend_data <- function(
   }
 
   # return data
-  return(mydata)
+  mydata
 }
 
 #' Apply deaseason, if requested
@@ -684,7 +682,7 @@ deseason_smoothtrend_data <- function(mydata, deseason) {
     )
   }
 
-  return(results)
+  results
 }
 
 #' Fit a GAM for smoothTrend
