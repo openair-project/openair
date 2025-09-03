@@ -216,7 +216,9 @@ readSummaryData <-
     fileName <- purrr::map(year, function(x) paste0(files, x, ".rds")) %>%
       purrr::list_c()
 
-    thedata <- try(readRDS(url(fileName)), TRUE)
+    con <- url(fileName)
+    on.exit(close.connection(con))
+    thedata <- try(readRDS(con), TRUE)
 
     if (inherits(thedata, "try-error")) {
       return()
@@ -339,7 +341,9 @@ readDAQI <- function(files, year, source) {
   fileName <- purrr::map(year, function(x) paste0(files, x, ".rds")) %>%
     purrr::list_c()
 
-  thedata <- try(readRDS(url(fileName)), TRUE)
+  con <- url(fileName)
+  on.exit(close.connection(con))
+  thedata <- try(readRDS(con), TRUE)
 
   if (inherits(thedata, "try-error")) {
     return()
