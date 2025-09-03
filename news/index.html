@@ -53,9 +53,14 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="openair-development-version">openair (development version)<a class="anchor" aria-label="anchor" href="#openair-development-version"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> now closes its <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">url()</a></code> connections and generally fails more gracefully when <code>data_type %in% c("annual", "monthly", "daqi")</code>. This was already the case for other data types.</li>
+</ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.19.0" id="openair-2190">openair 2.19.0<a class="anchor" aria-label="anchor" href="#openair-2190"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.19.0" id="openair-2190">openair 2.19.0<a class="anchor" aria-label="anchor" href="#openair-2190"></a></h2><p class="text-muted">CRAN release: 2025-08-28</p>
 <div class="section level3">
 <h3 id="deprecations-2-19-0">Deprecations<a class="anchor" aria-label="anchor" href="#deprecations-2-19-0"></a></h3>
 <p><code><a href="../reference/importEurope.html">importEurope()</a></code> relies on the same back-end database as the <code>saqgetr</code> package (<a href="https://github.com/skgrange/saqgetr" class="external-link uri">https://github.com/skgrange/saqgetr</a>), which was retired in February 2024. <code><a href="../reference/importEurope.html">importEurope()</a></code> will now warn users of this, and outright error if <code>year &gt;= 2025</code>. Users are instead encouraged to use the EEA Air Quality Download Service <a href="https://eeadmz1-downloads-webapp.azurewebsites.net" class="external-link uri">https://eeadmz1-downloads-webapp.azurewebsites.net</a> to obtain European data for the time being. An R package, <a href="https://github.com/openair-project/euroaq" class="external-link uri">https://github.com/openair-project/euroaq</a>, has been developed to facilitate its use.</p>
