@@ -1,5 +1,9 @@
 # openair (development version)
 
+## New Features
+
+- `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
+
 ## Bug Fixes
 
 - `importUKAQ()` now closes its `url()` connections and generally fails more gracefully when `data_type %in% c("annual", "monthly", "daqi")`. This was already the case for other data types.
