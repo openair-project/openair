@@ -321,6 +321,13 @@ importUKAQ <-
         .progress = ifelse(progress, "Importing Statistics", FALSE)
       ) %>%
         purrr::list_rbind()
+
+      if (nrow(aq_data) == 0) {
+        cli::cli_abort(
+          "No data returned. Check {.arg site}, {.arg year} and {.arg source}.",
+          call = NULL
+        )
+      }
     }
 
     # Import pre-calculated DAQI?
@@ -346,7 +353,17 @@ importUKAQ <-
           readDAQI,
           .progress = ifelse(progress, "Importing DAQI", FALSE)
         ) %>%
-        purrr::list_rbind() %>%
+        purrr::list_rbind()
+
+      if (nrow(aq_data) == 0) {
+        cli::cli_abort(
+          "No data returned. Check {.arg site}, {.arg year} and {.arg source}.",
+          call = NULL
+        )
+      }
+
+      aq_data <-
+        aq_data %>%
         dplyr::tibble() %>%
         dplyr::mutate(
           band = dplyr::case_when(
