@@ -294,6 +294,7 @@ timePlot <- function(
     mydata = mydata,
     pollutant = pollutant,
     type = type,
+    avg.time = avg.time,
     date.pad = date.pad,
     windflow = windflow,
     ...
@@ -711,6 +712,7 @@ prepare_timeplot_data <- function(
   mydata,
   pollutant,
   type,
+  avg.time,
   date.pad,
   windflow,
   ...
@@ -733,7 +735,9 @@ prepare_timeplot_data <- function(
   mydata <- cutData(mydata, type, ...)
 
   # check for duplicates - can't really have duplicate data in a timeplot
-  checkDuplicateRows(mydata, type, fn = cli::cli_abort)
+  if (avg.time == "default") {
+    checkDuplicateRows(mydata, type, fn = cli::cli_abort)
+  }
 
   # return data
   return(mydata)
