@@ -7,11 +7,12 @@
 calendarPlot(
   mydata,
   pollutant = "nox",
-  year = 2003,
-  month = 1:12,
-  type = "default",
+  year = NULL,
+  month = NULL,
   annotate = "date",
   statistic = "mean",
+  data.thresh = 0,
+  percentile = NA,
   cols = "heat",
   limits = c(0, 100),
   lim = NULL,
@@ -21,13 +22,11 @@ calendarPlot(
   cex.lim = c(0.6, 1),
   cex.date = 0.6,
   digits = 0,
-  data.thresh = 0,
   labels = NA,
   breaks = NA,
   w.shift = 0,
   w.abbr.len = 1,
   remove.empty = TRUE,
-  main = NULL,
   key.header = "",
   key.footer = "",
   key.position = "right",
@@ -51,8 +50,6 @@ potentially spanning several years will be plotted.}
 plot an entire year even if months are missing. To only plot certain months
 use the \code{month} option where month is a numeric 1:12 e.g. \code{month = c(1, 12)} to only plot January and December.}
 
-\item{type}{Not yet implemented.}
-
 \item{annotate}{This option controls what appears on each day of the
 calendar. Can be:
 \itemize{
@@ -62,9 +59,19 @@ calendar. Can be:
 \item \code{"value"} --- shows the daily mean value
 }}
 
-\item{statistic}{Statistic passed to \code{\link[=timeAverage]{timeAverage()}}. Note that if \code{statistic = "max"} and \code{annotate} is "ws" or "wd", the hour corresponding to the
-maximum concentration of \code{polluant} is used to provide the associated \code{ws}
-or \code{wd} and not the maximum daily \code{ws} or \code{wd}.}
+\item{statistic}{Statistic passed to \code{\link[=timeAverage]{timeAverage()}}. Note that if \code{statistic \%in\% c("max", "min")} and \code{annotate} is "ws" or "wd", the hour
+corresponding to the maximum/minimum concentration of \code{polluant} is used to
+provide the associated \code{ws} or \code{wd} and not the maximum/minimum daily \code{ws} or \code{wd}.}
+
+\item{data.thresh}{The data capture threshold to use (\%). A value of zero
+means that all available data will be used in a particular period
+regardless if of the number of values available. Conversely, a value of 100
+will mean that all data will need to be present for the average to be
+calculated, else it is recorded as \code{NA}. See also \code{interval}, \code{start.date}
+and \code{end.date} to see whether it is advisable to set these other options.}
+
+\item{percentile}{The percentile level in percent used when \code{statistic = "percentile"} and when aggregating the data with \code{avg.time}. More than one
+percentile level is allowed for \code{type = "default"} e.g. \code{percentile = c(50, 95)}. Not used if \code{avg.time = "default"}.}
 
 \item{cols}{Colours to be used for plotting; see \code{\link[=openColours]{openColours()}} for details.}
 
@@ -100,18 +107,14 @@ the text above \code{lim}.}
 \item{digits}{The number of digits used to display concentration values when
 \code{annotate = "value"}.}
 
-\item{data.thresh}{Data capture threshold passed to \code{\link[=timeAverage]{timeAverage()}}. For
-example, \code{data.thresh = 75} means that at least 75\\% of the data must be
-available in a day for the value to be calculate, else the data is removed.}
-
 \item{labels}{If a categorical scale is defined using \code{breaks}, then \code{labels}
 can be used to override the default category labels, e.g., \code{labels = c("good", "bad", "very bad")}. Note there is one less label than break.}
 
 \item{breaks}{If a categorical scale is required then these breaks will be
-used. For example, \code{breaks = c(0, 50, 100, 1000)}. In this case
-\dQuote{good} corresponds to values between 0 and 50 and so on. Users
-should set the maximum value of \code{breaks} to exceed the maximum data value
-to ensure it is within the maximum final range e.g. 100--1000 in this case.}
+used. For example, \code{breaks = c(0, 50, 100, 1000)}. In this case "good"
+corresponds to values between 0 and 50 and so on. Users should set the
+maximum value of \code{breaks} to exceed the maximum data value to ensure it is
+within the maximum final range e.g. 100--1000 in this case.}
 
 \item{w.shift}{Controls the order of the days of the week. By default the
 plot shows Saturday first (\code{w.shift = 0}). To change this so that it starts
@@ -124,8 +127,6 @@ abbreviate "Monday" to "Mon".}
 
 \item{remove.empty}{Should months with no data present be removed? Default is
 \code{TRUE}.}
-
-\item{main}{The plot title; default is pollutant and year.}
 
 \item{key.header}{Adds additional text/labels to the scale key. For example,
 passing \code{calendarPlot(mydata, key.header = "header", key.footer = "footer")} adds addition text above and below the scale key. These

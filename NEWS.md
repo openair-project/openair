@@ -4,6 +4,12 @@
 
 - `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
 
+- `calendarPlot()` refinements:
+
+    - `calendarPlot()` has gained the `percentile` argument, passed on to `timeAverage()`.
+    
+    - When `statistic == "min"` and `annotation %in% c("ws", "wd")`, the ws/wd returned will correspond to the minimum daily pollutant, rather than the minimum daily ws/wd.
+
 ## Bug Fixes
 
 - `importUKAQ()` now closes its `url()` connections and generally fails more gracefully when `data_type %in% c("annual", "monthly", "daqi")`. This was already the case for other data types.
