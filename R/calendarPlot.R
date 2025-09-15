@@ -322,7 +322,10 @@ calendarPlot <-
         dplyr::add_count(.data$cuts, name = "month_counts")
 
       # if any duplicates, set show.year = TRUE
-      if (any(verify_duplicates$month_counts > 1L)) {
+      if (
+        any(verify_duplicates$month_counts > 1L) ||
+          dplyr::n_distinct(verify_duplicates$years) > 1L
+      ) {
         mydata <- dplyr::mutate(
           mydata,
           cuts = format(.data$date, "%B-%Y"),
