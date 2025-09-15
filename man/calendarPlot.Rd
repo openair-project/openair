@@ -38,9 +38,8 @@ calendarPlot(
 )
 }
 \arguments{
-\item{mydata}{A data frame minimally containing \code{date} and at least one other
-numeric variable. The date should be in either \code{Date} format or class
-\code{POSIXct}.}
+\item{mydata}{A data frame of time series. Must include a \code{date} field and at
+least one variable to plot.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \verb{pollutant = "nox". }}
@@ -55,17 +54,19 @@ use the \code{month} option where month is a numeric 1:12 e.g. \code{month = c(1
 \item{type}{Not yet implemented.}
 
 \item{annotate}{This option controls what appears on each day of the
-calendar. Can be: "date" --- shows day of the month; "wd"
---- shows vector-averaged wind direction, or "ws" --- shows
-vector-averaged wind direction scaled by wind speed. Finally it can be
-\dQuote{value} which shows the daily mean value.}
+calendar. Can be:
+\itemize{
+\item \code{"date"} --- shows day of the month
+\item \code{"wd"} --- shows vector-averaged wind direction
+\item \code{"ws"} --- shows vector-averaged wind direction scaled by wind speed
+\item \code{"value"} --- shows the daily mean value
+}}
 
 \item{statistic}{Statistic passed to \code{\link[=timeAverage]{timeAverage()}}. Note that if \code{statistic = "max"} and \code{annotate} is "ws" or "wd", the hour corresponding to the
 maximum concentration of \code{polluant} is used to provide the associated \code{ws}
 or \code{wd} and not the maximum daily \code{ws} or \code{wd}.}
 
-\item{cols}{Colours to be used for plotting. See \code{\link[=openColours]{openColours()}} for more
-details.}
+\item{cols}{Colours to be used for plotting; see \code{\link[=openColours]{openColours()}} for details.}
 
 \item{limits}{Use this option to manually set the colour scale limits. This
 is useful in the case when there is a need for two or more plots and a
@@ -141,10 +142,10 @@ arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"} and \c
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
-properly e.g.  by subscripting the `2' in NO2.}
+properly, e.g., by subscripting the '2' in NO2.}
 
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
-data to extract calendar plot components and plotting them in other ways.}
+data to extract plot components and plotting them in other ways.}
 
 \item{...}{Other graphical parameters are passed onto the \code{lattice} function
 \code{\link[lattice:levelplot]{lattice::levelplot()}}, with common axis and title labelling options (such

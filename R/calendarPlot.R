@@ -31,9 +31,8 @@
 #' passed to [calendarPlot()] and `statistic = "max"` chosen, which will plot
 #' maximum daily 8-hour mean concentrations.
 #'
-#' @param mydata A data frame minimally containing `date` and at least one other
-#'   numeric variable. The date should be in either `Date` format or class
-#'   `POSIXct`.
+#' @inheritParams timePlot
+#'
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
 #'   data frame should be supplied e.g. `pollutant = "nox". `
 #' @param year Year to plot e.g. `year = 2003`. If not supplied all data
@@ -44,16 +43,15 @@
 #'   12)` to only plot January and December.
 #' @param type Not yet implemented.
 #' @param annotate This option controls what appears on each day of the
-#'   calendar. Can be: "date" --- shows day of the month; "wd"
-#'   --- shows vector-averaged wind direction, or "ws" --- shows
-#'   vector-averaged wind direction scaled by wind speed. Finally it can be
-#'   \dQuote{value} which shows the daily mean value.
+#'   calendar. Can be:
+#'   - `"date"` --- shows day of the month
+#'   - `"wd"` --- shows vector-averaged wind direction
+#'   - `"ws"` --- shows vector-averaged wind direction scaled by wind speed
+#'   - `"value"` --- shows the daily mean value
 #' @param statistic Statistic passed to [timeAverage()]. Note that if `statistic
 #'   = "max"` and `annotate` is "ws" or "wd", the hour corresponding to the
 #'   maximum concentration of `polluant` is used to provide the associated `ws`
 #'   or `wd` and not the maximum daily `ws` or `wd`.
-#' @param cols Colours to be used for plotting. See [openColours()] for more
-#'   details.
 #' @param limits Use this option to manually set the colour scale limits. This
 #'   is useful in the case when there is a need for two or more plots and a
 #'   consistent scale is needed on each. Set the limits to cover the maximum
@@ -83,7 +81,7 @@
 #'   available in a day for the value to be calculate, else the data is removed.
 #' @param breaks If a categorical scale is required then these breaks will be
 #'   used. For example, `breaks = c(0, 50, 100, 1000)`. In this case
-#'   \dQuote{good} corresponds to values between 0 and 50 and so on. Users
+#'   "good" corresponds to values between 0 and 50 and so on. Users
 #'   should set the maximum value of `breaks` to exceed the maximum data value
 #'   to ensure it is within the maximum final range e.g. 100--1000 in this case.
 #' @param labels If a categorical scale is defined using `breaks`, then `labels`
@@ -109,11 +107,6 @@
 #'   arguments currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
 #' @param key Fine control of the scale key via [drawOpenKey()]. See
 #'   [drawOpenKey()] for further details.
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
-#'   axis labels will automatically try and format pollutant names and units
-#'   properly e.g.  by subscripting the `2' in NO2.
-#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
-#'   data to extract calendar plot components and plotting them in other ways.
 #' @param ... Other graphical parameters are passed onto the `lattice` function
 #'   [lattice::levelplot()], with common axis and title labelling options (such
 #'   as `xlab`, `ylab`, `main`) being passed to via [quickText()] to handle
