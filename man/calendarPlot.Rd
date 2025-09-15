@@ -27,6 +27,7 @@ calendarPlot(
   w.shift = 0,
   w.abbr.len = 1,
   remove.empty = TRUE,
+  show.year = TRUE,
   key.header = "",
   key.footer = "",
   key.position = "right",
@@ -61,7 +62,8 @@ calendar. Can be:
 
 \item{statistic}{Statistic passed to \code{\link[=timeAverage]{timeAverage()}}. Note that if \code{statistic \%in\% c("max", "min")} and \code{annotate} is "ws" or "wd", the hour
 corresponding to the maximum/minimum concentration of \code{polluant} is used to
-provide the associated \code{ws} or \code{wd} and not the maximum/minimum daily \code{ws} or \code{wd}.}
+provide the associated \code{ws} or \code{wd} and not the maximum/minimum daily \code{ws}
+or \code{wd}.}
 
 \item{data.thresh}{The data capture threshold to use (\%). A value of zero
 means that all available data will be used in a particular period
@@ -127,6 +129,11 @@ abbreviate "Monday" to "Mon".}
 
 \item{remove.empty}{Should months with no data present be removed? Default is
 \code{TRUE}.}
+
+\item{show.year}{If only a single year is being plotted, should the calendar
+labels include the year label? \code{TRUE} creates labels like "January-2000",
+\code{FALSE} labels just as "January". If multiple years of data are detected,
+this option is forced to be \code{TRUE}.}
 
 \item{key.header}{Adds additional text/labels to the scale key. For example,
 passing \code{calendarPlot(mydata, key.header = "header", key.footer = "footer")} adds addition text above and below the scale key. These

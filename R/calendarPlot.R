@@ -50,7 +50,8 @@
 #' @param statistic Statistic passed to [timeAverage()]. Note that if `statistic
 #'   %in% c("max", "min")` and `annotate` is "ws" or "wd", the hour
 #'   corresponding to the maximum/minimum concentration of `polluant` is used to
-#'   provide the associated `ws` or `wd` and not the maximum/minimum daily `ws` or `wd`.
+#'   provide the associated `ws` or `wd` and not the maximum/minimum daily `ws`
+#'   or `wd`.
 #' @param limits Use this option to manually set the colour scale limits. This
 #'   is useful in the case when there is a need for two or more plots and a
 #'   consistent scale is needed on each. Set the limits to cover the maximum
@@ -92,6 +93,10 @@
 #'   abbreviate "Monday" to "Mon".
 #' @param remove.empty Should months with no data present be removed? Default is
 #'   `TRUE`.
+#' @param show.year If only a single year is being plotted, should the calendar
+#'   labels include the year label? `TRUE` creates labels like "January-2000",
+#'   `FALSE` labels just as "January". If multiple years of data are detected,
+#'   this option is forced to be `TRUE`.
 #' @param key.header Adds additional text/labels to the scale key. For example,
 #'   passing `calendarPlot(mydata, key.header = "header", key.footer =
 #'   "footer")` adds addition text above and below the scale key. These
@@ -167,6 +172,7 @@ calendarPlot <-
     w.shift = 0,
     w.abbr.len = 1,
     remove.empty = TRUE,
+    show.year = TRUE,
     key.header = "",
     key.footer = "",
     key.position = "right",
@@ -294,11 +300,39 @@ calendarPlot <-
       dplyr::left_join(data.frame(date = all_dates), mydata, by = "date")
 
     # split by year-month, and set 'type' to this
-    mydata <- dplyr::mutate(
-      mydata,
-      cuts = format(.data$date, "%B-%Y"),
-      cuts = ordered(.data$cuts, levels = unique(.data$cuts))
-    )
+    if (show.year) {
+      mydata <- dplyr::mutate(
+        mydata,
+        cuts = format(.data$date, "%B-%Y"),
+        cuts = ordered(.data$cuts, levels = unique(.data$cuts))
+      )
+    } else {
+      # cut just by month - although check duplicate years
+      mydata <- dplyr::mutate(
+        mydata,
+        cuts = format(.data$date, "%B"),
+        years = format(.data$date, "%Y"),
+        cuts = ordered(.data$cuts, levels = unique(.data$cuts))
+      )
+
+      # check duplicates
+      verify_duplicates <-
+        mydata %>%
+        dplyr::count(.data$cuts, .data$years) %>%
+        dplyr::add_count(.data$cuts, name = "month_counts")
+
+      # if any duplicates, set show.year = TRUE
+      if (any(verify_duplicates$month_counts > 1L)) {
+        mydata <- dplyr::mutate(
+          mydata,
+          cuts = format(.data$date, "%B-%Y"),
+          cuts = ordered(.data$cuts, levels = unique(.data$cuts))
+        )
+      }
+
+      mydata <- dplyr::select(mydata, -"years")
+    }
+
     type <- "cuts"
 
     # drop empty months?
