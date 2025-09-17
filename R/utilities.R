@@ -143,7 +143,7 @@ date.pad <- function(mydata, type = NULL, print.int = FALSE) {
     mydata <- mydata %>% full_join(all.dates, by = "date")
 
     # add missing types - if type is present
-    if (!is.null(type)) {
+    if (!is.null(type) && type != "default") {
       mydata[type] <- mydata[1, type]
     }
   }
