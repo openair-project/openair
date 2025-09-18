@@ -1337,19 +1337,16 @@ simple_kernel <- function(
   wd_spread,
   kernel
 ) {
-  # Centres
-  ws1 <- data[[1]]
-  wd1 <- data[[2]]
+  # center data
+  ws_cent <- mydata[[x]] - data[[1]]
+  wd_cent <- mydata[[y]] - data[[2]]
 
-  # centred ws, wd
-  ws_cent <- mydata[[x]] - ws1
-  wd_cent <- mydata[[y]] - wd1
+  # handle circular wind direction - wrap at 180
   wd_cent <- ifelse(wd_cent < -180, wd_cent + 360, wd_cent)
 
+  # calculate gaussian density & weighted mean
   weight <- gauss_dens(ws_cent, wd_cent, 0, 0, ws_spread, wd_spread)
-
-  conc <- sum(mydata[[pollutant]] * weight) /
-    sum(weight)
+  conc <- weighted.mean(mydata[[pollutant]], w = weight)
 
   return(data.frame(conc = conc))
 }
