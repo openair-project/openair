@@ -608,7 +608,7 @@ polarPlot <-
       vars <- c(vars, x_error, y_error)
     }
 
-    if (any(type %in% dateTypes)) {
+    if (any(type %in% dateTypes) || statistic == "trend") {
       vars <- c(vars, "date")
     }
 
