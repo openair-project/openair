@@ -457,16 +457,14 @@ polarPlot <-
     plot = TRUE,
     ...
   ) {
-    if (
-      statistic == "percentile" && is.na(percentile[1] & statistic != "cpf")
-    ) {
-      warning("percentile value missing, using 50")
+    if (statistic == "percentile" && is.na(percentile[1])) {
       percentile <- 50
+      cli::cli_warn("{.field percentile} value missing; using {percentile}.")
     }
 
     if (statistic == "cpf" && is.na(percentile[1])) {
-      warning("percentile value missing, using 75")
       percentile <- 75
+      cli::cli_warn("{.field percentile} value missing; using {percentile}.")
     }
 
     # Allow for period notation
@@ -567,38 +565,18 @@ polarPlot <-
     extra.args <- list(...)
 
     ## label controls
-    extra.args$xlab <- if ("xlab" %in% names(extra.args)) {
-      quickText(extra.args$xlab, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
+    extra.args$xlab <- quickText(extra.args$xlab %||% "", auto.text)
+    extra.args$ylab <- quickText(extra.args$ylab %||% "", auto.text)
+    extra.args$main <- quickText(extra.args$main %||% "", auto.text)
 
-    extra.args$ylab <- if ("ylab" %in% names(extra.args)) {
-      quickText(extra.args$ylab, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
+    ## layout default
+    extra.args$layout <- extra.args$layout %||% NULL
 
-    extra.args$main <- if ("main" %in% names(extra.args)) {
-      quickText(extra.args$main, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
+    ## if clustering, lower resolution plot (through polarCluster)
+    extra.args$cluster <- extra.args$cluster %||% FALSE
 
     if ("fontsize" %in% names(extra.args)) {
       trellis.par.set(fontsize = list(text = extra.args$fontsize))
-    }
-
-    # if clustering, return lower resolution plot
-    extra.args$cluster <- if ("cluster" %in% names(extra.args)) {
-      TRUE
-    } else {
-      FALSE
-    }
-
-    ## layout default
-    if (!"layout" %in% names(extra.args)) {
-      extra.args$layout <- NULL
     }
 
     ## extract variables of interest
