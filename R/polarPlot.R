@@ -1364,25 +1364,25 @@ simple_kernel_trend <- function(
   kernel,
   tau
 ) {
-  # Centres
-  ws1 <- data[[1]]
-  wd1 <- data[[2]]
+  # ensure quantreg is installed
+  rlang::check_installed("quantreg")
 
-  # centred ws, wd
-  ws_cent <- mydata[[x]] - ws1
-  wd_cent <- mydata[[y]] - wd1
+  # center data
+  ws_cent <- mydata[[x]] - data[[1]]
+  wd_cent <- mydata[[y]] - data[[2]]
+
+  # handle circular wind direction - wrap at 180
   wd_cent <- ifelse(wd_cent < -180, wd_cent + 360, wd_cent)
 
+  # calculate gaussian density & normalise
   weight <- gauss_dens(ws_cent, wd_cent, 0, 0, ws_spread, wd_spread)
   weight <- weight / max(weight)
 
+  # overwrite weights from mydata
   mydata$weight <- weight
 
-  # quantreg is a Suggests package, so make sure it is there
-  try_require("quantreg", "polarPlot")
-
   # don't fit all data - takes too long with no gain
-  mydata <- filter(mydata, weight > 0.00001)
+  mydata <- dplyr::filter(mydata, .data$weight > 0.00001)
 
   # Drop dplyr's data frame for formula
   mydata <- data.frame(mydata)
@@ -1396,19 +1396,20 @@ simple_kernel_trend <- function(
         weights = mydata[["weight"]],
         method = "fn"
       ),
-      TRUE
+      silent = TRUE
     )
   )
 
   # Extract statistics
-  if (!inherits(fit, "try-error")) {
+  slope <- if (!inherits(fit, "try-error")) {
     # Extract statistics
-    slope <- 365.25 * 24 * 3600 * fit$coefficients[2]
+    365.25 * 24 * 3600 * fit$coefficients[2]
   } else {
-    slope <- NA
+    NA
   }
 
-  return(data.frame(conc = slope))
+  # return a data frame with the slope
+  data.frame(conc = slope)
 }
 
 
@@ -1564,8 +1565,8 @@ calculate_weighted_statistics <-
 
     # Quantile regression with weights
     if (grepl("quantile", statistic, ignore.case = TRUE)) {
-      # quantreg is a Suggests package, so make sure it is there
-      try_require("quantreg", "polarPlot")
+      # ensure quantreg is installed
+      rlang::check_installed("quantreg")
 
       # Drop dplyr's data frame for formula
       thedata <- data.frame(thedata)

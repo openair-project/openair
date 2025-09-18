@@ -41,25 +41,6 @@ setGraphics <- function(fontsize = 5) {
   ))
 }
 
-
-# function to test of a suggested package is available and warn if not
-try_require <- function(package, fun) {
-  if (requireNamespace(package, quietly = TRUE)) {
-    library(package, character.only = TRUE)
-    return(invisible())
-  }
-
-  stop(
-    "Package `",
-    package,
-    "` required for `",
-    fun,
-    "`.\n",
-    "Please install and try again.",
-    call. = FALSE
-  )
-}
-
 ###############################################################################
 
 ## function to find averaging period of data, returns "xx sec"

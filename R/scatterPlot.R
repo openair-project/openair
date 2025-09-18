@@ -1820,10 +1820,8 @@ scatterPlot <- function(
 
 add.map <- function(Args, ...) {
   if (Args$map.res == "default") {
-    # try_require("maps", "scatterPlot")
     res <- "world"
   } else {
-    #  try_require("mapdata", "scatterPlot")
     res <- "worldHires"
   }
 
