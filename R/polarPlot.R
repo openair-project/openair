@@ -1853,7 +1853,7 @@ YorkFit <- function(
 
 # bi-linear interpolation on a regular grid
 # allows surface predictions at a low resolution to be interpolated, rather than using a GAM
-interp.surface <- function(obj, loc) {
+interp_surface <- function(obj, loc) {
   # obj is a surface or image  object like the list for contour, persp or image.
   # loc a matrix of 2 d locations -- new points to evaluate the surface.
   x <- obj$x
@@ -1861,21 +1861,29 @@ interp.surface <- function(obj, loc) {
   z <- obj$z
   nx <- length(x)
   ny <- length(y)
-  # this clever idea for finding the intermediate coordinates at the new points
-  # is from J-O Irisson
-  lx <- approx(x, 1:nx, loc[, 1])$y
-  ly <- approx(y, 1:ny, loc[, 2])$y
+
+  # find the intermediate coordinates at the new points, from J-O Irisson
+  lx <- approx(x, seq_len(nx), loc[, 1])$y
+  ly <- approx(y, seq_len(ny), loc[, 2])$y
+
   lx1 <- floor(lx)
   ly1 <- floor(ly)
-  # x and y distances between each new point and the closest grid point in the lower left hand corner.
+
+  # x and y distances between each new point and the closest grid point in the
+  # lower left hand corner.
   ex <- lx - lx1
   ey <- ly - ly1
+
   # fix up weights to handle the case when loc are equal to
   # last grid point.  These have been set to NA above.
-  ex[lx1 == nx] <- 1
-  ey[ly1 == ny] <- 1
-  lx1[lx1 == nx] <- nx - 1
-  ly1[ly1 == ny] <- ny - 1
+  edge_x <- lx1 == nx
+  edge_y <- ly1 == ny
+
+  ex[edge_x] <- 1
+  ey[edge_y] <- 1
+  lx1[edge_x] <- nx - 1
+  ly1[edge_y] <- ny - 1
+
   # bilinear interpolation finds simple weights based on the
   # the four corners of the grid box containing the new
   # points.
@@ -1883,17 +1891,8 @@ interp.surface <- function(obj, loc) {
     z[cbind(lx1, ly1)] *
       (1 - ex) *
       (1 - ey) +
-      z[cbind(
-        lx1 +
-          1,
-        ly1
-      )] *
-        ex *
-        (1 - ey) +
-      z[cbind(lx1, ly1 + 1)] *
-        (1 -
-          ex) *
-        ey +
+      z[cbind(lx1 + 1, ly1)] * ex * (1 - ey) +
+      z[cbind(lx1, ly1 + 1)] * (1 - ex) * ey +
       z[cbind(lx1 + 1, ly1 + 1)] * ex * ey
   )
 }
@@ -1921,7 +1920,7 @@ interp_grid <- function(input.data, x = "u", y = "v", z, n = 201) {
   )
 
   # Interpolate onto output grid
-  res.interp <- interp.surface(obj, out[c("u", "v")])
+  res.interp <- interp_surface(obj, out[c("u", "v")])
 
   return(data.frame(out, z = res.interp))
 }
