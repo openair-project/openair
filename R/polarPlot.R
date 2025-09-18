@@ -492,8 +492,9 @@ polarPlot <-
     )
 
     # ensure statistic is recognised
+    statistic <- tolower(statistic)
     statistic <- rlang::arg_match(
-      tolower(statistic),
+      statistic,
       all_stats,
       multiple = FALSE
     )
@@ -593,29 +594,18 @@ polarPlot <-
         y_error = y_error
       )
 
-    # this is used later for the 'x' scale
-    min.scale <- min(mydata[[x]], na.rm = TRUE)
-
     # check to see if a high proportion of the data is negative
-    if (
-      length(which(mydata[pollutant] < 0)) / nrow(mydata) > 0.1 &&
-        force.positive
-    ) {
-      cli::cli_warn(c(
-        "!" = ">10% negative data detected.",
-        "i" = "Consider setting {.arg force.positive} to {FALSE}."
-      ))
-    }
+    warn_negative_data(mydata, pollutant, force.positive)
+
+    # capture radial scale as attribute "radial_scale" on returned data for
+    # external plotting
+    radial_scale <- range(mydata[[x]])
 
     # scale data by subtracting the min value this helps with dealing
     # with negative data on radial axis (starts from zero, always
     # positive)
-
-    # return radial scale as attribute "radial_scale" on returned data for
-    # external plotting
-    radial_scale <- range(mydata[[x]])
-
-    mydata[[x]] <- mydata[[x]] - min(mydata[[x]], na.rm = TRUE)
+    min.scale <- min(mydata[[x]], na.rm = TRUE) # this is used later for the 'x' scale
+    mydata[[x]] <- mydata[[x]] - min.scale
 
     # if more than one pollutant, need to stack the data and set type =
     # "variable" this case is most relevant for model-measurement
@@ -626,26 +616,28 @@ polarPlot <-
     # if statistic is 'r' we need the data for two pollutants in columns
     if (length(pollutant) > 1 && !statistic %in% correlation_stats) {
       if (length(type) > 1) {
-        warning(paste("Only type = '", type[1], "' will be used", sep = ""))
+        cli::cli_warn(
+          c(
+            "x" = "Cannot have 2 or more {.arg pollutant} and 2 {.arg type}.",
+            "i" = "'{type[1]}' will be used."
+          )
+        )
         type <- type[1]
       }
 
       # use pollutants as conditioning variables
-      mydata <- gather(
-        mydata,
-        key = variable,
-        value = value,
-        pollutant,
-        factor_key = TRUE
-      )
-      # now set pollutant to "value"
-      pollutant <- "value"
+      mydata <-
+        tidyr::pivot_longer(
+          mydata,
+          cols = dplyr::all_of(pollutant),
+          names_to = "variable",
+          values_to = "value",
+          names_transform = list(variable = factor)
+        )
 
-      if (type == "default") {
-        type <- "variable"
-      } else {
-        type <- c(type, "variable")
-      }
+      # set type to variable and pollutant to value
+      pollutant <- "value"
+      type <- c(type[type != "default"], "variable")
     }
 
     # cutData depending on type
@@ -1349,6 +1341,19 @@ prepare_polarplot_data <- function(
 
   # return
   mydata
+}
+
+# warning if too much data is negative
+warn_negative_data <- function(mydata, pollutant, force.positive) {
+  if (
+    length(which(mydata[pollutant] < 0)) / nrow(mydata) > 0.1 &&
+      force.positive
+  ) {
+    cli::cli_warn(c(
+      "!" = ">10% negative data detected.",
+      "i" = "Consider setting {.arg force.positive} to {FALSE}."
+    ))
+  }
 }
 
 # Gaussian bivariate density function
