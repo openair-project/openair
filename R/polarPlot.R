@@ -1371,12 +1371,6 @@ simple_kernel_trend <- function(
   ws1 <- data[[1]]
   wd1 <- data[[2]]
 
-  # Gaussian bivariate density function
-  gauss_dens <- function(x, y, mx, my, sx, sy) {
-    (1 / (2 * pi * sx * sy)) *
-      exp((-1 / 2) * ((x - mx)^2 / sx^2 + (y - my)^2 / sy^2))
-  }
-
   # centred ws, wd
   ws_cent <- mydata[[x]] - ws1
   wd_cent <- mydata[[y]] - wd1
