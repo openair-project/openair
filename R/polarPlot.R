@@ -1475,7 +1475,7 @@ calculate_weighted_statistics <-
       }
 
       # Weighted Pearson correlation
-      stat_weighted <- contCorr(
+      stat_weighted <- weighted_cor(
         thedata[[pol_1]],
         thedata[[pol_2]],
         w = thedata$weight,
@@ -1663,26 +1663,35 @@ kernel_smoother <- function(x, kernel = "gaussian") {
 indicator_function <- function(x) ifelse(abs(x) <= 1, 1, 0)
 
 # weighted Pearson and Spearman correlations, based on wCorr package
-contCorr <- function(x, y, w, method = c("Pearson", "Spearman")) {
-  if (!is.numeric(x)) {
-    x <- as.numeric(x)
-  }
-  if (!is.numeric(y)) {
-    y <- as.numeric(y)
-  }
-  if (!is.numeric(w)) {
-    w <- as.numeric(w)
-  }
-  pm <- pmatch(tolower(method[[1]]), tolower(c("Pearson", "Spearman")))
-  if (pm == 2) {
+weighted_cor <- function(x, y, w, method = c("Pearson", "Spearman")) {
+  # match methods
+  method <- rlang::arg_match(method, c("Pearson", "Spearman"))
+
+  # coerce inputs to numeric
+  x <- as.numeric(x)
+  y <- as.numeric(y)
+  w <- as.numeric(w)
+
+  # use weighted ranks for Spearman
+  if (method == "Spearman") {
     x <- wrank(x, w)
     y <- wrank(y, w)
   }
-  xb <- sum(w * x) / sum(w)
-  yb <- sum(w * y) / sum(w)
-  numerator <- sum(w * (x - xb) * (y - yb))
-  denom <- sqrt(sum(w * (x - xb)^2) * sum(w * (y - yb)^2))
-  numerator / denom
+
+  # weighted means
+  sum_w <- sum(w)
+  x_mean <- sum(w * x) / sum_w
+  y_mean <- sum(w * y) / sum_w
+
+  # centred values
+  x_centered <- x - x_mean
+  y_centered <- y - y_mean
+
+  # weighted correlation components
+  numerator <- sum(w * x_centered * y_centered)
+  denominator <- sqrt(sum(w * x_centered^2) * sum(w * y_centered^2))
+
+  numerator / denominator
 }
 
 
