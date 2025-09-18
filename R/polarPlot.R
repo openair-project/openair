@@ -457,9 +457,6 @@ polarPlot <-
     plot = TRUE,
     ...
   ) {
-    ## get rid of R check annoyances
-    z <- . <- NULL
-
     if (statistic == "percentile" & is.na(percentile[1] & statistic != "cpf")) {
       warning("percentile value missing, using 50")
       percentile <- 50
@@ -1903,26 +1900,28 @@ interp.surface <- function(obj, loc) {
 
 # function to do bilinear interpolation given input grid and number of points required
 interp_grid <- function(input.data, x = "u", y = "v", z, n = 201) {
+  # get x and y ranges
+  x_range <- range(input.data[[x]])
+  y_range <- range(input.data[[y]])
+
   # current number of points
   int <- length(unique(input.data[[x]]))
 
+  # Create interpolation grid w/ current number of points
   obj <- list(
-    x = seq(min(input.data[[x]]), max(input.data[[x]]), length.out = int),
-    y = seq(min(input.data[[y]]), max(input.data[[y]]), length.out = int),
+    x = seq(x_range[1], x_range[2], length.out = int),
+    y = seq(y_range[1], y_range[2], length.out = int),
     z = matrix(z, nrow = int)
   )
 
-  loc <- expand.grid(
-    x = seq(min(input.data[[x]]), max(input.data[[x]]), length.out = n),
-    y = seq(min(input.data[[y]]), max(input.data[[y]]), length.out = n)
-  )
-
-  res.interp <- interp.surface(obj, loc)
-
+  # Create output grid w/ n number of points
   out <- expand.grid(
-    u = seq(min(input.data[[x]]), max(input.data[[x]]), length.out = n),
-    v = seq(min(input.data[[y]]), max(input.data[[y]]), length.out = n)
+    u = seq(x_range[1], x_range[2], length.out = n),
+    v = seq(y_range[1], y_range[2], length.out = n)
   )
 
-  results <- data.frame(out, z = res.interp)
+  # Interpolate onto output grid
+  res.interp <- interp.surface(obj, out[c("u", "v")])
+
+  return(data.frame(out, z = res.interp))
 }
