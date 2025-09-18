@@ -457,8 +457,6 @@ polarPlot <-
     plot = TRUE,
     ...
   ) {
-    # ---- input validation ----
-
     # Allow for period notation
     statistic <- gsub("\\.| ", "_", statistic)
 
@@ -548,8 +546,6 @@ polarPlot <-
       cli::cli_abort("{.arg weights} should be of length 3.")
     }
 
-    # ---- lattice style setup ----
-
     # greyscale handling
     if (length(cols) == 1 && cols == "greyscale") {
       trellis.par.set(list(strip.background = list(col = "white")))
@@ -578,8 +574,6 @@ polarPlot <-
     if ("fontsize" %in% names(extra.args)) {
       trellis.par.set(fontsize = list(text = extra.args$fontsize))
     }
-
-    # ---- data preparation ----
 
     # standard checks
     mydata <-
@@ -754,7 +748,7 @@ polarPlot <-
     nam.x <- x
     nam.wd <- wd
 
-    prepare.grid <- function(mydata) {
+    prepare.grid <- function(mydata, min.bin) {
       # identify which ws and wd bins the data belong
       wd <- cut(
         wd.int * ceiling(mydata[[wd]] / wd.int - 0.5),
@@ -769,53 +763,26 @@ polarPlot <-
       )
 
       if (!statistic %in% c(correlation_stats, "nwr", "trend")) {
-        binned <- switch(
-          statistic,
-          frequency = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-            length(na.omit(x))
-          }),
-          mean = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-            mean(x, na.rm = TRUE)
-          }),
-          median = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-            median(x, na.rm = TRUE)
-          }),
-          max = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-            max(x, na.rm = TRUE)
-          }),
-          stdev = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-            sd(x, na.rm = TRUE)
-          }),
-          cpf = tapply(
-            mydata[[pollutant]],
-            list(wd, x),
-            function(x) {
-              (length(which(
-                x > Pval
-              )) /
-                length(x))
-            }
-          ),
-          cpfi = tapply(
-            mydata[[pollutant]],
-            list(wd, x),
-            function(x) {
-              (length(
-                which(x > Pval[1] & x <= Pval[2])
-              ) /
-                length(x))
-            }
-          ),
-          weighted_mean = tapply(
-            mydata[[pollutant]],
-            list(wd, x),
-            function(x) {
-              (mean(x) * length(x) / nrow(mydata))
-            }
-          ),
-          percentile = tapply(mydata[[pollutant]], list(wd, x), function(x) {
+        stat_functions <- list(
+          frequency = function(x) length(na.omit(x)),
+          mean = function(x) mean(x, na.rm = TRUE),
+          median = function(x) median(x, na.rm = TRUE),
+          max = function(x) max(x, na.rm = TRUE),
+          stdev = function(x) sd(x, na.rm = TRUE),
+          cpf = function(x) length(which(x > Pval)) / length(x),
+          cpfi = function(x) {
+            length(which(x > Pval[1] & x <= Pval[2])) / length(x)
+          },
+          weighted_mean = function(x) mean(x) * length(x) / nrow(mydata),
+          percentile = function(x) {
             quantile(x, probs = percentile / 100, na.rm = TRUE)
-          })
+          }
+        )
+
+        binned <- tapply(
+          mydata[[pollutant]],
+          list(wd, x),
+          stat_functions[[statistic]]
         )
 
         binned <- as.vector(t(binned))
@@ -880,55 +847,44 @@ polarPlot <-
       binned.len <- as.vector(bin.len)
 
       # apply weights
-      W <- rep(1, times = length(binned))
-      ids <- which(binned.len == 1)
-      W[ids] <- W[ids] * weights[1]
-      ids <- which(binned.len == 2)
-      W[ids] <- W[ids] * weights[2]
-      ids <- which(binned.len == 3)
-      W[ids] <- W[ids] * weights[3]
+      W <-
+        dplyr::case_match(
+          binned.len,
+          1 ~ weights[1],
+          2 ~ weights[2],
+          3 ~ weights[3],
+          .default = 1
+        )
 
       # set missing to NA
       ids <- which(binned.len < min.bin)
       binned[ids] <- NA
-
-      # for removing missing data later
       binned.len[ids] <- NA
 
-      if (force.positive) {
-        n <- 0.5
-      } else {
-        n <- 1
-      }
+      n <- ifelse(force.positive, 0.5, 1)
 
       # no uncertainty to calculate
       if (!uncertainty) {
         # catch errors when not enough data to calculate surface
-        Mgam <- try(mgcv::gam(binned^n ~ s(u, v, k = k), weights = W), TRUE)
+        Mgam <- try(
+          mgcv::gam(binned^n ~ s(u, v, k = k), weights = W),
+          silent = TRUE
+        )
 
         if (!inherits(Mgam, "try-error")) {
-          pred <- predict.gam(Mgam, input.data)
-          pred <- pred^(1 / n)
-          pred <- as.vector(pred)
+          pred <- (predict.gam(Mgam, input.data)^(1 / n)) %>%
+            as.vector()
 
-          # interpolate results for speed, but not for clustering
-          if (extra.args$cluster) {
-            results <- interp_grid(input.data, z = pred, n = 101)
-            int <- 101
-          } else {
-            results <- interp_grid(input.data, z = pred, n = 201)
-            int <- 201
-          }
+          int <- ifelse(extra.args$cluster, 101, 201)
+
+          results <- interp_grid(input.data, z = pred, n = int)
         } else {
           results <- data.frame(u = u, v = v, z = binned)
           exclude.missing <- FALSE
-          warning(
-            call. = FALSE,
-            paste(
-              "Not enough data to fit surface.\nTry reducing the value of the smoothing parameter, k to less than ",
-              k,
-              ". \nOr use statistic = 'nwr'.",
-              sep = ""
+          cli::cli_warn(
+            c(
+              "!" = "Not enough data to fit surface.",
+              "i" = 'Try reducing the value of the smoothing parameter, {.arg k} to less than {k} or use {.arg statistic} "nwr".'
             )
           )
         }
@@ -937,76 +893,65 @@ polarPlot <-
         Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k), weights = binned.len)
         pred <- predict.gam(Mgam, input.data, se.fit = TRUE)
         uncer <- 2 * as.vector(pred[[2]]) # for approx 95% CI
-        pred <- as.vector(pred[[1]])^(1 / n)
 
         # do not weight for central prediction
         Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k))
-        pred <- predict.gam(Mgam, input.data)
-        pred <- as.vector(pred)
+        pred <- predict.gam(Mgam, input.data) %>% as.vector()
+
         Lower <- (pred - uncer)^(1 / n)
         Upper <- (pred + uncer)^(1 / n)
         pred <- pred^(1 / n)
 
-        n <- length(pred)
-
         # interpolate each uncertainty surface
+        interp_uncer_grid <- function(data, label) {
+          interp_grid(input.data, z = data, n = 201) %>%
+            mutate(uncertainty = label)
+        }
 
-        lower_uncer <- interp_grid(input.data, z = Lower, n = 201) %>%
-          mutate(uncertainty = "lower uncertainty")
-        upper_uncer <- interp_grid(input.data, z = Upper, n = 201) %>%
-          mutate(uncertainty = "upper uncertainty")
-        prediction <- interp_grid(input.data, z = pred, n = 201) %>%
-          mutate(uncertainty = "prediction")
-        results <- bind_rows(prediction, lower_uncer, upper_uncer)
+        lower_uncer <- interp_uncer_grid(Lower, "lower uncertainty")
+        upper_uncer <- interp_uncer_grid(Upper, "upper uncertainty")
+        prediction <- interp_uncer_grid(pred, "prediction")
+        results <- dplyr::bind_rows(prediction, lower_uncer, upper_uncer)
         int <- 201
       }
 
       # function to remove points too far from original data
-      exclude <- function(results) {
-        # exclude predictions too far from data (from mgcv)
-        x <- seq(-upper, upper, length = int)
-        y <- x
-        res <- int
-        wsp <- rep(x, res)
-        wdp <- rep(y, rep(res, res))
+      exclude_missing_points <- function(results) {
+        # create coordinate sequences
+        coord_seq <- seq(-upper, upper, length = int)
+        wsp <- rep(coord_seq, int)
+        wdp <- rep(coord_seq, each = int)
 
-        # data with gaps caused by min.bin
-        all.data <- na.omit(data.frame(u, v, binned.len))
-        ind <- with(all.data, exclude.too.far(wsp, wdp, u, v, dist = 0.05))
+        # filter data for exclusion
+        all.data <- data.frame(u, v, binned.len) %>% na.omit()
+
+        # get points too far from original dat a
+        ind <- exclude.too.far(wsp, wdp, all.data$u, all.data$v, dist = 0.05)
 
         results$z[ind] <- NA
         results
       }
 
       if (exclude.missing) {
-        results <- exclude(results)
+        results <- exclude_missing_points(results)
       }
 
       results
     }
 
-    # if min.bin >1 show the missing data. Work this out by running twice:
-    # first time with no missings, second with min.bin.
-    # Plot one surface on top of the other.
+    # prepare a grid per type
+    res <- mydata %>%
+      group_by(across(type)) %>%
+      group_modify(~ prepare.grid(., min.bin = min.bin))
 
+    # if min.bin >1, run a second time and add "miss" column w/ no min.bin;
+    # plotting one surface on top of the other.
     if (!missing(min.bin)) {
-      tmp <- min.bin
-      min.bin <- 0
       res1 <- mydata %>%
         group_by(across(type)) %>%
-        group_modify(~ prepare.grid(.))
-
-      min.bin <- tmp
-
-      res <- mydata %>%
-        group_by(across(type)) %>%
-        group_modify(~ prepare.grid(.))
+        group_modify(~ prepare.grid(., min.bin = 0))
 
       res$miss <- res1$z
-    } else {
-      res <- mydata %>%
-        group_by(across(type)) %>%
-        group_modify(~ prepare.grid(.))
     }
 
     # with CPF make sure not >1 due to surface fitting
