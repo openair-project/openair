@@ -1615,53 +1615,6 @@ calculate_weighted_statistics <-
     result
   }
 
-
-# Taken directly from the boot package to save importing
-corr <- function(d, w = rep(1, nrow(d)) / nrow(d)) {
-  s <- sum(w)
-  m1 <- sum(d[, 1L] * w) / s
-  m2 <- sum(d[, 2L] * w) / s
-  (sum(d[, 1L] * d[, 2L] * w) / s - m1 * m2) /
-    sqrt((sum(d[, 1L]^2 * w) / s - m1^2) * (sum(d[, 2L]^2 * w) / s - m2^2))
-}
-
-
-# From enlightenr package
-kernel_smoother <- function(x, kernel = "gaussian") {
-  kernel <- tolower(kernel)
-  if (kernel %in% c("gaussian", "normal")) {
-    x <- (2 * pi)^-0.5 * exp(-0.5 * x^2)
-  }
-  if (kernel == "epanechnikov") {
-    x <- 3 / 4 * (1 - x^2) * indicator_function(x)
-  }
-  if (kernel == "logistic") {
-    x <- 1 / (exp(x) + 2 + exp(-x))
-  }
-  if (kernel == "cosine") {
-    x <- pi / 4 * cos((pi / 2) * x) * indicator_function(x)
-  }
-  if (kernel == "triangular") {
-    x <- (1 - abs(x)) * indicator_function(x)
-  }
-  if (kernel %in% c("box", "uniform")) {
-    x <- 1 / 2 * indicator_function(x)
-  }
-  if (kernel == "tricube") {
-    x <- 70 / 81 * (1 - abs(x)^3)^3 * indicator_function(x)
-  }
-  if (kernel == "triweight") {
-    x <- 35 / 32 * (1 - x^2)^3 * indicator_function(x)
-  }
-  if (kernel %in% c("biweight", "quartic")) {
-    x <- 15 / 16 * (1 - x^2)^2 * indicator_function(x)
-  }
-  x
-}
-
-
-indicator_function <- function(x) ifelse(abs(x) <= 1, 1, 0)
-
 # weighted Pearson and Spearman correlations, based on wCorr package
 weighted_cor <- function(x, y, w, method = c("Pearson", "Spearman")) {
   # match methods
