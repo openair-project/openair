@@ -534,20 +534,6 @@ polarPlot <-
       stop("weights should be of length 3.")
     }
 
-    if (key.header == "nwr") {
-      key.header <- "NWR"
-    }
-    if (key.header == "weighted_mean") {
-      key.header <- "weighted\nmean"
-    }
-    if (key.header == "percentile") {
-      key.header <- c(paste(percentile, "th", sep = ""), "percentile")
-    }
-
-    if ("cpf" %in% key.header) {
-      key.header <- c("CPF", "probability")
-    }
-
     ## greyscale handling
     if (length(cols) == 1 && cols == "greyscale") {
       trellis.par.set(list(strip.background = list(col = "white")))
@@ -579,20 +565,18 @@ polarPlot <-
       trellis.par.set(fontsize = list(text = extra.args$fontsize))
     }
 
-    ## extract variables of interest
-    vars <- c(wd, x, pollutant)
-
-    if (statistic == "york_slope") {
-      vars <- c(vars, x_error, y_error)
-    }
-
-    if (any(type %in% dateTypes) || statistic == "trend") {
-      vars <- c(vars, "date")
-    }
-
-    mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-
-    mydata <- na.omit(mydata)
+    # standard checks
+    mydata <-
+      prepare_polarplot_data(
+        mydata = mydata,
+        statistic = statistic,
+        type = type,
+        wd = wd,
+        x = x,
+        pollutant = pollutant,
+        x_error = x_error,
+        y_error = y_error
+      )
 
     ## this is used later for the 'x' scale
     min.scale <- min(mydata[[x]], na.rm = TRUE)
@@ -1059,6 +1043,20 @@ polarPlot <-
     }
 
     # Labels for correlation and regression, keep lower case like other labels
+    if (key.header == "nwr") {
+      key.header <- "NWR"
+    }
+    if (key.header == "weighted_mean") {
+      key.header <- "weighted\nmean"
+    }
+    if (key.header == "percentile") {
+      key.header <- c(paste(percentile, "th", sep = ""), "percentile")
+    }
+
+    if ("cpf" %in% key.header) {
+      key.header <- c("CPF", "probability")
+    }
+
     if (statistic %in% c("r", "Pearson")) {
       key.header <- expression(italic("Pearson\ncorrelation"))
     }
@@ -1297,6 +1295,38 @@ polarPlot <-
     # Final return
     invisible(output)
   }
+
+# standard openair checks, depending on input options
+prepare_polarplot_data <- function(
+  mydata,
+  statistic,
+  type,
+  wd,
+  x,
+  pollutant,
+  x_error,
+  y_error
+) {
+  # extract variables of interest
+  vars <- c(wd, x, pollutant)
+
+  if (statistic == "york_slope") {
+    vars <- c(vars, x_error, y_error)
+  }
+
+  if (any(type %in% dateTypes) || statistic == "trend") {
+    vars <- c(vars, "date")
+  }
+
+  # standard checks
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+
+  # drop missing values
+  mydata <- na.omit(mydata)
+
+  # return
+  mydata
+}
 
 # Gaussian bivariate density function
 gauss_dens <- function(x, y, mx, my, sx, sy) {
