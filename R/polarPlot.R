@@ -1466,7 +1466,6 @@ calculate_weighted_statistics <-
     x_error,
     y_error
   ) {
-    weight <- NULL
     # Centres
     ws1 <- data[[1]]
     wd1 <- data[[2]]
@@ -1476,70 +1475,60 @@ calculate_weighted_statistics <-
     wd_cent <- mydata[[y]] - wd1
     wd_cent <- ifelse(wd_cent < -180, wd_cent + 360, wd_cent)
 
+    # weights
     weight <- gauss_dens(ws_cent, wd_cent, 0, 0, ws_spread, wd_spread)
     weight <- weight / max(weight)
-
     mydata$weight <- weight
 
     # Select and filter
     vars <- c(pol_1, pol_2, "weight")
-
     if (!all(is.na(c(x_error, y_error)))) {
       vars <- c(vars, x_error, y_error)
     }
     thedata <- mydata[vars]
 
     # don't fit all data - takes too long with no gain
-    thedata <- thedata[which(thedata$weight > 0.001), ]
+    thedata <- dplyr::filter(thedata, .data$weight > 0.001)
 
     # don't try and calculate stats is there's not much data
     if (nrow(thedata) < 100) {
       return(data.frame(ws1, wd1, NA))
     }
 
-    if (statistic %in% c("r", "Pearson", "Spearman")) {
-      if (statistic == "r") {
-        statistic <- "Pearson"
-      }
+    # Drop dplyr's data frame for formula
+    thedata <- data.frame(thedata)
 
-      # Weighted Pearson correlation
+    # default stat
+    stat_weighted <- NA
+
+    # Weighted correlation
+    if (statistic %in% c("r", "Pearson", "Spearman")) {
+      statistic[statistic == "r"] <- "Pearson"
       stat_weighted <- weighted_cor(
         thedata[[pol_1]],
         thedata[[pol_2]],
         w = thedata$weight,
         method = statistic
       )
-
-      result <- data.frame(ws1, wd1, stat_weighted)
     }
 
     # Simple least squared regression with weights
     if (statistic %in% c("slope", "intercept")) {
-      # Drop dplyr's data frame for formula
-      thedata <- data.frame(thedata)
-
       # Calculate model, no warnings on perfect fits.
       fit <- lm(
-        thedata[, pol_1] ~ thedata[, pol_2],
-        weights = thedata[, "weight"]
+        thedata[[pol_1]] ~ thedata[[pol_2]],
+        weights = thedata$weight
       )
-
-      # Extract statistics
-      if (statistic == "slope") {
-        stat_weighted <- fit$coefficients[2]
+      stat_weighted <- if (statistic == "slope") {
+        coef(fit)[2]
+      } else {
+        coef(fit)[1]
       }
-      if (statistic == "intercept") {
-        stat_weighted <- fit$coefficients[1]
-      }
-
-      # Bind together
-      result <- data.frame(ws1, wd1, stat_weighted)
     }
 
+    # York Fit
     if (statistic == "york_slope") {
-      thedata <- as.data.frame(thedata) # so formula works
-
-      result <- try(
+      fit <- try(
         YorkFit(
           thedata,
           X = names(thedata)[2],
@@ -1548,55 +1537,37 @@ calculate_weighted_statistics <-
           Ystd = y_error,
           weight = thedata$weight
         ),
-        TRUE
+        silent = TRUE
       )
 
       # Extract statistics
-      if (!inherits(result, "try-error")) {
-        # Extract statistics
-        stat_weighted <- result$Slope
-      } else {
-        stat_weighted <- NA
+      if (!inherits(fit, "try-error")) {
+        stat_weighted <- fit$Slope
       }
-
-      result <- data.frame(ws1, wd1, stat_weighted)
     }
 
     # Robust linear regression with weights
     if (grepl("robust", statistic, ignore.case = TRUE)) {
-      # Drop dplyr's data frame for formula
-      thedata <- data.frame(thedata)
-
       # Build model, optimal method (MM) cannot use weights
       fit <- suppressWarnings(
         try(
           MASS::rlm(
-            thedata[, pol_1] ~ thedata[, pol_2],
-            weights = thedata[, "weight"],
+            thedata[[pol_1]] ~ thedata[[pol_2]],
+            weights = thedata$weight,
             method = "M"
           ),
-          TRUE
+          silent = TRUE
         )
       )
 
       # Extract statistics
       if (!inherits(fit, "try-error")) {
-        # Extract statistics
-        if (statistic == "robust_slope") {
-          stat_weighted <- fit$coefficients[2]
+        stat_weighted <- if (statistic == "robust_slope") {
+          coef(fit)[2]
+        } else {
+          coef(fit)[1]
         }
-        if (statistic == "robust_intercept") {
-          stat_weighted <- fit$coefficients[1]
-        }
-      } else {
-        if (statistic == "robust_slope") {
-          stat_weighted <- NA
-        }
-        if (statistic == "robust_intercept") stat_weighted <- NA
       }
-
-      # Bind together
-      result <- data.frame(ws1, wd1, stat_weighted)
     }
 
     # Quantile regression with weights
@@ -1604,43 +1575,31 @@ calculate_weighted_statistics <-
       # ensure quantreg is installed
       rlang::check_installed("quantreg")
 
-      # Drop dplyr's data frame for formula
-      thedata <- data.frame(thedata)
-
       # Build model
       suppressWarnings(
         fit <- try(
           quantreg::rq(
             thedata[[pol_1]] ~ thedata[[pol_2]],
             tau = tau,
-            weights = thedata[["weight"]],
+            weights = thedata$weight,
             method = "br"
           ),
-          TRUE
+          silent = TRUE
         )
       )
 
+      # Extract statistics
       if (!inherits(fit, "try-error")) {
-        # Extract statistics
-        if (statistic == "quantile_slope") {
-          stat_weighted <- fit$coefficients[2]
+        stat_weighted <- if (statistic == "quantile_slope") {
+          coef(fit)[2]
+        } else {
+          coef(fit)[1]
         }
-        if (statistic == "quantile_intercept") {
-          stat_weighted <- fit$coefficients[1]
-        }
-      } else {
-        if (statistic == "quantile_slope") {
-          stat_weighted <- NA
-        }
-        if (statistic == "quantile_intercept") stat_weighted <- NA
       }
-
-      # Bind together
-      result <- data.frame(ws1, wd1, stat_weighted)
     }
 
     # Return
-    result
+    data.frame(ws1, wd1, stat_weighted)
   }
 
 # weighted Pearson and Spearman correlations, based on wCorr package
