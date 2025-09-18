@@ -457,12 +457,14 @@ polarPlot <-
     plot = TRUE,
     ...
   ) {
-    if (statistic == "percentile" & is.na(percentile[1] & statistic != "cpf")) {
+    if (
+      statistic == "percentile" && is.na(percentile[1] & statistic != "cpf")
+    ) {
       warning("percentile value missing, using 50")
       percentile <- 50
     }
 
-    if (statistic == "cpf" & is.na(percentile[1])) {
+    if (statistic == "cpf" && is.na(percentile[1])) {
       warning("percentile value missing, using 75")
       percentile <- 75
     }
@@ -507,7 +509,7 @@ polarPlot <-
       type <- "default"
     }
 
-    if (uncertainty & length(pollutant) > 1) {
+    if (uncertainty && length(pollutant) > 1) {
       stop("Can only have one pollutant when uncertainty = TRUE")
     }
 
@@ -554,7 +556,6 @@ polarPlot <-
     }
 
     ## set graphics
-    current.strip <- trellis.par.get("strip.background")
     current.font <- trellis.par.get("fontsize")
 
     ## reset graphic parameters
@@ -1032,7 +1033,7 @@ polarPlot <-
     }
 
     ## with CPF make sure not >1 due to surface fitting
-    if (any(res$z > 1, na.rm = TRUE) & statistic %in% c("cpf", "cpfi")) {
+    if (any(res$z > 1, na.rm = TRUE) && statistic %in% c("cpf", "cpfi")) {
       id <- which(res$z > 1)
       res$z[id] <- 1
     }
@@ -1046,7 +1047,6 @@ polarPlot <-
     strip.dat <- strip.fun(res, type, auto.text)
     strip <- strip.dat[[1]]
     strip.left <- strip.dat[[2]]
-    pol.name <- strip.dat[[3]]
     if (uncertainty) {
       strip <- TRUE
     }
@@ -1076,7 +1076,7 @@ polarPlot <-
     }
 
     # if regression, set key.footer to 'm' (slope)
-    if (grepl("slope|intercept", statistic) & length(pollutant == 2)) {
+    if (grepl("slope|intercept", statistic) && length(pollutant == 2)) {
       key.footer <- "m"
     }
 
@@ -1114,8 +1114,7 @@ polarPlot <-
 
     ## handle missing breaks arguments
 
-    if (any(is.null(limits)) | any(is.na(limits))) {
-      # breaks <- pretty(res$z, n = nlev)
+    if (any(is.null(limits)) || any(is.na(limits))) {
       breaks <- seq(
         min(res$z, na.rm = TRUE),
         max(res$z, na.rm = TRUE),
@@ -1153,7 +1152,7 @@ polarPlot <-
     col.scale <- breaks
 
     ## special handling of layout for uncertainty
-    if (uncertainty & is.null(extra.args$layout)) {
+    if (uncertainty && is.null(extra.args$layout)) {
       extra.args$layout <- c(3, 1)
     }
 
@@ -1461,7 +1460,6 @@ calculate_weighted_statistics <-
       vars <- c(vars, x_error, y_error)
     }
     thedata <- mydata[vars]
-    #  thedata <- thedata[complete.cases(thedata), ]
 
     # don't fit all data - takes too long with no gain
     thedata <- thedata[which(thedata$weight > 0.001), ]
@@ -1470,9 +1468,6 @@ calculate_weighted_statistics <-
     if (nrow(thedata) < 100) {
       return(data.frame(ws1, wd1, NA))
     }
-
-    # useful for showing what the weighting looks like as a surface
-    # openair::scatterPlot(mydata, x = "ws", y = "wd", z = "weight", method = "level")
 
     if (statistic %in% c("r", "Pearson", "Spearman")) {
       if (statistic == "r") {
@@ -1680,8 +1675,6 @@ contCorr <- function(x, y, w, method = c("Pearson", "Spearman")) {
   }
   pm <- pmatch(tolower(method[[1]]), tolower(c("Pearson", "Spearman")))
   if (pm == 2) {
-    # x <- rank(x) # rank gives averages for ties
-    # y <- rank(y)
     x <- wrank(x, w)
     y <- wrank(y, w)
   }
@@ -1696,7 +1689,7 @@ contCorr <- function(x, y, w, method = c("Pearson", "Spearman")) {
 wrank <- function(x, w = rep(1, length(x))) {
   # sort by x so we can just traverse once
   ord <- order(x)
-  rord <- (1:length(x))[order(ord)] # reverse order
+  rord <- (seq_along(x))[order(ord)] # reverse order
   xp <- x[ord] # x, permuted
   wp <- w[ord] # weights, permuted
   rnk <- rep(NA, length(x)) # blank ranks vector
@@ -1819,7 +1812,6 @@ YorkFit <- function(
   }
 
   a <- Ybar - b * Xbar
-  wYorkFitCoefs <- c(a, b)
 
   # ERROR CALCULATION #
 
@@ -1832,13 +1824,11 @@ YorkFit <- function(
   errorSum <- sum(wErrorTerm, na.rm = TRUE)
   b.err <- sqrt(1 / errorSum)
   a.err <- sqrt((1 / sumWi) + (Xadjbar^2) * (b.err^2))
-  wYorkFitErrors <- c(a.err, b.err)
 
   # GOODNESS OF FIT CALCULATION #
   lgth <- length(X)
   wSint <- Wi * (Y - b * X - a)^2
   sumSint <- sum(wSint, na.rm = TRUE)
-  wYorkGOF <- c(sumSint / (lgth - 2), sqrt(2 / (lgth - 2))) # GOF (should equal 1 if assumptions are valid), #standard error in GOF
 
   ans <- tibble(
     Intercept = a,
