@@ -542,6 +542,10 @@ polarPlot <-
       )
     }
 
+    if (statistic == "cpf" && length(percentile) > 1) {
+      statistic <- "cpfi"
+    }
+
     if (length(weights) != 3) {
       cli::cli_abort("{.arg weights} should be of length 3.")
     }
@@ -650,25 +654,25 @@ polarPlot <-
     if (all(mydata[[wd]] %% 10 == 0, na.rm = TRUE)) {
       wd.int <- 10
     } else {
-      if (toupper(statistic) == "NWR") wd.int <- 2 else wd.int <- 5 # how to split wd
+      wd.int <- ifelse(toupper(statistic) == "NWR", 2, 5)
     }
 
     if (toupper(statistic) == "NWR") {
       ws_bins <- 40
+      # limit any smoothing
+      k <- 200
     } else {
       ws_bins <- 30
     }
 
-    if (statistic == "nwr") {
-      k <- 200
-    } # limit any smoothing
-
+    # create grid of ws/wd
     ws.seq <- seq(min.scale, max.scale, length = ws_bins)
     wd.seq <- seq(from = wd.int, to = 360, by = wd.int) # wind directions from wd.int to 360
     ws.wd <- expand.grid(x = ws.seq, wd = wd.seq)
 
-    u <- with(ws.wd, x * sin(pi * wd / 180)) # convert to polar coords
-    v <- with(ws.wd, x * cos(pi * wd / 180))
+    # convert to polar coords
+    u <- ws.wd$x * sin(pi * ws.wd$wd / 180)
+    v <- ws.wd$x * cos(pi * ws.wd$wd / 180)
 
     # data to predict over
     input.data <- expand.grid(
@@ -676,66 +680,16 @@ polarPlot <-
       v = seq(-upper, upper, length = 51)
     )
 
-    if (statistic == "cpf") {
-      # can be interval of percentiles or a single (threshold)
-      if (length(percentile) > 1) {
-        statistic <- "cpfi" # CPF interval
-
-        if (length(percentile) == 3) {
-          # in this case there is a trim value as a proprtion of the mean
-          # if this value <0 use absolute values as range
-          Mean <- mean(mydata[[pollutant]], na.rm = TRUE)
-
-          if (percentile[3] < 0) {
-            Pval <- percentile[1:2]
-          } else {
-            Pval <- quantile(
-              subset(
-                mydata[[pollutant]],
-                mydata[[pollutant]] >=
-                  Mean *
-                    percentile[3]
-              ),
-              probs = percentile[1:2] / 100,
-              na.rm = TRUE
-            )
-          }
-        } else {
-          Pval <- quantile(
-            mydata[[pollutant]],
-            probs = percentile / 100,
-            na.rm = TRUE
-          )
-        }
-
-        sub <- paste(
-          "CPF (",
-          format(Pval[1], digits = 2),
-          " to ",
-          format(Pval[2], digits = 2),
-          ")",
-          sep = ""
-        )
-      } else {
-        Pval <- quantile(
-          mydata[[pollutant]],
-          probs = percentile / 100,
-          na.rm = TRUE
-        )
-
-        sub <- paste(
-          "CPF at the ",
-          percentile,
-          "th percentile (=",
-          format(Pval, digits = 2),
-          ")",
-          sep = ""
-        )
-        if (!formula.label) sub <- NULL # no label
-      }
-    } else {
-      sub <- NULL
-    }
+    # get CPF percentile value & create specific sub name
+    cpf_pval <- get_cpf_pval(
+      mydata,
+      pollutant = pollutant,
+      statistic = statistic,
+      percentile = percentile,
+      formula.label = formula.label
+    )
+    Pval <- cpf_pval$Pval
+    sub <- cpf_pval$sub
 
     # names of variables for use later
     nam.x <- x
@@ -1292,6 +1246,79 @@ warn_negative_data <- function(mydata, pollutant, force.positive) {
       "i" = "Consider setting {.arg force.positive} to {FALSE}."
     ))
   }
+}
+
+# create a special sub label for certain statistics
+get_cpf_pval <- function(
+  mydata,
+  pollutant,
+  statistic,
+  percentile,
+  formula.label
+) {
+  if (statistic %in% c("cpf", "cpfi")) {
+    # can be interval of percentiles or a single (threshold)
+    if (length(percentile) > 1) {
+      if (length(percentile) == 3) {
+        # in this case there is a trim value as a proportion of the mean
+        # if this value <0 use absolute values as range
+        Mean <- mean(mydata[[pollutant]], na.rm = TRUE)
+
+        if (percentile[3] < 0) {
+          Pval <- percentile[1:2]
+        } else {
+          Pval <- quantile(
+            subset(
+              mydata[[pollutant]],
+              mydata[[pollutant]] >=
+                Mean *
+                  percentile[3]
+            ),
+            probs = percentile[1:2] / 100,
+            na.rm = TRUE
+          )
+        }
+      } else {
+        Pval <- quantile(
+          mydata[[pollutant]],
+          probs = percentile / 100,
+          na.rm = TRUE
+        )
+      }
+
+      sub <- paste(
+        "CPF (",
+        format(Pval[1], digits = 2),
+        " to ",
+        format(Pval[2], digits = 2),
+        ")",
+        sep = ""
+      )
+    } else {
+      Pval <- quantile(
+        mydata[[pollutant]],
+        probs = percentile / 100,
+        na.rm = TRUE
+      )
+
+      sub <- paste(
+        "CPF at the ",
+        percentile,
+        "th percentile (=",
+        format(Pval, digits = 2),
+        ")",
+        sep = ""
+      )
+      if (!formula.label) sub <- NULL # no label
+    }
+  } else {
+    Pval <- NULL
+    sub <- NULL
+  }
+  list(
+    Pval = Pval,
+    sub = sub
+  )
 }
 
 # Gaussian bivariate density function
