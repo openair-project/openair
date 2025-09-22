@@ -958,13 +958,7 @@ polarPlot <-
 
       # make sure smoothing does not results in r>1 or <-1
       # sometimes happens with little data at edges
-      id <- which(res$z > 1)
-      if (length(id) > 0) {
-        res$z[id] <- 1
-      }
-
-      id <- which(res$z < -1)
-      if (length(id) > 0) res$z[id] <- -1
+      res$z <- pmin(pmax(res$z, -1), 1)
     }
 
     # if regression, set key.footer to 'm' (slope)
