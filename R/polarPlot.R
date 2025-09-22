@@ -599,7 +599,15 @@ polarPlot <-
     # with negative data on radial axis (starts from zero, always
     # positive)
     min.scale <- min(mydata[[x]], na.rm = TRUE) # this is used later for the 'x' scale
+    max.scale <- max(mydata[[x]], na.rm = TRUE)
     mydata[[x]] <- mydata[[x]] - min.scale
+
+    # if upper ws not set, set it to the max to display all information
+    clip <- TRUE
+    if (is.na(upper)) {
+      upper <- max.scale
+      clip <- FALSE
+    }
 
     # if more than one pollutant, need to stack the data and set type =
     # "variable" this case is most relevant for model-measurement
@@ -637,21 +645,6 @@ polarPlot <-
     # cutData depending on type
     mydata <- cutData(mydata, type, ...)
 
-    # if upper ws not set, set it to the max to display all information
-    max.ws <- max(mydata[[x]], na.rm = TRUE)
-    min.ws <- min(mydata[[x]], na.rm = TRUE)
-    clip <- TRUE # used for removing data where ws > upper
-
-    if (is.na(upper)) {
-      upper <- max.ws
-      clip <- FALSE
-    }
-
-    # resolution deprecated, int is resolution of GAM surface predictions over
-    # int * int grid 51 works well with bilinear interpolation of results
-
-    int <- 51
-
     # binning wd data properly
     # use 10 degree binning of wd if already binned, else 5
     if (all(mydata[[wd]] %% 10 == 0, na.rm = TRUE)) {
@@ -670,7 +663,7 @@ polarPlot <-
       k <- 200
     } # limit any smoothing
 
-    ws.seq <- seq(min.ws, max.ws, length = ws_bins)
+    ws.seq <- seq(min.scale, max.scale, length = ws_bins)
     wd.seq <- seq(from = wd.int, to = 360, by = wd.int) # wind directions from wd.int to 360
     ws.wd <- expand.grid(x = ws.seq, wd = wd.seq)
 
@@ -679,8 +672,8 @@ polarPlot <-
 
     # data to predict over
     input.data <- expand.grid(
-      u = seq(-upper, upper, length = int),
-      v = seq(-upper, upper, length = int)
+      u = seq(-upper, upper, length = 51),
+      v = seq(-upper, upper, length = 51)
     )
 
     if (statistic == "cpf") {
@@ -758,7 +751,7 @@ polarPlot <-
 
       x <- cut(
         mydata[[x]],
-        breaks = seq(0, max.ws, length = ws_bins + 1),
+        breaks = seq(0, max.scale, length = ws_bins + 1),
         include.lowest = TRUE
       )
 
