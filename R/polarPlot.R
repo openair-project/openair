@@ -887,16 +887,39 @@ polarPlot <-
     }
 
     # prepare a grid per type
-    res <- mydata %>%
-      group_by(across(type)) %>%
-      group_modify(~ prepare.grid(., min.bin = min.bin))
+    res <-
+      purrr::map(
+        .x = split(
+          mydata,
+          mydata[type],
+          drop = TRUE
+        ),
+        .f = function(df) {
+          out <- prepare.grid(df, min.bin = min.bin)
+          out[type] <- df[1, type, drop = TRUE]
+          out
+        }
+      ) %>%
+      dplyr::bind_rows() %>%
+      dplyr::relocate(dplyr::all_of(type))
 
     # if min.bin >1, run a second time and add "miss" column w/ no min.bin;
     # plotting one surface on top of the other.
     if (!missing(min.bin)) {
-      res1 <- mydata %>%
-        group_by(across(type)) %>%
-        group_modify(~ prepare.grid(., min.bin = 0))
+      res1 <- purrr::map(
+        .x = split(
+          mydata,
+          mydata[type],
+          drop = TRUE
+        ),
+        .f = function(df) {
+          out <- prepare.grid(df, min.bin = 0)
+          out[type] <- df[1, type, drop = TRUE]
+          out
+        }
+      ) %>%
+        dplyr::bind_rows() %>%
+        dplyr::relocate(dplyr::all_of(type))
 
       res$miss <- res1$z
     }
