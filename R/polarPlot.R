@@ -654,10 +654,10 @@ polarPlot <-
     if (all(mydata[[wd]] %% 10 == 0, na.rm = TRUE)) {
       wd.int <- 10
     } else {
-      wd.int <- ifelse(toupper(statistic) == "NWR", 2, 5)
+      wd.int <- ifelse(statistic == "nwr", 2, 5)
     }
 
-    if (toupper(statistic) == "NWR") {
+    if (statistic == "nwr") {
       ws_bins <- 40
       # limit any smoothing
       k <- 200
@@ -733,7 +733,7 @@ polarPlot <-
         )
 
         binned <- as.vector(t(binned))
-      } else if (toupper(statistic) == "NWR") {
+      } else if (statistic == "nwr") {
         binned <- rowwise(ws.wd) %>%
           summarise(simple_kernel(
             across(.cols = everything()),
@@ -747,7 +747,7 @@ polarPlot <-
           ))
 
         binned <- binned$conc
-      } else if (toupper(statistic) == "TREND") {
+      } else if (statistic == "trend") {
         binned <- rowwise(ws.wd) %>%
           summarise(simple_kernel_trend(
             across(.cols = everything()),
@@ -928,7 +928,7 @@ polarPlot <-
     }
 
     # correlation notation
-    if (statistic %in% c("r", "Pearson", "Spearman")) {
+    if (statistic %in% c("r", "pearson", "spearman")) {
       if (missing(key.footer)) {
         key.footer <- paste0("corr(", pollutant[1], ", ", pollutant[2], ")")
       }
@@ -964,11 +964,11 @@ polarPlot <-
       key.header <- c("CPF", "probability")
     }
 
-    if (statistic %in% c("r", "Pearson")) {
+    if (statistic %in% c("r", "cearson")) {
       key.header <- expression(italic("Pearson\ncorrelation"))
     }
 
-    if (statistic == "Spearman") {
+    if (statistic == "spearman") {
       key.header <- expression(italic("Spearman\ncorrelation"))
     }
 
@@ -1467,8 +1467,8 @@ calculate_weighted_statistics <-
     stat_weighted <- NA
 
     # Weighted correlation
-    if (statistic %in% c("r", "Pearson", "Spearman")) {
-      statistic[statistic == "r"] <- "Pearson"
+    if (statistic %in% c("r", "pearson", "spearman")) {
+      statistic[statistic == "r"] <- "pearson"
       stat_weighted <- weighted_cor(
         thedata[[pol_1]],
         thedata[[pol_2]],
