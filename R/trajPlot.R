@@ -88,7 +88,8 @@
 #' @param grid.nx,grid.ny The approximate number of ticks to draw on the map
 #'   grid. `grid.nx` defaults to `9`, and `grid.ny` defaults to whatever value
 #'   is passed to `grid.nx`. Setting both values to `0` will remove the grid
-#'   entirely.
+#'   entirely. The number of ticks is approximate as this value is passed to
+#'   [pretty()] to determine nice-looking, round breakpoints.
 #' @param npoints A dot is placed every `npoints` along each full trajectory.
 #'   For hourly back trajectories points are plotted every `npoint` hours. This
 #'   helps to understand where the air masses were at particular times and get a

@@ -118,7 +118,8 @@ coordinates in the map.}
 \item{grid.nx, grid.ny}{The approximate number of ticks to draw on the map
 grid. \code{grid.nx} defaults to \code{9}, and \code{grid.ny} defaults to whatever value
 is passed to \code{grid.nx}. Setting both values to \code{0} will remove the grid
-entirely.}
+entirely. The number of ticks is approximate as this value is passed to
+\code{\link[=pretty]{pretty()}} to determine nice-looking, round breakpoints.}
 
 \item{npoints}{A dot is placed every \code{npoints} along each full trajectory.
 For hourly back trajectories points are plotted every \code{npoint} hours. This
