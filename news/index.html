@@ -60,8 +60,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
-<ul><li>
-<code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> now closes its <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">url()</a></code> connections and generally fails more gracefully when <code>data_type %in% c("annual", "monthly", "daqi")</code>. This was already the case for other data types.</li>
+<ul><li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> now allows duplicate dates when <code>time.avg</code> is used. The user will still recieve a warning from <code><a href="../reference/timeAverage.html">timeAverage()</a></code>, which is used internally, but the plot will still be created.</p></li>
+<li><p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> now closes its <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">url()</a></code> connections and generally fails more gracefully when <code>data_type %in% c("annual", "monthly", "daqi")</code>. This was already the case for other data types.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
