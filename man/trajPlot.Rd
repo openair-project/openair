@@ -23,6 +23,8 @@ trajPlot(
   parameters = c(51, 51),
   orientation = c(90, 0, 0),
   grid.col = "deepskyblue",
+  grid.nx = 9,
+  grid.ny = grid.nx,
   npoints = 12,
   origin = TRUE,
   plot = TRUE,
@@ -112,6 +114,11 @@ coordinates in the map.}
 
 \item{grid.col}{The colour of the map grid to be used. To remove the grid set
 \code{grid.col = "transparent"}.}
+
+\item{grid.nx, grid.ny}{The approximate number of ticks to draw on the map
+grid. \code{grid.nx} defaults to \code{9}, and \code{grid.ny} defaults to whatever value
+is passed to \code{grid.nx}. Setting both values to \code{0} will remove the grid
+entirely.}
 
 \item{npoints}{A dot is placed every \code{npoints} along each full trajectory.
 For hourly back trajectories points are plotted every \code{npoint} hours. This
