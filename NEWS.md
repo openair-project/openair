@@ -8,6 +8,8 @@
 
 - `importUKAQ()` now closes its `url()` connections and generally fails more gracefully when `data_type %in% c("annual", "monthly", "daqi")`. This was already the case for other data types.
 
+- The `windflow` argument of `timePlot()` now works when `"ws"` and/or `"wd"` are in `pollutant`.
+
 # openair 2.19.0
 
 ## Deprecations
