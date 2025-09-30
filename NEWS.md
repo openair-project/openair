@@ -8,7 +8,11 @@
 
 ## Bug Fixes
 
+- `timePlot()` now allows duplicate dates when `time.avg` is used. The user will still recieve a warning from `timeAverage()`, which is used internally, but the plot will still be created.
+
 - `importUKAQ()` now closes its `url()` connections and generally fails more gracefully when `data_type %in% c("annual", "monthly", "daqi")`. This was already the case for other data types.
+
+- The `windflow` argument of `timePlot()` now works when `"ws"` and/or `"wd"` are in `pollutant`.
 
 # openair 2.19.0
 

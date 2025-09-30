@@ -294,6 +294,7 @@ timePlot <- function(
     mydata = mydata,
     pollutant = pollutant,
     type = type,
+    avg.time = avg.time,
     date.pad = date.pad,
     windflow = windflow,
     ...
@@ -307,7 +308,8 @@ timePlot <- function(
     statistic = statistic,
     avg.time = avg.time,
     data.thresh = data.thresh,
-    percentile = percentile
+    percentile = percentile,
+    windflow = windflow
   )
   pollutant <- mydata$pollutant
   mydata <- mydata$data
@@ -711,6 +713,7 @@ prepare_timeplot_data <- function(
   mydata,
   pollutant,
   type,
+  avg.time,
   date.pad,
   windflow,
   ...
@@ -733,7 +736,9 @@ prepare_timeplot_data <- function(
   mydata <- cutData(mydata, type, ...)
 
   # check for duplicates - can't really have duplicate data in a timeplot
-  checkDuplicateRows(mydata, type, fn = cli::cli_abort)
+  if (avg.time == "default") {
+    checkDuplicateRows(mydata, type, fn = cli::cli_abort)
+  }
 
   # return data
   return(mydata)
@@ -748,7 +753,8 @@ time_average_timeplot_data <- function(
   statistic,
   avg.time,
   data.thresh,
-  percentile
+  percentile,
+  windflow
 ) {
   # average the data if necessary (default does nothing)
   if (avg.time != "default") {
@@ -787,6 +793,18 @@ time_average_timeplot_data <- function(
     mydata$default <- "default"
   }
 
+  # need to flag if ws/wd are being plotted *and* used for windflow
+  flag_wind_pollutant <- !is.null(windflow) &&
+    ("ws" %in% pollutant || "wd" %in% pollutant)
+
+  # retain ws/wd if needed later
+  if (flag_wind_pollutant) {
+    # only select what is being pivoted, as it will need joining back on
+    met_vars <- c("ws", "wd")
+    met_vars <- met_vars[met_vars %in% pollutant]
+    met_data <- dplyr::select(mydata, dplyr::any_of(c("date", met_vars)))
+  }
+
   # reshape
   mydata <-
     tidyr::pivot_longer(
@@ -795,6 +813,16 @@ time_average_timeplot_data <- function(
       names_to = "variable",
       values_to = "value"
     )
+
+  # bind on ws/wd if needed for windflow
+  if (flag_wind_pollutant) {
+    mydata <- dplyr::left_join(
+      mydata,
+      met_data,
+      by = dplyr::join_by("date")
+    ) %>%
+      dplyr::relocate(dplyr::any_of(c("ws", "wd")), .after = "date")
+  }
 
   # need to return pollutant as it can change
   return(list(
