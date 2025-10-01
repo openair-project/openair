@@ -61,29 +61,33 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">smoothTrend</span><span class="op">(</span></span>
 <span>  <span class="va">mydata</span>,</span>
 <span>  pollutant <span class="op">=</span> <span class="st">"nox"</span>,</span>
-<span>  deseason <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
-<span>  statistic <span class="op">=</span> <span class="st">"mean"</span>,</span>
 <span>  avg.time <span class="op">=</span> <span class="st">"month"</span>,</span>
-<span>  percentile <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  data.thresh <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  statistic <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>  percentile <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  k <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  deseason <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  simulate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  n <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  autocor <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"brewer1"</span>,</span>
-<span>  shade <span class="op">=</span> <span class="st">"grey95"</span>,</span>
-<span>  xlab <span class="op">=</span> <span class="st">"year"</span>,</span>
+<span>  x.relation <span class="op">=</span> <span class="st">"same"</span>,</span>
 <span>  y.relation <span class="op">=</span> <span class="st">"same"</span>,</span>
 <span>  ref.x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref.y <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  key.columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">percentile</span><span class="op">)</span>,</span>
+<span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  key.columns <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  key.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
 <span>  name.pol <span class="op">=</span> <span class="va">pollutant</span>,</span>
+<span>  date.breaks <span class="op">=</span> <span class="fl">7</span>,</span>
+<span>  date.format <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.2</span>,</span>
-<span>  date.breaks <span class="op">=</span> <span class="fl">7</span>,</span>
-<span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  k <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  shade <span class="op">=</span> <span class="st">"grey95"</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  progress <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -93,51 +97,37 @@
 
 
 <dl><dt id="arg-mydata">mydata<a class="anchor" aria-label="anchor" href="#arg-mydata"></a></dt>
-<dd><p>A data frame containing the field <code>date</code> and at least one other
-parameter for which a trend test is required; typically (but not
-necessarily) a pollutant.</p></dd>
+<dd><p>A data frame of time series. Must include a <code>date</code> field
+and at least one variable to plot.</p></dd>
 
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
-<dd><p>The parameter for which a trend test is required. Mandatory.</p></dd>
+<dd><p>Name of variable to plot. Two or more pollutants can be
+plotted, in which case a form like <code>pollutant = c("nox", "co")</code> should
+be used.</p></dd>
 
 
-<dt id="arg-deseason">deseason<a class="anchor" aria-label="anchor" href="#arg-deseason"></a></dt>
-<dd><p>Should the data be de-deasonalized first? If <code>TRUE</code> the
-function <code>stl</code> is used (seasonal trend decomposition using loess). Note
-that if <code>TRUE</code> missing data are first imputed using a Kalman filter and
-Kalman smooth.</p></dd>
+<dt id="arg-avg-time">avg.time<a class="anchor" aria-label="anchor" href="#arg-avg-time"></a></dt>
+<dd><p>Can be <code>"month"</code> (the default), <code>"season"</code> or <code>"year"</code>.
+Determines the time over which data should be averaged. Note that for
+<code>"year"</code>, six or more years are required. For <code>"season"</code> the data are plit
+up into spring: March, April, May etc. Note that December is considered as
+belonging to winter of the following year.</p></dd>
 
 
-<dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p><code>type</code> determines how the data are split i.e. conditioned, and
-then plotted. The default is will produce a single plot using the entire
-data. Type can be one of the built-in types as detailed in <code>cutData</code> e.g.
-“season”, “year”, “weekday” and so on. For example,
-<code>type = "season"</code> will produce four plots — one for each season.</p>
-<p>It is also possible to choose <code>type</code> as another variable in the data frame.
-If that variable is numeric, then the data will be split into four
-quantiles (if possible) and labelled accordingly. If type is an existing
-character or factor variable, then those categories/levels will be used
-directly. This offers great flexibility for understanding the variation of
-different variables and how they depend on one another.</p>
-<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will produce
-a 2x2 plot split by season and day of the week. Note, when two types are
-provided the first forms the columns and the second the rows.</p></dd>
+<dt id="arg-data-thresh">data.thresh<a class="anchor" aria-label="anchor" href="#arg-data-thresh"></a></dt>
+<dd><p>The data capture threshold to use when aggregating the
+data using <code>avg.time</code>. A value of zero means that all available data
+will be used in a particular period regardless if of the number of values
+available. Conversely, a value of 100 will mean that all data will need to
+be present for the average to be calculated, else it is recorded as
+<code>NA</code>. Not used if <code>avg.time = "default"</code>.</p></dd>
 
 
 <dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
 <dd><p>Statistic used for calculating monthly values. Default is
-“mean”, but can also be “percentile”. See <code>timeAverage</code> for
-more details.</p></dd>
-
-
-<dt id="arg-avg-time">avg.time<a class="anchor" aria-label="anchor" href="#arg-avg-time"></a></dt>
-<dd><p>Can be “month” (the default), “season” or
-“year”. Determines the time over which data should be averaged. Note
-that for “year”, six or more years are required. For “season”
-the data are plit up into spring: March, April, May etc. Note that December
-is considered as belonging to winter of the following year.</p></dd>
+<code>"mean"</code>, but can also be <code>"percentile"</code>. See <code><a href="timeAverage.html">timeAverage()</a></code> for more
+details.</p></dd>
 
 
 <dt id="arg-percentile">percentile<a class="anchor" aria-label="anchor" href="#arg-percentile"></a></dt>
@@ -146,13 +136,18 @@ chosen. Can be a vector of numbers e.g. <code>percentile = c(5, 50, 95)</code> w
 plot the 5th, 50th and 95th percentile values together on the same plot.</p></dd>
 
 
-<dt id="arg-data-thresh">data.thresh<a class="anchor" aria-label="anchor" href="#arg-data-thresh"></a></dt>
-<dd><p>The data capture threshold to use (%) when aggregating the
-data using <code>avg.time</code>. A value of zero means that all available data will
-be used in a particular period regardless if of the number of values
-available. Conversely, a value of 100 will mean that all data will need to
-be present for the average to be calculated, else it is recorded as <code>NA</code>.
-Not used if <code>avg.time = "default"</code>.</p></dd>
+<dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
+<dd><p>This is the smoothing parameter used by the <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam()</a></code> function
+in package <code>mgcv</code>. By default it is not used and the amount of smoothing is
+optimised automatically. However, sometimes it is useful to set the
+smoothing amount manually using <code>k</code>.</p></dd>
+
+
+<dt id="arg-deseason">deseason<a class="anchor" aria-label="anchor" href="#arg-deseason"></a></dt>
+<dd><p>Should the data be de-deasonalized first? If <code>TRUE</code> the
+function <code>stl</code> is used (seasonal trend decomposition using loess). Note
+that if <code>TRUE</code> missing data are first imputed using a Kalman filter and
+Kalman smooth.</p></dd>
 
 
 <dt id="arg-simulate">simulate<a class="anchor" aria-label="anchor" href="#arg-simulate"></a></dt>
@@ -172,57 +167,72 @@ autocorrelation increases the uncertainty of the trend estimate sometimes
 by a large amount.</p></dd>
 
 
+<dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
+<dd><p><code>type</code> determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in <code><a href="cutData.html">cutData()</a></code>,
+e.g., <code>"season"</code>, <code>"year"</code>, <code>"weekday"</code> and so on. For example, <code>type = "season"</code> will produce four plots — one for each season.</p>
+<p>It is also possible to choose <code>type</code> as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
+quantiles (if possible) and labelled accordingly. If type is an existing
+character or factor variable, then those categories/levels will be used
+directly. This offers great flexibility for understanding the variation of
+different variables and how they depend on one another.</p>
+<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will produce
+a 2x2 plot split by season and day of the week. Note, when two types are
+provided the first forms the columns and the second the rows.</p></dd>
+
+
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
-<dd><p>Colours to use. Can be a vector of colours e.g. <code>cols = c("black", "green")</code> or pre-defined openair colours — see <code>openColours</code>
-for more details.</p></dd>
+<dd><p>Colours to be used for plotting. Options include
+“default”, “increment”, “heat”, “jet” and
+<code>RColorBrewer</code> colours — see the <code>openair</code> <code>openColours</code>
+function for more details. For user defined the user can supply a list of
+colour names recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list).
+An example would be <code>cols = c("yellow", "green", "blue")</code></p></dd>
 
 
-<dt id="arg-shade">shade<a class="anchor" aria-label="anchor" href="#arg-shade"></a></dt>
-<dd><p>The colour used for marking alternate years. Use “white”
-or “transparent” to remove shading.</p></dd>
-
-
-<dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
-<dd><p>x-axis label, by default “year”.</p></dd>
-
-
-<dt id="arg-y-relation">y.relation<a class="anchor" aria-label="anchor" href="#arg-y-relation"></a></dt>
-<dd><p>This determines how the y-axis scale is plotted. "same"
-ensures all panels use the same scale and "free" will use panel-specific
-scales. The latter is a useful setting when plotting data with very
-different values.  ref.x See <code>ref.y</code> for details. In this case the correct
-date format should be used for a vertical line e.g.  <code>ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)</code>.</p></dd>
+<dt id="arg-x-relation-y-relation">x.relation, y.relation<a class="anchor" aria-label="anchor" href="#arg-x-relation-y-relation"></a></dt>
+<dd><p>This determines how the x- and y-axis scales are
+plotted. <code>"same"</code> ensures all panels use the same scale and <code>"free"</code> will
+use panel-specific scales. The latter is a useful setting when plotting
+data with very different values.</p></dd>
 
 
 <dt id="arg-ref-x">ref.x<a class="anchor" aria-label="anchor" href="#arg-ref-x"></a></dt>
-<dd><p>See <code>ref.y</code>.</p></dd>
+<dd><p>See <code>ref.y</code> for details. In this case the correct date
+format should be used for a vertical line e.g. <code>ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)</code>.</p></dd>
 
 
 <dt id="arg-ref-y">ref.y<a class="anchor" aria-label="anchor" href="#arg-ref-y"></a></dt>
 <dd><p>A list with details of the horizontal lines to be added
 representing reference line(s). For example, <code>ref.y = list(h = 50, lty = 5)</code> will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))</code>. See <code>panel.abline</code> in the <code>lattice</code> package for more details on
-adding/controlling lines.</p></dd>
+e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))</code>. See <code>panel.abline</code> in the <code>lattice</code> package for more
+details on adding/controlling lines.</p></dd>
+
+
+<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
+<dd><p>Should a key be drawn? The default is <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-key-columns">key.columns<a class="anchor" aria-label="anchor" href="#arg-key-columns"></a></dt>
-<dd><p>Number of columns used if a key is drawn when using the
-option <code>statistic = "percentile"</code>.</p></dd>
+<dd><p>Number of columns to be used in the key. With many
+pollutants a single column can make to key too wide. The user can thus
+choose to use several columns by setting <code>columns</code> to be less than the
+number of pollutants.</p></dd>
+
+
+<dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
+<dd><p>Location where the scale key is to plotted. Can include
+“top”, “bottom”, “right” and “left”.</p></dd>
 
 
 <dt id="arg-name-pol">name.pol<a class="anchor" aria-label="anchor" href="#arg-name-pol"></a></dt>
-<dd><p>Names to be given to the pollutant(s). This is useful if you
-want to give a fuller description of the variables, maybe also including
-subscripts etc.</p></dd>
-
-
-<dt id="arg-ci">ci<a class="anchor" aria-label="anchor" href="#arg-ci"></a></dt>
-<dd><p>Should confidence intervals be plotted? The default is <code>FALSE</code>.</p></dd>
-
-
-<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
-<dd><p>The alpha transparency of shaded confidence intervals - if
-plotted. A value of 0 is fully transparent and 1 is fully opaque.</p></dd>
+<dd><p>This option can be used to give alternative names for the
+variables plotted. Instead of taking the column headings as names, the user
+can supply replacements. For example, if a column had the name “nox”
+and the user wanted a different description, then setting <code>name.pol = "nox before change"</code> can be used. If more than one pollutant is plotted
+then use <code>c</code> e.g. <code>name.pol = c("nox here", "o3 there")</code>.</p></dd>
 
 
 <dt id="arg-date-breaks">date.breaks<a class="anchor" aria-label="anchor" href="#arg-date-breaks"></a></dt>
@@ -230,25 +240,46 @@ plotted. A value of 0 is fully transparent and 1 is fully opaque.</p></dd>
 try and choose a sensible number of dates/times as well as formatting the
 date/time appropriately to the range being considered. This does not always
 work as desired automatically. The user can therefore increase or decrease
-the number of intervals by adjusting the value of <code>date.breaks</code> up or down.</p></dd>
+the number of intervals by adjusting the value of <code>date.breaks</code> up or
+down.</p></dd>
+
+
+<dt id="arg-date-format">date.format<a class="anchor" aria-label="anchor" href="#arg-date-format"></a></dt>
+<dd><p>This option controls the date format on the x-axis. While
+<code>timePlot</code> generally sets the date format sensibly there can be some
+situations where the user wishes to have more control. For format types see
+<code>strptime</code>. For example, to format the date like “Jan-2012” set
+<code>date.format = "\%b-\%Y"</code>.</p></dd>
 
 
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
-<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
-axis labels will automatically try and format pollutant names and units
-properly e.g.  by subscripting the ‘2’ in NO2.</p></dd>
+<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code>
+titles and axis labels will automatically try and format pollutant names
+and units properly e.g.  by subscripting the ‘2’ in NO2.</p></dd>
 
 
-<dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
-<dd><p>This is the smoothing parameter used by the <code><a href="https://rdrr.io/pkg/mgcv/man/gam.html" class="external-link">mgcv::gam()</a></code> function
-in package <code>mgcv</code>. By default it is not used and the amount of smoothing is
-optimised automatically. However, sometimes it is useful to set the
-smoothing amount manually using <code>k</code>.</p></dd>
+<dt id="arg-ci">ci<a class="anchor" aria-label="anchor" href="#arg-ci"></a></dt>
+<dd><p>Should confidence intervals be plotted? The default is <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
+<dd><p>The alpha transparency of shaded confidence intervals - if
+plotted. A value of 0 is fully transparent and 1 is fully opaque.</p></dd>
+
+
+<dt id="arg-shade">shade<a class="anchor" aria-label="anchor" href="#arg-shade"></a></dt>
+<dd><p>The colour used for marking alternate years. Use <code>"white"</code> or
+<code>"transparent"</code> to remove shading.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
-<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
-data to extract plot components and plotting them in other ways.</p></dd>
+<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when
+analysing data to extract plot components and plotting them in other ways.</p></dd>
+
+
+<dt id="arg-progress">progress<a class="anchor" aria-label="anchor" href="#arg-progress"></a></dt>
+<dd><p>Show a progress bar when many groups make up <code>type</code>? Defaults
+to <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -314,23 +345,17 @@ Residual resampling is used.</p>
 <span class="r-in"><span><span class="co"># trend plot by each of 8 wind sectors</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="fu">smoothTrend</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"o3"</span>, type <span class="op">=</span> <span class="st">"wd"</span>, ylab <span class="op">=</span> <span class="st">"o3 (ppb)"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># several pollutants, no plotting symbol</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="fu">smoothTrend</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"no2"</span>, <span class="st">"o3"</span>, <span class="st">"pm10"</span>, <span class="st">"pm25"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># percentiles</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="fu">smoothTrend</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
 <span class="r-in"><span>  pollutant <span class="op">=</span> <span class="st">"o3"</span>, statistic <span class="op">=</span> <span class="st">"percentile"</span>,</span></span>
 <span class="r-in"><span>  percentile <span class="op">=</span> <span class="fl">95</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># several percentiles with control over lines used</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="fu">smoothTrend</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
 <span class="r-in"><span>  pollutant <span class="op">=</span> <span class="st">"o3"</span>, statistic <span class="op">=</span> <span class="st">"percentile"</span>,</span></span>
 <span class="r-in"><span>  percentile <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">50</span>, <span class="fl">95</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span></span></span>
