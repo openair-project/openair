@@ -782,3 +782,25 @@ checkDuplicateRows <- function(mydata, type = NULL, fn = cli::cli_warn) {
     )
   }
 }
+
+#' Map a function over a dataframe using `type` to split
+#' @noRd
+#' @examples
+#' mapType(openairmaps::polar_data, fun = head, type = c("site", "site_type"))
+mapType <- function(mydata, fun, type, .progress = FALSE) {
+  if (all(type == "default")) {
+    return(fun(mydata))
+  }
+
+  purrr::map(
+    .x = split(mydata, mydata[type], drop = TRUE),
+    .f = function(df) {
+      out <- fun(df)
+      out[type] <- df[1, type, drop = TRUE]
+      return(out)
+    },
+    .progress = .progress
+  ) %>%
+    dplyr::bind_rows() %>%
+    dplyr::relocate(dplyr::any_of(type))
+}
