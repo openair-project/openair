@@ -321,20 +321,20 @@ percentileRose <- function(
 
     if (method == "default") {
       ## calculate percentiles
-      percentiles <- group_by(mydata, wd) %>%
+      percentiles <- group_by(mydata, wd) |>
         dplyr::reframe(
           {{ pollutant }} := quantile(
             .data[[pollutant]],
             probs = percentile / 100,
             na.rm = TRUE
           )
-        ) %>%
-        group_by(wd) %>%
+        ) |>
+        group_by(wd) |>
         mutate(percentile = percentile)
     }
 
     if (tolower(method) == "cpf") {
-      percentiles1 <- group_by(mydata, wd) %>%
+      percentiles1 <- group_by(mydata, wd) |>
         summarise(across(
           where(is.numeric),
           ~ length(which(.x < overall.lower)) / length(.x)
@@ -342,7 +342,7 @@ percentileRose <- function(
 
       percentiles1$percentile <- min(percentile)
 
-      percentiles2 <- group_by(mydata, wd) %>%
+      percentiles2 <- group_by(mydata, wd) |>
         summarise(across(
           where(is.numeric),
           ~ length(which(.x > upper)) / length(.x)
@@ -361,17 +361,17 @@ percentileRose <- function(
       purrr::map(
         .x = percentile,
         .f = \(x) mod.percentiles(x, overall.lower, overall.upper)
-      ) %>%
+      ) |>
       dplyr::bind_rows()
 
     ## calculate mean; assume a percentile of 999 to flag it later
 
-    percentiles <- group_by(mydata, wd) %>%
+    percentiles <- group_by(mydata, wd) |>
       summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
 
     percentiles$percentile <- 999
 
-    Mean <- purrr::map(999, mod.percentiles) %>%
+    Mean <- purrr::map(999, mod.percentiles) |>
       purrr::list_rbind()
 
     if (stat == "percentile") {
@@ -390,8 +390,8 @@ percentileRose <- function(
 
   ## overall.lower and overall.upper are the OVERALL upper/lower percentiles, but pollutant specific
   if (npol > 1) {
-    mydata <- mydata %>%
-      group_by(variable) %>%
+    mydata <- mydata |>
+      group_by(variable) |>
       mutate(
         lower = quantile(
           .data[[pollutant]],
@@ -403,7 +403,7 @@ percentileRose <- function(
           probs = max(percentile) / 100,
           na.rm = TRUE
         )
-      ) %>%
+      ) |>
       ungroup()
   } else {
     mydata <- mutate(
@@ -559,11 +559,11 @@ percentileRose <- function(
               lpolygon(subdata$x, subdata$y, col = "white", border = NA)
             }
           } else {
-            subdata1 <- results.grid[subscripts, ] %>%
+            subdata1 <- results.grid[subscripts, ] |>
               filter(percentile == {{ value }})
 
             value2 <- percentile[i - 1]
-            subdata2 <- results.grid[subscripts, ] %>%
+            subdata2 <- results.grid[subscripts, ] |>
               filter(percentile == {{ value2 }})
 
             poly.na(

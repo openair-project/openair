@@ -78,7 +78,7 @@ selectRunning <- function(
   # pad out missing data
   thedata <- purrr::map(split(mydata, mydata[type], drop = TRUE), function(x) {
     date.pad(x, type = type)
-  }) %>%
+  }) |>
     dplyr::bind_rows()
 
   # save input for later
@@ -95,18 +95,18 @@ selectRunning <- function(
 
   # calculate run lengths
   thedata <-
-    thedata %>%
+    thedata |>
     # create flags of the criterion, and work out run length
     dplyr::mutate(
       `__flag__` = rlang::eval_tidy(rlang::parse_expr(expr)),
       `__run__` = dplyr::consecutive_id(.data[["__flag__"]]),
       .by = dplyr::all_of(type)
-    ) %>%
+    ) |>
     # count length of runs
     dplyr::mutate(
       `__len__` = dplyr::n(),
       .by = dplyr::all_of(c("__run__", type))
-    ) %>%
+    ) |>
     # check if run length is greater than run.len for positive flags
     dplyr::mutate(
       `__flag__` = dplyr::if_else(

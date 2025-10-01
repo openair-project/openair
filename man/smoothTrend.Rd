@@ -38,12 +38,12 @@ smoothTrend(
 )
 }
 \arguments{
-\item{mydata}{A data frame of time series. Must include a \code{date} field
-and at least one variable to plot.}
+\item{mydata}{A data frame of time series. Must include a \code{date} field and at
+least one variable to plot.}
 
 \item{pollutant}{Name of variable to plot. Two or more pollutants can be
-plotted, in which case a form like \code{pollutant = c("nox", "co")} should
-be used.}
+plotted, in which case a form like \code{pollutant = c("nox", "co")} should be
+used.}
 
 \item{avg.time}{Can be \code{"month"} (the default), \code{"season"} or \code{"year"}.
 Determines the time over which data should be averaged. Note that for
@@ -51,12 +51,12 @@ Determines the time over which data should be averaged. Note that for
 up into spring: March, April, May etc. Note that December is considered as
 belonging to winter of the following year.}
 
-\item{data.thresh}{The data capture threshold to use when aggregating the
-data using \code{avg.time}. A value of zero means that all available data
-will be used in a particular period regardless if of the number of values
-available. Conversely, a value of 100 will mean that all data will need to
-be present for the average to be calculated, else it is recorded as
-\code{NA}. Not used if \code{avg.time = "default"}.}
+\item{data.thresh}{The data capture threshold to use (\%). A value of zero
+means that all available data will be used in a particular period
+regardless if of the number of values available. Conversely, a value of 100
+will mean that all data will need to be present for the average to be
+calculated, else it is recorded as \code{NA}. See also \code{interval}, \code{start.date}
+and \code{end.date} to see whether it is advisable to set these other options.}
 
 \item{statistic}{Statistic used for calculating monthly values. Default is
 \code{"mean"}, but can also be \code{"percentile"}. See \code{\link[=timeAverage]{timeAverage()}} for more
@@ -103,25 +103,20 @@ Type can be up length two e.g. \code{type = c("season", "weekday")} will produce
 a 2x2 plot split by season and day of the week. Note, when two types are
 provided the first forms the columns and the second the rows.}
 
-\item{cols}{Colours to be used for plotting. Options include
-\dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-\code{RColorBrewer} colours --- see the \code{openair} \code{openColours}
-function for more details. For user defined the user can supply a list of
-colour names recognised by R (type \code{colours()} to see the full list).
-An example would be \code{cols = c("yellow", "green", "blue")}}
+\item{cols}{Colours to be used for plotting; see \code{\link[=openColours]{openColours()}} for details.}
 
 \item{x.relation, y.relation}{This determines how the x- and y-axis scales are
 plotted. \code{"same"} ensures all panels use the same scale and \code{"free"} will
 use panel-specific scales. The latter is a useful setting when plotting
 data with very different values.}
 
-\item{ref.x}{See \code{ref.y} for details. In this case the correct date
-format should be used for a vertical line e.g. \code{ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)}.}
+\item{ref.x}{See \code{ref.y} for details. In this case the correct date format
+should be used for a vertical line e.g. \code{ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)}.}
 
 \item{ref.y}{A list with details of the horizontal lines to be added
 representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
-details on adding/controlling lines.}
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more details on
+adding/controlling lines.}
 
 \item{key}{Should a key be drawn? The default is \code{TRUE}.}
 
@@ -131,30 +126,29 @@ choose to use several columns by setting \code{columns} to be less than the
 number of pollutants.}
 
 \item{key.position}{Location where the scale key is to plotted. Can include
-\dQuote{top}, \dQuote{bottom}, \dQuote{right} and \dQuote{left}.}
+\code{"top"}, \code{"bottom"}, \code{"right"} and \code{"left"}.}
 
 \item{name.pol}{This option can be used to give alternative names for the
 variables plotted. Instead of taking the column headings as names, the user
-can supply replacements. For example, if a column had the name \dQuote{nox}
-and the user wanted a different description, then setting \code{name.pol = "nox before change"} can be used. If more than one pollutant is plotted
-then use \code{c} e.g. \code{name.pol = c("nox here", "o3 there")}.}
+can supply replacements. For example, if a column had the name "nox" and
+the user wanted a different description, then setting \code{name.pol = "nox before change"} can be used. If more than one pollutant is plotted then use
+\code{c} e.g. \code{name.pol = c("nox here", "o3 there")}.}
 
 \item{date.breaks}{Number of major x-axis intervals to use. The function will
 try and choose a sensible number of dates/times as well as formatting the
 date/time appropriately to the range being considered. This does not always
 work as desired automatically. The user can therefore increase or decrease
-the number of intervals by adjusting the value of \code{date.breaks} up or
-down.}
+the number of intervals by adjusting the value of \code{date.breaks} up or down.}
 
 \item{date.format}{This option controls the date format on the x-axis. While
-\code{timePlot} generally sets the date format sensibly there can be some
+\code{\link[=timePlot]{timePlot()}} generally sets the date format sensibly there can be some
 situations where the user wishes to have more control. For format types see
-\code{strptime}. For example, to format the date like \dQuote{Jan-2012} set
+\code{\link[=strptime]{strptime()}}. For example, to format the date like "Jan-2012" set
 \code{date.format = "\\\%b-\\\%Y"}.}
 
-\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
-titles and axis labels will automatically try and format pollutant names
-and units properly e.g.  by subscripting the \sQuote{2} in NO2.}
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly, e.g., by subscripting the '2' in NO2.}
 
 \item{ci}{Should confidence intervals be plotted? The default is \code{TRUE}.}
 
@@ -164,8 +158,8 @@ plotted. A value of 0 is fully transparent and 1 is fully opaque.}
 \item{shade}{The colour used for marking alternate years. Use \code{"white"} or
 \code{"transparent"} to remove shading.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other ways.}
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data to extract plot components and plotting them in other ways.}
 
 \item{progress}{Show a progress bar when many groups make up \code{type}? Defaults
 to \code{TRUE}.}

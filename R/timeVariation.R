@@ -655,8 +655,8 @@ timeVariation <- function(
             statistic = statistic
           )
         }
-      ) %>%
-      dplyr::bind_rows() %>%
+      ) |>
+      dplyr::bind_rows() |>
       dplyr::tibble()
   }
 
@@ -789,8 +789,8 @@ timeVariation <- function(
             statistic = statistic
           )
         }
-      ) %>%
-      dplyr::bind_rows() %>%
+      ) |>
+      dplyr::bind_rows() |>
       dplyr::tibble()
   }
 
@@ -914,8 +914,8 @@ timeVariation <- function(
             statistic = statistic
           )
         }
-      ) %>%
-      dplyr::bind_rows() %>%
+      ) |>
+      dplyr::bind_rows() |>
       dplyr::tibble()
   }
 
@@ -1064,8 +1064,8 @@ timeVariation <- function(
             statistic = statistic
           )
         }
-      ) %>%
-      dplyr::bind_rows() %>%
+      ) |>
+      dplyr::bind_rows() |>
       dplyr::tibble()
   }
 

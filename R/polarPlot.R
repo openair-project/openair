@@ -845,7 +845,7 @@ polarPlot <-
 
         binned <- as.vector(t(binned))
       } else if (toupper(statistic) == "NWR") {
-        binned <- rowwise(ws.wd) %>%
+        binned <- rowwise(ws.wd) |>
           summarise(simple_kernel(
             across(.cols = everything()),
             mydata,
@@ -859,7 +859,7 @@ polarPlot <-
 
         binned <- binned$conc
       } else if (toupper(statistic) == "TREND") {
-        binned <- rowwise(ws.wd) %>%
+        binned <- rowwise(ws.wd) |>
           summarise(simple_kernel_trend(
             across(.cols = everything()),
             mydata,
@@ -875,7 +875,7 @@ polarPlot <-
 
         binned <- binned$conc
       } else {
-        binned <- rowwise(ws.wd) %>%
+        binned <- rowwise(ws.wd) |>
           summarise(calculate_weighted_statistics(
             across(.cols = everything()),
             mydata,
@@ -976,11 +976,11 @@ polarPlot <-
 
         # interpolate each uncertainty surface
 
-        lower_uncer <- interp_grid(input.data, z = Lower, n = 201) %>%
+        lower_uncer <- interp_grid(input.data, z = Lower, n = 201) |>
           mutate(uncertainty = "lower uncertainty")
-        upper_uncer <- interp_grid(input.data, z = Upper, n = 201) %>%
+        upper_uncer <- interp_grid(input.data, z = Upper, n = 201) |>
           mutate(uncertainty = "upper uncertainty")
-        prediction <- interp_grid(input.data, z = pred, n = 201) %>%
+        prediction <- interp_grid(input.data, z = pred, n = 201) |>
           mutate(uncertainty = "prediction")
         results <- bind_rows(prediction, lower_uncer, upper_uncer)
         int <- 201
@@ -1017,20 +1017,20 @@ polarPlot <-
     if (!missing(min.bin)) {
       tmp <- min.bin
       min.bin <- 0
-      res1 <- mydata %>%
-        group_by(across(type)) %>%
+      res1 <- mydata |>
+        group_by(across(type)) |>
         group_modify(~ prepare.grid(.))
 
       min.bin <- tmp
 
-      res <- mydata %>%
-        group_by(across(type)) %>%
+      res <- mydata |>
+        group_by(across(type)) |>
         group_modify(~ prepare.grid(.))
 
       res$miss <- res1$z
     } else {
-      res <- mydata %>%
-        group_by(across(type)) %>%
+      res <- mydata |>
+        group_by(across(type)) |>
         group_modify(~ prepare.grid(.))
     }
 

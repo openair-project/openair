@@ -324,8 +324,8 @@ conditionalEval <- function(
         res <- purrr::map(
           .x = 1:200,
           .f = \(n) tmpFun(n, x)
-        ) %>%
-          dplyr::bind_rows() %>%
+        ) |>
+          dplyr::bind_rows() |>
           dplyr::mutate(
             n = 1:200,
             .before = 0
@@ -354,14 +354,14 @@ conditionalEval <- function(
     if (other) {
       vars <- c("pred.cut", statistic)
 
-      res <- res %>%
-        group_by(across(vars)) %>%
+      res <- res |>
+        group_by(across(vars)) |>
         summarise(Freq = dplyr::n())
 
       ## calculate proportions by interval
 
-      res <- ungroup(res) %>%
-        group_by(pred.cut) %>%
+      res <- ungroup(res) |>
+        group_by(pred.cut) |>
         mutate(Freq = Freq / sum(Freq))
 
       res$statistic <- factor(statistic)
@@ -371,7 +371,7 @@ conditionalEval <- function(
           res,
           type = "pred.cut",
           fun = \(df) statFun(df, statistic = statistic)
-        ) %>%
+        ) |>
         tibble()
     }
 
@@ -490,7 +490,7 @@ conditionalEval <- function(
             var.mod = var.mod
           )
         }
-      ) %>%
+      ) |>
       dplyr::bind_rows()
 
     results$.id <- as.numeric(as.character(results$pred.cut))
@@ -557,7 +557,7 @@ conditionalEval <- function(
     myform <- formula(paste("mean ~ .id | ", temp, sep = ""))
 
     # ylimits list
-    ylim <- split(results, results$statistic) %>%
+    ylim <- split(results, results$statistic) |>
       map(~ c(min(.$lower, na.rm = TRUE), max(.$upper, na.rm = TRUE)))
 
     p.args <- list(

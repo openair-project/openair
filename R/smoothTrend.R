@@ -261,9 +261,9 @@ smoothTrend <- function(
         out[, vars] <- x[1, vars, drop = TRUE]
         out
       }
-    ) %>%
-    dplyr::bind_rows() %>%
-    dplyr::tibble() %>%
+    ) |>
+    dplyr::bind_rows() |>
+    dplyr::tibble() |>
     dplyr::relocate(dplyr::all_of(vars))
 
   fit <-
@@ -274,9 +274,9 @@ smoothTrend <- function(
         out[, vars] <- df[1, vars, drop = TRUE]
         out
       }
-    ) %>%
-    dplyr::bind_rows() %>%
-    dplyr::tibble() %>%
+    ) |>
+    dplyr::bind_rows() |>
+    dplyr::tibble() |>
     dplyr::relocate(dplyr::all_of(vars))
 
   class(fit$date) <- c("POSIXct", "POSIXt")
@@ -597,7 +597,7 @@ prepare_smoothtrend_data <- function(
         cols = dplyr::all_of(vars),
         names_to = "variable",
         values_to = "value"
-      ) %>%
+      ) |>
       dplyr::arrange(.data$variable)
   } else {
     mydata <- suppressWarnings(timeAverage(

@@ -123,7 +123,7 @@ date.pad <- function(mydata, type = NULL, print.int = FALSE) {
   # only pad if there are missing data
   if (length(unique(diff(mydata$date))) != 1L) {
     all.dates <- data.frame(date = seq(start.date, end.date, by = interval))
-    mydata <- mydata %>% full_join(all.dates, by = "date")
+    mydata <- mydata |> full_join(all.dates, by = "date")
 
     # add missing types - if type is present
     if (!is.null(type) && type != "default") {
@@ -763,12 +763,12 @@ checkDuplicateRows <- function(mydata, type = NULL, fn = cli::cli_warn) {
     flag <- length(mydata$date) != length(unique(mydata$date))
   } else {
     flag <-
-      split(mydata, mydata[type], drop = TRUE) %>%
+      split(mydata, mydata[type], drop = TRUE) |>
       purrr::map_vec(function(x) {
         dates <- x$date
         unique_dates <- unique(x$date)
         length(dates) != length(unique_dates)
-      }) %>%
+      }) |>
       any()
   }
 
@@ -806,7 +806,7 @@ mapType <- function(
       return(out)
     },
     .progress = .progress
-  ) %>%
-    dplyr::bind_rows() %>%
+  ) |>
+    dplyr::bind_rows() |>
     dplyr::relocate(dplyr::any_of(type))
 }

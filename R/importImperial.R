@@ -222,7 +222,7 @@ importImperial <-
       progress <- "Importing Air Quality Data"
     }
     thedata <-
-      purrr::map(files, loadData, .progress = progress) %>%
+      purrr::map(files, loadData, .progress = progress) |>
       purrr::list_rbind()
 
     if (is.null(thedata)) {
@@ -381,7 +381,7 @@ importImperial <-
             thedata,
             -c(date, site, code, latitude, longitude, site.type),
             names_to = "pollutant"
-          ) %>%
+          ) |>
           arrange(site, code, pollutant, date)
       } else {
         thedata <-
@@ -389,7 +389,7 @@ importImperial <-
             thedata,
             -c(date, site, code),
             names_to = "pollutant"
-          ) %>%
+          ) |>
           arrange(site, code, pollutant, date)
       }
     }

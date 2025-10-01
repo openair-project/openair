@@ -266,27 +266,27 @@ conditionalQuantile <- function(
   lo <- min(mydata[c(mod, obs)])
   hi <- max(mydata[c(mod, obs)])
 
-  all.results <- mydata %>%
-    group_by(across(type)) %>%
-    group_nest() %>%
+  all.results <- mydata |>
+    group_by(across(type)) |>
+    group_nest() |>
     mutate(
       results = map(data, procData),
       .keep = "unused"
     )
 
-  results <- all.results %>%
-    mutate(first = map(results, 1)) %>%
-    unnest(first) %>%
+  results <- all.results |>
+    mutate(first = map(results, 1)) |>
+    unnest(first) |>
     dplyr::select(-"results")
 
-  hist.results <- all.results %>%
-    mutate(second = map(results, 2)) %>%
-    unnest(second) %>%
+  hist.results <- all.results |>
+    mutate(second = map(results, 2)) |>
+    unnest(second) |>
     dplyr::select(-"results")
 
-  obs.results <- all.results %>%
-    mutate(third = map(results, 3)) %>%
-    unnest(third) %>%
+  obs.results <- all.results |>
+    mutate(third = map(results, 3)) |>
+    unnest(third) |>
     dplyr::select(-"results")
 
   ## proper names of labelling #################################################

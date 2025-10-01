@@ -110,13 +110,13 @@ trajCluster <- function(
   traj <- filter(traj, !is.na(lat), !is.na(lon))
 
   # check to see if all back trajectories are the same length
-  traj <- group_by(traj, date) %>%
+  traj <- group_by(traj, date) |>
     mutate(traj_len = length(date))
 
   if (length(unique(traj$traj_len)) > 1) {
     ux <- unique(traj$traj_len)
     nmax <- ux[which.max(tabulate(match(traj$traj_len, ux)))]
-    traj <- ungroup(traj) %>%
+    traj <- ungroup(traj) |>
       filter(traj_len == nmax)
   }
 
@@ -152,7 +152,7 @@ trajCluster <- function(
     traj <- traj[order(traj$date, traj$hour.inc), ]
 
     ## length of back trajectories
-    traj <- group_by(traj, date) %>%
+    traj <- group_by(traj, date) |>
       mutate(len = length(date))
 
     ## find length of back trajectories
@@ -221,8 +221,8 @@ trajCluster <- function(
   vars <- c("lat", "lon", "date", "cluster", "hour.inc", type)
   vars2 <- c("cluster", "hour.inc", type)
 
-  agg <- select(traj, vars) %>%
-    group_by(across(vars2)) %>%
+  agg <- select(traj, vars) |>
+    group_by(across(vars2)) |>
     summarise(across(everything(), mean))
 
   # the data frame we want to return before it is transformed
@@ -232,15 +232,15 @@ trajCluster <- function(
 
   vars <- c(type, "cluster")
 
-  clusters <- traj %>%
-    group_by(across(vars)) %>%
-    tally() %>%
+  clusters <- traj |>
+    group_by(across(vars)) |>
+    tally() |>
     mutate(freq = round(100 * n / sum(n), 1))
 
   ## make each panel add up to 100
   if (by.type) {
-    clusters <- clusters %>%
-      group_by(across(type)) %>%
+    clusters <- clusters |>
+      group_by(across(type)) |>
       mutate(freq = 100 * freq / sum(freq))
 
     clusters$freq <- round(clusters$freq, 1)

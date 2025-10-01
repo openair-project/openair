@@ -258,7 +258,7 @@ polarCluster <-
         .f = make.clust,
         results.grid = results.grid,
         .progress = "Calculating Clusters"
-      ) %>%
+      ) |>
       purrr::list_rbind()
 
     results.grid$nclust <-
@@ -500,18 +500,18 @@ polarCluster <-
 
     if (length(n.clusters) == 1L && length(pollutant) == 1L) {
       clust_stats <-
-        out_data %>%
-        dplyr::group_by(cluster) %>%
+        out_data |>
+        dplyr::group_by(cluster) |>
         dplyr::summarise(
           {{ var_mean }} := mean(.data[[pollutant]], na.rm = TRUE),
           n = dplyr::n()
-        ) %>%
-        na.omit() %>%
+        ) |>
+        na.omit() |>
         dplyr::mutate(
           n_mean = n * .data[[var_mean]],
           n_percent = round(100 * n / sum(n), 1),
           {{ var_percent }} := round(100 * n_mean / sum(n_mean), 1)
-        ) %>%
+        ) |>
         dplyr::select(-n_mean)
     } else {
       clust_stats <- NULL

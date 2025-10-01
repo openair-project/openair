@@ -114,34 +114,34 @@ runRegression <- function(
   models <- lapply(mydata, model)
 
   # extract components
-  slope <- models %>%
-    map(coefficients) %>%
+  slope <- models |>
+    map(coefficients) |>
     map_dbl(2)
 
-  intercept <- models %>%
-    map(coefficients) %>%
+  intercept <- models |>
+    map(coefficients) |>
     map_dbl(1)
 
-  # r_squared <- models %>% map_dbl(rsq)
-  r_squared <- models %>%
-    map("r.sq") %>%
+  # r_squared <- models |> map_dbl(rsq)
+  r_squared <- models |>
+    map("r.sq") |>
     map_dbl(1)
-  date <- mydata %>% map_vec(~ median(.x$date)) # use median date
-  date_start <- mydata %>% map_vec(~ min(.x$date))
-  date_end <- mydata %>% map_vec(~ max(.x$date))
+  date <- mydata |> map_vec(~ median(.x$date)) # use median date
+  date_start <- mydata |> map_vec(~ min(.x$date))
+  date_end <- mydata |> map_vec(~ max(.x$date))
 
   results <- tibble(date, date_start, date_end, intercept, slope, r_squared)
 
   # info for regression lines
-  x1 <- mydata %>%
+  x1 <- mydata |>
     map_dbl(~ min(.x[[x]]))
 
-  x2 <- mydata %>%
+  x2 <- mydata |>
     map_dbl(~ max(.x[[x]]))
 
   results <- cbind(results, x1, x2)
 
-  results <- results %>%
+  results <- results |>
     mutate(
       y1 = slope * x1 + intercept,
       y2 = slope * x2 + intercept,
