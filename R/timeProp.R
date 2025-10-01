@@ -349,8 +349,7 @@ timeProp <- function(
     panel = function(..., col, subscripts) {
       panel.grid(-1, 0)
       panel.abline(v = dates, col = "grey95", ...)
-      split(results[subscripts, ], results$date[subscripts]) %>%
-        lapply(., panelBar)
+      lapply(split(results[subscripts, ], results$date[subscripts]), panelBar)
     }
   )
 

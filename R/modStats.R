@@ -177,82 +177,71 @@ modStats <- function(
 
   ## calculate the various statistics
 
+  calculateStat <- function(f, ...) {
+    res.n <- mapType(
+      mydata,
+      type = type,
+      fun = \(x) f(x, mod, obs, ...),
+      .include_default = TRUE
+    )
+  }
+
   if ("n" %in% statistic) {
-    res.n <- mydata %>%
-      group_by(across(type)) %>%
-      do(n(., mod, obs))
+    res.n <- calculateStat(N)
   } else {
     res.n <- NULL
   }
 
   if ("FAC2" %in% statistic) {
-    res.FAC <- mydata %>%
-      group_by(across(type)) %>%
-      do(FAC2(., mod, obs))
+    res.FAC <- calculateStat(FAC2)
   } else {
     res.FAC <- NULL
   }
 
   if ("MB" %in% statistic) {
-    res.MB <- mydata %>%
-      group_by(across(type)) %>%
-      do(MB(., mod, obs))
+    res.MB <- calculateStat(MB)
   } else {
     res.MB <- NULL
   }
 
   if ("MGE" %in% statistic) {
-    res.MGE <- mydata %>%
-      group_by(across(type)) %>%
-      do(MGE(., mod, obs))
+    res.MGE <- calculateStat(MGE)
   } else {
     res.MGE <- NULL
   }
 
   if ("NMB" %in% statistic) {
-    res.NMB <- mydata %>%
-      group_by(across(type)) %>%
-      do(NMB(., mod, obs))
+    res.NMB <- calculateStat(NMB)
   } else {
     res.NMB <- NULL
   }
 
   if ("NMGE" %in% statistic) {
-    res.NMGE <- mydata %>%
-      group_by(across(type)) %>%
-      do(NMGE(., mod, obs))
+    res.NMGE <- calculateStat(NMGE)
   } else {
     res.NMGE <- NULL
   }
 
   if ("RMSE" %in% statistic) {
-    res.RMSE <- mydata %>%
-      group_by(across(type)) %>%
-      do(RMSE(., mod, obs))
+    res.RMSE <- calculateStat(RMSE)
   } else {
     res.RMSE <- NULL
   }
 
   if ("r" %in% statistic) {
-    res.r <- mydata %>%
-      group_by(across(type)) %>%
-      do(r(., mod, obs, ...))
+    res.r <- calculateStat(r, ...)
   } else {
     res.r <- NULL
   }
 
   if ("COE" %in% statistic) {
-    res.COE <- mydata %>%
-      group_by(across(type)) %>%
-      do(COE(., mod, obs))
+    res.COE <- calculateStat(COE)
   } else {
     res.COE <- NULL
   }
 
   if ("IOA" %in% statistic) {
-    res.IOA <- mydata %>%
-      group_by(across(type)) %>%
-      do(IOA(., mod, obs))
+    res.IOA <- calculateStat(IOA)
   } else {
     res.IOA <- NULL
   }
@@ -287,9 +276,12 @@ modStats <- function(
     if (length(types) == 0) {
       results <- rankModels(results, rank.name)
     } else {
-      results <- results %>%
-        group_by(across(types)) %>%
-        do(rankModels(., rank.name = rank.name))
+      results <- mapType(
+        results,
+        type = types,
+        fun = \(x) rankModels(x, rank.name = rank.name),
+        .include_default = TRUE
+      )
     }
   }
 
@@ -315,10 +307,11 @@ sortDataFrame <- function(x, key, ...) {
 rankModels <- function(mydata, rank.name = "group") {
   ## sort by COE
   mydata <- sortDataFrame(mydata, "COE", decreasing = TRUE)
+  mydata
 }
 
 ## number of valid readings
-n <- function(x, mod = "mod", obs = "obs") {
+N <- function(x, mod = "mod", obs = "obs") {
   x <- na.omit(x[, c(mod, obs)])
   res <- nrow(x)
   data.frame(n = res)

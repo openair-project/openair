@@ -427,10 +427,13 @@ calendarPlot <-
       mydata <- selectByDate(mydata, month = month)
     }
 
-    mydata <- mydata %>%
-      group_by(across(type)) %>%
-      do(prepare.grid(., pollutant)) %>%
-      ungroup()
+    mydata <-
+      mapType(
+        mydata,
+        type = type,
+        fun = \(df) prepare.grid(df, pollutant),
+        .include_default = TRUE
+      )
 
     mydata$value <-
       mydata$conc.mat ## actual numerical value (retain for categorical scales)
@@ -463,10 +466,13 @@ calendarPlot <-
     if (annotate == "wd") {
       baseData$wd <- baseData$wd * 2 * pi / 360
 
-      wd <- baseData %>%
-        group_by(across(type)) %>%
-        do(prepare.grid(., "wd")) %>%
-        ungroup()
+      wd <-
+        mapType(
+          baseData,
+          type = type,
+          fun = \(df) prepare.grid(df, "wd"),
+          .include_default = TRUE
+        )
 
       wd$value <-
         wd$conc.mat ## actual numerical value (retain for categorical scales)
@@ -475,15 +481,21 @@ calendarPlot <-
     if (annotate == "ws") {
       baseData$wd <- baseData$wd * 2 * pi / 360
 
-      ws <- baseData %>%
-        group_by(across(type)) %>%
-        do(prepare.grid(., "ws")) %>%
-        ungroup()
+      ws <-
+        mapType(
+          baseData,
+          type = type,
+          fun = \(df) prepare.grid(df, "ws"),
+          .include_default = TRUE
+        )
 
-      wd <- baseData %>%
-        group_by(across(type)) %>%
-        do(prepare.grid(., "wd")) %>%
-        ungroup()
+      wd <-
+        mapType(
+          baseData,
+          type = type,
+          fun = \(df) prepare.grid(df, "wd"),
+          .include_default = TRUE
+        )
 
       ## normalise wind speeds to highest daily mean
       ws$conc.mat <- ws$conc.mat / max(ws$conc.mat, na.rm = TRUE)

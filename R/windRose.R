@@ -711,9 +711,13 @@ windRose <- function(
     }
   }
 
-  results <- mydata %>%
-    group_by(across(type)) %>%
-    do(prepare.grid(.))
+  # prepare grid for each type
+  results <- mapType(
+    mydata,
+    fun = prepare.grid,
+    type = type,
+    .include_default = TRUE
+  )
 
   ## format
   results$calm <- stat.labcalm(results$calm)
@@ -750,9 +754,12 @@ windRose <- function(
 
   ## correction for bias when angle does not divide exactly into 360
   if (bias.corr) {
-    results <- results %>%
-      group_by(across(type)) %>%
-      do(corr_bias(.))
+    results <- mapType(
+      results,
+      type = type,
+      fun = corr_bias,
+      .include_default = TRUE
+    )
   }
 
   ## proper names of labelling###########################################

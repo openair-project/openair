@@ -357,8 +357,12 @@ percentileRose <- function(
       }
     }
 
-    results <- group_by(data.frame(percentile), percentile) %>%
-      do(mod.percentiles(.$percentile, overall.lower, overall.upper))
+    results <-
+      purrr::map(
+        .x = percentile,
+        .f = \(x) mod.percentiles(x, overall.lower, overall.upper)
+      ) %>%
+      dplyr::bind_rows()
 
     ## calculate mean; assume a percentile of 999 to flag it later
 
@@ -417,9 +421,13 @@ percentileRose <- function(
     )
   }
 
-  results.grid <- mydata %>%
-    group_by(across(type)) %>%
-    do(prepare.grid(., stat = "percentile"))
+  results.grid <-
+    mapType(
+      mydata,
+      type = type,
+      fun = \(x) prepare.grid(x, stat = "percentile"),
+      .include_default = TRUE
+    )
 
   if (method == "cpf") {
     ## useful labelling
@@ -441,9 +449,12 @@ percentileRose <- function(
   }
 
   if (mean) {
-    Mean <- mydata %>%
-      group_by(across(type)) %>%
-      do(prepare.grid(., stat = "mean"))
+    Mean <- mapType(
+      mydata,
+      type = type,
+      fun = \(x) prepare.grid(x, stat = "mean"),
+      .include_default = TRUE
+    )
 
     results.grid <- bind_rows(results.grid, Mean)
   }

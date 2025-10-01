@@ -321,8 +321,15 @@ conditionalEval <- function(
       }
 
       if (nrow(x) > 4) {
-        res <- group_by(data.frame(n = 1:200), n) %>%
-          do(tmpFun(i = .$n, x))
+        res <- purrr::map(
+          .x = 1:200,
+          .f = \(n) tmpFun(n, x)
+        ) %>%
+          dplyr::bind_rows() %>%
+          dplyr::mutate(
+            n = 1:200,
+            .before = 0
+          )
 
         data.frame(
           statistic = statistic,
@@ -359,8 +366,13 @@ conditionalEval <- function(
 
       res$statistic <- factor(statistic)
     } else {
-      res <- group_by(res, pred.cut) %>% do(statFun(., statistic = statistic))
-      #  res <- do(statFun(., statistic = statistic))
+      res <-
+        mapType(
+          res,
+          type = "pred.cut",
+          fun = \(df) statFun(df, statistic = statistic)
+        ) %>%
+        tibble()
     }
 
     na.omit(res)
@@ -369,9 +381,13 @@ conditionalEval <- function(
   ## treat clusters specifically if present #####################################
 
   if (other) {
-    clust.results <- mydata %>%
-      group_by(across(type)) %>%
-      do(procData(., other = other, statistic = statistic))
+    clust.results <-
+      mapType(
+        mydata = mydata,
+        type = type,
+        fun = \(df) procData(df, other = other, statistic = statistic),
+        .include_default = TRUE
+      )
 
     clust.results$.id <- as.numeric(as.character(clust.results$pred.cut))
 
@@ -454,20 +470,28 @@ conditionalEval <- function(
     )
 
     process_data <- function(mydata, type, ...) {
-      mydata <- mydata %>%
-        group_by(across(type)) %>%
-        do(procData(., ...))
+      mydata <- mapType(
+        mydata,
+        type = type,
+        fun = \(df) procData(df, ...),
+        .include_default = TRUE
+      )
     }
 
-    results <- combs %>%
-      rowwise() %>%
-      do(suppressWarnings(process_data(
-        mydata,
-        type,
-        statistic = .$stat,
-        var.obs = .$var.obs,
-        var.mod = .$var.mod
-      )))
+    results <-
+      purrr::pmap(
+        .l = combs,
+        .f = function(var.obs, stat, var.mod, stat.1) {
+          process_data(
+            mydata,
+            type,
+            statistic = stat,
+            var.obs = var.obs,
+            var.mod = var.mod
+          )
+        }
+      ) %>%
+      dplyr::bind_rows()
 
     results$.id <- as.numeric(as.character(results$pred.cut))
 

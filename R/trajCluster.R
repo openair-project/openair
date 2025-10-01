@@ -189,15 +189,20 @@ trajCluster <- function(
   ## this bit decides whether to separately calculate trajectories for each level of type
 
   if (split.after) {
-    traj <- group_by(traj, default) %>%
-      do(calcTraj(.))
+    traj$default <- "default"
+    traj <- mapType(
+      traj,
+      type = "default",
+      fun = calcTraj
+    )
     traj <- cutData(traj, type)
   } else {
     traj <- cutData(traj, type)
-
-    traj <- traj %>%
-      group_by(across(type)) %>%
-      do(calcTraj(.))
+    traj <- mapType(
+      traj,
+      type = type,
+      fun = calcTraj
+    )
   }
 
   # trajectory origin

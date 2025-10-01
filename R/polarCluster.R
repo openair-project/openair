@@ -252,10 +252,6 @@ polarCluster <-
       dat.orig
     }
 
-    # results.grid <-
-    #   group_by(data.frame(n = seq_along(n.clusters)), n) %>%
-    #   do(make.clust(i = .$n, results.grid))
-
     results.grid <-
       purrr::map(
         .x = seq_along(n.clusters),

@@ -787,8 +787,14 @@ checkDuplicateRows <- function(mydata, type = NULL, fn = cli::cli_warn) {
 #' @noRd
 #' @examples
 #' mapType(openairmaps::polar_data, fun = head, type = c("site", "site_type"))
-mapType <- function(mydata, fun, type, .progress = FALSE) {
-  if (all(type == "default")) {
+mapType <- function(
+  mydata,
+  type,
+  fun,
+  .include_default = FALSE,
+  .progress = FALSE
+) {
+  if ((all(type == "default") || is.null(type)) && !.include_default) {
     return(fun(mydata))
   }
 

@@ -641,21 +641,31 @@ timeVariation <- function(
       conf.int = conf.int
     )
   } else {
-    data.hour <- group_by(conf_int, ci) %>%
-      do(proc(
-        .$ci,
-        mydata,
-        vars = "hour",
-        pollutant,
-        type,
-        B = B,
-        statistic = statistic
-      ))
+    data.hour <-
+      purrr::map(
+        .x = conf_int$ci,
+        .f = function(x) {
+          proc(
+            x,
+            mydata,
+            vars = "hour",
+            pollutant,
+            type,
+            B = B,
+            statistic = statistic
+          )
+        }
+      ) %>%
+      dplyr::bind_rows() %>%
+      dplyr::tibble()
   }
 
   if (normalise) {
-    data.hour <- group_by(data.hour, variable) %>%
-      do(divide.by.mean(.))
+    data.hour <- mapType(
+      data.hour,
+      type = "variable",
+      fun = divide.by.mean
+    )
   }
 
   if (is.null(xlab[2]) | is.na(xlab[2])) {
@@ -765,21 +775,31 @@ timeVariation <- function(
       conf.int = conf.int
     )
   } else {
-    data.weekday <- group_by(conf_int, ci) %>%
-      do(proc(
-        .$ci,
-        mydata,
-        vars = "wkday",
-        pollutant,
-        type,
-        B = B,
-        statistic = statistic
-      ))
+    data.weekday <-
+      purrr::map(
+        .x = conf_int$ci,
+        .f = function(x) {
+          proc(
+            x,
+            mydata,
+            vars = "wkday",
+            pollutant,
+            type,
+            B = B,
+            statistic = statistic
+          )
+        }
+      ) %>%
+      dplyr::bind_rows() %>%
+      dplyr::tibble()
   }
 
   if (normalise) {
-    data.weekday <- group_by(data.weekday, variable) %>%
-      do(divide.by.mean(.))
+    data.weekday <- mapType(
+      data.weekday,
+      type = "variable",
+      fun = divide.by.mean
+    )
   }
 
   data.weekday$wkday <- ordered(data.weekday$wkday, levels = day.ord)
@@ -880,21 +900,31 @@ timeVariation <- function(
       conf.int = conf.int
     )
   } else {
-    data.month <- group_by(conf_int, ci) %>%
-      do(proc(
-        .$ci,
-        mydata,
-        vars = "mnth",
-        pollutant,
-        type,
-        B = B,
-        statistic = statistic
-      ))
+    data.month <-
+      purrr::map(
+        .x = conf_int$ci,
+        .f = function(x) {
+          proc(
+            x,
+            mydata,
+            vars = "mnth",
+            pollutant,
+            type,
+            B = B,
+            statistic = statistic
+          )
+        }
+      ) %>%
+      dplyr::bind_rows() %>%
+      dplyr::tibble()
   }
 
   if (normalise) {
-    data.month <- group_by(data.month, variable) %>%
-      do(divide.by.mean(.))
+    data.month <- mapType(
+      data.month,
+      type = "variable",
+      fun = divide.by.mean
+    )
   }
 
   if (is.null(xlab[3]) | is.na(xlab[3])) {
@@ -1020,21 +1050,31 @@ timeVariation <- function(
       conf.int = conf.int
     )
   } else {
-    data.day.hour <- group_by(conf_int, ci) %>%
-      do(proc(
-        .$ci,
-        mydata,
-        vars = "day.hour",
-        pollutant,
-        type,
-        B = B,
-        statistic = statistic
-      ))
+    data.day.hour <-
+      purrr::map(
+        .x = conf_int$ci,
+        .f = function(x) {
+          proc(
+            x,
+            mydata,
+            vars = "day.hour",
+            pollutant,
+            type,
+            B = B,
+            statistic = statistic
+          )
+        }
+      ) %>%
+      dplyr::bind_rows() %>%
+      dplyr::tibble()
   }
 
   if (normalise) {
-    data.day.hour <- group_by(data.day.hour, variable) %>%
-      do(divide.by.mean(.))
+    data.day.hour <- mapType(
+      data.day.hour,
+      type = "variable",
+      fun = divide.by.mean
+    )
   }
 
   ids <- which(is.na(data.day.hour$Lower)) ## missing Lower ci, set to mean
@@ -1424,9 +1464,12 @@ errorDiff <- function(
   }
 
   ## warnings from dplyr seem harmless FIXME
-  res <- mydata %>%
-    group_by(across(splits)) %>%
-    do(bootMeanDiff(., x = poll1, y = poll2, B = B, na.rm = TRUE))
+  res <-
+    mapType(
+      mydata,
+      type = splits,
+      fun = \(df) bootMeanDiff(df, x = poll1, y = poll2, B = B, na.rm = TRUE)
+    )
 
   # make sure we keep the order correct
   res$variable <- ordered(res$variable, levels = res$variable[1:3])

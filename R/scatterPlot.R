@@ -1213,9 +1213,13 @@ scatterPlot <- function(
     }
 
     if (smooth) {
-      mydata <- mydata %>%
-        group_by(across(type)) %>%
-        do(smooth.grid(., z))
+      mydata <-
+        mapType(
+          mydata,
+          type = type,
+          fun = \(x) smooth.grid(x, z),
+          .include_default = TRUE
+        )
     }
 
     ## basic function for lattice call + defaults
@@ -1474,9 +1478,13 @@ scatterPlot <- function(
     }
 
     if (smooth) {
-      mydata <- mydata %>%
-        group_by(across(type)) %>%
-        do(smooth.grid(., z))
+      mydata <-
+        mapType(
+          mydata,
+          type = type,
+          fun = \(x) smooth.grid(x, z),
+          .include_default = TRUE
+        )
     }
 
     ## basic function for lattice call + defaults
@@ -1703,9 +1711,13 @@ scatterPlot <- function(
 
     ## ###########################################################################
 
-    results.grid <- mydata %>%
-      group_by(across(type)) %>%
-      do(prepare.grid(.))
+    mydata <-
+      mapType(
+        mydata,
+        type = type,
+        fun = prepare.grid,
+        .include_default = TRUE
+      )
 
     ## auto-scaling
     nlev <- nrow(mydata) ## preferred number of intervals
