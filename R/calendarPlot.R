@@ -31,9 +31,8 @@
 #' passed to [calendarPlot()] and `statistic = "max"` chosen, which will plot
 #' maximum daily 8-hour mean concentrations.
 #'
-#' @param mydata A data frame minimally containing `date` and at least one other
-#'   numeric variable. The date should be in either `Date` format or class
-#'   `POSIXct`.
+#' @inheritParams timePlot
+#'
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
 #'   data frame should be supplied e.g. `pollutant = "nox". `
 #' @param year Year to plot e.g. `year = 2003`. If not supplied all data
@@ -42,18 +41,17 @@
 #'   plot an entire year even if months are missing. To only plot certain months
 #'   use the `month` option where month is a numeric 1:12 e.g. `month = c(1,
 #'   12)` to only plot January and December.
-#' @param type Not yet implemented.
 #' @param annotate This option controls what appears on each day of the
-#'   calendar. Can be: "date" --- shows day of the month; "wd"
-#'   --- shows vector-averaged wind direction, or "ws" --- shows
-#'   vector-averaged wind direction scaled by wind speed. Finally it can be
-#'   \dQuote{value} which shows the daily mean value.
+#'   calendar. Can be:
+#'   - `"date"` --- shows day of the month
+#'   - `"wd"` --- shows vector-averaged wind direction
+#'   - `"ws"` --- shows vector-averaged wind direction scaled by wind speed
+#'   - `"value"` --- shows the daily mean value
 #' @param statistic Statistic passed to [timeAverage()]. Note that if `statistic
-#'   = "max"` and `annotate` is "ws" or "wd", the hour corresponding to the
-#'   maximum concentration of `polluant` is used to provide the associated `ws`
-#'   or `wd` and not the maximum daily `ws` or `wd`.
-#' @param cols Colours to be used for plotting. See [openColours()] for more
-#'   details.
+#'   %in% c("max", "min")` and `annotate` is "ws" or "wd", the hour
+#'   corresponding to the maximum/minimum concentration of `polluant` is used to
+#'   provide the associated `ws` or `wd` and not the maximum/minimum daily `ws`
+#'   or `wd`.
 #' @param limits Use this option to manually set the colour scale limits. This
 #'   is useful in the case when there is a need for two or more plots and a
 #'   consistent scale is needed on each. Set the limits to cover the maximum
@@ -78,18 +76,14 @@
 #' @param cex.date The base size of the annotation text for the date.
 #' @param digits The number of digits used to display concentration values when
 #'   `annotate = "value"`.
-#' @param data.thresh Data capture threshold passed to [timeAverage()]. For
-#'   example, `data.thresh = 75` means that at least 75\% of the data must be
-#'   available in a day for the value to be calculate, else the data is removed.
 #' @param breaks If a categorical scale is required then these breaks will be
-#'   used. For example, `breaks = c(0, 50, 100, 1000)`. In this case
-#'   \dQuote{good} corresponds to values between 0 and 50 and so on. Users
-#'   should set the maximum value of `breaks` to exceed the maximum data value
-#'   to ensure it is within the maximum final range e.g. 100--1000 in this case.
+#'   used. For example, `breaks = c(0, 50, 100, 1000)`. In this case "good"
+#'   corresponds to values between 0 and 50 and so on. Users should set the
+#'   maximum value of `breaks` to exceed the maximum data value to ensure it is
+#'   within the maximum final range e.g. 100--1000 in this case.
 #' @param labels If a categorical scale is defined using `breaks`, then `labels`
 #'   can be used to override the default category labels, e.g., `labels =
 #'   c("good", "bad", "very bad")`. Note there is one less label than break.
-#' @param main The plot title; default is pollutant and year.
 #' @param w.shift Controls the order of the days of the week. By default the
 #'   plot shows Saturday first (`w.shift = 0`). To change this so that it starts
 #'   on a Monday for example, set `w.shift = 2`, and so on.
@@ -99,6 +93,10 @@
 #'   abbreviate "Monday" to "Mon".
 #' @param remove.empty Should months with no data present be removed? Default is
 #'   `TRUE`.
+#' @param show.year If only a single year is being plotted, should the calendar
+#'   labels include the year label? `TRUE` creates labels like "January-2000",
+#'   `FALSE` labels just as "January". If multiple years of data are detected,
+#'   this option is forced to be `TRUE`.
 #' @param key.header Adds additional text/labels to the scale key. For example,
 #'   passing `calendarPlot(mydata, key.header = "header", key.footer =
 #'   "footer")` adds addition text above and below the scale key. These
@@ -109,11 +107,6 @@
 #'   arguments currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
 #' @param key Fine control of the scale key via [drawOpenKey()]. See
 #'   [drawOpenKey()] for further details.
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
-#'   axis labels will automatically try and format pollutant names and units
-#'   properly e.g.  by subscripting the `2' in NO2.
-#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
-#'   data to extract calendar plot components and plotting them in other ways.
 #' @param ... Other graphical parameters are passed onto the `lattice` function
 #'   [lattice::levelplot()], with common axis and title labelling options (such
 #'   as `xlab`, `ylab`, `main`) being passed to via [quickText()] to handle
@@ -159,11 +152,12 @@ calendarPlot <-
   function(
     mydata,
     pollutant = "nox",
-    year = 2003,
-    month = 1:12,
-    type = "default",
+    year = NULL,
+    month = NULL,
     annotate = "date",
     statistic = "mean",
+    data.thresh = 0,
+    percentile = NA,
     cols = "heat",
     limits = c(0, 100),
     lim = NULL,
@@ -173,13 +167,12 @@ calendarPlot <-
     cex.lim = c(0.6, 1),
     cex.date = 0.6,
     digits = 0,
-    data.thresh = 0,
     labels = NA,
     breaks = NA,
     w.shift = 0,
     w.abbr.len = 1,
     remove.empty = TRUE,
-    main = NULL,
+    show.year = TRUE,
     key.header = "",
     key.footer = "",
     key.position = "right",
@@ -188,81 +181,27 @@ calendarPlot <-
     plot = TRUE,
     ...
   ) {
-    conc.mat <- NULL ## keep R check quiet
+    ## ---- Setup & Validation ----
 
-    ## international keyboard
-    ## first letter and ordered Sun to Sat
-
+    # check w.shift
     if (w.shift < 0 || w.shift > 6) {
-      warning("w.shift should be between 0 and 6")
+      cli::cli_abort("{.field w.shift} should be between {0} and {6}.")
     }
 
-    weekday.abb <-
-      substr(format(ISOdate(2000, 1, 2:8), "%A"), 1, w.abbr.len)[
-        ((6:12) +
-          w.shift) %%
-          7 +
-          1
-      ]
-
-    ## extra args
+    # extra args
     extra.args <- list(...)
 
-    ## set graphics
-    current.strip <- trellis.par.get("strip.background")
+    ## ---- Graphics ----
+
+    # set graphics
     current.font <- trellis.par.get("fontsize")
-
-    ## reset graphic parameters
     on.exit(trellis.par.set(fontsize = current.font))
-
-    ## label controls
-    ## (main currently handled in formals)
-    extra.args$xlab <- if ("xlab" %in% names(extra.args)) {
-      quickText(extra.args$xlab, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
-
-    extra.args$ylab <- if ("ylab" %in% names(extra.args)) {
-      quickText(extra.args$ylab, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
 
     if ("fontsize" %in% names(extra.args)) {
       trellis.par.set(fontsize = list(text = extra.args$fontsize))
     }
 
-    ## extract variables of interest
-    if (annotate %in% c("date", "value")) {
-      vars <- c("date", pollutant)
-    }
-    if (annotate == "wd") {
-      vars <- c("wd", "ws", "date", pollutant)
-    }
-    if (annotate == "ws") {
-      vars <- c("wd", "ws", "date", pollutant)
-    }
-
-    ## select year first, then check variables
-    if (!missing(year)) {
-      mydata <- selectByDate(mydata, year = year)
-    }
-
-    if (!missing(month)) {
-      mydata <- selectByDate(mydata, month = month)
-    }
-
-    # mydata <- selectByDate(mydata, year = year)
-    if (nrow(mydata) == 0) {
-      stop("No data to plot - check year chosen")
-    }
-    mydata <-
-      checkPrep(mydata, vars, "default", remove.calm = FALSE)
-
-    main <- quickText(main, auto.text)
-
-    ## themes for calendarPlot
+    # themes for calendarPlot
     def.theme <- list(
       strip.background = list(col = "#ffe5cc"),
       strip.border = list(col = "black"),
@@ -278,96 +217,53 @@ calendarPlot <-
     )
 
     lattice.options(default.theme = cal.theme)
+    on.exit(
+      # reset theme
+      lattice.options(default.theme = def.theme)
+    )
 
-    ## all the days in the year
-    all.dates <- seq(
-      as_date(floor_date(min(mydata$date), "month")),
-      as_date(ceiling_date(max(mydata$date), "month")) - 1,
+    ## ---- Labels ----
+
+    # label controls
+    extra.args$xlab <- quickText(extra.args$xlab %||% "", auto.text)
+    extra.args$ylab <- quickText(extra.args$ylab %||% "", auto.text)
+    main <- quickText(extra.args$main %||% NULL, auto.text)
+
+    ## ---- Data Preparation ----
+
+    # filter and check data
+    mydata <- prepare_calendar_data(
+      mydata,
+      year = year,
+      month = month,
+      pollutant = pollutant,
+      annotate = annotate
+    )
+
+    # all the days in the period - to be bound later
+    all_dates <- seq(
+      lubridate::as_date(lubridate::floor_date(min(mydata$date), "month")),
+      lubridate::as_date(lubridate::ceiling_date(max(mydata$date), "month")) -
+        1,
       by = "day"
     )
 
-    prepare.grid <- function(mydata, pollutant) {
-      firstDay <- format(mydata$date[1], "%A")
-      lastDay <-
-        as.numeric(format(mydata$date[length(mydata$date)], "%d"))
+    ## ---- Data Aggregation ----
 
-      ## number of blank cells at beginning to get calendar format
-      pad.start <-
-        (as.numeric(format(mydata$date[1], "%w")) - w.shift) %% 7 + 1
-
-      ## need to do in reverse to plot easily
-      conc <- rev(mydata[[pollutant]])
-      actual_date <- rev(mydata$date)
-
-      ## day of the month
-      theDates <- as.numeric(format(mydata$date, "%d"))
-      theDates <- rev(theDates)
-
-      daysAtEnd <- 42 - pad.start - nrow(mydata) ## 7x6 regular grid
-      conc <- c(rep(NA, daysAtEnd), conc)
-
-      actual_date <- c(rep(NA, daysAtEnd), actual_date)
-
-      ## get relevant days in previous and next month, like a real calendar
-      endDates <- mydata$date[nrow(mydata)] + (1:daysAtEnd)
-      endDates <- rev(as.numeric(format(endDates, "%d")))
-
-      theDates <- c(endDates, theDates)
-
-      beginDates <- -1 * (1:pad.start) + mydata$date[1]
-      beginDates <- as.numeric(format(beginDates, "%d"))
-
-      conc <- c(conc, rep(NA, pad.start))
-
-      actual_date <- c(actual_date, rep(NA, pad.start))
-
-      if (pad.start != 0) {
-        theDates <- c(theDates, beginDates)
+    # if statistic is max/min we want the corresponding ws/wd for the pollutant,
+    # not simply the max ws/wd
+    if (statistic %in% c("max", "min")) {
+      if (statistic == "max") {
+        which.fun <- which.max
+      } else if (statistic == "min") {
+        which.fun <- which.min
       }
-
-      ## colurs for dates
-      dateColour <- c(
-        rep("grey70", daysAtEnd),
-        rep("black", nrow(mydata)),
-        rep("grey70", pad.start)
-      )
-
-      ## convert to matrix
-      conc.mat <- matrix(conc, ncol = 7, byrow = TRUE)
-      date.mat <- matrix(theDates, ncol = 7, byrow = TRUE)
-      actual_date.mat <- matrix(actual_date, ncol = 7, byrow = TRUE)
-      colour.mat <- matrix(dateColour, ncol = 7, byrow = TRUE)
-
-      ## need to reverse each row for calendar format
-      conc.mat <- as.vector(apply(conc.mat, 1, rev))
-      date.mat <- as.vector(apply(date.mat, 1, rev))
-      actual_date.mat <- as.vector(apply(actual_date.mat, 1, rev))
-      colour.mat <- as.vector(apply(colour.mat, 1, rev))
-
-      grid <- data.frame(expand.grid(x = 1:7, y = 1:6))
-      results <- tibble(
-        x = grid$x,
-        y = grid$y,
-        conc.mat,
-        date.mat = date.mat,
-        dateColour = colour.mat,
-        date = lubridate::as_date(actual_date.mat)
-      )
-
-      results
-    }
-
-    # if statistic = "max" we want the corresponding ws/wd for the pollutant, not
-    # simply the max ws/wd
-
-    if (statistic == "max") {
-      vars <- c("ws", "wd")
 
       # max ws/wd for hour with max pollutant value
       maxes <- mydata |>
-        mutate(date = as_date(date)) |>
-        group_by(date) |>
-        slice(which.max(.data[[pollutant]]))
+        dplyr::mutate(date = lubridate::as_date(.data$date)) |>
+        dplyr::group_by(date) |>
+        dplyr::slice(which.fun(.data[[pollutant]]))
 
       # averaged data, make sure Date format (max returns POSIXct)
       mydata <- timeAverage(
@@ -376,140 +272,155 @@ calendarPlot <-
         statistic = statistic,
         data.thresh = data.thresh
       ) |>
-        mutate(date = as_date(date))
+        dplyr::mutate(date = lubridate::as_date(.data$date))
 
       # replace with parallel max
-      mydata <- left_join(
-        mydata |>
-          select(!any_of(vars)),
-        maxes |>
-          select(!.data[[pollutant]]),
-        by = join_by(date)
+      mydata <- dplyr::left_join(
+        dplyr::select(mydata, !dplyr::any_of(c("ws", "wd"))),
+        dplyr::select(maxes, !.data[[pollutant]]),
+        by = dplyr::join_by(date)
       )
     } else {
-      ## calculate daily means
-
+      # calculate daily means
       mydata <- timeAverage(
         mydata,
         "day",
         statistic = statistic,
-        data.thresh = data.thresh
+        data.thresh = data.thresh,
+        percentile = percentile
       )
 
-      mydata$date <- as_date(mydata$date)
+      mydata$date <- lubridate::as_date(mydata$date)
+    }
+
+    ## ---- Data Structuring ----
+
+    # make sure all days are available
+    mydata <-
+      dplyr::left_join(data.frame(date = all_dates), mydata, by = "date")
+
+    # split by year-month, and set 'type' to this
+    if (show.year) {
+      mydata <- dplyr::mutate(
+        mydata,
+        cuts = format(.data$date, "%B-%Y"),
+        cuts = ordered(.data$cuts, levels = unique(.data$cuts))
+      )
+    } else {
+      # cut just by month - although check duplicate years
+      mydata <- dplyr::mutate(
+        mydata,
+        cuts = format(.data$date, "%B"),
+        years = format(.data$date, "%Y"),
+        cuts = ordered(.data$cuts, levels = unique(.data$cuts))
+      )
+
+      # check duplicates
+      verify_duplicates <-
+        mydata |>
+        dplyr::count(.data$cuts, .data$years) |>
+        dplyr::add_count(.data$cuts, name = "month_counts")
+
+      # if any duplicates, set show.year = TRUE
+      if (
+        any(verify_duplicates$month_counts > 1L) ||
+          dplyr::n_distinct(verify_duplicates$years) > 1L
+      ) {
+        mydata <- dplyr::mutate(
+          mydata,
+          cuts = format(.data$date, "%B-%Y"),
+          cuts = ordered(.data$cuts, levels = unique(.data$cuts))
+        )
+      }
+
+      mydata <- dplyr::select(mydata, -"years")
     }
 
     type <- "cuts"
 
-    # make sure all days are available
-    mydata <-
-      left_join(data.frame(date = all.dates), mydata, by = "date")
-
-    # split by year-month
-    mydata <- mutate(
-      mydata,
-      cuts = format(date, "%B-%Y"),
-      cuts = ordered(cuts, levels = unique(cuts))
-    )
-
+    # drop empty months?
     if (remove.empty) {
-      mydata <- group_by(mydata, cuts) |>
-        mutate(empty = all(is.na(across(pollutant)))) |>
-        filter(empty == FALSE) |>
-        ungroup()
+      mydata <- mydata |>
+        dplyr::group_by(.data$cuts) |>
+        dplyr::mutate(
+          empty = all(is.na(dplyr::across(dplyr::all_of(pollutant))))
+        ) |>
+        dplyr::filter(!.data$empty) |>
+        dplyr::ungroup()
     }
 
-    baseData <- mydata # for use later
+    # snapshot data for later
     original_data <- mydata
 
     # timeAverage will pad-out missing months
-    if (!missing(month)) {
+    if (!is.null(month)) {
       mydata <- selectByDate(mydata, month = month)
     }
 
-    mydata <-
-      mapType(
-        mydata,
-        type = type,
-        fun = \(df) prepare.grid(df, pollutant),
-        .include_default = TRUE
-      )
+    # transform data into a calendar grid
+    mydata <- mapType(
+      mydata,
+      type = type,
+      fun = \(df) prepare_calendar_grid(df, pollutant, w.shift),
+      .include_default = TRUE
+    ) |>
+      # retain actual numerical value (retain for categorical scales)
+      dplyr::mutate(value = .data$conc.mat)
 
-    mydata$value <-
-      mydata$conc.mat ## actual numerical value (retain for categorical scales)
+    ## ---- Wind Speed / Direction Annotations ----
 
-    strip.dat <- strip.fun(mydata, type, auto.text)
-    strip <- strip.dat[[1]]
+    # need wd dataframe if ws/wd annotation
+    if (annotate %in% c("ws", "wd")) {
+      wd <- original_data |>
+        dplyr::mutate(wd = .data$wd * 2 * pi / 360) |>
+        mapType(
+          type = type,
+          fun = \(df) prepare_calendar_grid(df, "wd", w.shift),
+          .include_default = TRUE
+        ) |>
+        # actual numerical value (retain for categorical scales)
+        dplyr::mutate(value = .data$conc.mat)
+    }
 
-    category <- FALSE ## assume pollutant is not a categorical value
+    # if ws annotation, also need ws
+    if (annotate == "ws") {
+      ws <- original_data |>
+        dplyr::mutate(wd = .data$wd * 2 * pi / 360) |>
+        mapType(
+          type = type,
+          fun = \(df) prepare_calendar_grid(df, "ws", w.shift),
+          .include_default = TRUE
+        ) |>
+        dplyr::mutate(
+          # normalise wind speeds to highest daily mean
+          conc.mat = .data$conc.mat / max(.data$conc.mat, na.rm = TRUE),
+          # actual numerical value (retain for categorical scales)
+          value = .data$conc.mat
+        )
+    }
 
+    ## ---- Scales & Colours Setup ----
+
+    # get name for lattice strips
+    strip <- strip.fun(mydata, type, auto.text)[[1]]
+
+    # handle breaks
+    category <- FALSE
     if (!anyNA(breaks)) {
       # assign labels if no labels are given
-      if (anyNA(labels)) {
-        labels <- c()
-        for (i in seq_along(breaks)) {
-          lhs <- breaks[i]
-          rhs <- breaks[i + 1]
-          str <- paste(lhs, rhs, sep = " - ")
-          labels <- append(labels, str)
-        }
-        labels <- labels[-i]
-      }
-
+      labels <- breaksToLabels(breaks, labels)
       category <- TRUE
-      mydata <- mutate(
+      mydata <- dplyr::mutate(
         mydata,
-        conc.mat = cut(conc.mat, breaks = breaks, labels = labels)
+        conc.mat = cut(.data$conc.mat, breaks = breaks, labels = labels)
       )
     }
 
-    if (annotate == "wd") {
-      baseData$wd <- baseData$wd * 2 * pi / 360
+    ## ---- Categorical Scales ----
 
-      wd <-
-        mapType(
-          baseData,
-          type = type,
-          fun = \(df) prepare.grid(df, "wd"),
-          .include_default = TRUE
-        )
-
-      wd$value <-
-        wd$conc.mat ## actual numerical value (retain for categorical scales)
-    }
-
-    if (annotate == "ws") {
-      baseData$wd <- baseData$wd * 2 * pi / 360
-
-      ws <-
-        mapType(
-          baseData,
-          type = type,
-          fun = \(df) prepare.grid(df, "ws"),
-          .include_default = TRUE
-        )
-
-      wd <-
-        mapType(
-          baseData,
-          type = type,
-          fun = \(df) prepare.grid(df, "wd"),
-          .include_default = TRUE
-        )
-
-      ## normalise wind speeds to highest daily mean
-      ws$conc.mat <- ws$conc.mat / max(ws$conc.mat, na.rm = TRUE)
-      ws$value <-
-        ws$conc.mat ## actual numerical value (retain for categorical scales)
-      wd$value <-
-        wd$conc.mat ## actual numerical value (retain for categorical scales)
-    }
-
-    ## set up scales
-
-    ## categorical scales required
+    # categorical scales required
     if (category) {
-      ## check the breaks and labels are consistent
+      # check the breaks and labels are consistent
       if (length(labels) + 1 != length(breaks)) {
         stop("Need one more break than labels")
       }
@@ -532,10 +443,10 @@ calendarPlot <-
       col.scale <- breaks
       legend <- makeOpenKeyLegend(key, legend, "windRose")
     } else {
-      ## continuous colour scale
+      # continuous colour scale
       nlev <- 200
 
-      ## handle missing breaks arguments
+      # handle missing breaks arguments
 
       if (missing(limits)) {
         breaks <- pretty(mydata$value, n = nlev)
@@ -547,7 +458,7 @@ calendarPlot <-
         labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
 
         if (max(limits) < max(mydata$value, na.rm = TRUE)) {
-          ## if clipping highest, then annotate differently
+          # if clipping highest, then annotate differently
           id <- which(mydata$value > max(limits))
           mydata$value[id] <- max(limits)
           labs <- pretty(breaks, 7)
@@ -575,6 +486,17 @@ calendarPlot <-
 
       legend <- makeOpenKeyLegend(key, legend, "calendarPlot")
     }
+
+    ## ---- Construct Plot ----
+
+    # get weekday abbreviation for axis
+    weekday.abb <-
+      substr(format(ISOdate(2000, 1, 2:8), "%A"), 1, w.abbr.len)[
+        ((6:12) +
+          w.shift) %%
+          7 +
+          1
+      ]
 
     lv.args <- list(
       x = value ~ x * y | cuts,
@@ -617,7 +539,7 @@ calendarPlot <-
         }
 
         if (annotate == "value") {
-          ## add some dates for navigation
+          # add some dates for navigation
           date.col <- as.character(mydata$dateColour[subscripts])
           ids <- which(date.col == "black")
           date.col[ids] <- "transparent"
@@ -631,13 +553,13 @@ calendarPlot <-
 
           concs <- mydata$value[subscripts]
 
-          ## deal with values above/below threshold
+          # deal with values above/below threshold
           ids <- seq_along(concs)
           the.cols <- rep(col.lim[1], length(ids))
           the.font <- rep(font.lim[1], length(ids))
           the.cex <- rep(cex.lim[1], length(ids))
           if (!is.null(lim)) {
-            ## ids where conc is >= lim
+            # ids where conc is >= lim
             ids <- which(concs >= lim)
             the.cols[ids] <- col.lim[2]
             the.font[ids] <- font.lim[2]
@@ -688,26 +610,22 @@ calendarPlot <-
       }
     )
 
-    ## reset for extra.args
+    # reset for extra.args
     lv.args <- listUpdate(lv.args, extra.args)
 
-    ## plot
+    # plot
     if (plot) {
       print(do.call(levelplot, lv.args))
     }
 
-    ## reset theme
-    lattice.options(default.theme = def.theme)
-
     # output
-
     plt <- do.call(levelplot, lv.args)
 
     # add in ws and wd if there
     newdata <-
-      left_join(
+      dplyr::left_join(
         mydata,
-        original_data |> select(any_of(c("date", "ws", "wd"))),
+        dplyr::select(original_data, dplyr::any_of(c("date", "ws", "wd"))),
         by = "date"
       )
 
@@ -719,3 +637,107 @@ calendarPlot <-
     class(output) <- "openair"
     invisible(output)
   }
+
+#' @noRd
+prepare_calendar_data <- function(mydata, year, month, pollutant, annotate) {
+  # filter by year
+  if (!is.null(year)) {
+    mydata <- selectByDate(mydata, year = year)
+  }
+
+  # filter by month
+  if (!is.null(month)) {
+    mydata <- selectByDate(mydata, month = month)
+  }
+
+  # if no data left, error
+  if (nrow(mydata) == 0) {
+    cli::cli_abort(c(
+      "x" = "No data to plot.",
+      "i" = "Check {.field year} and {.field month}."
+    ))
+  }
+
+  # extract variables of interest
+  if (annotate %in% c("date", "value")) {
+    vars <- c("date", pollutant)
+  }
+  if (annotate == "wd") {
+    vars <- c("wd", "ws", "date", pollutant)
+  }
+  if (annotate == "ws") {
+    vars <- c("wd", "ws", "date", pollutant)
+  }
+
+  # check input data
+  mydata <-
+    checkPrep(mydata, vars, "default", remove.calm = FALSE)
+
+  return(mydata)
+}
+
+#' @noRd
+prepare_calendar_grid <- function(mydata, pollutant, w.shift) {
+  # number of blank cells at beginning to get calendar format
+  pad.start <-
+    (as.numeric(format(mydata$date[1], "%w")) - w.shift) %% 7 + 1
+
+  # need to do in reverse to plot easily
+  conc <- rev(mydata[[pollutant]])
+  actual_date <- rev(mydata$date)
+
+  # day of the month
+  theDates <- rev(as.numeric(format(mydata$date, "%d")))
+
+  # get number of days left over at end of 7x6 regular grid
+  daysAtEnd <- (7 * 6) - pad.start - nrow(mydata)
+
+  # get relevant days in previous and next month, like a real calendar
+  if (daysAtEnd > 0) {
+    endDates <- mydata$date[nrow(mydata)] + (1:daysAtEnd)
+    endDates <- rev(as.numeric(format(endDates, "%d")))
+    conc <- c(rep(NA, daysAtEnd), conc)
+    actual_date <- c(rep(NA, daysAtEnd), actual_date)
+    theDates <- c(endDates, theDates)
+  }
+
+  if (pad.start > 0) {
+    beginDates <- -1 * (1:pad.start) + mydata$date[1]
+    beginDates <- as.numeric(format(beginDates, "%d"))
+    conc <- c(conc, rep(NA, pad.start))
+    actual_date <- c(actual_date, rep(NA, pad.start))
+    theDates <- c(theDates, beginDates)
+  }
+
+  # colurs for dates
+  dateColour <- c(
+    rep("grey70", daysAtEnd),
+    rep("black", nrow(mydata)),
+    rep("grey70", pad.start)
+  )
+
+  # create and reverse matrix for data
+  reversed_matrix <- function(data) {
+    mat <- matrix(data, ncol = 7, byrow = TRUE)
+    as.vector(apply(mat, 1, rev))
+  }
+
+  # Create all matrices
+  conc.mat <- reversed_matrix(conc)
+  date.mat <- reversed_matrix(theDates)
+  actual_date.mat <- reversed_matrix(actual_date)
+  colour.mat <- reversed_matrix(dateColour)
+
+  # Create grid and results
+  grid <- data.frame(expand.grid(x = 1:7, y = 1:6))
+
+  results <- dplyr::tibble(
+    x = grid$x,
+    y = grid$y,
+    conc.mat,
+    date.mat = date.mat,
+    dateColour = colour.mat,
+    date = lubridate::as_date(actual_date.mat)
+  )
+  results
+}

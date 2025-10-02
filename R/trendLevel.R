@@ -235,17 +235,7 @@ trendLevel <- function(
   # assume pollutant scale is not a categorical value
   category <- FALSE
   if (!anyNA(breaks)) {
-    # assign labels if no labels are given
-    if (anyNA(labels)) {
-      labels <- c()
-      for (i in seq_along(breaks)) {
-        lhs <- breaks[i]
-        rhs <- breaks[i + 1]
-        str <- paste(lhs, rhs, sep = " - ")
-        labels <- append(labels, str)
-      }
-      labels <- labels[-i]
-    }
+    labels <- breaksToLabels(breaks, labels)
     category <- TRUE
   }
 
