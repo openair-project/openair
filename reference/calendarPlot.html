@@ -70,11 +70,12 @@ if wind speed and direction are available.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">calendarPlot</span><span class="op">(</span></span>
 <span>  <span class="va">mydata</span>,</span>
 <span>  pollutant <span class="op">=</span> <span class="st">"nox"</span>,</span>
-<span>  year <span class="op">=</span> <span class="fl">2003</span>,</span>
-<span>  month <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span>,</span>
-<span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  year <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  month <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  annotate <span class="op">=</span> <span class="st">"date"</span>,</span>
 <span>  statistic <span class="op">=</span> <span class="st">"mean"</span>,</span>
+<span>  data.thresh <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  percentile <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"heat"</span>,</span>
 <span>  limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100</span><span class="op">)</span>,</span>
 <span>  lim <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -84,13 +85,12 @@ if wind speed and direction are available.</p>
 <span>  cex.lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  cex.date <span class="op">=</span> <span class="fl">0.6</span>,</span>
 <span>  digits <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  data.thresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  labels <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  breaks <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  w.shift <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  w.abbr.len <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  remove.empty <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  main <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  show.year <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  key.header <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  key.footer <span class="op">=</span> <span class="st">""</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
@@ -106,9 +106,8 @@ if wind speed and direction are available.</p>
 
 
 <dl><dt id="arg-mydata">mydata<a class="anchor" aria-label="anchor" href="#arg-mydata"></a></dt>
-<dd><p>A data frame minimally containing <code>date</code> and at least one other
-numeric variable. The date should be in either <code>Date</code> format or class
-<code>POSIXct</code>.</p></dd>
+<dd><p>A data frame of time series. Must include a <code>date</code> field and at
+least one variable to plot.</p></dd>
 
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
@@ -127,27 +126,38 @@ plot an entire year even if months are missing. To only plot certain months
 use the <code>month</code> option where month is a numeric 1:12 e.g. <code>month = c(1, 12)</code> to only plot January and December.</p></dd>
 
 
-<dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p>Not yet implemented.</p></dd>
-
-
 <dt id="arg-annotate">annotate<a class="anchor" aria-label="anchor" href="#arg-annotate"></a></dt>
 <dd><p>This option controls what appears on each day of the
-calendar. Can be: "date" — shows day of the month; "wd"
-— shows vector-averaged wind direction, or "ws" — shows
-vector-averaged wind direction scaled by wind speed. Finally it can be
-“value” which shows the daily mean value.</p></dd>
+calendar. Can be:</p><ul><li><p><code>"date"</code> — shows day of the month</p></li>
+<li><p><code>"wd"</code> — shows vector-averaged wind direction</p></li>
+<li><p><code>"ws"</code> — shows vector-averaged wind direction scaled by wind speed</p></li>
+<li><p><code>"value"</code> — shows the daily mean value</p></li>
+</ul></dd>
 
 
 <dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
-<dd><p>Statistic passed to <code><a href="timeAverage.html">timeAverage()</a></code>. Note that if <code>statistic = "max"</code> and <code>annotate</code> is "ws" or "wd", the hour corresponding to the
-maximum concentration of <code>polluant</code> is used to provide the associated <code>ws</code>
-or <code>wd</code> and not the maximum daily <code>ws</code> or <code>wd</code>.</p></dd>
+<dd><p>Statistic passed to <code><a href="timeAverage.html">timeAverage()</a></code>. Note that if <code>statistic %in% c("max", "min")</code> and <code>annotate</code> is "ws" or "wd", the hour
+corresponding to the maximum/minimum concentration of <code>polluant</code> is used to
+provide the associated <code>ws</code> or <code>wd</code> and not the maximum/minimum daily <code>ws</code>
+or <code>wd</code>.</p></dd>
+
+
+<dt id="arg-data-thresh">data.thresh<a class="anchor" aria-label="anchor" href="#arg-data-thresh"></a></dt>
+<dd><p>The data capture threshold to use (%). A value of zero
+means that all available data will be used in a particular period
+regardless if of the number of values available. Conversely, a value of 100
+will mean that all data will need to be present for the average to be
+calculated, else it is recorded as <code>NA</code>. See also <code>interval</code>, <code>start.date</code>
+and <code>end.date</code> to see whether it is advisable to set these other options.</p></dd>
+
+
+<dt id="arg-percentile">percentile<a class="anchor" aria-label="anchor" href="#arg-percentile"></a></dt>
+<dd><p>The percentile level in percent used when <code>statistic = "percentile"</code> and when aggregating the data with <code>avg.time</code>. More than one
+percentile level is allowed for <code>type = "default"</code> e.g. <code>percentile = c(50, 95)</code>. Not used if <code>avg.time = "default"</code>.</p></dd>
 
 
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
-<dd><p>Colours to be used for plotting. See <code><a href="openColours.html">openColours()</a></code> for more
-details.</p></dd>
+<dd><p>Colours to be used for plotting; see <code><a href="openColours.html">openColours()</a></code> for details.</p></dd>
 
 
 <dt id="arg-limits">limits<a class="anchor" aria-label="anchor" href="#arg-limits"></a></dt>
@@ -198,12 +208,6 @@ the text above <code>lim</code>.</p></dd>
 <code>annotate = "value"</code>.</p></dd>
 
 
-<dt id="arg-data-thresh">data.thresh<a class="anchor" aria-label="anchor" href="#arg-data-thresh"></a></dt>
-<dd><p>Data capture threshold passed to <code><a href="timeAverage.html">timeAverage()</a></code>. For
-example, <code>data.thresh = 75</code> means that at least 75\<!-- % of the data must be -->
-available in a day for the value to be calculate, else the data is removed.</p></dd>
-
-
 <dt id="arg-labels">labels<a class="anchor" aria-label="anchor" href="#arg-labels"></a></dt>
 <dd><p>If a categorical scale is defined using <code>breaks</code>, then <code>labels</code>
 can be used to override the default category labels, e.g., <code>labels = c("good", "bad", "very bad")</code>. Note there is one less label than break.</p></dd>
@@ -211,10 +215,10 @@ can be used to override the default category labels, e.g., <code>labels = c("goo
 
 <dt id="arg-breaks">breaks<a class="anchor" aria-label="anchor" href="#arg-breaks"></a></dt>
 <dd><p>If a categorical scale is required then these breaks will be
-used. For example, <code>breaks = c(0, 50, 100, 1000)</code>. In this case
-“good” corresponds to values between 0 and 50 and so on. Users
-should set the maximum value of <code>breaks</code> to exceed the maximum data value
-to ensure it is within the maximum final range e.g. 100–1000 in this case.</p></dd>
+used. For example, <code>breaks = c(0, 50, 100, 1000)</code>. In this case "good"
+corresponds to values between 0 and 50 and so on. Users should set the
+maximum value of <code>breaks</code> to exceed the maximum data value to ensure it is
+within the maximum final range e.g. 100–1000 in this case.</p></dd>
 
 
 <dt id="arg-w-shift">w.shift<a class="anchor" aria-label="anchor" href="#arg-w-shift"></a></dt>
@@ -235,8 +239,11 @@ abbreviate "Monday" to "Mon".</p></dd>
 <code>TRUE</code>.</p></dd>
 
 
-<dt id="arg-main">main<a class="anchor" aria-label="anchor" href="#arg-main"></a></dt>
-<dd><p>The plot title; default is pollutant and year.</p></dd>
+<dt id="arg-show-year">show.year<a class="anchor" aria-label="anchor" href="#arg-show-year"></a></dt>
+<dd><p>If only a single year is being plotted, should the calendar
+labels include the year label? <code>TRUE</code> creates labels like "January-2000",
+<code>FALSE</code> labels just as "January". If multiple years of data are detected,
+this option is forced to be <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-key-header">key.header<a class="anchor" aria-label="anchor" href="#arg-key-header"></a></dt>
@@ -263,12 +270,12 @@ arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bot
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
 <dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
 axis labels will automatically try and format pollutant names and units
-properly e.g.  by subscripting the `2' in NO2.</p></dd>
+properly, e.g., by subscripting the '2' in NO2.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
 <dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
-data to extract calendar plot components and plotting them in other ways.</p></dd>
+data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

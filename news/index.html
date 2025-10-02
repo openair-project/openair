@@ -62,6 +62,12 @@
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
 <ul><li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> has gained the <code>x.relation</code> argument, allowing for different x ranges on different panels.</p></li>
 <li><p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> has gained the <code>x.relation</code>, <code>date.format</code>, <code>key</code> and <code>key.position</code> arguments, in line with <code><a href="../reference/timePlot.html">timePlot()</a></code>. It has also gained the <code>progress</code> argument, passed to <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
+<li>
+<p><code><a href="../reference/calendarPlot.html">calendarPlot()</a></code> refinements:</p>
+<ul><li><p>Gained the <code>percentile</code> argument, passed on to <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
+<li><p>Gained the <code>show.year</code> argument, defaulting to <code>TRUE</code>. When <code>FALSE</code> and only one year of data is given, the strip titles will only read, e.g., “January” instead of “January-2000”. This can create cleaner plots, as well as being useful for certain edge cases (e.g., if the calendarPlot is showing day-of-year averages over multiple years).</p></li>
+<li><p>When <code>statistic == "min"</code> and <code>annotation %in% c("ws", "wd")</code>, the ws/wd returned will correspond to the minimum daily pollutant, rather than the minimum daily ws/wd.</p></li>
+</ul></li>
 <li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> have gained the <code>grid.nx</code> and <code>grid.ny</code> arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.</p></li>
 </ul></div>
 <div class="section level3">
