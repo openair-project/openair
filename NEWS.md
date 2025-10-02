@@ -28,6 +28,8 @@
 
 - The `windflow` argument of `timePlot()` now works when `"ws"` and/or `"wd"` are in `pollutant`.
 
+- `timeAverage()` will no longer leave `Uu` and `Vv` columns behind when `statistic = "data.cap"`.
+
 # openair 2.19.0
 
 ## Deprecations

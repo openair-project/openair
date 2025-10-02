@@ -391,24 +391,25 @@ timeAverage <- function(
         ))
     }
 
-    if ("wd" %in% names(mydata) && statistic != "data.cap") {
-      if (is.numeric(mydata$wd)) {
-        ## mean wd
-        avmet <-
-          avmet |>
-          dplyr::mutate(
-            wd = as.vector(atan2(.data$Uu, .data$Vv) * 360 / 2 / pi),
-            # correct negative wind directions
-            wd = dplyr::if_else(.data$wd < 0, .data$wd + 360, .data$wd)
-          )
+    if ("wd" %in% names(mydata)) {
+      if (statistic != "data.cap") {
+        if (is.numeric(mydata$wd)) {
+          ## mean wd
+          avmet <-
+            avmet |>
+            dplyr::mutate(
+              wd = as.vector(atan2(.data$Uu, .data$Vv) * 360 / 2 / pi),
+              # correct negative wind directions
+              wd = dplyr::if_else(.data$wd < 0, .data$wd + 360, .data$wd)
+            )
 
-        ## vector average ws
-        if ("ws" %in% names(mydata) && vector.ws) {
-          avmet <- dplyr::mutate(avmet, ws = (.data$Uu^2 + .data$Vv^2)^0.5)
+          ## vector average ws
+          if ("ws" %in% names(mydata) && vector.ws) {
+            avmet <- dplyr::mutate(avmet, ws = (.data$Uu^2 + .data$Vv^2)^0.5)
+          }
         }
-
-        avmet <- dplyr::select(avmet, -"Uu", -"Vv")
       }
+      avmet <- dplyr::select(avmet, -dplyr::any_of(c("Uu", "Vv")))
     }
 
     ## fill missing gaps - but only for non-dst data
