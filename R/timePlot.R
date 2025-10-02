@@ -382,8 +382,8 @@ timePlot <- function(
       purrr::map(
         split(mydata, mydata[type]),
         function(x) dateBreaks(x$date, date.breaks)$major
-      ) %>%
-      purrr::list_c() %>%
+      ) |>
+      purrr::list_c() |>
       unique()
   } else {
     dates <- dateBreaks(mydata$date, date.breaks)$major
@@ -820,7 +820,7 @@ time_average_timeplot_data <- function(
       mydata,
       met_data,
       by = dplyr::join_by("date")
-    ) %>%
+    ) |>
       dplyr::relocate(dplyr::any_of(c("ws", "wd")), .after = "date")
   }
 
@@ -871,25 +871,25 @@ normalise_timeplot_data <-
 
       # find nearest values to each date
       target_date_values <-
-        tidyr::drop_na(mydata) %>%
+        tidyr::drop_na(mydata) |>
         slice_min(
           abs(.data$date - target_date),
           n = 1L,
           with_ties = FALSE,
           by = "variable"
-        ) %>%
+        ) |>
         dplyr::select("variable", "target_value" = "value")
 
       # scale value to 100 at specific date
       mydata <-
-        mydata %>%
+        mydata |>
         dplyr::left_join(
           target_date_values,
           by = dplyr::join_by(variable)
-        ) %>%
+        ) |>
         dplyr::mutate(
           value = 100 * (.data$value / .data$target_value)
-        ) %>%
+        ) |>
         dplyr::select(-"target_value")
     }
 

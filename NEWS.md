@@ -1,8 +1,14 @@
 # openair (development version)
 
+## Dependency Changes
+
+- `openair` now depends on R v4.1 and, internally, uses the base R pipe (`|>`).
+
 ## New Features
 
 - `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
+
+- `smoothTrend()` has gained the `x.relation`, `date.format`, `key` and `key.position` arguments, in line with `timePlot()`. It has also gained the `progress` argument, passed to `timeAverage()`. 
 
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
 

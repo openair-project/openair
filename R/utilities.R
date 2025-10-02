@@ -123,7 +123,7 @@ date.pad <- function(mydata, type = NULL, print.int = FALSE) {
   # only pad if there are missing data
   if (length(unique(diff(mydata$date))) != 1L) {
     all.dates <- data.frame(date = seq(start.date, end.date, by = interval))
-    mydata <- mydata %>% full_join(all.dates, by = "date")
+    mydata <- mydata |> full_join(all.dates, by = "date")
 
     # add missing types - if type is present
     if (!is.null(type) && type != "default") {
@@ -763,12 +763,12 @@ checkDuplicateRows <- function(mydata, type = NULL, fn = cli::cli_warn) {
     flag <- length(mydata$date) != length(unique(mydata$date))
   } else {
     flag <-
-      split(mydata, mydata[type], drop = TRUE) %>%
+      split(mydata, mydata[type], drop = TRUE) |>
       purrr::map_vec(function(x) {
-        dates <- x$date
-        unique_dates <- unique(x$date)
-        length(dates) != length(unique_dates)
-      }) %>%
+          dates <- x$date
+          unique_dates <- unique(x$date)
+          length(dates) != length(unique_dates)
+      }) |>
       any()
   }
 
@@ -781,4 +781,49 @@ checkDuplicateRows <- function(mydata, type = NULL, fn = cli::cli_warn) {
       call = NULL
     )
   }
+}
+
+#' Flexibly map a function over a dataframe using `type` to split. The `type`
+#' columns are always re-appended if the output is a dataframe.
+#'
+#' @param mydata A `data.frame` to split
+#'
+#' @param type Column or columns to split by; note that this function does not
+#'   run [cutData()] itself.
+#'
+#' @param fun The function to apply; should be a function of a dataframe.
+#'
+#' @param .include_default If `default` is the only `type`, should any of the
+#'   splitting actually happen? If `FALSE`, no `default` column will be
+#'   returned.
+#'
+#' @param .progress Show a progress bar?
+#'
+#' @param fun A function
+#'
+#' @noRd
+#' @examples
+#' mapType(openairmaps::polar_data, fun = head, type = c("site", "site_type"))
+mapType <- function(
+  mydata,
+  type,
+  fun,
+  .include_default = FALSE,
+  .progress = FALSE
+) {
+  if ((all(type == "default") || is.null(type)) && !.include_default) {
+    return(fun(mydata))
+  }
+
+  purrr::map(
+    .x = split(mydata, mydata[type], drop = TRUE),
+    .f = function(df) {
+      out <- fun(df)
+      out[type] <- df[1, type, drop = TRUE]
+      return(out)
+    },
+    .progress = .progress
+  ) |>
+    dplyr::bind_rows() |>
+    dplyr::relocate(dplyr::any_of(type))
 }

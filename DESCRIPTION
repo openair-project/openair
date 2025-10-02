@@ -20,7 +20,7 @@ URL: https://openair-project.github.io/openair/,
     https://github.com/openair-project/openair
 BugReports: https://github.com/openair-project/openair/issues
 Depends:
-    R (>= 3.2.0)
+    R (>= 4.1.0)
 Imports:
     cli,
     cluster,
