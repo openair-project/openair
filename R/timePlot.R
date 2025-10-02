@@ -308,7 +308,8 @@ timePlot <- function(
     statistic = statistic,
     avg.time = avg.time,
     data.thresh = data.thresh,
-    percentile = percentile
+    percentile = percentile,
+    windflow = windflow
   )
   pollutant <- mydata$pollutant
   mydata <- mydata$data
@@ -381,8 +382,8 @@ timePlot <- function(
       purrr::map(
         split(mydata, mydata[type]),
         function(x) dateBreaks(x$date, date.breaks)$major
-      ) %>%
-      purrr::list_c() %>%
+      ) |>
+      purrr::list_c() |>
       unique()
   } else {
     dates <- dateBreaks(mydata$date, date.breaks)$major
@@ -752,7 +753,8 @@ time_average_timeplot_data <- function(
   statistic,
   avg.time,
   data.thresh,
-  percentile
+  percentile,
+  windflow
 ) {
   # average the data if necessary (default does nothing)
   if (avg.time != "default") {
@@ -791,6 +793,18 @@ time_average_timeplot_data <- function(
     mydata$default <- "default"
   }
 
+  # need to flag if ws/wd are being plotted *and* used for windflow
+  flag_wind_pollutant <- !is.null(windflow) &&
+    ("ws" %in% pollutant || "wd" %in% pollutant)
+
+  # retain ws/wd if needed later
+  if (flag_wind_pollutant) {
+    # only select what is being pivoted, as it will need joining back on
+    met_vars <- c("ws", "wd")
+    met_vars <- met_vars[met_vars %in% pollutant]
+    met_data <- dplyr::select(mydata, dplyr::any_of(c("date", met_vars)))
+  }
+
   # reshape
   mydata <-
     tidyr::pivot_longer(
@@ -799,6 +813,16 @@ time_average_timeplot_data <- function(
       names_to = "variable",
       values_to = "value"
     )
+
+  # bind on ws/wd if needed for windflow
+  if (flag_wind_pollutant) {
+    mydata <- dplyr::left_join(
+      mydata,
+      met_data,
+      by = dplyr::join_by("date")
+    ) |>
+      dplyr::relocate(dplyr::any_of(c("ws", "wd")), .after = "date")
+  }
 
   # need to return pollutant as it can change
   return(list(
@@ -847,25 +871,25 @@ normalise_timeplot_data <-
 
       # find nearest values to each date
       target_date_values <-
-        tidyr::drop_na(mydata) %>%
+        tidyr::drop_na(mydata) |>
         slice_min(
           abs(.data$date - target_date),
           n = 1L,
           with_ties = FALSE,
           by = "variable"
-        ) %>%
+        ) |>
         dplyr::select("variable", "target_value" = "value")
 
       # scale value to 100 at specific date
       mydata <-
-        mydata %>%
+        mydata |>
         dplyr::left_join(
           target_date_values,
           by = dplyr::join_by(variable)
-        ) %>%
+        ) |>
         dplyr::mutate(
           value = 100 * (.data$value / .data$target_value)
-        ) %>%
+        ) |>
         dplyr::select(-"target_value")
     }
 

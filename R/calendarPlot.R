@@ -359,7 +359,7 @@ calendarPlot <-
 
     # transform data into a calendar grid
     mydata <- mapType(
-      data,
+      mydata,
       type = type,
       fun = \(df) prepare_calendar_grid(df, pollutant, w.shift),
       .include_default = TRUE
@@ -374,7 +374,6 @@ calendarPlot <-
       wd <- original_data |>
         dplyr::mutate(wd = .data$wd * 2 * pi / 360) |>
         mapType(
-          data,
           type = type,
           fun = \(df) prepare_calendar_grid(df, "wd", w.shift),
           .include_default = TRUE
@@ -388,7 +387,6 @@ calendarPlot <-
       ws <- original_data |>
         dplyr::mutate(wd = .data$wd * 2 * pi / 360) |>
         mapType(
-          data,
           type = type,
           fun = \(df) prepare_calendar_grid(df, "ws", w.shift),
           .include_default = TRUE

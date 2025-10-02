@@ -56,13 +56,10 @@ quickText <- function(text, auto.text = TRUE) {
   ans <- gsub("co ", "' 'CO ' '", ans)
   ans <- gsub("co,", "' 'CO,' '", ans)
   ans <- gsub("nmhc", "' 'NMHC' '", ans)
-
-  ans <- if (nchar(as.character(text)) == 2 && length(grep("ws", text)) > 0) {
-    gsub("ws", "' 'wind spd.' '", ans)
-  } else {
-    ans
-  }
-  ans <- gsub("wd", "' 'wind dir.' '", ans)
+  ans <- gsub("\\bws\\b", "' 'wind spd.' '", ans)
+  ans <- gsub("\\bwd\\b", "' 'wind dir.' '", ans)
+  ans <- gsub("\\bWS\\b", "' 'wind spd.' '", ans)
+  ans <- gsub("\\bWD\\b", "' 'wind dir.' '", ans)
   ans <- gsub("rh ", "' 'relative humidity' '", ans)
   ans <- gsub("PM10", "' 'PM' [10] * '", ans)
   ans <- gsub("pm10", "' 'PM' [10] * '", ans)

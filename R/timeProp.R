@@ -207,20 +207,20 @@ timeProp <- function(
   # summarise by proportion, type etc
   # add the most common non-zero time interval
 
-  results <- mydata %>%
+  results <- mydata |>
     mutate(
       xleft = as.POSIXct(cut(date, avg.time), tz = tzone),
       xright = xleft + median(diff(xleft)[diff(xleft) != 0])
-    ) %>%
-    group_by(across(group_1)) %>% # group by type and date interval to get overall average
-    mutate(mean_value = mean(.data[[pollutant]], na.rm = TRUE)) %>%
-    group_by(across(group_2)) %>%
+    ) |>
+    group_by(across(group_1)) |> # group by type and date interval to get overall average
+    mutate(mean_value = mean(.data[[pollutant]], na.rm = TRUE)) |>
+    group_by(across(group_2)) |>
     summarise(
       {{ pollutant }} := mean(.data[[pollutant]], na.rm = TRUE),
       mean_value = mean(mean_value, na.rm = TRUE),
       n = length(date)
-    ) %>%
-    group_by(across(group_1)) %>%
+    ) |>
+    group_by(across(group_1)) |>
     mutate(
       weighted_mean = .data[[pollutant]] * n / sum(n),
       Var1 = replace_na(weighted_mean, 0),
@@ -231,8 +231,8 @@ timeProp <- function(
   ## normlaise to 100 if needed
   vars <- c(type, "date")
   if (normalise) {
-    results <- results %>%
-      group_by(across(vars)) %>%
+    results <- results |>
+      group_by(across(vars)) |>
       mutate(
         Var1 = Var1 * (100 / sum(Var1, na.rm = TRUE)),
         var2 = cumsum(Var1)
@@ -284,8 +284,8 @@ timeProp <- function(
   #  results <- na.omit(results)
 
   # y values for plotting rectangles
-  # results <- results %>%
-  #   group_by(across(vars)) %>%
+  # results <- results |>
+  #   group_by(across(vars)) |>
   #   mutate(var2 = cumsum(Var1))
 
   myform <- formula(paste("Var1 ~ date | ", type, sep = ""))
@@ -349,8 +349,7 @@ timeProp <- function(
     panel = function(..., col, subscripts) {
       panel.grid(-1, 0)
       panel.abline(v = dates, col = "grey95", ...)
-      split(results[subscripts, ], results$date[subscripts]) %>%
-        lapply(., panelBar)
+      lapply(split(results[subscripts, ], results$date[subscripts]), panelBar)
     }
   )
 

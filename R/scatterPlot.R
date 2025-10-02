@@ -1116,22 +1116,22 @@ scatterPlot <- function(
     ) {
       if (statistic == "frequency") {
         vars_select <- c(vars, z)
-        mydata <- select(mydata, vars_select) %>%
-          group_by(across(vars)) %>%
+        mydata <- select(mydata, vars_select) |>
+          group_by(across(vars)) |>
           summarise(MN = length(.data[[z]]))
       }
 
       if (statistic == "mean") {
         vars_select <- c(vars, z)
-        mydata <- select(mydata, vars_select) %>%
-          group_by(across(vars)) %>%
+        mydata <- select(mydata, vars_select) |>
+          group_by(across(vars)) |>
           summarise(MN = mean(.data[[z]], na.rm = TRUE))
       }
 
       if (statistic == "median") {
         vars_select <- c(vars, z)
-        mydata <- select(mydata, vars_select) %>%
-          group_by(across(vars)) %>%
+        mydata <- select(mydata, vars_select) |>
+          group_by(across(vars)) |>
           summarise(MN = median(.data[[z]], na.rm = TRUE))
       }
 
@@ -1213,9 +1213,13 @@ scatterPlot <- function(
     }
 
     if (smooth) {
-      mydata <- mydata %>%
-        group_by(across(type)) %>%
-        do(smooth.grid(., z))
+      mydata <-
+        mapType(
+          mydata,
+          type = type,
+          fun = \(x) smooth.grid(x, z),
+          .include_default = TRUE
+        )
     }
 
     ## basic function for lattice call + defaults
@@ -1474,9 +1478,13 @@ scatterPlot <- function(
     }
 
     if (smooth) {
-      mydata <- mydata %>%
-        group_by(across(type)) %>%
-        do(smooth.grid(., z))
+      mydata <-
+        mapType(
+          mydata,
+          type = type,
+          fun = \(x) smooth.grid(x, z),
+          .include_default = TRUE
+        )
     }
 
     ## basic function for lattice call + defaults
@@ -1703,9 +1711,13 @@ scatterPlot <- function(
 
     ## ###########################################################################
 
-    results.grid <- mydata %>%
-      group_by(across(type)) %>%
-      do(prepare.grid(.))
+    results.grid <-
+      mapType(
+        mydata,
+        type = type,
+        fun = prepare.grid,
+        .include_default = TRUE
+      )
 
     ## auto-scaling
     nlev <- nrow(mydata) ## preferred number of intervals
@@ -2119,13 +2131,13 @@ addTraj <- function(
       ## make sure we match clusters in case order mixed
       vars <- c(type, "MyGroupVar")
 
-      pnts <- mydata %>%
-        group_by(across(vars)) %>%
+      pnts <- mydata |>
+        group_by(across(vars)) |>
         dplyr::slice_head(n = 1)
 
       if (length(unique(pnts$lon)) == 1 & length(unique(pnts$lat)) == 1) {
-        pnts <- mydata %>%
-          group_by(across(vars)) %>%
+        pnts <- mydata |>
+          group_by(across(vars)) |>
           dplyr::slice_tail(n = 1)
       }
 
