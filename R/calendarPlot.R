@@ -260,9 +260,9 @@ calendarPlot <-
       }
 
       # max ws/wd for hour with max pollutant value
-      maxes <- mydata %>%
-        dplyr::mutate(date = lubridate::as_date(.data$date)) %>%
-        dplyr::group_by(date) %>%
+      maxes <- mydata |>
+        dplyr::mutate(date = lubridate::as_date(.data$date)) |>
+        dplyr::group_by(date) |>
         dplyr::slice(which.fun(.data[[pollutant]]))
 
       # averaged data, make sure Date format (max returns POSIXct)
@@ -271,7 +271,7 @@ calendarPlot <-
         "day",
         statistic = statistic,
         data.thresh = data.thresh
-      ) %>%
+      ) |>
         dplyr::mutate(date = lubridate::as_date(.data$date))
 
       # replace with parallel max
@@ -317,8 +317,8 @@ calendarPlot <-
 
       # check duplicates
       verify_duplicates <-
-        mydata %>%
-        dplyr::count(.data$cuts, .data$years) %>%
+        mydata |>
+        dplyr::count(.data$cuts, .data$years) |>
         dplyr::add_count(.data$cuts, name = "month_counts")
 
       # if any duplicates, set show.year = TRUE
@@ -340,12 +340,12 @@ calendarPlot <-
 
     # drop empty months?
     if (remove.empty) {
-      mydata <- mydata %>%
-        dplyr::group_by(.data$cuts) %>%
+      mydata <- mydata |>
+        dplyr::group_by(.data$cuts) |>
         dplyr::mutate(
           empty = all(is.na(dplyr::across(dplyr::all_of(pollutant))))
-        ) %>%
-        dplyr::filter(!.data$empty) %>%
+        ) |>
+        dplyr::filter(!.data$empty) |>
         dplyr::ungroup()
     }
 
@@ -358,7 +358,12 @@ calendarPlot <-
     }
 
     # transform data into a calendar grid
-    mydata <- map_calendar_grid(mydata, type, pollutant, w.shift) %>%
+    mydata <- mapType(
+      data,
+      type = type,
+      fun = \(df) prepare_calendar_grid(df, pollutant, w.shift),
+      .include_default = TRUE
+    ) |>
       # retain actual numerical value (retain for categorical scales)
       dplyr::mutate(value = .data$conc.mat)
 
@@ -366,18 +371,28 @@ calendarPlot <-
 
     # need wd dataframe if ws/wd annotation
     if (annotate %in% c("ws", "wd")) {
-      wd <- original_data %>%
-        dplyr::mutate(wd = .data$wd * 2 * pi / 360) %>%
-        map_calendar_grid(type, "wd", w.shift) %>%
+      wd <- original_data |>
+        dplyr::mutate(wd = .data$wd * 2 * pi / 360) |>
+        mapType(
+          data,
+          type = type,
+          fun = \(df) prepare_calendar_grid(df, "wd", w.shift),
+          .include_default = TRUE
+        ) |>
         # actual numerical value (retain for categorical scales)
         dplyr::mutate(value = .data$conc.mat)
     }
 
     # if ws annotation, also need ws
     if (annotate == "ws") {
-      ws <- original_data %>%
-        dplyr::mutate(wd = .data$wd * 2 * pi / 360) %>%
-        map_calendar_grid(type, "ws", w.shift) %>%
+      ws <- original_data |>
+        dplyr::mutate(wd = .data$wd * 2 * pi / 360) |>
+        mapType(
+          data,
+          type = type,
+          fun = \(df) prepare_calendar_grid(df, "ws", w.shift),
+          .include_default = TRUE
+        ) |>
         dplyr::mutate(
           # normalise wind speeds to highest daily mean
           conc.mat = .data$conc.mat / max(.data$conc.mat, na.rm = TRUE),
@@ -672,22 +687,6 @@ prepare_calendar_data <- function(mydata, year, month, pollutant, annotate) {
     checkPrep(mydata, vars, "default", remove.calm = FALSE)
 
   return(mydata)
-}
-
-map_calendar_grid <- function(data, type, pollutant, w.shift) {
-  purrr::map(
-    .x = split(
-      data,
-      data[[type]],
-      drop = TRUE
-    ),
-    .f = function(df) {
-      out <- prepare_calendar_grid(df, pollutant, w.shift)
-      out[type] <- df[1, type, drop = TRUE]
-      out
-    }
-  ) %>%
-    dplyr::bind_rows()
 }
 
 #' @noRd
