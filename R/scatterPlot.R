@@ -453,6 +453,9 @@ scatterPlot <- function(
 
   Args$grid.col <- Args$grid.col %||% "deepskyblue"
 
+  Args$grid.nx <- Args$grid.nx %||% 9
+  Args$grid.ny <- Args$grid.ny %||% 9
+
   Args$npoints <- Args$npoints %||% 12
 
   Args$origin <- Args$origin %||% TRUE
@@ -1884,13 +1887,17 @@ add.map <- function(Args, ...) {
     )
   }
 
-  map.grid2(
-    lim = Args$trajLims,
-    projection = Args$projection,
-    parameters = Args$parameters,
-    orientation = Args$orientation,
-    col = Args$grid.col
-  )
+  if (Args$grid.nx != 0 || Args$grid.ny != 0) {
+    map.grid2(
+      lim = Args$trajLims,
+      projection = Args$projection,
+      parameters = Args$parameters,
+      orientation = Args$orientation,
+      col = Args$grid.col,
+      nx = Args$grid.nx,
+      ny = Args$grid.ny
+    )
+  }
 }
 
 

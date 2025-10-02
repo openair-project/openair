@@ -182,6 +182,8 @@ trajLevel <- function(
   parameters = c(51, 51),
   orientation = c(90, 0, 0),
   grid.col = "deepskyblue",
+  grid.nx = 9,
+  grid.ny = grid.nx,
   origin = TRUE,
   plot = TRUE,
   ...
@@ -596,6 +598,8 @@ trajLevel <- function(
     parameters = parameters,
     orientation = orientation,
     grid.col = grid.col,
+    grid.nx = grid.nx,
+    grid.ny = grid.ny,
     trajLims = trajLims,
     receptor = receptor,
     origin = origin,

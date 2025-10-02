@@ -18,6 +18,8 @@
     
     - When `statistic == "min"` and `annotation %in% c("ws", "wd")`, the ws/wd returned will correspond to the minimum daily pollutant, rather than the minimum daily ws/wd.
 
+- `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
+
 ## Bug Fixes
 
 - `timePlot()` now allows duplicate dates when `time.avg` is used. The user will still recieve a warning from `timeAverage()`, which is used internally, but the plot will still be created.
