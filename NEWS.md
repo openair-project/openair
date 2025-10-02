@@ -1,5 +1,9 @@
 # openair (development version)
 
+## Dependency Changes
+
+- `openair` now depends on R v4.1 and, internally, uses the base R pipe (`|>`).
+
 ## New Features
 
 - `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
