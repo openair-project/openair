@@ -400,16 +400,24 @@ TaylorDiagram <- function(
 
   vars <- c(group, type)
 
-  results <- mydata %>%
-    group_by(across(vars)) %>%
-    do(calcStats(., obs = obs, mod = mod[1]))
+  results <-
+    mapType(
+      mydata,
+      type = vars,
+      fun = \(x) calcStats(x, obs = obs, mod = mod[1]),
+      .include_default = TRUE
+    )
 
   results.new <- NULL
 
   if (combine) {
-    results.new <- mydata %>%
-      group_by(across(vars)) %>%
-      do(calcStats(., obs = obs, mod = mod[2]))
+    results.new <-
+      mapType(
+        mydata,
+        type = vars,
+        fun = \(x) calcStats(x, obs = obs, mod = mod[2]),
+        .include_default = TRUE
+      )
   }
 
   ## if no group to plot, then add a dummy one to make xyplot work

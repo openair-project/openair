@@ -61,11 +61,11 @@ importEurope <- function(
   file_remote <- crossing(
     site = site,
     year = year
-  ) %>%
+  ) |>
     arrange(
       site,
       year
-    ) %>%
+    ) |>
     mutate(
       file_remote = paste0(
         remote_path,
@@ -78,7 +78,7 @@ importEurope <- function(
         year,
         ".csv.gz"
       )
-    ) %>%
+    ) |>
     pull(file_remote)
 
   # Load files
@@ -89,7 +89,7 @@ importEurope <- function(
     file_remote,
     ~ get_saq_observations_worker(file = .x, tz = tz),
     .progress = progress
-  ) %>%
+  ) |>
     purrr::list_rbind()
 
   if (nrow(df) == 0L) {
@@ -107,7 +107,7 @@ importEurope <- function(
   }
 
   # don't need end date
-  df <- select(df, -date_end) %>%
+  df <- select(df, -date_end) |>
     rename(code = site)
 
   if (meta) {
@@ -151,8 +151,8 @@ read_saq_observations <- function(file, tz = tz, verbose) {
   )
 
   # Create gz connection
-  con <- file %>%
-    url() %>%
+  con <- file |>
+    url() |>
     gzcon()
 
   df <- tryCatch(
@@ -160,7 +160,7 @@ read_saq_observations <- function(file, tz = tz, verbose) {
       # Read and parse dates, quiet supresses time zone conversion messages and
       # warning supression is for when url does not exist
       suppressWarnings(
-        readr::read_csv(con, col_types = col_types, progress = FALSE) %>%
+        readr::read_csv(con, col_types = col_types, progress = FALSE) |>
           mutate(
             date = lubridate::ymd_hms(date, tz = tz, quiet = TRUE),
             date_end = lubridate::ymd_hms(date_end, tz = tz, quiet = TRUE)
@@ -185,14 +185,14 @@ read_saq_observations <- function(file, tz = tz, verbose) {
 make_saq_observations_wider <- function(df) {
   tryCatch(
     {
-      df %>%
+      df |>
         select(
           date,
           date_end,
           site,
           variable,
           value
-        ) %>%
+        ) |>
         spread(variable, value)
     },
     error = function(e) {
@@ -201,15 +201,15 @@ make_saq_observations_wider <- function(df) {
         call. = FALSE
       )
 
-      df %>%
+      df |>
         select(
           date,
           date_end,
           site,
           variable,
           value
-        ) %>%
-        distinct(date, site, variable, .keep_all = TRUE) %>%
+        ) |>
+        distinct(date, site, variable, .keep_all = TRUE) |>
         spread(variable, value)
     }
   )
