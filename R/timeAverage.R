@@ -243,19 +243,12 @@ timeAverage <- function(
     # if interval specified, then use it to pad the data
     if (!is.na(interval)) {
       mydata <-
-        mydata %>%
-        split(mydata[type], drop = TRUE) %>%
-        purrr::map(function(x) {
-          pad_dates_timeavg(
-            mydata = x,
-            type = type,
-            interval = interval
-          )
-        }) %>%
-        purrr::list_rbind()
-
-      # make sure missing types are inserted
-      mydata[type] <- mydata[type] <- mydata[1, type]
+        mapType(
+          mydata,
+          type = type,
+          fun = \(df) pad_dates_timeavg(df, type = type, interval = interval),
+          .include_default = TRUE
+        )
 
       padded <- TRUE
     }
@@ -299,8 +292,8 @@ timeAverage <- function(
 
       # merge with original data, which leaves gaps to fill
       mydata <-
-        mydata %>%
-        dplyr::full_join(allData, by = dplyr::join_by("date")) %>%
+        mydata |>
+        dplyr::full_join(allData, by = dplyr::join_by("date")) |>
         dplyr::arrange(date)
 
       # make sure missing types are inserted
@@ -321,16 +314,16 @@ timeAverage <- function(
 
         # fill data
         mydata <-
-          mydata %>%
+          mydata |>
           # find dates in original data, and assign each data chunk an ID
           dplyr::mutate(
             `__flag__` = .data$date %in% theDates,
             `__id__` = ceiling(dplyr::consecutive_id(.data$`__flag__`) / 2) * 2
-          ) %>%
+          ) |>
           # fill within each ID
-          dplyr::group_by(.data[["__id__"]]) %>%
-          tidyr::fill(dplyr::where(is.numeric), .direction = "down") %>%
-          dplyr::ungroup() %>%
+          dplyr::group_by(.data[["__id__"]]) |>
+          tidyr::fill(dplyr::where(is.numeric), .direction = "down") |>
+          dplyr::ungroup() |>
           # remove helper columns
           dplyr::select(-"__id__", -"__flag__")
       }
@@ -370,8 +363,8 @@ timeAverage <- function(
     }
 
     if (data.thresh != 0) {
-      avmet <- mydata %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(vars))) %>%
+      avmet <- mydata |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(vars))) |>
         dplyr::summarise(dplyr::across(
           dplyr::where(function(x) {
             !is.factor(x) && !is.character(x)
@@ -386,8 +379,8 @@ timeAverage <- function(
         ))
     } else {
       avmet <-
-        mydata %>%
-        dplyr::group_by(dplyr::across(dplyr::all_of(vars))) %>%
+        mydata |>
+        dplyr::group_by(dplyr::across(dplyr::all_of(vars))) |>
         dplyr::summarise(dplyr::across(
           dplyr::where(function(x) {
             !is.factor(x) && !is.character(x)
@@ -402,7 +395,7 @@ timeAverage <- function(
       if (is.numeric(mydata$wd)) {
         ## mean wd
         avmet <-
-          avmet %>%
+          avmet |>
           dplyr::mutate(
             wd = as.vector(atan2(.data$Uu, .data$Vv) * 360 / 2 / pi),
             # correct negative wind directions
@@ -449,16 +442,19 @@ timeAverage <- function(
 
   # calculate averages
   mydata <-
-    mydata %>%
-    split(mydata[type], drop = TRUE) %>%
-    purrr::map(
-      calc.mean,
-      start.date = start.date,
-      end.date = end.date,
+    mapType(
+      mydata,
+      type = type,
+      fun = \(df) {
+        calc.mean(
+          df,
+          start.date = start.date,
+          end.date = end.date
+        )
+      },
+      .include_default = TRUE,
       .progress = progress
-    ) %>%
-    purrr::list_rbind() %>%
-    dplyr::as_tibble()
+    )
 
   # drop default column if it exists
   if ("default" %in% names(mydata)) {
@@ -620,7 +616,7 @@ pad_dates_timeavg <- function(mydata, type = NULL, interval = "month") {
   }
 
   all.dates <- data.frame(date = seq(start.date, end.date, by = interval))
-  mydata <- mydata %>% full_join(all.dates, by = "date")
+  mydata <- mydata |> full_join(all.dates, by = "date")
 
   # add in missing types if gaps are made
   if (!is.null(type)) {
@@ -730,23 +726,23 @@ handle_season_avgtime <- function(mydata, type, ...) {
     mydata <- cutData(mydata, type = "season", ...)
   }
 
-  mydata %>%
+  mydata |>
     # drop missing seasons
-    dplyr::filter(!is.na(.data$season)) %>%
+    dplyr::filter(!is.na(.data$season)) |>
     # extract year/month
     dplyr::mutate(
       year = lubridate::year(.data$date),
       month = lubridate::month(.data$date)
-    ) %>%
+    ) |>
     # nudge December into next month
     dplyr::mutate(
       year = dplyr::if_else(.data$month == 12, .data$year + 1, .data$year)
-    ) %>%
+    ) |>
     # get average date per year-season
     dplyr::mutate(
       date = mean(date, na.rm = TRUE),
       .by = c("year", "season")
-    ) %>%
+    ) |>
     # drop year/month cols
     dplyr::select(-"year", -"month")
 }

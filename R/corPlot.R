@@ -264,19 +264,19 @@ corPlot <- function(
   }
 
   # main results in lists
-  results.grid <- mydata %>%
-    group_by(across(type)) %>%
-    group_nest() %>%
+  results.grid <- mydata |>
+    group_by(across(type)) |>
+    group_nest() |>
     mutate(results = map(data, prepare.cond))
 
   # cluster model
-  clust <- results.grid %>%
+  clust <- results.grid |>
     mutate(clust = map(results, 4))
   clust <- clust$clust[[1]]
 
   ## recover by-type order
 
-  data.order <- results.grid %>%
+  data.order <- results.grid |>
     mutate(out = map(results, 3))
 
   data.order <- lapply(data.order$out, function(x) pollutants[x])
@@ -290,7 +290,7 @@ corPlot <- function(
 
   ## list of labels
 
-  labels <- results.grid %>%
+  labels <- results.grid |>
     mutate(out = map(results, 2))
 
   labels <- labels$out
@@ -298,9 +298,9 @@ corPlot <- function(
   # vars we want
   vars <- c(type, "out")
 
-  results.grid <- results.grid %>%
-    mutate(out = map(results, 1)) %>%
-    select(vars) %>%
+  results.grid <- results.grid |>
+    mutate(out = map(results, 1)) |>
+    select(vars) |>
     unnest(cols = c(out))
 
   div.col <- function(x) openColours(cols, x)

@@ -649,7 +649,7 @@ cutVecSeason <- function(x, hemisphere) {
 
   # need to work out month names local to the user and extract first letter
   month_names_local <-
-    cutVecMonth(ISOdate(2000, 1:12, 1), is.axis = FALSE) %>%
+    cutVecMonth(ISOdate(2000, 1:12, 1), is.axis = FALSE) |>
     substr(1, 1)
 
   # Function to create, e.g., 'winter (JFM)'

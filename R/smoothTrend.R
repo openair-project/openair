@@ -254,30 +254,20 @@ smoothTrend <- function(
 
   # prep data for modelling
   res <-
-    purrr::map(
-      .x = split(mydata, mydata[vars], drop = TRUE),
-      .f = function(x) {
-        out <- deseason_smoothtrend_data(x, deseason = deseason)
-        out[, vars] <- x[1, vars, drop = TRUE]
-        out
-      }
-    ) %>%
-    dplyr::bind_rows() %>%
-    dplyr::tibble() %>%
-    dplyr::relocate(dplyr::all_of(vars))
+    mapType(
+      mydata,
+      type = vars,
+      fun = \(df) deseason_smoothtrend_data(df, deseason = deseason),
+      .include_default = TRUE
+    )
 
   fit <-
-    purrr::map(
-      .x = split(res, res[vars], drop = TRUE),
-      .f = function(df) {
-        out <- fit_smoothtrend_gam(df, x = "date", y = "conc", k = k, ...)
-        out[, vars] <- df[1, vars, drop = TRUE]
-        out
-      }
-    ) %>%
-    dplyr::bind_rows() %>%
-    dplyr::tibble() %>%
-    dplyr::relocate(dplyr::all_of(vars))
+    mapType(
+      res,
+      type = vars,
+      fun = \(df) fit_smoothtrend_gam(df, x = "date", y = "conc", k = k, ...),
+      .include_default = TRUE
+    )
 
   class(fit$date) <- c("POSIXct", "POSIXt")
 
@@ -597,7 +587,7 @@ prepare_smoothtrend_data <- function(
         cols = dplyr::all_of(vars),
         names_to = "variable",
         values_to = "value"
-      ) %>%
+      ) |>
       dplyr::arrange(.data$variable)
   } else {
     mydata <- suppressWarnings(timeAverage(

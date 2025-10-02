@@ -58,12 +58,12 @@ polarDiff <- function(
   }
 
   # check variables exists
-  before <- cutData(before, type = type) %>%
-    checkPrep(vars, type, remove.calm = FALSE) %>%
+  before <- cutData(before, type = type) |>
+    checkPrep(vars, type, remove.calm = FALSE) |>
     dplyr::mutate(period = "before")
 
-  after <- cutData(after, type = type) %>%
-    checkPrep(vars, type, remove.calm = FALSE) %>%
+  after <- cutData(after, type = type) |>
+    checkPrep(vars, type, remove.calm = FALSE) |>
     dplyr::mutate(period = "after")
 
   if (type == "default") {
@@ -99,12 +99,12 @@ polarDiff <- function(
         }
 
         polar_data <-
-          polar_plt$data %>%
+          polar_plt$data |>
           tidyr::pivot_wider(
             id_cols = u:v,
             names_from = period,
             values_from = z
-          ) %>%
+          ) |>
           dplyr::mutate(
             {{ pollutant }} := after - before,
             {{ x }} := (u^2 + v^2)^0.5,
@@ -116,7 +116,7 @@ polarDiff <- function(
 
         return(polar_data)
       }
-    ) %>%
+    ) |>
     purrr::list_rbind()
 
   # other arguments
