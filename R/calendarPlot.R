@@ -405,26 +405,15 @@ calendarPlot <-
     strip <- strip.fun(mydata, type, auto.text)[[1]]
 
     # handle breaks
+    category <- FALSE
     if (!anyNA(breaks)) {
       # assign labels if no labels are given
-      if (anyNA(labels)) {
-        labels <- c()
-        for (i in seq_along(breaks)) {
-          lhs <- breaks[i]
-          rhs <- breaks[i + 1]
-          str <- paste(lhs, rhs, sep = " - ")
-          labels <- append(labels, str)
-        }
-        labels <- labels[-i]
-      }
-
+      labels <- breaksToLabels(breaks, labels)
       category <- TRUE
       mydata <- dplyr::mutate(
         mydata,
         conc.mat = cut(.data$conc.mat, breaks = breaks, labels = labels)
       )
-    } else {
-      category <- FALSE
     }
 
     ## ---- Categorical Scales ----

@@ -765,9 +765,9 @@ checkDuplicateRows <- function(mydata, type = NULL, fn = cli::cli_warn) {
     flag <-
       split(mydata, mydata[type], drop = TRUE) |>
       purrr::map_vec(function(x) {
-          dates <- x$date
-          unique_dates <- unique(x$date)
-          length(dates) != length(unique_dates)
+        dates <- x$date
+        unique_dates <- unique(x$date)
+        length(dates) != length(unique_dates)
       }) |>
       any()
   }
@@ -826,4 +826,20 @@ mapType <- function(
   ) |>
     dplyr::bind_rows() |>
     dplyr::relocate(dplyr::any_of(type))
+}
+
+#' Create nice labels out of breaks, if only breaks are provided
+#' @noRd
+breaksToLabels <- function(breaks, labels = NA) {
+  if (any(is.na(labels)) || is.null(labels)) {
+    labels <- c()
+    for (i in seq_along(breaks)) {
+      lhs <- breaks[i]
+      rhs <- breaks[i + 1]
+      str <- paste(lhs, rhs, sep = " - ")
+      labels <- append(labels, str)
+    }
+    labels <- labels[-i]
+  }
+  return(labels)
 }
