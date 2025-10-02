@@ -765,9 +765,9 @@ checkDuplicateRows <- function(mydata, type = NULL, fn = cli::cli_warn) {
     flag <-
       split(mydata, mydata[type], drop = TRUE) |>
       purrr::map_vec(function(x) {
-        dates <- x$date
-        unique_dates <- unique(x$date)
-        length(dates) != length(unique_dates)
+          dates <- x$date
+          unique_dates <- unique(x$date)
+          length(dates) != length(unique_dates)
       }) |>
       any()
   }
@@ -783,7 +783,24 @@ checkDuplicateRows <- function(mydata, type = NULL, fn = cli::cli_warn) {
   }
 }
 
-#' Map a function over a dataframe using `type` to split
+#' Flexibly map a function over a dataframe using `type` to split. The `type`
+#' columns are always re-appended if the output is a dataframe.
+#'
+#' @param mydata A `data.frame` to split
+#'
+#' @param type Column or columns to split by; note that this function does not
+#'   run [cutData()] itself.
+#'
+#' @param fun The function to apply; should be a function of a dataframe.
+#'
+#' @param .include_default If `default` is the only `type`, should any of the
+#'   splitting actually happen? If `FALSE`, no `default` column will be
+#'   returned.
+#'
+#' @param .progress Show a progress bar?
+#'
+#' @param fun A function
+#'
 #' @noRd
 #' @examples
 #' mapType(openairmaps::polar_data, fun = head, type = c("site", "site_type"))

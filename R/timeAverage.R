@@ -243,19 +243,12 @@ timeAverage <- function(
     # if interval specified, then use it to pad the data
     if (!is.na(interval)) {
       mydata <-
-        mydata |>
-        split(mydata[type], drop = TRUE) |>
-        purrr::map(function(x) {
-          pad_dates_timeavg(
-            mydata = x,
-            type = type,
-            interval = interval
-          )
-        }) |>
-        purrr::list_rbind()
-
-      # make sure missing types are inserted
-      mydata[type] <- mydata[type] <- mydata[1, type]
+        mapType(
+          mydata,
+          type = type,
+          fun = \(df) pad_dates_timeavg(df, type = type, interval = interval),
+          .include_default = TRUE
+        )
 
       padded <- TRUE
     }
@@ -449,16 +442,19 @@ timeAverage <- function(
 
   # calculate averages
   mydata <-
-    mydata |>
-    split(mydata[type], drop = TRUE) |>
-    purrr::map(
-      calc.mean,
-      start.date = start.date,
-      end.date = end.date,
+    mapType(
+      mydata,
+      type = type,
+      fun = \(df) {
+        calc.mean(
+          df,
+          start.date = start.date,
+          end.date = end.date
+        )
+      },
+      .include_default = TRUE,
       .progress = progress
-    ) |>
-    purrr::list_rbind() |>
-    dplyr::as_tibble()
+    )
 
   # drop default column if it exists
   if ("default" %in% names(mydata)) {

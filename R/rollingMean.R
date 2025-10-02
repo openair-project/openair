@@ -112,9 +112,12 @@ rollingMean <- function(
   }
 
   # split if several sites
-  mydata <-
-    purrr::map(split(mydata, mydata[[type]], drop = TRUE), calc.rolling) |>
-    purrr::list_rbind()
+  mydata <- mapType(
+    mydata,
+    type = type,
+    fun = calc.rolling,
+    .include_default = TRUE
+  )
 
   # drop default column
   if (any(type == "default")) {

@@ -76,10 +76,12 @@ selectRunning <- function(
   checkDuplicateRows(mydata, type, fn = cli::cli_abort)
 
   # pad out missing data
-  thedata <- purrr::map(split(mydata, mydata[type], drop = TRUE), function(x) {
-    date.pad(x, type = type)
-  }) |>
-    dplyr::bind_rows()
+  thedata <- mapType(
+    mydata,
+    type = type,
+    fun = \(x) date.pad(x, type = type),
+    .include_default = TRUE
+  )
 
   # save input for later
   mydata <- thedata

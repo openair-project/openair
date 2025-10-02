@@ -118,25 +118,23 @@ aqStats <- function(
 
   # calculate the statistics
   results <-
-    purrr::map(
-      .x = split(mydata, mydata[vars], sep = "__", drop = TRUE),
-      .f = function(x) {
-        out <- rlang::exec(
+    mapType(
+      mydata,
+      type = vars,
+      fun = \(df) {
+        rlang::exec(
           calcStats,
           !!!rlang::list2(
-            mydata = x,
+            mydata = df,
             data.thresh = data.thresh,
             percentile = percentile,
             ...
           )
         )
-        out[vars] <- x[vars][1, , drop = FALSE]
-        out
       },
+      .include_default = TRUE,
       .progress = progress
-    ) |>
-    dplyr::bind_rows() |>
-    dplyr::relocate(dplyr::all_of(vars))
+    )
 
   # transpose if requested
   if (transpose) {
