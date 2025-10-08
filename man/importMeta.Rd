@@ -32,11 +32,11 @@ available meta data and provide details (when available) or the individual
 pollutants measured at each site.}
 
 \item{year}{If a single year is selected, only sites that were open at some
-point in that year are returned. If \code{all = TRUE} only sites that
-measured a particular pollutant in that year are returned. Year can also be
-a sequence e.g. \code{year = 2010:2020} or of length 2 e.g. \code{year = c(2010, 2020)}, which will return only sites that were open over the
-duration. Note that \code{year} is ignored when the \code{source} is either
-\code{"imperial"} or \code{"europe"}.}
+point in that year are returned. If \code{all = TRUE} only sites that measured a
+particular pollutant in that year are returned. Year can also be a sequence
+e.g. \code{year = 2010:2020} or of length 2 e.g. \code{year = c(2010, 2020)}, which
+will return only sites that were open over the duration. Note that \code{year}
+is ignored when the \code{source} is either \code{"imperial"} or \code{"europe"}.}
 
 \item{duplicate}{Some UK air quality sites are part of multiple networks, so
 could appear more than once when \code{source} is a vector of two or more. The
@@ -68,7 +68,8 @@ simplified version of the \code{{saqgetr}} package.
 
 By default, the function will return the site latitude, longitude and site
 type. If the option \code{all = TRUE} is used, much more detailed information is
-returned. The following metadata columns are available in the complete dataset:
+returned. The following metadata columns are available in the complete
+dataset:
 \itemize{
 \item \strong{source}: The network with which the site is associated. Note that some monitoring sites are part of multiple networks (e.g., the AURN & SAQN) so the same site may feature twice under different sources.
 \item \strong{code}: The site code, used to import data from specific sites of interest.
@@ -82,8 +83,8 @@ returned. The following metadata columns are available in the complete dataset:
 \item \strong{provider} and \strong{code}: The specific provider of the locally managed dataset (e.g., \code{"londonair"}).
 }
 
-Thanks go to Trevor Davies (Ricardo), Dr Stuart Grange (EMPA) and Dr Ben
-Barratt (KCL) and  for making these data available.
+Thanks go to Trevor Davies (WSP, formerly Ricardo), Dr Stuart Grange (EMPA)
+and Dr Ben Barratt (KCL) and  for making these data available.
 }
 \examples{
 \dontrun{

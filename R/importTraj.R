@@ -92,22 +92,21 @@
 #' }
 #' @param progress Show a progress bar when many receptors/years are being
 #'   imported? Defaults to `TRUE`.
-#' @param year Year or years to import. To import a sequence of years from
-#'   1990 to 2000 use `year = 1990:2000`. To import several specific years
-#'   use `year = c(1990, 1995, 2000)` for example.
+#' @param year Year or years to import. To import a sequence of years from 1990
+#'   to 2000 use `year = 1990:2000`. To import several specific years use `year
+#'   = c(1990, 1995, 2000)` for example.
 #'
-#' @param local File path to .RData trajectory files run by user and
-#' not stored on the Ricardo web server. These files would have been
-#' generated from the Hysplit trajectory code shown in the appendix
-#' of the openair manual. An example would be `local =
-#' 'c:/users/david/TrajFiles/'`.
+#' @param local File path to .RData trajectory files run by user and not stored
+#'   on the WSP web server. These files would have been generated from the
+#'   Hysplit trajectory code shown in the appendix of the openair book. An
+#'   example would be `local = 'c:/users/david/TrajFiles/'`.
 #' @export
 #' @return Returns a data frame with pre-calculated back trajectories.
 #' @author David Carslaw
-#' @note The trajectories were run using the February 2011 HYSPLIT model.
-#'  The function is primarily written to investigate a single
-#' site at a time for a single year. The trajectory files are quite
-#' large and care should be exercised when importing several years and/or sites.
+#' @note The trajectories were run using the February 2011 HYSPLIT model. The
+#'   function is primarily written to investigate a single site at a time for a
+#'   single year. The trajectory files are quite large and care should be
+#'   exercised when importing several years and/or sites.
 #' @family import functions
 #' @family trajectory analysis functions
 #' @examples

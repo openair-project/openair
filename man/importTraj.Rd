@@ -49,14 +49,13 @@ wuhan      \tab Wuhan, China                 \tab  30.58300 \tab 114.280000 \tab
 yw         \tab Yarner Wood                  \tab  50.59760 \tab  -3.716510 \tab 1988-2013
 }}
 
-\item{year}{Year or years to import. To import a sequence of years from
-1990 to 2000 use \code{year = 1990:2000}. To import several specific years
-use \code{year = c(1990, 1995, 2000)} for example.}
+\item{year}{Year or years to import. To import a sequence of years from 1990
+to 2000 use \code{year = 1990:2000}. To import several specific years use \code{year = c(1990, 1995, 2000)} for example.}
 
-\item{local}{File path to .RData trajectory files run by user and
-not stored on the Ricardo web server. These files would have been
-generated from the Hysplit trajectory code shown in the appendix
-of the openair manual. An example would be \code{local = 'c:/users/david/TrajFiles/'}.}
+\item{local}{File path to .RData trajectory files run by user and not stored
+on the WSP web server. These files would have been generated from the
+Hysplit trajectory code shown in the appendix of the openair book. An
+example would be \code{local = 'c:/users/david/TrajFiles/'}.}
 
 \item{progress}{Show a progress bar when many receptors/years are being
 imported? Defaults to \code{TRUE}.}
@@ -117,10 +116,10 @@ decimal format.}  \item{height}{Height of trajectory (m).}
 \item{pressure}{Pressure of trajectory (kPa).}  }
 }
 \note{
-The trajectories were run using the February 2011 HYSPLIT model.
-The function is primarily written to investigate a single
-site at a time for a single year. The trajectory files are quite
-large and care should be exercised when importing several years and/or sites.
+The trajectories were run using the February 2011 HYSPLIT model. The
+function is primarily written to investigate a single site at a time for a
+single year. The trajectory files are quite large and care should be
+exercised when importing several years and/or sites.
 }
 \examples{
 

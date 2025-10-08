@@ -4,17 +4,17 @@
 #' including the Automatic Urban and Rural Network (AURN), the individual
 #' England (AQE), Scotland (SAQN), Wales (WAQN) and Northern Ireland (NI)
 #' Networks, and many "locally managed" monitoring networks across England.
-#' Files are imported from a remote server operated by Ricardo that provides air
-#' quality data files as R data objects. For an up to date list of available
-#' sites that can be imported, see [importMeta()].
+#' Files are imported from a remote server operated by WSP (formerly Ricardo)
+#' that provides air quality data files as R data objects. For an up to date
+#' list of available sites that can be imported, see [importMeta()].
 #'
 #' @section Importing UK Air Pollution Data:
 #'
 #'   This family of functions has been written to make it easy to import data
-#'   from across several UK air quality networks. Ricardo have provided .RData
-#'   files (R workspaces) of all individual sites and years, as well as up to
-#'   date meta data. These files are updated on a daily basis. This approach
-#'   requires a link to the Internet to work.
+#'   from across several UK air quality networks. WSP (formerly Ricardo) have
+#'   provided .RData files (R workspaces) of all individual sites and years, as
+#'   well as up to date meta data. These files are updated on a daily basis.
+#'   This approach requires a link to the Internet to work.
 #'
 #'   There are several advantages over the web portal approach where .csv files
 #'   are downloaded.
@@ -69,7 +69,7 @@
 #'   The function returns modelled hourly values of wind speed (`ws`), wind
 #'   direction (`wd`) and ambient temperature (`air_temp`) if available
 #'   (generally from around 2010). These values are modelled using the WRF model
-#'   operated by Ricardo.
+#'   operated by WSP.
 #'
 #'   The BAM (Beta-Attenuation Monitor) instruments that have been incorporated
 #'   into the network throughout its history have been scaled by 1.3 if they
@@ -135,10 +135,9 @@
 #' @param meteo Append modelled meteorological data, if available? Defaults to
 #'   `TRUE`, which will return wind speed (`ws`), wind direction (`wd`) and
 #'   ambient temperature (`air_temp`). The variables are calculated from using
-#'   the WRF model run by Ricardo Energy & Environment and are available for
-#'   most but not all networks. Setting `meteo = FALSE` is useful if you have
-#'   other meteorological data to use in preference, for example from the
-#'   `worldmet` package.
+#'   the WRF model run by WSP and are available for most but not all networks.
+#'   Setting `meteo = FALSE` is useful if you have other meteorological data to
+#'   use in preference, for example from the `worldmet` package.
 #' @param ratified Append `qc` column(s) to hourly data indicating whether each
 #'   species was ratified (i.e., quality-checked)?  Defaults to `FALSE`.
 #' @param to_narrow Return the data in a "narrow"/"long"/"tidy" format? By

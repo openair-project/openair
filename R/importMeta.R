@@ -25,7 +25,8 @@
 #'
 #' By default, the function will return the site latitude, longitude and site
 #' type. If the option `all = TRUE` is used, much more detailed information is
-#' returned. The following metadata columns are available in the complete dataset:
+#' returned. The following metadata columns are available in the complete
+#' dataset:
 #'
 #' - **source**: The network with which the site is associated. Note that some monitoring sites are part of multiple networks (e.g., the AURN & SAQN) so the same site may feature twice under different sources.
 #'
@@ -47,8 +48,9 @@
 #'
 #' - **provider** and **code**: The specific provider of the locally managed dataset (e.g., `"londonair"`).
 #'
-#' Thanks go to Trevor Davies (Ricardo), Dr Stuart Grange (EMPA) and Dr Ben
-#' Barratt (KCL) and  for making these data available.
+#' Thanks go to Trevor Davies (WSP, formerly Ricardo), Dr Stuart Grange (EMPA)
+#' and Dr Ben Barratt (KCL) and  for making these data available.
+#'
 #' @param source One or more air quality networks for which data is available
 #'   through openair. Available networks include:
 #'
@@ -73,12 +75,11 @@
 #'   could appear more than once when `source` is a vector of two or more. The
 #'   default argument, `FALSE`, drops duplicate sites. `TRUE` will return them.
 #' @param year If a single year is selected, only sites that were open at some
-#'   point in that year are returned. If `all = TRUE` only sites that
-#'   measured a particular pollutant in that year are returned. Year can also be
-#'   a sequence e.g. `year = 2010:2020` or of length 2 e.g. `year =
-#'   c(2010, 2020)`, which will return only sites that were open over the
-#'   duration. Note that `year` is ignored when the `source` is either
-#'   `"imperial"` or `"europe"`.
+#'   point in that year are returned. If `all = TRUE` only sites that measured a
+#'   particular pollutant in that year are returned. Year can also be a sequence
+#'   e.g. `year = 2010:2020` or of length 2 e.g. `year = c(2010, 2020)`, which
+#'   will return only sites that were open over the duration. Note that `year`
+#'   is ignored when the `source` is either `"imperial"` or `"europe"`.
 #' @return A data frame with meta data.
 #' @author David Carslaw
 #' @family import functions
@@ -154,7 +155,7 @@ importMeta <-
           lmam = "https://uk-air.defra.gov.uk/openair/LMAM/R_data/LMAM_metadata.RData"
         )
 
-        meta <- clean_ricardo_meta(url, all = all, year = year)
+        meta <- clean_wsp_meta(url, all = all, year = year)
       }
 
       # KCL
@@ -313,12 +314,12 @@ importMeta <-
     as_tibble(meta)
   }
 
-#' Clean data from Ricardo (not KCL or Europe)
+#' Clean data from WSP (not KCL or Europe)
 #' @param url URL to use
 #' @param all inherited from parent function
 #' @param year inherited from parent function
 #' @noRd
-clean_ricardo_meta <- function(url, all, year) {
+clean_wsp_meta <- function(url, all, year) {
   tmp <- tempfile()
 
   # load data
