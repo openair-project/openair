@@ -107,7 +107,7 @@
 #'
 openColours <- function(scheme = "default", n = 100) {
   # pre-defined brewer colour palettes sequential, diverging, qualitative
-  brewer.col <- c(
+  brewer_schemes <- c(
     "Blues",
     "BuGn",
     "BuPu",
@@ -161,7 +161,8 @@ openColours <- function(scheme = "default", n = 100) {
       "inferno",
       "plasma",
       "cividis",
-      "gaf.seq"
+      "gaf.seq",
+      "greyscale"
     )
 
   # qualitative palettes and maximum lengths
@@ -187,25 +188,21 @@ openColours <- function(scheme = "default", n = 100) {
   schemes <- c(
     seq_schemes,
     qual_schemes,
+    brewer_schemes,
     "brewer1",
-    "hue",
-    "greyscale",
-    brewer.col
+    "hue"
   )
 
   # get colours based on scheme
   if (length(scheme) == 1L) {
     if (scheme == "brewer1") {
-      cols <- brewerPalette(n, "Set1", brewer.col, brewer.n)
+      cols <- brewerPalette(n, "Set1", brewer_schemes, brewer.n)
     }
-    if (scheme %in% brewer.col) {
-      cols <- brewerPalette(n, scheme, brewer.col, brewer.n)
+    if (scheme %in% brewer_schemes) {
+      cols <- brewerPalette(n, scheme, brewer_schemes, brewer.n)
     }
     if (scheme == "hue") {
       cols <- huePalette(n)
-    }
-    if (scheme == "greyscale") {
-      cols <- grDevices::grey(seq(0.9, 0.1, length = n))
     }
     if (scheme %in% seq_schemes) {
       cols <- seqPalette(n, scheme = scheme)
@@ -256,8 +253,8 @@ openColours <- function(scheme = "default", n = 100) {
 
 #' Function to build Brewer palettes
 #' @noRd
-brewerPalette <- function(n, scheme, brewer.col, brewer.n) {
-  n.brew <- brewer.n[scheme == brewer.col]
+brewerPalette <- function(n, scheme, brewer_schemes, brewer.n) {
+  n.brew <- brewer.n[scheme == brewer_schemes]
 
   if (n >= 3 & n <= n.brew) {
     brewer.pal(n, scheme)
@@ -439,6 +436,26 @@ seqPalette <- function(n, scheme) {
   if (scheme == "default") {
     cols <- rev(brewer.pal(11, "Spectral"))
     interpolate <- "spline"
+  }
+
+  if (scheme == "greyscale") {
+    cols <- c(
+      "#E6E6E6",
+      "#D7D7D7",
+      "#C8C8C8",
+      "#BABABA",
+      "#ABABAB",
+      "#9D9D9D",
+      "#8E8E8E",
+      "#808080",
+      "#717171",
+      "#626262",
+      "#545454",
+      "#454545",
+      "#373737",
+      "#282828",
+      "#1A1A1A"
+    )
   }
 
   if (scheme == "increment") {
