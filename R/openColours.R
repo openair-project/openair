@@ -1,86 +1,105 @@
 #' Pre-defined openair colours and definition of user-defined colours
 #'
-#' This in primarily an internal openair function to make it easy for users to
-#' select particular colour schemes, or define their own range of colours of a
-#' user-defined length.
-#'
-#' @section Schemes:
-#'
-#'   The following schemes are made available by `openColours()`:
-#'
-#'   **Sequential Colours:**
-#'
-#'   * "default", "increment", "brewer1", "heat", "jet", "turbo", "hue",
-#'   "greyscale".
-#'
-#'   * Simplified versions of the `viridis` colours: "viridis", "plasma",
-#'   "magma", "inferno", "cividis", and "turbo".
-#'
-#'   * Simplified versions of the `RColorBrewer` sequential palettes: "Blues", "BuGn",
-#'   "BuPu", "GnBu", "Greens", "Greys", "Oranges", "OrRd", "PuBu", "PuBuGn",
-#'   "PuRd", "Purples", "RdPu", "Reds", "YlGn", "YlGnBu", "YlOrBr", "YlOrRd".
-#'
-#'   **Diverging Palettes:**
-#'
-#'   * Simplified versions of the `RColorBrewer` diverging palettes: "BrBG",
-#'   "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral".
-#'
-#'   **Qualitative Palettes:**
-#'
-#'   * Simplified versions of the `RColorBrewer` qualitative palettes:
-#'   "Accent", "Dark2", "Paired", "Pastel1", "Pastel2", "Set1", "Set2", "Set3".
-#'
-#'   * "okabeito" (or "cbPalette"), a colour-blind safe palette based on
-#'   the work of Masataka Okabe and Kei Ito (<https://jfly.uni-koeln.de/color/>)
-#'
-#'   * "tol.bright" (or "tol"), "tol.muted" and "tol.light", colour-blind safe
-#'   palettes based on the work of Paul Tol.
-#'
-#'   * "tableau" and "observable", aliases for the
-#'   "Tableau10"
-#'   (<https://www.tableau.com/blog/colors-upgrade-tableau-10-56782>) and
-#'   "Observable10" (<https://observablehq.com/blog/crafting-data-colors>)
-#'   colour palettes. These could be useful for consistency between openair
-#'   plots and with figures made in Tableau or Observable Plot.
-#'
-#'   **UK Government Palettes:**
-#'
-#'   * "daqi" and "daqi.bands", the colours associated with the UK daily air
-#'   quality index; "daqi" (a palette of 10 colours, corresponding to each index
-#'   value) or "daqi.bands" (4 colours, corresponding to each band - Low,
-#'   Moderate, High, and Very High). These colours were taken directly from
-#'   <https://uk-air.defra.gov.uk/air-pollution/daqi> and may be useful in
-#'   figures like [calendarPlot()].
-#'
-#'   * "gaf.cat", "gaf.focus" and "gaf.seq", colours recommended by the UK Government Analysis function
-#'   (<https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/>).
-#'   "gaf.cat" will return the 'categorical' palette (max 6 colours),
-#'   "gaf.focus" the 'focus' palette (max 2 colours), and "gaf.seq" the
-#'   'sequential' palette.
+#' [openColours()] is a convenience function for accessing pre-defined colours
+#' or interpolating user-defined colours. Many useful and accessible themes are
+#' defined within `openair` for convenience, all of which are categorised and
+#' referenced within [openSchemes]. Further, [openColours()] is often used
+#' within *other* openair functions; for example `polarPlot(mydata, cols =
+#' "viridis")` will use `openColours("viridis")` to access a colour palette.
 #'
 #' @section Details:
 #'
 #'   Because of the way many of the schemes have been developed they only exist
-#'   over certain number of colour gradations (typically 3--10) --- see
-#'   `?brewer.pal` for actual details. If less than or more than the required
-#'   number of colours is supplied then `openair` will interpolate the colours.
+#'   over certain number of colour gradations (typically 3--10). If the required
+#'   number of colours is outside of this range, `openair` will interpolate the
+#'   colours with a warning.
 #'
 #'   Each of the pre-defined schemes have merits and their use will depend on a
 #'   particular situation. For showing incrementing concentrations, e.g., high
-#'   concentrations emphasised, then "default", "heat", "jet", "turbo", and
-#'   "increment" are very useful. See also the description of `RColorBrewer`
-#'   schemes for the option `scheme`.
+#'   concentrations emphasised, then `"default"`, `"turbo"`, `"viridis"`, and
+#'   `"increment"` are very useful.
 #'
 #'   To colour-code categorical-type problems, e.g., colours for different
-#'   pollutants, "hue" and "brewer1" are useful.
+#'   pollutants, `"hue"` and `"brewer1"` are useful.
 #'
-#'   When publishing in black and white, "greyscale" is often convenient.  With
-#'   most openair functions, as well as generating a greyscale colour gradient,
-#'   it also resets strip background and other coloured text and lines to
-#'   greyscale values.
+#'   When publishing in black and white, `"greyscale"` is often convenient. With
+#'   most `openair` functions, as well as generating a greyscale colour
+#'   gradient, it also resets strip background and other coloured text and lines
+#'   to greyscale values.
 #'
 #'   Failing that, the user can define their own schemes based on R colour
-#'   names. To see the full list of names, type [colors()] into R.
+#'   names. To see the full list of names, see [colors()].
+#'
+#' @section Schemes:
+#'
+#'   The following schemes are made available by [openColours()]. They are also
+#'   listed in [openSchemes].
+#'
+#'   **Sequential Colours:**
+#'
+#'   * `"default"`, `"increment"`, `"brewer1"`, `"heat"`, `"jet"`, `"turbo"`,
+#'   `"hue"`, `"greyscale"`.
+#'
+#'   * Simplified versions of the `viridis` colours: `"viridis"`, `"plasma"`,
+#'   `"magma"`, `"inferno"`, and `"cividis"`.
+#'
+#'   * Simplified versions of the `RColorBrewer` sequential palettes: `"Blues"`, `"BuGn"`,
+#'   `"BuPu"`, `"GnBu"`, `"Greens"`, `"Greys"`, `"Oranges"`, `"OrRd"`, `"PuBu"`,
+#'   `"PuBuGn"`, `"PuRd"`, `"Purples"`, `"RdPu"`, `"Reds"`, `"YlGn"`,
+#'   `"YlGnBu"`, `"YlOrBr"`, `"YlOrRd"`.
+#'
+#'   **Diverging Palettes:**
+#'
+#'   * Simplified versions of the `RColorBrewer` diverging palettes: `"BrBG"`,
+#'   `"PiYG"`, `"PRGn"`, `"PuOr"`, `"RdBu"`, `"RdGy"`, `"RdYlBu"`, `"RdYlGn"`,
+#'   `"Spectral"`.
+#'
+#'   **Qualitative Palettes:**
+#'
+#'   * Simplified versions of the `RColorBrewer` qualitative palettes:
+#'   `"Accent"`, `"Dark2"`, `"Paired"`, `"Pastel1"`, `"Pastel2"`, `"Set1"`,
+#'   `"Set2"`, `"Set3"`.
+#'
+#'   * `"okabeito"` (or `"cbPalette"`), a colour-blind safe palette based on
+#'   the work of Masataka Okabe and Kei Ito.
+#'
+#'   * `"tol.bright"` (or `"tol"`), `"tol.muted"` and `"tol.light"`, colour-blind safe
+#'   palettes based on the work of Paul Tol.
+#'
+#'   * `"tableau"` and `"observable"`, aliases for the
+#'   "Tableau10" and "Observable10" colour palettes. These could be useful for
+#'   consistency between openair plots and with figures made in these software
+#'   programs.
+#'
+#'   **UK Government Palettes:**
+#'
+#'   * `"daqi"` and `"daqi.bands"`, the colours associated with the UK daily air
+#'   quality index; `"daqi"` (a palette of 10 colours, corresponding to each
+#'   index value) or `"daqi.bands"` (4 colours, corresponding to each band -
+#'   Low, Moderate, High, and Very High). These colours may be useful in figures
+#'   like [calendarPlot()].
+#'
+#'   * `"gaf.cat"`, `"gaf.focus"` and `"gaf.seq"`, colours recommended by the UK Government Analysis function.
+#'   `"gaf.cat"` will return the 'categorical' palette (max 6 colours),
+#'   `"gaf.focus"` the 'focus' palette (max 2 colours), and `"gaf.seq"` the
+#'   'sequential' palette.
+#'
+#' @section The `openSchemes` dataset:
+#'
+#'   To help understand the available palettes in [openColours()], the
+#'   [openSchemes] dataset is provided. This is a `data.frame` listing all
+#'   schemes, categorising them into diverging, sequential, or qualitative. This
+#'   dataset can be filtered to find useful scales for your specific
+#'   visualisation.
+#'
+#'   \describe{
+#'   \item{category}{The category - one of `"div"` (diverging), `"qual"` (qualitative), or `"seq"` (sequential).}
+#'   \item{scheme}{The scheme name - to be provided to [openColours()]}
+#'   \item{max_n}{The maximum number of pre-defined colours in a qualitative palette. Setting `n` greater than this value is not recommended.}
+#'   \item{colorblind}{Whether or not the scheme is colour-blind accessible. This is a estimation based on available information from third parties; users should assess the accesibility of all visualisations they create.}
+#'   \item{origin}{The original authors of the palette.}
+#'   \item{reference}{A URL reference for further reading about the colour schemes.}
+#'   }
 #'
 #' @param scheme Any one of the pre-defined `openair` schemes (e.g.,
 #'   `"increment"`) or a user-defined palette (e.g., `c("red", "orange",
@@ -96,13 +115,11 @@
 #'   reversed.
 #'
 #' @export
+#' @rdname open-colours
+#'
 #' @return A character vector of hex codes
 #' @author David Carslaw
 #' @author Jack Davison
-#' @references <https://colorbrewer2.org/>
-#' @references <https://uk-air.defra.gov.uk/air-pollution/daqi>
-#' @references
-#' <https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/>
 #' @examples
 #'
 #' # to return 5 colours from the "jet" scheme:
@@ -119,84 +136,10 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
     cli::cli_abort("{.arg direction} must be either {1L} or {-1L}.")
   }
 
-  # sequential palettes
-  seq_schemes <-
-    c(
-      "increment",
-      "default",
-      "heat",
-      "jet",
-      "turbo",
-      "viridis",
-      "magma",
-      "inferno",
-      "plasma",
-      "cividis",
-      "gaf.seq",
-      "greyscale",
-      "hue",
-      "Blues",
-      "BuGn",
-      "BuPu",
-      "GnBu",
-      "Greens",
-      "Greys",
-      "Oranges",
-      "OrRd",
-      "PuBu",
-      "PuBuGn",
-      "PuRd",
-      "Purples",
-      "RdPu",
-      "Reds",
-      "YlGn",
-      "YlGnBu",
-      "YlOrBr",
-      "YlOrRd",
-      "BrBG",
-      "PiYG",
-      "PRGn",
-      "PuOr",
-      "RdBu",
-      "RdGy",
-      "RdYlBu",
-      "RdYlGn",
-      "Spectral"
-    )
-
-  # qualitative palettes and maximum lengths
-  qual_scheme_lengths <- c(
-    "okabeito" = 9,
-    "cbPalette" = 9,
-    "daqi" = 10,
-    "daqi.bands" = 4,
-    "gaf.cat" = 6,
-    "gaf.focus" = 2,
-    "tableau" = 10,
-    "observable" = 10,
-    "tol" = 7,
-    "tol.bright" = 7,
-    "tol.muted" = 10,
-    "tol.light" = 9,
-    "Accent" = 8,
-    "Dark2" = 8,
-    "Paired" = 12,
-    "Pastel1" = 9,
-    "Pastel2" = 8,
-    "brewer1" = 9,
-    "Set1" = 9,
-    "Set2" = 8,
-    "Set3" = 12
-  )
-
-  # names of qualitative palettes
-  qual_schemes <- names(qual_scheme_lengths)
-
-  # combine all schemes into vector
-  schemes <- c(
-    seq_schemes,
-    qual_schemes
-  )
+  # get lists of schemes
+  schemes <- openSchemes$scheme
+  seq_schemes <- openSchemes$scheme[openSchemes$category %in% c("seq", "div")]
+  qual_schemes <- openSchemes$scheme[openSchemes$category == "qual"]
 
   # get colours based on scheme
   if (length(scheme) == 1L) {
@@ -228,7 +171,8 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
       bad_cols <- unique(names(check[!check]))
       cli::cli_abort(
         c(
-          "x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openColours} palettes: {.field {bad_cols}}"
+          "x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openair::openColours} palettes: {.field {bad_cols}}",
+          "i" = "See {.fun openair::openSchemes} for a list of available in-built palettes."
         ),
         call = NULL
       )
@@ -247,7 +191,7 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
     cli::cli_abort(
       c(
         "x" = "Please provide {.strong either} 1 {.fun openColours} palette {.emph or} a vector of valid R colours",
-        "i" = "See {.code ?openColours} for a list of palettes."
+        "i" = "See {.fun openair::openSchemes} for a list of available in-built palettes."
       ),
       call = NULL
     )
@@ -1129,3 +1073,8 @@ areColors <- function(x) {
     )
   })
 }
+
+#' @rdname open-colours
+#' @examples
+#' openSchemes
+"openSchemes"
