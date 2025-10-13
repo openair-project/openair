@@ -86,6 +86,9 @@
 #'   `"increment"`) or a user-defined palette (e.g., `c("red", "orange",
 #'   "gold")`). See `?openColours` for a full list of available schemes.
 #' @param n number of colours required.
+#' @param direction Sets the order of colours in the scale. If `1`, the default,
+#'   outputs the default order of the `scheme`. If `-1`, the order of colours is
+#'   reversed.
 #' @export
 #' @return A character vector of hex codes
 #' @author David Carslaw
@@ -105,7 +108,11 @@
 #' cols <- openColours(c("yellow", "green", "red"), 10)
 #' cols
 #'
-openColours <- function(scheme = "default", n = 100) {
+openColours <- function(scheme = "default", n = 100, direction = 1L) {
+  if (!rlang::is_integerish(direction, n = 1L) || !direction %in% c(-1, 1)) {
+    cli::cli_abort("{.arg direction} must be either {1L} or {-1L}.")
+  }
+
   # pre-defined brewer colour palettes sequential, diverging, qualitative
   brewer_schemes <- c(
     "Blues",
@@ -195,6 +202,11 @@ openColours <- function(scheme = "default", n = 100) {
 
   # get colours based on scheme
   if (length(scheme) == 1L) {
+    if (startsWith(scheme, "-")) {
+      scheme <- gsub("\\-", "", scheme)
+      direction <- direction * -1
+    }
+
     if (scheme == "brewer1") {
       cols <- brewerPalette(n, "Set1", brewer_schemes, brewer.n)
     }
@@ -246,6 +258,10 @@ openColours <- function(scheme = "default", n = 100) {
       ),
       call = NULL
     )
+  }
+
+  if (direction == -1) {
+    cols <- rev(cols)
   }
 
   cols
