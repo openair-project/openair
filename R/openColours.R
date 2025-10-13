@@ -172,7 +172,7 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
       cli::cli_abort(
         c(
           "x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openair::openColours} palettes: {.field {bad_cols}}",
-          "i" = "See {.fun openair::openSchemes} for a list of available in-built palettes."
+          "i" = "See {.topic openair::openSchemes} for a list of available in-built palettes."
         ),
         call = NULL
       )
@@ -191,7 +191,7 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
     cli::cli_abort(
       c(
         "x" = "Please provide {.strong either} 1 {.fun openColours} palette {.emph or} a vector of valid R colours",
-        "i" = "See {.fun openair::openSchemes} for a list of available in-built palettes."
+        "i" = "See {.topic openair::openSchemes} for a list of available in-built palettes."
       ),
       call = NULL
     )
