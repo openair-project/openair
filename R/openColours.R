@@ -84,11 +84,17 @@
 #'
 #' @param scheme Any one of the pre-defined `openair` schemes (e.g.,
 #'   `"increment"`) or a user-defined palette (e.g., `c("red", "orange",
-#'   "gold")`). See `?openColours` for a full list of available schemes.
+#'   "gold")`). See [openColours()] for a full list of available schemes.
+#'   Starting a pre-defined scheme with `"-"` (e.g., `"-increment"`) will
+#'   reverse `direction`; this is mainly useful for use within other `openair`
+#'   functions (e.g., `polarPlot(mydata, cols = "-viridis")`).
+#'
 #' @param n number of colours required.
+#'
 #' @param direction Sets the order of colours in the scale. If `1`, the default,
 #'   outputs the default order of the `scheme`. If `-1`, the order of colours is
 #'   reversed.
+#'
 #' @export
 #' @return A character vector of hex codes
 #' @author David Carslaw
@@ -113,49 +119,6 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
     cli::cli_abort("{.arg direction} must be either {1L} or {-1L}.")
   }
 
-  # pre-defined brewer colour palettes sequential, diverging, qualitative
-  brewer_schemes <- c(
-    "Blues",
-    "BuGn",
-    "BuPu",
-    "GnBu",
-    "Greens",
-    "Greys",
-    "Oranges",
-    "OrRd",
-    "PuBu",
-    "PuBuGn",
-    "PuRd",
-    "Purples",
-    "RdPu",
-    "Reds",
-    "YlGn",
-    "YlGnBu",
-    "YlOrBr",
-    "YlOrRd",
-    "BrBG",
-    "PiYG",
-    "PRGn",
-    "PuOr",
-    "RdBu",
-    "RdGy",
-    "RdYlBu",
-    "RdYlGn",
-    "Spectral",
-    "Accent",
-    "Dark2",
-    "Paired",
-    "Pastel1",
-    "Pastel2",
-    "brewer1",
-    "Set1",
-    "Set2",
-    "Set3"
-  )
-
-  # max colours allowed for each brewer pal
-  brewer.n <- c(rep(9, 18), rep(9, 9), c(8, 8, 12, 9, 8, 9, 8, 12))
-
   # sequential palettes
   seq_schemes <-
     c(
@@ -171,7 +134,34 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
       "cividis",
       "gaf.seq",
       "greyscale",
-      "hue"
+      "hue",
+      "Blues",
+      "BuGn",
+      "BuPu",
+      "GnBu",
+      "Greens",
+      "Greys",
+      "Oranges",
+      "OrRd",
+      "PuBu",
+      "PuBuGn",
+      "PuRd",
+      "Purples",
+      "RdPu",
+      "Reds",
+      "YlGn",
+      "YlGnBu",
+      "YlOrBr",
+      "YlOrRd",
+      "BrBG",
+      "PiYG",
+      "PRGn",
+      "PuOr",
+      "RdBu",
+      "RdGy",
+      "RdYlBu",
+      "RdYlGn",
+      "Spectral"
     )
 
   # qualitative palettes and maximum lengths
@@ -187,7 +177,16 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
     "tol" = 7,
     "tol.bright" = 7,
     "tol.muted" = 10,
-    "tol.light" = 9
+    "tol.light" = 9,
+    "Accent" = 8,
+    "Dark2" = 8,
+    "Paired" = 12,
+    "Pastel1" = 9,
+    "Pastel2" = 8,
+    "brewer1" = 9,
+    "Set1" = 9,
+    "Set2" = 8,
+    "Set3" = 12
   )
 
   # names of qualitative palettes
@@ -196,8 +195,7 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
   # combine all schemes into vector
   schemes <- c(
     seq_schemes,
-    qual_schemes,
-    brewer_schemes
+    qual_schemes
   )
 
   # get colours based on scheme
@@ -211,9 +209,6 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
     # edge case for brewer
     scheme[scheme == "brewer1"] <- "Set1"
 
-    if (scheme %in% brewer_schemes) {
-      cols <- brewerPalette(n, scheme, brewer_schemes, brewer.n)
-    }
     if (scheme %in% seq_schemes) {
       cols <- seqPalette(n, scheme = scheme)
     }
@@ -265,26 +260,123 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
   cols
 }
 
-#' Function to build Brewer palettes
-#' @noRd
-brewerPalette <- function(n, scheme, brewer_schemes, brewer.n) {
-  n.brew <- brewer.n[scheme == brewer_schemes]
-
-  if (n >= 3 & n <= n.brew) {
-    brewer.pal(n, scheme)
-  } else {
-    thefun <-
-      suppressWarnings(grDevices::colorRampPalette(
-        brewer.pal(n.brew, scheme),
-        interpolate = "spline"
-      ))
-    thefun(n)
-  }
-}
-
 #' Function to manage qualitative palettes
 #' @noRd
 qualPalette <- function(n, scheme) {
+  if (scheme == "Accent") {
+    cols <- c(
+      "#7FC97F",
+      "#BEAED4",
+      "#FDC086",
+      "#FFFF99",
+      "#386CB0",
+      "#F0027F",
+      "#BF5B17",
+      "#666666"
+    )
+  }
+
+  if (scheme == "Dark2") {
+    cols <- c(
+      "#1B9E77",
+      "#D95F02",
+      "#7570B3",
+      "#E7298A",
+      "#66A61E",
+      "#E6AB02",
+      "#A6761D",
+      "#666666"
+    )
+  }
+
+  if (scheme == "Paired") {
+    cols <- c(
+      "#A6CEE3",
+      "#1F78B4",
+      "#B2DF8A",
+      "#33A02C",
+      "#FB9A99",
+      "#E31A1C",
+      "#FDBF6F",
+      "#FF7F00",
+      "#CAB2D6",
+      "#6A3D9A",
+      "#FFFF99",
+      "#B15928"
+    )
+  }
+
+  if (scheme == "Pastel1") {
+    cols <- c(
+      "#FBB4AE",
+      "#B3CDE3",
+      "#CCEBC5",
+      "#DECBE4",
+      "#FED9A6",
+      "#FFFFCC",
+      "#E5D8BD",
+      "#FDDAEC",
+      "#F2F2F2"
+    )
+  }
+
+  if (scheme == "Pastel2") {
+    cols <- c(
+      "#B3E2CD",
+      "#FDCDAC",
+      "#CBD5E8",
+      "#F4CAE4",
+      "#E6F5C9",
+      "#FFF2AE",
+      "#F1E2CC",
+      "#CCCCCC"
+    )
+  }
+
+  if (scheme == "Set1") {
+    cols <- c(
+      "#E41A1C",
+      "#377EB8",
+      "#4DAF4A",
+      "#984EA3",
+      "#FF7F00",
+      "#FFFF33",
+      "#A65628",
+      "#F781BF",
+      "#999999"
+    )
+  }
+
+  if (scheme == "Set2") {
+    cols <- c(
+      "#66C2A5",
+      "#FC8D62",
+      "#8DA0CB",
+      "#E78AC3",
+      "#A6D854",
+      "#FFD92F",
+      "#E5C494",
+      "#B3B3B3"
+    )
+  }
+
+  if (scheme == "Set3") {
+    cols <- c(
+      "#8DD3C7",
+      "#FFFFB3",
+      "#BEBADA",
+      "#FB8072",
+      "#80B1D3",
+      "#FDB462",
+      "#B3DE69",
+      "#FCCDE5",
+      "#D9D9D9",
+      "#BC80BD",
+      "#CCEBC5",
+      "#FFED6F"
+    )
+  }
+
   if (scheme %in% c("cbPalette", "okabeito")) {
     cols <- c(
       "#E69F00",
@@ -413,14 +505,24 @@ qualPalette <- function(n, scheme) {
   if (n >= 1 && n <= max) {
     cols <- cols[1:n]
   } else {
-    cli::cli_abort(
+    cli::cli_warn(
       c(
         "!" = "Too many colours selected for {.code {scheme}}.",
-        "i" = "{.code n} should be between 1 and {max}."
+        "i" = "{.code n} should be between 1 and {max}.",
+        "i" = "Colours will be interpolated to produce {n} colours."
       ),
       call = NULL
     )
+
+    color_fun <-
+      suppressWarnings(grDevices::colorRampPalette(
+        cols,
+        interpolate = "spline"
+      ))
+    cols <- color_fun(n)
   }
+
+  cols
 }
 
 
@@ -429,9 +531,25 @@ qualPalette <- function(n, scheme) {
 seqPalette <- function(n, scheme) {
   interpolate <- "linear"
 
-  if (scheme == "default") {
-    cols <- rev(brewer.pal(11, "Spectral"))
-    interpolate <- "spline"
+  if (scheme %in% c("default", "Spectral")) {
+    cols <- c(
+      "#9E0142",
+      "#D53E4F",
+      "#F46D43",
+      "#FDAE61",
+      "#FEE08B",
+      "#FFFFBF",
+      "#E6F598",
+      "#ABDDA4",
+      "#66C2A5",
+      "#3288BD",
+      "#5E4FA2"
+    )
+
+    if (scheme == "default") {
+      cols <- rev(cols)
+      interpolate <- "spline"
+    }
   }
 
   if (scheme == "hue") {
@@ -480,6 +598,390 @@ seqPalette <- function(n, scheme) {
     )
   }
 
+  if (scheme == "BrBG") {
+    cols <- c(
+      "#543005",
+      "#8C510A",
+      "#BF812D",
+      "#DFC27D",
+      "#F6E8C3",
+      "#F5F5F5",
+      "#C7EAE5",
+      "#80CDC1",
+      "#35978F",
+      "#01665E",
+      "#003C30"
+    )
+  }
+
+  if (scheme == "PiYG") {
+    cols <- c(
+      "#8E0152",
+      "#C51B7D",
+      "#DE77AE",
+      "#F1B6DA",
+      "#FDE0EF",
+      "#F7F7F7",
+      "#E6F5D0",
+      "#B8E186",
+      "#7FBC41",
+      "#4D9221",
+      "#276419"
+    )
+  }
+
+  if (scheme == "PRGn") {
+    cols <- c(
+      "#40004B",
+      "#762A83",
+      "#9970AB",
+      "#C2A5CF",
+      "#E7D4E8",
+      "#F7F7F7",
+      "#D9F0D3",
+      "#A6DBA0",
+      "#5AAE61",
+      "#1B7837",
+      "#00441B"
+    )
+  }
+
+  if (scheme == "PuOr") {
+    cols <- c(
+      "#7F3B08",
+      "#B35806",
+      "#E08214",
+      "#FDB863",
+      "#FEE0B6",
+      "#F7F7F7",
+      "#D8DAEB",
+      "#B2ABD2",
+      "#8073AC",
+      "#542788",
+      "#2D004B"
+    )
+  }
+
+  if (scheme == "RdBu") {
+    cols <- c(
+      "#67001F",
+      "#B2182B",
+      "#D6604D",
+      "#F4A582",
+      "#FDDBC7",
+      "#F7F7F7",
+      "#D1E5F0",
+      "#92C5DE",
+      "#4393C3",
+      "#2166AC",
+      "#053061"
+    )
+  }
+
+  if (scheme == "RdGy") {
+    cols <- c(
+      "#67001F",
+      "#B2182B",
+      "#D6604D",
+      "#F4A582",
+      "#FDDBC7",
+      "#FFFFFF",
+      "#E0E0E0",
+      "#BABABA",
+      "#878787",
+      "#4D4D4D",
+      "#1A1A1A"
+    )
+  }
+
+  if (scheme == "RdYlBu") {
+    cols <- c(
+      "#A50026",
+      "#D73027",
+      "#F46D43",
+      "#FDAE61",
+      "#FEE090",
+      "#FFFFBF",
+      "#E0F3F8",
+      "#ABD9E9",
+      "#74ADD1",
+      "#4575B4",
+      "#313695"
+    )
+  }
+
+  if (scheme == "RdYlGn") {
+    cols <- c(
+      "#A50026",
+      "#D73027",
+      "#F46D43",
+      "#FDAE61",
+      "#FEE08B",
+      "#FFFFBF",
+      "#D9EF8B",
+      "#A6D96A",
+      "#66BD63",
+      "#1A9850",
+      "#006837"
+    )
+  }
+
+  if (scheme == "Blues") {
+    cols <- c(
+      "#F7FBFF",
+      "#DEEBF7",
+      "#C6DBEF",
+      "#9ECAE1",
+      "#6BAED6",
+      "#4292C6",
+      "#2171B5",
+      "#08519C",
+      "#08306B"
+    )
+  }
+
+  if (scheme == "BuGn") {
+    cols <- c(
+      "#F7FCFD",
+      "#E5F5F9",
+      "#CCECE6",
+      "#99D8C9",
+      "#66C2A4",
+      "#41AE76",
+      "#238B45",
+      "#006D2C",
+      "#00441B"
+    )
+  }
+
+  if (scheme == "BuPu") {
+    cols <- c(
+      "#F7FCFD",
+      "#E0ECF4",
+      "#BFD3E6",
+      "#9EBCDA",
+      "#8C96C6",
+      "#8C6BB1",
+      "#88419D",
+      "#810F7C",
+      "#4D004B"
+    )
+  }
+
+  if (scheme == "GnBu") {
+    cols <- c(
+      "#F7FCF0",
+      "#E0F3DB",
+      "#CCEBC5",
+      "#A8DDB5",
+      "#7BCCC4",
+      "#4EB3D3",
+      "#2B8CBE",
+      "#0868AC",
+      "#084081"
+    )
+  }
+
+  if (scheme == "Greens") {
+    cols <- c(
+      "#F7FCF5",
+      "#E5F5E0",
+      "#C7E9C0",
+      "#A1D99B",
+      "#74C476",
+      "#41AB5D",
+      "#238B45",
+      "#006D2C",
+      "#00441B"
+    )
+  }
+
+  if (scheme == "Greys") {
+    cols <- c(
+      "#FFFFFF",
+      "#F0F0F0",
+      "#D9D9D9",
+      "#BDBDBD",
+      "#969696",
+      "#737373",
+      "#525252",
+      "#252525",
+      "#000000"
+    )
+  }
+
+  if (scheme == "Oranges") {
+    cols <- c(
+      "#FFF5EB",
+      "#FEE6CE",
+      "#FDD0A2",
+      "#FDAE6B",
+      "#FD8D3C",
+      "#F16913",
+      "#D94801",
+      "#A63603",
+      "#7F2704"
+    )
+  }
+
+  if (scheme == "OrRd") {
+    cols <- c(
+      "#FFF7EC",
+      "#FEE8C8",
+      "#FDD49E",
+      "#FDBB84",
+      "#FC8D59",
+      "#EF6548",
+      "#D7301F",
+      "#B30000",
+      "#7F0000"
+    )
+  }
+
+  if (scheme == "PuBu") {
+    cols <- c(
+      "#FFF7FB",
+      "#ECE7F2",
+      "#D0D1E6",
+      "#A6BDDB",
+      "#74A9CF",
+      "#3690C0",
+      "#0570B0",
+      "#045A8D",
+      "#023858"
+    )
+  }
+
+  if (scheme == "PuBuGn") {
+    cols <- c(
+      "#FFF7FB",
+      "#ECE2F0",
+      "#D0D1E6",
+      "#A6BDDB",
+      "#67A9CF",
+      "#3690C0",
+      "#02818A",
+      "#016C59",
+      "#014636"
+    )
+  }
+
+  if (scheme == "PuRd") {
+    cols <- c(
+      "#F7F4F9",
+      "#E7E1EF",
+      "#D4B9DA",
+      "#C994C7",
+      "#DF65B0",
+      "#E7298A",
+      "#CE1256",
+      "#980043",
+      "#67001F"
+    )
+  }
+
+  if (scheme == "Purples") {
+    cols <- c(
+      "#FCFBFD",
+      "#EFEDF5",
+      "#DADAEB",
+      "#BCBDDC",
+      "#9E9AC8",
+      "#807DBA",
+      "#6A51A3",
+      "#54278F",
+      "#3F007D"
+    )
+  }
+
+  if (scheme == "RdPu") {
+    cols <- c(
+      "#FFF7F3",
+      "#FDE0DD",
+      "#FCC5C0",
+      "#FA9FB5",
+      "#F768A1",
+      "#DD3497",
+      "#AE017E",
+      "#7A0177",
+      "#49006A"
+    )
+  }
+
+  if (scheme == "Reds") {
+    cols <- c(
+      "#FFF5F0",
+      "#FEE0D2",
+      "#FCBBA1",
+      "#FC9272",
+      "#FB6A4A",
+      "#EF3B2C",
+      "#CB181D",
+      "#A50F15",
+      "#67000D"
+    )
+  }
+
+  if (scheme == "YlGn") {
+    cols <- c(
+      "#FFFFE5",
+      "#F7FCB9",
+      "#D9F0A3",
+      "#ADDD8E",
+      "#78C679",
+      "#41AB5D",
+      "#238443",
+      "#006837",
+      "#004529"
+    )
+  }
+
+  if (scheme == "YlGnBu") {
+    cols <- c(
+      "#FFFFD9",
+      "#EDF8B1",
+      "#C7E9B4",
+      "#7FCDBB",
+      "#41B6C4",
+      "#1D91C0",
+      "#225EA8",
+      "#253494",
+      "#081D58"
+    )
+  }
+
+  if (scheme == "YlOrBr") {
+    cols <- c(
+      "#FFFFE5",
+      "#FFF7BC",
+      "#FEE391",
+      "#FEC44F",
+      "#FE9929",
+      "#EC7014",
+      "#CC4C02",
+      "#993404",
+      "#662506"
+    )
+  }
+
+  if (scheme %in% c("YlOrRd", "heat")) {
+    cols <- c(
+      "#FFFFCC",
+      "#FFEDA0",
+      "#FED976",
+      "#FEB24C",
+      "#FD8D3C",
+      "#FC4E2A",
+      "#E31A1C",
+      "#BD0026",
+      "#800026"
+    )
+
+    if (scheme == "heat") {
+      interpolate <- "spline"
+    }
+  }
+
   if (scheme == "increment") {
     cols <- c(
       "#B0FFF1",
@@ -498,11 +1000,6 @@ seqPalette <- function(n, scheme) {
       "#990A7C",
       "#520066"
     )
-  }
-
-  if (scheme == "heat") {
-    cols <- brewer.pal(9, "YlOrRd")
-    interpolate <- "spline"
   }
 
   if (scheme == "viridis") {

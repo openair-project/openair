@@ -4,13 +4,20 @@
 \alias{openColours}
 \title{Pre-defined openair colours and definition of user-defined colours}
 \usage{
-openColours(scheme = "default", n = 100)
+openColours(scheme = "default", n = 100, direction = 1L)
 }
 \arguments{
 \item{scheme}{Any one of the pre-defined \code{openair} schemes (e.g.,
-\code{"increment"}) or a user-defined palette (e.g., \code{c("red", "orange", "gold")}). See \code{?openColours} for a full list of available schemes.}
+\code{"increment"}) or a user-defined palette (e.g., \code{c("red", "orange", "gold")}). See \code{\link[=openColours]{openColours()}} for a full list of available schemes.
+Starting a pre-defined scheme with \code{"-"} (e.g., \code{"-increment"}) will
+reverse \code{direction}; this is mainly useful for use within other \code{openair}
+functions (e.g., \code{polarPlot(mydata, cols = "-viridis")}).}
 
 \item{n}{number of colours required.}
+
+\item{direction}{Sets the order of colours in the scale. If \code{1}, the default,
+outputs the default order of the \code{scheme}. If \code{-1}, the order of colours is
+reversed.}
 }
 \value{
 A character vector of hex codes

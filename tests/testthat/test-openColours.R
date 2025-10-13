@@ -19,7 +19,7 @@ test_that("opencolours works", {
   expect_error(openColours(c("viridis", "something_stupid")))
   expect_error(openColours(c("red", "blue", "viridis")))
   expect_error(openColours(c("viridis", "heat")))
-  expect_error(openColours("daqi", n = 100L))
+  expect_warning(openColours("daqi", n = 100L))
 })
 
 test_that("all palettes work", {
