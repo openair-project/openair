@@ -1,5 +1,35 @@
 # openair (development version)
 
+## Dependency Changes
+
+- `openair` now depends on R v4.1 and, internally, uses the base R pipe (`|>`).
+
+## New Features
+
+- `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
+
+- `smoothTrend()` has gained the `x.relation`, `date.format`, `key` and `key.position` arguments, in line with `timePlot()`. It has also gained the `progress` argument, passed to `timeAverage()`. 
+
+- `calendarPlot()` refinements:
+
+    - Gained the `percentile` argument, passed on to `timeAverage()`.
+    
+    - Gained the `show.year` argument, defaulting to `TRUE`. When `FALSE` and only one year of data is given, the strip titles will only read, e.g., "January" instead of "January-2000". This can create cleaner plots, as well as being useful for certain edge cases (e.g., if the calendarPlot is showing day-of-year averages over multiple years).
+    
+    - When `statistic == "min"` and `annotation %in% c("ws", "wd")`, the ws/wd returned will correspond to the minimum daily pollutant, rather than the minimum daily ws/wd.
+
+- `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
+
+## Bug Fixes
+
+- `timePlot()` now allows duplicate dates when `time.avg` is used. The user will still recieve a warning from `timeAverage()`, which is used internally, but the plot will still be created.
+
+- `importUKAQ()` now closes its `url()` connections and generally fails more gracefully when `data_type %in% c("annual", "monthly", "daqi")`. This was already the case for other data types.
+
+- The `windflow` argument of `timePlot()` now works when `"ws"` and/or `"wd"` are in `pollutant`.
+
+- `timeAverage()` will no longer leave `Uu` and `Vv` columns behind when `statistic = "data.cap"`.
+
 # openair 2.19.0
 
 ## Deprecations

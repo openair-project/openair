@@ -134,8 +134,8 @@ readUKAQData <-
         )
 
       # clean tidied data before returning
-      thedata <- thedata %>%
-        dplyr::relocate(dplyr::any_of(the_vars)) %>%
+      thedata <- thedata |>
+        dplyr::relocate(dplyr::any_of(the_vars)) |>
         dplyr::arrange(site, code, pollutant, date)
     }
 
@@ -187,7 +187,7 @@ loadData <- function(x, verbose, url_data, data_type) {
 
         lookup <- c(gr_pm2.5 = "GR2.5", gr_pm10 = "GR10")
 
-        dat <- dat %>%
+        dat <- dat |>
           rename(any_of(lookup))
       }
 
@@ -213,10 +213,12 @@ loadData <- function(x, verbose, url_data, data_type) {
 #' @noRd
 readSummaryData <-
   function(files, year, source, data_type, to_narrow, meta, hc) {
-    fileName <- purrr::map(year, function(x) paste0(files, x, ".rds")) %>%
+    fileName <- purrr::map(year, function(x) paste0(files, x, ".rds")) |>
       purrr::list_c()
 
-    thedata <- try(readRDS(url(fileName)), TRUE)
+    con <- url(fileName)
+    on.exit(close.connection(con))
+    thedata <- try(readRDS(con), TRUE)
 
     if (inherits(thedata, "try-error")) {
       return()
@@ -230,7 +232,7 @@ readSummaryData <-
     names(thedata) <- gsub(".capture", "_capture", names(thedata))
 
     if (!hc) {
-      thedata <- thedata %>%
+      thedata <- thedata |>
         select(any_of(
           c(
             "date",
@@ -283,18 +285,18 @@ readSummaryData <-
     }
 
     if (data_type == "annual") {
-      thedata <- rename(thedata, date = year) %>%
-        drop_na(date) %>%
+      thedata <- rename(thedata, date = year) |>
+        drop_na(date) |>
         mutate(date = lubridate::ymd(paste0(date, "-01-01"), tz = "UTC"))
     }
 
     if (to_narrow) {
       # make sure numbers are numbers
-      values <- select(thedata, !contains("capture")) %>%
+      values <- select(thedata, !contains("capture")) |>
         select(!matches("uka_code"))
 
       capture <-
-        select(thedata, contains("capture") | c(code, date, site)) %>%
+        select(thedata, contains("capture") | c(code, date, site)) |>
         select(!matches("uka_code"))
 
       values <- pivot_longer(
@@ -320,11 +322,11 @@ readSummaryData <-
       )
     }
 
-    thedata <- thedata %>%
+    thedata <- thedata |>
       mutate(
         site = as.character(site),
         code = as.character(code)
-      ) %>%
+      ) |>
       mutate(
         source = source,
         .before = dplyr::everything()
@@ -336,25 +338,27 @@ readSummaryData <-
 #' Function to read DAQI data from a file
 #' @noRd
 readDAQI <- function(files, year, source) {
-  fileName <- purrr::map(year, function(x) paste0(files, x, ".rds")) %>%
+  fileName <- purrr::map(year, function(x) paste0(files, x, ".rds")) |>
     purrr::list_c()
 
-  thedata <- try(readRDS(url(fileName)), TRUE)
+  con <- url(fileName)
+  on.exit(close.connection(con))
+  thedata <- try(readRDS(con), TRUE)
 
   if (inherits(thedata, "try-error")) {
     return()
   }
 
-  thedata <- thedata %>%
+  thedata <- thedata |>
     mutate(
       code = as.character(code),
       site = as.character(site),
       pollutant = as.character(pollutant),
       date = lubridate::ymd(Date, tz = "GMT"),
       measurement_period = as.character(measurement_period)
-    ) %>%
-    select(-Date) %>%
-    relocate(date, .after = pollutant) %>%
+    ) |>
+    select(-Date) |>
+    relocate(date, .after = pollutant) |>
     mutate(
       source = source,
       .before = dplyr::everything()
@@ -375,7 +379,7 @@ add_meta <- function(source, columns, aq_data) {
       duplicate = TRUE
     )
 
-  meta_data <- distinct(meta_data, source, site, .keep_all = TRUE) %>%
+  meta_data <- distinct(meta_data, source, site, .keep_all = TRUE) |>
     select(source, site, code, dplyr::all_of(columns))
 
   aq_data <- left_join(aq_data, meta_data, by = c("source", "code", "site"))
@@ -387,7 +391,7 @@ add_meta <- function(source, columns, aq_data) {
 #' @noRd
 add_ratified <- function(aq_data, source, to_narrow) {
   meta <-
-    importMeta(unique(source), all = T) %>%
+    importMeta(unique(source), all = T) |>
     dplyr::filter(
       code %in% aq_data$code,
       !variable %in%
@@ -400,25 +404,25 @@ add_ratified <- function(aq_data, source, to_narrow) {
           "wd",
           "temp"
         )
-    ) %>%
-    dplyr::select(source, code, variable, ratified_to) %>%
+    ) |>
+    dplyr::select(source, code, variable, ratified_to) |>
     dplyr::mutate(variable = tolower(variable))
 
   if (to_narrow) {
     meta <-
-      dplyr::rename(meta, "pollutant" = variable, "qc" = ratified_to) %>%
+      dplyr::rename(meta, "pollutant" = variable, "qc" = ratified_to) |>
       dplyr::filter(pollutant %in% tolower(aq_data$pollutant))
     aq_data <-
-      aq_data %>%
-      dplyr::left_join(meta, by = dplyr::join_by(source, code, pollutant)) %>%
+      aq_data |>
+      dplyr::left_join(meta, by = dplyr::join_by(source, code, pollutant)) |>
       dplyr::mutate(qc = lubridate::floor_date(date, "day") <= .data$qc)
 
     return(aq_data)
   }
 
   meta <-
-    meta %>%
-    dplyr::filter(variable %in% names(aq_data)) %>%
+    meta |>
+    dplyr::filter(variable %in% names(aq_data)) |>
     tidyr::pivot_wider(
       names_from = variable,
       values_from = ratified_to,
@@ -426,8 +430,8 @@ add_ratified <- function(aq_data, source, to_narrow) {
     )
 
   aq_data <-
-    aq_data %>%
-    dplyr::left_join(meta, by = dplyr::join_by(source, code)) %>%
+    aq_data |>
+    dplyr::left_join(meta, by = dplyr::join_by(source, code)) |>
     dplyr::mutate(dplyr::across(dplyr::contains("_qc"), function(x) {
       lubridate::floor_date(date, "day") <= x
     }))
@@ -476,15 +480,15 @@ filter_site_pollutant <- function(
 #' @param site Sites passed to [importUKAQ()]
 #' @noRd
 guess_source <- function(site) {
-  ukaq_meta <- importMeta("ukaq") %>%
+  ukaq_meta <- importMeta("ukaq") |>
     dplyr::mutate(
       source = factor(
         .data$source,
         c("aurn", "saqn", "aqe", "waqn", "ni", "local")
       ),
       code = toupper(.data$code)
-    ) %>%
-    dplyr::arrange(.data$source) %>%
+    ) |>
+    dplyr::arrange(.data$source) |>
     dplyr::distinct(
       .data$site,
       .data$code,
@@ -494,13 +498,13 @@ guess_source <- function(site) {
     )
 
   source_tbl <-
-    data.frame(code = toupper(site)) %>%
+    data.frame(code = toupper(site)) |>
     dplyr::left_join(ukaq_meta, by = "code")
 
   if (any(is.na(source_tbl$source))) {
     ambiguous_codes <-
-      source_tbl %>%
-      dplyr::filter(is.na(.data$source)) %>%
+      source_tbl |>
+      dplyr::filter(is.na(.data$source)) |>
       dplyr::pull(.data$code)
 
     cli::cli_abort(
@@ -528,11 +532,11 @@ guess_source <- function(site) {
           "longitude",
           "site_type"
         )
-      ) %>%
+      ) |>
       dplyr::distinct()
 
     alternatives <-
-      source_tbl_other %>%
+      source_tbl_other |>
       dplyr::mutate(
         str = paste0(
           .data$code,
@@ -542,7 +546,7 @@ guess_source <- function(site) {
           .data$source,
           "'.)"
         )
-      ) %>%
+      ) |>
       dplyr::pull(.data$str)
 
     msg <- c(

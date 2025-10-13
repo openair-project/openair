@@ -182,6 +182,8 @@ trajLevel <- function(
   parameters = c(51, 51),
   orientation = c(90, 0, 0),
   grid.col = "deepskyblue",
+  grid.nx = 9,
+  grid.ny = grid.nx,
   origin = TRUE,
   plot = TRUE,
   ...
@@ -304,9 +306,9 @@ trajLevel <- function(
   }
 
   ## location of receptor for map projection, used to show location on maps
-  origin_xy <- mydata %>%
-    filter(hour.inc == 0) %>%
-    group_by(lat, lon) %>%
+  origin_xy <- mydata |>
+    filter(hour.inc == 0) |>
+    group_by(lat, lon) |>
     slice_head(n = 1)
 
   tmp <- mapproject(
@@ -355,7 +357,7 @@ trajLevel <- function(
   rhs <- paste(rhs, collapse = "+")
 
   if (statistic == "sqtba") {
-    mydata <- mydata %>%
+    mydata <- mydata |>
       select(any_of(na.omit(c(
         "date",
         "lon",
@@ -376,8 +378,8 @@ trajLevel <- function(
   ## plot mean concentration - CWT method
   if (statistic %in% c("cwt", "median")) {
     ## calculate the mean of points in each cell
-    mydata <- mydata %>%
-      group_by(across(vars)) %>%
+    mydata <- mydata |>
+      group_by(across(vars)) |>
       summarise(
         N = length(date),
         date = head(date, 1),
@@ -399,9 +401,9 @@ trajLevel <- function(
     attr(mydata$date, "tzone") <- "GMT" ## avoid warning messages about TZ
 
     # prep output data
-    out_data <- dplyr::ungroup(mydata) %>%
-      dplyr::select(-dplyr::any_of(c("date", "count"))) %>%
-      dplyr::rename("count" = "N") %>%
+    out_data <- dplyr::ungroup(mydata) |>
+      dplyr::select(-dplyr::any_of(c("date", "count"))) |>
+      dplyr::rename("count" = "N") |>
       dplyr::mutate(
         statistic = statistic,
         .before = dplyr::everything()
@@ -413,15 +415,15 @@ trajLevel <- function(
     ## count % of times a cell contains a trajectory point
     ## need date for later use of type
 
-    mydata <- mydata %>%
-      group_by(across(vars)) %>%
+    mydata <- mydata |>
+      group_by(across(vars)) |>
       summarise(count = length(date), date = head(date, 1))
 
     mydata[[pollutant]] <- 100 * mydata$count / max(mydata$count)
 
     # prep output data
-    out_data <- dplyr::ungroup(mydata) %>%
-      dplyr::select(-dplyr::any_of(c("date"))) %>%
+    out_data <- dplyr::ungroup(mydata) |>
+      dplyr::select(-dplyr::any_of(c("date"))) |>
       dplyr::mutate(
         statistic = statistic,
         .before = dplyr::everything()
@@ -434,8 +436,8 @@ trajLevel <- function(
     Q90 <- quantile(mydata[[pollutant]], probs = percentile / 100, na.rm = TRUE)
 
     ## calculate the proportion of points in cell with value > Q90
-    mydata <- mydata %>%
-      group_by(across(vars)) %>%
+    mydata <- mydata |>
+      group_by(across(vars)) |>
       summarise(
         N = length(date),
         date = head(date, 1),
@@ -456,9 +458,9 @@ trajLevel <- function(
     mydata[id, pollutant] <- mydata[id, pollutant] * 0.15
 
     # prep output data
-    out_data <- dplyr::ungroup(mydata) %>%
-      dplyr::select(-dplyr::any_of(c("date", "count"))) %>%
-      dplyr::rename("count" = "N") %>%
+    out_data <- dplyr::ungroup(mydata) |>
+      dplyr::select(-dplyr::any_of(c("date", "count"))) |>
+      dplyr::rename("count" = "N") |>
       dplyr::mutate(
         statistic = statistic,
         percentile = percentile,
@@ -470,8 +472,8 @@ trajLevel <- function(
 
   if (tolower(statistic) == "sqtba") {
     # calculate sigma
-    mydata <- mydata %>%
-      mutate(sigma = sigma * abs(hour.inc)) %>%
+    mydata <- mydata |>
+      mutate(sigma = sigma * abs(hour.inc)) |>
       drop_na({{ pollutant }})
 
     # receptor grid
@@ -487,38 +489,38 @@ trajLevel <- function(
         round(quantile(mydata$lon, probs = 0.998)),
         by = lon.inc
       )
-    ) %>%
+    ) |>
       as.matrix(.)
 
     # just run
     if (is.na(.combine)) {
-      mydata <- calc_SQTBA(mydata, r_grid, pollutant, min.bin) %>%
+      mydata <- calc_SQTBA(mydata, r_grid, pollutant, min.bin) |>
         rename({{ pollutant }} := SQTBA)
     } else {
       # process by site, normalise contributions by default
-      mydata <- mydata %>%
-        group_by(across(.combine)) %>%
-        group_modify(~ calc_SQTBA(.x, r_grid, pollutant, min.bin)) %>%
-        mutate(SQTBA_norm = SQTBA / mean(SQTBA)) %>%
-        group_by(ygrid, xgrid) %>%
+      mydata <- mydata |>
+        group_by(across(.combine)) |>
+        group_modify(~ calc_SQTBA(.x, r_grid, pollutant, min.bin)) |>
+        mutate(SQTBA_norm = SQTBA / mean(SQTBA)) |>
+        group_by(ygrid, xgrid) |>
         summarise(
           SQTBA = mean(SQTBA),
           SQTBA_norm = mean(SQTBA_norm)
-        ) %>%
-        ungroup() %>%
-        mutate(SQTBA_norm = SQTBA_norm * mean(SQTBA)) %>%
+        ) |>
+        ungroup() |>
+        mutate(SQTBA_norm = SQTBA_norm * mean(SQTBA)) |>
         rename({{ pollutant }} := SQTBA_norm)
     }
 
     # prep output data
     names(mydata)[names(mydata) == "n"] <- "count"
 
-    out_data <- dplyr::ungroup(mydata) %>%
+    out_data <- dplyr::ungroup(mydata) |>
       dplyr::select(
         -dplyr::any_of(c("lat_rnd", "lon_rnd", "Q", "Q_c", "SQTBA"))
-      ) %>%
-      dplyr::relocate(dplyr::any_of("count"), .before = pollutant) %>%
-      dplyr::relocate("xgrid", .before = "ygrid") %>%
+      ) |>
+      dplyr::relocate(dplyr::any_of("count"), .before = pollutant) |>
+      dplyr::relocate("xgrid", .before = "ygrid") |>
       dplyr::mutate(
         statistic = statistic,
         sigma = sigma,
@@ -531,8 +533,8 @@ trajLevel <- function(
   if (statistic == "difference") {
     ## calculate percentage of points for all data
 
-    base <- mydata %>%
-      group_by(across(vars)) %>%
+    base <- mydata |>
+      group_by(across(vars)) |>
       summarise(count = length(date), date = head(date, 1))
 
     base[[pollutant]] <- 100 * base$count / max(base$count)
@@ -541,8 +543,8 @@ trajLevel <- function(
     Q90 <- quantile(mydata[[pollutant]], probs = percentile / 100, na.rm = TRUE)
 
     ## calculate percentage of points for high data
-    high <- mydata %>%
-      group_by(across(vars)) %>%
+    high <- mydata |>
+      group_by(across(vars)) |>
       summarise(
         N = length(date),
         date = head(date, 1),
@@ -559,8 +561,8 @@ trajLevel <- function(
     mydata <- subset(mydata, count >= min.bin)
 
     # prep output data
-    out_data <- dplyr::ungroup(mydata) %>%
-      dplyr::select(-dplyr::any_of(c("date"))) %>%
+    out_data <- dplyr::ungroup(mydata) |>
+      dplyr::select(-dplyr::any_of(c("date"))) |>
       dplyr::mutate(
         statistic = statistic,
         percentile = percentile,
@@ -596,6 +598,8 @@ trajLevel <- function(
     parameters = parameters,
     orientation = orientation,
     grid.col = grid.col,
+    grid.nx = grid.nx,
+    grid.ny = grid.ny,
     trajLims = trajLims,
     receptor = receptor,
     origin = origin,
@@ -676,16 +680,16 @@ make_grid <- function(traj_data, r_grid, pollutant) {
 }
 
 calc_SQTBA <- function(mydata, r_grid, pollutant, min.bin) {
-  q_calc <- mydata %>%
-    select(date, lat, lon, hour.inc, {{ pollutant }}, sigma) %>%
-    group_by(date) %>%
-    nest() %>%
+  q_calc <- mydata |>
+    select(date, lat, lon, hour.inc, {{ pollutant }}, sigma) |>
+    group_by(date) |>
+    nest() |>
     mutate(out = purrr::map(data, make_grid, r_grid, pollutant))
 
   # combine all trajectory grids, add coordinates back in
-  output <- reduce(q_calc$out, `+`) %>%
-    cbind(r_grid) %>%
-    as_tibble(.) %>%
+  output <- reduce(q_calc$out, `+`) |>
+    cbind(r_grid) |>
+    as_tibble(.) |>
     mutate(
       SQTBA = Q_c / Q,
       lat_rnd = round(lat),
@@ -693,10 +697,10 @@ calc_SQTBA <- function(mydata, r_grid, pollutant, min.bin) {
     )
 
   # number of trajectories in a grid square
-  grid_out <- mydata %>%
-    mutate(lat_rnd = round(lat), lon_rnd = round(lon)) %>%
-    group_by(lat_rnd, lon_rnd) %>%
-    tally() %>%
+  grid_out <- mydata |>
+    mutate(lat_rnd = round(lat), lon_rnd = round(lon)) |>
+    group_by(lat_rnd, lon_rnd) |>
+    tally() |>
     filter(n >= min.bin)
 
   # add in number of trajectories in each grid square to act as a filter

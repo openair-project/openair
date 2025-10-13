@@ -235,17 +235,7 @@ trendLevel <- function(
   # assume pollutant scale is not a categorical value
   category <- FALSE
   if (!anyNA(breaks)) {
-    # assign labels if no labels are given
-    if (anyNA(labels)) {
-      labels <- c()
-      for (i in seq_along(breaks)) {
-        lhs <- breaks[i]
-        rhs <- breaks[i + 1]
-        str <- paste(lhs, rhs, sep = " - ")
-        labels <- append(labels, str)
-      }
-      labels <- labels[-i]
-    }
+    labels <- breaksToLabels(breaks, labels)
     category <- TRUE
   }
 
@@ -412,9 +402,9 @@ trendLevel <- function(
   # cutData
   # different n.levels for axis and type, axes get `is.axis = TRUE`
   newdata <-
-    mydata %>%
-    cutData(x, n.levels = n.levels[1], is.axis = TRUE, ...) %>%
-    cutData(y, n.levels = n.levels[2], is.axis = TRUE, ...) %>%
+    mydata |>
+    cutData(x, n.levels = n.levels[1], is.axis = TRUE, ...) |>
+    cutData(y, n.levels = n.levels[2], is.axis = TRUE, ...) |>
     cutData(type, n.levels = n.levels[3], ...)
 
   # select only pollutant and axis/facet columns
@@ -425,15 +415,15 @@ trendLevel <- function(
     rlang::exec(stat.fun, !!!args)
   }
   newdata <-
-    newdata %>%
+    newdata |>
     dplyr::summarise(
       {{ pollutant }} := calc_stat(.data[[pollutant]]),
       .by = dplyr::all_of(c(x, y, type))
-    ) %>%
+    ) |>
     dplyr::mutate(dplyr::across(
       dplyr::all_of(c(x, y, type)),
       function(x) factor(x, ordered = FALSE)
-    )) %>%
+    )) |>
     as.data.frame()
 
   # plot setup

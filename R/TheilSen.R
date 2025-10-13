@@ -493,16 +493,16 @@ TheilSen <- function(
     message("Taking bootstrap samples. Please wait.", appendLF = TRUE)
   }
 
-  split.data <- mydata %>%
-    group_by(across(type)) %>%
-    nest() %>%
+  split.data <- mydata |>
+    group_by(across(type)) |>
+    nest() |>
     mutate(
       data = purrr::map(
         data,
         process.cond,
         .progress = "Taking Bootstrap Samples"
       )
-    ) %>%
+    ) |>
     unnest(cols = c(data))
 
   if (nrow(split.data) < 2) {
@@ -560,8 +560,8 @@ TheilSen <- function(
   ## aggregated results
   vars <- c(type, "p.stars")
 
-  res2 <- split.data %>%
-    group_by(across(vars)) %>%
+  res2 <- split.data |>
+    group_by(across(vars)) |>
     summarise(across(everything(), ~ mean(.x, na.rm = TRUE)))
 
   ## calculate percentage changes in slope and uncertainties need
@@ -569,12 +569,12 @@ TheilSen <- function(
   ## points percentage change defind as 100.(C.end/C.start -1) /
   ## duration
 
-  start <- split.data %>%
-    group_by(across(type)) %>%
+  start <- split.data |>
+    group_by(across(type)) |>
     dplyr::slice_head(n = 1)
 
-  end <- split.data %>%
-    group_by(across(type)) %>%
+  end <- split.data |>
+    group_by(across(type)) |>
     dplyr::slice_tail(n = 1)
 
   percent.change <- merge(start, end, by = type, suffixes = c(".start", ".end"))

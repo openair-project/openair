@@ -85,6 +85,11 @@
 #'   coordinates in the map.
 #' @param grid.col The colour of the map grid to be used. To remove the grid set
 #'   `grid.col = "transparent"`.
+#' @param grid.nx,grid.ny The approximate number of ticks to draw on the map
+#'   grid. `grid.nx` defaults to `9`, and `grid.ny` defaults to whatever value
+#'   is passed to `grid.nx`. Setting both values to `0` will remove the grid
+#'   entirely. The number of ticks is approximate as this value is passed to
+#'   [pretty()] to determine nice-looking, round breakpoints.
 #' @param npoints A dot is placed every `npoints` along each full trajectory.
 #'   For hourly back trajectories points are plotted every `npoint` hours. This
 #'   helps to understand where the air masses were at particular times and get a
@@ -152,6 +157,8 @@ trajPlot <- function(
   parameters = c(51, 51),
   orientation = c(90, 0, 0),
   grid.col = "deepskyblue",
+  grid.nx = 9,
+  grid.ny = grid.nx,
   npoints = 12,
   origin = TRUE,
   plot = TRUE,
@@ -300,6 +307,8 @@ trajPlot <- function(
       parameters = parameters,
       orientation = orientation,
       grid.col = grid.col,
+      grid.nx = grid.nx,
+      grid.ny = grid.ny,
       trajLims = trajLims,
       receptor = receptor,
       npoints = npoints,
@@ -328,6 +337,8 @@ trajPlot <- function(
       parameters = parameters,
       orientation = orientation,
       grid.col = grid.col,
+      grid.nx = grid.nx,
+      grid.ny = grid.ny,
       trajLims = trajLims,
       receptor = receptor,
       npoints = npoints,

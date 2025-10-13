@@ -319,8 +319,15 @@ importUKAQ <-
         to_narrow = to_narrow,
         hc = hc,
         .progress = ifelse(progress, "Importing Statistics", FALSE)
-      ) %>%
+      ) |>
         purrr::list_rbind()
+
+      if (nrow(aq_data) == 0) {
+        cli::cli_abort(
+          "No data returned. Check {.arg site}, {.arg year} and {.arg source}.",
+          call = NULL
+        )
+      }
     }
 
     # Import pre-calculated DAQI?
@@ -345,9 +352,19 @@ importUKAQ <-
           tidyr::crossing(tidyr::nesting(files, source), year),
           readDAQI,
           .progress = ifelse(progress, "Importing DAQI", FALSE)
-        ) %>%
-        purrr::list_rbind() %>%
-        dplyr::tibble() %>%
+        ) |>
+        purrr::list_rbind()
+
+      if (nrow(aq_data) == 0) {
+        cli::cli_abort(
+          "No data returned. Check {.arg site}, {.arg year} and {.arg source}.",
+          call = NULL
+        )
+      }
+
+      aq_data <-
+        aq_data |>
+        dplyr::tibble() |>
         dplyr::mutate(
           band = dplyr::case_when(
             .data$poll_index %in% 1:3 ~ "Low",
@@ -375,8 +392,8 @@ importUKAQ <-
       if ("local" %in% source) {
         # get pcodes for file paths
         pcodes <-
-          importMeta("local", all = TRUE) %>%
-          dplyr::distinct(.data$site, .keep_all = TRUE) %>%
+          importMeta("local", all = TRUE) |>
+          dplyr::distinct(.data$site, .keep_all = TRUE) |>
           select("code", "pcode")
 
         # get sites and pcodes
@@ -385,8 +402,8 @@ importUKAQ <-
             code = site,
             source = source,
             url_data = url_domain
-          ) %>%
-          dplyr::left_join(pcodes, by = "code") %>%
+          ) |>
+          dplyr::left_join(pcodes, by = "code") |>
           tidyr::crossing(year = year)
       } else {
         site_info <-
@@ -394,8 +411,8 @@ importUKAQ <-
             code = site,
             source = source,
             url_data = url_domain
-          ) %>%
-          dplyr::mutate(pcode = rep(NA, times = length(site))) %>%
+          ) |>
+          dplyr::mutate(pcode = rep(NA, times = length(site))) |>
           tidyr::crossing(year = year)
       }
 
@@ -418,7 +435,7 @@ importUKAQ <-
             quiet = !verbose
           ),
           .progress = ifelse(progress, "Importing AQ Data", FALSE)
-        ) %>%
+        ) |>
         purrr::list_rbind()
 
       if (nrow(aq_data) == 0) {
@@ -452,7 +469,7 @@ importUKAQ <-
 
     # check to see if met data needed
     if (!meteo) {
-      aq_data <- aq_data %>%
+      aq_data <- aq_data |>
         select(-any_of(c("ws", "wd", "air_temp")))
     }
 
