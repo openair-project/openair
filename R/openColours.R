@@ -147,6 +147,7 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
     "Paired",
     "Pastel1",
     "Pastel2",
+    "brewer1",
     "Set1",
     "Set2",
     "Set3"
@@ -169,7 +170,8 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
       "plasma",
       "cividis",
       "gaf.seq",
-      "greyscale"
+      "greyscale",
+      "hue"
     )
 
   # qualitative palettes and maximum lengths
@@ -195,9 +197,7 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
   schemes <- c(
     seq_schemes,
     qual_schemes,
-    brewer_schemes,
-    "brewer1",
-    "hue"
+    brewer_schemes
   )
 
   # get colours based on scheme
@@ -213,9 +213,6 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
 
     if (scheme %in% brewer_schemes) {
       cols <- brewerPalette(n, scheme, brewer_schemes, brewer.n)
-    }
-    if (scheme == "hue") {
-      cols <- huePalette(n)
     }
     if (scheme %in% seq_schemes) {
       cols <- seqPalette(n, scheme = scheme)
@@ -283,24 +280,6 @@ brewerPalette <- function(n, scheme, brewer_schemes, brewer.n) {
       ))
     thefun(n)
   }
-}
-
-#' Build hue palette
-#' @noRd
-huePalette <- function(n) {
-  h <- c(0, 360) + 15
-  l <- 65
-  c <- 100
-
-  if ((diff(h) %% 360) < 1) {
-    h[2] <- h[2] - 360 / n
-  }
-
-  grDevices::hcl(
-    h = seq(h[1], h[2], length = n),
-    c = c,
-    l = l
-  )
 }
 
 #' Function to manage qualitative palettes
@@ -453,6 +432,32 @@ seqPalette <- function(n, scheme) {
   if (scheme == "default") {
     cols <- rev(brewer.pal(11, "Spectral"))
     interpolate <- "spline"
+  }
+
+  if (scheme == "hue") {
+    cols <-
+      c(
+        "#F8766D",
+        "#EA8331",
+        "#D89000",
+        "#C09B00",
+        "#A3A500",
+        "#7CAE00",
+        "#39B600",
+        "#00BB4E",
+        "#00BF7D",
+        "#00C1A3",
+        "#00BFC4",
+        "#00BAE0",
+        "#00B0F6",
+        "#35A2FF",
+        "#9590FF",
+        "#C77CFF",
+        "#E76BF3",
+        "#FA62DB",
+        "#FF62BC",
+        "#FF6A98"
+      )
   }
 
   if (scheme == "greyscale") {
