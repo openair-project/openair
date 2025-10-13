@@ -202,14 +202,15 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
 
   # get colours based on scheme
   if (length(scheme) == 1L) {
+    # if scheme starts with "-", reverse direction
     if (startsWith(scheme, "-")) {
       scheme <- gsub("\\-", "", scheme)
       direction <- direction * -1
     }
 
-    if (scheme == "brewer1") {
-      cols <- brewerPalette(n, "Set1", brewer_schemes, brewer.n)
-    }
+    # edge case for brewer
+    scheme[scheme == "brewer1"] <- "Set1"
+
     if (scheme %in% brewer_schemes) {
       cols <- brewerPalette(n, scheme, brewer_schemes, brewer.n)
     }
