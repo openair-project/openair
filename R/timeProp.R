@@ -71,18 +71,14 @@ timeProp <- function(
   plot = TRUE,
   ...
 ) {
+  # can only have one type
+  if (length(type) > 1) {
+    cli::cli_abort("{.arg type} can only be of length {1L}.")
+  }
+
   # greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
     trellis.par.set(list(strip.background = list(col = "white")))
-  }
-
-  if (length(type) > 1) {
-    stop("'type' can only be of length 1.")
-  }
-
-  # if proportion is not categorical then make it so
-  if (!class(mydata[[proportion]]) %in% c("factor")) {
-    mydata <- cutData(mydata, proportion, ...)
   }
 
   # extra.args setup
@@ -97,36 +93,12 @@ timeProp <- function(
   ))
 
   # label controls
+  main <- quickText(extra.args$main %||% "", auto.text)
+  xlab <- quickText(extra.args$xlab %||% "date", auto.text)
+  ylab <- quickText(extra.args$ylab %||% pollutant, auto.text)
 
-  main <- if ("main" %in% names(extra.args)) {
-    quickText(extra.args$main, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
-
-  xlab <- if ("xlab" %in% names(extra.args)) {
-    quickText(extra.args$xlab, auto.text)
-  } else {
-    "date"
-  }
-
-  ylab <- if ("ylab" %in% names(extra.args)) {
-    quickText(extra.args$ylab, auto.text)
-  } else {
-    quickText(pollutant, auto.text)
-  }
-
-  xlim <- if ("xlim" %in% names(extra.args)) {
-    extra.args$xlim
-  } else {
-    NULL
-  }
-
-  ylim <- if ("ylim" %in% names(extra.args)) {
-    extra.args$ylim
-  } else {
-    NULL
-  }
+  xlim <- extra.args$xlim %||% NULL
+  ylim <- extra.args$ylim %||% NULL
 
   if ("fontsize" %in% names(extra.args)) {
     trellis.par.set(fontsize = list(text = extra.args$fontsize))
@@ -134,10 +106,6 @@ timeProp <- function(
 
   # variables needed
   vars <- c("date", pollutant, proportion)
-
-  if (any(type %in% dateTypes)) {
-    vars <- unique(c("date", vars))
-  }
 
   # check the data
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
@@ -148,6 +116,7 @@ timeProp <- function(
   # cut data
   mydata <- cutData(mydata, c(type, proportion))
 
+  # groups for dplyr
   group_1 <- c("xleft", "xright", type)
   group_2 <- c(type, "xleft", "xright", proportion)
 
@@ -155,22 +124,22 @@ timeProp <- function(
   # add the most common non-zero time interval
 
   results <- mydata |>
-    mutate(
+    dplyr::mutate(
       xleft = as.POSIXct(cut(.data$date, avg.time), tz = tzone),
       xright = .data$xleft + median(diff(.data$xleft)[diff(.data$xleft) != 0])
     ) |>
-    group_by(across(group_1)) |> # group by type and date interval to get overall average
-    mutate(mean_value = mean(.data[[pollutant]], na.rm = TRUE)) |>
-    group_by(across(group_2)) |>
-    summarise(
+    dplyr::group_by(dplyr::across(group_1)) |> # group by type and date interval to get overall average
+    dplyr::mutate(mean_value = mean(.data[[pollutant]], na.rm = TRUE)) |>
+    dplyr::group_by(dplyr::across(group_2)) |>
+    dplyr::summarise(
       {{ pollutant }} := mean(.data[[pollutant]], na.rm = TRUE),
       mean_value = mean(.data$mean_value, na.rm = TRUE),
       n = length(.data$date)
     ) |>
-    group_by(across(group_1)) |>
-    mutate(
+    dplyr::group_by(dplyr::across(group_1)) |>
+    dplyr::mutate(
       weighted_mean = .data[[pollutant]] * n / sum(n),
-      Var1 = replace_na(.data$weighted_mean, 0),
+      Var1 = tidyr::replace_na(.data$weighted_mean, 0),
       var2 = cumsum(.data$Var1),
       date = .data$xleft
     )
@@ -179,8 +148,8 @@ timeProp <- function(
   vars <- c(type, "date")
   if (normalise) {
     results <- results |>
-      group_by(across(vars)) |>
-      mutate(
+      dplyr::group_by(dplyr::across(vars)) |>
+      dplyr::mutate(
         Var1 = .data$Var1 * (100 / sum(.data$Var1, na.rm = TRUE)),
         var2 = cumsum(.data$Var1)
       )
@@ -201,7 +170,7 @@ timeProp <- function(
   )
 
   # make sure we know order of data frame for adding other dates
-  results <- arrange(results, type, "date")
+  results <- dplyr::arrange(results, type, "date")
 
   # the few colours used for scaling
   scaleCol <- openColours(cols, nProp)
@@ -216,7 +185,7 @@ timeProp <- function(
   # need to merge based on character, not factor
   results[[proportion]] <- as.character(results[[proportion]])
 
-  results <- full_join(results, cols, by = proportion)
+  results <- dplyr::full_join(results, cols, by = proportion)
 
   results[[proportion]] <- factor(results[[proportion]], levels = thelevels)
 
@@ -253,7 +222,6 @@ timeProp <- function(
   }
 
   # sub heading
-
   sub <- "contribution weighted by mean"
 
   if (key) {
@@ -291,7 +259,7 @@ timeProp <- function(
     }
   )
 
-  # update extra args; usual method does not seem to work...
+  # update extra args; usual method does not seem to work
   plt <- modifyList(
     plt,
     list(
@@ -316,8 +284,8 @@ timeProp <- function(
   invisible(output)
 }
 
-# plot individual rectangles as lattice panel.barchar is *very* slow
-
+#' plot individual rectangles as lattice panel.barchar is *very* slow
+#' @noRd
 panelBar <- function(dat) {
   xleft <- unclass(dat$xleft)
   ybottom <- lag(dat$var2, default = 0)
