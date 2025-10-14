@@ -137,9 +137,13 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
   }
 
   # get lists of schemes
-  schemes <- openSchemes$scheme
-  seq_schemes <- openSchemes$scheme[openSchemes$category %in% c("seq", "div")]
-  qual_schemes <- openSchemes$scheme[openSchemes$category == "qual"]
+  schemes <- openair::openSchemes$scheme
+  seq_schemes <- openair::openSchemes$scheme[
+    openair::openSchemes$category %in% c("seq", "div")
+  ]
+  qual_schemes <- openair::openSchemes$scheme[
+    openair::openSchemes$category == "qual"
+  ]
 
   # get colours based on scheme
   if (length(scheme) == 1L) {
@@ -156,9 +160,9 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
       cols <- seqPalette(n, scheme = scheme)
     }
     if (scheme %in% qual_schemes) {
-      # if n not provided, return max number o
+      # if n not provided, return max number
       if (missing(n)) {
-        n <- qual_scheme_lengths[[scheme]]
+        n <- openair::openSchemes$max_n[openair::openSchemes$scheme == scheme]
       }
       cols <- qualPalette(n, scheme = scheme)
     }

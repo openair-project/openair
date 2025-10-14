@@ -13,7 +13,7 @@ conditionalQuantile(
   min.bin = c(10, 20),
   xlab = "predicted value",
   ylab = "observed value",
-  col = brewer.pal(5, "YlOrRd"),
+  col = openair::openColours("YlOrRd", n = 5),
   key.columns = 2,
   key.position = "bottom",
   auto.text = TRUE,
