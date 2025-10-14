@@ -18,6 +18,14 @@
     
     - When `statistic == "min"` and `annotation %in% c("ws", "wd")`, the ws/wd returned will correspond to the minimum daily pollutant, rather than the minimum daily ws/wd.
 
+- `timeProp()` refinements:
+
+    - `proportion` is now treated more like `type` internally. For a user, this means it can now be passed `"default"` to avoid any conditioning and create a regular period average barchart.
+
+    - `sub` can now be defined via `...`; set `sub = NA` to remove the text annotation which appears by default at the bottom of a `timeProp()` plot.
+
+    - Gained the `key` argument to remove a legend.
+
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
 
 ## Bug Fixes
