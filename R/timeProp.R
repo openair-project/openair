@@ -102,16 +102,16 @@ timeProp <- function(
   }
 
   # variables needed
-  vars <- c("date", pollutant, proportion)
+  vars <- c("date", pollutant)
 
   # check the data
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-
-  # time zone of input data
-  tzone <- attr(mydata$date, "tzone")
+  mydata <- checkPrep(mydata, vars, c(type, proportion), remove.calm = FALSE)
 
   # cut data
   mydata <- cutData(mydata, c(type, proportion))
+
+  # time zone of input data
+  tzone <- attr(mydata$date, "tzone")
 
   # groups for dplyr
   group_1 <- c("xleft", "xright", type)
@@ -228,7 +228,6 @@ timeProp <- function(
     strip.left = strip.left,
     groups = get(proportion),
     stack = TRUE,
-    sub = sub,
     scales = scales,
     col = scaleCol,
     border = NA,
@@ -250,7 +249,8 @@ timeProp <- function(
       xlab = xlab,
       x.limits = xlim,
       y.limits = ylim,
-      main = main
+      main = main,
+      sub = sub
     )
   )
 
