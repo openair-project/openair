@@ -76,18 +76,11 @@ timeProp <- function(
     cli::cli_abort("{.arg type} can only be of length {1L}.")
   }
 
-  # greyscale handling
-  if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-  }
-
   # extra.args setup
   extra.args <- list(...)
 
-  # set graphaics
-  current.font <- trellis.par.get("fontsize")
-
   # reset graphic parameters
+  current.font <- trellis.par.get("fontsize")
   on.exit(trellis.par.set(
     fontsize = current.font
   ))
@@ -96,12 +89,16 @@ timeProp <- function(
   main <- quickText(extra.args$main %||% "", auto.text)
   xlab <- quickText(extra.args$xlab %||% "date", auto.text)
   ylab <- quickText(extra.args$ylab %||% pollutant, auto.text)
+  sub <- extra.args$sub %||% "contribution weighted by mean"
 
-  xlim <- extra.args$xlim %||% NULL
-  ylim <- extra.args$ylim %||% NULL
-
+  # fontsize handling
   if ("fontsize" %in% names(extra.args)) {
     trellis.par.set(fontsize = list(text = extra.args$fontsize))
+  }
+
+  # greyscale handling
+  if (length(cols) == 1 && cols == "greyscale") {
+    trellis.par.set(list(strip.background = list(col = "white")))
   }
 
   # variables needed
@@ -121,47 +118,54 @@ timeProp <- function(
   group_2 <- c(type, "xleft", "xright", proportion)
 
   # summarise by proportion, type etc
-  # add the most common non-zero time interval
-
-  results <- mydata |>
+  results <-
+    mydata |>
+    # calculate left and right extremes of each bar, add the most common
+    # non-zero time interval to left to get right
     dplyr::mutate(
       xleft = as.POSIXct(cut(.data$date, avg.time), tz = tzone),
       xright = .data$xleft + median(diff(.data$xleft)[diff(.data$xleft) != 0])
     ) |>
-    dplyr::group_by(dplyr::across(group_1)) |> # group by type and date interval to get overall average
-    dplyr::mutate(mean_value = mean(.data[[pollutant]], na.rm = TRUE)) |>
-    dplyr::group_by(dplyr::across(group_2)) |>
+    # calculate mean & count per type & pollutant, retain type mean
     dplyr::summarise(
       {{ pollutant }} := mean(.data[[pollutant]], na.rm = TRUE),
-      mean_value = mean(.data$mean_value, na.rm = TRUE),
-      n = length(.data$date)
+      n = dplyr::n(),
+      .by = dplyr::all_of(group_2)
     ) |>
-    dplyr::group_by(dplyr::across(group_1)) |>
+    # needs specific arrangement for lattice
+    dplyr::arrange(
+      .data[[type]],
+      .data$xleft,
+      .data$xright,
+      .data[[proportion]]
+    ) |>
+    # weighted mean, with cumulative sum for bar heights
     dplyr::mutate(
       weighted_mean = .data[[pollutant]] * n / sum(n),
       Var1 = tidyr::replace_na(.data$weighted_mean, 0),
       var2 = cumsum(.data$Var1),
-      date = .data$xleft
+      date = .data$xleft,
+      .by = dplyr::all_of(group_1)
     )
 
-  # normlaise to 100 if needed
-  vars <- c(type, "date")
+  # normalise to 100 if needed
   if (normalise) {
-    results <- results |>
-      dplyr::group_by(dplyr::across(vars)) |>
+    results <-
       dplyr::mutate(
+        results,
         Var1 = .data$Var1 * (100 / sum(.data$Var1, na.rm = TRUE)),
-        var2 = cumsum(.data$Var1)
+        var2 = cumsum(.data$Var1),
+        .by = dplyr::all_of(c(type, "date"))
       )
   }
+
+  # make sure we know order of data frame for adding other dates
+  results <- dplyr::arrange(results, .data[[type]], "date")
 
   # proper names of labelling #
   strip.dat <- strip.fun(results, type, auto.text)
   strip <- strip.dat[[1]]
   strip.left <- strip.dat[[2]]
-
-  # work out width of each bar
-  nProp <- length(levels(results[[proportion]]))
 
   # labelling on plot
   labs <- sapply(
@@ -169,61 +173,39 @@ timeProp <- function(
     function(x) quickText(x, auto.text)
   )
 
-  # make sure we know order of data frame for adding other dates
-  results <- dplyr::arrange(results, type, "date")
-
   # the few colours used for scaling
+  nProp <- length(levels(results[[proportion]]))
   scaleCol <- openColours(cols, nProp)
 
-  # levels of proportion
-  thelevels <- levels(results[[proportion]])
+  # add colours to the dataframe
+  results <-
+    dplyr::mutate(
+      results,
+      cols = scaleCol[as.integer(.data[[proportion]])]
+    )
 
-  # add colour directly to data frame for easy reference
-  cols <- data.frame(cols = scaleCol, stringsAsFactors = FALSE)
-  cols[[proportion]] <- as.character(levels(results[[proportion]]))
-
-  # need to merge based on character, not factor
-  results[[proportion]] <- as.character(results[[proportion]])
-
-  results <- dplyr::full_join(results, cols, by = proportion)
-
-  results[[proportion]] <- factor(results[[proportion]], levels = thelevels)
-
+  # formula for lattice
   myform <- formula(paste("Var1 ~ date | ", type, sep = ""))
 
-  dates <- dateBreaks(results$date, date.breaks)$major # for date scale
-
   # date axis formating
-  if (is.null(date.format)) {
-    formats <- dateBreaks(results$date, date.breaks)$format
-  } else {
-    formats <- date.format
-  }
-
+  breaks <- dateBreaks(results$date, date.breaks)
+  dates <- breaks$major
+  formats <- date.format %||% breaks$format
   scales <- list(x = list(at = dates, format = formats))
 
-  y.max <- max(results$var2, na.rm = TRUE)
-
-  if (is.null(xlim)) {
-    xlim <- range(c(results$xleft, results$xright))
-  }
-
+  # change in style if normalising data
   if (normalise) {
+    ylab <- quickText(paste("% contribution to", pollutant), auto.text)
     pad <- 1
   } else {
     pad <- 1.04
   }
-  if (is.null(ylim)) {
-    ylim <- c(0, pad * y.max)
-  }
 
-  if (normalise) {
-    ylab <- quickText(paste("% contribution to", pollutant), auto.text)
-  }
+  # set limits, if not set by user
+  xlim <- extra.args$xlim %||% range(c(results$xleft, results$xright))
+  ylim <- extra.args$ylim %||% c(0, pad * max(results$var2, na.rm = TRUE))
 
-  # sub heading
-  sub <- "contribution weighted by mean"
-
+  # set up key, if required
   if (key) {
     key <- list(
       rectangles = list(col = rev(scaleCol), border = NA),
@@ -237,6 +219,7 @@ timeProp <- function(
     key <- NULL
   }
 
+  # construct plot
   plt <- xyplot(
     myform,
     data = results,
