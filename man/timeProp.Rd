@@ -12,6 +12,7 @@ timeProp(
   type = "default",
   cols = "Set1",
   normalise = FALSE,
+  key = TRUE,
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
@@ -63,6 +64,8 @@ different variables and how they depend on one another.
 \item{normalise}{If \code{normalise = TRUE} then each time interval is scaled to
 100. This is helpful to show the relative (percentage) contribution of the
 proportions.}
+
+\item{key}{Should a key be drawn? The default is \code{TRUE}.}
 
 \item{key.columns}{Number of columns to be used in the key. With many
 pollutants a single column can make to key too wide. The user can thus

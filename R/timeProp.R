@@ -61,6 +61,7 @@ timeProp <- function(
   type = "default",
   cols = "Set1",
   normalise = FALSE,
+  key = TRUE,
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
@@ -279,6 +280,19 @@ timeProp <- function(
 
   sub <- "contribution weighted by mean"
 
+  if (key) {
+    key <- list(
+      rectangles = list(col = rev(scaleCol), border = NA),
+      text = list(labs),
+      space = key.position,
+      title = quickText(key.title, auto.text),
+      cex.title = 1,
+      columns = key.columns
+    )
+  } else {
+    key <- NULL
+  }
+
   plt <- xyplot(
     myform,
     data = results,
@@ -291,14 +305,7 @@ timeProp <- function(
     scales = scales,
     col = scaleCol,
     border = NA,
-    key = list(
-      rectangles = list(col = rev(scaleCol), border = NA),
-      text = list(labs),
-      space = key.position,
-      title = quickText(key.title, auto.text),
-      cex.title = 1,
-      columns = key.columns
-    ),
+    key = key,
     par.strip.text = list(cex = 0.8),
     ...,
     panel = function(..., col, subscripts) {
