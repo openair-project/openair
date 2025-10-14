@@ -76,7 +76,7 @@
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   Only one `type` is currently allowed in `timePlot`.
+#'   `type` must be of length one.
 #' @param cols Colours to be used for plotting; see [openColours()] for details.
 #' @param plot.type The `lattice` plot type, which is a line (`plot.type = "l"`)
 #'   by default. Another useful option is `plot.type = "h"`, which draws
