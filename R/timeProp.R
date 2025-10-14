@@ -51,7 +51,7 @@
 #' @family time series and trend functions
 #' @family cluster analysis functions
 #' @examples
-#' ## monthly plot of SO2 showing the contribution by wind sector
+#' # monthly plot of SO2 showing the contribution by wind sector
 #' timeProp(mydata, pollutant = "so2", avg.time = "month", proportion = "wd")
 timeProp <- function(
   mydata,
@@ -71,15 +71,7 @@ timeProp <- function(
   plot = TRUE,
   ...
 ) {
-  ## keep check happy
-  sums <- NULL
-  freq <- NULL
-  Var1 <- NULL
-  means <- NULL
-  date2 <- NULL
-  mean_value <- weighted_mean <- xleft <- NULL
-
-  ## greyscale handling
+  # greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
     trellis.par.set(list(strip.background = list(col = "white")))
   }
@@ -88,24 +80,23 @@ timeProp <- function(
     stop("'type' can only be of length 1.")
   }
 
-  ## if proportion is not categorical then make it so
+  # if proportion is not categorical then make it so
   if (!class(mydata[[proportion]]) %in% c("factor")) {
     mydata <- cutData(mydata, proportion, ...)
   }
 
-  ## extra.args setup
+  # extra.args setup
   extra.args <- list(...)
 
-  ## set graphaics
-  current.strip <- trellis.par.get("strip.background")
+  # set graphaics
   current.font <- trellis.par.get("fontsize")
 
-  ## reset graphic parameters
+  # reset graphic parameters
   on.exit(trellis.par.set(
     fontsize = current.font
   ))
 
-  ## label controls
+  # label controls
 
   main <- if ("main" %in% names(extra.args)) {
     quickText(extra.args$main, auto.text)
@@ -141,14 +132,14 @@ timeProp <- function(
     trellis.par.set(fontsize = list(text = extra.args$fontsize))
   }
 
-  ## variables needed
+  # variables needed
   vars <- c("date", pollutant, proportion)
 
   if (any(type %in% dateTypes)) {
     vars <- unique(c("date", vars))
   }
 
-  ## check the data
+  # check the data
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
 
   # time zone of input data
@@ -165,43 +156,42 @@ timeProp <- function(
 
   results <- mydata |>
     mutate(
-      xleft = as.POSIXct(cut(date, avg.time), tz = tzone),
-      xright = xleft + median(diff(xleft)[diff(xleft) != 0])
+      xleft = as.POSIXct(cut(.data$date, avg.time), tz = tzone),
+      xright = .data$xleft + median(diff(.data$xleft)[diff(.data$xleft) != 0])
     ) |>
     group_by(across(group_1)) |> # group by type and date interval to get overall average
     mutate(mean_value = mean(.data[[pollutant]], na.rm = TRUE)) |>
     group_by(across(group_2)) |>
     summarise(
       {{ pollutant }} := mean(.data[[pollutant]], na.rm = TRUE),
-      mean_value = mean(mean_value, na.rm = TRUE),
-      n = length(date)
+      mean_value = mean(.data$mean_value, na.rm = TRUE),
+      n = length(.data$date)
     ) |>
     group_by(across(group_1)) |>
     mutate(
       weighted_mean = .data[[pollutant]] * n / sum(n),
-      Var1 = replace_na(weighted_mean, 0),
-      var2 = cumsum(Var1),
-      date = xleft
+      Var1 = replace_na(.data$weighted_mean, 0),
+      var2 = cumsum(.data$Var1),
+      date = .data$xleft
     )
 
-  ## normlaise to 100 if needed
+  # normlaise to 100 if needed
   vars <- c(type, "date")
   if (normalise) {
     results <- results |>
       group_by(across(vars)) |>
       mutate(
-        Var1 = Var1 * (100 / sum(Var1, na.rm = TRUE)),
-        var2 = cumsum(Var1)
+        Var1 = .data$Var1 * (100 / sum(.data$Var1, na.rm = TRUE)),
+        var2 = cumsum(.data$Var1)
       )
   }
 
-  ## proper names of labelling ###################################################
+  # proper names of labelling #
   strip.dat <- strip.fun(results, type, auto.text)
   strip <- strip.dat[[1]]
   strip.left <- strip.dat[[2]]
-  pol.name <- strip.dat[[3]]
 
-  ## work out width of each bar
+  # work out width of each bar
   nProp <- length(levels(results[[proportion]]))
 
   # labelling on plot
@@ -212,12 +202,6 @@ timeProp <- function(
 
   # make sure we know order of data frame for adding other dates
   results <- arrange(results, type, "date")
-
-  # xleft, xright used by plot function
-  # results$xleft <- results$date
-  # results$xright <- results$date2
-  # ## don't need date2
-  # results <- select(results, -date2)
 
   # the few colours used for scaling
   scaleCol <- openColours(cols, nProp)
@@ -236,19 +220,11 @@ timeProp <- function(
 
   results[[proportion]] <- factor(results[[proportion]], levels = thelevels)
 
-  # remove missing so we can do a cumsum
-  #  results <- na.omit(results)
-
-  # y values for plotting rectangles
-  # results <- results |>
-  #   group_by(across(vars)) |>
-  #   mutate(var2 = cumsum(Var1))
-
   myform <- formula(paste("Var1 ~ date | ", type, sep = ""))
 
-  dates <- dateBreaks(results$date, date.breaks)$major ## for date scale
+  dates <- dateBreaks(results$date, date.breaks)$major # for date scale
 
-  ## date axis formating
+  # date axis formating
   if (is.null(date.format)) {
     formats <- dateBreaks(results$date, date.breaks)$format
   } else {
@@ -276,7 +252,7 @@ timeProp <- function(
     ylab <- quickText(paste("% contribution to", pollutant), auto.text)
   }
 
-  ## sub heading
+  # sub heading
 
   sub <- "contribution weighted by mean"
 
@@ -315,7 +291,7 @@ timeProp <- function(
     }
   )
 
-  ## update extra args; usual method does not seem to work...
+  # update extra args; usual method does not seem to work...
   plt <- modifyList(
     plt,
     list(
