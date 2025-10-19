@@ -10,8 +10,8 @@
 #' in the way vehicles vary by vehicles type e.g. less heavy vehicles at
 #' weekends.
 #'
-#' The `timeVariation` function makes it easy to see how concentrations
-#' (and many other variable types) vary by hour of the day and day of the week.
+#' The [timeVariation()] function makes it easy to see how concentrations (and
+#' many other variable types) vary by hour of the day and day of the week.
 #'
 #' The plots also show the 95\% confidence intervals in the mean. The 95\%
 #' confidence intervals in the mean are calculated through bootstrap
@@ -19,48 +19,42 @@
 #' intervals (particularly when there are relatively few data).
 #'
 #' The function can handle multiple pollutants and uses the flexible `type`
-#' option to provide separate panels for each 'type' --- see `cutData` for
-#' more details. `timeVariation` can also accept a `group` option
-#' which is useful if data are stacked. This will work in a similar way to
-#' having multiple pollutants in separate columns.
+#' option to provide separate panels for each 'type' --- see [cutData()] for
+#' more details. [timeVariation()] can also accept a `group` option which is
+#' useful if data are stacked. This will work in a similar way to having
+#' multiple pollutants in separate columns.
 #'
-#' The user can supply their own `ylim` e.g. `ylim = c(0, 200)` that
-#' will be used for all plots. `ylim` can also be a list of length four to
-#' control the y-limits on each individual plot e.g. `ylim =
-#' list(c(-100,500), c(200, 300), c(-400,400), c(50,70))`. These pairs
-#' correspond to the hour, weekday, month and day-hour plots respectively.
+#' The user can supply their own `ylim` e.g. `ylim = c(0, 200)` that will be
+#' used for all plots. `ylim` can also be a list of length four to control the
+#' y-limits on each individual plot e.g. `ylim = list(c(-100,500), c(200, 300),
+#' c(-400,400), c(50,70))`. These pairs correspond to the hour, weekday, month
+#' and day-hour plots respectively.
 #'
 #' The option `difference` will calculate the difference in means of two
 #' pollutants together with bootstrap estimates of the 95\% confidence intervals
 #' in the difference in the mean. This works in two ways: either two pollutants
-#' are supplied in separate columns e.g. `pollutant = c("no2", "o3")`, or
-#' there are two unique values of `group`. The difference is calculated as
-#' the second pollutant minus the first and is labelled as such. Considering
-#' differences in this way can provide many useful insights and is particularly
-#' useful for model evaluation when information is needed about where a model
-#' differs from observations by many different time scales. The manual contains
-#' various examples of using `difference = TRUE`.
+#' are supplied in separate columns e.g. `pollutant = c("no2", "o3")`, or there
+#' are two unique values of `group`. The difference is calculated as the second
+#' pollutant minus the first and is labelled as such. Considering differences in
+#' this way can provide many useful insights and is particularly useful for
+#' model evaluation when information is needed about where a model differs from
+#' observations by many different time scales. The manual contains various
+#' examples of using `difference = TRUE`.
 #'
-#' Note also that the `timeVariation` function works well on a subset of
-#' data and in conjunction with other plots. For example, a
-#' [polarPlot()] may highlight an interesting feature for a particular
-#' wind speed/direction range. By filtering for those conditions
-#' `timeVariation` can help determine whether the temporal variation of
-#' that feature differs from other features --- and help with source
-#' identification.
+#' Note also that the [timeVariation()] function works well on a subset of data
+#' and in conjunction with other plots. For example, a [polarPlot()] may
+#' highlight an interesting feature for a particular wind speed/direction range.
+#' By filtering for those conditions [timeVariation()] can help determine
+#' whether the temporal variation of that feature differs from other features
+#' --- and help with source identification.
 #'
-#' In addition, `timeVariation` will work well with other variables if
+#' In addition, [timeVariation()] will work well with other variables if
 #' available. Examples include meteorological and traffic flow data.
 #'
 #' Depending on the choice of statistic, a subheading is added. Users can
-#' control the text in the subheading through the use of `sub` e.g.
-#' `sub = ""` will remove any subheading.
+#' control the text in the subheading through the use of `sub` e.g. `sub = ""`
+#' will remove any subheading.
 #'
-#' @param mydata A data frame of hourly (or higher temporal resolution data).
-#'   Must include a `date` field and at least one variable to plot.
-#' @param pollutant Name of variable to plot. Two or more pollutants can be
-#'   plotted, in which case a form like `pollutant = c("nox", "co")` should
-#'   be used.
 #' @param local.tz Should the results be calculated in local time that includes
 #'   a treatment of daylight savings time (DST)? The default is not to consider
 #'   DST issues, provided the data were imported without a DST offset. Emissions
@@ -72,26 +66,22 @@
 #'   is to express time as local time. This correction tends to produce
 #'   better-defined diurnal profiles of concentration (or other variables) and
 #'   allows a better comparison to be made with emissions/activity data. If set
-#'   to `FALSE` then GMT is used. Examples of usage include `local.tz
-#'   = "Europe/London"`, `local.tz = "America/New_York"`. See
-#'   `cutData` and `import` for more details.
-#' @param normalise Should variables be normalised? The default is `FALSE`.
-#'   If `TRUE` then the variable(s) are divided by their mean values. This
-#'   helps to compare the shape of the diurnal trends for variables on very
-#'   different scales.
+#'   to `FALSE` then GMT is used. Examples of usage include `local.tz =
+#'   "Europe/London"`, `local.tz = "America/New_York"`. See `cutData` and
+#'   `import` for more details.
+#' @param normalise Should variables be normalised? The default is `FALSE`. If
+#'   `TRUE` then the variable(s) are divided by their mean values. This helps to
+#'   compare the shape of the diurnal trends for variables on very different
+#'   scales.
 #' @param xlab x-axis label; one for each sub-plot.
-#' @param name.pol Names to be given to the pollutant(s). This is useful if you
-#'   want to give a fuller description of the variables, maybe also including
-#'   subscripts etc.
-#' @param type `type` determines how the data are split i.e. conditioned,
-#'   and then plotted. The default is will produce a single plot using the
-#'   entire data. Type can be one of the built-in types as detailed in
-#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, `type = "season"` will produce four plots --- one for
-#'   each season.
+#' @param type `type` determines how the data are split i.e. conditioned, and
+#'   then plotted. The default is will produce a single plot using the entire
+#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
+#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+#'   `type = "season"` will produce four plots --- one for each season.
 #'
-#'   It is also possible to choose `type` as another variable in the data
-#'   frame. If that variable is numeric, then the data will be split into four
+#'   It is also possible to choose `type` as another variable in the data frame.
+#'   If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
@@ -99,84 +89,60 @@
 #'
 #'   Only one `type` is allowed in`timeVariation`.
 #' @param group This sets the grouping variable to be used. For example, if a
-#'   data frame had a column `site` setting `group = "site"` will plot
-#'   all sites together in each panel. See examples below.
-#' @param difference If two pollutants are chosen then setting `difference
-#'   = TRUE` will also plot the difference in means between the two variables as
-#'   `pollutant[2] - pollutant[1]`. Bootstrap 95\% confidence intervals of
-#'   the difference in means are also calculated. A horizontal dashed line is
-#'   shown at y = 0. The difference can also be calculated if there is a column
-#'   that identifies two groups e.g. having used `splitByDate`. In this
-#'   case it is possible to call `timeVariation` with the option
-#'   `group = "split.by"` and `difference = TRUE`.
-#' @param statistic Can be \dQuote{mean} (default) or \dQuote{median}. If the
-#'   statistic is \sQuote{mean} then the mean line and the 95\% confidence
-#'   interval in the mean are plotted by default. If the statistic is
-#'   \sQuote{median} then the median line is plotted together with the 5/95 and
-#'   25/75th quantiles are plotted. Users can control the confidence intervals
-#'   with `conf.int`.
+#'   data frame had a column `site` setting `group = "site"` will plot all sites
+#'   together in each panel. See examples below.
+#' @param difference If two pollutants are chosen then setting `difference =
+#'   TRUE` will also plot the difference in means between the two variables as
+#'   `pollutant[2] - pollutant[1]`. Bootstrap 95\% confidence intervals of the
+#'   difference in means are also calculated. A horizontal dashed line is shown
+#'   at y = 0. The difference can also be calculated if there is a column that
+#'   identifies two groups e.g. having used `splitByDate`. In this case it is
+#'   possible to call `timeVariation` with the option `group = "split.by"` and
+#'   `difference = TRUE`.
+#' @param statistic Can be `"mean"` (default) or `"median"`. If the statistic is
+#'   `"mean"` then the mean line and the 95% confidence interval in the mean are
+#'   plotted by default. If the statistic is `"median"` then the median line is
+#'   plotted together with the 5/95 and 25/75th quantiles are plotted. Users can
+#'   control the confidence intervals with `conf.int`.
 #' @param conf.int The confidence intervals to be plotted. If `statistic =
 #'   "mean"` then the confidence intervals in the mean are plotted. If
-#'   `statistic = "median"` then the `conf.int` and `1 -
-#'   conf.int` *quantiles* are plotted. `conf.int` can be of length 2,
-#'   which is most useful for showing quantiles. For example `conf.int =
-#'   c(0.75, 0.99)` will yield a plot showing the median, 25/75 and 5/95th
-#'   quantiles.
+#'   `statistic = "median"` then the `conf.int` and `1 - conf.int` *quantiles*
+#'   are plotted. `conf.int` can be of length 2, which is most useful for
+#'   showing quantiles. For example `conf.int = c(0.75, 0.99)` will yield a plot
+#'   showing the median, 25/75 and 5/95th quantiles.
 #' @param B Number of bootstrap replicates to use. Can be useful to reduce this
 #'   value when there are a large number of observations available to increase
 #'   the speed of the calculations without affecting the 95\% confidence
 #'   interval calculations by much.
 #' @param ci Should confidence intervals be shown? The default is `TRUE`.
-#'   Setting this to `FALSE` can be useful if multiple pollutants are
-#'   chosen where over-lapping confidence intervals can over complicate plots.
-#' @param cols Colours to be used for plotting. Options include
-#'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-#'   `RColorBrewer` colours --- see the `openair` `openColours`
-#'   function for more details. For user defined the user can supply a list of
-#'   colour names recognised by R (type `colours()` to see the full list).
-#'   An example would be `cols = c("yellow", "green", "blue")`
-#' @param ref.y A list with details of the horizontal lines to be added
-#'   representing reference line(s). For example, `ref.y = list(h = 50, lty
-#'   = 5)` will add a dashed horizontal line at 50. Several lines can be plotted
-#'   e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-#'   "blue"))`. See `panel.abline` in the `lattice` package for more
-#'   details on adding/controlling lines.
-#' @param key By default `timeVariation` produces four plots on one page.
-#'   While it is useful to see these plots together, it is sometimes necessary
-#'   just to use one for a report. If `key` is `TRUE`, a key is added
-#'   to all plots allowing the extraction of a single plot *with* key. See
-#'   below for an example.
-#' @param key.columns Number of columns to be used in the key. With many
-#'   pollutants a single column can make to key too wide. The user can thus
-#'   choose to use several columns by setting `columns` to be less than the
-#'   number of pollutants.
+#'   Setting this to `FALSE` can be useful if multiple pollutants are chosen
+#'   where over-lapping confidence intervals can over complicate plots.
+#' @param key By default `timeVariation` produces four plots on one page. While
+#'   it is useful to see these plots together, it is sometimes necessary just to
+#'   use one for a report. If `key` is `TRUE`, a key is added to all plots
+#'   allowing the extraction of a single plot *with* key. See below for an
+#'   example.
 #' @param start.day What day of the week should the plots start on? The user can
 #'   change the start day by supplying an integer between 0 and 6. Sunday = 0,
 #'   Monday = 1, \ldots For example to start the weekday plots on a Saturday,
 #'   choose `start.day = 6`.
 #' @param panel.gap The gap between panels in the hour-day plot.
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
-#'   titles and axis labels will automatically try and format pollutant names
-#'   and units properly e.g.  by subscripting the \sQuote{2} in NO2.
 #' @param alpha The alpha transparency used for plotting confidence intervals. 0
 #'   is fully transparent and 1 is opaque. The default is 0.4
 #' @param month.last Should the order of the plots be changed so the plot
 #'   showing monthly means be the last plot for a logical hierarchy of averaging
 #'   periods?
-#' @param plot Should a plot be produced? `FALSE` can be useful when
-#'   analysing data to extract plot components and plotting them in other ways.
-#' @param ... Other graphical parameters passed onto `lattice:xyplot` and
-#'   `cutData`. For example, in the case of `cutData` the option
-#'   `hemisphere = "southern"`.
+#' @param ... Other graphical parameters passed onto [lattice::xyplot()] and
+#'   [cutData()]. For example, in the case of [cutData()] the option `hemisphere
+#'   = "southern"`.
 #'
 #' @import lattice
 #' @export
 #' @return an [openair][openair-package] object. The four components of
-#'   timeVariation are: `day.hour`, `hour`, `day` and
-#'   `month`. Associated data.frames can be extracted directly using the
-#'   `subset` option, e.g. as in `plot(object, subset = "day.hour")`,
-#'   `summary(output, subset = "hour")`, etc., for `output <-
-#'   timeVariation(mydata, "nox")`
+#'   timeVariation are: `day.hour`, `hour`, `day` and `month`. Associated
+#'   data.frames can be extracted directly using the `subset` option, e.g. as in
+#'   `plot(object, subset = "day.hour")`, `summary(output, subset = "hour")`,
+#'   etc., for `output <- timeVariation(mydata, "nox")`
 #' @author David Carslaw
 #' @family time series and trend functions
 #' @examples
@@ -206,7 +172,7 @@
 #' timeVariation(mydata, pollutant = "nox", type = "dst", local.tz = "Europe/London")
 #' }
 #'
-#' ## In this case it is better to group the results for clarity:
+#' # In this case it is better to group the results for clarity:
 #' \dontrun{
 #' timeVariation(mydata, pollutant = "nox", group = "dst", local.tz = "Europe/London")
 #' }
@@ -219,14 +185,14 @@
 #' timeVariation(mydata, pollutant = "ws", group = "dst", local.tz = "Europe/London")
 #' }
 #'
-#' ## It is also possible to plot several variables and set type. For
-#' ## example, consider the NOx and NO2 split by levels of O3:
+#' # It is also possible to plot several variables and set type. For
+#' # example, consider the NOx and NO2 split by levels of O3:
 #'
 #' \dontrun{
 #' timeVariation(mydata, pollutant = c("nox", "no2"), type = "o3", normalise = TRUE)
 #' }
 #'
-#' ## difference in concentrations
+#' # difference in concentrations
 #' \dontrun{
 #' timeVariation(mydata, poll = c("pm25", "pm10"), difference = TRUE)
 #' }
@@ -243,29 +209,29 @@
 #' timeVariation(mydata, pollutant = "no2", group = "split.by", difference = TRUE)
 #' }
 #'
-#' ## sub plots can be extracted from the openair object
+#' # sub plots can be extracted from the openair object
 #' \dontrun{
 #' myplot <- timeVariation(mydata, pollutant = "no2")
 #' plot(myplot, subset = "day.hour") # top weekday and plot
 #' }
 #'
-#' ## individual plots
-#' ## plot(myplot, subset="day.hour") for the weekday and hours subplot (top)
-#' ## plot(myplot, subset="hour") for the diurnal plot
-#' ## plot(myplot, subset="day") for the weekday plot
-#' ## plot(myplot, subset="month") for the monthly plot
+#' # individual plots
+#' # plot(myplot, subset="day.hour") for the weekday and hours subplot (top)
+#' # plot(myplot, subset="hour") for the diurnal plot
+#' # plot(myplot, subset="day") for the weekday plot
+#' # plot(myplot, subset="month") for the monthly plot
 #'
-#' ## numerical results (mean, lower/upper uncertainties)
-#' ## myplot$data$day.hour # the weekday and hour data set
-#' ## summary(myplot, subset = "hour") #summary of hour data set
-#' ## head(myplot, subset = "day") #head/top of day data set
-#' ## tail(myplot, subset = "month") #tail/top of month data set
+#' # numerical results (mean, lower/upper uncertainties)
+#' # myplot$data$day.hour # the weekday and hour data set
+#' # summary(myplot, subset = "hour") #summary of hour data set
+#' # head(myplot, subset = "day") #head/top of day data set
+#' # tail(myplot, subset = "month") #tail/top of month data set
 #'
-#' ## plot quantiles and median
+#' # plot quantiles and median
 #' \dontrun{
 #' timeVariation(mydata, stati = "median", poll = "pm10", col = "firebrick")
 #'
-#' ## with different intervals
+#' # with different intervals
 #' timeVariation(mydata,
 #'   stati = "median", poll = "pm10", conf.int = c(0.75, 0.99),
 #'   col = "firebrick"
@@ -303,39 +269,31 @@ timeVariation <- function(
   plot = TRUE,
   ...
 ) {
-  ## get rid of R check annoyances
-  variable <- NULL
-
-  ## greyscale handling
+  # greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
     trellis.par.set(list(strip.background = list(col = "white")))
   }
 
-  ## set graphics
+  # set graphics
   current.strip <- trellis.par.get("strip.background")
   current.font <- trellis.par.get("fontsize")
 
-  ## reset graphic parameters
+  # reset graphic parameters
   on.exit(trellis.par.set(
     fontsize = current.font
   ))
 
-  ## extra.args setup
+  # extra.args setup
   extra.args <- list(...)
 
-  ## label controls
-  ## xlab handled in formals and code because unique
-  extra.args$ylab <- if ("ylab" %in% names(extra.args)) {
-    quickText(extra.args$ylab, auto.text)
-  } else {
-    quickText(paste(pollutant, collapse = ", "), auto.text)
-  }
-
-  extra.args$main <- if ("main" %in% names(extra.args)) {
-    quickText(extra.args$main, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
+  # label controls
+  # xlab handled in formals and code because unique
+  extra.args$ylab <- quickText(
+    extra.args$ylab %||%
+      ifelse(normalise, "normalised level", paste(pollutant, collapse = ", ")),
+    auto.text
+  )
+  extra.args$main <- quickText(extra.args$main %||% "", auto.text)
 
   if ("fontsize" %in% names(extra.args)) {
     trellis.par.set(fontsize = list(text = extra.args$fontsize))
@@ -345,7 +303,7 @@ timeVariation <- function(
     conf.int <- c(0.75, 0.95)
   }
 
-  ## sub heading stat info
+  # sub heading stat info
   if (statistic == "mean") {
     sub.text <- paste(
       "mean and ",
@@ -379,21 +337,13 @@ timeVariation <- function(
     }
   }
 
-  extra.args$sub <- if ("sub" %in% names(extra.args)) {
-    quickText(extra.args$sub, auto.text)
-  } else {
-    quickText(sub.text, auto.text)
-  }
+  extra.args$sub <- quickText(extra.args$sub %||% sub.text, auto.text)
 
-  extra.args$lwd <- if ("lwd" %in% names(extra.args)) extra.args$lwd else 2
+  extra.args$lwd <- extra.args$lwd %||% 2
 
-  ylim.handler <- if ("ylim" %in% names(extra.args)) {
-    FALSE
-  } else {
-    TRUE
-  }
+  ylim.handler <- !("ylim" %in% names(extra.args))
 
-  ## if user supplies separate ylims for each plot
+  # if user supplies separate ylims for each plot
   ylimList <- FALSE
 
   if ("ylim" %in% names(extra.args)) {
@@ -408,7 +358,7 @@ timeVariation <- function(
 
   vars <- c("date", pollutant)
 
-  ##  various check to make sure all the data are available ####################
+  #  various check to make sure all the data are available #
 
   if (!missing(group) & length(pollutant) > 1) {
     stop(
@@ -416,7 +366,7 @@ timeVariation <- function(
     )
   }
 
-  ## only one type for now
+  # only one type for now
   if (length(type) > 1) {
     stop("Can only have one type for timeVariation.")
   }
@@ -431,7 +381,7 @@ timeVariation <- function(
     }
   }
 
-  ## if differences between two pollutants are calculated
+  # if differences between two pollutants are calculated
   if (difference) {
     if (missing(group)) {
       if (length(pollutant) != 2) {
@@ -446,20 +396,20 @@ timeVariation <- function(
     }
   }
 
-  ## statistic check
+  # statistic check
   if (!statistic %in% c("mean", "median")) {
     statistic <- "mean"
     warning("statistic should be 'mean' or 'median',  setting it to 'mean'.")
   }
-  ## #################################################################################
+  # #
 
-  ## check to see if type = "variable" (word used in code, so change)
+  # check to see if type = "variable" (word used in code, so change)
   if (type == "variable") {
     mydata <- rename(mydata, c(variable = "tempVar"))
     type <- "tempVar"
   }
 
-  ## if group is present, need to add that list of variables
+  # if group is present, need to add that list of variables
   if (!missing(group)) {
     if (group %in% dateTypes) {
       vars <- unique(c(vars, "date"))
@@ -468,25 +418,25 @@ timeVariation <- function(
     }
   }
 
-  ## data checks
+  # data checks
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
   if (!missing(group)) {
     mydata <- cutData(mydata, group, local.tz = local.tz, ...)
   }
   mydata <- cutData(mydata, type, local.tz = local.tz, ...)
 
-  ## put in local time if needed
+  # put in local time if needed
   if (!is.null(local.tz)) {
     attr(mydata$date, "tzone") <- local.tz
   }
 
-  ## title for overall and individual plots
+  # title for overall and individual plots
   overall.main <- extra.args$main
   extra.args$main <- ""
   overall.sub <- extra.args$sub
   extra.args$sub <- ""
 
-  ## labels for pollutants, can be user-defined, special handling when difference = TRUE
+  # labels for pollutants, can be user-defined, special handling when difference = TRUE
   poll.orig <- pollutant
   if (difference && missing(group)) {
     pollutant <- c(pollutant, paste(pollutant[2], "-", pollutant[1]))
@@ -506,15 +456,15 @@ timeVariation <- function(
 
   if (missing(group)) {
     mydata <- gather(mydata, key = variable, value = value, poll.orig)
-    mydata$variable <- factor(mydata$variable, levels = pollutant) ## drop unused factor levels
+    mydata$variable <- factor(mydata$variable, levels = pollutant) # drop unused factor levels
   } else {
-    ## group needs to be 'variable' and pollutant 'value'
+    # group needs to be 'variable' and pollutant 'value'
     id <- which(names(mydata) == poll.orig)
     names(mydata)[id] <- "value"
     id <- which(names(mydata) == group)
     names(mydata)[id] <- "variable"
 
-    mydata$variable <- factor(mydata$variable) ## drop unused factor levels
+    mydata$variable <- factor(mydata$variable) # drop unused factor levels
     the.names <- levels(mydata[["variable"]])
     if (difference) {
       the.names <- c(
@@ -529,7 +479,7 @@ timeVariation <- function(
     mylab <- sapply(the.names, function(x) quickText(x, auto.text))
   }
 
-  ## function to normalise
+  # function to normalise
   divide.by.mean <- function(x) {
     Mean <- mean(x$Mean, na.rm = TRUE)
     x$Mean <- x$Mean / Mean
@@ -538,11 +488,7 @@ timeVariation <- function(
     x
   }
 
-  if (normalise) {
-    extra.args$ylab <- "normalised level"
-  }
-
-  ## get days in right order
+  # get days in right order
   days <- format(ISOdate(2000, 1, 2:8), "%A")
   days.abb <- format(ISOdate(2000, 1, 2:8), "%a")
   if (start.day < 0 || start.day > 6) {
@@ -560,7 +506,7 @@ timeVariation <- function(
     day.ord.abb <- days.abb
   }
 
-  ## calculate temporal components
+  # calculate temporal components
   mydata <- mutate(
     mydata,
     wkday = wday(date, label = TRUE, abbr = FALSE),
@@ -569,9 +515,9 @@ timeVariation <- function(
     mnth = month(date)
   )
 
-  ## y range taking account of expanded uncertainties
+  # y range taking account of expanded uncertainties
   rng <- function(x) {
-    ## if no CI information, just return
+    # if no CI information, just return
     if (all(is.na(x[, c("Lower", "Upper")]))) {
       lims <- NULL
       return(lims)
@@ -590,10 +536,10 @@ timeVariation <- function(
     lims
   }
 
-  npol <- length(levels(mydata$variable)) ## number of pollutants
+  npol <- length(levels(mydata$variable)) # number of pollutants
 
   if (difference) {
-    npol <- 3 ## 3 pollutants if difference considered
+    npol <- 3 # 3 pollutants if difference considered
     if (missing(group)) {
       poll1 <- pollutant[1]
     }
@@ -604,14 +550,14 @@ timeVariation <- function(
     poll2 <- levels(mydata$variable)[2]
   }
 
-  ## number of columns for key
+  # number of columns for key
   if (missing(key.columns)) {
     key.columns <- npol
   }
 
   myColors <- openColours(cols, npol)
 
-  ## for individual plot keys - useful if only one of the plots is extracted after printing
+  # for individual plot keys - useful if only one of the plots is extracted after printing
   if (!is.null(key)) {
     key <- list(
       rectangles = list(col = myColors[1:npol], border = NA),
@@ -628,7 +574,7 @@ timeVariation <- function(
   # data frame of confidence intervals
   conf_int <- data.frame(ci = conf.int)
 
-  ## hour ############################################################################
+  # hour #
 
   if (difference) {
     data.hour <- errorDiff(
@@ -672,7 +618,7 @@ timeVariation <- function(
     xlab[2] <- "hour"
   }
 
-  ## proper names of labelling ##########################################################
+  # proper names of labelling #
   if (type != "default") {
     stripName <- sapply(
       levels(factor(data.hour[[type]])),
@@ -682,22 +628,22 @@ timeVariation <- function(
   } else {
     strip <- FALSE
   }
-  ## ###################################################################################
+  # #
 
   temp <- paste(type, collapse = "+")
   myform <- formula(paste("Mean ~ hour | ", temp, sep = ""))
 
-  ## ylim hander
+  # ylim hander
   if (ylim.handler) {
     extra.args$ylim <- rng(data.hour)
   }
 
-  ## user supplied separate ylim
+  # user supplied separate ylim
   if (ylimList) {
     extra.args$ylim <- ylim.list[[1]]
   }
 
-  ## plot
+  # plot
   xy.args <- list(
     x = myform,
     data = data.hour,
@@ -729,7 +675,7 @@ timeVariation <- function(
           if (difference) {
             panel.abline(h = 0, lty = 5)
           }
-          ## plot once
+          # plot once
           id <- which(data.hour$ci[subscripts] == data.hour$ci[1])
           panel.xyplot(
             x[id],
@@ -749,20 +695,20 @@ timeVariation <- function(
               alpha
             )
           }
-          ## reference line(s)
+          # reference line(s)
           if (!is.null(ref.y)) do.call(panel.abline, ref.y)
         }
       )
     }
   )
 
-  ## reset for extra.args
+  # reset for extra.args
   xy.args <- listUpdate(xy.args, extra.args)
 
-  ## plot
+  # plot
   hour <- do.call(xyplot, xy.args)
 
-  ## weekday ############################################################################
+  # weekday #
 
   if (difference) {
     data.weekday <- errorDiff(
@@ -813,17 +759,17 @@ timeVariation <- function(
   temp <- paste(type, collapse = "+")
   myform <- formula(paste("Mean ~ wkday | ", temp, sep = ""))
 
-  ## ylim hander
+  # ylim hander
   if (ylim.handler) {
     extra.args$ylim <- rng(data.weekday)
   }
 
-  ## user supplied separate ylim
+  # user supplied separate ylim
   if (ylimList) {
     extra.args$ylim <- ylim.list[[2]]
   }
 
-  ## plot
+  # plot
   xy.args <- list(
     x = myform,
     data = data.weekday,
@@ -855,7 +801,7 @@ timeVariation <- function(
             panel.abline(h = 0, lty = 5)
           }
 
-          ## only plot median once if 2 conf.int
+          # only plot median once if 2 conf.int
           id <- which(data.weekday$ci[subscripts] == data.weekday$ci[1])
           panel.xyplot(
             x[id],
@@ -875,19 +821,19 @@ timeVariation <- function(
               alpha
             )
           }
-          ## refrence line(s)
+          # refrence line(s)
           if (!is.null(ref.y)) do.call(panel.abline, ref.y)
         }
       )
     }
   )
-  ## reset for extra.args
+  # reset for extra.args
   xy.args <- listUpdate(xy.args, extra.args)
 
-  ## plot
+  # plot
   day <- do.call(xyplot, xy.args)
 
-  ## month ############################################################################
+  # month #
 
   if (difference) {
     data.month <- errorDiff(
@@ -934,17 +880,17 @@ timeVariation <- function(
   temp <- paste(type, collapse = "+")
   myform <- formula(paste("Mean ~ mnth | ", temp, sep = ""))
 
-  ## ylim hander
+  # ylim hander
   if (ylim.handler) {
     extra.args$ylim <- rng(data.month)
   }
 
-  ## user supplied separate ylim
+  # user supplied separate ylim
   if (ylimList) {
     extra.args$ylim <- ylim.list[[3]]
   }
 
-  ## plot
+  # plot
   xy.args <-
     list(
       x = myform,
@@ -994,16 +940,16 @@ timeVariation <- function(
               panel.abline(h = 0, lty = 5)
             }
 
-            ## a line won't work for a single point
+            # a line won't work for a single point
             pltType <- "l"
             if (length(subscripts) == 1) {
               pltType <- "p"
             }
 
-            ## only plot median once if 2 conf.int
+            # only plot median once if 2 conf.int
             id <- which(data.month$ci[subscripts] == data.month$ci[1])
 
-            ## lines not needed if split by season
+            # lines not needed if split by season
             if (group != "season" || is.null(group)) {
               panel.xyplot(
                 x[id],
@@ -1024,20 +970,20 @@ timeVariation <- function(
                 alpha
               )
             }
-            ## refrence line(s)
+            # refrence line(s)
             if (!is.null(ref.y)) do.call(panel.abline, ref.y)
           }
         )
       }
     )
 
-  ## reset for extra.args
+  # reset for extra.args
   xy.args <- listUpdate(xy.args, extra.args)
 
-  ## plot
+  # plot
   month <- do.call(xyplot, xy.args)
 
-  ## day and hour ############################################################################
+  # day and hour #
 
   if (difference) {
     data.day.hour <- errorDiff(
@@ -1077,17 +1023,17 @@ timeVariation <- function(
     )
   }
 
-  ids <- which(is.na(data.day.hour$Lower)) ## missing Lower ci, set to mean
+  ids <- which(is.na(data.day.hour$Lower)) # missing Lower ci, set to mean
 
   data.day.hour$Lower[ids] <- data.day.hour$Mean[ids]
-  ids <- which(is.na(data.day.hour$Upper)) ## missing Upper ci, set to mean
+  ids <- which(is.na(data.day.hour$Upper)) # missing Upper ci, set to mean
   data.day.hour$Upper[ids] <- data.day.hour$Mean[ids]
 
   if (is.null(xlab[1]) | is.na(xlab[1])) {
     xlab[1] <- "hour"
   }
 
-  ## proper names of labelling #####################################################################
+  # proper names of labelling #
 
   strip <- strip.custom(par.strip.text = list(cex = 0.8))
 
@@ -1095,7 +1041,7 @@ timeVariation <- function(
     strip.left <- FALSE
     layout <- c(length(unique(mydata$wkday)), 1)
   } else {
-    ## two conditioning variables
+    # two conditioning variables
 
     stripName <- sapply(
       levels(factor(data.day.hour[[type]])),
@@ -1104,7 +1050,7 @@ timeVariation <- function(
     strip.left <- strip.custom(factor.levels = stripName)
     layout <- NULL
   }
-  ## #################################################################################################
+  # #
 
   temp <- paste(type, collapse = "+")
   if (type == "default") {
@@ -1113,17 +1059,17 @@ timeVariation <- function(
     myform <- formula(paste("Mean ~ hour | wkday *", temp, sep = ""))
   }
 
-  ## ylim hander
+  # ylim hander
   if (ylim.handler) {
     extra.args$ylim <- rng(data.day.hour)
   }
 
-  ## user supplied separate ylim
+  # user supplied separate ylim
   if (ylimList) {
     extra.args$ylim <- ylim.list[[4]]
   }
 
-  ## plot
+  # plot
   xy.args <- list(
     x = myform,
     data = data.day.hour,
@@ -1159,7 +1105,7 @@ timeVariation <- function(
             panel.abline(h = 0, lty = 5)
           }
 
-          ## only plot median once if 2 conf.int
+          # only plot median once if 2 conf.int
           id <- which(data.day.hour$ci[subscripts] == data.day.hour$ci[1])
 
           panel.xyplot(
@@ -1180,22 +1126,22 @@ timeVariation <- function(
               alpha
             )
           }
-          ## refrence line(s)
+          # refrence line(s)
           if (!is.null(ref.y)) do.call(panel.abline, ref.y)
         }
       )
     }
   )
 
-  ## reset for extra.args
+  # reset for extra.args
   xy.args <- listUpdate(xy.args, extra.args)
 
-  ## plot
+  # plot
   day.hour <- do.call(xyplot, xy.args)
 
   subsets <- c("day.hour", "hour", "day", "month")
 
-  ## this adjusts the space for the title to 2 lines (approx) if \n in title
+  # this adjusts the space for the title to 2 lines (approx) if \n in title
   if (length(grep("atop", overall.main) == 1)) {
     y.upp <- 0.95
     y.dwn <- 0.05
@@ -1253,7 +1199,7 @@ timeVariation <- function(
       print(month, position = c(0.66, y.dwn, 1, 0.53))
     }
 
-    ## use grid to add an overall title
+    # use grid to add an overall title
     grid.text(overall.main, 0.5, y.upp, gp = gpar(fontsize = 14))
     grid.text(overall.sub, 0.5, y.dwn, gp = gpar(fontsize = 12))
   }
@@ -1305,7 +1251,7 @@ proc <- function(
   B = B,
   statistic = statistic
 ) {
-  ## get rid of R check annoyances
+  # get rid of R check annoyances
   variable <- value <- NULL
 
   if (statistic == "mean") {
@@ -1350,7 +1296,7 @@ proc <- function(
     mydata
   }
 
-  ## function to calculate statistics dealing with wd properly
+  # function to calculate statistics dealing with wd properly
   if (any(!pollutant %in% "wd")) {
     data1 <- subset(mydata, variable != "wd")
     data1 <- summary.values(
@@ -1398,17 +1344,17 @@ proc <- function(
 }
 
 wd.smean.normal <- function(wd, B = B, statistic, conf.int) {
-  ## function to calculate mean and 95% CI of the mean for wd
+  # function to calculate mean and 95% CI of the mean for wd
 
   u <- mean(sin(pi * wd / 180), na.rm = TRUE)
   v <- mean(cos(pi * wd / 180), na.rm = TRUE)
   Mean <- as.vector(atan2(u, v) * 360 / 2 / pi)
-  ids <- which(Mean < 0) ## ids where wd < 0
+  ids <- which(Mean < 0) # ids where wd < 0
   Mean[ids] <- Mean[ids] + 360
 
-  ## to calculate SD and conf int, need to know how much the angle changes from one point
-  ## to the next. Also cannot be more than 180 degrees. Example change from 350 to 10 is not
-  ## 340 but 20.
+  # to calculate SD and conf int, need to know how much the angle changes from one point
+  # to the next. Also cannot be more than 180 degrees. Example change from 350 to 10 is not
+  # 340 but 20.
   wd.diff <- diff(wd)
   ids <- which(wd.diff < 0)
   wd.diff[ids] <- wd.diff[ids] + 360
@@ -1439,8 +1385,8 @@ errorDiff <- function(
   B = B,
   conf.int = conf.int
 ) {
-  ## bootstrap mean difference confidence intervals
-  ## rearrange data
+  # bootstrap mean difference confidence intervals
+  # rearrange data
 
   # it could be dates duplicate e.g. run function over several sites
 
@@ -1463,7 +1409,7 @@ errorDiff <- function(
     splits <- c("mnth", type)
   }
 
-  ## warnings from dplyr seem harmless FIXME
+  # warnings from dplyr seem harmless FIXME
   res <-
     mapType(
       mydata,
@@ -1479,23 +1425,23 @@ errorDiff <- function(
 }
 
 
-## function to calculate median and lower/upper quantiles
+# function to calculate median and lower/upper quantiles
 median_hilow <- function(x, conf.int = 0.95, na.rm = TRUE, ...) {
   quant <- quantile(x, probs = c(0.5, (1 - conf.int), conf.int), na.rm = na.rm)
   names(quant) <- c("Mean", "Lower", "Upper")
   quant
 }
 
-## make poly function ########################################
+# make poly function #
 mkpoly <- function(dat, x = "hour", y = "Mean", group.number, myColors, alpha) {
-  len <- length(unique(dat$ci)) ## number of confidence intervals to consider
+  len <- length(unique(dat$ci)) # number of confidence intervals to consider
   ci <- sort(unique(dat$ci))
 
   fac <- 2
 
   if (len == 1L) {
     id1 <- which(dat$ci == ci[1])
-  } ## ids of higher band
+  } # ids of higher band
 
   if (len == 2L) {
     id1 <- which(dat$ci == ci[2])
@@ -1534,14 +1480,14 @@ mkrect <- function(
   myColors,
   alpha
 ) {
-  len <- length(unique(dat$ci)) ## number of confidence intervals to consider
+  len <- length(unique(dat$ci)) # number of confidence intervals to consider
   ci <- sort(unique(dat$ci))
 
   fac <- 2
 
   if (len == 1L) {
     id1 <- which(dat$ci == ci[1])
-  } ## ids of higher band
+  } # ids of higher band
 
   if (len == 2L) {
     id1 <- which(dat$ci == ci[2])
