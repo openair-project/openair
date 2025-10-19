@@ -275,7 +275,6 @@ timeVariation <- function(
   }
 
   # set graphics
-  current.strip <- trellis.par.get("strip.background")
   current.font <- trellis.par.get("fontsize")
 
   # reset graphic parameters
@@ -360,7 +359,7 @@ timeVariation <- function(
 
   #  various check to make sure all the data are available #
 
-  if (!missing(group) & length(pollutant) > 1) {
+  if (!missing(group) && length(pollutant) > 1) {
     stop(
       "Can only have one pollutant with a grouping variable, or several pollutants and no grouping variable."
     )
@@ -614,7 +613,7 @@ timeVariation <- function(
     )
   }
 
-  if (is.null(xlab[2]) | is.na(xlab[2])) {
+  if (is.null(xlab[2]) || is.na(xlab[2])) {
     xlab[2] <- "hour"
   }
 
@@ -752,7 +751,7 @@ timeVariation <- function(
 
   data.weekday$wkday <- as.numeric(as.factor(data.weekday$wkday))
 
-  if (is.null(xlab[4]) | is.na(xlab[4])) {
+  if (is.null(xlab[4]) || is.na(xlab[4])) {
     xlab[4] <- "weekday"
   }
 
@@ -873,7 +872,7 @@ timeVariation <- function(
     )
   }
 
-  if (is.null(xlab[3]) | is.na(xlab[3])) {
+  if (is.null(xlab[3]) || is.na(xlab[3])) {
     xlab[3] <- "month"
   }
 
@@ -1029,7 +1028,7 @@ timeVariation <- function(
   ids <- which(is.na(data.day.hour$Upper)) # missing Upper ci, set to mean
   data.day.hour$Upper[ids] <- data.day.hour$Mean[ids]
 
-  if (is.null(xlab[1]) | is.na(xlab[1])) {
+  if (is.null(xlab[1]) || is.na(xlab[1])) {
     xlab[1] <- "hour"
   }
 
@@ -1327,7 +1326,7 @@ proc <- function(
     data2 <- data.frame(subset(data2, select = -value), data2$value)
   }
 
-  if (length(pollutant) > 1 & "wd" %in% pollutant) {
+  if (length(pollutant) > 1 && "wd" %in% pollutant) {
     data2 <- bind_rows(data1, data2)
   }
 
@@ -1335,7 +1334,7 @@ proc <- function(
     data2 <- data1
   }
 
-  if (length(pollutant) == 1 & "wd" %in% pollutant) {
+  if (length(pollutant) == 1 && "wd" %in% pollutant) {
     data2 <- data2
   }
 
@@ -1391,7 +1390,7 @@ errorDiff <- function(
   # it could be dates duplicate e.g. run function over several sites
 
   if (anyDuplicated(mydata$date) > 0) {
-    mydata$rowid <- 1:nrow(mydata)
+    mydata$rowid <- seq_len(nrow(mydata))
   }
 
   mydata <- pivot_wider(mydata, names_from = "variable", values_from = "value")
