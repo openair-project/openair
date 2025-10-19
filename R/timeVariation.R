@@ -302,6 +302,10 @@ timeVariation <- function(
     conf.int <- c(0.75, 0.95)
   }
 
+  if (!length(unique(conf.int)) %in% c(1L, 2L)) {
+    cli::cli_abort("{.arg conf.int} can only be of length 1 or 2.")
+  }
+
   # sub heading stat info
   if (statistic == "mean") {
     sub.text <- paste(
@@ -355,28 +359,32 @@ timeVariation <- function(
     }
   }
 
-  vars <- c("date", pollutant)
-
   #  various check to make sure all the data are available #
 
   if (!missing(group) && length(pollutant) > 1) {
-    stop(
-      "Can only have one pollutant with a grouping variable, or several pollutants and no grouping variable."
+    cli::cli_abort(
+      "Can only have one {.arg pollutant} and one {.arg group}, or several {.arg pollutant}s and no {.arg group}."
     )
   }
 
   # only one type for now
   if (length(type) > 1) {
-    stop("Can only have one type for timeVariation.")
+    cli::cli_abort(
+      "Can only have one {.arg type} for {.fun openair::timeVariation}."
+    )
   }
 
   if (type %in% pollutant) {
-    stop("Cannot have type the same as a pollutant name.")
+    cli::cli_abort(
+      "{.arg type} cannot be in {.arg pollutant}. Problem variable: {type[type %in% pollutant]}."
+    )
   }
 
   if (!missing(group)) {
     if (group %in% pollutant) {
-      stop("Cannot have group the same as a pollutant name.")
+      cli::cli_abort(
+        "{.arg group} cannot be in {.arg pollutant}. Problem variable: {group[group %in% pollutant]}."
+      )
     }
   }
 
@@ -384,23 +392,23 @@ timeVariation <- function(
   if (difference) {
     if (missing(group)) {
       if (length(pollutant) != 2) {
-        stop("Need to specify two pollutants to calculate their difference.")
+        cli::cli_abort(
+          "Need to specify two {.arg pollutant}s to calculate their difference."
+        )
       }
     }
 
     if (!missing(group)) {
       if (length(unique(na.omit(mydata[[group]]))) != 2) {
-        stop("Need to specify two pollutants to calculate their difference.")
+        cli::cli_abort(
+          "Need to specify two {.arg group}s to calculate their difference."
+        )
       }
     }
   }
 
   # statistic check
-  if (!statistic %in% c("mean", "median")) {
-    statistic <- "mean"
-    warning("statistic should be 'mean' or 'median',  setting it to 'mean'.")
-  }
-  # #
+  rlang::arg_match(statistic, c("mean", "median"))
 
   # check to see if type = "variable" (word used in code, so change)
   if (type == "variable") {
@@ -408,11 +416,10 @@ timeVariation <- function(
     type <- "tempVar"
   }
 
-  # if group is present, need to add that list of variables
+  vars <- c("date", pollutant)
+  # if group is present and not a date-type (e.g., year), add to vars
   if (!missing(group)) {
-    if (group %in% dateTypes) {
-      vars <- unique(c(vars, "date"))
-    } else {
+    if (!group %in% dateTypes) {
       vars <- unique(c(vars, group))
     }
   }
@@ -445,9 +452,7 @@ timeVariation <- function(
     mylab <- sapply(seq_along(pollutant), function(x) {
       quickText(pollutant[x], auto.text)
     })
-  }
-
-  if (!missing(name.pol)) {
+  } else {
     mylab <- sapply(seq_along(name.pol), function(x) {
       quickText(name.pol[x], auto.text)
     })
@@ -1250,9 +1255,6 @@ proc <- function(
   B = B,
   statistic = statistic
 ) {
-  # get rid of R check annoyances
-  variable <- value <- NULL
-
   if (statistic == "mean") {
     stat <- bootMean
   } else {
@@ -1344,7 +1346,6 @@ proc <- function(
 
 wd.smean.normal <- function(wd, B = B, statistic, conf.int) {
   # function to calculate mean and 95% CI of the mean for wd
-
   u <- mean(sin(pi * wd / 180), na.rm = TRUE)
   v <- mean(cos(pi * wd / 180), na.rm = TRUE)
   Mean <- as.vector(atan2(u, v) * 360 / 2 / pi)
@@ -1375,38 +1376,32 @@ wd.smean.normal <- function(wd, B = B, statistic, conf.int) {
   c(Mean = Mean, Lower = Mean - diff.wd, Upper = Mean + diff.wd)
 }
 
+#' bootstrap mean difference confidence intervals
+#' @noRd
 errorDiff <- function(
   mydata,
-  vars = "day.hour",
+  vars,
   poll1,
   poll2,
   type,
   B = B,
   conf.int = conf.int
 ) {
-  # bootstrap mean difference confidence intervals
-  # rearrange data
-
   # it could be dates duplicate e.g. run function over several sites
-
   if (anyDuplicated(mydata$date) > 0) {
     mydata$rowid <- seq_len(nrow(mydata))
   }
 
-  mydata <- pivot_wider(mydata, names_from = "variable", values_from = "value")
+  mydata <- tidyr::pivot_wider(
+    mydata,
+    names_from = "variable",
+    values_from = "value"
+  )
 
-  if (vars == "hour") {
-    splits <- c("hour", type)
-  }
   if (vars == "day.hour") {
-    splits <- c("hour", "wkday", type)
+    vars <- c("hour", "wkday")
   }
-  if (vars == "wkday") {
-    splits <- c("wkday", type)
-  }
-  if (vars == "mnth") {
-    splits <- c("mnth", type)
-  }
+  splits <- c(vars, type)
 
   # warnings from dplyr seem harmless FIXME
   res <-
@@ -1418,7 +1413,6 @@ errorDiff <- function(
 
   # make sure we keep the order correct
   res$variable <- ordered(res$variable, levels = res$variable[1:3])
-
   res$ci <- conf.int[1]
   res
 }
@@ -1431,46 +1425,69 @@ median_hilow <- function(x, conf.int = 0.95, na.rm = TRUE, ...) {
   quant
 }
 
-# make poly function #
-mkpoly <- function(dat, x = "hour", y = "Mean", group.number, myColors, alpha) {
-  len <- length(unique(dat$ci)) # number of confidence intervals to consider
+# Helper function for shared CI band logic
+mk_ci_bands <- function(dat, x, y, group.number, myColors, alpha, draw_func) {
   ci <- sort(unique(dat$ci))
-
-  fac <- 2
+  len <- length(ci)
 
   if (len == 1L) {
     id1 <- which(dat$ci == ci[1])
-  } # ids of higher band
-
-  if (len == 2L) {
+    fac <- 2
+  } else if (len == 2L) {
     id1 <- which(dat$ci == ci[2])
     id2 <- which(dat$ci == ci[1])
     fac <- 1
   }
 
-  poly.na(
-    dat[[x]][id1],
-    dat$Lower[id1],
-    dat[[x]][id1],
-    dat$Upper[id1],
-    group.number,
-    myColors,
-    alpha = fac * alpha / 2
+  # Draw first band
+  draw_func(
+    dat = dat,
+    x = x,
+    ids = id1,
+    group.number = group.number,
+    myColors = myColors,
+    alpha = fac * alpha / 2,
+    is_outer = (len == 2L)
   )
 
+  # Draw second band if needed
   if (len == 2L) {
-    poly.na(
-      dat[[x]][id2],
-      dat$Lower[id2],
-      dat[[x]][id2],
-      dat$Upper[id2],
-      group.number,
-      myColors,
-      alpha = alpha
+    draw_func(
+      dat = dat,
+      x = x,
+      ids = id2,
+      group.number = group.number,
+      myColors = myColors,
+      alpha = alpha,
+      is_outer = FALSE
     )
   }
 }
 
+# Make poly function
+mkpoly <- function(dat, x = "hour", y = "Mean", group.number, myColors, alpha) {
+  mk_ci_bands(
+    dat,
+    x,
+    y,
+    group.number,
+    myColors,
+    alpha,
+    function(dat, x, ids, group.number, myColors, alpha, is_outer) {
+      poly.na(
+        dat[[x]][ids],
+        dat$Lower[ids],
+        dat[[x]][ids],
+        dat$Upper[ids],
+        group.number,
+        myColors,
+        alpha = alpha
+      )
+    }
+  )
+}
+
+# Make rect function
 mkrect <- function(
   dat,
   x = "wkday",
@@ -1479,40 +1496,24 @@ mkrect <- function(
   myColors,
   alpha
 ) {
-  len <- length(unique(dat$ci)) # number of confidence intervals to consider
-  ci <- sort(unique(dat$ci))
-
-  fac <- 2
-
-  if (len == 1L) {
-    id1 <- which(dat$ci == ci[1])
-  } # ids of higher band
-
-  if (len == 2L) {
-    id1 <- which(dat$ci == ci[2])
-    id2 <- which(dat$ci == ci[1])
-    fac <- 1
-  }
-
-  panel.rect(
-    dat[[x]][id1] - 0.15 * fac,
-    dat$Lower[id1],
-    dat[[x]][id1] + 0.15 * fac,
-    dat$Upper[id1],
-    fill = myColors[group.number],
-    border = NA,
-    alpha = fac * alpha / 2
+  mk_ci_bands(
+    dat,
+    x,
+    y,
+    group.number,
+    myColors,
+    alpha,
+    function(dat, x, ids, group.number, myColors, alpha, is_outer) {
+      width <- ifelse(is_outer, 0.15, 0.3)
+      panel.rect(
+        dat[[x]][ids] - width,
+        dat$Lower[ids],
+        dat[[x]][ids] + width,
+        dat$Upper[ids],
+        fill = myColors[group.number],
+        border = NA,
+        alpha = alpha
+      )
+    }
   )
-
-  if (len == 2L) {
-    panel.rect(
-      dat[[x]][id2] - 0.3,
-      dat$Lower[id2],
-      dat[[x]][id2] + 0.3,
-      dat$Upper[id2],
-      fill = myColors[group.number],
-      border = NA,
-      alpha = alpha
-    )
-  }
 }
