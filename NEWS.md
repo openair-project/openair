@@ -20,6 +20,8 @@
 
 - `timeVariation()` refinements:
 
+    - When any panel only has a single value (e.g., one month in the month panel, one hour in the hour panel), the relevant panel will show a point with a rectangular error bar.
+
     - When `key` is `FALSE`, no key is shown for any of the four `timeVariation()` plots. Previously, any value passed to `key` would cause all four plots to display a key.
 
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.

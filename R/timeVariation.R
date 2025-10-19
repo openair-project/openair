@@ -260,7 +260,7 @@ timeVariation <- function(
   cols = "hue",
   ref.y = NULL,
   key = NULL,
-  key.columns = 1,
+  key.columns = NULL,
   start.day = 1,
   panel.gap = 0.2,
   auto.text = TRUE,
@@ -269,98 +269,7 @@ timeVariation <- function(
   plot = TRUE,
   ...
 ) {
-  # greyscale handling
-  if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-  }
-
-  # set graphics
-  current.font <- trellis.par.get("fontsize")
-
-  # reset graphic parameters
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
-
-  # extra.args setup
-  extra.args <- list(...)
-
-  # label controls
-  # xlab handled in formals and code because unique
-  extra.args$ylab <- quickText(
-    extra.args$ylab %||%
-      ifelse(normalise, "normalised level", paste(pollutant, collapse = ", ")),
-    auto.text
-  )
-  extra.args$main <- quickText(extra.args$main %||% "", auto.text)
-
-  if ("fontsize" %in% names(extra.args)) {
-    trellis.par.set(fontsize = list(text = extra.args$fontsize))
-  }
-
-  if (statistic == "median" && missing(conf.int)) {
-    conf.int <- c(0.75, 0.95)
-  }
-
-  if (!length(unique(conf.int)) %in% c(1L, 2L)) {
-    cli::cli_abort("{.arg conf.int} can only be of length 1 or 2.")
-  }
-
-  # sub heading stat info
-  if (statistic == "mean") {
-    sub.text <- paste(
-      "mean and ",
-      100 * conf.int[1],
-      "% confidence interval in mean",
-      sep = ""
-    )
-  } else {
-    if (length(conf.int) == 1L) {
-      sub.text <- paste(
-        "median and ",
-        100 * (1 - conf.int[1]),
-        "/",
-        100 * conf.int[1],
-        "th quantiles",
-        sep = ""
-      )
-    } else {
-      sub.text <- paste(
-        "median, ",
-        100 * (1 - conf.int[1]),
-        "/",
-        100 * conf.int[1],
-        " and ",
-        100 * (1 - conf.int[2]),
-        "/",
-        100 * conf.int[2],
-        "th quantiles",
-        sep = ""
-      )
-    }
-  }
-
-  extra.args$sub <- quickText(extra.args$sub %||% sub.text, auto.text)
-
-  extra.args$lwd <- extra.args$lwd %||% 2
-
-  ylim.handler <- !("ylim" %in% names(extra.args))
-
-  # if user supplies separate ylims for each plot
-  ylimList <- FALSE
-
-  if ("ylim" %in% names(extra.args)) {
-    if (is.list(extra.args$ylim)) {
-      if (length(extra.args$ylim) != 4) {
-        stop("ylim should be a list of 4")
-      }
-      ylim.list <- extra.args$ylim
-      ylimList <- TRUE
-    }
-  }
-
-  #  various check to make sure all the data are available #
-
+  # validate inputs
   if (!missing(group) && length(pollutant) > 1) {
     cli::cli_abort(
       "Can only have one {.arg pollutant} and one {.arg group}, or several {.arg pollutant}s and no {.arg group}."
@@ -410,12 +319,74 @@ timeVariation <- function(
   # statistic check
   rlang::arg_match(statistic, c("mean", "median"))
 
+  # if median, use alternative default
+  if (statistic == "median" && missing(conf.int)) {
+    conf.int <- c(0.75, 0.95)
+  }
+
+  if (!length(unique(conf.int)) %in% c(1L, 2L)) {
+    cli::cli_abort("{.arg conf.int} can only be of length 1 or 2.")
+  }
+
+  # graphical parameter handling
+
+  # greyscale handling
+  if (length(cols) == 1 && cols == "greyscale") {
+    trellis.par.set(list(strip.background = list(col = "white")))
+  }
+
+  # extra.args setup
+  extra.args <- list(...)
+
+  # set graphics
+  current.font <- trellis.par.get("fontsize")
+  on.exit(trellis.par.set(
+    fontsize = current.font
+  ))
+  if ("fontsize" %in% names(extra.args)) {
+    trellis.par.set(fontsize = list(text = extra.args$fontsize))
+  }
+
+  # label controls
+  # xlab handled in formals and code because unique
+  extra.args$ylab <- quickText(
+    extra.args$ylab %||%
+      ifelse(normalise, "normalised level", paste(pollutant, collapse = ", ")),
+    auto.text
+  )
+  extra.args$main <- quickText(extra.args$main %||% "", auto.text)
+
+  extra.args$sub <- quickText(
+    extra.args$sub %||% make_sub_text(statistic, conf.int),
+    auto.text
+  )
+
+  extra.args$lwd <- extra.args$lwd %||% 2
+
+  ylim.handler <- !("ylim" %in% names(extra.args))
+
+  # if user supplies separate ylims for each plot
+  ylimList <- FALSE
+
+  if ("ylim" %in% names(extra.args)) {
+    if (is.list(extra.args$ylim)) {
+      if (length(extra.args$ylim) != 4) {
+        cli::cli_abort(
+          "{.arg ylim} should be a list of {4}."
+        )
+      }
+      ylim.list <- extra.args$ylim
+      ylimList <- TRUE
+    }
+  }
+
   # check to see if type = "variable" (word used in code, so change)
   if (type == "variable") {
-    mydata <- rename(mydata, c(variable = "tempVar"))
+    mydata <- dplyr::rename(mydata, c(variable = "tempVar"))
     type <- "tempVar"
   }
 
+  # check & cut data
   vars <- c("date", pollutant)
   # if group is present and not a date-type (e.g., year), add to vars
   if (!missing(group)) {
@@ -459,8 +430,13 @@ timeVariation <- function(
   }
 
   if (missing(group)) {
-    mydata <- gather(mydata, key = variable, value = value, poll.orig)
-    mydata$variable <- factor(mydata$variable, levels = pollutant) # drop unused factor levels
+    mydata <- tidyr::pivot_longer(
+      mydata,
+      cols = dplyr::all_of(poll.orig),
+      names_to = "variable",
+      values_to = "value"
+    )
+    mydata$variable <- factor(mydata$variable, levels = pollutant)
   } else {
     # group needs to be 'variable' and pollutant 'value'
     id <- which(names(mydata) == poll.orig)
@@ -483,15 +459,6 @@ timeVariation <- function(
     mylab <- sapply(the.names, function(x) quickText(x, auto.text))
   }
 
-  # function to normalise
-  divide.by.mean <- function(x) {
-    Mean <- mean(x$Mean, na.rm = TRUE)
-    x$Mean <- x$Mean / Mean
-    x$Lower <- x$Lower / Mean
-    x$Upper <- x$Upper / Mean
-    x
-  }
-
   # get days in right order
   days <- format(ISOdate(2000, 1, 2:8), "%A")
   days.abb <- format(ISOdate(2000, 1, 2:8), "%a")
@@ -511,34 +478,13 @@ timeVariation <- function(
   }
 
   # calculate temporal components
-  mydata <- mutate(
+  mydata <- dplyr::mutate(
     mydata,
     wkday = wday(date, label = TRUE, abbr = FALSE),
     wkday = ordered(wkday, levels = day.ord),
     hour = hour(date),
     mnth = month(date)
   )
-
-  # y range taking account of expanded uncertainties
-  rng <- function(x) {
-    # if no CI information, just return
-    if (all(is.na(x[, c("Lower", "Upper")]))) {
-      lims <- NULL
-      return(lims)
-    }
-
-    if (ci) {
-      lims <- range(c(x$Lower, x$Upper), na.rm = TRUE)
-      inc <- 0.04 * abs(lims[2] - lims[1])
-      lims <- c(lims[1] - inc, lims[2] + inc)
-    } else {
-      lims <- range(c(x$Mean, x$Mean), na.rm = TRUE)
-      inc <- 0.04 * abs(lims[2] - lims[1])
-      lims <- c(lims[1] - inc, lims[2] + inc)
-      if (diff(lims) == 0) lims <- NULL
-    }
-    lims
-  }
 
   npol <- length(levels(mydata$variable)) # number of pollutants
 
@@ -555,9 +501,7 @@ timeVariation <- function(
   }
 
   # number of columns for key
-  if (missing(key.columns)) {
-    key.columns <- npol
-  }
+  key.columns <- key.columns %||% npol
 
   myColors <- openColours(cols, npol)
 
@@ -581,68 +525,29 @@ timeVariation <- function(
   # data frame of confidence intervals
   conf_int <- data.frame(ci = conf.int)
 
-  # hour #
+  # hour ----
 
-  if (difference) {
-    data.hour <- errorDiff(
-      mydata,
-      vars = "hour",
-      type = type,
-      poll1 = poll1,
-      poll2 = poll2,
-      B = B,
-      conf.int = conf.int
-    )
-  } else {
-    data.hour <-
-      purrr::map(
-        .x = conf_int$ci,
-        .f = function(x) {
-          proc(
-            x,
-            mydata,
-            vars = "hour",
-            pollutant,
-            type,
-            B = B,
-            statistic = statistic
-          )
-        }
-      ) |>
-      dplyr::bind_rows() |>
-      dplyr::tibble()
-  }
-
-  if (normalise) {
-    data.hour <- mapType(
-      data.hour,
-      type = "variable",
-      fun = divide.by.mean
-    )
-  }
+  data.hour <- prep_panel_data(
+    mydata,
+    "hour",
+    conf_int,
+    difference,
+    normalise,
+    type,
+    pollutant,
+    poll1,
+    poll2,
+    B,
+    statistic
+  )
 
   if (is.null(xlab[2]) || is.na(xlab[2])) {
     xlab[2] <- "hour"
   }
 
-  # proper names of labelling #
-  if (type != "default") {
-    stripName <- sapply(
-      levels(factor(data.hour[[type]])),
-      function(x) quickText(x, auto.text)
-    )
-    strip <- strip.custom(factor.levels = stripName)
-  } else {
-    strip <- FALSE
-  }
-  # #
-
-  temp <- paste(type, collapse = "+")
-  myform <- formula(paste("Mean ~ hour | ", temp, sep = ""))
-
   # ylim hander
   if (ylim.handler) {
-    extra.args$ylim <- rng(data.hour)
+    extra.args$ylim <- get_tv_ylim(data.hour, ci)
   }
 
   # user supplied separate ylim
@@ -652,13 +557,13 @@ timeVariation <- function(
 
   # plot
   xy.args <- list(
-    x = myform,
+    x = create_formula("hour", type),
     data = data.hour,
     groups = data.hour$variable,
     as.table = TRUE,
     xlab = xlab[2],
     xlim = c(0, 23),
-    strip = strip,
+    strip = create_strip(data.hour, type, auto.text),
     par.strip.text = list(cex = 0.8),
     key = key,
     scales = list(x = list(at = c(0, 6, 12, 18, 23))),
@@ -670,41 +575,17 @@ timeVariation <- function(
         x,
         y,
         ...,
-        panel.groups = function(
-          x,
-          y,
-          col.line,
-          type,
-          group.number,
-          subscripts,
-          ...
-        ) {
-          if (difference) {
-            panel.abline(h = 0, lty = 5)
-          }
-          # plot once
-          id <- which(data.hour$ci[subscripts] == data.hour$ci[1])
-          panel.xyplot(
-            x[id],
-            y[id],
-            type = "l",
-            col.line = myColors[group.number],
-            ...
-          )
-
-          if (ci) {
-            mkpoly(
-              data.hour[subscripts, ],
-              x = "hour",
-              y = "Mean",
-              group.number,
-              myColors,
-              alpha
-            )
-          }
-          # reference line(s)
-          if (!is.null(ref.y)) do.call(panel.abline, ref.y)
-        }
+        panel.groups = create_tv_panel_groups(
+          data.hour,
+          "hour",
+          mkpoly,
+          difference,
+          myColors,
+          alpha,
+          ci,
+          ref.y,
+          group = group
+        )
       )
     }
   )
@@ -715,45 +596,21 @@ timeVariation <- function(
   # plot
   hour <- do.call(xyplot, xy.args)
 
-  # weekday #
+  # weekday ----
 
-  if (difference) {
-    data.weekday <- errorDiff(
-      mydata,
-      vars = "wkday",
-      type = type,
-      poll1 = poll1,
-      poll2 = poll2,
-      B = B,
-      conf.int = conf.int
-    )
-  } else {
-    data.weekday <-
-      purrr::map(
-        .x = conf_int$ci,
-        .f = function(x) {
-          proc(
-            x,
-            mydata,
-            vars = "wkday",
-            pollutant,
-            type,
-            B = B,
-            statistic = statistic
-          )
-        }
-      ) |>
-      dplyr::bind_rows() |>
-      dplyr::tibble()
-  }
-
-  if (normalise) {
-    data.weekday <- mapType(
-      data.weekday,
-      type = "variable",
-      fun = divide.by.mean
-    )
-  }
+  data.weekday <- prep_panel_data(
+    mydata,
+    "wkday",
+    conf_int,
+    difference,
+    normalise,
+    type,
+    pollutant,
+    poll1,
+    poll2,
+    B,
+    statistic
+  )
 
   data.weekday$wkday <- ordered(data.weekday$wkday, levels = day.ord)
 
@@ -763,12 +620,9 @@ timeVariation <- function(
     xlab[4] <- "weekday"
   }
 
-  temp <- paste(type, collapse = "+")
-  myform <- formula(paste("Mean ~ wkday | ", temp, sep = ""))
-
   # ylim hander
   if (ylim.handler) {
-    extra.args$ylim <- rng(data.weekday)
+    extra.args$ylim <- get_tv_ylim(data.weekday, ci)
   }
 
   # user supplied separate ylim
@@ -778,14 +632,14 @@ timeVariation <- function(
 
   # plot
   xy.args <- list(
-    x = myform,
+    x = create_formula("wkday", type),
     data = data.weekday,
     groups = data.weekday$variable,
     as.table = TRUE,
     par.settings = simpleTheme(col = myColors, pch = 16),
     scales = list(x = list(at = 1:7, labels = day.ord.abb)),
     xlab = xlab[4],
-    strip = strip,
+    strip = create_strip(data.weekday, type, auto.text),
     par.strip.text = list(cex = 0.8),
     key = key,
     panel = function(x, y, ...) {
@@ -795,42 +649,17 @@ timeVariation <- function(
         x,
         y,
         ...,
-        panel.groups = function(
-          x,
-          y,
-          col.line,
-          type,
-          group.number,
-          subscripts,
-          ...
-        ) {
-          if (difference) {
-            panel.abline(h = 0, lty = 5)
-          }
-
-          # only plot median once if 2 conf.int
-          id <- which(data.weekday$ci[subscripts] == data.weekday$ci[1])
-          panel.xyplot(
-            x[id],
-            y[id],
-            type = "l",
-            col.line = myColors[group.number],
-            ...
-          )
-
-          if (ci) {
-            mkrect(
-              data.weekday[subscripts, ],
-              x = "wkday",
-              y = "Mean",
-              group.number,
-              myColors,
-              alpha
-            )
-          }
-          # refrence line(s)
-          if (!is.null(ref.y)) do.call(panel.abline, ref.y)
-        }
+        panel.groups = create_tv_panel_groups(
+          data.weekday,
+          "wkday",
+          mkrect,
+          difference,
+          myColors,
+          alpha,
+          ci,
+          ref.y,
+          group = group
+        )
       )
     }
   )
@@ -840,56 +669,29 @@ timeVariation <- function(
   # plot
   day <- do.call(xyplot, xy.args)
 
-  # month #
+  # month ----
 
-  if (difference) {
-    data.month <- errorDiff(
-      mydata,
-      vars = "mnth",
-      type = type,
-      poll1 = poll1,
-      poll2 = poll2,
-      B = B,
-      conf.int = conf.int
-    )
-  } else {
-    data.month <-
-      purrr::map(
-        .x = conf_int$ci,
-        .f = function(x) {
-          proc(
-            x,
-            mydata,
-            vars = "mnth",
-            pollutant,
-            type,
-            B = B,
-            statistic = statistic
-          )
-        }
-      ) |>
-      dplyr::bind_rows() |>
-      dplyr::tibble()
-  }
-
-  if (normalise) {
-    data.month <- mapType(
-      data.month,
-      type = "variable",
-      fun = divide.by.mean
-    )
-  }
+  data.month <- prep_panel_data(
+    mydata,
+    "mnth",
+    conf_int,
+    difference,
+    normalise,
+    type,
+    pollutant,
+    poll1,
+    poll2,
+    B,
+    statistic
+  )
 
   if (is.null(xlab[3]) || is.na(xlab[3])) {
     xlab[3] <- "month"
   }
 
-  temp <- paste(type, collapse = "+")
-  myform <- formula(paste("Mean ~ mnth | ", temp, sep = ""))
-
   # ylim hander
   if (ylim.handler) {
-    extra.args$ylim <- rng(data.month)
+    extra.args$ylim <- get_tv_ylim(data.month, ci)
   }
 
   # user supplied separate ylim
@@ -900,14 +702,14 @@ timeVariation <- function(
   # plot
   xy.args <-
     list(
-      x = myform,
+      x = create_formula("mnth", type),
       data = data.month,
       groups = data.month$variable,
       as.table = TRUE,
       xlab = xlab[3],
       xlim = c(0.5, 12.5),
       key = key,
-      strip = strip,
+      strip = create_strip(data.month, type, auto.text),
       par.strip.text = list(cex = 0.8),
       par.settings = simpleTheme(col = myColors, pch = 16),
       scales = list(
@@ -934,52 +736,17 @@ timeVariation <- function(
           x,
           y,
           ...,
-          panel.groups = function(
-            x,
-            y,
-            col.line,
-            type,
-            group.number,
-            subscripts,
-            ...
-          ) {
-            if (difference) {
-              panel.abline(h = 0, lty = 5)
-            }
-
-            # a line won't work for a single point
-            pltType <- "l"
-            if (length(subscripts) == 1) {
-              pltType <- "p"
-            }
-
-            # only plot median once if 2 conf.int
-            id <- which(data.month$ci[subscripts] == data.month$ci[1])
-
-            # lines not needed if split by season
-            if (group != "season" || is.null(group)) {
-              panel.xyplot(
-                x[id],
-                y[id],
-                type = pltType,
-                col.line = myColors[group.number],
-                ...
-              )
-            }
-
-            if (ci) {
-              mkrect(
-                data.month[subscripts, ],
-                x = "mnth",
-                y = "Mean",
-                group.number,
-                myColors,
-                alpha
-              )
-            }
-            # refrence line(s)
-            if (!is.null(ref.y)) do.call(panel.abline, ref.y)
-          }
+          panel.groups = create_tv_panel_groups(
+            data.month,
+            "mnth",
+            mkrect,
+            difference,
+            myColors,
+            alpha,
+            ci,
+            ref.y,
+            group = group
+          )
         )
       }
     )
@@ -990,45 +757,21 @@ timeVariation <- function(
   # plot
   month <- do.call(xyplot, xy.args)
 
-  # day and hour #
+  # day and hour ----
 
-  if (difference) {
-    data.day.hour <- errorDiff(
-      mydata,
-      vars = "day.hour",
-      type = type,
-      poll1 = poll1,
-      poll2 = poll2,
-      B = B,
-      conf.int = conf.int
-    )
-  } else {
-    data.day.hour <-
-      purrr::map(
-        .x = conf_int$ci,
-        .f = function(x) {
-          proc(
-            x,
-            mydata,
-            vars = "day.hour",
-            pollutant,
-            type,
-            B = B,
-            statistic = statistic
-          )
-        }
-      ) |>
-      dplyr::bind_rows() |>
-      dplyr::tibble()
-  }
-
-  if (normalise) {
-    data.day.hour <- mapType(
-      data.day.hour,
-      type = "variable",
-      fun = divide.by.mean
-    )
-  }
+  data.day.hour <- prep_panel_data(
+    mydata,
+    "day.hour",
+    conf_int,
+    difference,
+    normalise,
+    type,
+    pollutant,
+    poll1,
+    poll2,
+    B,
+    statistic
+  )
 
   ids <- which(is.na(data.day.hour$Lower)) # missing Lower ci, set to mean
 
@@ -1068,7 +811,7 @@ timeVariation <- function(
 
   # ylim hander
   if (ylim.handler) {
-    extra.args$ylim <- rng(data.day.hour)
+    extra.args$ylim <- get_tv_ylim(data.day.hour, ci)
   }
 
   # user supplied separate ylim
@@ -1099,43 +842,17 @@ timeVariation <- function(
         x,
         y,
         ...,
-        panel.groups = function(
-          x,
-          y,
-          col.line,
-          type,
-          group.number,
-          subscripts,
-          ...
-        ) {
-          if (difference) {
-            panel.abline(h = 0, lty = 5)
-          }
-
-          # only plot median once if 2 conf.int
-          id <- which(data.day.hour$ci[subscripts] == data.day.hour$ci[1])
-
-          panel.xyplot(
-            x[id],
-            y[id],
-            type = "l",
-            col.line = myColors[group.number],
-            ...
-          )
-
-          if (ci) {
-            mkpoly(
-              data.day.hour[subscripts, ],
-              x = "hour",
-              y = "Mean",
-              group.number,
-              myColors,
-              alpha
-            )
-          }
-          # refrence line(s)
-          if (!is.null(ref.y)) do.call(panel.abline, ref.y)
-        }
+        panel.groups = create_tv_panel_groups(
+          data.day.hour,
+          "hour",
+          mkpoly,
+          difference,
+          myColors,
+          alpha,
+          ci,
+          ref.y,
+          group = group
+        )
       )
     }
   )
@@ -1265,6 +982,207 @@ timeVariation <- function(
   invisible(output)
 }
 
+# sub heading stat info
+make_sub_text <- function(statistic, conf.int) {
+  if (statistic == "mean") {
+    sub.text <- paste(
+      "mean and ",
+      100 * conf.int[1],
+      "% confidence interval in mean",
+      sep = ""
+    )
+  }
+
+  if (statistic == "median") {
+    if (length(conf.int) == 1L) {
+      sub.text <- paste(
+        "median and ",
+        100 * (1 - conf.int[1]),
+        "/",
+        100 * conf.int[1],
+        "th quantiles",
+        sep = ""
+      )
+    } else {
+      sub.text <- paste(
+        "median, ",
+        100 * (1 - conf.int[1]),
+        "/",
+        100 * conf.int[1],
+        " and ",
+        100 * (1 - conf.int[2]),
+        "/",
+        100 * conf.int[2],
+        "th quantiles",
+        sep = ""
+      )
+    }
+
+    sub.text
+  }
+}
+
+# y range taking account of expanded uncertainties
+get_tv_ylim <- function(x, ci) {
+  # if no CI information, just return
+  if (all(is.na(x[, c("Lower", "Upper")]))) {
+    return(NULL)
+  }
+
+  if (ci) {
+    lims <- range(c(x$Lower, x$Upper), na.rm = TRUE)
+  } else {
+    lims <- range(c(x$Mean, x$Mean), na.rm = TRUE)
+    if (diff(lims) == 0) {
+      return(NULL)
+    }
+  }
+
+  inc <- 0.04 * abs(lims[2] - lims[1])
+  lims <- c(lims[1] - inc, lims[2] + inc)
+}
+
+# calculate difference and normalise
+prep_panel_data <- function(
+  mydata,
+  vars,
+  conf_int,
+  difference,
+  normalise,
+  type,
+  pollutant,
+  poll1,
+  poll2,
+  B,
+  statistic
+) {
+  if (difference) {
+    data <- errorDiff(
+      mydata,
+      vars = vars,
+      type = type,
+      poll1 = poll1,
+      poll2 = poll2,
+      B = B,
+      conf.int = conf_int$ci
+    )
+  } else {
+    data <- purrr::map(
+      .x = conf_int$ci,
+      .f = function(x) {
+        proc(
+          x,
+          mydata,
+          vars = vars,
+          pollutant,
+          type,
+          B = B,
+          statistic = statistic
+        )
+      }
+    ) |>
+      dplyr::bind_rows() |>
+      dplyr::tibble()
+  }
+
+  if (normalise) {
+    data <- mapType(data, type = "variable", fun = function(x) {
+      Mean <- mean(x$Mean, na.rm = TRUE)
+      x$Mean <- x$Mean / Mean
+      x$Lower <- x$Lower / Mean
+      x$Upper <- x$Upper / Mean
+      x
+    })
+  }
+
+  data
+}
+
+# create strip for a tv panel
+create_strip <- function(data, type, auto.text) {
+  if (type == "default") {
+    return(FALSE)
+  }
+  stripName <- sapply(
+    levels(factor(data[[type]])),
+    function(x) quickText(x, auto.text)
+  )
+  strip.custom(factor.levels = stripName)
+}
+
+# create formula for a tv panel
+create_formula <- function(xvar, type) {
+  temp <- paste(type, collapse = "+")
+  formula(paste("Mean ~", xvar, "|", temp))
+}
+
+# create the panel.groups function for panel.superpose
+create_tv_panel_groups <- function(
+  data,
+  xvar,
+  ci_fun,
+  difference,
+  myColors,
+  alpha,
+  ci,
+  ref.y,
+  group = NULL,
+  plot_type = "l"
+) {
+  function(
+    x,
+    y,
+    col.line,
+    type,
+    group.number,
+    subscripts,
+    ...
+  ) {
+    if (difference) {
+      panel.abline(h = 0, lty = 5)
+    }
+
+    # a line won't work for a single point
+    pltType <- "l"
+    if (length(subscripts) == 1) {
+      pltType <- "p"
+      ci_fun <- mkrect
+    }
+    if (!is.null(group)) {
+      if (xvar == "mnth" && group == "season") {
+        pltType <- "p"
+      }
+    }
+
+    # plot once
+    id <- which(data$ci[subscripts] == data$ci[1])
+    panel.xyplot(
+      x[id],
+      y[id],
+      type = pltType,
+      col.line = myColors[group.number],
+      ...
+    )
+
+    if (ci) {
+      ci_fun(
+        data[subscripts, ],
+        x = xvar,
+        y = "Mean",
+        group.number,
+        myColors,
+        alpha
+      )
+    }
+
+    # reference line(s)
+    if (!is.null(ref.y)) {
+      do.call(panel.abline, ref.y)
+    }
+  }
+}
+
+# process
 proc <- function(
   conf.int = conf.int,
   mydata,
@@ -1280,7 +1198,7 @@ proc <- function(
     stat <- median_hilow
   }
 
-  summary.values <- function(
+  calc_summary_values <- function(
     conf.int = conf.int,
     mydata,
     vars = vars,
@@ -1319,7 +1237,7 @@ proc <- function(
   # function to calculate statistics dealing with wd properly
   if (any(!pollutant %in% "wd")) {
     data1 <- subset(mydata, variable != "wd")
-    data1 <- summary.values(
+    data1 <- calc_summary_values(
       data1,
       vars,
       stat,
@@ -1335,11 +1253,11 @@ proc <- function(
     if (length(pollutant) > 1) {
       mydata <- subset(mydata, variable == "wd")
     }
-    data2 <- summary.values(
+    data2 <- calc_summary_values(
       conf.int,
       mydata,
       vars,
-      wd.smean.normal,
+      wd_smean_normal,
       type,
       B = B,
       statistic = statistic
@@ -1363,7 +1281,7 @@ proc <- function(
   data2
 }
 
-wd.smean.normal <- function(wd, B = B, statistic, conf.int) {
+wd_smean_normal <- function(wd, B = B, statistic, conf.int) {
   # function to calculate mean and 95% CI of the mean for wd
   u <- mean(sin(pi * wd / 180), na.rm = TRUE)
   v <- mean(cos(pi * wd / 180), na.rm = TRUE)
