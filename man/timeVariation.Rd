@@ -101,11 +101,11 @@ interval calculations by much.}
 Setting this to \code{FALSE} can be useful if multiple pollutants are chosen
 where over-lapping confidence intervals can over complicate plots.}
 
-\item{key}{By default \code{timeVariation} produces four plots on one page. While
-it is useful to see these plots together, it is sometimes necessary just to
-use one for a report. If \code{key} is \code{TRUE}, a key is added to all plots
-allowing the extraction of a single plot \emph{with} key. See below for an
-example.}
+\item{key}{By default \code{\link[=timeVariation]{timeVariation()}} produces four plots on one page.
+While it is useful to see these plots together, it is sometimes necessary
+just to use one for a report. If \code{key} is \code{TRUE}, a key is added to all
+plots allowing the extraction of a single plot \emph{with} key. See below for an
+example. If \code{key} is \code{FALSE}, no key is shown for any plot.}
 
 \item{start.day}{What day of the week should the plots start on? The user can
 change the start day by supplying an integer between 0 and 6. Sunday = 0,

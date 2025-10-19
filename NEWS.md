@@ -18,6 +18,10 @@
     
     - When `statistic == "min"` and `annotation %in% c("ws", "wd")`, the ws/wd returned will correspond to the minimum daily pollutant, rather than the minimum daily ws/wd.
 
+- `timeVariation()` refinements:
+
+    - When `key` is `FALSE`, no key is shown for any of the four `timeVariation()` plots. Previously, any value passed to `key` would cause all four plots to display a key.
+
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
 
 ## Bug Fixes

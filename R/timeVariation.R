@@ -117,11 +117,11 @@
 #' @param ci Should confidence intervals be shown? The default is `TRUE`.
 #'   Setting this to `FALSE` can be useful if multiple pollutants are chosen
 #'   where over-lapping confidence intervals can over complicate plots.
-#' @param key By default `timeVariation` produces four plots on one page. While
-#'   it is useful to see these plots together, it is sometimes necessary just to
-#'   use one for a report. If `key` is `TRUE`, a key is added to all plots
-#'   allowing the extraction of a single plot *with* key. See below for an
-#'   example.
+#' @param key By default [timeVariation()] produces four plots on one page.
+#'   While it is useful to see these plots together, it is sometimes necessary
+#'   just to use one for a report. If `key` is `TRUE`, a key is added to all
+#'   plots allowing the extraction of a single plot *with* key. See below for an
+#'   example. If `key` is `FALSE`, no key is shown for any plot.
 #' @param start.day What day of the week should the plots start on? The user can
 #'   change the start day by supplying an integer between 0 and 6. Sunday = 0,
 #'   Monday = 1, \ldots For example to start the weekday plots on a Saturday,
@@ -562,7 +562,8 @@ timeVariation <- function(
   myColors <- openColours(cols, npol)
 
   # for individual plot keys - useful if only one of the plots is extracted after printing
-  if (!is.null(key)) {
+  key_input <- key
+  if (isTRUE(key_input)) {
     key <- list(
       rectangles = list(col = myColors[1:npol], border = NA),
       title = "",
@@ -573,6 +574,8 @@ timeVariation <- function(
     )
 
     extra.args$main <- overall.main
+  } else if (isFALSE(key_input)) {
+    key <- NULL
   }
 
   # data frame of confidence intervals
@@ -1155,38 +1158,54 @@ timeVariation <- function(
   }
 
   main.plot <- function(...) {
-    if (type == "default") {
-      print(
-        update(
-          day.hour,
-          key = list(
-            rectangles = list(col = myColors[1:npol], border = NA),
-            text = list(lab = mylab),
-            space = "bottom",
-            columns = key.columns,
-            title = "",
-            lines.title = 1
-          )
-        ),
-        position = c(0, 0.5, 1, y.upp),
-        more = TRUE
-      )
+    if (is.null(key_input) || isTRUE(key_input)) {
+      if (type == "default") {
+        print(
+          update(
+            day.hour,
+            key = list(
+              rectangles = list(col = myColors[1:npol], border = NA),
+              text = list(lab = mylab),
+              space = "bottom",
+              columns = key.columns,
+              title = "",
+              lines.title = 1
+            )
+          ),
+          position = c(0, 0.5, 1, y.upp),
+          more = TRUE
+        )
+      } else {
+        print(
+          update(
+            useOuterStrips(day.hour, strip = strip, strip.left = strip.left),
+            key = list(
+              rectangles = list(col = myColors[1:npol], border = NA),
+              text = list(lab = mylab),
+              space = "bottom",
+              columns = key.columns,
+              title = "",
+              lines.title = 1
+            )
+          ),
+          position = c(0, 0.5, 1, y.upp),
+          more = TRUE
+        )
+      }
     } else {
-      print(
-        update(
+      if (type == "default") {
+        print(
+          day.hour,
+          position = c(0, 0.5, 1, y.upp),
+          more = TRUE
+        )
+      } else {
+        print(
           useOuterStrips(day.hour, strip = strip, strip.left = strip.left),
-          key = list(
-            rectangles = list(col = myColors[1:npol], border = NA),
-            text = list(lab = mylab),
-            space = "bottom",
-            columns = key.columns,
-            title = "",
-            lines.title = 1
-          )
-        ),
-        position = c(0, 0.5, 1, y.upp),
-        more = TRUE
-      )
+          position = c(0, 0.5, 1, y.upp),
+          more = TRUE
+        )
+      }
     }
 
     # Build the plot panels in different orders
