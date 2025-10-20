@@ -459,32 +459,28 @@ timeVariation <- function(
     mylab <- sapply(the.names, function(x) quickText(x, auto.text))
   }
 
-  # get days in right order
-  days <- format(ISOdate(2000, 1, 2:8), "%A")
-  days.abb <- format(ISOdate(2000, 1, 2:8), "%a")
-  if (start.day < 0 || start.day > 6) {
-    stop("start.day must be between 0 and 6.")
-  }
-
-  if (start.day > 0) {
-    day.ord <- c(days[(1 + start.day):7], days[1:(1 + start.day - 1)])
-    day.ord.abb <- c(
-      days.abb[(1 + start.day):7],
-      days.abb[1:(1 + start.day - 1)]
+  # get weekday/hour/month
+  mydata <-
+    cutData(
+      mydata,
+      type = c("weekday", "hour", "month"),
+      start.day = start.day
     )
-  } else {
-    day.ord <- days
-    day.ord.abb <- days.abb
-  }
 
-  # calculate temporal components
-  mydata <- dplyr::mutate(
-    mydata,
-    weekday = wday(date, label = TRUE, abbr = FALSE),
-    weekday = ordered(weekday, levels = day.ord),
-    hour = hour(date),
-    month = month(date)
-  )
+  # get an ordered list of abbreviated weekdays
+  day.ord.abb <- substr(levels(mydata$weekday), 1, 3)
+
+  # set the cut variables to numeric for plotting
+  mydata <-
+    dplyr::mutate(
+      mydata,
+      # preserve day for faceted plot
+      day = .data$weekday,
+      # set all as numeric
+      dplyr::across(c("weekday", "hour", "month"), \(x) {
+        as.numeric(as.factor(x))
+      })
+    )
 
   npol <- length(levels(mydata$variable)) # number of pollutants
 
@@ -522,9 +518,6 @@ timeVariation <- function(
     key <- NULL
   }
 
-  # data frame of confidence intervals
-  conf_int <- data.frame(ci = conf.int)
-
   # set xlab to defaults if missing
   xlab_defaults <- c("hour", "hour", "month", "weekday")
   for (i in seq_along(xlab_defaults)) {
@@ -538,7 +531,7 @@ timeVariation <- function(
   data.hour <- prep_panel_data(
     mydata,
     "hour",
-    conf_int,
+    ci,
     difference,
     normalise,
     type,
@@ -592,7 +585,7 @@ timeVariation <- function(
   data.weekday <- prep_panel_data(
     mydata,
     "weekday",
-    conf_int,
+    ci,
     difference,
     normalise,
     type,
@@ -602,9 +595,6 @@ timeVariation <- function(
     B,
     statistic
   )
-
-  data.weekday$weekday <- ordered(data.weekday$weekday, levels = day.ord)
-  data.weekday$weekday <- as.numeric(as.factor(data.weekday$weekday))
 
   # get ylim for plot
   extra.args <- update_extra_args_ylim(
@@ -649,7 +639,7 @@ timeVariation <- function(
   data.month <- prep_panel_data(
     mydata,
     "month",
-    conf_int,
+    ci,
     difference,
     normalise,
     type,
@@ -707,7 +697,7 @@ timeVariation <- function(
   data.day.hour <- prep_panel_data(
     mydata,
     "day.hour",
-    conf_int,
+    ci,
     difference,
     normalise,
     type,
@@ -735,7 +725,7 @@ timeVariation <- function(
   # plot
   day.hour <- create_tv_xyplot(
     data = data.day.hour,
-    xvar = c("hour", "weekday"),
+    xvar = c("hour", "day"),
     type = type,
     v_gridlines = c(0, 6, 12, 18, 23),
     v_labels = NULL,
@@ -888,7 +878,7 @@ timeVariation <- function(
 prep_panel_data <- function(
   mydata,
   vars,
-  conf_int,
+  ci,
   difference,
   normalise,
   type,
@@ -906,11 +896,11 @@ prep_panel_data <- function(
       poll1 = poll1,
       poll2 = poll2,
       B = B,
-      conf.int = conf_int$ci
+      conf.int = ci
     )
   } else {
     data <- purrr::map(
-      .x = conf_int$ci,
+      .x = ci,
       .f = function(x) {
         calculate_tv_summary_values(
           x,
@@ -1019,7 +1009,7 @@ create_tv_strip_faceted <- function(data, type, auto.text) {
 
   if (type == "default") {
     strip.left <- FALSE
-    layout <- c(length(unique(data$weekday)), 1)
+    layout <- c(length(unique(data$day)), 1)
   } else {
     strip.left <- strip.custom(
       factor.levels = sapply(
@@ -1252,7 +1242,7 @@ calculate_tv_summary_values <- function(
     statistic = statistic
   ) {
     if (vars == "day.hour") {
-      vars <- c("weekday", "hour")
+      vars <- c("day", "hour")
     }
 
     mydata |>
@@ -1359,7 +1349,7 @@ errorDiff <- function(
   )
 
   if (vars == "day.hour") {
-    vars <- c("hour", "weekday")
+    vars <- c("hour", "day")
   }
   splits <- c(vars, type)
 
