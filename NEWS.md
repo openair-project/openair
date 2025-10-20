@@ -20,7 +20,7 @@
 
 - `timeVariation()` refinements:
 
-    - When any panel only has a single value (e.g., one month in the month panel, one hour in the hour panel), the relevant panel will show a point with a rectangular error bar.
+    - `timeVariation()` will now change lines to points and polygons to rectangles for certain panel and `group` combinations: month-season, weekday-weekend, and hour-daylight.
 
     - When `key` is `FALSE`, no key is shown for any of the four `timeVariation()` plots. Previously, any value passed to `key` would cause all four plots to display a key.
     

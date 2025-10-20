@@ -269,64 +269,22 @@ timeVariation <- function(
   plot = TRUE,
   ...
 ) {
-  # validate inputs
-  if (!is.null(group) && length(pollutant) > 1) {
-    cli::cli_abort(
-      "Can only have one {.arg pollutant} and one {.arg group}, or several {.arg pollutant}s and no {.arg group}."
-    )
-  }
-
-  # only one type for now
-  if (length(type) > 1) {
-    cli::cli_abort(
-      "Can only have one {.arg type} for {.fun openair::timeVariation}."
-    )
-  }
-
-  if (type %in% pollutant) {
-    cli::cli_abort(
-      "{.arg type} cannot be in {.arg pollutant}. Problem variable: {type[type %in% pollutant]}."
-    )
-  }
-
-  if (!is.null(group)) {
-    if (group %in% pollutant) {
-      cli::cli_abort(
-        "{.arg group} cannot be in {.arg pollutant}. Problem variable: {group[group %in% pollutant]}."
-      )
-    }
-  }
-
-  # if differences between two pollutants are calculated
-  if (difference) {
-    if (is.null(group)) {
-      if (length(pollutant) != 2) {
-        cli::cli_abort(
-          "Need to specify two {.arg pollutant}s to calculate their difference."
-        )
-      }
-    }
-
-    if (!is.null(group)) {
-      if (length(unique(na.omit(mydata[[group]]))) != 2) {
-        cli::cli_abort(
-          "Need to specify two {.arg group}s to calculate their difference."
-        )
-      }
-    }
-  }
-
-  # statistic check
-  rlang::arg_match(statistic, c("mean", "median"))
-
   # if median, use alternative default
   if (statistic == "median" && missing(conf.int)) {
     conf.int <- c(0.75, 0.95)
   }
 
-  if (!length(unique(conf.int)) %in% c(1L, 2L)) {
-    cli::cli_abort("{.arg conf.int} can only be of length 1 or 2.")
-  }
+  # validate inputs
+  validate_tv_inputs(
+    mydata = mydata,
+    group = group,
+    pollutant = pollutant,
+    type = type,
+    difference = difference,
+    statistic = statistic,
+    conf.int = conf.int,
+    xlab
+  )
 
   # graphical parameter handling
 
@@ -363,11 +321,8 @@ timeVariation <- function(
 
   extra.args$lwd <- extra.args$lwd %||% 2
 
-  ylim.handler <- !("ylim" %in% names(extra.args))
-
   # if user supplies separate ylims for each plot
   ylimList <- FALSE
-
   if ("ylim" %in% names(extra.args)) {
     if (is.list(extra.args$ylim)) {
       if (length(extra.args$ylim) != 4) {
@@ -396,11 +351,9 @@ timeVariation <- function(
   }
 
   # data checks
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-  if (!is.null(group)) {
-    mydata <- cutData(mydata, group, local.tz = local.tz, ...)
-  }
-  mydata <- cutData(mydata, type, local.tz = local.tz, ...)
+  mydata <- mydata |>
+    checkPrep(vars, type, remove.calm = FALSE) |>
+    cutData(type = c(type, group), local.tz = local.tz, ...)
 
   # put in local time if needed
   if (!is.null(local.tz)) {
@@ -418,16 +371,9 @@ timeVariation <- function(
   if (difference && is.null(group)) {
     pollutant <- c(pollutant, paste(pollutant[2], "-", pollutant[1]))
   }
-
-  if (missing(name.pol)) {
-    mylab <- sapply(seq_along(pollutant), function(x) {
-      quickText(pollutant[x], auto.text)
-    })
-  } else {
-    mylab <- sapply(seq_along(name.pol), function(x) {
-      quickText(name.pol[x], auto.text)
-    })
-  }
+  mylab <- sapply(seq_along(name.pol), function(x) {
+    quickText(name.pol[x], auto.text)
+  })
 
   if (is.null(group)) {
     mydata <- tidyr::pivot_longer(
@@ -495,204 +441,144 @@ timeVariation <- function(
     key <- NULL
   }
 
-  # set xlab to defaults if missing
-  xlab_defaults <- c("hour", "hour", "month", "weekday")
-  for (i in seq_along(xlab_defaults)) {
-    if (is.null(xlab[i]) || is.na(xlab[i])) {
-      xlab[i] <- xlab_defaults[i]
-    }
+  # convenience functions ----
+
+  quick_prep_panel_data <- function(vars, facet_vars, label.len = 100) {
+    prep_panel_data(
+      mydata,
+      vars = vars,
+      facet_vars = facet_vars,
+      conf.int,
+      difference,
+      normalise,
+      type,
+      pollutant,
+      poll1,
+      poll2,
+      B,
+      statistic,
+      start.day = start.day,
+      label.len = label.len
+    )
+  }
+
+  quick_update_extra_args_ylim <- function(data, index) {
+    update_extra_args_ylim(
+      data = data$data,
+      extra.args,
+      ci,
+      ylim.list,
+      index = index,
+      ylimList
+    )
+  }
+
+  quick_create_tv_xyplot <- function(
+    data,
+    xvar,
+    xlab,
+    strip = NULL
+  ) {
+    strip <- strip %||% create_tv_strip(data$data, type, auto.text)
+
+    create_tv_xyplot(
+      data = data$data,
+      xvar = xvar,
+      type = type,
+      v_gridlines = data$x_breaks,
+      v_labels = data$x_labels,
+      xlab = xlab,
+      key = key,
+      strip = strip,
+      myColors = myColors,
+      panel.gap = panel.gap,
+      fun_panel_groups = create_tv_panel_groups(
+        data$data,
+        xvar[1],
+        difference,
+        myColors,
+        alpha,
+        ci,
+        ref.y,
+        group = group
+      ),
+      extra.args = extra.args
+    )
   }
 
   # hour ----
 
-  data.hour <- prep_panel_data(
-    mydata,
+  data.hour <- quick_prep_panel_data(
     vars = "hour",
-    facet_vars = NULL,
-    ci,
-    difference,
-    normalise,
-    type,
-    pollutant,
-    poll1,
-    poll2,
-    B,
-    statistic,
-    start.day = start.day
+    facet_vars = NULL
   )
 
   # get ylim for plot
-  extra.args <- update_extra_args_ylim(
-    data = data.hour$data,
-    extra.args,
-    ci,
-    ylim.list,
-    index = 1,
-    ylim.handler,
-    ylimList
+  extra.args <- quick_update_extra_args_ylim(
+    data = data.hour,
+    index = 1
   )
 
   # plot
-  hour <- create_tv_xyplot(
-    data = data.hour$data,
+  hour <- quick_create_tv_xyplot(
+    data = data.hour,
     xvar = "hour",
-    type = type,
-    v_gridlines = c(0, 6, 12, 18, 23),
-    v_labels = NULL,
-    xlab = xlab[2],
-    key = key,
-    strip = create_tv_strip(data.hour$data, type, auto.text),
-    myColors = myColors,
-    panel.gap = panel.gap,
-    fun_panel_groups = create_tv_panel_groups(
-      data.hour$data,
-      "hour",
-      difference,
-      myColors,
-      alpha,
-      ci,
-      ref.y,
-      group = group
-    ),
-    extra.args = extra.args
+    xlab = xlab[2]
   )
 
   # weekday ----
 
-  data.weekday <- prep_panel_data(
-    mydata,
+  data.weekday <- quick_prep_panel_data(
     vars = "weekday",
     facet_vars = NULL,
-    ci,
-    difference,
-    normalise,
-    type,
-    pollutant,
-    poll1,
-    poll2,
-    B,
-    statistic,
-    start.day = start.day,
-    label.len = 3
+    label.len = 3L
   )
 
   # get ylim for plot
-  extra.args <- update_extra_args_ylim(
-    data = data.weekday$data,
-    extra.args,
-    ci,
-    ylim.list,
-    index = 2,
-    ylim.handler,
-    ylimList
+  extra.args <- quick_update_extra_args_ylim(
+    data = data.weekday,
+    index = 2
   )
 
   # plot
-  day <- create_tv_xyplot(
-    data = dplyr::arrange(data.weekday$data, .data$weekday),
+  day <- quick_create_tv_xyplot(
+    data = data.weekday,
     xvar = "weekday",
-    type = type,
-    v_gridlines = seq_along(data.weekday$x_labels),
-    v_labels = data.weekday$x_labels,
-    xlab = xlab[4],
-    key = key,
-    strip = create_tv_strip(data.weekday$data, type, auto.text),
-    myColors = myColors,
-    panel.gap = panel.gap,
-    fun_panel_groups = create_tv_panel_groups(
-      data.weekday$data,
-      "weekday",
-      difference,
-      myColors,
-      alpha,
-      ci,
-      ref.y,
-      group = group
-    ),
-    extra.args = extra.args
+    xlab = xlab[4]
   )
 
   # month ----
 
-  data.month <- prep_panel_data(
-    mydata,
+  data.month <- quick_prep_panel_data(
     vars = "month",
     facet_vars = NULL,
-    ci,
-    difference,
-    normalise,
-    type,
-    pollutant,
-    poll1,
-    poll2,
-    B,
-    statistic,
-    start.day = start.day
+    label.len = 1
   )
 
   # get ylim for plot
-  extra.args <- update_extra_args_ylim(
-    data = data.month$data,
-    extra.args,
-    ci,
-    ylim.list,
-    index = 3,
-    ylim.handler,
-    ylimList
+  extra.args <- quick_update_extra_args_ylim(
+    data = data.month,
+    index = 3
   )
 
   # plot
-  month <- create_tv_xyplot(
-    data = data.month$data,
+  month <- quick_create_tv_xyplot(
+    data = data.month,
     xvar = "month",
-    type = type,
-    v_gridlines = 1:12,
-    v_labels = data.month$x_labels,
-    xlab = xlab[3],
-    key = key,
-    strip = create_tv_strip(data.month$data, type, auto.text),
-    myColors = myColors,
-    panel.gap = panel.gap,
-    fun_panel_groups = create_tv_panel_groups(
-      data.month$data,
-      "month",
-      difference,
-      myColors,
-      alpha,
-      ci,
-      ref.y,
-      group = group
-    ),
-    extra.args = extra.args
+    xlab = xlab[3]
   )
 
   # day and hour ----
 
-  data.day.hour <- prep_panel_data(
-    mydata,
+  data.day.hour <- quick_prep_panel_data(
     vars = "hour",
-    facet_vars = "weekday",
-    ci,
-    difference,
-    normalise,
-    type,
-    pollutant,
-    poll1,
-    poll2,
-    B,
-    statistic,
-    start.day = start.day
+    facet_vars = "weekday"
   )
 
   # get ylim for plot
-  extra.args <- update_extra_args_ylim(
-    data = data.day.hour$data,
-    extra.args,
-    ci,
-    ylim.list,
-    index = 4,
-    ylim.handler,
-    ylimList
+  extra.args <- quick_update_extra_args_ylim(
+    data = data.day.hour,
+    index = 4
   )
 
   # need day.hour strip outside of fun for main.plot
@@ -704,28 +590,11 @@ timeVariation <- function(
   )
 
   # plot
-  day.hour <- create_tv_xyplot(
-    data = data.day.hour$data,
+  day.hour <- quick_create_tv_xyplot(
+    data = data.day.hour,
     xvar = c("hour", "weekday"),
-    type = type,
-    v_gridlines = c(0, 6, 12, 18, 23),
-    v_labels = NULL,
     xlab = xlab[1],
-    key = key,
-    strip = strip_dayhour,
-    myColors = myColors,
-    panel.gap = panel.gap,
-    fun_panel_groups = create_tv_panel_groups(
-      data.day.hour$data,
-      "hour",
-      difference,
-      myColors,
-      alpha,
-      ci,
-      ref.y,
-      group = group
-    ),
-    extra.args = extra.args
+    strip = strip_dayhour
   )
 
   # main ----
@@ -853,12 +722,82 @@ timeVariation <- function(
   invisible(output)
 }
 
+# validate timevar inputs
+validate_tv_inputs <- function(
+  mydata,
+  group,
+  pollutant,
+  type,
+  difference,
+  statistic,
+  conf.int,
+  xlab
+) {
+  if (length(type) > 1) {
+    cli::cli_abort(
+      "Can only have one {.arg type} for {.fun openair::timeVariation}."
+    )
+  }
+
+  # validate inputs
+  if (!is.null(group) && length(pollutant) > 1) {
+    cli::cli_abort(
+      "Can only have one {.arg pollutant} and one {.arg group}, or several {.arg pollutant}s and no {.arg group}."
+    )
+  }
+
+  if (type %in% pollutant) {
+    cli::cli_abort(
+      "{.arg type} cannot be in {.arg pollutant}. Problem variable: {type[type %in% pollutant]}."
+    )
+  }
+
+  if (!is.null(group)) {
+    if (group %in% pollutant) {
+      cli::cli_abort(
+        "{.arg group} cannot be in {.arg pollutant}. Problem variable: {group[group %in% pollutant]}."
+      )
+    }
+  }
+
+  # if differences between two pollutants are calculated
+  if (difference) {
+    if (is.null(group)) {
+      if (length(pollutant) != 2) {
+        cli::cli_abort(
+          "Need to specify two {.arg pollutant}s to calculate their difference."
+        )
+      }
+    }
+
+    if (!is.null(group)) {
+      if (length(unique(na.omit(mydata[[group]]))) != 2) {
+        cli::cli_abort(
+          "Need to specify two {.arg group}s to calculate their difference."
+        )
+      }
+    }
+  }
+
+  # statistic check
+  rlang::arg_match(statistic, c("mean", "median"))
+
+  if (!length(unique(conf.int)) %in% c(1L, 2L)) {
+    cli::cli_abort("{.arg conf.int} can only be of length 1 or 2.")
+  }
+
+  if (!rlang::is_character(xlab, 4)) {
+    cli::cli_abort("{.arg xlab} must be a character vector of length 4.")
+  }
+}
+
+
 # calculate difference and normalise
 prep_panel_data <- function(
   mydata,
   vars,
   facet_vars = NULL,
-  ci,
+  conf.int,
   difference,
   normalise,
   type,
@@ -868,7 +807,7 @@ prep_panel_data <- function(
   B,
   statistic,
   start.day,
-  label.len = 1
+  label.len = 100
 ) {
   # cut data for the variables
   mydata <-
@@ -882,6 +821,10 @@ prep_panel_data <- function(
 
   # retain the labels for the plot
   x_labels <- substr(levels(mydata[[vars]]), 1, label.len)
+  x_breaks <- seq_along(x_labels)
+
+  # retain whether variable is ordered - used for line vs point
+  ordered <- is.ordered(mydata[[vars]])
 
   # set the x variable to be numeric for plotting
   mydata <-
@@ -896,6 +839,8 @@ prep_panel_data <- function(
   # special case for hour - starts at 00 so needs to bump down one
   if (vars == "hour") {
     mydata$hour <- mydata$hour - 1L
+    x_labels <- NULL
+    x_breaks <- c(0, 6, 12, 18, 23)
   }
 
   # combine plotting & facet variables now
@@ -910,11 +855,11 @@ prep_panel_data <- function(
       poll1 = poll1,
       poll2 = poll2,
       B = B,
-      conf.int = ci
+      conf.int = conf.int
     )
   } else {
     data <- purrr::map(
-      .x = ci,
+      .x = conf.int,
       .f = function(x) {
         calculate_tv_summary_values(
           x,
@@ -952,7 +897,9 @@ prep_panel_data <- function(
   # return data
   list(
     data = data,
-    x_labels = x_labels
+    x_labels = x_labels,
+    x_breaks = x_breaks,
+    ordered = ordered
   )
 }
 
@@ -991,9 +938,9 @@ create_tv_sub_text <- function(statistic, conf.int) {
         sep = ""
       )
     }
-
-    sub.text
   }
+
+  sub.text
 }
 
 # create strip for a tv panel
@@ -1089,14 +1036,15 @@ create_tv_panel_groups <- function(
     }
 
     # if lots of data, use polygons
-    if (length(x) < 15) {
+    if (length(unique(x)) < 15) {
       ci_fun <- make_rectangles
     } else {
       ci_fun <- make_polygons
     }
 
+    pltType <- plot_type
+
     # a line won't work for a single point
-    pltType <- "l"
     if (length(subscripts) == 1) {
       pltType <- "p"
       ci_fun <- make_rectangles
@@ -1106,6 +1054,13 @@ create_tv_panel_groups <- function(
     if (!is.null(group)) {
       if (xvar == "month" && group == "season") {
         pltType <- "p"
+      }
+      if (xvar == "weekday" && group == "weekend") {
+        pltType <- "p"
+      }
+      if (xvar == "hour" && group == "daylight") {
+        pltType <- "p"
+        ci_fun <- make_rectangles
       }
     }
 
@@ -1205,7 +1160,6 @@ update_extra_args_ylim <- function(
   ci,
   ylim.list,
   index,
-  ylim.handler,
   ylimList
 ) {
   # y range taking account of expanded uncertainties
@@ -1228,14 +1182,11 @@ update_extra_args_ylim <- function(
     lims <- c(lims[1] - inc, lims[2] + inc)
   }
 
-  # ylim hander
-  if (ylim.handler) {
-    extra.args$ylim <- get_tv_ylim(data, ci)
-  }
-
   # user supplied separate ylim
   if (ylimList) {
     extra.args$ylim <- ylim.list[[index]]
+  } else {
+    extra.args$ylim <- get_tv_ylim(data, ci)
   }
 
   extra.args
@@ -1369,9 +1320,6 @@ errorDiff <- function(
     values_from = "value"
   )
 
-  if (vars == "day.hour") {
-    vars <- c("hour", "weekday")
-  }
   splits <- c(vars, type)
 
   # warnings from dplyr seem harmless FIXME
