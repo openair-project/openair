@@ -833,7 +833,8 @@ validate_tv_inputs <- function(
     }
 
     if (!is.null(group)) {
-      if (length(unique(na.omit(mydata[[group]]))) != 2) {
+      test <- cutData(mydata, type = group)
+      if (length(unique(na.omit(test[[group]]))) != 2) {
         cli::cli_abort(
           "Need to specify two {.arg group}s to calculate their difference."
         )
