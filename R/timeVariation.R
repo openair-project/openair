@@ -924,6 +924,12 @@ prep_panel_data <- function(
     x_breaks <- c(0, 6, 12, 18, 23)
   }
 
+  if (vars == "week") {
+    mydata$week <- mydata$week - 1L
+    x_labels <- NULL
+    x_breaks <- c(seq(0, 53, 5), 53)
+  }
+
   # combine plotting & facet variables now
   vars <- c(vars, facet_vars)
 
@@ -1191,7 +1197,7 @@ create_tv_xyplot <- function(
 ) {
   # don't want to add space for hourly plots
   xlim_adj <- 0.5
-  if (xvar[1] == "hour") {
+  if (xvar[1] %in% c("week", "hour")) {
     xlim_adj <- 0
   }
 
