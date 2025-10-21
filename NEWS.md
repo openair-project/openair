@@ -6,6 +6,16 @@
 
 ## New Features
 
+- `timeVariation()` has been almost completely rewritten, allowing for the following updates:
+
+    - Gained the `panels` argument. This allows for panels other than "hour.weekday", "hour", "month", and "weekday" to be represented in the plot assembly. The first panel will be the top row, and the re
+    
+    - `timeVariation()` will now change lines to points and polygons to rectangles for certain panel and `group` combinations: month-season, weekday-weekend, and hour-daylight.
+
+    - When `key` is `FALSE`, no key is shown for any of the four `timeVariation()` plots. Previously, any value passed to `key` would cause all four plots to display a key.
+
+    - (!) BREAKING: The order of `xlab` and `ylim` now matches the order of `panels`.
+
 - `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
 
 - `smoothTrend()` has gained the `x.relation`, `date.format`, `key` and `key.position` arguments, in line with `timePlot()`. It has also gained the `progress` argument, passed to `timeAverage()`. 
@@ -17,14 +27,6 @@
     - Gained the `show.year` argument, defaulting to `TRUE`. When `FALSE` and only one year of data is given, the strip titles will only read, e.g., "January" instead of "January-2000". This can create cleaner plots, as well as being useful for certain edge cases (e.g., if the calendarPlot is showing day-of-year averages over multiple years).
     
     - When `statistic == "min"` and `annotation %in% c("ws", "wd")`, the ws/wd returned will correspond to the minimum daily pollutant, rather than the minimum daily ws/wd.
-
-- `timeVariation()` refinements:
-
-    - `timeVariation()` will now change lines to points and polygons to rectangles for certain panel and `group` combinations: month-season, weekday-weekend, and hour-daylight.
-
-    - When `key` is `FALSE`, no key is shown for any of the four `timeVariation()` plots. Previously, any value passed to `key` would cause all four plots to display a key.
-    
-    - The weekday panel will no longer show errenous lines when `group = "weekend"`.
 
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
 

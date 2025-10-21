@@ -2,14 +2,15 @@
 % Please edit documentation in R/timeVariation.R
 \name{timeVariation}
 \alias{timeVariation}
-\title{Diurnal, day of the week and monthly variation}
+\title{Temporal variation plots with flexible panel control}
 \usage{
 timeVariation(
   mydata,
   pollutant = "nox",
+  panels = c("hour.weekday", "hour", "month", "weekday"),
   local.tz = NULL,
   normalise = FALSE,
-  xlab = c("hour", "hour", "month", "weekday"),
+  xlab = NULL,
   name.pol = pollutant,
   type = "default",
   group = NULL,
@@ -21,17 +22,31 @@ timeVariation(
   cols = "hue",
   ref.y = NULL,
   key = NULL,
-  key.columns = 1,
+  key.columns = NULL,
   start.day = 1,
   panel.gap = 0.2,
   auto.text = TRUE,
   alpha = 0.4,
-  month.last = FALSE,
   plot = TRUE,
   ...
 )
 }
 \arguments{
+\item{mydata}{A data frame of time series. Must include a \code{date} field and at
+least one variable to plot.}
+
+\item{pollutant}{Name of variable to plot. Two or more pollutants can be
+plotted, in which case a form like \code{pollutant = c("nox", "co")} should be
+used.}
+
+\item{panels}{A vector of character values which can be passed to
+\code{\link[=cutData]{cutData()}}; used to define each panel in the plot. The first panel will
+take up the entire first row, and any remaining panels will make up the
+bottom row. If a single panel is given, it will take up the entire plotting
+area. Combining two \code{type} strings delimited with a full stop (e.g.,
+\code{"hour.weekday"}) will use the first as the x-axis variable the second as a
+facet.}
+
 \item{local.tz}{Should the results be calculated in local time that includes
 a treatment of daylight savings time (DST)? The default is not to consider
 DST issues, provided the data were imported without a DST offset. Emissions
@@ -51,13 +66,19 @@ to \code{FALSE} then GMT is used. Examples of usage include \code{local.tz = "Eu
 compare the shape of the diurnal trends for variables on very different
 scales.}
 
-\item{xlab}{x-axis label; one for each sub-plot.}
+\item{xlab}{x-axis label; one for each \code{panel}. Defaults to the x-axis
+variable defined in \code{panels}. Must be the same length as \code{panels}.}
+
+\item{name.pol}{This option can be used to give alternative names for the
+variables plotted. Instead of taking the column headings as names, the user
+can supply replacements. For example, if a column had the name "nox" and
+the user wanted a different description, then setting \code{name.pol = "nox before change"} can be used. If more than one pollutant is plotted then use
+\code{c} e.g. \code{name.pol = c("nox here", "o3 there")}.}
 
 \item{type}{\code{type} determines how the data are split i.e. conditioned, and
 then plotted. The default is will produce a single plot using the entire
-data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
-\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
-\code{type = "season"} will produce four plots --- one for each season.
+data. Type can be one of the built-in types as detailed in \code{\link[=cutData]{cutData()}},
+e.g., \code{"season"}, \code{"year"}, \code{"weekday"} and so on. For example, \code{type = "season"} will produce four plots --- one for each season.
 
 It is also possible to choose \code{type} as another variable in the data frame.
 If that variable is numeric, then the data will be split into four
@@ -66,19 +87,21 @@ character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-Only one \code{type} is allowed in\code{timeVariation}.}
+Only one \code{type} is allowed in \code{\link[=timeVariation]{timeVariation()}}, and it is applied to each
+\code{panel}. For additional splits, use the \code{"x.type"} syntax in the \code{panels}
+argument (e.g, \code{panels = c("hour.weekday")}).}
 
 \item{group}{This sets the grouping variable to be used. For example, if a
 data frame had a column \code{site} setting \code{group = "site"} will plot all sites
-together in each panel. See examples below.}
+together in each panel.}
 
 \item{difference}{If two pollutants are chosen then setting \code{difference = TRUE} will also plot the difference in means between the two variables as
 \code{pollutant[2] - pollutant[1]}. Bootstrap 95\\% confidence intervals of the
 difference in means are also calculated. A horizontal dashed line is shown
 at y = 0. The difference can also be calculated if there is a column that
-identifies two groups e.g. having used \code{splitByDate}. In this case it is
-possible to call \code{timeVariation} with the option \code{group = "split.by"} and
-\code{difference = TRUE}.}
+identifies two groups, e.g., having used \code{\link[=splitByDate]{splitByDate()}}. In this case it
+is possible to call \code{\link[=timeVariation]{timeVariation()}} with the option \code{group = "split.by"}
+and \code{difference = TRUE}.}
 
 \item{statistic}{Can be \code{"mean"} (default) or \code{"median"}. If the statistic is
 \code{"mean"} then the mean line and the 95\% confidence interval in the mean are
@@ -94,12 +117,19 @@ showing the median, 25/75 and 5/95th quantiles.}
 
 \item{B}{Number of bootstrap replicates to use. Can be useful to reduce this
 value when there are a large number of observations available to increase
-the speed of the calculations without affecting the 95\\% confidence
-interval calculations by much.}
+the speed of the calculations without affecting the 95\% confidence interval
+calculations by much.}
 
 \item{ci}{Should confidence intervals be shown? The default is \code{TRUE}.
 Setting this to \code{FALSE} can be useful if multiple pollutants are chosen
 where over-lapping confidence intervals can over complicate plots.}
+
+\item{cols}{Colours to be used for plotting; see \code{\link[=openColours]{openColours()}} for details.}
+
+\item{ref.y}{A list with details of the horizontal lines to be added
+representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more details on
+adding/controlling lines.}
 
 \item{key}{By default \code{\link[=timeVariation]{timeVariation()}} produces four plots on one page.
 While it is useful to see these plots together, it is sometimes necessary
@@ -107,71 +137,80 @@ just to use one for a report. If \code{key} is \code{TRUE}, a key is added to al
 plots allowing the extraction of a single plot \emph{with} key. See below for an
 example. If \code{key} is \code{FALSE}, no key is shown for any plot.}
 
+\item{key.columns}{Number of columns to be used in the key. With many
+pollutants a single column can make to key too wide. The user can thus
+choose to use several columns by setting \code{columns} to be less than the
+number of pollutants.}
+
 \item{start.day}{What day of the week should the plots start on? The user can
-change the start day by supplying an integer between 0 and 6. Sunday = 0,
-Monday = 1, \ldots For example to start the weekday plots on a Saturday,
-choose \code{start.day = 6}.}
+change the start day by supplying an integer between \code{0} and \code{6}. \code{Sunday = 0}, \code{Monday = 1}, and so on. For example to start the weekday plots on a
+Saturday, choose \code{start.day = 6}.}
 
-\item{panel.gap}{The gap between panels in the hour-day plot.}
+\item{panel.gap}{The gap between panels in any split panel (e.g., the default
+\code{"hour.weekday"} panel).}
 
-\item{alpha}{The alpha transparency used for plotting confidence intervals. 0
-is fully transparent and 1 is opaque. The default is 0.4}
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly, e.g., by subscripting the '2' in NO2.}
 
-\item{month.last}{Should the order of the plots be changed so the plot
-showing monthly means be the last plot for a logical hierarchy of averaging
-periods?}
+\item{alpha}{The alpha transparency used for plotting confidence intervals.
+\code{0} is fully transparent and 1 is opaque. The default is \code{0.4}.}
+
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data to extract plot components and plotting them in other ways.}
 
 \item{...}{Other graphical parameters passed onto \code{\link[lattice:xyplot]{lattice::xyplot()}} and
-\code{\link[=cutData]{cutData()}}. For example, in the case of \code{\link[=cutData]{cutData()}} the option \code{hemisphere = "southern"}.}
+\code{\link[=cutData]{cutData()}}. For example, in the case of \code{\link[=cutData]{cutData()}} the option \code{hemisphere = "southern"}. Note that \code{\link[=cutData]{cutData()}} is used in \code{type}, \code{group} and
+\code{panels}, and \code{...} will be passed to all three.}
 }
 \value{
-an \link[=openair-package]{openair} object. The four components of
-timeVariation are: \code{day.hour}, \code{hour}, \code{day} and \code{month}. Associated
-data.frames can be extracted directly using the \code{subset} option, e.g. as in
-\code{plot(object, subset = "day.hour")}, \code{summary(output, subset = "hour")},
-etc., for \code{output <- timeVariation(mydata, "nox")}
+an \link[=openair-package]{openair} object. The components of
+\code{\link[=timeVariation]{timeVariation()}} are named after \code{panels}. Associated data.frames can be
+extracted directly using the \code{subset} option, e.g. as in \code{plot(object, subset = "day.hour")}, \code{summary(output, subset = "hour")}, etc., for
+\code{output <- timeVariation(mydata, "nox")}
 }
 \description{
-Plots the diurnal, day of the week and monthly variation for different
-variables, typically pollutant concentrations. Four separate plots are
-produced.
+Plots temporal variation for different variables, typically pollutant
+concentrations, across user-defined time scales. Multiple panels can be
+shown, such as hour of the day, day of the week, week of the year, month of
+the year, annual mean, or any other time-based grouping the user specifies.
+By default, this function plots the diurnal, day of the week and monthly
+variation for different variables, typically pollutant concentrations. Four
+separate plots are produced.
 }
 \details{
-The variation of pollutant concentrations by hour of the day and day of the
-week etc. can reveal many interesting features that relate to source types
-and meteorology. For traffic sources, there are often important differences
-in the way vehicles vary by vehicles type e.g. less heavy vehicles at
-weekends.
+The variation of pollutant concentrations by time can reveal many interesting
+features that relate to source types and meteorology. For traffic sources,
+there are often important differences in the way vehicles vary by type -
+e.g., fewer heavy vehicles at weekends.
 
 The \code{\link[=timeVariation]{timeVariation()}} function makes it easy to see how concentrations (and
-many other variable types) vary by hour of the day and day of the week.
+many other variable types) vary across different temporal resolutions. Users
+have full control over which based panels are shown, allowing for more
+tailored and insightful analysis.
 
-The plots also show the 95\\% confidence intervals in the mean. The 95\\%
-confidence intervals in the mean are calculated through bootstrap
-simulations, which will provide more robust estimates of the confidence
-intervals (particularly when there are relatively few data).
+The plots also show the 95\% confidence intervals in the mean. The 95\%
+confidence intervals are calculated through bootstrap simulations, which will
+provide more robust estimates of the confidence intervals (particularly when
+there are relatively few data).
 
 The function can handle multiple pollutants and uses the flexible \code{type}
-option to provide separate panels for each 'type' --- see \code{\link[=cutData]{cutData()}} for
-more details. \code{\link[=timeVariation]{timeVariation()}} can also accept a \code{group} option which is
-useful if data are stacked. This will work in a similar way to having
-multiple pollutants in separate columns.
+option to provide separate panels for each 'type' — see \code{\link[=cutData]{cutData()}} for more
+details. \code{\link[=timeVariation]{timeVariation()}} also accepts a \code{group} option, useful for stacked
+data. This works similarly to having multiple pollutants in separate columns.
 
-The user can supply their own \code{ylim} e.g. \code{ylim = c(0, 200)} that will be
-used for all plots. \code{ylim} can also be a list of length four to control the
-y-limits on each individual plot e.g. \code{ylim = list(c(-100,500), c(200, 300), c(-400,400), c(50,70))}. These pairs correspond to the hour, weekday, month
-and day-hour plots respectively.
+Users can supply their own \code{ylim}, e.g. \code{ylim = c(0, 200)}, which will be
+used for all plots. Alternatively, \code{ylim} can be a list equal to the length
+of \code{panels} to control y-limits for each individual panel, e.g. \code{ylim = list(c(-100,500), c(200, 300), c(-400,400), c(50,70))}.
 
-The option \code{difference} will calculate the difference in means of two
-pollutants together with bootstrap estimates of the 95\\% confidence intervals
-in the difference in the mean. This works in two ways: either two pollutants
-are supplied in separate columns e.g. \code{pollutant = c("no2", "o3")}, or there
-are two unique values of \code{group}. The difference is calculated as the second
-pollutant minus the first and is labelled as such. Considering differences in
-this way can provide many useful insights and is particularly useful for
-model evaluation when information is needed about where a model differs from
-observations by many different time scales. The manual contains various
-examples of using \code{difference = TRUE}.
+The \code{difference} option calculates the difference in means between two
+pollutants, along with bootstrap estimates of the 95\\% confidence intervals
+in the difference. This works in two ways: either two pollutants are supplied
+in separate columns (e.g. \code{pollutant = c("no2", "o3")}), or there are two
+unique values of \code{group}. The difference is calculated as the second
+pollutant minus the first and is labelled accordingly. This feature is
+particularly useful for model evaluation and identifying where models diverge
+from observations across time scales.
 
 Note also that the \code{\link[=timeVariation]{timeVariation()}} function works well on a subset of data
 and in conjunction with other plots. For example, a \code{\link[=polarPlot]{polarPlot()}} may
@@ -180,15 +219,14 @@ By filtering for those conditions \code{\link[=timeVariation]{timeVariation()}} 
 whether the temporal variation of that feature differs from other features
 --- and help with source identification.
 
-In addition, \code{\link[=timeVariation]{timeVariation()}} will work well with other variables if
-available. Examples include meteorological and traffic flow data.
+The function also supports non-pollutant variables, such as meteorological or
+traffic flow data.
 
 Depending on the choice of statistic, a subheading is added. Users can
 control the text in the subheading through the use of \code{sub} e.g. \code{sub = ""}
 will remove any subheading.
 }
 \examples{
-
 
 # basic use
 timeVariation(mydata, pollutant = "nox")
@@ -198,46 +236,33 @@ timeVariation(mydata, pollutant = "nox")
 timeVariation(subset(mydata, ws > 3 & wd > 100 & wd < 270),
   pollutant = "pm10", ylab = "pm10 (ug/m3)"
 )
-}
 
 # multiple pollutants with concentrations normalised
-\dontrun{
 timeVariation(mydata, pollutant = c("nox", "co"), normalise = TRUE)
-}
 
 # show BST/GMT variation (see ?cutData for more details)
 # the NOx plot shows the profiles are very similar when expressed in
 # local time, showing that the profile is dominated by a local source
 # that varies by local time and not by GMT i.e. road vehicle emissions
 
-\dontrun{
 timeVariation(mydata, pollutant = "nox", type = "dst", local.tz = "Europe/London")
-}
 
 # In this case it is better to group the results for clarity:
-\dontrun{
 timeVariation(mydata, pollutant = "nox", group = "dst", local.tz = "Europe/London")
-}
 
 # By contrast, a variable such as wind speed shows a clear shift when
 #  expressed in local time. These two plots can help show whether the
 #  variation is dominated by man-made influences or natural processes
 
-\dontrun{
 timeVariation(mydata, pollutant = "ws", group = "dst", local.tz = "Europe/London")
-}
 
 # It is also possible to plot several variables and set type. For
 # example, consider the NOx and NO2 split by levels of O3:
 
-\dontrun{
 timeVariation(mydata, pollutant = c("nox", "no2"), type = "o3", normalise = TRUE)
-}
 
 # difference in concentrations
-\dontrun{
 timeVariation(mydata, poll = c("pm25", "pm10"), difference = TRUE)
-}
 
 # It is also useful to consider how concentrations vary by
 # considering two different periods e.g. in intervention
@@ -246,16 +271,12 @@ timeVariation(mydata, poll = c("pm25", "pm10"), difference = TRUE)
 # are important because flows of cars are approximately invariant by
 # day of the week
 
-\dontrun{
 mydata <- splitByDate(mydata, dates = "1/1/2003", labels = c("before Jan. 2003", "After Jan. 2003"))
 timeVariation(mydata, pollutant = "no2", group = "split.by", difference = TRUE)
-}
 
 # sub plots can be extracted from the openair object
-\dontrun{
 myplot <- timeVariation(mydata, pollutant = "no2")
 plot(myplot, subset = "day.hour") # top weekday and plot
-}
 
 # individual plots
 # plot(myplot, subset="day.hour") for the weekday and hours subplot (top)
@@ -270,7 +291,6 @@ plot(myplot, subset = "day.hour") # top weekday and plot
 # tail(myplot, subset = "month") #tail/top of month data set
 
 # plot quantiles and median
-\dontrun{
 timeVariation(mydata, stati = "median", poll = "pm10", col = "firebrick")
 
 # with different intervals
@@ -278,8 +298,16 @@ timeVariation(mydata,
   stati = "median", poll = "pm10", conf.int = c(0.75, 0.99),
   col = "firebrick"
 )
-}
 
+# with different (arbitrary) panels
+# note 'hemisphere' is passed to cutData() for season
+timeVariation(
+  mydata,
+  pollutant = "no2",
+  panels = c("weekday.season", "year", "wd"),
+  hemisphere = "southern"
+)
+}
 }
 \seealso{
 Other time series and trend functions: 

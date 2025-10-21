@@ -1,45 +1,46 @@
-#' Diurnal, day of the week and monthly variation
+#' Temporal variation plots with flexible panel control
 #'
-#' Plots the diurnal, day of the week and monthly variation for different
-#' variables, typically pollutant concentrations. Four separate plots are
-#' produced.
+#' Plots temporal variation for different variables, typically pollutant
+#' concentrations, across user-defined time scales. Multiple panels can be
+#' shown, such as hour of the day, day of the week, week of the year, month of
+#' the year, annual mean, or any other time-based grouping the user specifies.
+#' By default, this function plots the diurnal, day of the week and monthly
+#' variation for different variables, typically pollutant concentrations. Four
+#' separate plots are produced.
 #'
-#' The variation of pollutant concentrations by hour of the day and day of the
-#' week etc. can reveal many interesting features that relate to source types
-#' and meteorology. For traffic sources, there are often important differences
-#' in the way vehicles vary by vehicles type e.g. less heavy vehicles at
-#' weekends.
+#' The variation of pollutant concentrations by time can reveal many interesting
+#' features that relate to source types and meteorology. For traffic sources,
+#' there are often important differences in the way vehicles vary by type -
+#' e.g., fewer heavy vehicles at weekends.
 #'
 #' The [timeVariation()] function makes it easy to see how concentrations (and
-#' many other variable types) vary by hour of the day and day of the week.
+#' many other variable types) vary across different temporal resolutions. Users
+#' have full control over which based panels are shown, allowing for more
+#' tailored and insightful analysis.
 #'
-#' The plots also show the 95\% confidence intervals in the mean. The 95\%
-#' confidence intervals in the mean are calculated through bootstrap
-#' simulations, which will provide more robust estimates of the confidence
-#' intervals (particularly when there are relatively few data).
+#' The plots also show the 95% confidence intervals in the mean. The 95%
+#' confidence intervals are calculated through bootstrap simulations, which will
+#' provide more robust estimates of the confidence intervals (particularly when
+#' there are relatively few data).
 #'
 #' The function can handle multiple pollutants and uses the flexible `type`
-#' option to provide separate panels for each 'type' --- see [cutData()] for
-#' more details. [timeVariation()] can also accept a `group` option which is
-#' useful if data are stacked. This will work in a similar way to having
-#' multiple pollutants in separate columns.
+#' option to provide separate panels for each 'type' — see [cutData()] for more
+#' details. [timeVariation()] also accepts a `group` option, useful for stacked
+#' data. This works similarly to having multiple pollutants in separate columns.
 #'
-#' The user can supply their own `ylim` e.g. `ylim = c(0, 200)` that will be
-#' used for all plots. `ylim` can also be a list of length four to control the
-#' y-limits on each individual plot e.g. `ylim = list(c(-100,500), c(200, 300),
-#' c(-400,400), c(50,70))`. These pairs correspond to the hour, weekday, month
-#' and day-hour plots respectively.
+#' Users can supply their own `ylim`, e.g. `ylim = c(0, 200)`, which will be
+#' used for all plots. Alternatively, `ylim` can be a list equal to the length
+#' of `panels` to control y-limits for each individual panel, e.g. `ylim =
+#' list(c(-100,500), c(200, 300), c(-400,400), c(50,70))`.
 #'
-#' The option `difference` will calculate the difference in means of two
-#' pollutants together with bootstrap estimates of the 95\% confidence intervals
-#' in the difference in the mean. This works in two ways: either two pollutants
-#' are supplied in separate columns e.g. `pollutant = c("no2", "o3")`, or there
-#' are two unique values of `group`. The difference is calculated as the second
-#' pollutant minus the first and is labelled as such. Considering differences in
-#' this way can provide many useful insights and is particularly useful for
-#' model evaluation when information is needed about where a model differs from
-#' observations by many different time scales. The manual contains various
-#' examples of using `difference = TRUE`.
+#' The `difference` option calculates the difference in means between two
+#' pollutants, along with bootstrap estimates of the 95\% confidence intervals
+#' in the difference. This works in two ways: either two pollutants are supplied
+#' in separate columns (e.g. `pollutant = c("no2", "o3")`), or there are two
+#' unique values of `group`. The difference is calculated as the second
+#' pollutant minus the first and is labelled accordingly. This feature is
+#' particularly useful for model evaluation and identifying where models diverge
+#' from observations across time scales.
 #'
 #' Note also that the [timeVariation()] function works well on a subset of data
 #' and in conjunction with other plots. For example, a [polarPlot()] may
@@ -48,12 +49,22 @@
 #' whether the temporal variation of that feature differs from other features
 #' --- and help with source identification.
 #'
-#' In addition, [timeVariation()] will work well with other variables if
-#' available. Examples include meteorological and traffic flow data.
+#' The function also supports non-pollutant variables, such as meteorological or
+#' traffic flow data.
 #'
 #' Depending on the choice of statistic, a subheading is added. Users can
 #' control the text in the subheading through the use of `sub` e.g. `sub = ""`
 #' will remove any subheading.
+#'
+#' @inheritParams timePlot
+#'
+#' @param panels A vector of character values which can be passed to
+#'   [cutData()]; used to define each panel in the plot. The first panel will
+#'   take up the entire first row, and any remaining panels will make up the
+#'   bottom row. If a single panel is given, it will take up the entire plotting
+#'   area. Combining two `type` strings delimited with a full stop (e.g.,
+#'   `"hour.weekday"`) will use the first as the x-axis variable the second as a
+#'   facet.
 #'
 #' @param local.tz Should the results be calculated in local time that includes
 #'   a treatment of daylight savings time (DST)? The default is not to consider
@@ -69,16 +80,20 @@
 #'   to `FALSE` then GMT is used. Examples of usage include `local.tz =
 #'   "Europe/London"`, `local.tz = "America/New_York"`. See `cutData` and
 #'   `import` for more details.
+#'
 #' @param normalise Should variables be normalised? The default is `FALSE`. If
 #'   `TRUE` then the variable(s) are divided by their mean values. This helps to
 #'   compare the shape of the diurnal trends for variables on very different
 #'   scales.
-#' @param xlab x-axis label; one for each sub-plot.
+#'
+#' @param xlab x-axis label; one for each `panel`. Defaults to the x-axis
+#'   variable defined in `panels`. Must be the same length as `panels`.
+#'
 #' @param type `type` determines how the data are split i.e. conditioned, and
 #'   then plotted. The default is will produce a single plot using the entire
-#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
-#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
-#'   `type = "season"` will produce four plots --- one for each season.
+#'   data. Type can be one of the built-in types as detailed in [cutData()],
+#'   e.g., `"season"`, `"year"`, `"weekday"` and so on. For example, `type =
+#'   "season"` will produce four plots --- one for each season.
 #'
 #'   It is also possible to choose `type` as another variable in the data frame.
 #'   If that variable is numeric, then the data will be split into four
@@ -87,66 +102,77 @@
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   Only one `type` is allowed in`timeVariation`.
+#'   Only one `type` is allowed in [timeVariation()], and it is applied to each
+#'   `panel`. For additional splits, use the `"x.type"` syntax in the `panels`
+#'   argument (e.g, `panels = c("hour.weekday")`).
+#'
 #' @param group This sets the grouping variable to be used. For example, if a
 #'   data frame had a column `site` setting `group = "site"` will plot all sites
-#'   together in each panel. See examples below.
+#'   together in each panel.
+#'
 #' @param difference If two pollutants are chosen then setting `difference =
 #'   TRUE` will also plot the difference in means between the two variables as
 #'   `pollutant[2] - pollutant[1]`. Bootstrap 95\% confidence intervals of the
 #'   difference in means are also calculated. A horizontal dashed line is shown
 #'   at y = 0. The difference can also be calculated if there is a column that
-#'   identifies two groups e.g. having used `splitByDate`. In this case it is
-#'   possible to call `timeVariation` with the option `group = "split.by"` and
-#'   `difference = TRUE`.
+#'   identifies two groups, e.g., having used [splitByDate()]. In this case it
+#'   is possible to call [timeVariation()] with the option `group = "split.by"`
+#'   and `difference = TRUE`.
+#'
 #' @param statistic Can be `"mean"` (default) or `"median"`. If the statistic is
 #'   `"mean"` then the mean line and the 95% confidence interval in the mean are
 #'   plotted by default. If the statistic is `"median"` then the median line is
 #'   plotted together with the 5/95 and 25/75th quantiles are plotted. Users can
 #'   control the confidence intervals with `conf.int`.
+#'
 #' @param conf.int The confidence intervals to be plotted. If `statistic =
 #'   "mean"` then the confidence intervals in the mean are plotted. If
 #'   `statistic = "median"` then the `conf.int` and `1 - conf.int` *quantiles*
 #'   are plotted. `conf.int` can be of length 2, which is most useful for
 #'   showing quantiles. For example `conf.int = c(0.75, 0.99)` will yield a plot
 #'   showing the median, 25/75 and 5/95th quantiles.
+#'
 #' @param B Number of bootstrap replicates to use. Can be useful to reduce this
 #'   value when there are a large number of observations available to increase
-#'   the speed of the calculations without affecting the 95\% confidence
-#'   interval calculations by much.
+#'   the speed of the calculations without affecting the 95% confidence interval
+#'   calculations by much.
+#'
 #' @param ci Should confidence intervals be shown? The default is `TRUE`.
 #'   Setting this to `FALSE` can be useful if multiple pollutants are chosen
 #'   where over-lapping confidence intervals can over complicate plots.
+#'
 #' @param key By default [timeVariation()] produces four plots on one page.
 #'   While it is useful to see these plots together, it is sometimes necessary
 #'   just to use one for a report. If `key` is `TRUE`, a key is added to all
 #'   plots allowing the extraction of a single plot *with* key. See below for an
 #'   example. If `key` is `FALSE`, no key is shown for any plot.
+#'
 #' @param start.day What day of the week should the plots start on? The user can
-#'   change the start day by supplying an integer between 0 and 6. Sunday = 0,
-#'   Monday = 1, \ldots For example to start the weekday plots on a Saturday,
-#'   choose `start.day = 6`.
-#' @param panel.gap The gap between panels in the hour-day plot.
-#' @param alpha The alpha transparency used for plotting confidence intervals. 0
-#'   is fully transparent and 1 is opaque. The default is 0.4
-#' @param month.last Should the order of the plots be changed so the plot
-#'   showing monthly means be the last plot for a logical hierarchy of averaging
-#'   periods?
+#'   change the start day by supplying an integer between `0` and `6`. `Sunday =
+#'   0`, `Monday = 1`, and so on. For example to start the weekday plots on a
+#'   Saturday, choose `start.day = 6`.
+#'
+#' @param panel.gap The gap between panels in any split panel (e.g., the default
+#'   `"hour.weekday"` panel).
+#'
+#' @param alpha The alpha transparency used for plotting confidence intervals.
+#'   `0` is fully transparent and 1 is opaque. The default is `0.4`.
+#'
 #' @param ... Other graphical parameters passed onto [lattice::xyplot()] and
 #'   [cutData()]. For example, in the case of [cutData()] the option `hemisphere
-#'   = "southern"`.
+#'   = "southern"`. Note that [cutData()] is used in `type`, `group` and
+#'   `panels`, and `...` will be passed to all three.
 #'
 #' @import lattice
 #' @export
-#' @return an [openair][openair-package] object. The four components of
-#'   timeVariation are: `day.hour`, `hour`, `day` and `month`. Associated
-#'   data.frames can be extracted directly using the `subset` option, e.g. as in
-#'   `plot(object, subset = "day.hour")`, `summary(output, subset = "hour")`,
-#'   etc., for `output <- timeVariation(mydata, "nox")`
+#' @return an [openair][openair-package] object. The components of
+#'   [timeVariation()] are named after `panels`. Associated data.frames can be
+#'   extracted directly using the `subset` option, e.g. as in `plot(object,
+#'   subset = "day.hour")`, `summary(output, subset = "hour")`, etc., for
+#'   `output <- timeVariation(mydata, "nox")`
 #' @author David Carslaw
 #' @family time series and trend functions
 #' @examples
-#'
 #'
 #' # basic use
 #' timeVariation(mydata, pollutant = "nox")
@@ -156,46 +182,33 @@
 #' timeVariation(subset(mydata, ws > 3 & wd > 100 & wd < 270),
 #'   pollutant = "pm10", ylab = "pm10 (ug/m3)"
 #' )
-#' }
 #'
 #' # multiple pollutants with concentrations normalised
-#' \dontrun{
 #' timeVariation(mydata, pollutant = c("nox", "co"), normalise = TRUE)
-#' }
 #'
 #' # show BST/GMT variation (see ?cutData for more details)
 #' # the NOx plot shows the profiles are very similar when expressed in
 #' # local time, showing that the profile is dominated by a local source
 #' # that varies by local time and not by GMT i.e. road vehicle emissions
 #'
-#' \dontrun{
 #' timeVariation(mydata, pollutant = "nox", type = "dst", local.tz = "Europe/London")
-#' }
 #'
 #' # In this case it is better to group the results for clarity:
-#' \dontrun{
 #' timeVariation(mydata, pollutant = "nox", group = "dst", local.tz = "Europe/London")
-#' }
 #'
 #' # By contrast, a variable such as wind speed shows a clear shift when
 #' #  expressed in local time. These two plots can help show whether the
 #' #  variation is dominated by man-made influences or natural processes
 #'
-#' \dontrun{
 #' timeVariation(mydata, pollutant = "ws", group = "dst", local.tz = "Europe/London")
-#' }
 #'
 #' # It is also possible to plot several variables and set type. For
 #' # example, consider the NOx and NO2 split by levels of O3:
 #'
-#' \dontrun{
 #' timeVariation(mydata, pollutant = c("nox", "no2"), type = "o3", normalise = TRUE)
-#' }
 #'
 #' # difference in concentrations
-#' \dontrun{
 #' timeVariation(mydata, poll = c("pm25", "pm10"), difference = TRUE)
-#' }
 #'
 #' # It is also useful to consider how concentrations vary by
 #' # considering two different periods e.g. in intervention
@@ -204,16 +217,12 @@
 #' # are important because flows of cars are approximately invariant by
 #' # day of the week
 #'
-#' \dontrun{
 #' mydata <- splitByDate(mydata, dates = "1/1/2003", labels = c("before Jan. 2003", "After Jan. 2003"))
 #' timeVariation(mydata, pollutant = "no2", group = "split.by", difference = TRUE)
-#' }
 #'
 #' # sub plots can be extracted from the openair object
-#' \dontrun{
 #' myplot <- timeVariation(mydata, pollutant = "no2")
 #' plot(myplot, subset = "day.hour") # top weekday and plot
-#' }
 #'
 #' # individual plots
 #' # plot(myplot, subset="day.hour") for the weekday and hours subplot (top)
@@ -228,7 +237,6 @@
 #' # tail(myplot, subset = "month") #tail/top of month data set
 #'
 #' # plot quantiles and median
-#' \dontrun{
 #' timeVariation(mydata, stati = "median", poll = "pm10", col = "firebrick")
 #'
 #' # with different intervals
@@ -236,19 +244,28 @@
 #'   stati = "median", poll = "pm10", conf.int = c(0.75, 0.99),
 #'   col = "firebrick"
 #' )
-#' }
 #'
+#' # with different (arbitrary) panels
+#' # note 'hemisphere' is passed to cutData() for season
+#' timeVariation(
+#'   mydata,
+#'   pollutant = "no2",
+#'   panels = c("weekday.season", "year", "wd"),
+#'   hemisphere = "southern"
+#' )
+#' }
 timeVariation <- function(
   mydata,
   pollutant = "nox",
-  local.tz = NULL,
-  normalise = FALSE,
-  xlab = c(
-    "hour",
+  panels = c(
+    "hour.weekday",
     "hour",
     "month",
     "weekday"
   ),
+  local.tz = NULL,
+  normalise = FALSE,
+  xlab = NULL,
   name.pol = pollutant,
   type = "default",
   group = NULL,
@@ -265,7 +282,6 @@ timeVariation <- function(
   panel.gap = 0.2,
   auto.text = TRUE,
   alpha = 0.4,
-  month.last = FALSE,
   plot = TRUE,
   ...
 ) {
@@ -283,7 +299,8 @@ timeVariation <- function(
     difference = difference,
     statistic = statistic,
     conf.int = conf.int,
-    xlab
+    panels = panels,
+    xlab = xlab
   )
 
   # graphical parameter handling
@@ -295,6 +312,16 @@ timeVariation <- function(
 
   # extra.args setup
   extra.args <- list(...)
+
+  # month.last deprecation
+  if ("month.last" %in% names(extra.args)) {
+    cli::cli_warn(c(
+      "!" = "{.arg month.last} has been deprecated. Please use the {.arg panels} argument for flexible control over panels.",
+      "i" = "Setting {.arg panels} to {.code c('hour.weekday', 'hour', 'weekday', 'month')}."
+    ))
+    panels <- c("hour.weekday", "hour", "weekday", "month")
+    extra.args$month.last <- NULL
+  }
 
   # set graphics
   current.font <- trellis.par.get("fontsize")
@@ -325,9 +352,9 @@ timeVariation <- function(
   ylimList <- FALSE
   if ("ylim" %in% names(extra.args)) {
     if (is.list(extra.args$ylim)) {
-      if (length(extra.args$ylim) != 4) {
+      if (length(extra.args$ylim) != length(panels)) {
         cli::cli_abort(
-          "{.arg ylim} should be a list of {4}."
+          "{.arg ylim} should be equal in length to {.arg panels} ({length(panels)})."
         )
       }
       ylim.list <- extra.args$ylim
@@ -343,11 +370,18 @@ timeVariation <- function(
 
   # check & cut data
   vars <- c("date", pollutant)
+
   # if group is present and not a date-type (e.g., year), add to vars
   if (!is.null(group)) {
     if (!group %in% dateTypes) {
       vars <- unique(c(vars, group))
     }
+  }
+
+  # if any panels aren't datetypes (e.g., sites), add to vars
+  panel_vars <- unique(purrr::list_c(strsplit(panels, "\\.")))
+  if (any(!panel_vars %in% dateTypes)) {
+    vars <- unique(c(vars, panel_vars[!panel_vars %in% dateTypes]))
   }
 
   # data checks
@@ -441,9 +475,9 @@ timeVariation <- function(
     key <- NULL
   }
 
-  # convenience functions ----
+  # convenience functions
 
-  quick_prep_panel_data <- function(vars, facet_vars, label.len = 100) {
+  quick_prep_panel_data <- function(vars, facet_vars) {
     prep_panel_data(
       mydata,
       vars = vars,
@@ -458,7 +492,7 @@ timeVariation <- function(
       B,
       statistic,
       start.day = start.day,
-      label.len = label.len
+      ...
     )
   }
 
@@ -500,226 +534,225 @@ timeVariation <- function(
         alpha,
         ci,
         ref.y,
-        group = group
+        group = group,
+        plot_type = ifelse(data$ordered, "l", "p")
       ),
       extra.args = extra.args
     )
   }
 
-  # hour ----
+  # create panels iteratively
 
-  data.hour <- quick_prep_panel_data(
-    vars = "hour",
-    facet_vars = NULL
-  )
-
-  # get ylim for plot
-  extra.args <- quick_update_extra_args_ylim(
-    data = data.hour,
-    index = 1
-  )
-
-  # plot
-  hour <- quick_create_tv_xyplot(
-    data = data.hour,
-    xvar = "hour",
-    xlab = xlab[2]
-  )
-
-  # weekday ----
-
-  data.weekday <- quick_prep_panel_data(
-    vars = "weekday",
-    facet_vars = NULL,
-    label.len = 3L
-  )
-
-  # get ylim for plot
-  extra.args <- quick_update_extra_args_ylim(
-    data = data.weekday,
-    index = 2
-  )
-
-  # plot
-  day <- quick_create_tv_xyplot(
-    data = data.weekday,
-    xvar = "weekday",
-    xlab = xlab[4]
-  )
-
-  # month ----
-
-  data.month <- quick_prep_panel_data(
-    vars = "month",
-    facet_vars = NULL,
-    label.len = 1
-  )
-
-  # get ylim for plot
-  extra.args <- quick_update_extra_args_ylim(
-    data = data.month,
-    index = 3
-  )
-
-  # plot
-  month <- quick_create_tv_xyplot(
-    data = data.month,
-    xvar = "month",
-    xlab = xlab[3]
-  )
-
-  # day and hour ----
-
-  data.day.hour <- quick_prep_panel_data(
-    vars = "hour",
-    facet_vars = "weekday"
-  )
-
-  # get ylim for plot
-  extra.args <- quick_update_extra_args_ylim(
-    data = data.day.hour,
-    index = 4
-  )
-
-  # need day.hour strip outside of fun for main.plot
-  strip_dayhour <- create_tv_strip(
-    data.day.hour$data,
-    type,
-    auto.text,
-    facet_var = "weekday"
-  )
-
-  # plot
-  day.hour <- quick_create_tv_xyplot(
-    data = data.day.hour,
-    xvar = c("hour", "weekday"),
-    xlab = xlab[1],
-    strip = strip_dayhour
-  )
-
-  # main ----
-
-  subsets <- c("day.hour", "hour", "day", "month")
-
-  # this adjusts the space for the title to 2 lines (approx) if \n in title
-  if (length(grep("atop", overall.main) == 1)) {
-    y.upp <- 0.95
-    y.dwn <- 0.05
-  } else {
-    y.upp <- 0.975
-    y.dwn <- 0.025
-  }
-
-  main.plot <- function(...) {
-    if (is.null(key_input) || isTRUE(key_input)) {
-      if (type == "default") {
-        print(
-          update(
-            day.hour,
-            key = list(
-              rectangles = list(col = myColors[1:npol], border = NA),
-              text = list(lab = mylab),
-              space = "bottom",
-              columns = key.columns,
-              title = "",
-              lines.title = 1
-            )
-          ),
-          position = c(0, 0.5, 1, y.upp),
-          more = TRUE
-        )
-      } else {
-        print(
-          update(
-            useOuterStrips(
-              day.hour,
-              strip = strip_dayhour$strip,
-              strip.left = strip_dayhour$strip.left
-            ),
-            key = list(
-              rectangles = list(col = myColors[1:npol], border = NA),
-              text = list(lab = mylab),
-              space = "bottom",
-              columns = key.columns,
-              title = "",
-              lines.title = 1
-            )
-          ),
-          position = c(0, 0.5, 1, y.upp),
-          more = TRUE
-        )
-      }
+  panels_x <- list()
+  panels_facet <- list()
+  for (i in panels) {
+    if (grepl("\\.", i)) {
+      x <- strsplit(i, "\\.")[[1]]
+      panels_x <- append(panels_x, x[1])
+      panels_facet <- append(panels_facet, x[2])
     } else {
-      if (type == "default") {
-        print(
-          day.hour,
-          position = c(0, 0.5, 1, y.upp),
-          more = TRUE
-        )
-      } else {
-        print(
-          useOuterStrips(day.hour, strip = strip, strip.left = strip.left),
-          position = c(0, 0.5, 1, y.upp),
-          more = TRUE
-        )
-      }
+      panels_x <- append(panels_x, i)
+      panels_facet <- append(panels_facet, list(NULL))
     }
-
-    # Build the plot panels in different orders
-    if (!month.last) {
-      # The original plot orders
-      print(hour, position = c(0, y.dwn, 0.33, 0.53), more = TRUE)
-      print(month, position = c(0.33, y.dwn, 0.66, 0.53), more = TRUE)
-      print(day, position = c(0.66, y.dwn, 1, 0.53))
-    } else {
-      # Move around the plot order so they follow a logical hierarchy of averaging
-      # periods hour-day-month
-      print(hour, position = c(0, y.dwn, 0.33, 0.53), more = TRUE)
-      print(day, position = c(0.33, y.dwn, 0.66, 0.53), more = TRUE)
-      print(month, position = c(0.66, y.dwn, 1, 0.53))
-    }
-
-    # use grid to add an overall title
-    grid.text(overall.main, 0.5, y.upp, gp = gpar(fontsize = 14))
-    grid.text(overall.sub, 0.5, y.dwn, gp = gpar(fontsize = 12))
   }
+  xlab <- xlab %||% panels_x
 
-  ind.plot <- function(x, ...) {
-    plot(
-      update(
-        x,
-        key = list(
-          rectangles = list(col = myColors[1:npol], border = NA),
-          text = list(lab = mylab),
-          space = "top",
-          columns = key.columns
-        )
-      ),
-      ...
+  data_out <- list()
+  plot_out <- list()
+  for (i in seq_along(panels_x)) {
+    # prepare data
+    panel.data <- quick_prep_panel_data(
+      vars = panels_x[[i]],
+      facet_vars = panels_facet[[i]]
     )
+    data_out <- append(data_out, list(panel.data))
+
+    # get ylim for plot
+    extra.args <- quick_update_extra_args_ylim(
+      data = panel.data,
+      index = i
+    )
+
+    # need day.hour strip outside of fun for main.plot
+    strip <- create_tv_strip(
+      panel.data$data,
+      type = type,
+      auto.text = auto.text,
+      facet_var = panels_facet[[i]]
+    )
+
+    # plot
+    thePlot <- quick_create_tv_xyplot(
+      data = panel.data,
+      xvar = c(panels_x[[i]], panels_facet[[i]]),
+      xlab = xlab[i],
+      strip
+    )
+    plot_out <- append(plot_out, list(thePlot))
   }
 
-  if (plot) {
-    main.plot()
-  }
-  output <- list(
-    plot = list(day.hour, hour, day, month, subsets = subsets),
-    data = list(
-      data.day.hour,
-      data.hour,
-      data.weekday,
-      data.month,
-      subsets = subsets
-    ),
-    call = match.call(),
-    main.plot = main.plot,
-    ind.plot = ind.plot
-  )
-  names(output$data)[1:4] <- subsets
-  names(output$plot)[1:4] <- subsets
-  class(output) <- "openair"
+  # name the outputs
+  names(data_out) <- panels
+  names(plot_out) <- panels
 
-  invisible(output)
+  # if only one panel, just let it fill the whole area
+  if (length(plot_out) == 1L) {
+    if (is.null(key_input) || isTRUE(key_input)) {
+      plot_out[[1]] <-
+        update(
+          plot_out[[1]],
+          key = list(
+            rectangles = list(col = myColors[1:npol], border = NA),
+            text = list(lab = mylab),
+            space = "bottom",
+            columns = key.columns,
+            title = "",
+            lines.title = 1
+          )
+        )
+    }
+
+    if (plot) {
+      if (!is.null(panels_facet[[1]]) && type != "default") {
+        plot(
+          useOuterStrips(
+            plot_out[[1]],
+            strip = strip$strip,
+            strip.left = strip$strip.left
+          )
+        )
+      } else {
+        plot(plot_out[[1]])
+      }
+    }
+
+    output <- list(
+      plot = append(plot_out, list(subsets = panels)),
+      data = append(purrr::map(data_out, "data"), list(subsets = panels)),
+      call = match.call(),
+      main.plot = function(...) {
+        plot(plot_out[[1]], ...)
+      },
+      ind.plot = function(x, ...) {
+        plot(x, ...)
+      }
+    )
+    class(output) <- "openair"
+
+    invisible(output)
+  } else {
+    # this adjusts the space for the title to 2 lines (approx) if \n in title
+    if (length(grep("atop", overall.main) == 1)) {
+      y.upp <- 0.95
+      y.dwn <- 0.05
+    } else {
+      y.upp <- 0.975
+      y.dwn <- 0.025
+    }
+
+    main.plot <- function(...) {
+      if (is.null(key_input) || isTRUE(key_input)) {
+        if (type == "default") {
+          print(
+            update(
+              plot_out[[1]],
+              key = list(
+                rectangles = list(col = myColors[1:npol], border = NA),
+                text = list(lab = mylab),
+                space = "bottom",
+                columns = key.columns,
+                title = "",
+                lines.title = 1
+              )
+            ),
+            position = c(0, 0.5, 1, y.upp),
+            more = TRUE
+          )
+        } else {
+          print(
+            update(
+              useOuterStrips(
+                plot_out[[1]],
+                strip = strip$strip,
+                strip.left = strip$strip.left
+              ),
+              key = list(
+                rectangles = list(col = myColors[1:npol], border = NA),
+                text = list(lab = mylab),
+                space = "bottom",
+                columns = key.columns,
+                title = "",
+                lines.title = 1
+              )
+            ),
+            position = c(0, 0.5, 1, y.upp),
+            more = TRUE
+          )
+        }
+      } else {
+        if (type == "default") {
+          print(
+            plot_out[[1]],
+            position = c(0, 0.5, 1, y.upp),
+            more = TRUE
+          )
+        } else {
+          print(
+            useOuterStrips(
+              plot_out[[1]],
+              strip = strip$strip,
+              strip.left = strip$strip.left
+            ),
+            position = c(0, 0.5, 1, y.upp),
+            more = TRUE
+          )
+        }
+      }
+
+      # iteratively plot lower panels
+      bounds <- seq(0, 1, length.out = length(panels))
+      for (i in seq_along(plot_out[-1])) {
+        print(
+          plot_out[-1][[i]],
+          position = c(bounds[i], y.dwn, bounds[i + 1], 0.53),
+          more = i != max(seq_along(plot_out[-1]))
+        )
+      }
+
+      # use grid to add an overall title
+      grid.text(overall.main, 0.5, y.upp, gp = gpar(fontsize = 14))
+      grid.text(overall.sub, 0.5, y.dwn, gp = gpar(fontsize = 12))
+    }
+
+    ind.plot <- function(x, ...) {
+      plot(
+        update(
+          x,
+          key = list(
+            rectangles = list(col = myColors[1:npol], border = NA),
+            text = list(lab = mylab),
+            space = "top",
+            columns = key.columns
+          )
+        ),
+        ...
+      )
+    }
+
+    if (plot) {
+      main.plot()
+    }
+    output <- list(
+      plot = append(plot_out, list(subsets = panels)),
+      data = append(purrr::map(data_out, "data"), list(subsets = panels)),
+      call = match.call(),
+      main.plot = main.plot,
+      ind.plot = ind.plot
+    )
+    class(output) <- "openair"
+
+    invisible(output)
+  }
 }
 
 # validate timevar inputs
@@ -731,11 +764,15 @@ validate_tv_inputs <- function(
   difference,
   statistic,
   conf.int,
+  panels,
   xlab
 ) {
   if (length(type) > 1) {
     cli::cli_abort(
-      "Can only have one {.arg type} for {.fun openair::timeVariation}."
+      c(
+        "x" = "Can only have one {.arg type} for {.fun openair::timeVariation}.",
+        "i" = "In {.fun openair::timeVariation}, {.arg type} is global to all panels. To add additional types to individual panels, use {.code x.type} syntax - e.g., {.code panel = 'hour.weekday'}."
+      )
     )
   }
 
@@ -786,8 +823,13 @@ validate_tv_inputs <- function(
     cli::cli_abort("{.arg conf.int} can only be of length 1 or 2.")
   }
 
-  if (!rlang::is_character(xlab, 4)) {
-    cli::cli_abort("{.arg xlab} must be a character vector of length 4.")
+  # check length of xlab
+  if (!is.null(xlab)) {
+    if (length(xlab) != length(panels)) {
+      cli::cli_abort(
+        "Length of {.arg xlab} must be equal to length of {.arg panels}."
+      )
+    }
   }
 }
 
@@ -807,7 +849,7 @@ prep_panel_data <- function(
   B,
   statistic,
   start.day,
-  label.len = 100
+  ...
 ) {
   # cut data for the variables
   mydata <-
@@ -815,13 +857,26 @@ prep_panel_data <- function(
       mydata,
       type = c(vars, facet_vars),
       start.day = start.day,
-      is.axis = TRUE
+      is.axis = TRUE,
+      ...
     ) |>
     dplyr::arrange(.data[[vars]])
 
   # retain the labels for the plot
+  label.len <- 100L
+  if (vars == "weekday") {
+    label.len <- 3L
+  }
+  if (vars == "month") {
+    label.len <- 1L
+  }
+
   x_labels <- substr(levels(mydata[[vars]]), 1, label.len)
   x_breaks <- seq_along(x_labels)
+
+  if (vars == "season") {
+    x_labels <- gsub(" ", replacement = "\n", x_labels)
+  }
 
   # retain whether variable is ordered - used for line vs point
   ordered <- is.ordered(mydata[[vars]])
@@ -1105,7 +1160,8 @@ create_tv_xyplot <- function(
   myColors,
   panel.gap,
   fun_panel_groups,
-  extra.args
+  extra.args,
+  ordered
 ) {
   # don't want to add space for hourly plots
   xlim_adj <- 0.5
