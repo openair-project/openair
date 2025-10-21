@@ -315,11 +315,13 @@ timeVariation <- function(
 
   # month.last deprecation
   if ("month.last" %in% names(extra.args)) {
-    cli::cli_warn(c(
-      "!" = "{.arg month.last} has been deprecated. Please use the {.arg panels} argument for flexible control over panels.",
-      "i" = "Setting {.arg panels} to {.code c('hour.weekday', 'hour', 'weekday', 'month')}."
-    ))
-    panels <- c("hour.weekday", "hour", "weekday", "month")
+    if (isTrue(extra.args$month.last)) {
+      cli::cli_warn(c(
+        "!" = "{.arg month.last} has been deprecated. Please use the {.arg panels} argument for flexible control over panels.",
+        "i" = "Setting {.arg panels} to {.code c('hour.weekday', 'hour', 'weekday', 'month')}."
+      ))
+      panels <- c("hour.weekday", "hour", "weekday", "month")
+    }
     extra.args$month.last <- NULL
   }
 
@@ -388,6 +390,11 @@ timeVariation <- function(
   mydata <- mydata |>
     checkPrep(vars, type, remove.calm = FALSE) |>
     cutData(type = c(type, group), local.tz = local.tz, ...)
+
+  if (type != "default") {
+    mydata$openair_type <- mydata[[type]]
+    type <- "openair_type"
+  }
 
   # put in local time if needed
   if (!is.null(local.tz)) {
@@ -541,8 +548,7 @@ timeVariation <- function(
     )
   }
 
-  # create panels iteratively
-
+  # get the xvars and facets for each panel
   panels_x <- list()
   panels_facet <- list()
   for (i in panels) {
@@ -555,10 +561,16 @@ timeVariation <- function(
       panels_facet <- append(panels_facet, list(NULL))
     }
   }
+
+  # if xlab not given, use xvar
   xlab <- xlab %||% panels_x
 
+  # need to retain a list of data, a list of plots, and a list of strips
   data_out <- list()
   plot_out <- list()
+  strips_out <- list()
+
+  # create panels iteratively
   for (i in seq_along(panels_x)) {
     # prepare data
     panel.data <- quick_prep_panel_data(
@@ -573,15 +585,16 @@ timeVariation <- function(
       index = i
     )
 
-    # need day.hour strip outside of fun for main.plot
+    # strip for plot - needed if type used
     strip <- create_tv_strip(
       panel.data$data,
       type = type,
       auto.text = auto.text,
       facet_var = panels_facet[[i]]
     )
+    strips_out <- append(strips_out, list(strip))
 
-    # plot
+    # create plot
     thePlot <- quick_create_tv_xyplot(
       data = panel.data,
       xvar = c(panels_x[[i]], panels_facet[[i]]),
@@ -617,8 +630,8 @@ timeVariation <- function(
         plot(
           useOuterStrips(
             plot_out[[1]],
-            strip = strip$strip,
-            strip.left = strip$strip.left
+            strip = strips_out[[1]]$strip,
+            strip.left = strips_out[[1]]$strip.left
           )
         )
       } else {
@@ -673,8 +686,8 @@ timeVariation <- function(
             update(
               useOuterStrips(
                 plot_out[[1]],
-                strip = strip$strip,
-                strip.left = strip$strip.left
+                strip = strips_out[[1]]$strip,
+                strip.left = strips_out[[1]]$strip.left
               ),
               key = list(
                 rectangles = list(col = myColors[1:npol], border = NA),
@@ -700,8 +713,8 @@ timeVariation <- function(
           print(
             useOuterStrips(
               plot_out[[1]],
-              strip = strip$strip,
-              strip.left = strip$strip.left
+              strip = strips_out[[1]]$strip,
+              strip.left = strips_out[[1]]$strip.left
             ),
             position = c(0, 0.5, 1, y.upp),
             more = TRUE
@@ -712,11 +725,23 @@ timeVariation <- function(
       # iteratively plot lower panels
       bounds <- seq(0, 1, length.out = length(panels))
       for (i in seq_along(plot_out[-1])) {
-        print(
-          plot_out[-1][[i]],
-          position = c(bounds[i], y.dwn, bounds[i + 1], 0.53),
-          more = i != max(seq_along(plot_out[-1]))
-        )
+        if (!is.null(panels_facet[-1][[i]]) && type != "default") {
+          print(
+            useOuterStrips(
+              plot_out[-1][[i]],
+              strip = strips_out[-1][[i]]$strip,
+              strip.left = strips_out[-1][[i]]$strip.left
+            ),
+            position = c(bounds[i], y.dwn, bounds[i + 1], 0.53),
+            more = i != max(seq_along(plot_out[-1]))
+          )
+        } else {
+          print(
+            plot_out[-1][[i]],
+            position = c(bounds[i], y.dwn, bounds[i + 1], 0.53),
+            more = i != max(seq_along(plot_out[-1]))
+          )
+        }
       }
 
       # use grid to add an overall title

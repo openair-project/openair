@@ -14,7 +14,7 @@
 
     - When `key` is `FALSE`, no key is shown for any of the four `timeVariation()` plots. Previously, any value passed to `key` would cause all four plots to display a key.
 
-    - (!) BREAKING: The order of `xlab` and `ylim` now matches the order of `panels`.
+    - (!) BREAKING: The order of `xlab` and `ylim` now matches the order of `panels`. `month.last` has also been deprecated; if used and `TRUE`, this will override `panels` with a warning.
 
 - `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
 
