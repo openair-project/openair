@@ -364,12 +364,6 @@ timeVariation <- function(
     }
   }
 
-  # check to see if type = "variable" (word used in code, so change)
-  if (type == "variable") {
-    mydata <- dplyr::rename(mydata, c(variable = "tempVar"))
-    type <- "tempVar"
-  }
-
   # check & cut data
   vars <- c("date", pollutant)
 
@@ -391,7 +385,10 @@ timeVariation <- function(
     checkPrep(vars, type, remove.calm = FALSE) |>
     cutData(type = c(type, group), local.tz = local.tz, ...)
 
+  # need to isolate "type" as timeVar will try to turn it numeric, which will
+  # break the strip labels
   if (type != "default") {
+    orig_type <- type
     mydata$openair_type <- mydata[[type]]
     type <- "openair_type"
   }
@@ -482,72 +479,6 @@ timeVariation <- function(
     key <- NULL
   }
 
-  # convenience functions
-
-  quick_prep_panel_data <- function(vars, facet_vars) {
-    prep_panel_data(
-      mydata,
-      vars = vars,
-      facet_vars = facet_vars,
-      conf.int,
-      difference,
-      normalise,
-      type,
-      pollutant,
-      poll1,
-      poll2,
-      B,
-      statistic,
-      start.day = start.day,
-      ...
-    )
-  }
-
-  quick_update_extra_args_ylim <- function(data, index) {
-    update_extra_args_ylim(
-      data = data$data,
-      extra.args,
-      ci,
-      ylim.list,
-      index = index,
-      ylimList
-    )
-  }
-
-  quick_create_tv_xyplot <- function(
-    data,
-    xvar,
-    xlab,
-    strip = NULL
-  ) {
-    strip <- strip %||% create_tv_strip(data$data, type, auto.text)
-
-    create_tv_xyplot(
-      data = data$data,
-      xvar = xvar,
-      type = type,
-      v_gridlines = data$x_breaks,
-      v_labels = data$x_labels,
-      xlab = xlab,
-      key = key,
-      strip = strip,
-      myColors = myColors,
-      panel.gap = panel.gap,
-      fun_panel_groups = create_tv_panel_groups(
-        data$data,
-        xvar[1],
-        difference,
-        myColors,
-        alpha,
-        ci,
-        ref.y,
-        group = group,
-        plot_type = ifelse(data$ordered, "l", "p")
-      ),
-      extra.args = extra.args
-    )
-  }
-
   # get the xvars and facets for each panel
   panels_x <- list()
   panels_facet <- list()
@@ -573,16 +504,33 @@ timeVariation <- function(
   # create panels iteratively
   for (i in seq_along(panels_x)) {
     # prepare data
-    panel.data <- quick_prep_panel_data(
-      vars = panels_x[[i]],
-      facet_vars = panels_facet[[i]]
-    )
+    panel.data <-
+      prep_panel_data(
+        mydata,
+        vars = panels_x[[i]],
+        facet_vars = panels_facet[[i]],
+        conf.int,
+        difference,
+        normalise,
+        type,
+        pollutant,
+        poll1,
+        poll2,
+        B,
+        statistic,
+        start.day = start.day,
+        ...
+      )
     data_out <- append(data_out, list(panel.data))
 
     # get ylim for plot
-    extra.args <- quick_update_extra_args_ylim(
-      data = panel.data,
-      index = i
+    extra.args <- update_extra_args_ylim(
+      data = panel.data$data,
+      extra.args,
+      ci,
+      ylim.list,
+      index = i,
+      ylimList
     )
 
     # strip for plot - needed if type used
@@ -593,6 +541,40 @@ timeVariation <- function(
       facet_var = panels_facet[[i]]
     )
     strips_out <- append(strips_out, list(strip))
+
+    # create xyplot
+    # (for whatever reason, errors occur when this isn't a function)
+    quick_create_tv_xyplot <- function(
+      data,
+      xvar,
+      xlab,
+      strip
+    ) {
+      create_tv_xyplot(
+        data = data$data,
+        xvar = xvar,
+        type = type,
+        v_gridlines = data$x_breaks,
+        v_labels = data$x_labels,
+        xlab = xlab,
+        key = key,
+        strip = strip,
+        myColors = myColors,
+        panel.gap = panel.gap,
+        fun_panel_groups = create_tv_panel_groups(
+          data$data,
+          xvar[1],
+          difference,
+          myColors,
+          alpha,
+          ci,
+          ref.y,
+          group = group,
+          plot_type = ifelse(data$ordered, "l", "p")
+        ),
+        extra.args = extra.args
+      )
+    }
 
     # create plot
     thePlot <- quick_create_tv_xyplot(
@@ -607,6 +589,21 @@ timeVariation <- function(
   # name the outputs
   names(data_out) <- panels
   names(plot_out) <- panels
+
+  # format output data for return
+  format_tv_data_for_output <- function(data) {
+    out_data <- data$data
+
+    if (type != "default") {
+      names(out_data)[names(out_data) == "openair_type"] <- paste(
+        orig_type,
+        "type",
+        sep = "_"
+      )
+    }
+
+    out_data
+  }
 
   # if only one panel, just let it fill the whole area
   if (length(plot_out) == 1L) {
@@ -641,7 +638,10 @@ timeVariation <- function(
 
     output <- list(
       plot = append(plot_out, list(subsets = panels)),
-      data = append(purrr::map(data_out, "data"), list(subsets = panels)),
+      data = append(
+        purrr::map(data_out, format_tv_data_for_output),
+        list(subsets = panels)
+      ),
       call = match.call(),
       main.plot = function(...) {
         plot(plot_out[[1]], ...)
@@ -769,7 +769,10 @@ timeVariation <- function(
     }
     output <- list(
       plot = append(plot_out, list(subsets = panels)),
-      data = append(purrr::map(data_out, "data"), list(subsets = panels)),
+      data = append(
+        purrr::map(data_out, format_tv_data_for_output),
+        list(subsets = panels)
+      ),
       call = match.call(),
       main.plot = main.plot,
       ind.plot = ind.plot
@@ -1192,8 +1195,7 @@ create_tv_xyplot <- function(
   myColors,
   panel.gap,
   fun_panel_groups,
-  extra.args,
-  ordered
+  extra.args
 ) {
   # don't want to add space for hourly plots
   xlim_adj <- 0.5
