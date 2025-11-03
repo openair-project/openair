@@ -1,4 +1,4 @@
-test_that("multiplication works", {
+test_that("cutData works", {
   testdat <- dplyr::filter(mydata, lubridate::year(date) == 2005)
   testdat <- dplyr::select(testdat, date, ws, wd, nox, no2)
 
@@ -116,4 +116,29 @@ test_that("multiplication works", {
     levels(southern$season),
     c("summer (DJF)", "autumn (MAM)", "winter (JJA)")
   )
+
+  # all "drop" options working?
+  for (drop in c("none", "empty", "outside")) {
+    dropopts <- cutData(
+      testdat[!is.na(testdat$wd), ],
+      type = conds,
+      drop = drop
+    )
+    expect_s3_class(dropopts$wd, "ordered")
+    expect_s3_class(dropopts$year, "ordered")
+    expect_s3_class(dropopts$hour, "ordered")
+    expect_s3_class(dropopts$month, "ordered")
+    expect_s3_class(dropopts$season, "ordered")
+    expect_s3_class(dropopts$week, "ordered")
+    expect_s3_class(dropopts$weekday, "ordered")
+    expect_s3_class(dropopts$weekend, "ordered")
+    expect_s3_class(dropopts$monthyear, "ordered")
+    expect_s3_class(dropopts$yearmonth, "ordered")
+    expect_s3_class(dropopts$bstgmt, "factor")
+    expect_s3_class(dropopts$gmtbst, "factor")
+    expect_s3_class(dropopts$dst, "factor")
+    expect_s3_class(dropopts$daylight, "factor")
+    expect_s3_class(dropopts$seasonyear, "ordered")
+    expect_s3_class(dropopts$yearseason, "ordered")
+  }
 })

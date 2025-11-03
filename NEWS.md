@@ -6,6 +6,18 @@
 
 ## New Features
 
+- `cutData()` now contains the `drop` argument. This allows for greater control over factor levels for appended columns. For example, consider a situation in which `data` only contains dates in March and May and `type = "month"` is used:
+
+    - `drop = "empty"` will ensure the resulting vector only has factor levels `"March"` and `"May"`. 
+    
+    - `drop = "none"` will ensure the vector has all twelve months (January, February, March, etc.).
+    
+    - `drop = "outside"` will retain 'inclusive' factor levels within the range of the data - in this case `"March"`, `"April"`, and `"May"`.
+    
+    - `drop = "default"` is the existing `cutData()` behaviour - in the case of `type = "month"`, it is equivalent to `drop = "empty"`.
+
+- `is.axis` now has an effect on `cutData(type = "weekday")`.
+
 - `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
 
 - `smoothTrend()` has gained the `x.relation`, `date.format`, `key` and `key.position` arguments, in line with `timePlot()`. It has also gained the `progress` argument, passed to `timeAverage()`. 
