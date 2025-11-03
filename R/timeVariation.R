@@ -880,6 +880,13 @@ prep_panel_data <- function(
   start.day,
   ...
 ) {
+  # mainly use "outside", but for vars treated as numeric (e.g., hour) we need
+  # "none" to retain correct factor labels
+  drop <- "outside"
+  if (vars %in% c("hour", "week")) {
+    drop <- "none"
+  }
+
   # cut data for the variables
   mydata <-
     cutData(
@@ -887,11 +894,12 @@ prep_panel_data <- function(
       type = c(vars, facet_vars),
       start.day = start.day,
       is.axis = TRUE,
+      drop = drop,
       ...
     ) |>
     dplyr::arrange(.data[[vars]])
 
-  # retain the labels for the plot
+  # retain the labels for the plot; some need a bit of customisation
   label.len <- 100L
   if (vars == "weekday") {
     label.len <- 3L
@@ -899,13 +907,15 @@ prep_panel_data <- function(
   if (vars == "month") {
     label.len <- 1L
   }
-
   x_labels <- substr(levels(mydata[[vars]]), 1, label.len)
-  x_breaks <- seq_along(x_labels)
 
+  # if season, split the (MMM) bit to a new line
   if (vars == "season") {
     x_labels <- gsub(" ", replacement = "\n", x_labels)
   }
+
+  # breaks - mostly just an ID for the labels, but can be overwritten
+  x_breaks <- seq_along(x_labels)
 
   # retain whether variable is ordered - used for line vs point
   ordered <- is.ordered(mydata[[vars]])
@@ -924,13 +934,26 @@ prep_panel_data <- function(
   if (vars == "hour") {
     mydata$hour <- mydata$hour - 1L
     x_labels <- NULL
-    x_breaks <- c(0, 6, 12, 18, 23)
+    if (dplyr::n_distinct(mydata$hour) == 24) {
+      x_breaks <- c(0, 6, 12, 18, 23)
+    } else {
+      x_breaks <- unique(as.integer(pretty(as.numeric(mydata$hour))))
+      x_breaks <- x_breaks[
+        x_breaks > min(mydata$hour) & x_breaks < max(mydata$hour)
+      ]
+      x_breaks <- sort(unique(c(range(mydata$hour, na.rm = TRUE), x_breaks)))
+    }
   }
 
+  # same situation for week
   if (vars == "week") {
     mydata$week <- mydata$week - 1L
     x_labels <- NULL
-    x_breaks <- c(seq(0, 53, 5), 53)
+    x_breaks <- unique(as.integer(pretty(as.numeric(mydata$week))))
+    x_breaks <- x_breaks[
+      x_breaks > min(mydata$week) & x_breaks < max(mydata$week)
+    ]
+    x_breaks <- sort(unique(c(range(mydata$week, na.rm = TRUE), x_breaks)))
   }
 
   # combine plotting & facet variables now
@@ -966,6 +989,7 @@ prep_panel_data <- function(
       dplyr::tibble()
   }
 
+  # if normalise selected, normalise the data
   if (normalise) {
     data <- mapType(data, type = "variable", fun = function(x) {
       Mean <- mean(x$Mean, na.rm = TRUE)
