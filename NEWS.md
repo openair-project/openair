@@ -16,6 +16,18 @@
 
     - (!) BREAKING: The order of `xlab` and `ylim` now matches the order of `panels`. `month.last` has also been deprecated; if used and `TRUE`, this will override `panels` with a warning. The output names `output$data` will now vary based on `panels`, and the `type` column will be named `{type}_type` (e.g., "hour_type").
 
+- `cutData()` now contains the `drop` argument. This allows for greater control over factor levels for appended columns. For example, consider a situation in which `data` only contains dates in March and May and `type = "month"` is used:
+
+    - `drop = "empty"` will ensure the resulting vector only has factor levels `"March"` and `"May"`. 
+    
+    - `drop = "none"` will ensure the vector has all twelve months (January, February, March, etc.).
+    
+    - `drop = "outside"` will retain 'inclusive' factor levels within the range of the data - in this case `"March"`, `"April"`, and `"May"`.
+    
+    - `drop = "default"` is the existing `cutData()` behaviour - in the case of `type = "month"`, it is equivalent to `drop = "empty"`.
+
+- `is.axis` now has an effect on `cutData(type = "weekday")`.
+
 - `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
 
 - `smoothTrend()` has gained the `x.relation`, `date.format`, `key` and `key.position` arguments, in line with `timePlot()`. It has also gained the `progress` argument, passed to `timeAverage()`. 
@@ -32,13 +44,15 @@
 
 ## Bug Fixes
 
-- `timePlot()` now allows duplicate dates when `time.avg` is used. The user will still recieve a warning from `timeAverage()`, which is used internally, but the plot will still be created.
+- `timePlot()` now allows duplicate dates when `time.avg` is used. The user will still receive a warning from `timeAverage()`, which is used internally, but the plot will still be created.
 
 - `importUKAQ()` now closes its `url()` connections and generally fails more gracefully when `data_type %in% c("annual", "monthly", "daqi")`. This was already the case for other data types.
 
 - The `windflow` argument of `timePlot()` now works when `"ws"` and/or `"wd"` are in `pollutant`.
 
 - `timeAverage()` will no longer leave `Uu` and `Vv` columns behind when `statistic = "data.cap"`.
+
+- `timeAverage()` now correctly passes `...` to `cutData()`.
 
 # openair 2.19.0
 
