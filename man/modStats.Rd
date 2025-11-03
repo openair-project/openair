@@ -60,8 +60,8 @@ length of \code{names} should therefore be equal to the length of \code{type}.}
 added columns that would otherwise overwrite existing columns. For example,
 \code{cutData(mydata, "nox", suffix = "_cuts")} would append a \code{nox_cuts} column
 rather than overwriting \code{nox}.}
-    \item{\code{hemisphere}}{Can be \code{"northern"} or \code{"southern"}, used to split data
-into seasons.}
+    \item{\code{hemisphere}}{Can be \code{"northern"} or \code{"southern"}, used to split data into
+seasons.}
     \item{\code{n.levels}}{Number of quantiles to split numeric data into.}
     \item{\code{start.day}}{What day of the week should the \code{type = "weekday"} start on?
 The user can change the start day by supplying an integer between 0 and 6.
@@ -72,11 +72,27 @@ labels for axes.}
     \item{\code{local.tz}}{Used for identifying whether a date has daylight savings time
 (DST) applied or not. Examples include \code{local.tz = "Europe/London"},
 \code{local.tz = "America/New_York"}, i.e., time zones that assume DST.
-\url{https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones} shows time
-zones that should be valid for most systems. It is important that the
-original data are in GMT (UTC) or a fixed offset from GMT.}
+\url{https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones} shows time zones
+that should be valid for most systems. It is important that the original
+data are in GMT (UTC) or a fixed offset from GMT.}
     \item{\code{latitude,longitude}}{The decimal latitude and longitudes used when \code{type = "daylight"}. Note that locations west of Greenwich have negative
 longitudes.}
+    \item{\code{drop}}{How to handle empty factor levels. One of:
+\itemize{
+\item \code{"default"}: Sensible defaults selected on a case-by-case basis for
+different \code{type} options.
+\item \code{"empty"}: Drop all empty factor levels.
+\item \code{"none"}: Retain all empty factor levels, where possible. For example,
+for \code{type = "hour"}, all factor levels from \code{0} and \code{23} will be
+represented.
+\item \code{"outside"}: Retain empty factor levels within the range of the data.
+For example, for \code{type = "hour"} when the data only contains data for 1 AM
+and 5 AM, the factor levels, \code{1}, \code{2}, \code{3}, \code{4} and \code{5} will be retained.
+}
+
+Some of these options only apply to certain \code{type} options. For example, for
+\code{type = "year"}, \code{"outside"} is equivalent to \code{"none"} as there is no fixed
+range of years to use in the \code{"none"} case.}
   }}
 }
 \value{
