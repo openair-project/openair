@@ -909,11 +909,6 @@ prep_panel_data <- function(
   }
   x_labels <- substr(levels(mydata[[vars]]), 1, label.len)
 
-  # if season, split the (MMM) bit to a new line
-  if (vars == "season") {
-    x_labels <- gsub(" ", replacement = "\n", x_labels)
-  }
-
   # breaks - mostly just an ID for the labels, but can be overwritten
   x_breaks <- seq_along(x_labels)
 

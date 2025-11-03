@@ -26,7 +26,7 @@
     
     - `drop = "default"` is the existing `cutData()` behaviour - in the case of `type = "month"`, it is equivalent to `drop = "empty"`.
 
-- `is.axis` now has an effect on `cutData(type = "weekday")`.
+- `is.axis` now has an effect on `weekday`, `season`, `seasonyear` and `monthyear`.
 
 - `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
 
