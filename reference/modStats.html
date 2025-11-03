@@ -136,8 +136,8 @@ added columns that would otherwise overwrite existing columns. For example,
 rather than overwriting <code>nox</code>.</p></dd>
 
     <dt><code>hemisphere</code></dt>
-<dd><p>Can be <code>"northern"</code> or <code>"southern"</code>, used to split data
-into seasons.</p></dd>
+<dd><p>Can be <code>"northern"</code> or <code>"southern"</code>, used to split data into
+seasons.</p></dd>
 
     <dt><code>n.levels</code></dt>
 <dd><p>Number of quantiles to split numeric data into.</p></dd>
@@ -156,13 +156,27 @@ labels for axes.</p></dd>
 <dd><p>Used for identifying whether a date has daylight savings time
 (DST) applied or not. Examples include <code>local.tz = "Europe/London"</code>,
 <code>local.tz = "America/New_York"</code>, i.e., time zones that assume DST.
-<a href="https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones" class="external-link">https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones</a> shows time
-zones that should be valid for most systems. It is important that the
-original data are in GMT (UTC) or a fixed offset from GMT.</p></dd>
+<a href="https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones" class="external-link">https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones</a> shows time zones
+that should be valid for most systems. It is important that the original
+data are in GMT (UTC) or a fixed offset from GMT.</p></dd>
 
     <dt><code>latitude,longitude</code></dt>
 <dd><p>The decimal latitude and longitudes used when <code>type = "daylight"</code>. Note that locations west of Greenwich have negative
 longitudes.</p></dd>
+
+    <dt><code>drop</code></dt>
+<dd><p>How to handle empty factor levels. One of:</p><ul><li><p><code>"default"</code>: Sensible defaults selected on a case-by-case basis for
+different <code>type</code> options.</p></li>
+<li><p><code>"empty"</code>: Drop all empty factor levels.</p></li>
+<li><p><code>"none"</code>: Retain all empty factor levels, where possible. For example,
+for <code>type = "hour"</code>, all factor levels from <code>0</code> and <code>23</code> will be
+represented.</p></li>
+<li><p><code>"outside"</code>: Retain empty factor levels within the range of the data.
+For example, for <code>type = "hour"</code> when the data only contains data for 1 AM
+and 5 AM, the factor levels, <code>1</code>, <code>2</code>, <code>3</code>, <code>4</code> and <code>5</code> will be retained.</p></li>
+</ul><p>Some of these options only apply to certain <code>type</code> options. For example, for
+<code>type = "year"</code>, <code>"outside"</code> is equivalent to <code>"none"</code> as there is no fixed
+range of years to use in the <code>"none"</code> case.</p></dd>
 
 
 </dl></dd>

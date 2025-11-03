@@ -60,7 +60,15 @@
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> has gained the <code>x.relation</code> argument, allowing for different x ranges on different panels.</p></li>
+<ul><li>
+<p><code><a href="../reference/cutData.html">cutData()</a></code> now contains the <code>drop</code> argument. This allows for greater control over factor levels for appended columns. For example, consider a situation in which <code>data</code> only contains dates in March and May and <code>type = "month"</code> is used:</p>
+<ul><li><p><code>drop = "empty"</code> will ensure the resulting vector only has factor levels <code>"March"</code> and <code>"May"</code>.</p></li>
+<li><p><code>drop = "none"</code> will ensure the vector has all twelve months (January, February, March, etc.).</p></li>
+<li><p><code>drop = "outside"</code> will retain ‘inclusive’ factor levels within the range of the data - in this case <code>"March"</code>, <code>"April"</code>, and <code>"May"</code>.</p></li>
+<li><p><code>drop = "default"</code> is the existing <code><a href="../reference/cutData.html">cutData()</a></code> behaviour - in the case of <code>type = "month"</code>, it is equivalent to <code>drop = "empty"</code>.</p></li>
+</ul></li>
+<li><p><code>is.axis</code> now has an effect on <code>cutData(type = "weekday")</code>.</p></li>
+<li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> has gained the <code>x.relation</code> argument, allowing for different x ranges on different panels.</p></li>
 <li><p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> has gained the <code>x.relation</code>, <code>date.format</code>, <code>key</code> and <code>key.position</code> arguments, in line with <code><a href="../reference/timePlot.html">timePlot()</a></code>. It has also gained the <code>progress</code> argument, passed to <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
 <li>
 <p><code><a href="../reference/calendarPlot.html">calendarPlot()</a></code> refinements:</p>
@@ -72,10 +80,11 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
-<ul><li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> now allows duplicate dates when <code>time.avg</code> is used. The user will still recieve a warning from <code><a href="../reference/timeAverage.html">timeAverage()</a></code>, which is used internally, but the plot will still be created.</p></li>
+<ul><li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> now allows duplicate dates when <code>time.avg</code> is used. The user will still receive a warning from <code><a href="../reference/timeAverage.html">timeAverage()</a></code>, which is used internally, but the plot will still be created.</p></li>
 <li><p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> now closes its <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">url()</a></code> connections and generally fails more gracefully when <code>data_type %in% c("annual", "monthly", "daqi")</code>. This was already the case for other data types.</p></li>
 <li><p>The <code>windflow</code> argument of <code><a href="../reference/timePlot.html">timePlot()</a></code> now works when <code>"ws"</code> and/or <code>"wd"</code> are in <code>pollutant</code>.</p></li>
 <li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> will no longer leave <code>Uu</code> and <code>Vv</code> columns behind when <code>statistic = "data.cap"</code>.</p></li>
+<li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> now correctly passes <code>...</code> to <code><a href="../reference/cutData.html">cutData()</a></code>.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
