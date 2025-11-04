@@ -121,7 +121,7 @@ character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-Only one \code{type} is currently allowed in \code{timePlot}.}
+\code{type} must be of length one.}
 
 \item{cols}{Colours to be used for plotting; see \code{\link[=openColours]{openColours()}} for details.}
 
