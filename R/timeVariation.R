@@ -315,7 +315,7 @@ timeVariation <- function(
 
   # month.last deprecation
   if ("month.last" %in% names(extra.args)) {
-    if (isTrue(extra.args$month.last)) {
+    if (base::isTrue(extra.args$month.last)) {
       cli::cli_warn(c(
         "!" = "{.arg month.last} has been deprecated. Please use the {.arg panels} argument for flexible control over panels.",
         "i" = "Setting {.arg panels} to {.code c('hour.weekday', 'hour', 'weekday', 'month')}."
@@ -472,7 +472,7 @@ timeVariation <- function(
 
   # for individual plot keys - useful if only one of the plots is extracted after printing
   key_input <- key
-  if (isTRUE(key_input)) {
+  if (base::isTRUE(key_input)) {
     key <- list(
       rectangles = list(col = myColors[1:npol], border = NA),
       title = "",
@@ -627,7 +627,7 @@ timeVariation <- function(
 
   # if only one panel, just let it fill the whole area
   if (length(plot_out) == 1L) {
-    if (is.null(key_input) || isTRUE(key_input)) {
+    if (is.null(key_input) || base::isTRUE(key_input)) {
       plot_out[[1]] <-
         update(
           plot_out[[1]],
@@ -684,7 +684,7 @@ timeVariation <- function(
     }
 
     main.plot <- function(...) {
-      if (is.null(key_input) || isTRUE(key_input)) {
+      if (is.null(key_input) || base::isTRUE(key_input)) {
         if (type == "default") {
           print(
             update(

@@ -13,12 +13,7 @@
 \alias{cutData.Date}
 \title{Function to split data in different ways for conditioning}
 \usage{
-cutData(
-  x,
-  type = "default",
-  drop = c("default", "empty", "outside", "none"),
-  ...
-)
+cutData(x, type = "default", ...)
 
 \method{cutData}{data.frame}(
   x,
@@ -36,13 +31,13 @@ cutData(
   ...
 )
 
-\method{cutData}{default}(x, ...)
+\method{cutData}{default}(x, type = "default", ...)
 
-\method{cutData}{numeric}(x, type = c("default", "wd"), n.levels = 4, drop = "default", ...)
+\method{cutData}{numeric}(x, type = "default", n.levels = 4, drop = "default", ...)
 
-\method{cutData}{double}(x, type = c("default", "wd"), n.levels = 4, drop = "default", ...)
+\method{cutData}{double}(x, type = "default", n.levels = 4, drop = "default", ...)
 
-\method{cutData}{integer}(x, type = c("default", "wd"), n.levels = 4, drop = "default", ...)
+\method{cutData}{integer}(x, type = "default", n.levels = 4, drop = "default", ...)
 
 \method{cutData}{character}(x, type = "default", ...)
 
@@ -83,23 +78,6 @@ column named \code{date} for time-dependent \code{type} options.}
 frames, a column name in \code{x} to be conditioned on (e.g., \code{"no2"}, \code{"site"},
 etc.). See \code{\link[=cutData]{cutData()}} for all options.}
 
-\item{drop}{How to handle empty factor levels. One of:
-\itemize{
-\item \code{"default"}: Sensible defaults selected on a case-by-case basis for
-different \code{type} options.
-\item \code{"empty"}: Drop all empty factor levels.
-\item \code{"none"}: Retain all empty factor levels, where possible. For example,
-for \code{type = "hour"}, all factor levels from \code{0} and \code{23} will be
-represented.
-\item \code{"outside"}: Retain empty factor levels within the range of the data.
-For example, for \code{type = "hour"} when the data only contains data for 1 AM
-and 5 AM, the factor levels, \code{1}, \code{2}, \code{3}, \code{4} and \code{5} will be retained.
-}
-
-Some of these options only apply to certain \code{type} options. For example,
-for \code{type = "year"}, \code{"outside"} is equivalent to \code{"none"} as there is no
-fixed range of years to use in the \code{"none"} case.}
-
 \item{...}{All additional parameters are passed on to next function(s).}
 
 \item{names}{By default, the columns created by \code{\link[=cutData]{cutData()}} are named after
@@ -134,6 +112,23 @@ original data are in GMT (UTC) or a fixed offset from GMT.}
 
 \item{latitude, longitude}{The decimal latitude and longitudes used when \code{type = "daylight"}. Note that locations west of Greenwich have negative
 longitudes.}
+
+\item{drop}{How to handle empty factor levels. One of:
+\itemize{
+\item \code{"default"}: Sensible defaults selected on a case-by-case basis for
+different \code{type} options.
+\item \code{"empty"}: Drop all empty factor levels.
+\item \code{"none"}: Retain all empty factor levels, where possible. For example,
+for \code{type = "hour"}, all factor levels from \code{0} and \code{23} will be
+represented.
+\item \code{"outside"}: Retain empty factor levels within the range of the data.
+For example, for \code{type = "hour"} when the data only contains data for 1 AM
+and 5 AM, the factor levels, \code{1}, \code{2}, \code{3}, \code{4} and \code{5} will be retained.
+}
+
+Some of these options only apply to certain \code{type} options. For example,
+for \code{type = "year"}, \code{"outside"} is equivalent to \code{"none"} as there is no
+fixed range of years to use in the \code{"none"} case.}
 }
 \value{
 If \code{x} is a data.frame, returns the data frame with columns appended
@@ -227,16 +222,16 @@ individual methods for extra arguments and differences in behaviour.
 
 \examples{
 # split data by day of the week
-mydata <- cutData(mydata, type = "weekday")
-names(mydata)
-head(mydata)
+cutdata <- cutData(mydata, type = "weekday")
+names(cutdata)
+head(cutdata)
 
 # use many types
-cutData(mydata, type = c("weekday", "weekend", "no2"))
+head(cutData(mydata, type = c("weekday", "weekend", "no2")))
 
 # use different names
-cutData(mydata, type = c("wd", "ws"), names = c("winddir", "windspd"))
-cutData(mydata, type = c("no2", "nox"), suffix = "_cuts")
+head(cutData(mydata, type = c("wd", "ws"), names = c("winddir", "windspd")))
+head(cutData(mydata, type = c("no2", "nox"), suffix = "_cuts"))
 
 # apply to vectors
 head(mydata$no2)

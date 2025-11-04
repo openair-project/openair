@@ -53,22 +53,6 @@ available.}
   \describe{
     \item{\code{x}}{A data frame or vector. Data frames should contain a POSIXCt or Date
 column named \code{date} for time-dependent \code{type} options.}
-    \item{\code{drop}}{How to handle empty factor levels. One of:
-\itemize{
-\item \code{"default"}: Sensible defaults selected on a case-by-case basis for
-different \code{type} options.
-\item \code{"empty"}: Drop all empty factor levels.
-\item \code{"none"}: Retain all empty factor levels, where possible. For example,
-for \code{type = "hour"}, all factor levels from \code{0} and \code{23} will be
-represented.
-\item \code{"outside"}: Retain empty factor levels within the range of the data.
-For example, for \code{type = "hour"} when the data only contains data for 1 AM
-and 5 AM, the factor levels, \code{1}, \code{2}, \code{3}, \code{4} and \code{5} will be retained.
-}
-
-Some of these options only apply to certain \code{type} options. For example,
-for \code{type = "year"}, \code{"outside"} is equivalent to \code{"none"} as there is no
-fixed range of years to use in the \code{"none"} case.}
   }}
 }
 \value{

@@ -95,25 +95,6 @@
 #'   frames, a column name in `x` to be conditioned on (e.g., `"no2"`, `"site"`,
 #'   etc.). See [cutData()] for all options.
 #'
-#' @param drop How to handle empty factor levels. One of:
-#'
-#'   - `"default"`: Sensible defaults selected on a case-by-case basis for
-#'   different `type` options.
-#'
-#'   - `"empty"`: Drop all empty factor levels.
-#'
-#'   - `"none"`: Retain all empty factor levels, where possible. For example,
-#'   for `type = "hour"`, all factor levels from `0` and `23` will be
-#'   represented.
-#'
-#'   - `"outside"`: Retain empty factor levels within the range of the data.
-#'   For example, for `type = "hour"` when the data only contains data for 1 AM
-#'   and 5 AM, the factor levels, `1`, `2`, `3`, `4` and `5` will be retained.
-#'
-#'   Some of these options only apply to certain `type` options. For example,
-#'   for `type = "year"`, `"outside"` is equivalent to `"none"` as there is no
-#'   fixed range of years to use in the `"none"` case.
-#'
 #' @param ... All additional parameters are passed on to next function(s).
 #'
 #' @export
@@ -128,16 +109,16 @@
 #'
 #' @examples
 #' # split data by day of the week
-#' mydata <- cutData(mydata, type = "weekday")
-#' names(mydata)
-#' head(mydata)
+#' cutdata <- cutData(mydata, type = "weekday")
+#' names(cutdata)
+#' head(cutdata)
 #'
 #' # use many types
-#' cutData(mydata, type = c("weekday", "weekend", "no2"))
+#' head(cutData(mydata, type = c("weekday", "weekend", "no2")))
 #'
 #' # use different names
-#' cutData(mydata, type = c("wd", "ws"), names = c("winddir", "windspd"))
-#' cutData(mydata, type = c("no2", "nox"), suffix = "_cuts")
+#' head(cutData(mydata, type = c("wd", "ws"), names = c("winddir", "windspd")))
+#' head(cutData(mydata, type = c("no2", "nox"), suffix = "_cuts"))
 #'
 #' # apply to vectors
 #' head(mydata$no2)
@@ -147,7 +128,6 @@
 cutData <- function(
   x,
   type = "default",
-  drop = c("default", "empty", "outside", "none"),
   ...
 ) {
   UseMethod("cutData")
@@ -190,6 +170,25 @@ cutData <- function(
 #' @param latitude,longitude The decimal latitude and longitudes used when `type
 #'   = "daylight"`. Note that locations west of Greenwich have negative
 #'   longitudes.
+#'
+#' @param drop How to handle empty factor levels. One of:
+#'
+#'   - `"default"`: Sensible defaults selected on a case-by-case basis for
+#'   different `type` options.
+#'
+#'   - `"empty"`: Drop all empty factor levels.
+#'
+#'   - `"none"`: Retain all empty factor levels, where possible. For example,
+#'   for `type = "hour"`, all factor levels from `0` and `23` will be
+#'   represented.
+#'
+#'   - `"outside"`: Retain empty factor levels within the range of the data.
+#'   For example, for `type = "hour"` when the data only contains data for 1 AM
+#'   and 5 AM, the factor levels, `1`, `2`, `3`, `4` and `5` will be retained.
+#'
+#'   Some of these options only apply to certain `type` options. For example,
+#'   for `type = "year"`, `"outside"` is equivalent to `"none"` as there is no
+#'   fixed range of years to use in the `"none"` case.
 #'
 #' @rdname cutData
 #' @export
@@ -330,6 +329,7 @@ cutData.data.frame <- function(
 #' @export
 cutData.default <- function(
   x,
+  type = "default",
   ...
 ) {
   cli::cli_warn(
@@ -342,7 +342,7 @@ cutData.default <- function(
 #' @export
 cutData.numeric <- function(
   x,
-  type = c("default", "wd"),
+  type = "default",
   n.levels = 4,
   drop = "default",
   ...
@@ -830,14 +830,11 @@ cutVecDaylight <- function(
   x <- data.frame(date = x)
 
   # local hour offset
-
   local.hour.offset <- as.numeric(
     lubridate::force_tz(x$date[1], "UTC") - x$date[1]
   )
 
-  ###################
   # temp functions
-  ###################
   rad <- function(x) {
     x * pi / 180
   }
@@ -845,14 +842,10 @@ cutVecDaylight <- function(
     x * (180 / pi)
   }
 
-  ###############
   # get local time
-  ###############
   temp <- x$date
 
-  #################
   # make julian.refs
-  #################
   # ref Gregorian calendar back extrapolated.
   # assumed good for years between 1800 and 2100
 
@@ -869,9 +862,7 @@ cutVecDaylight <- function(
     (local.hour.offset / 24)
   julian.century <- (julian.century - 2451545) / 36525
 
-  ##################
   # main calcs
-  ##################
   # as of noaa
 
   geom.mean.long.sun.deg <-
@@ -936,11 +927,9 @@ cutVecDaylight <- function(
     )
 
   # original nooa code
-  ##
   # ha.sunrise.deg <- degrees(acos(cos(rad(90.833)) /
   #                  (cos(rad(latitude)) * cos(rad(sun.declin.deg))) -
   #                  tan(rad(latitude)) * tan(rad(sun.declin.deg))))
-  ##
   # R error catcher added
   # for long nights>24hours/short nights<0
 
@@ -960,9 +949,7 @@ cutVecDaylight <- function(
 
   sunlight.duration.minutes <- 8 * ha.sunrise.deg
 
-  #################################
   # daylight factor
-  #################################
   # need to confirm dusk/dawn handing
 
   daylight <- ifelse(
