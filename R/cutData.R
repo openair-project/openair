@@ -670,11 +670,6 @@ cutVecMonth <- function(x, is.axis, drop) {
 #' Cut a vector into 'monthyears' (e.g., January 2020)
 #' @noRd
 cutVecMonthyear <- function(x, is.axis, drop) {
-  str <- "%B %Y"
-  if (is.axis) {
-    str <- "%b\n%Y"
-  }
-
   # get years and months
   yrs <- cutVecYear(x, drop = "none")
   mnths <- cutVecMonth(x, is.axis = is.axis, drop = "none")
