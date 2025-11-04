@@ -362,6 +362,14 @@ cutData.numeric <- function(
 
 #' @rdname cutData
 #' @export
+cutData.double <- cutData.numeric
+
+#' @rdname cutData
+#' @export
+cutData.integer <- cutData.numeric
+
+#' @rdname cutData
+#' @export
 cutData.character <- function(
   x,
   type = "default",

@@ -5,6 +5,8 @@
 \alias{cutData.data.frame}
 \alias{cutData.default}
 \alias{cutData.numeric}
+\alias{cutData.double}
+\alias{cutData.integer}
 \alias{cutData.character}
 \alias{cutData.factor}
 \alias{cutData.POSIXct}
@@ -37,6 +39,10 @@ cutData(
 \method{cutData}{default}(x, ...)
 
 \method{cutData}{numeric}(x, type = c("default", "wd"), n.levels = 4, drop = "default", ...)
+
+\method{cutData}{double}(x, type = c("default", "wd"), n.levels = 4, drop = "default", ...)
+
+\method{cutData}{integer}(x, type = c("default", "wd"), n.levels = 4, drop = "default", ...)
 
 \method{cutData}{character}(x, type = "default", ...)
 
@@ -224,6 +230,19 @@ individual methods for extra arguments and differences in behaviour.
 mydata <- cutData(mydata, type = "weekday")
 names(mydata)
 head(mydata)
+
+# use many types
+cutData(mydata, type = c("weekday", "weekend", "no2"))
+
+# use different names
+cutData(mydata, type = c("wd", "ws"), names = c("winddir", "windspd"))
+cutData(mydata, type = c("no2", "nox"), suffix = "_cuts")
+
+# apply to vectors
+head(mydata$no2)
+head(cutData(mydata$no2))
+
+head(cutData(mydata$date, "weekday"))
 }
 \author{
 David Carslaw
