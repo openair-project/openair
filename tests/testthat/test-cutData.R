@@ -2,17 +2,25 @@ test_that("cutData works", {
   testdat <- dplyr::filter(mydata, lubridate::year(date) == 2005)
   testdat <- dplyr::select(testdat, date, ws, wd, nox, no2)
 
-  default <- cutData(testdat)
+  default <- cutData(testdat, local.tz = "Europe/London")
   expect_equal(names(default), c("date", "ws", "wd", "nox", "no2", "default"))
   expect_equal(nrow(default), nrow(testdat))
 
-  default2 <- cutData(testdat, names = c("dateranges"))
+  default2 <- cutData(
+    testdat,
+    names = c("dateranges"),
+    local.tz = "Europe/London"
+  )
   expect_equal(
     names(default2),
     c("date", "ws", "wd", "nox", "no2", "dateranges")
   )
 
-  multiple <- cutData(testdat, type = c("default", "month"))
+  multiple <- cutData(
+    testdat,
+    type = c("default", "month"),
+    local.tz = "Europe/London"
+  )
   expect_equal(
     names(multiple),
     c("date", "ws", "wd", "nox", "no2", "default", "month")
@@ -21,7 +29,8 @@ test_that("cutData works", {
   expect_error(cutData(
     testdat,
     type = c("default", "month"),
-    names = c("onename")
+    names = c("onename"),
+    local.tz = "Europe/London"
   ))
 
   conds <- c(
@@ -100,7 +109,8 @@ test_that("cutData works", {
         !is.na(testdat$nox),
     ],
     c("no2", "nox"),
-    suffix = "_cuts"
+    suffix = "_cuts",
+    local.tz = "Europe/London"
   )
   expect_type(suffix$no2, "integer")
   expect_type(suffix$nox, "integer")
@@ -111,7 +121,12 @@ test_that("cutData works", {
   expect_error(cutData(testdat, "some_silly_type"))
 
   # hemisphere working?
-  southern <- cutData(testdat, "season", hemisphere = "southern")
+  southern <- cutData(
+    testdat,
+    "season",
+    hemisphere = "southern",
+    local.tz = "Europe/London"
+  )
   expect_equal(
     levels(southern$season),
     c("summer (DJF)", "autumn (MAM)", "winter (JJA)")
@@ -122,7 +137,8 @@ test_that("cutData works", {
     dropopts <- cutData(
       testdat[!is.na(testdat$wd), ],
       type = conds,
-      drop = drop
+      drop = drop,
+      local.tz = "Europe/London"
     )
     expect_s3_class(dropopts$wd, "ordered")
     expect_s3_class(dropopts$year, "ordered")
