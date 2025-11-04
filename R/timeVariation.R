@@ -602,11 +602,23 @@ timeVariation <- function(
   format_tv_data_for_output <- function(data) {
     out_data <- data$data
 
+    # give the "type" column a nicer name
     if (type != "default") {
       names(out_data)[names(out_data) == "openair_type"] <- paste(
         orig_type,
         "type",
         sep = "_"
+      )
+    }
+
+    # reformat the variable column in a nicer way - as long as there's x_labels
+    # (i.e., ignore hour/week). Use full labels as sometimes you end up with
+    # repeated factor levels (e.g., for month)
+    if (!is.null(data$x_labels)) {
+      out_data[data$var] <- factor(
+        out_data[[data$var]],
+        levels = data$x_breaks,
+        labels = data$x_labels_full
       )
     }
 
@@ -915,7 +927,8 @@ prep_panel_data <- function(
   if (vars == "month") {
     label.len <- 1L
   }
-  x_labels <- substr(levels(mydata[[vars]]), 1, label.len)
+  x_labels_full <- levels(mydata[[vars]])
+  x_labels <- substr(x_labels_full, 1, label.len)
 
   # breaks - mostly just an ID for the labels, but can be overwritten
   x_breaks <- seq_along(x_labels)
@@ -1015,8 +1028,10 @@ prep_panel_data <- function(
   list(
     data = data,
     x_labels = x_labels,
+    x_labels_full = x_labels_full,
     x_breaks = x_breaks,
-    ordered = ordered
+    ordered = ordered,
+    var = vars[1]
   )
 }
 
