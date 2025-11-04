@@ -123,7 +123,6 @@
 #'   Some of these options only apply to certain `type` options. For example,
 #'   for `type = "year"`, `"outside"` is equivalent to `"none"` as there is no
 #'   fixed range of years to use in the `"none"` case.
-#'
 #' @param ... All additional parameters are passed on to next function(s).
 #' @export
 #' @return Returns the data frame, `x`, with columns appended as defined by
@@ -271,13 +270,19 @@ cutData <- function(
     }
 
     if (type == "season") {
-      x[[name]] <- cutVecSeason(x$date, hemisphere = hemisphere, drop = drop)
+      x[[name]] <- cutVecSeason(
+        x$date,
+        hemisphere = hemisphere,
+        is.axis = is.axis,
+        drop = drop
+      )
     }
 
     if (type %in% c("seasonyear", "yearseason")) {
       x[[name]] <- cutVecSeasonyear(
         x$date,
         hemisphere = hemisphere,
+        is.axis = is.axis,
         drop = drop
       )
     }
@@ -473,7 +478,7 @@ cutVecMonth <- function(x, is.axis, drop) {
 cutVecMonthyear <- function(x, is.axis, drop) {
   str <- "%B %Y"
   if (is.axis) {
-    str <- "%b %Y"
+    str <- "%b\n%Y"
   }
 
   # get years and months
@@ -512,9 +517,16 @@ cutVecMonthyear <- function(x, is.axis, drop) {
 
 #'  Cut into season year (e.g., Summer 2020)
 #'  @noRd
-cutVecSeasonyear <- function(x, hemisphere, drop) {
+cutVecSeasonyear <- function(x, hemisphere, is.axis, drop) {
+  sep <- ifelse(is.axis, "\n", "-")
+
   # get seasons/years
-  seasons <- cutVecSeason(x, hemisphere = hemisphere, drop = "none")
+  seasons <- cutVecSeason(
+    x,
+    hemisphere = hemisphere,
+    is.axis = TRUE,
+    drop = "none"
+  )
   years <- lubridate::year(x)
 
   # adjust year if month is 12 - belongs to "winter" next year
@@ -528,12 +540,12 @@ cutVecSeasonyear <- function(x, hemisphere, drop) {
       season = factor(levels(seasons), levels = levels(seasons))
     ) |>
     dplyr::mutate(
-      level = paste(.data$season, .data$year, sep = "-")
+      level = paste(.data$season, .data$year, sep = sep)
     ) |>
     dplyr::pull(.data$level)
 
   # combine actual years and months
-  x <- paste(seasons, years, sep = "-")
+  x <- factor(paste(seasons, years, sep = sep), levels = levels)
 
   # get the factor levels
   if (drop %in% c("default", "empty")) {
@@ -541,9 +553,8 @@ cutVecSeasonyear <- function(x, hemisphere, drop) {
   } else if (drop == "none") {
     levels <- levels
   } else if (drop == "outside") {
-    start <- which(levels == dplyr::first(x))
-    end <- which(levels == dplyr::last(x))
-    levels <- levels[start:end]
+    level_ids <- range(which(levels %in% x))
+    levels <- levels[min(level_ids):max(level_ids)]
   }
 
   x <- ordered(x, levels = levels)
@@ -807,7 +818,8 @@ cutVecDaylight <- function(
 
 #'  Cut a vector into seasons
 #'  @noRd
-cutVecSeason <- function(x, hemisphere, drop) {
+cutVecSeason <- function(x, hemisphere, is.axis, drop) {
+  sep <- ifelse(is.axis, "\n", " ")
   hemisphere <- rlang::arg_match(hemisphere, c("northern", "southern"))
 
   # need to work out month names local to the user and extract first letter
@@ -817,7 +829,7 @@ cutVecSeason <- function(x, hemisphere, drop) {
 
   # Function to create, e.g., 'winter (JFM)'
   make_season_name <- function(str, id) {
-    paste0(str, " (", paste(month_names_local[id], collapse = ""), ")")
+    paste0(str, sep, "(", paste(month_names_local[id], collapse = ""), ")")
   }
 
   # get months by number

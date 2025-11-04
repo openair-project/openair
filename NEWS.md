@@ -6,6 +6,16 @@
 
 ## New Features
 
+- `timeVariation()` has been almost completely rewritten, allowing for the following updates:
+
+    - Gained the `panels` argument. This allows for panels other than "hour.weekday", "hour", "month", and "weekday" to be represented in the plot assembly. The first panel will be the top row, and the re
+    
+    - `timeVariation()` will now change lines to points and polygons to rectangles for certain panel and `group` combinations: month-season, weekday-weekend, and hour-daylight.
+
+    - When `key` is `FALSE`, no key is shown for any of the four `timeVariation()` plots. Previously, any value passed to `key` would cause all four plots to display a key.
+
+    - (!) BREAKING: The order of `xlab` and `ylim` now matches the order of `panels`. `month.last` has also been deprecated; if used and `TRUE`, this will override `panels` with a warning. The output names `output$data` will now vary based on `panels`, and the `type` column will be named `{type}_type` (e.g., "hour_type").
+
 - `cutData()` now contains the `drop` argument. This allows for greater control over factor levels for appended columns. For example, consider a situation in which `data` only contains dates in March and May and `type = "month"` is used:
 
     - `drop = "empty"` will ensure the resulting vector only has factor levels `"March"` and `"May"`. 
@@ -16,7 +26,7 @@
     
     - `drop = "default"` is the existing `cutData()` behaviour - in the case of `type = "month"`, it is equivalent to `drop = "empty"`.
 
-- `is.axis` now has an effect on `cutData(type = "weekday")`.
+- `is.axis` now has an effect on `weekday`, `season`, `seasonyear` and `monthyear`.
 
 - `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
 
