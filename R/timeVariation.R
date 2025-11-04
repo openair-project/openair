@@ -564,7 +564,7 @@ timeVariation <- function(
         type = type,
         v_gridlines = data$x_breaks,
         v_labels = data$x_labels,
-        xlab = xlab,
+        xlab = quickText(xlab, auto.text = auto.text),
         key = key,
         strip = strip,
         myColors = myColors,
