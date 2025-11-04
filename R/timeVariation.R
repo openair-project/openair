@@ -393,6 +393,14 @@ timeVariation <- function(
     type <- "openair_type"
   }
 
+  # need to isolate "group" as if the grouping var is also a panel it'll be
+  # stripped away
+  if (!is.null(group)) {
+    orig_group <- group
+    mydata$openair_group <- mydata[[group]]
+    group <- "openair_group"
+  }
+
   # put in local time if needed
   if (!is.null(local.tz)) {
     attr(mydata$date, "tzone") <- local.tz
