@@ -315,7 +315,7 @@ timeVariation <- function(
 
   # month.last deprecation
   if ("month.last" %in% names(extra.args)) {
-    if (base::isTrue(extra.args$month.last)) {
+    if (base::isTRUE(extra.args$month.last)) {
       cli::cli_warn(c(
         "!" = "{.arg month.last} has been deprecated. Please use the {.arg panels} argument for flexible control over panels.",
         "i" = "Setting {.arg panels} to {.code c('hour.weekday', 'hour', 'weekday', 'month')}."
