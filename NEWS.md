@@ -26,9 +26,11 @@
     
     - Adding a minus to a scheme name will invert `direction`. This is most useful when using `openColours()` indirectly; e.g., `polarPlot(mydata, "no2", cols = "-viridis")`.
 
-    - Qualitative palettes will now consistently interpolate if `n` is greater than their maximum values. They will always warn the user, however.
+    - Qualitative palettes are now consistently interpolated if `n` is greater than their maximum values. The option `too_few` can be defined to change this behaviour to cycling through the colour palette, or raising an error. The user will always be warned if any `too_few` strategy needs to be implemented.
 
-    - the `openSchemes` object is now exported. This dataset contains a complete list of available schemes available via `openColours()`.
+    - The `openSchemes` object is now exported. This dataset contains a complete list of available schemes available via `openColours()`.
+    
+    - Additional palettes have been defined based on the works of both Paul Tol and Fabio Crameri.
 
 ## Bug Fixes
 

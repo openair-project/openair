@@ -32,8 +32,8 @@
 #'
 #' @section Schemes:
 #'
-#'   The following schemes are made available by [openColours()]. They are also
-#'   listed in [openSchemes].
+#'   The following is an abridged list of schemes made available by
+#'   [openColours()]. A complete list is outlined in [openSchemes].
 #'
 #'   **Sequential Colours:**
 #'
@@ -48,11 +48,15 @@
 #'   `"PuBuGn"`, `"PuRd"`, `"Purples"`, `"RdPu"`, `"Reds"`, `"YlGn"`,
 #'   `"YlGnBu"`, `"YlOrBr"`, `"YlOrRd"`.
 #'
+#'   * Simplified versions of Fabio Crameri's sequential color schemes (e.g., `"batlow"`).
+#'
 #'   **Diverging Palettes:**
 #'
 #'   * Simplified versions of the `RColorBrewer` diverging palettes: `"BrBG"`,
 #'   `"PiYG"`, `"PRGn"`, `"PuOr"`, `"RdBu"`, `"RdGy"`, `"RdYlBu"`, `"RdYlGn"`,
 #'   `"Spectral"`.
+#'
+#'   * Simplified versions of Fabio Crameri's diverging color schemes (e.g., `"berlin"`).
 #'
 #'   **Qualitative Palettes:**
 #'
@@ -63,8 +67,8 @@
 #'   * `"okabeito"` (or `"cbPalette"`), a colour-blind safe palette based on
 #'   the work of Masataka Okabe and Kei Ito.
 #'
-#'   * `"tol.bright"` (or `"tol"`), `"tol.muted"` and `"tol.light"`, colour-blind safe
-#'   palettes based on the work of Paul Tol.
+#'   * Paul Tol's palettes (e.g., `"tol.bright"`, `"tol.muted"`, `"tol.light"`,
+#'   etc.), many of which are colour blind safe.
 #'
 #'   * `"tableau"` and `"observable"`, aliases for the
 #'   "Tableau10" and "Observable10" colour palettes. These could be useful for
@@ -96,7 +100,6 @@
 #'   \item{category}{The category - one of `"div"` (diverging), `"qual"` (qualitative), or `"seq"` (sequential).}
 #'   \item{scheme}{The scheme name - to be provided to [openColours()]}
 #'   \item{max_n}{The maximum number of pre-defined colours in a qualitative palette. Setting `n` greater than this value is not recommended.}
-#'   \item{colorblind}{Whether or not the scheme is colour-blind accessible. This is a estimation based on available information from third parties; users should assess the accesibility of all visualisations they create.}
 #'   \item{origin}{The original authors of the palette.}
 #'   \item{reference}{A URL reference for further reading about the colour schemes.}
 #'   }
@@ -453,6 +456,34 @@ qualPalette <- function(n, scheme, too_few) {
         "#AAAA00",
         "#DDDDDD"
       )
+  }
+
+  if (scheme == "tol.highcontrast") {
+    cols <- c("#004488", "#DDAA33", "#BB5566")
+  }
+
+  if (scheme == "tol.vibrant") {
+    cols <- c(
+      "#EE7733",
+      "#0077BB",
+      "#33BBEE",
+      "#EE3377",
+      "#CC3311",
+      "#009988",
+      "#BBBBBB"
+    )
+  }
+
+  if (scheme == "tol.mediumcontrast") {
+    cols <- c("#EECC66", "#EE99AA", "#6699CC", "#997700", "#994455", "#004488")
+  }
+
+  if (scheme == "tol.pale") {
+    cols <- c("#BBCCEE", "#CCEEFF", "#CCDDAA", "#EEEEBB", "#FFCCCC", "#DDDDDD")
+  }
+
+  if (scheme == "tol.dark") {
+    cols <- c("#222255", "#225555", "#225522", "#666633", "#663333", "#555555")
   }
 
   if (scheme == "tableau") {
@@ -1085,6 +1116,675 @@ seqPalette <- function(n, scheme) {
       "#F66B19FF",
       "#CB2A04FF",
       "#7A0403FF"
+    )
+  }
+
+  if (scheme == "broc") {
+    cols <- c(
+      "#2C1A4C",
+      "#284073",
+      "#3F6B99",
+      "#7798B7",
+      "#B3C5D7",
+      "#EAEEEC",
+      "#DBDAB7",
+      "#B4B47A",
+      "#81814C",
+      "#515123",
+      "#262600"
+    )
+  }
+
+  if (scheme == "cork") {
+    cols <- c(
+      "#2C194C",
+      "#284174",
+      "#3D6B98",
+      "#7092B3",
+      "#ADC1D4",
+      "#E6EDEC",
+      "#B6CEB6",
+      "#79A578",
+      "#438142",
+      "#195715",
+      "#0F2903"
+    )
+  }
+
+  if (scheme == "vik") {
+    cols <- c(
+      "#001261",
+      "#02397A",
+      "#116496",
+      "#5597B8",
+      "#A7C9DA",
+      "#EBE5E1",
+      "#E0B79F",
+      "#CC875F",
+      "#B75A26",
+      "#862306",
+      "#590008"
+    )
+  }
+
+  if (scheme == "lisbon") {
+    cols <- c(
+      "#E6E5FF",
+      "#A1B3D6",
+      "#6083AE",
+      "#28517B",
+      "#132A42",
+      "#161919",
+      "#383522",
+      "#67603D",
+      "#9A9160",
+      "#CEC896",
+      "#FFFFD9"
+    )
+  }
+
+  if (scheme == "tofino") {
+    cols <- c(
+      "#DED9FF",
+      "#99A9E1",
+      "#5777BA",
+      "#2F4979",
+      "#19253D",
+      "#0D1513",
+      "#18321A",
+      "#2B5C2F",
+      "#4A8D4B",
+      "#8FBD73",
+      "#DBE69B"
+    )
+  }
+
+  if (scheme == "berlin") {
+    cols <- c(
+      "#9EB0FF",
+      "#61A5DF",
+      "#3280A6",
+      "#1F5068",
+      "#112732",
+      "#180C09",
+      "#371000",
+      "#601F0A",
+      "#964A36",
+      "#C97970",
+      "#FFADAD"
+    )
+  }
+
+  if (scheme == "roma") {
+    cols <- c(
+      "#7E1700",
+      "#974D13",
+      "#AC7726",
+      "#C1A444",
+      "#D2D484",
+      "#C0EAC2",
+      "#88D9D7",
+      "#4BB2CE",
+      "#2D88BE",
+      "#1E5FAC",
+      "#033198"
+    )
+  }
+
+  if (scheme == "bam") {
+    cols <- c(
+      "#65024B",
+      "#9A3780",
+      "#C164A9",
+      "#DD9BCC",
+      "#F0D1E8",
+      "#F6F1F0",
+      "#E1ECD0",
+      "#ABCB87",
+      "#709E4B",
+      "#417726",
+      "#0D4C00"
+    )
+  }
+
+  if (scheme == "vanimo") {
+    cols <- c(
+      "#FFCDFD",
+      "#D787C9",
+      "#AD539A",
+      "#722D62",
+      "#33172C",
+      "#1A1513",
+      "#232C14",
+      "#40591F",
+      "#62872F",
+      "#89BB51",
+      "#BEFDA5"
+    )
+  }
+
+  if (scheme == "managua") {
+    cols <- c(
+      "#FFCF67",
+      "#DF9E56",
+      "#C17449",
+      "#9E503E",
+      "#773339",
+      "#572948",
+      "#4C3D73",
+      "#5162A1",
+      "#5F89C3",
+      "#6FB5E1",
+      "#81E7FF"
+    )
+  }
+
+  if (scheme == "sunset") {
+    cols <- c(
+      "#364B9A",
+      "#4A7BB7",
+      "#6EA6CD",
+      "#98CAE1",
+      "#C2E4EF",
+      "#EAECCC",
+      "#FEDA8B",
+      "#FDB366",
+      "#F67E4B",
+      "#DD3D2D",
+      "#A50026"
+    )
+  }
+
+  if (scheme == "nightfall") {
+    cols <- c(
+      "#125A56",
+      "#15858F",
+      "#48ABCD",
+      "#90C8ED",
+      "#CFDFEA",
+      "#ECEADA",
+      "#F5DB8D",
+      "#FEB250",
+      "#F67D37",
+      "#DF3715",
+      "#A01813"
+    )
+  }
+
+  if (scheme == "navia") {
+    cols <- c(
+      "#031327",
+      "#063059",
+      "#105185",
+      "#236C91",
+      "#327C89",
+      "#408A80",
+      "#549B74",
+      "#70B369",
+      "#A7D278",
+      "#DCE7AD",
+      "#FCF4D9"
+    )
+  }
+
+  if (scheme == "naviaW") {
+    cols <- c(
+      "#041427",
+      "#08335B",
+      "#165584",
+      "#29708F",
+      "#388188",
+      "#49917F",
+      "#62A774",
+      "#8DC574",
+      "#CBE6A3",
+      "#EEF6DA",
+      "#FEFEFD"
+    )
+  }
+
+  if (scheme == "devon") {
+    cols <- c(
+      "#2C1A4C",
+      "#293164",
+      "#274A7E",
+      "#2F62A1",
+      "#4C77C4",
+      "#7D8EDC",
+      "#A8A5EC",
+      "#C0BAF2",
+      "#D5D1F6",
+      "#E9E7FB",
+      "#FFFFFF"
+    )
+  }
+
+  if (scheme == "glasgow") {
+    cols <- c(
+      "#361338",
+      "#4C1924",
+      "#652211",
+      "#743B01",
+      "#735704",
+      "#6D702C",
+      "#65845D",
+      "#60988D",
+      "#7EAEB9",
+      "#AABFDB",
+      "#DBD3FF"
+    )
+  }
+
+  if (scheme == "lajolla") {
+    cols <- c(
+      "#191900",
+      "#30210D",
+      "#512D1E",
+      "#7E3B35",
+      "#B34947",
+      "#D85F4D",
+      "#E38050",
+      "#E99D53",
+      "#F0BD57",
+      "#F9E283",
+      "#FFFECB"
+    )
+  }
+
+  if (scheme == "bamako") {
+    cols <- c(
+      "#003B47",
+      "#0C4240",
+      "#1B4C37",
+      "#2E582A",
+      "#47681C",
+      "#61790A",
+      "#818800",
+      "#A3930D",
+      "#C6AE39",
+      "#E4CA74",
+      "#FFE5AD"
+    )
+  }
+
+  if (scheme == "davos") {
+    cols <- c(
+      "#00054A",
+      "#0F296E",
+      "#234A8C",
+      "#3A679B",
+      "#547D9C",
+      "#6B8D93",
+      "#849E89",
+      "#A5B68A",
+      "#D4DBA8",
+      "#F4F4D6",
+      "#FEFEFE"
+    )
+  }
+
+  if (scheme == "bilbao") {
+    cols <- c(
+      "#4C0001",
+      "#702126",
+      "#8E3F46",
+      "#9E5A55",
+      "#A46F5A",
+      "#A9815E",
+      "#AE9663",
+      "#B9AE81",
+      "#C4C0AC",
+      "#D5D4D2",
+      "#FFFFFF"
+    )
+  }
+
+  if (scheme == "nuuk") {
+    cols <- c(
+      "#05598C",
+      "#266184",
+      "#436E82",
+      "#638089",
+      "#859493",
+      "#A0A598",
+      "#B2B293",
+      "#BDBD8A",
+      "#CACA83",
+      "#E3E290",
+      "#FEFEB2"
+    )
+  }
+
+  if (scheme == "oslo") {
+    cols <- c(
+      "#010101",
+      "#0D1926",
+      "#122D48",
+      "#1A446E",
+      "#2C5D96",
+      "#4F7ABB",
+      "#7494C9",
+      "#92A6C9",
+      "#B2BCCC",
+      "#D7D9DD",
+      "#FFFFFF"
+    )
+  }
+
+  if (scheme == "grayC") {
+    cols <- c(
+      "#000000",
+      "#202020",
+      "#383838",
+      "#4E4E4E",
+      "#636363",
+      "#777777",
+      "#8B8B8B",
+      "#A2A2A2",
+      "#BDBDBD",
+      "#DBDBDB",
+      "#FFFFFF"
+    )
+  }
+
+  if (scheme == "hawaii") {
+    cols <- c(
+      "#8C0273",
+      "#91275A",
+      "#954147",
+      "#985935",
+      "#9C7524",
+      "#9C951C",
+      "#8EB63C",
+      "#77CB71",
+      "#62DCA9",
+      "#70EBDF",
+      "#B3F2FD"
+    )
+  }
+
+  if (scheme == "lapaz") {
+    cols <- c(
+      "#1A0C64",
+      "#222A79",
+      "#28468B",
+      "#315E99",
+      "#4277A2",
+      "#5B8BA3",
+      "#7C9B9D",
+      "#A0A696",
+      "#CAB79D",
+      "#F1D6C5",
+      "#FEF2F3"
+    )
+  }
+
+  if (scheme == "lipari") {
+    cols <- c(
+      "#031326",
+      "#0F3456",
+      "#3C5478",
+      "#615E78",
+      "#806070",
+      "#A36267",
+      "#CF695E",
+      "#E98768",
+      "#E6AA7F",
+      "#EACCA3",
+      "#FDF5DA"
+    )
+  }
+
+  if (scheme == "tokyo") {
+    cols <- c(
+      "#1C0E34",
+      "#471E42",
+      "#653A4D",
+      "#6E5151",
+      "#716152",
+      "#746F53",
+      "#788555",
+      "#7FA35C",
+      "#95CB78",
+      "#C6EFB1",
+      "#EFFCDD"
+    )
+  }
+  if (scheme == "buda") {
+    cols <- c(
+      "#B301B3",
+      "#B3279F",
+      "#B84294",
+      "#BF598C",
+      "#C76F85",
+      "#CD847E",
+      "#D39B78",
+      "#D8B173",
+      "#DEC96D",
+      "#E6E168",
+      "#FFFF66"
+    )
+  }
+
+  if (scheme == "acton") {
+    cols <- c(
+      "#260D40",
+      "#3B2B5B",
+      "#4F4775",
+      "#665E8A",
+      "#85648E",
+      "#A76690",
+      "#CA7199",
+      "#D891B3",
+      "#E2B2CF",
+      "#E9D0E6",
+      "#F0EAFA"
+    )
+  }
+  if (scheme == "turku") {
+    cols <- c(
+      "#000000",
+      "#21211E",
+      "#3C3C32",
+      "#565640",
+      "#71704C",
+      "#928B5A",
+      "#B9A06E",
+      "#D8A782",
+      "#EFB1A1",
+      "#FDCAC6",
+      "#FFE6E6"
+    )
+  }
+  if (scheme == "imola") {
+    cols <- c(
+      "#1A33B3",
+      "#2344AA",
+      "#2C55A1",
+      "#356598",
+      "#42748B",
+      "#53857F",
+      "#6A9D78",
+      "#83B672",
+      "#9FD26B",
+      "#C9EB67",
+      "#FFFF66"
+    )
+  }
+
+  if (scheme == "batlow") {
+    cols <- c(
+      "#011959",
+      "#0F3C5F",
+      "#185562",
+      "#30685B",
+      "#577647",
+      "#818231",
+      "#B38E2F",
+      "#E09651",
+      "#FBA689",
+      "#FDB8C1",
+      "#FACCFA"
+    )
+  }
+
+  if (scheme == "batlowW") {
+    cols <- c(
+      "#011959",
+      "#0F3C5F",
+      "#175462",
+      "#2D685D",
+      "#53784C",
+      "#7D8737",
+      "#B1993A",
+      "#DAA66C",
+      "#F3B49E",
+      "#FFDCDA",
+      "#FFFEFE"
+    )
+  }
+
+  if (scheme == "batlowK") {
+    cols <- c(
+      "#04050A",
+      "#17283C",
+      "#304D5D",
+      "#47605B",
+      "#61704D",
+      "#85823C",
+      "#B7953C",
+      "#E4A15F",
+      "#F9AC92",
+      "#FDBAC3",
+      "#FACCFA"
+    )
+  }
+
+  if (scheme == "brocO") {
+    cols <- c(
+      "#372F38",
+      "#373E5F",
+      "#4C6790",
+      "#7995B5",
+      "#ADBECD",
+      "#CFD3C5",
+      "#BBBB91",
+      "#8D8D5A",
+      "#615F36",
+      "#423C29",
+      "#372F37"
+    )
+  }
+
+  if (scheme == "corkO") {
+    cols <- c(
+      "#3F3E3A",
+      "#3E4159",
+      "#4D6389",
+      "#7490B0",
+      "#A1B8C7",
+      "#AFCBBC",
+      "#8FB990",
+      "#65945C",
+      "#4A6934",
+      "#424C2D",
+      "#3F3E3A"
+    )
+  }
+
+  if (scheme == "vikO") {
+    cols <- c(
+      "#4F1A3D",
+      "#3C3162",
+      "#355C8D",
+      "#5F8EB1",
+      "#A4B9C8",
+      "#D4BEB3",
+      "#D49B7C",
+      "#B86843",
+      "#8A3320",
+      "#651724",
+      "#50193C"
+    )
+  }
+
+  if (scheme == "romaO") {
+    cols <- c(
+      "#733957",
+      "#853E38",
+      "#9C5D2B",
+      "#B88F3C",
+      "#D3C876",
+      "#CBE1B2",
+      "#9AD3CD",
+      "#63ABC9",
+      "#4E7CB2",
+      "#5D4F86",
+      "#723959"
+    )
+  }
+
+  if (scheme == "bamO") {
+    cols <- c(
+      "#4F3043",
+      "#824574",
+      "#AE6D9E",
+      "#D19FC2",
+      "#D9C5CB",
+      "#CECDBB",
+      "#A1B084",
+      "#77825A",
+      "#5B5C44",
+      "#4B403B",
+      "#4E3042"
+    )
+  }
+
+  if (scheme == "iridescent") {
+    cols <- c(
+      "#FEFBE9",
+      "#F2F2BE",
+      "#D7EAC3",
+      "#BADFD5",
+      "#9DD3E0",
+      "#81C4E7",
+      "#80AFE2",
+      "#9692CC",
+      "#9B75A5",
+      "#835974",
+      "#46353A"
+    )
+  }
+
+  if (scheme == "incandescent") {
+    cols <- c(
+      "#CEFFFF",
+      "#C6F7D6",
+      "#A2F49B",
+      "#BBE453",
+      "#D5CE04",
+      "#E7B503",
+      "#F19903",
+      "#F6790B",
+      "#F94902",
+      "#E40515",
+      "#A80003"
+    )
+  }
+
+  if (scheme == "smoothrainbow") {
+    cols <- c(
+      "#E8ECFB",
+      "#BEA0CC",
+      "#92569E",
+      "#5666B6",
+      "#4F97BA",
+      "#64AE97",
+      "#A0BD57",
+      "#DDA83B",
+      "#E5702F",
+      "#C2221F",
+      "#521A13"
     )
   }
 

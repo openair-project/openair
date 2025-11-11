@@ -1,62 +1,109 @@
-category,scheme,max_n,colorblind,origin,reference
-div,BrBG,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-div,PRGn,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-div,PiYG,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-div,PuOr,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-div,RdBu,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-div,RdGy,NA,FALSE,RColorBrewer,https://colorbrewer2.org
-div,RdYlBu,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-div,RdYlGn,NA,FALSE,RColorBrewer,https://colorbrewer2.org
-div,Spectral,NA,FALSE,RColorBrewer,https://colorbrewer2.org
-qual,Accent,8,FALSE,RColorBrewer,https://colorbrewer2.org
-qual,Dark2,8,TRUE,RColorBrewer,https://colorbrewer2.org
-qual,Paired,12,TRUE,RColorBrewer,https://colorbrewer2.org
-qual,Pastel1,9,FALSE,RColorBrewer,https://colorbrewer2.org
-qual,Pastel2,8,FALSE,RColorBrewer,https://colorbrewer2.org
-qual,Set1,9,FALSE,RColorBrewer,https://colorbrewer2.org
-qual,Set2,8,TRUE,RColorBrewer,https://colorbrewer2.org
-qual,Set3,12,FALSE,RColorBrewer,https://colorbrewer2.org
-qual,brewer1,9,FALSE,RColorBrewer,https://colorbrewer2.org
-qual,cbPalette,9,TRUE,Okabe and Ito,https://jfly.uni-koeln.de/color/
-qual,daqi,10,FALSE,UK Government,https://uk-air.defra.gov.uk/air-pollution/daqi
-qual,daqi.bands,4,FALSE,UK Government,https://uk-air.defra.gov.uk/air-pollution/daqi
-qual,gaf.cat,6,TRUE,UK Government,https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/
-qual,gaf.focus,2,TRUE,UK Government,https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/
-qual,observable,10,FALSE,Observable,https://observablehq.com/blog/crafting-data-colors
-qual,okabeito,9,TRUE,Okabe and Ito,https://jfly.uni-koeln.de/color/
-qual,tableau,10,FALSE,Tableau,https://www.tableau.com/blog/colors-upgrade-tableau-10-56782
-qual,tol,7,TRUE,Paul Tol,https://sronpersonalpages.nl/~pault/
-qual,tol.bright,7,TRUE,Paul Tol,https://sronpersonalpages.nl/~pault/
-qual,tol.light,9,TRUE,Paul Tol,https://sronpersonalpages.nl/~pault/
-qual,tol.muted,10,TRUE,Paul Tol,https://sronpersonalpages.nl/~pault/
-seq,Blues,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,BuGn,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,BuPu,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,GnBu,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,Greens,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,Greys,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,OrRd,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,Oranges,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,PuBu,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,PuBuGn,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,PuRd,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,Purples,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,RdPu,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,Reds,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,YlGn,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,YlGnBu,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,YlOrBr,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,YlOrRd,NA,TRUE,RColorBrewer,https://colorbrewer2.org
-seq,cividis,NA,TRUE,viridis,https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
-seq,default,NA,FALSE,openair,
-seq,gaf.seq,NA,TRUE,UK Government,https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/
-seq,greyscale,NA,FALSE,openair,
-seq,heat,NA,TRUE,openair,
-seq,hue,NA,FALSE,openair,
-seq,increment,NA,FALSE,RColorBrewer,https://colorbrewer2.org
-seq,inferno,NA,TRUE,viridis,https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
-seq,jet,NA,FALSE,openair,
-seq,magma,NA,TRUE,viridis,https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
-seq,plasma,NA,TRUE,viridis,https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
-seq,turbo,NA,FALSE,viridis,https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
-seq,viridis,NA,TRUE,viridis,https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+category,scheme,max_n,origin,reference
+div,BrBG,NA,RColorBrewer,https://colorbrewer2.org
+div,PRGn,NA,RColorBrewer,https://colorbrewer2.org
+div,PiYG,NA,RColorBrewer,https://colorbrewer2.org
+div,PuOr,NA,RColorBrewer,https://colorbrewer2.org
+div,RdBu,NA,RColorBrewer,https://colorbrewer2.org
+div,RdGy,NA,RColorBrewer,https://colorbrewer2.org
+div,RdYlBu,NA,RColorBrewer,https://colorbrewer2.org
+div,RdYlGn,NA,RColorBrewer,https://colorbrewer2.org
+div,Spectral,NA,RColorBrewer,https://colorbrewer2.org
+div,broc,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+div,cork,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+div,vik,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+div,lisbon,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+div,tofino,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+div,berlin,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+div,roma,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+div,bam,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+div,vanimo,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+div,managua,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+div,sunset,NA,Paul Tol,https://sronpersonalpages.nl/~pault/
+div,nightfall,NA,Paul Tol,https://sronpersonalpages.nl/~pault/
+qual,Accent,8,RColorBrewer,https://colorbrewer2.org
+qual,Dark2,8,RColorBrewer,https://colorbrewer2.org
+qual,Paired,12,RColorBrewer,https://colorbrewer2.org
+qual,Pastel1,9,RColorBrewer,https://colorbrewer2.org
+qual,Pastel2,8,RColorBrewer,https://colorbrewer2.org
+qual,Set1,9,RColorBrewer,https://colorbrewer2.org
+qual,Set2,8,RColorBrewer,https://colorbrewer2.org
+qual,Set3,12,RColorBrewer,https://colorbrewer2.org
+qual,brewer1,9,RColorBrewer,https://colorbrewer2.org
+qual,cbPalette,9,Okabe and Ito,https://jfly.uni-koeln.de/color/
+qual,daqi,10,UK Government,https://uk-air.defra.gov.uk/air-pollution/daqi
+qual,daqi.bands,4,UK Government,https://uk-air.defra.gov.uk/air-pollution/daqi
+qual,gaf.cat,6,UK Government,https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/
+qual,gaf.focus,2,UK Government,https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/
+qual,observable,10,Observable,https://observablehq.com/blog/crafting-data-colors
+qual,okabeito,9,Okabe and Ito,https://jfly.uni-koeln.de/color/
+qual,tableau,10,Tableau,https://www.tableau.com/blog/colors-upgrade-tableau-10-56782
+qual,tol,7,Paul Tol,https://sronpersonalpages.nl/~pault/
+qual,tol.bright,7,Paul Tol,https://sronpersonalpages.nl/~pault/
+qual,tol.light,9,Paul Tol,https://sronpersonalpages.nl/~pault/
+qual,tol.muted,10,Paul Tol,https://sronpersonalpages.nl/~pault/
+qual,tol.highcontrast,3,Paul Tol,https://sronpersonalpages.nl/~pault/
+qual,tol.vibrant,7,Paul Tol,https://sronpersonalpages.nl/~pault/
+qual,tol.mediumcontrast,6,Paul Tol,https://sronpersonalpages.nl/~pault/
+qual,tol.pale,6,Paul Tol,https://sronpersonalpages.nl/~pault/
+qual,tol.dark,6,Paul Tol,https://sronpersonalpages.nl/~pault/
+seq,Blues,NA,RColorBrewer,https://colorbrewer2.org
+seq,BuGn,NA,RColorBrewer,https://colorbrewer2.org
+seq,BuPu,NA,RColorBrewer,https://colorbrewer2.org
+seq,GnBu,NA,RColorBrewer,https://colorbrewer2.org
+seq,Greens,NA,RColorBrewer,https://colorbrewer2.org
+seq,Greys,NA,RColorBrewer,https://colorbrewer2.org
+seq,OrRd,NA,RColorBrewer,https://colorbrewer2.org
+seq,Oranges,NA,RColorBrewer,https://colorbrewer2.org
+seq,PuBu,NA,RColorBrewer,https://colorbrewer2.org
+seq,PuBuGn,NA,RColorBrewer,https://colorbrewer2.org
+seq,PuRd,NA,RColorBrewer,https://colorbrewer2.org
+seq,Purples,NA,RColorBrewer,https://colorbrewer2.org
+seq,RdPu,NA,RColorBrewer,https://colorbrewer2.org
+seq,Reds,NA,RColorBrewer,https://colorbrewer2.org
+seq,YlGn,NA,RColorBrewer,https://colorbrewer2.org
+seq,YlGnBu,NA,RColorBrewer,https://colorbrewer2.org
+seq,YlOrBr,NA,RColorBrewer,https://colorbrewer2.org
+seq,YlOrRd,NA,RColorBrewer,https://colorbrewer2.org
+seq,cividis,NA,viridis,https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+seq,default,NA,openair,
+seq,gaf.seq,NA,UK Government,https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/
+seq,greyscale,NA,openair,
+seq,heat,NA,openair,
+seq,hue,NA,openair,
+seq,increment,NA,RColorBrewer,https://colorbrewer2.org
+seq,inferno,NA,viridis,https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+seq,jet,NA,openair,
+seq,magma,NA,viridis,https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+seq,plasma,NA,viridis,https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+seq,turbo,NA,viridis,https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+seq,viridis,NA,viridis,https://cran.r-project.org/web/packages/viridis/vignettes/intro-to-viridis.html
+seq,navia,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,naviaW,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,devon,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,glasgow,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,lajolla,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,bamako,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,davos,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,bilbao,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,nuuk,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,oslo,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,grayC,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,hawaii,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,lapaz,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,lipari,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,tokyo,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,buda,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,acton,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,turku,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,imola,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,batlow,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,batlowW,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,batlowK,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,brocO,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,corkO,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,vikO,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,romaO,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,bamO,NA,Fabio Crameri,https://www.fabiocrameri.ch/colourmaps/
+seq,iridescent,NA,Paul Tol,https://sronpersonalpages.nl/~pault/
+seq,incandescent,NA,Paul Tol,https://sronpersonalpages.nl/~pault/
+seq,smoothrainbow,NA,Paul Tol,https://sronpersonalpages.nl/~pault/
