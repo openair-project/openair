@@ -9,7 +9,12 @@
 An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 61 rows and 6 columns.
 }
 \usage{
-openColours(scheme = "default", n = 100, direction = 1L)
+openColours(
+  scheme = "default",
+  n = 100,
+  direction = 1L,
+  too_few = c("interpolate", "repeat", "error")
+)
 
 openSchemes
 }
@@ -20,11 +25,24 @@ Starting a pre-defined scheme with \code{"-"} (e.g., \code{"-increment"}) will
 reverse \code{direction}; this is mainly useful for use within other \code{openair}
 functions (e.g., \code{polarPlot(mydata, cols = "-viridis")}).}
 
-\item{n}{number of colours required.}
+\item{n}{number of colours required. By default, this will return \code{100}
+values for sequential palettes or the maximum number of pre-defined colours
+in categorical palettes.}
 
 \item{direction}{Sets the order of colours in the scale. If \code{1}, the default,
 outputs the default order of the \code{scheme}. If \code{-1}, the order of colours is
 reversed.}
+
+\item{too_few}{If a categorical palette has too few colours for the given
+\code{n}, how should \code{\link[=openColours]{openColours()}} deal with this? One of:
+\itemize{
+\item \code{"interpolate"} (the default), which causes new colours to be
+interpolated based on the existing palette. Note that this may create ugly
+colours or compromise colourblind-friendliness.
+\item \code{"repeat"}, which cycles through the sequential scheme meaning colours
+are repeated.
+\item \code{"error"}, which causes an error if \code{n} exceeds available colours in \code{scheme}.
+}}
 }
 \value{
 A character vector of hex codes

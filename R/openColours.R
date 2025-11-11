@@ -108,11 +108,25 @@
 #'   reverse `direction`; this is mainly useful for use within other `openair`
 #'   functions (e.g., `polarPlot(mydata, cols = "-viridis")`).
 #'
-#' @param n number of colours required.
+#' @param n number of colours required. By default, this will return `100`
+#'   values for sequential palettes or the maximum number of pre-defined colours
+#'   in categorical palettes.
 #'
 #' @param direction Sets the order of colours in the scale. If `1`, the default,
 #'   outputs the default order of the `scheme`. If `-1`, the order of colours is
 #'   reversed.
+#'
+#' @param too_few If a categorical palette has too few colours for the given
+#'   `n`, how should [openColours()] deal with this? One of:
+#'
+#'   - `"interpolate"` (the default), which causes new colours to be
+#'   interpolated based on the existing palette. Note that this may create ugly
+#'   colours or compromise colourblind-friendliness.
+#'
+#'   - `"repeat"`, which cycles through the sequential scheme meaning colours
+#'   are repeated.
+#'
+#'   - `"error"`, which causes an error if `n` exceeds available colours in `scheme`.
 #'
 #' @export
 #' @rdname open-colours
@@ -131,10 +145,17 @@
 #' cols <- openColours(c("yellow", "green", "red"), 10)
 #' cols
 #'
-openColours <- function(scheme = "default", n = 100, direction = 1L) {
+openColours <- function(
+  scheme = "default",
+  n = 100,
+  direction = 1L,
+  too_few = c("interpolate", "repeat", "error")
+) {
   if (!rlang::is_integerish(direction, n = 1L) || !direction %in% c(-1, 1)) {
     cli::cli_abort("{.arg direction} must be either {1L} or {-1L}.")
   }
+
+  too_few <- rlang::arg_match(too_few, multiple = FALSE)
 
   # get lists of schemes
   schemes <- openair::openSchemes$scheme
@@ -156,15 +177,31 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
     # edge case for brewer
     scheme[scheme == "brewer1"] <- "Set1"
 
-    if (scheme %in% seq_schemes) {
+    if (scheme == "hue") {
+      huePalette <- function(n) {
+        h <- c(0, 360) + 15
+        l <- 65
+        c <- 100
+
+        if ((diff(h) %% 360) < 1) {
+          h[2] <- h[2] - 360 / n
+        }
+
+        grDevices::hcl(
+          h = seq(h[1], h[2], length = n),
+          c = c,
+          l = l
+        )
+      }
+      cols <- huePalette(n)
+    } else if (scheme %in% seq_schemes) {
       cols <- seqPalette(n, scheme = scheme)
-    }
-    if (scheme %in% qual_schemes) {
+    } else if (scheme %in% qual_schemes) {
       # if n not provided, return max number
       if (missing(n)) {
         n <- openair::openSchemes$max_n[openair::openSchemes$scheme == scheme]
       }
-      cols <- qualPalette(n, scheme = scheme)
+      cols <- qualPalette(n, scheme = scheme, too_few = too_few)
     }
   }
 
@@ -191,7 +228,7 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
     }
   }
 
-  if (any(scheme %in% schemes) & length(scheme) > 1L) {
+  if (any(scheme %in% schemes) && length(scheme) > 1L) {
     cli::cli_abort(
       c(
         "x" = "Please provide {.strong either} 1 {.fun openColours} palette {.emph or} a vector of valid R colours",
@@ -210,7 +247,7 @@ openColours <- function(scheme = "default", n = 100, direction = 1L) {
 
 #' Function to manage qualitative palettes
 #' @noRd
-qualPalette <- function(n, scheme) {
+qualPalette <- function(n, scheme, too_few) {
   if (scheme == "Accent") {
     cols <- c(
       "#7FC97F",
@@ -453,21 +490,44 @@ qualPalette <- function(n, scheme) {
   if (n >= 1 && n <= max) {
     cols <- cols[1:n]
   } else {
-    cli::cli_warn(
-      c(
-        "!" = "Too many colours selected for {.code {scheme}}.",
-        "i" = "{.code n} should be between 1 and {max}.",
-        "i" = "Colours will be interpolated to produce {n} colours."
-      ),
-      call = NULL
-    )
+    if (too_few == "interpolate") {
+      cli::cli_warn(
+        c(
+          "!" = "Too many colours selected for {.code {scheme}}.",
+          "i" = "{.code n} should be between 1 and {max}.",
+          "i" = "Colours will be interpolated to produce {n} colours."
+        ),
+        call = NULL
+      )
 
-    color_fun <-
-      suppressWarnings(grDevices::colorRampPalette(
-        cols,
-        interpolate = "spline"
-      ))
-    cols <- color_fun(n)
+      color_fun <-
+        suppressWarnings(grDevices::colorRampPalette(
+          cols,
+          interpolate = "spline"
+        ))
+      cols <- color_fun(n)
+    } else if (too_few == "repeat") {
+      cli::cli_warn(
+        c(
+          "!" = "Too many colours selected for {.code {scheme}}.",
+          "i" = "{.code n} should be between 1 and {max}.",
+          "i" = "Colours will be repeated to produce {n} colours."
+        ),
+        call = NULL
+      )
+      while (length(cols) < n) {
+        cols <- c(cols, cols)
+      }
+      cols <- cols[1:n]
+    } else {
+      cli::cli_abort(
+        c(
+          "!" = "Too many colours selected for {.code {scheme}}.",
+          "i" = "{.code n} should be between 1 and {max}."
+        ),
+        call = NULL
+      )
+    }
   }
 
   cols
@@ -498,32 +558,6 @@ seqPalette <- function(n, scheme) {
       cols <- rev(cols)
       interpolate <- "spline"
     }
-  }
-
-  if (scheme == "hue") {
-    cols <-
-      c(
-        "#F8766D",
-        "#EA8331",
-        "#D89000",
-        "#C09B00",
-        "#A3A500",
-        "#7CAE00",
-        "#39B600",
-        "#00BB4E",
-        "#00BF7D",
-        "#00C1A3",
-        "#00BFC4",
-        "#00BAE0",
-        "#00B0F6",
-        "#35A2FF",
-        "#9590FF",
-        "#C77CFF",
-        "#E76BF3",
-        "#FA62DB",
-        "#FF62BC",
-        "#FF6A98"
-      )
   }
 
   if (scheme == "greyscale") {
@@ -1062,7 +1096,7 @@ seqPalette <- function(n, scheme) {
 
   cols <- fun(n)
 
-  return(cols)
+  cols
 }
 
 #' Helper to check provided data are valid colours
