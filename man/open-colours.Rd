@@ -6,7 +6,7 @@
 \alias{openSchemes}
 \title{Pre-defined openair colours and definition of user-defined colours}
 \format{
-An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 61 rows and 6 columns.
+An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 111 rows and 5 columns.
 }
 \usage{
 openColours(
@@ -82,8 +82,8 @@ names. To see the full list of names, see \code{\link[=colors]{colors()}}.
 \section{Schemes}{
 
 
-The following schemes are made available by \code{\link[=openColours]{openColours()}}. They are also
-listed in \link{openSchemes}.
+The following is an abridged list of schemes made available by
+\code{\link[=openColours]{openColours()}}. A complete list is outlined in \link{openSchemes}.
 
 \strong{Sequential Colours:}
 \itemize{
@@ -95,6 +95,7 @@ listed in \link{openSchemes}.
 \code{"BuPu"}, \code{"GnBu"}, \code{"Greens"}, \code{"Greys"}, \code{"Oranges"}, \code{"OrRd"}, \code{"PuBu"},
 \code{"PuBuGn"}, \code{"PuRd"}, \code{"Purples"}, \code{"RdPu"}, \code{"Reds"}, \code{"YlGn"},
 \code{"YlGnBu"}, \code{"YlOrBr"}, \code{"YlOrRd"}.
+\item Simplified versions of Fabio Crameri's sequential color schemes (e.g., \code{"batlow"}).
 }
 
 \strong{Diverging Palettes:}
@@ -102,6 +103,7 @@ listed in \link{openSchemes}.
 \item Simplified versions of the \code{RColorBrewer} diverging palettes: \code{"BrBG"},
 \code{"PiYG"}, \code{"PRGn"}, \code{"PuOr"}, \code{"RdBu"}, \code{"RdGy"}, \code{"RdYlBu"}, \code{"RdYlGn"},
 \code{"Spectral"}.
+\item Simplified versions of Fabio Crameri's diverging color schemes (e.g., \code{"berlin"}).
 }
 
 \strong{Qualitative Palettes:}
@@ -111,8 +113,8 @@ listed in \link{openSchemes}.
 \code{"Set2"}, \code{"Set3"}.
 \item \code{"okabeito"} (or \code{"cbPalette"}), a colour-blind safe palette based on
 the work of Masataka Okabe and Kei Ito.
-\item \code{"tol.bright"} (or \code{"tol"}), \code{"tol.muted"} and \code{"tol.light"}, colour-blind safe
-palettes based on the work of Paul Tol.
+\item Paul Tol's palettes (e.g., \code{"tol.bright"}, \code{"tol.muted"}, \code{"tol.light"},
+etc.), many of which are colour blind safe.
 \item \code{"tableau"} and \code{"observable"}, aliases for the
 "Tableau10" and "Observable10" colour palettes. These could be useful for
 consistency between openair plots and with figures made in these software
@@ -146,7 +148,6 @@ visualisation.
 \item{category}{The category - one of \code{"div"} (diverging), \code{"qual"} (qualitative), or \code{"seq"} (sequential).}
 \item{scheme}{The scheme name - to be provided to \code{\link[=openColours]{openColours()}}}
 \item{max_n}{The maximum number of pre-defined colours in a qualitative palette. Setting \code{n} greater than this value is not recommended.}
-\item{colorblind}{Whether or not the scheme is colour-blind accessible. This is a estimation based on available information from third parties; users should assess the accesibility of all visualisations they create.}
 \item{origin}{The original authors of the palette.}
 \item{reference}{A URL reference for further reading about the colour schemes.}
 }
