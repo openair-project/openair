@@ -30,68 +30,61 @@ TaylorDiagram(
 \item{mydata}{A data frame minimally containing a column of observations and
 a column of predictions.}
 
-\item{obs}{A column of observations with which the predictions (\code{mod})
-will be compared.}
+\item{obs}{A column of observations with which the predictions (\code{mod}) will
+be compared.}
 
-\item{mod}{A column of model predictions. Note, \code{mod} can be of length 2
-i.e. two lots of model predictions. If two sets of predictions are are
-present e.g. \code{mod = c("base", "revised")}, then arrows are shown on
-the Taylor Diagram which show the change in model performance in going from
-the first to the second. This is useful where, for example, there is
-interest in comparing how one model run compares with another using
-different assumptions e.g. input data or model set up. See examples below.}
+\item{mod}{A column of model predictions. Note, \code{mod} can be of length 2 i.e.
+two lots of model predictions. If two sets of predictions are are present
+e.g. \code{mod = c("base", "revised")}, then arrows are shown on the Taylor
+Diagram which show the change in model performance in going from the first
+to the second. This is useful where, for example, there is interest in
+comparing how one model run compares with another using different
+assumptions e.g. input data or model set up. See examples below.}
 
-\item{group}{The \code{group} column is used to differentiate between
-different models and can be a factor or character. The total number of
-models compared will be equal to the number of unique values of
-\code{group}.
+\item{group}{The \code{group} column is used to differentiate between different
+models and can be a factor or character. The total number of models
+compared will be equal to the number of unique values of \code{group}.
 
-\code{group} can also be of length two e.g. \code{group = c("model", "site")}. In this case all model-site combinations will be shown but they
-will only be differentiated by colour/symbol by the first grouping variable
-("model" in this case). In essence the plot removes the differentiation by
-the second grouping variable. Because there will be different values of
-\code{obs} for each group, \code{normalise = TRUE} should be used.}
+\code{group} can also be of length two e.g. \code{group = c("model", "site")}. In
+this case all model-site combinations will be shown but they will only be
+differentiated by colour/symbol by the first grouping variable ("model" in
+this case). In essence the plot removes the differentiation by the second
+grouping variable. Because there will be different values of \code{obs} for each
+group, \code{normalise = TRUE} should be used.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-\code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-on. For example, \code{type = "season"} will produce four plots --- one for
-each season.
+\item{type}{\code{type} determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
+\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+\code{type = "season"} will produce four plots --- one for each season.
 
-It is also possible to choose \code{type} as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+It is also possible to choose \code{type} as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-Type can be up length two e.g. \code{type = c("season", "weekday")} will
-produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.
+Type can be up length two e.g. \code{type = c("season", "weekday")} will produce
+a 2x2 plot split by season and day of the week. Note, when two types are
+provided the first forms the columns and the second the rows.
 
-Note that often it will make sense to use \code{type = "site"} when
-multiple sites are available. This will ensure that each panel contains
-data specific to an individual site.}
+Note that often it will make sense to use \code{type = "site"} when multiple
+sites are available. This will ensure that each panel contains data
+specific to an individual site.}
 
 \item{normalise}{Should the data be normalised by dividing the standard
 deviation of the observations? The statistics can be normalised (and
 non-dimensionalised) by dividing both the RMS difference and the standard
-deviation of the \code{mod} values by the standard deviation of the
-observations (\code{obs}). In this case the \dQuote{observed} point is
-plotted on the x-axis at unit distance from the origin. This makes it
-possible to plot statistics for different species (maybe with different
-units) on the same plot. The normalisation is done by each
-\code{group}/\code{type} combination.}
+deviation of the \code{mod} values by the standard deviation of the observations
+(\code{obs}). In this case the \dQuote{observed} point is plotted on the x-axis
+at unit distance from the origin. This makes it possible to plot statistics
+for different species (maybe with different units) on the same plot. The
+normalisation is done by each \code{group}/\code{type} combination.}
 
 \item{cols}{Colours to be used for plotting. Useful options for categorical
-data are available from \code{RColorBrewer} colours --- see the
-\code{openair} \code{openColours} function for more details. Useful schemes
-include \dQuote{Accent}, \dQuote{Dark2}, \dQuote{Paired}, \dQuote{Pastel1},
-\dQuote{Pastel2}, \dQuote{Set1}, \dQuote{Set2}, \dQuote{Set3} --- but see
-?\code{brewer.pal} for the maximum useful colours in each. For user defined
-the user can supply a list of colour names recognised by R (type
-\code{colours()} to see the full list). An example would be \code{cols = c("yellow", "green", "blue")}.}
+data are available from \code{RColorBrewer} colours --- see \code{\link[=openColours]{openColours()}} for
+more details.}
 
 \item{rms.col}{Colour for centred-RMS lines and text.}
 
@@ -115,33 +108,33 @@ choose to use several columns by setting \code{columns} to be less than the
 number of pollutants.}
 
 \item{key.pos}{Position of the key e.g. \dQuote{top}, \dQuote{bottom},
-\dQuote{left} and \dQuote{right}. See details in \code{lattice:xyplot} for
-more details about finer control.}
+\dQuote{left} and \dQuote{right}. See details in \code{lattice:xyplot} for more
+details about finer control.}
 
 \item{strip}{Should a strip be shown?}
 
-\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
-titles and axis labels will automatically try and format pollutant names
-and units properly e.g.  by subscripting the `2' in NO2.}
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly e.g.  by subscripting the `2' in NO2.}
 
 \item{...}{Other graphical parameters are passed onto \code{cutData} and
 \code{lattice:xyplot}. For example, \code{TaylorDiagram} passes the option
-\code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common graphical parameters, such as \code{layout}
-for panel arrangement and \code{pch} and \code{cex} for plot symbol type
-and size, are passed on to \code{xyplot}. Most are passed unmodified,
-although there are some special cases where \code{openair} may locally
-manage this process. For example, common axis and title labelling options
-(such as \code{xlab}, \code{ylab}, \code{main}) are passed via
+\code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than
+default northern) hemisphere handling of \code{type = "season"}. Similarly,
+common graphical parameters, such as \code{layout} for panel arrangement and
+\code{pch} and \code{cex} for plot symbol type and size, are passed on to \code{xyplot}.
+Most are passed unmodified, although there are some special cases where
+\code{openair} may locally manage this process. For example, common axis and
+title labelling options (such as \code{xlab}, \code{ylab}, \code{main}) are passed via
 \code{quickText} to handle routine formatting.}
 }
 \value{
 an \link[=openair-package]{openair} object. If retained, e.g., using
-\code{output <- TaylorDiagram(thedata, obs = "nox", mod = "mod")}, this
-output can be used to recover the data, reproduce or rework the original
-plot or undertake further analysis. For example, \code{output$data} will be
-a data frame consisting of the group, type, correlation coefficient (R),
-the standard deviation of the observations and measurements.
+\code{output <- TaylorDiagram(thedata, obs = "nox", mod = "mod")}, this output
+can be used to recover the data, reproduce or rework the original plot or
+undertake further analysis. For example, \code{output$data} will be a data frame
+consisting of the group, type, correlation coefficient (R), the standard
+deviation of the observations and measurements.
 }
 \description{
 Function to draw Taylor Diagrams for model evaluation. The function allows
@@ -157,37 +150,37 @@ root-mean-square error. These three statistics can be plotted on one (2D)
 graph because of the way they are related to one another which can be
 represented through the Law of Cosines.
 
-The \code{openair} version of the Taylor Diagram has several enhancements
-that increase its flexibility. In particular, the straightforward way of
-producing conditioning plots should prove valuable under many circumstances
-(using the \code{type} option). Many examples of Taylor Diagrams focus on
-model-observation comparisons for several models using all the available
-data. However, more insight can be gained into model performance by
-partitioning the data in various ways e.g. by season, daylight/nighttime, day
-of the week, by levels of a numeric variable e.g. wind speed or by land-use
-type etc.
+The \code{openair} version of the Taylor Diagram has several enhancements that
+increase its flexibility. In particular, the straightforward way of producing
+conditioning plots should prove valuable under many circumstances (using the
+\code{type} option). Many examples of Taylor Diagrams focus on model-observation
+comparisons for several models using all the available data. However, more
+insight can be gained into model performance by partitioning the data in
+various ways e.g. by season, daylight/nighttime, day of the week, by levels
+of a numeric variable e.g. wind speed or by land-use type etc.
 
 To consider several pollutants on one plot, a column identifying the
-pollutant name can be used e.g. \code{pollutant}. Then the Taylor Diagram can
-be plotted as (assuming a data frame \code{thedata}):
+pollutant name can be used e.g. \code{pollutant}. Then the Taylor Diagram can be
+plotted as (assuming a data frame \code{thedata}):
 
 \code{TaylorDiagram(thedata, obs = "obs", mod = "mod", group = "model", type = "pollutant")}
 
 which will give the model performance by pollutant in each panel.
 
 Note that it is important that each panel represents data with the same mean
-observed data across different groups. Therefore \code{TaylorDiagram(mydata, group = "model", type = "season")} is OK, whereas \code{TaylorDiagram(mydata, group = "season", type = "model")} is not because each panel (representing a
-model) will have four different mean values --- one for each season.
-Generally, the option \code{group} is either missing (one model being
-evaluated) or represents a column giving the model name. However, the data
-can be normalised using the \code{normalise} option. Normalisation is carried
-out on a per \code{group}/\code{type} basis making it possible to compare
-data on different scales e.g. \code{TaylorDiagram(mydata, group = "season", type = "model", normalise = TRUE)}. In this way it is possible to compare
-different pollutants, sites etc. in the same panel.
+observed data across different groups. Therefore \code{TaylorDiagram(mydata, group = "model", type = "season")} is OK, whereas \code{TaylorDiagram(mydata, group = "season", type = "model")} is not because each panel (representing a model)
+will have four different mean values --- one for each season. Generally, the
+option \code{group} is either missing (one model being evaluated) or represents a
+column giving the model name. However, the data can be normalised using the
+\code{normalise} option. Normalisation is carried out on a per \code{group}/\code{type}
+basis making it possible to compare data on different scales e.g.
+\code{TaylorDiagram(mydata, group = "season", type = "model", normalise = TRUE)}.
+In this way it is possible to compare different pollutants, sites etc. in the
+same panel.
 
-Also note that if multiple sites are present it makes sense to use \code{type = "site"} to ensure that each panel represents an individual site with its
-own specific standard deviation etc. If this is not the case then select a
-single site from the data first e.g. \code{subset(mydata, site == "Harwell")}.
+Also note that if multiple sites are present it makes sense to use \code{type = "site"} to ensure that each panel represents an individual site with its own
+specific standard deviation etc. If this is not the case then select a single
+site from the data first e.g. \code{subset(mydata, site == "Harwell")}.
 }
 \examples{
 ## in the examples below, most effort goes into making some artificial data
@@ -266,8 +259,8 @@ Taylor, K.E.: Summarizing multiple aspects of model performance in a single
 diagram. J.  Geophys. Res., 106, 7183-7192, 2001 (also see PCMDI Report 55).
 }
 \seealso{
-\code{taylor.diagram} from the \code{plotrix} package from which
-some of the annotation code was used.
+\code{taylor.diagram} from the \code{plotrix} package from which some of the
+annotation code was used.
 
 Other model evaluation functions: 
 \code{\link{conditionalEval}()},

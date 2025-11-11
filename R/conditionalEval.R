@@ -145,7 +145,7 @@ conditionalEval <- function(
   statistic = "MB",
   xlab = "predicted value",
   ylab = "statistic",
-  col = brewer.pal(5, "YlOrRd"),
+  col = openair::openColours("YlOrRd", n = 5),
   col.var = "Set1",
   var.names = NULL,
   auto.text = TRUE,
