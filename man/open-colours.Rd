@@ -6,7 +6,7 @@
 \alias{openSchemes}
 \title{Pre-defined openair colours and definition of user-defined colours}
 \format{
-An object of class \code{spec_tbl_df} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 111 rows and 5 columns.
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 108 rows and 5 columns.
 }
 \usage{
 openColours(
