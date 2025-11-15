@@ -1,0 +1,345 @@
+# Bivariate polarAnnulus plot
+
+Typically plots the concentration of a pollutant by wind direction and
+as a function of time as an annulus. The function is good for
+visualising how concentrations of pollutants vary by wind direction and
+a time period e.g. by month, day of week.
+
+## Usage
+
+``` r
+polarAnnulus(
+  mydata,
+  pollutant = "nox",
+  resolution = "fine",
+  local.tz = NULL,
+  period = "hour",
+  type = "default",
+  statistic = "mean",
+  percentile = NA,
+  limits = NULL,
+  cols = "default",
+  width = "normal",
+  min.bin = 1,
+  exclude.missing = TRUE,
+  date.pad = FALSE,
+  force.positive = TRUE,
+  k = c(20, 10),
+  normalise = FALSE,
+  key.header = statistic,
+  key.footer = pollutant,
+  key.position = "right",
+  key = TRUE,
+  auto.text = TRUE,
+  alpha = 1,
+  plot = TRUE,
+  ...
+)
+```
+
+## Arguments
+
+- mydata:
+
+  A data frame minimally containing `date`, `wd` and a pollutant.
+
+- pollutant:
+
+  Mandatory. A pollutant name corresponding to a variable in a data
+  frame should be supplied e.g. `pollutant = "nox"`. There can also be
+  more than one pollutant specified e.g. `pollutant = c("nox", "no2")`.
+  The main use of using two or more pollutants is for model evaluation
+  where two species would be expected to have similar concentrations.
+  This saves the user stacking the data and it is possible to work with
+  columns of data directly. A typical use would be
+  `pollutant = c("obs", "mod")` to compare two columns “obs” (the
+  observations) and “mod” (modelled values).
+
+- resolution:
+
+  Two plot resolutions can be set: “normal” and “fine” (the default).
+
+- local.tz:
+
+  Should the results be calculated in local time that includes a
+  treatment of daylight savings time (DST)? The default is not to
+  consider DST issues, provided the data were imported without a DST
+  offset. Emissions activity tends to occur at local time e.g. rush hour
+  is at 8 am every day. When the clocks go forward in spring, the
+  emissions are effectively released into the atmosphere typically 1
+  hour earlier during the summertime i.e. when DST applies. When
+  plotting diurnal profiles, this has the effect of “smearing-out” the
+  concentrations. Sometimes, a useful approach is to express time as
+  local time. This correction tends to produce better-defined diurnal
+  profiles of concentration (or other variables) and allows a better
+  comparison to be made with emissions/activity data. If set to `FALSE`
+  then GMT is used. Examples of usage include
+  `local.tz = "Europe/London"`, `local.tz = "America/New_York"`. See
+  `cutData` and `import` for more details.
+
+- period:
+
+  This determines the temporal period to consider. Options are “hour”
+  (the default, to plot diurnal variations), “season” to plot variation
+  throughout the year, “weekday” to plot day of the week variation and
+  “trend” to plot the trend by wind direction.
+
+- type:
+
+  `type` determines how the data are split i.e. conditioned, and then
+  plotted. The default is will produce a single plot using the entire
+  data. Type can be one of the built-in types as detailed in `cutData`
+  e.g. “season”, “year”, “weekday” and so on. For example,
+  `type = "season"` will produce four plots — one for each season.
+
+  It is also possible to choose `type` as another variable in the data
+  frame. If that variable is numeric, then the data will be split into
+  four quantiles (if possible) and labelled accordingly. If type is an
+  existing character or factor variable, then those categories/levels
+  will be used directly. This offers great flexibility for understanding
+  the variation of different variables and how they depend on one
+  another.
+
+  Type can be up length two e.g. `type = c("season", "site")` will
+  produce a 2x2 plot split by season and site. The use of two types is
+  mostly meant for situations where there are several sites. Note, when
+  two types are provided the first forms the columns and the second the
+  rows.
+
+  Also note that for the `polarAnnulus` function some type/period
+  combinations are forbidden or make little sense. For example,
+  `type = "season"` and `period = "trend"` (which would result in a plot
+  with too many gaps in it for sensible smoothing), or
+  `type = "weekday"` and `period = "weekday"`.
+
+- statistic:
+
+  The statistic that should be applied to each wind speed/direction bin.
+  Can be “mean” (default), “median”, “max” (maximum), “frequency”.
+  “stdev” (standard deviation), “weighted.mean” or “cpf” (Conditional
+  Probability Function). Because of the smoothing involved, the colour
+  scale for some of these statistics is only to provide an indication of
+  overall pattern and should not be interpreted in concentration units
+  e.g. for `statistic = "weighted.mean"` where the bin mean is
+  multiplied by the bin frequency and divided by the total frequency. In
+  many cases using `polarFreq` will be better. Setting
+  `statistic = "weighted.mean"` can be useful because it provides an
+  indication of the concentration \* frequency of occurrence and will
+  highlight the wind speed/direction conditions that dominate the
+  overall mean.
+
+- percentile:
+
+  If `statistic = "percentile"` or `statistic = "cpf"` then `percentile`
+  is used, expressed from 0 to 100. Note that the percentile value is
+  calculated in the wind speed, wind direction ‘bins’. For this reason
+  it can also be useful to set `min.bin` to ensure there are a
+  sufficient number of points available to estimate a percentile. See
+  `quantile` for more details of how percentiles are calculated.
+
+- limits:
+
+  The function does its best to choose sensible limits automatically.
+  However, there are circumstances when the user will wish to set
+  different ones. An example would be a series of plots showing each
+  year of data separately. The limits are set in the form
+  `c(lower, upper)`, so `limits = c(0, 100)` would force the plot limits
+  to span 0-100.
+
+- cols:
+
+  Colours to be used for plotting. Options include “default”,
+  “increment”, “heat”, “jet” and `RColorBrewer` colours — see the
+  `openair` `openColours` function for more details. For user defined
+  the user can supply a list of colour names recognised by R (type
+  [`colours()`](https://rdrr.io/r/grDevices/colors.html) to see the full
+  list). An example would be `cols = c("yellow", "green", "blue")`.
+  `cols` can also take the values `"viridis"`, `"magma"`, `"inferno"`,
+  or `"plasma"` which are the viridis colour maps ported from Python's
+  Matplotlib library.
+
+- width:
+
+  The width of the annulus; can be “normal” (the default), “thin” or
+  “fat”.
+
+- min.bin:
+
+  The minimum number of points allowed in a wind speed/wind direction
+  bin. The default is 1. A value of two requires at least 2 valid
+  records in each bin an so on; bins with less than 2 valid records are
+  set to NA. Care should be taken when using a value \> 1 because of the
+  risk of removing real data points. It is recommended to consider your
+  data with care. Also, the `polarFreq` function can be of use in such
+  circumstances.
+
+- exclude.missing:
+
+  Setting this option to `TRUE` (the default) removes points from the
+  plot that are too far from the original data. The smoothing routines
+  will produce predictions at points where no data exist i.e. they
+  predict. By removing the points too far from the original data
+  produces a plot where it is clear where the original data lie. If set
+  to `FALSE` missing data will be interpolated.
+
+- date.pad:
+
+  For `type = "trend"` (default), `date.pad = TRUE` will pad-out missing
+  data to the beginning of the first year and the end of the last year.
+  The purpose is to ensure that the trend plot begins and ends at the
+  beginning or end of year.
+
+- force.positive:
+
+  The default is `TRUE`. Sometimes if smoothing data with steep
+  gradients it is possible for predicted values to be negative.
+  `force.positive = TRUE` ensures that predictions remain positive. This
+  is useful for several reasons. First, with lots of missing data more
+  interpolation is needed and this can result in artefacts because the
+  predictions are too far from the original data. Second, if it is known
+  beforehand that the data are all positive, then this option carries
+  that assumption through to the prediction. The only likely time where
+  setting `force.positive = FALSE` would be if background concentrations
+  were first subtracted resulting in data that is legitimately negative.
+  For the vast majority of situations it is expected that the user will
+  not need to alter the default option.
+
+- k:
+
+  The smoothing value supplied to `gam` for the temporal and wind
+  direction components, respectively. In some cases e.g. a trend plot
+  with less than 1-year of data the smoothing with the default values
+  may become too noisy and affected more by outliers. Choosing a lower
+  value of `k` (say 10) may help produce a better plot.
+
+- normalise:
+
+  If `TRUE` concentrations are normalised by dividing by their mean
+  value. This is done *after* fitting the smooth surface. This option is
+  particularly useful if one is interested in the patterns of
+  concentrations for several pollutants on different scales e.g. NOx and
+  CO. Often useful if more than one `pollutant` is chosen.
+
+- key.header:
+
+  Adds additional text/labels to the scale key. For example, passing the
+  options `key.header = "header", key.footer = "footer1"` adds addition
+  text above and below the scale key. These arguments are passed to
+  `drawOpenKey` via `quickText`, applying the `auto.text` argument, to
+  handle formatting.
+
+- key.footer:
+
+  see `key.footer`.
+
+- key.position:
+
+  Location where the scale key is to plotted. Allowed arguments
+  currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
+
+- key:
+
+  Fine control of the scale key via `drawOpenKey`. See `drawOpenKey` for
+  further details.
+
+- auto.text:
+
+  Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
+  will automatically try and format pollutant names and units properly
+  e.g. by subscripting the \`2' in NO2.
+
+- alpha:
+
+  The alpha transparency to use for the plotting surface (a value
+  between 0 and 1 with zero being fully transparent and 1 fully opaque).
+  Setting a value below 1 can be useful when plotting surfaces on a map
+  using the package `openairmaps`.
+
+- plot:
+
+  Should a plot be produced? `FALSE` can be useful when analysing data
+  to extract plot components and plotting them in other ways.
+
+- ...:
+
+  Other graphical parameters passed onto `lattice:levelplot` and
+  `cutData`. For example, `polarAnnulus` passes the option
+  `hemisphere = "southern"` on to `cutData` to provide southern (rather
+  than default northern) hemisphere handling of `type = "season"`.
+  Similarly, common axis and title labelling options (such as `xlab`,
+  `ylab`, `main`) are passed to `levelplot` via `quickText` to handle
+  routine formatting.
+
+## Value
+
+an
+[openair](https://openair-project.github.io/openair/reference/openair-package.md)
+object
+
+## Details
+
+The `polarAnnulus` function shares many of the properties of the
+`polarPlot`. However, `polarAnnulus` is focussed on displaying
+information on how concentrations of a pollutant (values of another
+variable) vary with wind direction and time. Plotting as an annulus
+helps to reduce compression of information towards the centre of the
+plot. The circular plot is easy to interpret because wind direction is
+most easily understood in polar rather than Cartesian coordinates.
+
+The inner part of the annulus represents the earliest time and the outer
+part of the annulus the latest time. The time dimension can be shown in
+many ways including "trend", "hour" (hour or day), "season" (month of
+the year) and "weekday" (day of the week). Taking hour as an example,
+the plot will show how concentrations vary by hour of the day and wind
+direction. Such plots can be very useful for understanding how different
+source influences affect a location.
+
+For `type = "trend"` the amount of smoothing does not vary linearly with
+the length of the time series i.e. a certain amount of smoothing per
+unit interval in time. This is a deliberate choice because should one be
+interested in a subset (in time) of data, more detail will be provided
+for the subset compared with the full data set. This allows users to
+investigate specific periods in more detail. Full flexibility is given
+through the smoothing parameter `k`.
+
+## See also
+
+Other polar directional analysis functions:
+[`percentileRose()`](https://openair-project.github.io/openair/reference/percentileRose.md),
+[`polarCluster()`](https://openair-project.github.io/openair/reference/polarCluster.md),
+[`polarDiff()`](https://openair-project.github.io/openair/reference/polarDiff.md),
+[`polarFreq()`](https://openair-project.github.io/openair/reference/polarFreq.md),
+[`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md),
+[`pollutionRose()`](https://openair-project.github.io/openair/reference/pollutionRose.md),
+[`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
+
+## Author
+
+David Carslaw
+
+## Examples
+
+``` r
+# diurnal plot for PM10 at Marylebone Rd
+if (FALSE) { # \dontrun{
+polarAnnulus(mydata,
+  pollutant = "pm10",
+  main = "diurnal variation in pm10 at Marylebone Road"
+)
+} # }
+
+# seasonal plot for PM10 at Marylebone Rd
+if (FALSE) { # \dontrun{
+polarAnnulus(mydata, poll = "pm10", period = "season")
+} # }
+
+# trend in coarse particles (PMc = PM10 - PM2.5), calculate PMc first
+
+mydata$pmc <- mydata$pm10 - mydata$pm25
+if (FALSE) { # \dontrun{
+polarAnnulus(mydata,
+  poll = "pmc", period = "trend",
+  main = "trend in pmc at Marylebone Road"
+)
+} # }
+```

@@ -1,0 +1,293 @@
+![](reference/figures/logo.png)
+
+## **openair**
+
+### open source tools for air quality data analysis
+
+**openair** is an R package developed for the purpose of analysing air
+quality data — or more generally atmospheric composition data. The
+package is extensively used in academia, the public and private sectors.
+The project was initially funded by the UK Natural Environment Research
+Council ([NERC](https://www.ukri.org/councils/nerc/)), with additional
+funds from the UK Department for Environment Food & Rural Affairs
+([Defra](https://www.gov.uk/government/organisations/department-for-environment-food-rural-affairs)).
+
+*Part of the openair toolkit*
+
+[![openair](https://img.shields.io/badge/openair_core-06D6A0?style=flat-square)](https://openair-project.github.io/openair/)
+\|
+[![worldmet](https://img.shields.io/badge/worldmet-26547C?style=flat-square)](https://openair-project.github.io/worldmet/)
+\|
+[![openairmaps](https://img.shields.io/badge/openairmaps-FFD166?style=flat-square)](https://openair-project.github.io/openairmaps/)
+\|
+[![deweather](https://img.shields.io/badge/deweather-EF476F?style=flat-square)](https://openair-project.github.io/deweather/)
+
+------------------------------------------------------------------------
+
+## 💡 Core Features
+
+**openair** has developed over many years to form an extensive toolkit
+of functions for analysing air quality and atmospheric composition data.
+
+- **Access to data** from several hundred UK air pollution monitoring
+  sites through the
+  [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md)
+  family of functions.
+
+- **Time Series & Trend analysis** to explore how air quality
+  concentrations vary over time (e.g., through
+  [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md),
+  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md),
+  and
+  [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md)).
+
+- **Directional analysis** to help characterise different sources of
+  pollution, including the creation of **bivariate polar plots** using
+  [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md).
+
+- **Trajectory analysis** to examine NOAA Hysplit trajectories, with
+  plotting
+  ([`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md)),
+  heatmap
+  ([`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md))
+  and clustering
+  ([`trajCluster()`](https://openair-project.github.io/openair/reference/trajCluster.md))
+  functionality.
+
+- **Utility functions**, such as
+  [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
+  and
+  [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
+  to make it easier to manipulate atmospheric composition data.
+
+- **Flexible plot conditioning** to easily plot data by hour or the day,
+  day of the week, season of the year, etc., through the `type` option
+  available in most functions.
+
+![](reference/figures/feature-banner.png)
+
+------------------------------------------------------------------------
+
+## 📖 Documentation
+
+All **openair** functions are fully documented; access documentation
+using R in your IDE of choice.
+
+``` r
+?openair::polarPlot
+```
+
+Documentation is also hosted online on the **package website**.
+
+[![website](https://img.shields.io/badge/website-documentation-blue)](https://openair-project.github.io/openair/)
+
+A guide to the openair toolkit can be found in the **online book**,
+which contains lots of code snippets, demonstrations of functionality,
+and ideas for the application of **openair**’s various functions.
+
+[![book](https://img.shields.io/badge/book-code_demos_and_ideas-blue)](https://openair-project.github.io/book/)
+
+------------------------------------------------------------------------
+
+## 🗃️ Installation
+
+**openair** can be installed from **CRAN** with:
+
+``` r
+install.packages("openair")
+```
+
+You can also install the development version of **openair** from GitHub
+using [pak](https://pak.r-lib.org/):
+
+``` r
+# install.packages("pak")
+pak::pak("openair-project/openair")
+```
+
+------------------------------------------------------------------------
+
+🏛️ **openair** is primarily maintained by [David
+Carslaw](https://github.com/davidcarslaw).
+
+📃 **openair** is licensed under the [MIT
+License](https://openair-project.github.io/openair/LICENSE.html).
+
+🧑‍💻 Contributions are welcome from the wider community. See the
+[contributing
+guide](https://openair-project.github.io/openair/CONTRIBUTING.html) and
+[code of
+conduct](https://openair-project.github.io/openair/CODE_OF_CONDUCT.html)
+for more information.
+
+# Package index
+
+## Data
+
+In-built data to demonstrate openair functions.
+
+- [`mydata`](https://openair-project.github.io/openair/reference/mydata.md)
+  : Example air quality monitoring data for openair
+
+## Import
+
+Import tidy air quality data from the UK and Europe.
+
+- [`importADMS()`](https://openair-project.github.io/openair/reference/importADMS.md)
+  : CERC Atmospheric Dispersion Modelling System (ADMS) data import
+  function(s) for openair
+- [`importEurope()`](https://openair-project.github.io/openair/reference/importEurope.md)
+  : Import air quality data from European database until February 2024
+- [`importImperial()`](https://openair-project.github.io/openair/reference/importImperial.md)
+  [`importKCL()`](https://openair-project.github.io/openair/reference/importImperial.md)
+  : Import data from Imperial College London networks
+- [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md)
+  : Import monitoring site meta data for UK and European networks
+- [`importTraj()`](https://openair-project.github.io/openair/reference/importTraj.md)
+  : Import pre-calculated HYSPLIT 96-hour back trajectories
+- [`importAURN()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md)
+  [`importAQE()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md)
+  [`importSAQN()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md)
+  [`importWAQN()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md)
+  [`importNI()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md)
+  [`importLocal()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md)
+  : Import data from individual UK Air Pollution Networks
+- [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md)
+  : Import data from the UK Air Pollution Networks
+
+## Directional Analysis
+
+### Polar Analysis
+
+Examine the relationship between wind speed, wind direction and
+pollutant concentrations.
+
+- [`percentileRose()`](https://openair-project.github.io/openair/reference/percentileRose.md)
+  : Function to plot percentiles by wind direction
+- [`polarAnnulus()`](https://openair-project.github.io/openair/reference/polarAnnulus.md)
+  : Bivariate polarAnnulus plot
+- [`polarCluster()`](https://openair-project.github.io/openair/reference/polarCluster.md)
+  : K-means clustering of bivariate polar plots
+- [`polarDiff()`](https://openair-project.github.io/openair/reference/polarDiff.md)
+  : Polar plots considering changes in concentrations between two time
+  periods
+- [`polarFreq()`](https://openair-project.github.io/openair/reference/polarFreq.md)
+  : Function to plot wind speed/direction frequencies and other
+  statistics
+- [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md)
+  : Function for plotting bivariate polar plots with smoothing.
+- [`pollutionRose()`](https://openair-project.github.io/openair/reference/pollutionRose.md)
+  : Pollution rose variation of the traditional wind rose plot
+- [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
+  : Traditional wind rose plot
+
+### Trajectory Analysis
+
+Analyse and visualise HYSPLIT trajectory files.
+
+- [`importTraj()`](https://openair-project.github.io/openair/reference/importTraj.md)
+  : Import pre-calculated HYSPLIT 96-hour back trajectories
+- [`trajCluster()`](https://openair-project.github.io/openair/reference/trajCluster.md)
+  : Calculate clusters for back trajectories
+- [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md)
+  : Trajectory level plots with conditioning
+- [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md)
+  : Trajectory line plots with conditioning
+
+## Time Series and Trends
+
+Examine how pollutant concentrations change with time.
+
+- [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md)
+  : Tests for trends using Theil-Sen estimates
+- [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md)
+  : Plot time series values in a conventional calendar format
+- [`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md)
+  : Rolling regression for pollutant source characterisation.
+- [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
+  : Calculate nonparametric smooth trends
+- [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
+  : Plot time series, perhaps for multiple pollutants, grouped or in
+  separate panels.
+- [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md)
+  : Time series plot with categories shown as a stacked bar chart
+- [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+  : Temporal variation plots with flexible panel control
+- [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
+  : Plot heat map trends
+
+## Model Evaluation
+
+Compare models against measurements and models against other models.
+
+- [`TaylorDiagram()`](https://openair-project.github.io/openair/reference/TaylorDiagram.md)
+  : Taylor Diagram for model evaluation with conditioning
+- [`conditionalEval()`](https://openair-project.github.io/openair/reference/conditionalEval.md)
+  : Conditional quantile estimates with additional variables for model
+  evaluation
+- [`conditionalQuantile()`](https://openair-project.github.io/openair/reference/conditionalQuantile.md)
+  : Conditional quantile estimates for model evaluation
+- [`modStats()`](https://openair-project.github.io/openair/reference/modStats.md)
+  : Calculate common model evaluation statistics
+
+## Other Plots
+
+Additional plotting functions for visualising air quality data.
+
+- [`summaryPlot()`](https://openair-project.github.io/openair/reference/summaryPlot.md)
+  : Function to rapidly provide an overview of air quality data
+- [`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md)
+  : Rolling regression for pollutant source characterisation.
+- [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
+  : Flexible scatter plots
+- [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
+  : Correlation matrices with conditioning
+- [`linearRelation()`](https://openair-project.github.io/openair/reference/linearRelation.md)
+  : Linear relations between pollutants
+- [`calcFno2()`](https://openair-project.github.io/openair/reference/calcFno2.md)
+  : Estimate NO2/NOX emission ratios from monitoring data
+
+## Utilities
+
+### Plot Utilities
+
+Tools for refining openair plots.
+
+- [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+  : Pre-defined openair colours and definition of user-defined colours
+- [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+  : Automatic text formatting for openair
+- [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md)
+  : Scale key handling for openair
+
+### Data Utilities
+
+Tools for manipulating and summarising air quality data.
+
+- [`aqStats()`](https://openair-project.github.io/openair/reference/aqStats.md)
+  : Calculate summary statistics for air pollution data by year
+- [`binData()`](https://openair-project.github.io/openair/reference/bootMeans.md)
+  [`bootMeanDF()`](https://openair-project.github.io/openair/reference/bootMeans.md)
+  : Bin data, calculate mean and bootstrap confidence interval in the
+  mean
+- [`calcPercentile()`](https://openair-project.github.io/openair/reference/calcPercentile.md)
+  : Calculate percentile values from a time series
+- [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  : Function to split data in different ways for conditioning
+- [`rollingMean()`](https://openair-project.github.io/openair/reference/rollingMean.md)
+  : Calculate rolling mean pollutant values
+- [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
+  : Subset a data frame based on date
+- [`selectRunning()`](https://openair-project.github.io/openair/reference/selectRunning.md)
+  : Function to extract run lengths greater than a threshold
+- [`splitByDate()`](https://openair-project.github.io/openair/reference/splitByDate.md)
+  : Divide up a data frame by time
+- [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
+  : Function to calculate time averages for data frames
+
+# Articles
+
+### All vignettes
+
+- [Examples of {openair}
+  Functionality](https://openair-project.github.io/openair/articles/openair.md):
