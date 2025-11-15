@@ -575,14 +575,10 @@ cutVecWinddir <- function(x, drop) {
 
   levels <- c("N", "NE", "E", "SE", "S", "SW", "W", "NW")
 
-  if (drop %in% c("default", "none")) {
+  if (drop %in% c("default", "none", "outside")) {
     levels <- levels
   } else if (drop == "empty") {
     levels <- levels[levels %in% x]
-  } else if (drop == "outside") {
-    start <- which(levels == dplyr::first(x))
-    end <- which(levels == dplyr::last(x))
-    levels <- levels[start:end]
   }
 
   x <- ordered(x, levels = levels)
