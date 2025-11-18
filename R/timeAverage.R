@@ -45,8 +45,8 @@
 #' @param avg.time This defines the time period to average to. Can be `"sec"`,
 #'   `"min"`, `"hour"`, `"day"`, `"DSTday"`, `"week"`, `"month"`, `"quarter"` or
 #'   `"year"`. For much increased flexibility a number can precede these options
-#'   followed by a space. For example, a timeAverage of 2 months would be
-#'   `period = "2 month"`. In addition, `avg.time` can equal `"season"`, in
+#'   followed by a space. For example, an average of 2 months would be
+#'   `avg.time = "2 month"`. In addition, `avg.time` can equal `"season"`, in
 #'   which case 3-month seasonal values are calculated with spring defined as
 #'   March, April, May and so on.
 #'

@@ -68,8 +68,8 @@ time series together in one panel.}
 \item{avg.time}{This defines the time period to average to. Can be \code{"sec"},
 \code{"min"}, \code{"hour"}, \code{"day"}, \code{"DSTday"}, \code{"week"}, \code{"month"}, \code{"quarter"} or
 \code{"year"}. For much increased flexibility a number can precede these options
-followed by a space. For example, a timeAverage of 2 months would be
-\code{period = "2 month"}. In addition, \code{avg.time} can equal \code{"season"}, in
+followed by a space. For example, an average of 2 months would be
+\code{avg.time = "2 month"}. In addition, \code{avg.time} can equal \code{"season"}, in
 which case 3-month seasonal values are calculated with spring defined as
 March, April, May and so on.
 

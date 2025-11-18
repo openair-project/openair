@@ -38,8 +38,10 @@ character variable then the categories are used directly.}
 \item{avg.time}{This defines the time period to average to. Can be \code{"sec"},
 \code{"min"}, \code{"hour"}, \code{"day"}, \code{"DSTday"}, \code{"week"}, \code{"month"}, \code{"quarter"} or
 \code{"year"}. For much increased flexibility a number can precede these options
-followed by a space. For example, a timeAverage of 2 months would be
-\code{period = "2 month"}.
+followed by a space. For example, an average of 2 months would be
+\code{avg.time = "2 month"}. In addition, \code{avg.time} can equal \code{"season"}, in
+which case 3-month seasonal values are calculated with spring defined as
+March, April, May and so on.
 
 Note that \code{avg.time} when used in \code{timeProp} should be greater than the
 time gap in the original data. For example, \code{avg.time = "day"} for hourly
@@ -125,7 +127,7 @@ The plot shows the value of \code{pollutant} on the y-axis (averaged according t
 made up for any time interval.
 }
 \examples{
-## monthly plot of SO2 showing the contribution by wind sector
+# monthly plot of SO2 showing the contribution by wind sector
 timeProp(mydata, pollutant = "so2", avg.time = "month", proportion = "wd")
 }
 \seealso{
