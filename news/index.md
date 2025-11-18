@@ -61,11 +61,19 @@
   on different panels.
 
 - [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
-  has gained the `x.relation`, `date.format`, `key` and `key.position`
-  arguments, in line with
-  [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md).
-  It has also gained the `progress` argument, passed to
-  [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md).
+  refinements:
+
+  - Gained the `x.relation`, `date.format`, `key` and `key.position`
+    arguments, in line with
+    [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md).
+
+  - Gained the `progress` argument, passed to
+    [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md).
+
+  - `avg.time` is also no longer restricted to just three options (any
+    [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
+    option is permitted), although too fine a time resolution may
+    obscure the smooth trend for long running data.
 
 - [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md)
   refinements:

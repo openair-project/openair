@@ -53,11 +53,26 @@ smoothTrend(
 
 - avg.time:
 
-  Can be `"month"` (the default), `"season"` or `"year"`. Determines the
-  time over which data should be averaged. Note that for `"year"`, six
-  or more years are required. For `"season"` the data are plit up into
-  spring: March, April, May etc. Note that December is considered as
-  belonging to winter of the following year.
+  This defines the time period to average to. Can be `"sec"`, `"min"`,
+  `"hour"`, `"day"`, `"DSTday"`, `"week"`, `"month"`, `"quarter"` or
+  `"year"`. For much increased flexibility a number can precede these
+  options followed by a space. For example, a timeAverage of 2 months
+  would be `period = "2 month"`. In addition, `avg.time` can equal
+  `"season"`, in which case 3-month seasonal values are calculated with
+  spring defined as March, April, May and so on.
+
+  Note that `avg.time` can be *less* than the time interval of the
+  original series, in which case the series is expanded to the new time
+  interval. This is useful, for example, for calculating a 15-minute
+  time series from an hourly one where an hourly value is repeated for
+  each new 15-minute period. Note that when expanding data in this way
+  it is necessary to ensure that the time interval of the original
+  series is an exact multiple of `avg.time` e.g. hour to 10 minutes, day
+  to hour. Also, the input time series must have consistent time gaps
+  between successive intervals so that
+  [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
+  can work out how much 'padding' to apply. To pad-out data in this way
+  choose `fill = TRUE`.
 
 - data.thresh:
 

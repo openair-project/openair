@@ -76,7 +76,12 @@
 </ul></li>
 <li><p><code>is.axis</code> now has an effect on <code>weekday</code>, <code>season</code>, <code>seasonyear</code> and <code>monthyear</code>.</p></li>
 <li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> has gained the <code>x.relation</code> argument, allowing for different x ranges on different panels.</p></li>
-<li><p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> has gained the <code>x.relation</code>, <code>date.format</code>, <code>key</code> and <code>key.position</code> arguments, in line with <code><a href="../reference/timePlot.html">timePlot()</a></code>. It has also gained the <code>progress</code> argument, passed to <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
+<li>
+<p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> refinements:</p>
+<ul><li><p>Gained the <code>x.relation</code>, <code>date.format</code>, <code>key</code> and <code>key.position</code> arguments, in line with <code><a href="../reference/timePlot.html">timePlot()</a></code>.</p></li>
+<li><p>Gained the <code>progress</code> argument, passed to <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
+<li><p><code>avg.time</code> is also no longer restricted to just three options (any <code><a href="../reference/timeAverage.html">timeAverage()</a></code> option is permitted), although too fine a time resolution may obscure the smooth trend for long running data.</p></li>
+</ul></li>
 <li>
 <p><code><a href="../reference/calendarPlot.html">calendarPlot()</a></code> refinements:</p>
 <ul><li><p>Gained the <code>percentile</code> argument, passed on to <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
