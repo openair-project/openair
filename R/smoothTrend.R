@@ -48,11 +48,6 @@
 #' @param statistic Statistic used for calculating monthly values. Default is
 #'   `"mean"`, but can also be `"percentile"`. See [timeAverage()] for more
 #'   details.
-#' @param avg.time Can be `"month"` (the default), `"season"` or `"year"`.
-#'   Determines the time over which data should be averaged. Note that for
-#'   `"year"`, six or more years are required. For `"season"` the data are plit
-#'   up into spring: March, April, May etc. Note that December is considered as
-#'   belonging to winter of the following year.
 #' @param percentile Percentile value(s) to use if `statistic = "percentile"` is
 #'   chosen. Can be a vector of numbers e.g. `percentile = c(5, 50, 95)` will
 #'   plot the 5th, 50th and 95th percentile values together on the same plot.
@@ -162,7 +157,6 @@ smoothTrend <- function(
   }
 
   # check avg.time
-  rlang::arg_match(avg.time, c("year", "season", "month"))
   rlang::arg_match(x.relation, c("same", "free"))
   rlang::arg_match(y.relation, c("same", "free"))
 

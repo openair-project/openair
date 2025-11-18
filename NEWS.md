@@ -30,7 +30,13 @@
 
 - `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
 
-- `smoothTrend()` has gained the `x.relation`, `date.format`, `key` and `key.position` arguments, in line with `timePlot()`. It has also gained the `progress` argument, passed to `timeAverage()`. 
+- `smoothTrend()` refinements:
+
+    - Gained the `x.relation`, `date.format`, `key` and `key.position` arguments, in line with `timePlot()`. 
+    
+    - Gained the `progress` argument, passed to `timeAverage()`. 
+    
+    - `avg.time` is also no longer restricted to just three options (any `timeAverage()` option is permitted), although too fine a time resolution may obscure the smooth trend for long running data.
 
 - `calendarPlot()` refinements:
 

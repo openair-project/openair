@@ -45,11 +45,24 @@ least one variable to plot.}
 plotted, in which case a form like \code{pollutant = c("nox", "co")} should be
 used.}
 
-\item{avg.time}{Can be \code{"month"} (the default), \code{"season"} or \code{"year"}.
-Determines the time over which data should be averaged. Note that for
-\code{"year"}, six or more years are required. For \code{"season"} the data are plit
-up into spring: March, April, May etc. Note that December is considered as
-belonging to winter of the following year.}
+\item{avg.time}{This defines the time period to average to. Can be \code{"sec"},
+\code{"min"}, \code{"hour"}, \code{"day"}, \code{"DSTday"}, \code{"week"}, \code{"month"}, \code{"quarter"} or
+\code{"year"}. For much increased flexibility a number can precede these options
+followed by a space. For example, a timeAverage of 2 months would be
+\code{period = "2 month"}. In addition, \code{avg.time} can equal \code{"season"}, in
+which case 3-month seasonal values are calculated with spring defined as
+March, April, May and so on.
+
+Note that \code{avg.time} can be \emph{less} than the time interval of the original
+series, in which case the series is expanded to the new time interval. This
+is useful, for example, for calculating a 15-minute time series from an
+hourly one where an hourly value is repeated for each new 15-minute period.
+Note that when expanding data in this way it is necessary to ensure that
+the time interval of the original series is an exact multiple of \code{avg.time}
+e.g. hour to 10 minutes, day to hour. Also, the input time series must have
+consistent time gaps between successive intervals so that \code{\link[=timeAverage]{timeAverage()}}
+can work out how much 'padding' to apply. To pad-out data in this way
+choose \code{fill = TRUE}.}
 
 \item{data.thresh}{The data capture threshold to use (\%). A value of zero
 means that all available data will be used in a particular period
