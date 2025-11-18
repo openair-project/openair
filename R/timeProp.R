@@ -126,9 +126,15 @@ timeProp <- function(
       xleft = as.POSIXct(cut(.data$date, avg.time), tz = tzone),
       xright = .data$xleft + median(diff(.data$xleft)[diff(.data$xleft) != 0])
     ) |>
+    # calculate group mean
+    dplyr::mutate(
+      mean_value = mean(.data[[pollutant]], na.rm = TRUE),
+      .by = dplyr::all_of(group_1)
+    ) |>
     # calculate mean & count per type & pollutant, retain type mean
     dplyr::summarise(
       {{ pollutant }} := mean(.data[[pollutant]], na.rm = TRUE),
+      mean_value = mean(.data$mean_value, na.rm = TRUE),
       n = dplyr::n(),
       .by = dplyr::all_of(group_2)
     ) |>
@@ -187,7 +193,7 @@ timeProp <- function(
   # formula for lattice
   myform <- formula(paste("Var1 ~ date | ", type, sep = ""))
 
-  # date axis formating
+  # date axis formatting
   breaks <- dateBreaks(results$date, date.breaks)
   dates <- breaks$major
   formats <- date.format %||% breaks$format
