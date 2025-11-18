@@ -20,13 +20,14 @@ timeProp(
   proportion = "cluster",
   avg.time = "day",
   type = "default",
-  normalise = FALSE,
   cols = "Set1",
-  date.breaks = 7,
-  date.format = NULL,
+  normalise = FALSE,
+  key = TRUE,
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
+  date.breaks = 7,
+  date.format = NULL,
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -54,11 +55,13 @@ timeProp(
 
 - avg.time:
 
-  This defines the time period to average to. Can be “sec”, “min”,
-  “hour”, “day”, “DSTday”, “week”, “month”, “quarter” or “year”. For
-  much increased flexibility a number can precede these options followed
-  by a space. For example, a timeAverage of 2 months would be
-  `period = "2 month"`.
+  This defines the time period to average to. Can be `"sec"`, `"min"`,
+  `"hour"`, `"day"`, `"DSTday"`, `"week"`, `"month"`, `"quarter"` or
+  `"year"`. For much increased flexibility a number can precede these
+  options followed by a space. For example, an average of 2 months would
+  be `avg.time = "2 month"`. In addition, `avg.time` can equal
+  `"season"`, in which case 3-month seasonal values are calculated with
+  spring defined as March, April, May and so on.
 
   Note that `avg.time` when used in `timeProp` should be greater than
   the time gap in the original data. For example, `avg.time = "day"` for
@@ -68,8 +71,9 @@ timeProp(
 
   `type` determines how the data are split i.e. conditioned, and then
   plotted. The default is will produce a single plot using the entire
-  data. Type can be one of the built-in types as detailed in `cutData`
-  e.g. "season", "year", "weekday" and so on. For example,
+  data. Type can be one of the built-in types as detailed in
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md),
+  e.g., `"season"`, `"year"`, `"weekday"` and so on. For example,
   `type = "season"` will produce four plots — one for each season.
 
   It is also possible to choose `type` as another variable in the data
@@ -82,20 +86,37 @@ timeProp(
 
   `type` must be of length one.
 
+- cols:
+
+  Colours to be used for plotting; see
+  [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+  for details.
+
 - normalise:
 
   If `normalise = TRUE` then each time interval is scaled to 100. This
   is helpful to show the relative (percentage) contribution of the
   proportions.
 
-- cols:
+- key:
 
-  Colours to be used for plotting. Options include “default”,
-  “increment”, “heat”, “jet” and `RColorBrewer` colours — see the
-  `openair` `openColours` function for more details. For user defined
-  the user can supply a list of colour names recognised by R (type
-  [`colours()`](https://rdrr.io/r/grDevices/colors.html) to see the full
-  list). An example would be `cols = c("yellow", "green", "blue")`
+  Should a key be drawn? The default is `TRUE`.
+
+- key.columns:
+
+  Number of columns to be used in the key. With many pollutants a single
+  column can make to key too wide. The user can thus choose to use
+  several columns by setting `columns` to be less than the number of
+  pollutants.
+
+- key.position:
+
+  Location where the scale key is to plotted. Can include `"top"`,
+  `"bottom"`, `"right"` and `"left"`.
+
+- key.title:
+
+  The title of the key.
 
 - date.breaks:
 
@@ -108,33 +129,18 @@ timeProp(
 
 - date.format:
 
-  This option controls the date format on the x-axis. While `timePlot`
+  This option controls the date format on the x-axis. While
+  [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
   generally sets the date format sensibly there can be some situations
   where the user wishes to have more control. For format types see
-  `strptime`. For example, to format the date like “Jan-2012” set
-  `date.format = "\%b-\%Y"`.
-
-- key.columns:
-
-  Number of columns to be used in the key. With many pollutants a single
-  column can make to key too wide. The user can thus choose to use
-  several columns by setting `columns` to be less than the number of
-  pollutants.
-
-- key.position:
-
-  Location where the scale key is to plotted. Allowed arguments
-  currently include “top”, “right”, “bottom” and “left”.
-
-- key.title:
-
-  The title of the key.
+  [`strptime()`](https://rdrr.io/r/base/strptime.html). For example, to
+  format the date like "Jan-2012" set `date.format = "\%b-\%Y"`.
 
 - auto.text:
 
   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
-  etc. will automatically try and format pollutant names and units
-  properly e.g. by subscripting the \`2' in NO2.
+  will automatically try and format pollutant names and units properly,
+  e.g., by subscripting the '2' in NO2.
 
 - plot:
 
@@ -188,7 +194,7 @@ David Carslaw
 ## Examples
 
 ``` r
-## monthly plot of SO2 showing the contribution by wind sector
+# monthly plot of SO2 showing the contribution by wind sector
 timeProp(mydata, pollutant = "so2", avg.time = "month", proportion = "wd")
 #> Warning: ! Removing 219 rows due to missing `wd` data.
 ```

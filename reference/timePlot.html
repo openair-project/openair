@@ -145,8 +145,8 @@ time series together in one panel.</p></dd>
 <dd><p>This defines the time period to average to. Can be <code>"sec"</code>,
 <code>"min"</code>, <code>"hour"</code>, <code>"day"</code>, <code>"DSTday"</code>, <code>"week"</code>, <code>"month"</code>, <code>"quarter"</code> or
 <code>"year"</code>. For much increased flexibility a number can precede these options
-followed by a space. For example, a timeAverage of 2 months would be
-<code>period = "2 month"</code>. In addition, <code>avg.time</code> can equal <code>"season"</code>, in
+followed by a space. For example, an average of 2 months would be
+<code>avg.time = "2 month"</code>. In addition, <code>avg.time</code> can equal <code>"season"</code>, in
 which case 3-month seasonal values are calculated with spring defined as
 March, April, May and so on.</p>
 <p>Note that <code>avg.time</code> can be <em>less</em> than the time interval of the original
@@ -205,7 +205,7 @@ quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.</p>
-<p>Only one <code>type</code> is currently allowed in <code>timePlot</code>.</p></dd>
+<p><code>type</code> must be of length one.</p></dd>
 
 
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>

@@ -83,6 +83,29 @@
     ws/wd returned will correspond to the minimum daily pollutant,
     rather than the minimum daily ws/wd.
 
+- [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md)
+  refinements:
+
+  - `proportion` is now treated more like `type` internally. For a user,
+    this means it can now be passed `"default"` to avoid any
+    conditioning and create a regular period average barchart.
+
+  - `sub` can now be defined via `...`; set `sub = NA` to remove the
+    text annotation which appears by default at the bottom of a
+    [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md)
+    plot.
+
+  - Gained the `key` argument to remove a legend.
+
+  - `"season"` is now a permitted `avg.time` option in
+    [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md),
+    better aligning it with the options in
+    [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md).
+
+  - `...` is now correctly passed to
+    [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+    when using `type`/`proportion`.
+
 - [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md)
   and
   [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md)
@@ -117,8 +140,6 @@
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
 
 ## openair 2.19.0
-
-CRAN release: 2025-08-28
 
 ### Deprecations
 
@@ -375,8 +396,6 @@ facilitate its use.
 
 ## openair 2.18-2
 
-CRAN release: 2024-03-11
-
 ### New Features
 
 - add option to
@@ -399,8 +418,6 @@ CRAN release: 2024-03-11
   multiple combinations of `source` and `year`.
 
 ## openair 2.18-0
-
-CRAN release: 2023-10-09
 
 ### New Features
 
@@ -561,8 +578,6 @@ CRAN release: 2023-10-09
 
 ## openair 2.17-0
 
-CRAN release: 2023-05-02
-
 ### New Features
 
 - add option `meteo` to
@@ -653,8 +668,6 @@ CRAN release: 2023-05-02
 
 ## openair 2.15
 
-CRAN release: 2023-02-06
-
 - do not use native pipe yet - does not work with old versions of R
 
 - fix issue with
@@ -663,8 +676,6 @@ CRAN release: 2023-02-06
   element.
 
 ## openair 2.14
-
-CRAN release: 2023-01-25
 
 - add `year` as an option to `importMeta`. This allows the user to
   select sites that were only open at some point in the chosen year or
@@ -683,8 +694,6 @@ CRAN release: 2023-01-25
 
 ## openair 2.13
 
-CRAN release: 2023-01-06
-
 - add `importLocal` to access locally-managed automatic monitoring data
 - fix bug in `pollutionRose` when single number of breaks given (was
   ignored)
@@ -692,8 +701,6 @@ CRAN release: 2023-01-06
   `kernelExceed`
 
 ## openair 2.11
-
-CRAN release: 2022-09-25
 
 - add `sigma` to options for SQTBA trajectory analysis for control over
   plume spread assumptions; set to 1.5 km (in one hour)
@@ -723,8 +730,6 @@ CRAN release: 2022-09-25
 
 ## openair 2.9-1
 
-CRAN release: 2022-03-30
-
 - Do not return hydrocarbon measurements by default for annual and
   monthly summaries in `importAURN`.
 - fix issue with class of date-time object for importing some air
@@ -732,8 +737,6 @@ CRAN release: 2022-03-30
 - refine default grid lines in `windRose` and `pollutionRose`.
 
 ## openair 2.9-0
-
-CRAN release: 2022-03-22
 
 - add option to `TaylorDiagram` for annotation of observed data.
 - fix issue with `timevariation` when `difference = TRUE`
@@ -750,8 +753,6 @@ CRAN release: 2022-03-22
 
 ## openair 2.8-6
 
-CRAN release: 2021-11-22
-
 - fix annotation bug when comparing two data sets in `windRose`
 - enhance `selectRunning`. Now returns full data frame with a new
   condition column.
@@ -760,8 +761,6 @@ CRAN release: 2021-11-22
 - argument `month` not passed in `calendarPlot`
 
 ## openair 2.8-4
-
-CRAN release: 2021-09-15
 
 - fix bug in `windRose` where whole period is calm
 - add optimisation to `polarCluster` to speed up clustering through
@@ -933,8 +932,6 @@ CRAN release: 2021-09-15
 
 ## openair 2.2-3
 
-CRAN release: 2018-02-26
-
 ### Main changes
 
 - refine `selectByDate` due to changes in `lubridate`
@@ -948,8 +945,6 @@ CRAN release: 2018-02-26
   pollutants
 
 ## openair 2.1-5
-
-CRAN release: 2017-08-31
 
 ### Main changes
 
@@ -971,8 +966,6 @@ CRAN release: 2017-08-31
   were given (problem in bias correction)
 
 ## openair 2.1-0
-
-CRAN release: 2017-04-12
 
 ### Main changes
 
@@ -996,8 +989,6 @@ CRAN release: 2017-04-12
   the mean of a vector.
 
 ## openair 2.0-0
-
-CRAN release: 2016-11-23
 
 ### Main changes
 
@@ -1059,8 +1050,6 @@ CRAN release: 2016-11-23
 
 ## openair 1.8-6
 
-CRAN release: 2016-06-15
-
 - Only plot lower triangle for `corPlot`
 - make sure date class is POSIXct, POSIXt in `importAURN`
 - fix problem in `importMeta` for AURN - change in database source
@@ -1082,16 +1071,12 @@ CRAN release: 2016-06-15
 
 ## openair 1.8-2
 
-CRAN release: 2016-04-25
-
 - fixes for new version of `dplyr`
 - adjust legends in `conditionalEval` to avoid plot error.
 - fix problem on linux and simplify `importAURN`
 - update `importAURN` meta data in help function.
 
 ## openair 1.8-0
-
-CRAN release: 2016-03-24
 
 - Allow `scatterPlot` to have control over plot symbol fill and colour
   (for symbols 21 to 25). Use `cols` and `fill` to control.
@@ -1123,8 +1108,6 @@ CRAN release: 2016-03-24
 
 ## openair 1.7
 
-CRAN release: 2016-02-22
-
 - Allow `linearRelation` to use any arbitrary time averaging period.
 - don’t add line to monthly plot in `timeVariation` when group =
   “season”
@@ -1152,15 +1135,11 @@ CRAN release: 2016-02-22
 
 ## openair 1.6.5
 
-CRAN release: 2015-11-04
-
 - changes to fix examples not run during the R CMD check
 - make `TaylorDiagram` more flexible when using two groups and the
   second is date-based
 
 ## openair 1.6.4
-
-CRAN release: 2015-10-23
 
 - fix bug in `GoogleMapsPlot` when pollutant not given
 - don’t clutter up working directory with `GoogleMapsPlot`; write to
@@ -1180,8 +1159,6 @@ CRAN release: 2015-10-23
 - Always report data capture % in `aqStats`
 
 ## openair 1.6
-
-CRAN release: 2015-07-23
 
 - Don’t force integer results for `importAURN`
 - fix bug with `period = "months"` in `summaryPlot`
@@ -1215,8 +1192,6 @@ CRAN release: 2015-07-23
   pollutant name
 
 ## openair 1.5
-
-CRAN release: 2015-04-14
 
 - Add ‘days’ as a time unit to `summaryPlot` - useful for shorter time
   series
@@ -1334,8 +1309,6 @@ CRAN release: 2015-04-14
 
 ## openair 0.9-0
 
-CRAN release: 2013-11-12
-
 - Fix bug introduced in 0.8-0 for `scatterPlot` surfaces
 - Add statistic and percentile option to polarAnnulus; allow Conditional
   Probability Functions
@@ -1386,8 +1359,6 @@ CRAN release: 2013-11-12
 - Allow method = “density” in `trajLevel`
 
 ## openair 0.8-0
-
-CRAN release: 2013-02-13
 
 - make sure missing dates are plotted properly in `scatterPlot`
 - fix regression in `corPlot` - main did not work
@@ -1441,8 +1412,6 @@ CRAN release: 2013-02-13
 
 ## openair 0.7-0
 
-CRAN release: 2012-09-19
-
 - Allow more flexible layout when two or more pollutants are used with
   `polarPlot` and type is default
 - Fix colour scale problem for `windRose` when interval does not exist
@@ -1470,8 +1439,6 @@ CRAN release: 2012-09-19
 
 ## openair 0.6-0
 
-CRAN release: 2012-05-11
-
 - Add y.relation option to `timePlot`
 - Fix interpolation bug in calcFno2 and names in documentation.
 - Refine conditionalQuantile scales
@@ -1490,8 +1457,6 @@ CRAN release: 2012-05-11
 
 ## openair 0.5-25
 
-CRAN release: 2012-03-19
-
 - Fix bug when type = “wd” - would add missing data to north sector
 - Add observed histogram to conditionalQuantile
 - Fix bug in `timeAverage` when ws was not available but wd was
@@ -1499,8 +1464,6 @@ CRAN release: 2012-03-19
   version
 
 ## openair 0.5-23
-
-CRAN release: 2012-03-05
 
 - Fix bug in `windRose` when paddle = FALSE
 
@@ -1515,8 +1478,6 @@ CRAN release: 2012-03-05
   on axis
 
 ## openair 0.5-21
-
-CRAN release: 2012-02-22
 
 - Use C++ code for rolling mean calcs. Much faster, more to follow
 - NEW function trajCluster to carry out cluster analysis on back
@@ -1585,8 +1546,6 @@ CRAN release: 2012-02-22
 
 ## openair 0.5-11
 
-CRAN release: 2011-10-05
-
 - update to `corPlot`, `scatterPlot`, `smoothTrend`, linearRelation,
   `percentileRose`, `trajPlot`, `trajLevel`, `timeVariation`,
   TaylorDiagram, `timePlot`, `summaryPlot` improved … handling
@@ -1647,8 +1606,6 @@ CRAN release: 2011-10-05
 - add sep argument to import
 
 ## openair 0.4-23
-
-CRAN release: 2011-07-26
 
 - enhance ‘normalise’ option in `timePlot`
 - add annotate option to `windRose`/`pollutionRose`
@@ -1725,8 +1682,6 @@ CRAN release: 2011-07-26
 
 ## openair 0.4-17
 
-CRAN release: 2011-04-24
-
 - use readRDS and not .readRDS (caused failure on R Dev)
 - openair now depends on \>=R2.13.0
 - NEW FUNCTION sqStats to calculate common and pollutant-specific air
@@ -1743,8 +1698,6 @@ CRAN release: 2011-04-24
   `smoothTrend`, MannKendall, `timePlot` and `scatterPlot`
 
 ## openair 0.4-15
-
-CRAN release: 2011-04-12
 
 - Preparation for CRAN release
 - removed some restrictions on type/period combinations in polarAnnulus
@@ -1783,8 +1736,6 @@ CRAN release: 2011-04-12
 
 ## openair 0.4-10
 
-CRAN release: 2011-03-08
-
 - Fixed `calendarPlot` main/quickText handling.
 - Fixed `calendarPlot` first day of month error.
 - Fixed `summaryPlot` site ordering when more than one site.
@@ -1800,8 +1751,6 @@ CRAN release: 2011-03-08
   cutDaylight.
 
 ## openair 0.4-7
-
-CRAN release: 2011-02-17
 
 - ``` R
   Added new function conditionalQuantile for model
