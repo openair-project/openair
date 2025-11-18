@@ -10,49 +10,50 @@ timeProp(
   proportion = "cluster",
   avg.time = "day",
   type = "default",
-  normalise = FALSE,
   cols = "Set1",
-  date.breaks = 7,
-  date.format = NULL,
+  normalise = FALSE,
+  key = TRUE,
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
+  date.breaks = 7,
+  date.format = NULL,
   auto.text = TRUE,
   plot = TRUE,
   ...
 )
 }
 \arguments{
-\item{mydata}{A data frame containing the fields \code{date},
-\code{pollutant} and a splitting variable \code{proportion}}
+\item{mydata}{A data frame containing the fields \code{date}, \code{pollutant} and a
+splitting variable \code{proportion}}
 
 \item{pollutant}{Name of the pollutant to plot contained in \code{mydata}.}
 
 \item{proportion}{The splitting variable that makes up the bars in the bar
-chart e.g. \code{proportion = "cluster"} if the output from
-\code{polarCluster} is being analysed. If \code{proportion} is a numeric
-variable it is split into 4 quantiles (by default) by \code{cutData}. If
-\code{proportion} is a factor or character variable then the categories are
-used directly.}
+chart e.g. \code{proportion = "cluster"} if the output from \code{polarCluster} is
+being analysed. If \code{proportion} is a numeric variable it is split into 4
+quantiles (by default) by \code{cutData}. If \code{proportion} is a factor or
+character variable then the categories are used directly.}
 
-\item{avg.time}{This defines the time period to average to. Can be
-\dQuote{sec}, \dQuote{min}, \dQuote{hour}, \dQuote{day}, \dQuote{DSTday},
-\dQuote{week}, \dQuote{month}, \dQuote{quarter} or \dQuote{year}. For much
-increased flexibility a number can precede these options followed by a
-space. For example, a timeAverage of 2 months would be \code{period = "2 month"}.
+\item{avg.time}{This defines the time period to average to. Can be \code{"sec"},
+\code{"min"}, \code{"hour"}, \code{"day"}, \code{"DSTday"}, \code{"week"}, \code{"month"}, \code{"quarter"} or
+\code{"year"}. For much increased flexibility a number can precede these options
+followed by a space. For example, an average of 2 months would be
+\code{avg.time = "2 month"}. In addition, \code{avg.time} can equal \code{"season"}, in
+which case 3-month seasonal values are calculated with spring defined as
+March, April, May and so on.
 
-Note that \code{avg.time} when used in \code{timeProp} should be greater
-than the time gap in the original data. For example, \code{avg.time = "day"} for hourly data is OK, but \code{avg.time = "hour"} for daily data
-is not.}
+Note that \code{avg.time} when used in \code{timeProp} should be greater than the
+time gap in the original data. For example, \code{avg.time = "day"} for hourly
+data is OK, but \code{avg.time = "hour"} for daily data is not.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-\code{cutData} e.g. "season", "year", "weekday" and so on. For example,
-\code{type = "season"} will produce four plots --- one for each season.
+\item{type}{\code{type} determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in \code{\link[=cutData]{cutData()}},
+e.g., \code{"season"}, \code{"year"}, \code{"weekday"} and so on. For example, \code{type = "season"} will produce four plots --- one for each season.
 
-It is also possible to choose \code{type} as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+It is also possible to choose \code{type} as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
@@ -60,53 +61,48 @@ different variables and how they depend on one another.
 
 \code{type} must be of length one.}
 
-\item{normalise}{If \code{normalise = TRUE} then each time interval is scaled
-to 100. This is helpful to show the relative (percentage) contribution of
-the proportions.}
+\item{cols}{Colours to be used for plotting; see \code{\link[=openColours]{openColours()}} for details.}
 
-\item{cols}{Colours to be used for plotting. Options include
-\dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-\code{RColorBrewer} colours --- see the \code{openair} \code{openColours}
-function for more details. For user defined the user can supply a list of
-colour names recognised by R (type \code{colours()} to see the full list).
-An example would be \code{cols = c("yellow", "green", "blue")}}
+\item{normalise}{If \code{normalise = TRUE} then each time interval is scaled to
+100. This is helpful to show the relative (percentage) contribution of the
+proportions.}
 
-\item{date.breaks}{Number of major x-axis intervals to use. The function will
-try and choose a sensible number of dates/times as well as formatting the
-date/time appropriately to the range being considered.  This does not
-always work as desired automatically. The user can therefore increase or
-decrease the number of intervals by adjusting the value of
-\code{date.breaks} up or down.}
-
-\item{date.format}{This option controls the date format on the x-axis. While
-\code{timePlot} generally sets the date format sensibly there can be some
-situations where the user wishes to have more control. For format types see
-\code{strptime}. For example, to format the date like \dQuote{Jan-2012} set
-\code{date.format = "\\\%b-\\\%Y"}.}
+\item{key}{Should a key be drawn? The default is \code{TRUE}.}
 
 \item{key.columns}{Number of columns to be used in the key. With many
 pollutants a single column can make to key too wide. The user can thus
 choose to use several columns by setting \code{columns} to be less than the
 number of pollutants.}
 
-\item{key.position}{Location where the scale key is to plotted. Allowed
-arguments currently include \dQuote{top}, \dQuote{right}, \dQuote{bottom}
-and \dQuote{left}.}
+\item{key.position}{Location where the scale key is to plotted. Can include
+\code{"top"}, \code{"bottom"}, \code{"right"} and \code{"left"}.}
 
 \item{key.title}{The title of the key.}
 
-\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
-titles and axis labels etc. will automatically try and format pollutant
-names and units properly e.g.  by subscripting the `2' in NO2.}
+\item{date.breaks}{Number of major x-axis intervals to use. The function will
+try and choose a sensible number of dates/times as well as formatting the
+date/time appropriately to the range being considered. This does not always
+work as desired automatically. The user can therefore increase or decrease
+the number of intervals by adjusting the value of \code{date.breaks} up or down.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other ways.}
+\item{date.format}{This option controls the date format on the x-axis. While
+\code{\link[=timePlot]{timePlot()}} generally sets the date format sensibly there can be some
+situations where the user wishes to have more control. For format types see
+\code{\link[=strptime]{strptime()}}. For example, to format the date like "Jan-2012" set
+\code{date.format = "\\\%b-\\\%Y"}.}
 
-\item{...}{Other graphical parameters passed onto \code{timeProp} and
-\code{cutData}. For example, \code{timeProp} passes the option
-\code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common axis and title labelling options (such as
-\code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly, e.g., by subscripting the '2' in NO2.}
+
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data to extract plot components and plotting them in other ways.}
+
+\item{...}{Other graphical parameters passed onto \code{timeProp} and \code{cutData}.
+For example, \code{timeProp} passes the option \code{hemisphere = "southern"} on to
+\code{cutData} to provide southern (rather than default northern) hemisphere
+handling of \code{type = "season"}. Similarly, common axis and title labelling
+options (such as \code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
 \code{quickText} to handle routine formatting.}
 }
 \value{
@@ -116,22 +112,22 @@ an \link[=openair-package]{openair} object
 This function shows time series plots as stacked bar charts. The different
 categories in the bar chart are made up from a character or factor variable
 in a data frame. The function is primarily developed to support the plotting
-of cluster analysis output from \code{\link[=polarCluster]{polarCluster()}} and
-\code{\link[=trajCluster]{trajCluster()}} that consider local and regional (back trajectory)
-cluster analysis respectively. However, the function has more general use for
-understanding time series data.
+of cluster analysis output from \code{\link[=polarCluster]{polarCluster()}} and \code{\link[=trajCluster]{trajCluster()}} that
+consider local and regional (back trajectory) cluster analysis respectively.
+However, the function has more general use for understanding time series
+data.
 }
 \details{
 In order to plot time series in this way, some sort of time aggregation is
 needed, which is controlled by the option \code{avg.time}.
 
-The plot shows the value of \code{pollutant} on the y-axis (averaged
-according to \code{avg.time}). The time intervals are made up of bars split
-according to \code{proportion}. The bars therefore show how the total value
-of \code{pollutant} is made up for any time interval.
+The plot shows the value of \code{pollutant} on the y-axis (averaged according to
+\code{avg.time}). The time intervals are made up of bars split according to
+\code{proportion}. The bars therefore show how the total value of \code{pollutant} is
+made up for any time interval.
 }
 \examples{
-## monthly plot of SO2 showing the contribution by wind sector
+# monthly plot of SO2 showing the contribution by wind sector
 timeProp(mydata, pollutant = "so2", avg.time = "month", proportion = "wd")
 }
 \seealso{
