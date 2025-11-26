@@ -12,105 +12,94 @@
 #' graph because of the way they are related to one another which can be
 #' represented through the Law of Cosines.
 #'
-#' The `openair` version of the Taylor Diagram has several enhancements
-#' that increase its flexibility. In particular, the straightforward way of
-#' producing conditioning plots should prove valuable under many circumstances
-#' (using the `type` option). Many examples of Taylor Diagrams focus on
-#' model-observation comparisons for several models using all the available
-#' data. However, more insight can be gained into model performance by
-#' partitioning the data in various ways e.g. by season, daylight/nighttime, day
-#' of the week, by levels of a numeric variable e.g. wind speed or by land-use
-#' type etc.
+#' The `openair` version of the Taylor Diagram has several enhancements that
+#' increase its flexibility. In particular, the straightforward way of producing
+#' conditioning plots should prove valuable under many circumstances (using the
+#' `type` option). Many examples of Taylor Diagrams focus on model-observation
+#' comparisons for several models using all the available data. However, more
+#' insight can be gained into model performance by partitioning the data in
+#' various ways e.g. by season, daylight/nighttime, day of the week, by levels
+#' of a numeric variable e.g. wind speed or by land-use type etc.
 #'
 #' To consider several pollutants on one plot, a column identifying the
-#' pollutant name can be used e.g. `pollutant`. Then the Taylor Diagram can
-#' be plotted as (assuming a data frame `thedata`):
+#' pollutant name can be used e.g. `pollutant`. Then the Taylor Diagram can be
+#' plotted as (assuming a data frame `thedata`):
 #'
-#' `TaylorDiagram(thedata, obs = "obs", mod = "mod", group = "model", type
-#' = "pollutant")`
+#' `TaylorDiagram(thedata, obs = "obs", mod = "mod", group = "model", type =
+#' "pollutant")`
 #'
 #' which will give the model performance by pollutant in each panel.
 #'
 #' Note that it is important that each panel represents data with the same mean
-#' observed data across different groups. Therefore `TaylorDiagram(mydata,
-#' group = "model", type = "season")` is OK, whereas `TaylorDiagram(mydata,
-#' group = "season", type = "model")` is not because each panel (representing a
-#' model) will have four different mean values --- one for each season.
-#' Generally, the option `group` is either missing (one model being
-#' evaluated) or represents a column giving the model name. However, the data
-#' can be normalised using the `normalise` option. Normalisation is carried
-#' out on a per `group`/`type` basis making it possible to compare
-#' data on different scales e.g. `TaylorDiagram(mydata, group = "season",
-#' type = "model", normalise = TRUE)`. In this way it is possible to compare
-#' different pollutants, sites etc. in the same panel.
+#' observed data across different groups. Therefore `TaylorDiagram(mydata, group
+#' = "model", type = "season")` is OK, whereas `TaylorDiagram(mydata, group =
+#' "season", type = "model")` is not because each panel (representing a model)
+#' will have four different mean values --- one for each season. Generally, the
+#' option `group` is either missing (one model being evaluated) or represents a
+#' column giving the model name. However, the data can be normalised using the
+#' `normalise` option. Normalisation is carried out on a per `group`/`type`
+#' basis making it possible to compare data on different scales e.g.
+#' `TaylorDiagram(mydata, group = "season", type = "model", normalise = TRUE)`.
+#' In this way it is possible to compare different pollutants, sites etc. in the
+#' same panel.
 #'
-#' Also note that if multiple sites are present it makes sense to use `type
-#' = "site"` to ensure that each panel represents an individual site with its
-#' own specific standard deviation etc. If this is not the case then select a
-#' single site from the data first e.g. `subset(mydata, site ==
-#' "Harwell")`.
+#' Also note that if multiple sites are present it makes sense to use `type =
+#' "site"` to ensure that each panel represents an individual site with its own
+#' specific standard deviation etc. If this is not the case then select a single
+#' site from the data first e.g. `subset(mydata, site == "Harwell")`.
 #'
 #' @param mydata A data frame minimally containing a column of observations and
 #'   a column of predictions.
-#' @param obs A column of observations with which the predictions (`mod`)
-#'   will be compared.
-#' @param mod A column of model predictions. Note, `mod` can be of length 2
-#'   i.e. two lots of model predictions. If two sets of predictions are are
-#'   present e.g. `mod = c("base", "revised")`, then arrows are shown on
-#'   the Taylor Diagram which show the change in model performance in going from
-#'   the first to the second. This is useful where, for example, there is
-#'   interest in comparing how one model run compares with another using
-#'   different assumptions e.g. input data or model set up. See examples below.
-#' @param group The `group` column is used to differentiate between
-#'   different models and can be a factor or character. The total number of
-#'   models compared will be equal to the number of unique values of
-#'   `group`.
+#' @param obs A column of observations with which the predictions (`mod`) will
+#'   be compared.
+#' @param mod A column of model predictions. Note, `mod` can be of length 2 i.e.
+#'   two lots of model predictions. If two sets of predictions are are present
+#'   e.g. `mod = c("base", "revised")`, then arrows are shown on the Taylor
+#'   Diagram which show the change in model performance in going from the first
+#'   to the second. This is useful where, for example, there is interest in
+#'   comparing how one model run compares with another using different
+#'   assumptions e.g. input data or model set up. See examples below.
+#' @param group The `group` column is used to differentiate between different
+#'   models and can be a factor or character. The total number of models
+#'   compared will be equal to the number of unique values of `group`.
 #'
-#'   `group` can also be of length two e.g. `group = c("model",
-#'   "site")`. In this case all model-site combinations will be shown but they
-#'   will only be differentiated by colour/symbol by the first grouping variable
-#'   ("model" in this case). In essence the plot removes the differentiation by
-#'   the second grouping variable. Because there will be different values of
-#'   `obs` for each group, `normalise = TRUE` should be used.
-#' @param type `type` determines how the data are split i.e. conditioned,
-#'   and then plotted. The default is will produce a single plot using the
-#'   entire data. Type can be one of the built-in types as detailed in
-#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, `type = "season"` will produce four plots --- one for
-#'   each season.
+#'   `group` can also be of length two e.g. `group = c("model", "site")`. In
+#'   this case all model-site combinations will be shown but they will only be
+#'   differentiated by colour/symbol by the first grouping variable ("model" in
+#'   this case). In essence the plot removes the differentiation by the second
+#'   grouping variable. Because there will be different values of `obs` for each
+#'   group, `normalise = TRUE` should be used.
+#' @param type `type` determines how the data are split i.e. conditioned, and
+#'   then plotted. The default is will produce a single plot using the entire
+#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
+#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+#'   `type = "season"` will produce four plots --- one for each season.
 #'
-#'   It is also possible to choose `type` as another variable in the data
-#'   frame. If that variable is numeric, then the data will be split into four
+#'   It is also possible to choose `type` as another variable in the data frame.
+#'   If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   Type can be up length two e.g. `type = c("season", "weekday")` will
-#'   produce a 2x2 plot split by season and day of the week. Note, when two
-#'   types are provided the first forms the columns and the second the rows.
+#'   Type can be up length two e.g. `type = c("season", "weekday")` will produce
+#'   a 2x2 plot split by season and day of the week. Note, when two types are
+#'   provided the first forms the columns and the second the rows.
 #'
-#'   Note that often it will make sense to use `type = "site"` when
-#'   multiple sites are available. This will ensure that each panel contains
-#'   data specific to an individual site.
+#'   Note that often it will make sense to use `type = "site"` when multiple
+#'   sites are available. This will ensure that each panel contains data
+#'   specific to an individual site.
 #' @param normalise Should the data be normalised by dividing the standard
 #'   deviation of the observations? The statistics can be normalised (and
 #'   non-dimensionalised) by dividing both the RMS difference and the standard
-#'   deviation of the `mod` values by the standard deviation of the
-#'   observations (`obs`). In this case the \dQuote{observed} point is
-#'   plotted on the x-axis at unit distance from the origin. This makes it
-#'   possible to plot statistics for different species (maybe with different
-#'   units) on the same plot. The normalisation is done by each
-#'   `group`/`type` combination.
+#'   deviation of the `mod` values by the standard deviation of the observations
+#'   (`obs`). In this case the \dQuote{observed} point is plotted on the x-axis
+#'   at unit distance from the origin. This makes it possible to plot statistics
+#'   for different species (maybe with different units) on the same plot. The
+#'   normalisation is done by each `group`/`type` combination.
 #' @param cols Colours to be used for plotting. Useful options for categorical
-#'   data are available from `RColorBrewer` colours --- see the
-#'   `openair` `openColours` function for more details. Useful schemes
-#'   include \dQuote{Accent}, \dQuote{Dark2}, \dQuote{Paired}, \dQuote{Pastel1},
-#'   \dQuote{Pastel2}, \dQuote{Set1}, \dQuote{Set2}, \dQuote{Set3} --- but see
-#'   ?`brewer.pal` for the maximum useful colours in each. For user defined
-#'   the user can supply a list of colour names recognised by R (type
-#'   `colours()` to see the full list). An example would be `cols =
-#'   c("yellow", "green", "blue")`.
+#'   data are available from `RColorBrewer` colours --- see [openColours()] for
+#'   more details.
 #' @param rms.col Colour for centred-RMS lines and text.
 #' @param cor.col Colour for correlation coefficient lines and text.
 #' @param arrow.lwd Width of arrow used when used for comparing two model
@@ -125,34 +114,33 @@
 #'   choose to use several columns by setting `columns` to be less than the
 #'   number of pollutants.
 #' @param key.pos Position of the key e.g. \dQuote{top}, \dQuote{bottom},
-#'   \dQuote{left} and \dQuote{right}. See details in `lattice:xyplot` for
-#'   more details about finer control.
+#'   \dQuote{left} and \dQuote{right}. See details in `lattice:xyplot` for more
+#'   details about finer control.
 #' @param strip Should a strip be shown?
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
-#'   titles and axis labels will automatically try and format pollutant names
-#'   and units properly e.g.  by subscripting the `2' in NO2.
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
+#'   axis labels will automatically try and format pollutant names and units
+#'   properly e.g.  by subscripting the `2' in NO2.
 #' @param ... Other graphical parameters are passed onto `cutData` and
 #'   `lattice:xyplot`. For example, `TaylorDiagram` passes the option
-#'   `hemisphere = "southern"` on to `cutData` to provide southern
-#'   (rather than default northern) hemisphere handling of `type =
-#'   "season"`. Similarly, common graphical parameters, such as `layout`
-#'   for panel arrangement and `pch` and `cex` for plot symbol type
-#'   and size, are passed on to `xyplot`. Most are passed unmodified,
-#'   although there are some special cases where `openair` may locally
-#'   manage this process. For example, common axis and title labelling options
-#'   (such as `xlab`, `ylab`, `main`) are passed via
+#'   `hemisphere = "southern"` on to `cutData` to provide southern (rather than
+#'   default northern) hemisphere handling of `type = "season"`. Similarly,
+#'   common graphical parameters, such as `layout` for panel arrangement and
+#'   `pch` and `cex` for plot symbol type and size, are passed on to `xyplot`.
+#'   Most are passed unmodified, although there are some special cases where
+#'   `openair` may locally manage this process. For example, common axis and
+#'   title labelling options (such as `xlab`, `ylab`, `main`) are passed via
 #'   `quickText` to handle routine formatting.
 #' @export
 #' @return an [openair][openair-package] object. If retained, e.g., using
-#'   `output <- TaylorDiagram(thedata, obs = "nox", mod = "mod")`, this
-#'   output can be used to recover the data, reproduce or rework the original
-#'   plot or undertake further analysis. For example, `output$data` will be
-#'   a data frame consisting of the group, type, correlation coefficient (R),
-#'   the standard deviation of the observations and measurements.
+#'   `output <- TaylorDiagram(thedata, obs = "nox", mod = "mod")`, this output
+#'   can be used to recover the data, reproduce or rework the original plot or
+#'   undertake further analysis. For example, `output$data` will be a data frame
+#'   consisting of the group, type, correlation coefficient (R), the standard
+#'   deviation of the observations and measurements.
 #' @author David Carslaw
 #' @family model evaluation functions
-#' @seealso `taylor.diagram` from the `plotrix` package from which
-#'   some of the annotation code was used.
+#' @seealso `taylor.diagram` from the `plotrix` package from which some of the
+#'   annotation code was used.
 #' @references
 #'
 #' Taylor, K.E.: Summarizing multiple aspects of model performance in a single

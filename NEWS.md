@@ -64,6 +64,18 @@
 
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
 
+- `openColours()` improvements:
+
+    - `openColours()` gains the `direction` argument, which is used to reverse a palette. 
+    
+    - Adding a minus to a scheme name will invert `direction`. This is most useful when using `openColours()` indirectly; e.g., `polarPlot(mydata, "no2", cols = "-viridis")`.
+
+    - Qualitative palettes are now consistently interpolated if `n` is greater than their maximum values. The option `too_few` can be defined to change this behaviour to cycling through the colour palette, or raising an error. The user will always be warned if any `too_few` strategy needs to be implemented.
+
+    - The `openSchemes` object is now exported. This dataset contains a complete list of available schemes available via `openColours()`.
+    
+    - Additional palettes have been defined based on the works of both Paul Tol and Fabio Crameri.
+
 ## Bug Fixes
 
 - `timePlot()` now allows duplicate dates when `time.avg` is used. The user will still receive a warning from `timeAverage()`, which is used internally, but the plot will still be created.
