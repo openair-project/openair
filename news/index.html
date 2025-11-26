@@ -108,7 +108,7 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.19.0" id="openair-2190">openair 2.19.0<a class="anchor" aria-label="anchor" href="#openair-2190"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.19.0" id="openair-2190">openair 2.19.0<a class="anchor" aria-label="anchor" href="#openair-2190"></a></h2><p class="text-muted">CRAN release: 2025-08-28</p>
 <div class="section level3">
 <h3 id="deprecations-2-19-0">Deprecations<a class="anchor" aria-label="anchor" href="#deprecations-2-19-0"></a></h3>
 <p><code><a href="../reference/importEurope.html">importEurope()</a></code> relies on the same back-end database as the <code>saqgetr</code> package (<a href="https://github.com/skgrange/saqgetr" class="external-link uri">https://github.com/skgrange/saqgetr</a>), which was retired in February 2024. <code><a href="../reference/importEurope.html">importEurope()</a></code> will now warn users of this, and outright error if <code>year &gt;= 2025</code>. Users are instead encouraged to use the EEA Air Quality Download Service <a href="https://eeadmz1-downloads-webapp.azurewebsites.net" class="external-link uri">https://eeadmz1-downloads-webapp.azurewebsites.net</a> to obtain European data for the time being. An R package, <a href="https://github.com/openair-project/euroaq" class="external-link uri">https://github.com/openair-project/euroaq</a>, has been developed to facilitate its use.</p>
@@ -194,7 +194,7 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.18-2" id="openair-218-2">openair 2.18-2<a class="anchor" aria-label="anchor" href="#openair-218-2"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.18-2" id="openair-218-2">openair 2.18-2<a class="anchor" aria-label="anchor" href="#openair-218-2"></a></h2><p class="text-muted">CRAN release: 2024-03-11</p>
 <div class="section level3">
 <h3 id="new-features-2-18-2">New Features<a class="anchor" aria-label="anchor" href="#new-features-2-18-2"></a></h3>
 <ul><li>add option to <code><a href="../reference/corPlot.html">corPlot()</a></code> to carry through “use” option in <code>cor</code>.</li>
@@ -209,7 +209,7 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.18-0" id="openair-218-0">openair 2.18-0<a class="anchor" aria-label="anchor" href="#openair-218-0"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.18-0" id="openair-218-0">openair 2.18-0<a class="anchor" aria-label="anchor" href="#openair-218-0"></a></h2><p class="text-muted">CRAN release: 2023-10-09</p>
 <div class="section level3">
 <h3 id="new-features-2-18-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-2-18-0"></a></h3>
 <ul><li>
@@ -248,7 +248,7 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.17-0" id="openair-217-0">openair 2.17-0<a class="anchor" aria-label="anchor" href="#openair-217-0"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.17-0" id="openair-217-0">openair 2.17-0<a class="anchor" aria-label="anchor" href="#openair-217-0"></a></h2><p class="text-muted">CRAN release: 2023-05-02</p>
 <div class="section level3">
 <h3 id="new-features-2-17-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-2-17-0"></a></h3>
 <ul><li><p>add option <code>meteo</code> to <code><a href="../reference/importUKAQ-wrapper.html">importAURN()</a></code> family of functions. By default modelled wind speed, direction and ambient temperature are returned if available, but not if <code>meteo = FALSE</code>.</p></li>
@@ -273,26 +273,26 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.15" id="openair-215">openair 2.15<a class="anchor" aria-label="anchor" href="#openair-215"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.15" id="openair-215">openair 2.15<a class="anchor" aria-label="anchor" href="#openair-215"></a></h2><p class="text-muted">CRAN release: 2023-02-06</p>
 <ul><li><p>do not use native pipe yet - does not work with old versions of R</p></li>
 <li><p>fix issue with <code><a href="../reference/polarDiff.html">polarDiff()</a></code> where the resulting <code>openair</code> object did not contain the <code>plot</code> element.</p></li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.14" id="openair-214">openair 2.14<a class="anchor" aria-label="anchor" href="#openair-214"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.14" id="openair-214">openair 2.14<a class="anchor" aria-label="anchor" href="#openair-214"></a></h2><p class="text-muted">CRAN release: 2023-01-25</p>
 <ul><li><p>add <code>year</code> as an option to <code>importMeta</code>. This allows the user to select sites that were only open at some point in the chosen year or duration of years.</p></li>
 <li><p>make sure full daily gravimetric data are returned for PM10 and PM2.5 if available when using <code>importAURN</code> family of functions. These data will be returned as <code>gr_pm2.5</code> and <code>gr_pm10</code> if <code>data_type = "daily"</code></p></li>
 <li><p>add <code>alpha</code> argument to all polar directional analysis functions. This is mainly for use in <code>openairmaps</code> but may be of general interest for specific use cases.</p></li>
 <li><p>fix small bug in <code>smoothTrend</code> in returned fit data when data is missing.</p></li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.13" id="openair-213">openair 2.13<a class="anchor" aria-label="anchor" href="#openair-213"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.13" id="openair-213">openair 2.13<a class="anchor" aria-label="anchor" href="#openair-213"></a></h2><p class="text-muted">CRAN release: 2023-01-06</p>
 <ul><li>add <code>importLocal</code> to access locally-managed automatic monitoring data</li>
 <li>fix bug in <code>pollutionRose</code> when single number of breaks given (was ignored)</li>
 <li>remove legacy functions <code>import</code>, <code>import.2</code>, <code>importAURNcsv</code> and <code>kernelExceed</code>
 </li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.11" id="openair-211">openair 2.11<a class="anchor" aria-label="anchor" href="#openair-211"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.11" id="openair-211">openair 2.11<a class="anchor" aria-label="anchor" href="#openair-211"></a></h2><p class="text-muted">CRAN release: 2022-09-25</p>
 <ul><li>add <code>sigma</code> to options for SQTBA trajectory analysis for control over plume spread assumptions; set to 1.5 km (in one hour)</li>
 <li>fix bug introduced in <code>timeAverage</code> for multi-time period averages</li>
 <li>fix bug in <code>timeProp</code> and simplify code</li>
@@ -314,13 +314,13 @@
 <li>add initial version of ‘York regression’ approach as an option to <code>polarPlot</code>. This regression approach determines a best fit line when there is error in the ‘x’ and the ‘y’. The openair book will be updated to cover this in more detail.</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.9-1" id="openair-29-1">openair 2.9-1<a class="anchor" aria-label="anchor" href="#openair-29-1"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.9-1" id="openair-29-1">openair 2.9-1<a class="anchor" aria-label="anchor" href="#openair-29-1"></a></h2><p class="text-muted">CRAN release: 2022-03-30</p>
 <ul><li>Do not return hydrocarbon measurements by default for annual and monthly summaries in <code>importAURN</code>.</li>
 <li>fix issue with class of date-time object for importing some air quality data e.g. <code>importAURN</code>.</li>
 <li>refine default grid lines in <code>windRose</code> and <code>pollutionRose</code>.</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.9-0" id="openair-29-0">openair 2.9-0<a class="anchor" aria-label="anchor" href="#openair-29-0"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.9-0" id="openair-29-0">openair 2.9-0<a class="anchor" aria-label="anchor" href="#openair-29-0"></a></h2><p class="text-muted">CRAN release: 2022-03-22</p>
 <ul><li>add option to <code>TaylorDiagram</code> for annotation of observed data.</li>
 <li>fix issue with <code>timevariation</code> when <code>difference = TRUE</code>
 </li>
@@ -330,7 +330,7 @@
 <li>fix terrible spelling in <code>selectRunning</code>.</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.8-6" id="openair-28-6">openair 2.8-6<a class="anchor" aria-label="anchor" href="#openair-28-6"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.8-6" id="openair-28-6">openair 2.8-6<a class="anchor" aria-label="anchor" href="#openair-28-6"></a></h2><p class="text-muted">CRAN release: 2021-11-22</p>
 <ul><li>fix annotation bug when comparing two data sets in <code>windRose</code>
 </li>
 <li>enhance <code>selectRunning</code>. Now returns full data frame with a new condition column.</li>
@@ -339,7 +339,7 @@
 </li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.8-4" id="openair-28-4">openair 2.8-4<a class="anchor" aria-label="anchor" href="#openair-28-4"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.8-4" id="openair-28-4">openair 2.8-4<a class="anchor" aria-label="anchor" href="#openair-28-4"></a></h2><p class="text-muted">CRAN release: 2021-09-15</p>
 <ul><li>fix bug in <code>windRose</code> where whole period is calm</li>
 <li>add optimisation to <code>polarCluster</code> to speed up clustering through option <code>pamonce = 3</code>. This should not appreciably affect results.</li>
 <li>fix strange bug in <code>aqStats</code> due to <code>lubridate</code> time zone issue.</li>
@@ -469,7 +469,7 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.2-3" id="openair-22-3">openair 2.2-3<a class="anchor" aria-label="anchor" href="#openair-22-3"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.2-3" id="openair-22-3">openair 2.2-3<a class="anchor" aria-label="anchor" href="#openair-22-3"></a></h2><p class="text-muted">CRAN release: 2018-02-26</p>
 <div class="section level3">
 <h3 id="main-changes-2-2-3">Main changes<a class="anchor" aria-label="anchor" href="#main-changes-2-2-3"></a></h3>
 <ul><li>refine <code>selectByDate</code> due to changes in <code>lubridate</code>
@@ -486,7 +486,7 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.1-5" id="openair-21-5">openair 2.1-5<a class="anchor" aria-label="anchor" href="#openair-21-5"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.1-5" id="openair-21-5">openair 2.1-5<a class="anchor" aria-label="anchor" href="#openair-21-5"></a></h2><p class="text-muted">CRAN release: 2017-08-31</p>
 <div class="section level3">
 <h3 id="main-changes-2-1-5">Main changes<a class="anchor" aria-label="anchor" href="#main-changes-2-1-5"></a></h3>
 <ul><li>change <code>polarCluster</code> resolution to “normal” rather than “fine” to speed up.</li>
@@ -501,7 +501,7 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.1-0" id="openair-21-0">openair 2.1-0<a class="anchor" aria-label="anchor" href="#openair-21-0"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.1-0" id="openair-21-0">openair 2.1-0<a class="anchor" aria-label="anchor" href="#openair-21-0"></a></h2><p class="text-muted">CRAN release: 2017-04-12</p>
 <div class="section level3">
 <h3 id="main-changes-2-1-0">Main changes<a class="anchor" aria-label="anchor" href="#main-changes-2-1-0"></a></h3>
 <ul><li>add <code>angle</code> option to <code>percentileRose</code> to allow wind direction averages for sectors &gt;10 degrees.</li>
@@ -520,7 +520,7 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.0-0" id="openair-20-0">openair 2.0-0<a class="anchor" aria-label="anchor" href="#openair-20-0"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.0-0" id="openair-20-0">openair 2.0-0<a class="anchor" aria-label="anchor" href="#openair-20-0"></a></h2><p class="text-muted">CRAN release: 2016-11-23</p>
 <div class="section level3">
 <h3 id="main-changes-2-0-0">Main changes<a class="anchor" aria-label="anchor" href="#main-changes-2-0-0"></a></h3>
 <ul><li>silence download progress by default in <code>importAURN</code>
@@ -570,7 +570,7 @@
 </ul></div>
 </div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.8-6" id="openair-18-6">openair 1.8-6<a class="anchor" aria-label="anchor" href="#openair-18-6"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.8-6" id="openair-18-6">openair 1.8-6<a class="anchor" aria-label="anchor" href="#openair-18-6"></a></h2><p class="text-muted">CRAN release: 2016-06-15</p>
 <ul><li>Only plot lower triangle for <code>corPlot</code>
 </li>
 <li>make sure date class is POSIXct, POSIXt in <code>importAURN</code>
@@ -587,7 +587,7 @@
 <li>fix <code>TheilSen</code> bug when two types.</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.8-2" id="openair-18-2">openair 1.8-2<a class="anchor" aria-label="anchor" href="#openair-18-2"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.8-2" id="openair-18-2">openair 1.8-2<a class="anchor" aria-label="anchor" href="#openair-18-2"></a></h2><p class="text-muted">CRAN release: 2016-04-25</p>
 <ul><li>fixes for new version of <code>dplyr</code>
 </li>
 <li>adjust legends in <code>conditionalEval</code> to avoid plot error.</li>
@@ -596,7 +596,7 @@
 <li>update <code>importAURN</code> meta data in help function.</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.8-0" id="openair-18-0">openair 1.8-0<a class="anchor" aria-label="anchor" href="#openair-18-0"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.8-0" id="openair-18-0">openair 1.8-0<a class="anchor" aria-label="anchor" href="#openair-18-0"></a></h2><p class="text-muted">CRAN release: 2016-03-24</p>
 <ul><li>Allow <code>scatterPlot</code> to have control over plot symbol fill and colour (for symbols 21 to 25). Use <code>cols</code> and <code>fill</code> to control.</li>
 <li>
 <code>scatterPlot</code> can now fit more than one linear equation when there is a grouping variable</li>
@@ -623,7 +623,7 @@
 </li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.7" id="openair-17">openair 1.7<a class="anchor" aria-label="anchor" href="#openair-17"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.7" id="openair-17">openair 1.7<a class="anchor" aria-label="anchor" href="#openair-17"></a></h2><p class="text-muted">CRAN release: 2016-02-22</p>
 <ul><li>Allow <code>linearRelation</code> to use any arbitrary time averaging period.</li>
 <li>don’t add line to monthly plot in <code>timeVariation</code> when group = “season”</li>
 <li>fix <code>NA</code> factors in <code>trajPlot</code>
@@ -649,12 +649,12 @@
 <li>fix some cases where background strip was not white</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.6.5" id="openair-165">openair 1.6.5<a class="anchor" aria-label="anchor" href="#openair-165"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.6.5" id="openair-165">openair 1.6.5<a class="anchor" aria-label="anchor" href="#openair-165"></a></h2><p class="text-muted">CRAN release: 2015-11-04</p>
 <ul><li>changes to fix examples not run during the R CMD check</li>
 <li>make <code>TaylorDiagram</code> more flexible when using two groups and the second is date-based</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.6.4" id="openair-164">openair 1.6.4<a class="anchor" aria-label="anchor" href="#openair-164"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.6.4" id="openair-164">openair 1.6.4<a class="anchor" aria-label="anchor" href="#openair-164"></a></h2><p class="text-muted">CRAN release: 2015-10-23</p>
 <ul><li>fix bug in <code>GoogleMapsPlot</code> when pollutant not given</li>
 <li>don’t clutter up working directory with <code>GoogleMapsPlot</code>; write to temporary file instead</li>
 <li>fix bug when trying to access multiple sites with no data in</li>
@@ -672,7 +672,7 @@
 </li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.6" id="openair-16">openair 1.6<a class="anchor" aria-label="anchor" href="#openair-16"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.6" id="openair-16">openair 1.6<a class="anchor" aria-label="anchor" href="#openair-16"></a></h2><p class="text-muted">CRAN release: 2015-07-23</p>
 <ul><li>Don’t force integer results for <code>importAURN</code>
 </li>
 <li>fix bug with <code>period = "months"</code> in <code>summaryPlot</code>
@@ -703,7 +703,7 @@
 <li>fix bug in <code>timeVariation</code> with <code>type = "season"</code> when space in pollutant name</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.5" id="openair-15">openair 1.5<a class="anchor" aria-label="anchor" href="#openair-15"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.5" id="openair-15">openair 1.5<a class="anchor" aria-label="anchor" href="#openair-15"></a></h2><p class="text-muted">CRAN release: 2015-04-14</p>
 <ul><li>Add ‘days’ as a time unit to <code>summaryPlot</code> - useful for shorter time series</li>
 <li>Initial changes to use <code>dplyr</code> to speed up some of the code e.g. <code>timeAverage</code>
 </li>
@@ -793,7 +793,7 @@
 </li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.9-0" id="openair-09-0">openair 0.9-0<a class="anchor" aria-label="anchor" href="#openair-09-0"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.9-0" id="openair-09-0">openair 0.9-0<a class="anchor" aria-label="anchor" href="#openair-09-0"></a></h2><p class="text-muted">CRAN release: 2013-11-12</p>
 <ul><li>Fix bug introduced in 0.8-0 for <code>scatterPlot</code> surfaces</li>
 <li>Add statistic and percentile option to polarAnnulus; allow Conditional Probability Functions</li>
 <li>Allow percentile intervals to be considered in <code>polarPlot</code> when statistic = “cpf”</li>
@@ -832,7 +832,7 @@
 </li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.8-0" id="openair-08-0">openair 0.8-0<a class="anchor" aria-label="anchor" href="#openair-08-0"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.8-0" id="openair-08-0">openair 0.8-0<a class="anchor" aria-label="anchor" href="#openair-08-0"></a></h2><p class="text-muted">CRAN release: 2013-02-13</p>
 <ul><li>make sure missing dates are plotted properly in <code>scatterPlot</code>
 </li>
 <li>fix regression in <code>corPlot</code> - main did not work</li>
@@ -868,7 +868,7 @@
 <li>Update trajectory analysis to allow Potential Source Contribution Function (PSCF) and Concentration Weighted Trajectory (CWT) to be considered</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.7-0" id="openair-07-0">openair 0.7-0<a class="anchor" aria-label="anchor" href="#openair-07-0"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.7-0" id="openair-07-0">openair 0.7-0<a class="anchor" aria-label="anchor" href="#openair-07-0"></a></h2><p class="text-muted">CRAN release: 2012-09-19</p>
 <ul><li>Allow more flexible layout when two or more pollutants are used with <code>polarPlot</code> and type is default</li>
 <li>Fix colour scale problem for <code>windRose</code> when interval does not exist</li>
 <li>Added ‘nativeRaster’ class handler for GoogleMapsPlots</li>
@@ -895,7 +895,7 @@
 <li>Fix bug in <code>summaryPlot</code>: type = “density” broken in recent versions</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.6-0" id="openair-06-0">openair 0.6-0<a class="anchor" aria-label="anchor" href="#openair-06-0"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.6-0" id="openair-06-0">openair 0.6-0<a class="anchor" aria-label="anchor" href="#openair-06-0"></a></h2><p class="text-muted">CRAN release: 2012-05-11</p>
 <ul><li>Add y.relation option to <code>timePlot</code>
 </li>
 <li>Fix interpolation bug in calcFno2 and names in documentation.</li>
@@ -911,14 +911,14 @@
 <li>Allow better annotation of <code>calendarPlot</code> - highlight values above/below a certain threshold.</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.5-25" id="openair-05-25">openair 0.5-25<a class="anchor" aria-label="anchor" href="#openair-05-25"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.5-25" id="openair-05-25">openair 0.5-25<a class="anchor" aria-label="anchor" href="#openair-05-25"></a></h2><p class="text-muted">CRAN release: 2012-03-19</p>
 <ul><li>Fix bug when type = “wd” - would add missing data to north sector</li>
 <li>Add observed histogram to conditionalQuantile</li>
 <li>Fix bug in <code>timeAverage</code> when ws was not available but wd was</li>
 <li>Temporary fix to GoogleMapsPlot documentation due to new package version</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.5-23" id="openair-05-23">openair 0.5-23<a class="anchor" aria-label="anchor" href="#openair-05-23"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.5-23" id="openair-05-23">openair 0.5-23<a class="anchor" aria-label="anchor" href="#openair-05-23"></a></h2><p class="text-muted">CRAN release: 2012-03-05</p>
 <ul><li>Fix bug in <code>windRose</code> when paddle = FALSE</li>
 </ul></div>
     <div class="section level2">
@@ -932,7 +932,7 @@
 <li>add option date.format to <code>timePlot</code> for more control over date format on axis</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.5-21" id="openair-05-21">openair 0.5-21<a class="anchor" aria-label="anchor" href="#openair-05-21"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.5-21" id="openair-05-21">openair 0.5-21<a class="anchor" aria-label="anchor" href="#openair-05-21"></a></h2><p class="text-muted">CRAN release: 2012-02-22</p>
 <ul><li>Use C++ code for rolling mean calcs. Much faster, more to follow</li>
 <li>NEW function trajCluster to carry out cluster analysis on back trajectories</li>
 <li>Simple model ranking available in modStats # Changes in openair 0.5-18 [2012-01-16]</li>
@@ -988,7 +988,7 @@
 <li>Include all colour schemes defined in the RColorBrewer package</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.5-11" id="openair-05-11">openair 0.5-11<a class="anchor" aria-label="anchor" href="#openair-05-11"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.5-11" id="openair-05-11">openair 0.5-11<a class="anchor" aria-label="anchor" href="#openair-05-11"></a></h2><p class="text-muted">CRAN release: 2011-10-05</p>
 <ul><li>update to <code>corPlot</code>, <code>scatterPlot</code>, <code>smoothTrend</code>, linearRelation, <code>percentileRose</code>, <code>trajPlot</code>, <code>trajLevel</code>, <code>timeVariation</code>, TaylorDiagram, <code>timePlot</code>, <code>summaryPlot</code> improved … handling</li>
 <li>remove warnings when importing air pollution data</li>
 <li>additional update to <code>corPlot</code> added pollutant option, and openair class output</li>
@@ -1035,7 +1035,7 @@
 <li>add sep argument to import</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.4-23" id="openair-04-23">openair 0.4-23<a class="anchor" aria-label="anchor" href="#openair-04-23"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.4-23" id="openair-04-23">openair 0.4-23<a class="anchor" aria-label="anchor" href="#openair-04-23"></a></h2><p class="text-muted">CRAN release: 2011-07-26</p>
 <ul><li>enhance ‘normalise’ option in <code>timePlot</code>
 </li>
 <li>add annotate option to <code>windRose</code>/<code>pollutionRose</code>
@@ -1094,7 +1094,7 @@
 <li>return NA in aqStats when no data present; previously it tried to calculate quantities, returning -Inf etc</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.4-17" id="openair-04-17">openair 0.4-17<a class="anchor" aria-label="anchor" href="#openair-04-17"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.4-17" id="openair-04-17">openair 0.4-17<a class="anchor" aria-label="anchor" href="#openair-04-17"></a></h2><p class="text-muted">CRAN release: 2011-04-24</p>
 <ul><li>use readRDS and not .readRDS (caused failure on R Dev)</li>
 <li>openair now depends on &gt;=R2.13.0</li>
 <li>NEW FUNCTION sqStats to calculate common and pollutant-specific air quality statistics by year and site.</li>
@@ -1107,7 +1107,7 @@
 </li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.4-15" id="openair-04-15">openair 0.4-15<a class="anchor" aria-label="anchor" href="#openair-04-15"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.4-15" id="openair-04-15">openair 0.4-15<a class="anchor" aria-label="anchor" href="#openair-04-15"></a></h2><p class="text-muted">CRAN release: 2011-04-12</p>
 <ul><li>Preparation for CRAN release</li>
 <li>removed some restrictions on type/period combinations in polarAnnulus</li>
 </ul></div>
@@ -1137,7 +1137,7 @@
 <li>Add percentage units to <code>windRose</code> and <code>pollutionRose</code> on radial scale</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.4-10" id="openair-04-10">openair 0.4-10<a class="anchor" aria-label="anchor" href="#openair-04-10"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.4-10" id="openair-04-10">openair 0.4-10<a class="anchor" aria-label="anchor" href="#openair-04-10"></a></h2><p class="text-muted">CRAN release: 2011-03-08</p>
 <ul><li>Fixed <code>calendarPlot</code> main/quickText handling.</li>
 <li>Fixed <code>calendarPlot</code> first day of month error.</li>
 <li>Fixed <code>summaryPlot</code> site ordering when more than one site.</li>
@@ -1151,7 +1151,7 @@
 <ul><li>Added new cutData type option ‘daylight’, enabled using new function cutDaylight.</li>
 </ul></div>
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.4-7" id="openair-04-7">openair 0.4-7<a class="anchor" aria-label="anchor" href="#openair-04-7"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.4-7" id="openair-04-7">openair 0.4-7<a class="anchor" aria-label="anchor" href="#openair-04-7"></a></h2><p class="text-muted">CRAN release: 2011-02-17</p>
 <ul><li><div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>Added new <span class="cf">function</span> conditionalQuantile <span class="cf">for</span> model</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>evaluation purposes.</span></code></pre></div></li>
 <li><div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>Fixed <span class="st">`</span><span class="at">importAURN</span><span class="st">`</span> to account <span class="cf">for</span> a change <span class="cf">in</span> web domain</span>
