@@ -2,6 +2,12 @@
 
 ## openair (development version)
 
+### Bug Fixes
+
+- [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
+  now correctly handles the `end` date if supplied when in a date format
+  e.g. dd/mm/yyyy and selects all hours in the day if present.
+
 ### Dependency Changes
 
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe
