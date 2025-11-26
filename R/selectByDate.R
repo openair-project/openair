@@ -112,7 +112,11 @@ selectByDate <- function(
       )
 
       # check to see if supplied 'end' includes time component i.e. with a ":"
-      if (!grepl(":", end)) end <- end + 3600 * 23
+      if (!grepl(":", end)) {
+        # get the maximum date in data on that day
+        id <- which(as_date(mydata$date) == as_date(end))
+        end <- max(mydata$date[id])
+      }
     }
 
     mydata <- filter(mydata, date <= end)
