@@ -3,7 +3,7 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   articles/openair: openair.html
-last_built: 2025-11-26T11:14Z
+last_built: 2025-11-26T13:49Z
 urls:
   reference: https://openair-project.github.io/openair/reference
   article: https://openair-project.github.io/openair/articles
