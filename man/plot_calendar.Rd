@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_calendar.R
 \name{plot_calendar}
 \alias{plot_calendar}
-\title{Plot time series values in a conventional calendar format}
+\title{Plot an air quality timeseries chart in a conventional calendar format}
 \usage{
 plot_calendar(
   data,
@@ -105,10 +105,7 @@ properly, e.g., by subscripting the '2' in NO2.}
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}
 
-\item{...}{Other graphical parameters are passed onto the \code{lattice} function
-\code{\link[lattice:levelplot]{lattice::levelplot()}}, with common axis and title labelling options (such
-as \code{xlab}, \code{ylab}, \code{main}) being passed to via \code{\link[=quickText]{quickText()}} to handle
-routine formatting.}
+\item{...}{Not currently used.}
 }
 \value{
 an \link[=openair-package]{openair} object
@@ -163,6 +160,7 @@ plot_calendar(
 \seealso{
 Other ggplot2 time series and trend functions: 
 \code{\link{plot_trend_bars}()},
+\code{\link{plot_trend_lines}()},
 \code{\link{plot_trend_smooth}()}
 }
 \author{

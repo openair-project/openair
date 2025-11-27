@@ -1,4 +1,4 @@
-#' Plot time series values in a conventional calendar format
+#' Plot an air quality timeseries chart in a conventional calendar format
 #'
 #' This function will plot data by month laid out in a conventional calendar
 #' format. The main purpose is to help rapidly visualise potentially complex
@@ -77,13 +77,10 @@
 #'   `FALSE` labels just as "January". If multiple years of data are detected,
 #'   this option is forced to be `TRUE`.
 #'
-#' @param ... Other graphical parameters are passed onto the `lattice` function
-#'   [lattice::levelplot()], with common axis and title labelling options (such
-#'   as `xlab`, `ylab`, `main`) being passed to via [quickText()] to handle
-#'   routine formatting.
+#' @param ... Not currently used.
 #'
 #' @export
-
+#'
 #' @return an [openair][openair-package] object
 #'
 #' @author David Carslaw

@@ -1,3 +1,266 @@
+#' Plot an air quality timeseries line chart
+#'
+#' The [plot_trend_lines()] is the basic time series plotting function in
+#' `openair`. Its purpose is to make it quick and easy to plot time series for
+#' pollutants and other variables. The other purpose is to plot potentially many
+#' variables together in as compact a way as possible.
+#'
+#' The function is flexible enough to plot more than one variable at once. If
+#' more than one variable is chosen plots it can either show all variables on
+#' the same plot (with different line types) *on the same scale*, or (if `group
+#' = FALSE`) each variable in its own panels with its own scale.
+#'
+#' The general preference is not to plot two variables on the same graph with
+#' two different y-scales. It can be misleading to do so and difficult with more
+#' than two variables. If there is in interest in plotting several variables
+#' together that have very different scales, then it can be useful to normalise
+#' the data first, which can be down be setting the `normalise` option.
+#'
+#' @inheritParams timeAverage
+#'
+#' @param data A data frame of time series. Must include a `date` field and at
+#'   least one variable to plot.
+#'
+#' @param pollutant Name of variable to plot. Two or more pollutants can be
+#'   plotted, in which case a form like `pollutant = c("nox", "co")` should be
+#'   used.
+#'
+#' @param group If more than one pollutant is chosen, should they all be plotted
+#'   on the same graph together? The default is `FALSE`, which means they are
+#'   plotted in separate panels with their own scales. If `TRUE` then they are
+#'   plotted on the same plot with the same scale.
+#'
+#' @param normalise Should variables be normalised? The default is is not to
+#'   normalise the data. `normalise` can take two values, either `"mean"` or a
+#'   string representing a date in UK format e.g. "1/1/1998" (in the format
+#'   dd/mm/YYYY). If `normalise = "mean"` then each time series is divided by
+#'   its mean value.  If a date is chosen, then values at that date are set to
+#'   100 and the rest of the data scaled accordingly. Choosing a date (say at
+#'   the beginning of a time series) is very useful for showing how trends
+#'   diverge over time. Setting `group = TRUE` is often useful too to show all
+#'   time series together in one panel.
+#'
+#' @param percentile The percentile level in percent used when `statistic =
+#'   "percentile"` and when aggregating the data with `avg.time`. More than one
+#'   percentile level is allowed for `type = "default"` e.g. `percentile = c(50,
+#'   95)`. Not used if `avg.time = "default"`.
+#'
+#' @param date.pad Should missing data be padded-out? This is useful where a
+#'   data frame consists of two or more "chunks" of data with time gaps between
+#'   them. By setting `date.pad = TRUE` the time gaps between the chunks are
+#'   shown properly, rather than with a line connecting each chunk. For
+#'   irregular data, set to `FALSE`. Note, this should not be set for `type`
+#'   other than `default`.
+#'
+#' @param type `type` determines how the data are split i.e. conditioned, and
+#'   then plotted. The default is will produce a single plot using the entire
+#'   data. Type can be one of the built-in types as detailed in [cutData()],
+#'   e.g., `"season"`, `"year"`, `"weekday"` and so on. For example, `type =
+#'   "season"` will produce four plots --- one for each season.
+#'
+#'   It is also possible to choose `type` as another variable in the data frame.
+#'   If that variable is numeric, then the data will be split into four
+#'   quantiles (if possible) and labelled accordingly. If type is an existing
+#'   character or factor variable, then those categories/levels will be used
+#'   directly. This offers great flexibility for understanding the variation of
+#'   different variables and how they depend on one another.
+#'
+#' @param cols Colours to be used for plotting; see [openColours()] for details.
+#'
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
+#'   axis labels will automatically try and format pollutant names and units
+#'   properly, e.g., by subscripting the '2' in NO2.
+#'
+#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
+#'   data to extract plot components and plotting them in other ways.
+#'
+#' @param ... Other arguments passed to [cutData()].
+#'
+#' @export
+#'
+#' @return an [openair][openair-package] object
+#'
+#' @author David Carslaw
+#' @author Jack Davison
+#'
+#' @family ggplot2 time series and trend functions
+#'
+#' @examples
+#'
+#' # basic use, single pollutant
+#' plot_trend_lines(mydata, pollutant = "nox")
+#'
+#' \dontrun{
+#' # two pollutants in separate panels
+#' plot_trend_lines(mydata, pollutant = c("nox", "no2"))
+#'
+#' # two pollutants in the same panel with the same scale
+#' plot_trend_lines(mydata, pollutant = c("nox", "no2"), group = TRUE)
+#'
+#' # alternative by normalising concentrations and plotting on the same scale
+#' plot_trend_lines(
+#'   mydata,
+#'   pollutant = c("nox", "co", "pm10", "so2"),
+#'   group = TRUE,
+#'   avg.time = "year",
+#'   normalise = "1/1/1998"
+#' )
+#'
+#' # daily mean O3
+#' plot_trend_lines(mydata, pollutant = "o3", avg.time = "day")
+#'
+#' # daily mean O3 ensuring each day has data capture of at least 75%
+#' plot_trend_lines(mydata, pollutant = "o3", avg.time = "day", data.thresh = 75)
+#'
+#' # 2-week average of O3 concentrations
+#' plot_trend_lines(mydata, pollutant = "o3", avg.time = "2 week")
+#' }
+#'
+plot_trend_lines <- function(
+  data,
+  pollutant = "nox",
+  group = FALSE,
+  normalise = NULL,
+  avg.time = "default",
+  data.thresh = 0,
+  statistic = "mean",
+  percentile = NA,
+  date.pad = FALSE,
+  type = "default",
+  cols = "brewer1",
+  auto.text = TRUE,
+  plot = TRUE,
+  ...
+) {
+  # warning messages and other checks
+  if (length(percentile) > 1 && length(pollutant) > 1) {
+    cli::cli_abort(
+      "Only one {.field pollutant} allowed when considering more than one {.field percentile}."
+    )
+  }
+
+  # check & cut data
+  data <- prepare_timeplot_data(
+    mydata = data,
+    pollutant = pollutant,
+    type = type,
+    avg.time = avg.time,
+    date.pad = date.pad,
+    windflow = FALSE,
+    ...
+  )
+
+  # time average & reshape data
+  data <- time_average_timeplot_data(
+    mydata = data,
+    pollutant = pollutant,
+    type = type,
+    statistic = statistic,
+    avg.time = avg.time,
+    data.thresh = data.thresh,
+    percentile = percentile,
+    windflow = FALSE
+  )
+  pollutant <- data$pollutant
+  data <- dplyr::ungroup(data$data)
+
+  # normalise data (if required)
+  data <- normalise_timeplot_data(data, normalise = normalise)
+
+  # make sure order is correct
+  data$variable <- factor(data$variable, levels = pollutant)
+
+  # number of pollutants (or sites for type = "site")
+  npol <- length(unique(data$variable)) # number of pollutants
+
+  # label controls
+  xlab <- quickText("date", auto.text = auto.text)
+  ylab <- quickText(
+    dplyr::case_when(
+      !is.null(normalise) ~
+        paste("normalised", paste(pollutant, collapse = ", ")),
+      .default = paste(pollutant, collapse = ", ")
+    ),
+    auto.text
+  )
+
+  # set up colours
+  myColors <- if (length(cols) == 1 && cols == "greyscale") {
+    openColours(cols, npol + 1)[-1]
+  } else {
+    openColours(cols, npol)
+  }
+
+  # get facets
+  facet_fun <- NULL
+  if (
+    all(type == "default") && !group && dplyr::n_distinct(data$variable) > 1L
+  ) {
+    facet_fun <- ggplot2::facet_wrap(
+      facets = ggplot2::vars(.data$variable)
+    )
+  } else if (any(type != "default")) {
+    if (length(type) == 2) {
+      facet_fun <- ggplot2::facet_grid(
+        cols = ggplot2::vars(.data[[type[1]]]),
+        rows = ggplot2::vars(.data[[type[2]]])
+      )
+    } else {
+      if (type == "wd") {
+        facet_fun <- facet_wd(
+          facets = ggplot2::vars(.data[[type]])
+        )
+      } else {
+        facet_fun <- ggplot2::facet_wrap(
+          facets = ggplot2::vars(.data[[type]])
+        )
+      }
+    }
+  }
+
+  # make plot
+  plt <-
+    ggplot2::ggplot(data, ggplot2::aes(x = .data$date, y = .data$value)) +
+    ggplot2::geom_line(ggplot2::aes(color = .data$variable)) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      strip.background = ggplot2::element_rect(fill = NA, color = NA),
+      plot.caption = ggplot2::element_text(hjust = 0.5, face = "bold")
+    ) +
+    ggplot2::labs(
+      x = xlab,
+      y = ylab,
+      color = NULL
+    ) +
+    ggplot2::scale_color_manual(
+      values = openColours(
+        scheme = cols,
+        n = dplyr::n_distinct(data$variable)
+      ),
+      aesthetics = c("fill", "color"),
+      name = NULL
+    ) +
+    facet_fun
+
+  if (dplyr::n_distinct(data$variable) == 1L) {
+    plt <- plt +
+      ggplot2::guides(
+        color = ggplot2::guide_none()
+      )
+  }
+
+  # output
+  if (plot) {
+    plot(plt)
+  }
+  newdata <- data
+  output <- list(plot = plt, data = newdata, call = match.call())
+  class(output) <- "openair"
+
+  invisible(output)
+}
+
+
 #' Plot time series, perhaps for multiple pollutants, grouped or in separate
 #' panels.
 #'
@@ -312,7 +575,7 @@ timePlot <- function(
     windflow = windflow
   )
   pollutant <- mydata$pollutant
-  mydata <- mydata$data
+  mydata <- dplyr::ungroup(mydata$data)
 
   # normalise data (if required)
   mydata <- normalise_timeplot_data(mydata, normalise = normalise)
@@ -789,7 +1052,7 @@ time_average_timeplot_data <- function(
   }
 
   # timeAverage drops type if default
-  if (type == "default") {
+  if (any(type == "default")) {
     mydata$default <- "default"
   }
 
