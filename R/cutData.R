@@ -323,8 +323,6 @@ cutData <- function(
   return(x)
 }
 
-#'  Drop missing values and warn that it has happened
-#'  @noRd
 dropNAbyType <- function(x, type) {
   if (anyNA(x[[type]])) {
     lenNA <- length(which(is.na(x[[type]])))
@@ -336,8 +334,6 @@ dropNAbyType <- function(x, type) {
   return(x)
 }
 
-#'  Cut a numeric vector into quantiles
-#'  @noRd
 cutVecNumeric <- function(x, type, n.levels, is.axis) {
   temp.levels <-
     levels(cut(
@@ -372,8 +368,6 @@ cutVecNumeric <- function(x, type, n.levels, is.axis) {
   return(x)
 }
 
-#'  Cut a vector into a 'year' factor
-#'  @noRd
 cutVecYear <- function(x, drop) {
   x <- lubridate::year(x)
   if (drop %in% c("default", "none", "outside")) {
@@ -386,8 +380,6 @@ cutVecYear <- function(x, drop) {
   x
 }
 
-#'  Cut a vector into a 'hour' factor
-#'  @noRd
 cutVecHour <- function(x, drop) {
   x <- lubridate::hour(x)
   if (drop %in% c("none")) {
@@ -402,8 +394,6 @@ cutVecHour <- function(x, drop) {
   x
 }
 
-#'  Cut a vector into a factor of weeks of the year
-#'  @noRd
 cutVecWeek <- function(x, drop) {
   x <- as.numeric(format(x, "%W"))
   if (drop %in% c("none")) {
@@ -418,8 +408,6 @@ cutVecWeek <- function(x, drop) {
   return(x)
 }
 
-#'  Cut a date vector into weekday/weekend
-#'  @noRd
 cutVecWeekend <- function(x, drop) {
   wdays <- lubridate::wday(x, week_start = 1L)
   x <- dplyr::case_match(wdays, 1:5 ~ "weekday", 6:7 ~ "weekend")
@@ -433,8 +421,6 @@ cutVecWeekend <- function(x, drop) {
   return(x)
 }
 
-#'  Cut a date vector into weekdays
-#'  @noRd
 cutVecWeekday <- function(x, is.axis, start.day, drop) {
   if (start.day == 0L) {
     start.day <- 7L
@@ -455,8 +441,6 @@ cutVecWeekday <- function(x, is.axis, start.day, drop) {
   return(x)
 }
 
-#'  Cut a vector into an ordered 'month' factor
-#'  @noRd
 cutVecMonth <- function(x, is.axis, drop) {
   x <- lubridate::month(x, label = TRUE, abbr = is.axis)
   levels <- levels(x)
@@ -473,8 +457,6 @@ cutVecMonth <- function(x, is.axis, drop) {
   return(x)
 }
 
-#'  Cut a vector into 'monthyears' (e.g., January 2020)
-#'  @noRd
 cutVecMonthyear <- function(x, is.axis, drop) {
   str <- "%B %Y"
   if (is.axis) {
@@ -515,8 +497,6 @@ cutVecMonthyear <- function(x, is.axis, drop) {
   return(x)
 }
 
-#'  Cut into season year (e.g., Summer 2020)
-#'  @noRd
 cutVecSeasonyear <- function(x, hemisphere, is.axis, drop) {
   sep <- ifelse(is.axis, "\n", "-")
 
@@ -562,8 +542,6 @@ cutVecSeasonyear <- function(x, hemisphere, is.axis, drop) {
   return(x)
 }
 
-#'  Cut wind direction into bins
-#'  @noRd
 cutVecWinddir <- function(x, drop) {
   x <- cut(
     x,
@@ -586,8 +564,6 @@ cutVecWinddir <- function(x, drop) {
   return(x)
 }
 
-#'  Cut dates into DST
-#'  @noRd
 cutVecDST <- function(x, local.tz, drop) {
   ## how to extract BST/GMT
   if (is.null(local.tz)) {
@@ -616,16 +592,12 @@ cutVecDST <- function(x, local.tz, drop) {
   return(x)
 }
 
-#'  Cut date vector into daylight or not
-#'
-#'  calculations use (lat, long) position relative to sun to estimate if daylight
-#'  or nighttime hour solar.noon.lst, etc are factions of day seconds into that
-#'  day = p.time * 86400 so for example sunset time is as.POSIXct(sunset.time.lst
-#'  * 86400, origin = format(x$date, "%Y-%m-%d")) (assuming you do not run into
-#'  next day!) currently unsure about extremes long nights and days at poles need
-#'  checking
-#'
-#'  @noRd
+#  calculations use (lat, long) position relative to sun to estimate if daylight
+#  or nighttime hour solar.noon.lst, etc are factions of day seconds into that
+#  day = p.time * 86400 so for example sunset time is as.POSIXct(sunset.time.lst
+#  * 86400, origin = format(x$date, "%Y-%m-%d")) (assuming you do not run into
+#  next day!) currently unsure about extremes long nights and days at poles need
+#  checking
 cutVecDaylight <- function(
   x,
   latitude = 51.522393,
@@ -812,8 +784,6 @@ cutVecDaylight <- function(
   return(x)
 }
 
-#'  Cut a vector into seasons
-#'  @noRd
 cutVecSeason <- function(x, hemisphere, is.axis, drop) {
   sep <- ifelse(is.axis, "\n", " ")
   hemisphere <- rlang::arg_match(hemisphere, c("northern", "southern"))
