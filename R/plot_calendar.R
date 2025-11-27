@@ -2,6 +2,399 @@
 #'
 #' This function will plot data by month laid out in a conventional calendar
 #' format. The main purpose is to help rapidly visualise potentially complex
+#' data in a familiar way. Daily statistics are calculated using
+#' [timeAverage()], which by default will calculate the daily mean
+#' concentration.
+#'
+#' It is possible to plot categorical scales. This is useful where, for example,
+#' an air quality index defines concentrations as bands, e.g., "good", "poor".
+#' In these cases users must supply `labels` and corresponding `breaks`.
+#'
+#' Note that is is possible to pre-calculate concentrations in some way before
+#' passing the data to [calendarPlot()]. For example [rollingMean()] could be
+#' used to calculate rolling 8-hour mean concentrations. The data can then be
+#' passed to [calendarPlot()] and `statistic = "max"` chosen, which will plot
+#' maximum daily 8-hour mean concentrations.
+#'
+#' @inheritParams timePlot
+#'
+#' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
+#'   data frame should be supplied e.g. `pollutant = "nox". `
+#'
+#' @param year Year to plot e.g. `year = 2003`. If not supplied all data
+#'   potentially spanning several years will be plotted.
+#'
+#' @param month If only certain month are required. By default the function will
+#'   plot an entire year even if months are missing. To only plot certain months
+#'   use the `month` option where month is a numeric 1:12 e.g. `month = c(1,
+#'   12)` to only plot January and December.
+#'
+#' @param annotate This option controls what appears on each day of the
+#'   calendar. Can be:
+#'   - `"date"` --- shows day of the month
+#'   - `"value"` --- shows the daily mean value
+#'
+#' @param statistic Statistic passed to [timeAverage()]. Note that if `statistic
+#'   %in% c("max", "min")` and `annotate` is "ws" or "wd", the hour
+#'   corresponding to the maximum/minimum concentration of `polluant` is used to
+#'   provide the associated `ws` or `wd` and not the maximum/minimum daily `ws`
+#'   or `wd`.
+#'
+#' @param limits Use this option to manually set the colour scale limits. This
+#'   is useful in the case when there is a need for two or more plots and a
+#'   consistent scale is needed on each. Set the limits to cover the maximum
+#'   range of the data for all plots of interest. For example, if one plot had
+#'   data covering 0--60 and another 0--100, then set `limits = c(0, 100)`. Note
+#'   that data will be ignored if outside the limits range.
+#'
+#' @param digits The number of digits used to display concentration values when
+#'   `annotate = "value"`.
+#'
+#' @param breaks If a categorical scale is required then these breaks will be
+#'   used. For example, `breaks = c(0, 50, 100, 1000)`. In this case "good"
+#'   corresponds to values between 0 and 50 and so on. Users should set the
+#'   maximum value of `breaks` to exceed the maximum data value to ensure it is
+#'   within the maximum final range e.g. 100--1000 in this case.
+#'
+#' @param labels If a categorical scale is defined using `breaks`, then `labels`
+#'   can be used to override the default category labels, e.g., `labels =
+#'   c("good", "bad", "very bad")`. Note there is one less label than break.
+#'
+#' @param w.shift Controls the order of the days of the week. By default the
+#'   plot shows Saturday first (`w.shift = 0`). To change this so that it starts
+#'   on a Monday for example, set `w.shift = 2`, and so on.
+#'
+#' @param w.abbr.len The default (`1`) abbreviates the days of the week to a
+#'   single letter (e.g., in English, S/S/M/T/W/T/F). `w.abbr.len` defines the
+#'   number of letters to abbreviate until. For example, `w.abbr.len = 3` will
+#'   abbreviate "Monday" to "Mon".
+#'
+#' @param remove.empty Should months with no data present be removed? Default is
+#'   `TRUE`.
+#'
+#' @param show.year If only a single year is being plotted, should the calendar
+#'   labels include the year label? `TRUE` creates labels like "January-2000",
+#'   `FALSE` labels just as "January". If multiple years of data are detected,
+#'   this option is forced to be `TRUE`.
+#'
+#' @param ... Other graphical parameters are passed onto the `lattice` function
+#'   [lattice::levelplot()], with common axis and title labelling options (such
+#'   as `xlab`, `ylab`, `main`) being passed to via [quickText()] to handle
+#'   routine formatting.
+#'
+#' @export
+
+#' @return an [openair][openair-package] object
+#'
+#' @author David Carslaw
+#' @author Jack Davison
+#'
+#' @family ggplot2 time series and trend functions
+#'
+#' @examples
+#' # basic plot
+#' plot_calendar(mydata, pollutant = "o3", year = 2003)
+#'
+#' \dontrun{
+#' # categorical scale example
+#' plot_calendar(
+#'   mydata,
+#'   pollutant = "no2",
+#'   year = 2003,
+#'   breaks = c(0, 50, 100, 150, 1000),
+#'   labels = c("Very low", "Low", "High", "Very High"),
+#'   cols = c("lightblue", "green", "yellow", "red"),
+#'   statistic = "max"
+#' )
+#'
+#' # UK daily air quality index
+#' pm10_breaks <- c(0, 17, 34, 50, 59, 67, 75, 84, 92, 100, 1000)
+#' plot_calendar(
+#'   mydata,
+#'   "pm10",
+#'   year = 1999,
+#'   breaks = pm10_breaks,
+#'   labels = c(1:10),
+#'   cols = "daqi",
+#'   statistic = "mean"
+#' )$plot + ggplot2::labs(fill = "DAQI")
+#' }
+plot_calendar <-
+  function(
+    data,
+    pollutant = "nox",
+    year = NULL,
+    month = NULL,
+    annotate = "date",
+    digits = 0,
+    statistic = "mean",
+    data.thresh = 0,
+    percentile = NA,
+    cols = "heat",
+    limits = c(0, 100),
+    labels = NA,
+    breaks = NA,
+    w.shift = 0,
+    w.abbr.len = 1,
+    remove.empty = TRUE,
+    show.year = TRUE,
+    auto.text = TRUE,
+    plot = TRUE,
+    ...
+  ) {
+    annotate <- rlang::arg_match(annotate, c("date", "value"))
+
+    # check w.shift
+    if (w.shift < 0 || w.shift > 6) {
+      cli::cli_abort("{.field w.shift} should be between {0} and {6}.")
+    }
+
+    # filter and check data
+    data <- prepare_calendar_data(
+      data,
+      year = year,
+      month = month,
+      pollutant = pollutant,
+      annotate = annotate
+    )
+
+    # all the days in the period - to be bound later
+    all_dates <- seq(
+      lubridate::as_date(lubridate::floor_date(min(data$date), "month")),
+      lubridate::as_date(lubridate::ceiling_date(max(data$date), "month")) -
+        1,
+      by = "day"
+    )
+
+    # if statistic is max/min we want the corresponding ws/wd for the pollutant,
+    # not simply the max ws/wd
+    if (statistic %in% c("max", "min")) {
+      if (statistic == "max") {
+        which.fun <- which.max
+      } else if (statistic == "min") {
+        which.fun <- which.min
+      }
+
+      # max ws/wd for hour with max pollutant value
+      maxes <- data |>
+        dplyr::mutate(date = lubridate::as_date(.data$date)) |>
+        dplyr::group_by(date) |>
+        dplyr::slice(which.fun(.data[[pollutant]]))
+
+      # averaged data, make sure Date format (max returns POSIXct)
+      data <- timeAverage(
+        data,
+        "day",
+        statistic = statistic,
+        data.thresh = data.thresh
+      ) |>
+        dplyr::mutate(date = lubridate::as_date(.data$date))
+
+      # replace with parallel max
+      data <- dplyr::left_join(
+        dplyr::select(data, !dplyr::any_of(c("ws", "wd"))),
+        dplyr::select(maxes, !.data[[pollutant]]),
+        by = dplyr::join_by(date)
+      )
+    } else {
+      # calculate daily means
+      data <- timeAverage(
+        data,
+        "day",
+        statistic = statistic,
+        data.thresh = data.thresh,
+        percentile = percentile
+      )
+
+      data$date <- lubridate::as_date(data$date)
+    }
+
+    # make sure all days are available
+    data <-
+      dplyr::left_join(data.frame(date = all_dates), data, by = "date")
+
+    # split by year-month, and set 'type' to this
+    if (show.year) {
+      data <- dplyr::mutate(
+        data,
+        cuts = format(.data$date, "%B-%Y"),
+        cuts = ordered(.data$cuts, levels = unique(.data$cuts))
+      )
+    } else {
+      # cut just by month - although check duplicate years
+      data <- dplyr::mutate(
+        data,
+        cuts = format(.data$date, "%B"),
+        years = format(.data$date, "%Y"),
+        cuts = ordered(.data$cuts, levels = unique(.data$cuts))
+      )
+
+      # check duplicates
+      verify_duplicates <-
+        data |>
+        dplyr::count(.data$cuts, .data$years) |>
+        dplyr::add_count(.data$cuts, name = "month_counts")
+
+      # if any duplicates, set show.year = TRUE
+      if (
+        any(verify_duplicates$month_counts > 1L) ||
+          dplyr::n_distinct(verify_duplicates$years) > 1L
+      ) {
+        data <- dplyr::mutate(
+          data,
+          cuts = format(.data$date, "%B-%Y"),
+          cuts = ordered(.data$cuts, levels = unique(.data$cuts))
+        )
+      }
+
+      data <- dplyr::select(data, -"years")
+    }
+
+    type <- "cuts"
+
+    # drop empty months?
+    if (remove.empty) {
+      data <- data |>
+        dplyr::group_by(.data$cuts) |>
+        dplyr::mutate(
+          empty = all(is.na(dplyr::across(dplyr::all_of(pollutant))))
+        ) |>
+        dplyr::filter(!.data$empty) |>
+        dplyr::ungroup()
+    }
+
+    # snapshot data for later
+    original_data <- data
+
+    # timeAverage will pad-out missing months
+    if (!is.null(month)) {
+      data <- selectByDate(data, month = month)
+    }
+
+    # transform data into a calendar grid
+    data <- mapType(
+      data,
+      type = type,
+      fun = \(df) prepare_calendar_grid(df, pollutant, w.shift),
+      .include_default = TRUE
+    ) |>
+      # retain actual numerical value (retain for categorical scales)
+      dplyr::mutate(value = .data$conc.mat)
+
+    # handle breaks
+    category <- FALSE
+    if (!anyNA(breaks)) {
+      # assign labels if no labels are given
+      labels <- breaksToLabels(breaks, labels)
+      category <- TRUE
+      data <- dplyr::mutate(
+        data,
+        conc.mat = cut(.data$conc.mat, breaks = breaks, labels = labels)
+      )
+    }
+
+    # get weekday abbreviation for axis
+    weekday.abb <-
+      substr(format(ISOdate(2000, 1, 2:8), "%A"), 1, w.abbr.len)[
+        ((6:12) +
+          w.shift) %%
+          7 +
+          1
+      ]
+
+    if (annotate == "value") {
+      data$value <- round(data$value, digits = digits)
+    }
+
+    # construct plot
+    plt <-
+      ggplot2::ggplot(data, ggplot2::aes(x = .data$x, y = .data$y)) +
+      ggplot2::geom_tile(
+        ggplot2::aes(fill = .data$conc.mat),
+        color = "grey90"
+      ) +
+      ggplot2::geom_text(
+        ggplot2::aes(
+          label = if (annotate == "date") {
+            .data$date.mat
+          } else if (annotate == "value") {
+            .data$value
+          }
+        ),
+        size = 3
+      ) +
+      ggplot2::facet_wrap(
+        ggplot2::vars(.data$cuts),
+        axes = "all_x",
+        axis.labels = "all_x"
+      ) +
+      ggplot2::coord_cartesian(ratio = 1L, expand = FALSE) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(
+        strip.background = ggplot2::element_rect(fill = NA, color = NA),
+        plot.caption = ggplot2::element_text(hjust = 0.5, face = "bold"),
+        axis.ticks = ggplot2::element_blank(),
+        legend.position = "right",
+        legend.key.height = ggplot2::unit(1, "null")
+      ) +
+      ggplot2::scale_y_continuous(breaks = NULL) +
+      ggplot2::scale_x_continuous(breaks = 1:7, labels = weekday.abb) +
+      ggplot2::labs(
+        y = NULL,
+        x = NULL,
+        fill = quickText(pollutant, auto.text = auto.text)
+      )
+
+    if (category) {
+      plt <- plt +
+        ggplot2::scale_fill_manual(
+          values = openColours(
+            scheme = cols,
+            n = dplyr::n_distinct(data$conc.mat)
+          ),
+          na.value = "grey95",
+          breaks = levels(data$conc.mat)
+        ) +
+        ggplot2::guides(
+          fill = ggplot2::guide_legend(reverse = TRUE)
+        )
+    } else {
+      plt <- plt +
+        ggplot2::scale_fill_gradientn(
+          colours = openColours(
+            scheme = cols
+          ),
+          na.value = "grey95"
+        )
+    }
+
+    # plot
+    if (plot) {
+      plot(plt)
+    }
+
+    # add in ws and wd if there
+    newdata <-
+      dplyr::left_join(
+        data,
+        dplyr::select(original_data, dplyr::any_of(c("date", "ws", "wd"))),
+        by = "date"
+      )
+
+    output <- list(
+      plot = plt,
+      data = newdata,
+      call = match.call()
+    )
+    class(output) <- "openair"
+    invisible(output)
+  }
+
+
+#' Plot time series values in a conventional calendar format
+#'
+#' This function will plot data by month laid out in a conventional calendar
+#' format. The main purpose is to help rapidly visualise potentially complex
 #' data in a familiar way. Users can also choose to show daily mean wind vectors
 #' if wind speed and direction are available.
 #'

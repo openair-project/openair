@@ -170,6 +170,7 @@ plot_trend_smooth(
 \code{\link[=smoothTrend]{smoothTrend()}}, the original \code{lattice} equivalent
 
 Other ggplot2 time series and trend functions: 
+\code{\link{plot_calendar}()},
 \code{\link{plot_trend_bars}()}
 }
 \author{
