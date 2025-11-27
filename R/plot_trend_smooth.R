@@ -1,3 +1,281 @@
+#' Plot an air quality timeseries chart with a non-parametric smooth trend
+#'
+#' The [plot_trend_smooth()] function provides a flexible way of estimating the
+#' trend in the concentration of a pollutant or other variable. Monthly mean
+#' values are calculated from an hourly (or higher resolution) or daily time
+#' series. There is the option to deseasonalise the data if there is evidence of
+#' a seasonal cycle.
+#'
+#' [plot_trend_smooth()] uses a Generalized Additive Model (GAM) from the
+#' [mgcv::gam()] package to find the most appropriate level of smoothing. The
+#' function is particularly suited to situations where trends are not monotonic
+#' (see discussion with [TheilSen()] for more details on this). The
+#' [plot_trend_smooth()] function is particularly useful as an exploratory
+#' technique e.g. to check how linear or non-linear trends are.
+#'
+#' 95% confidence intervals are shown by shading. Bootstrap estimates of the
+#' confidence intervals are also available through the `simulate` option.
+#' Residual resampling is used.
+#'
+#' @inheritParams timePlot
+#' @inheritParams timeAverage
+#'
+#' @param deseason Should the data be de-deasonalized first? If `TRUE` the
+#'   function `stl` is used (seasonal trend decomposition using loess). Note
+#'   that if `TRUE` missing data are first imputed using a Kalman filter and
+#'   Kalman smooth.
+#' @param type `type` determines how the data are split i.e. conditioned, and
+#'   then plotted. The default is will produce a single plot using the entire
+#'   data. Type can be one of the built-in types as detailed in [cutData()],
+#'   e.g., `"season"`, `"year"`, `"weekday"` and so on. For example, `type =
+#'   "season"` will produce four plots --- one for each season.
+#'
+#'   It is also possible to choose `type` as another variable in the data frame.
+#'   If that variable is numeric, then the data will be split into four
+#'   quantiles (if possible) and labelled accordingly. If type is an existing
+#'   character or factor variable, then those categories/levels will be used
+#'   directly. This offers great flexibility for understanding the variation of
+#'   different variables and how they depend on one another.
+#'
+#'   Type can be up length two e.g. `type = c("season", "weekday")` will produce
+#'   a 2x2 plot split by season and day of the week. Note, when two types are
+#'   provided the first forms the columns and the second the rows.
+#' @param statistic Statistic used for calculating monthly values. Default is
+#'   `"mean"`, but can also be `"percentile"`. See [timeAverage()] for more
+#'   details.
+#' @param percentile Percentile value(s) to use if `statistic = "percentile"` is
+#'   chosen. Can be a vector of numbers e.g. `percentile = c(5, 50, 95)` will
+#'   plot the 5th, 50th and 95th percentile values together on the same plot.
+#' @param simulate Should simulations be carried out to determine the
+#'   Mann-Kendall tau and p-value. The default is `FALSE`. If `TRUE`, bootstrap
+#'   simulations are undertaken, which also account for autocorrelation.
+#' @param n Number of bootstrap simulations if `simulate = TRUE`.
+#' @param autocor Should autocorrelation be considered in the trend uncertainty
+#'   estimates? The default is `FALSE`. Generally, accounting for
+#'   autocorrelation increases the uncertainty of the trend estimate sometimes
+#'   by a large amount.
+#' @param ci Should confidence intervals be plotted? The default is `TRUE`.
+#' @param alpha The alpha transparency of shaded confidence intervals - if
+#'   plotted. A value of 0 is fully transparent and 1 is fully opaque.
+#' @param k This is the smoothing parameter used by the [mgcv::gam()] function
+#'   in package `mgcv`. By default it is not used and the amount of smoothing is
+#'   optimised automatically. However, sometimes it is useful to set the
+#'   smoothing amount manually using `k`.
+#' @param ... Extra arguments passed to [cutData()].
+#' @export
+#' @return an [openair][openair-package] object
+#'
+#' @author David Carslaw
+#' @author Jack Davison
+#'
+#' @family ggplot2 time series and trend functions
+#'
+#' @seealso [smoothTrend()], the original `lattice` equivalent
+#'
+#' @examples
+#' # trend plot for nox
+#' plot_trend_smooth(mydata, pollutant = "nox")
+#'
+#' \dontrun{
+#' # trend plot by each of 8 wind sectors
+#' plot_trend_smooth(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
+#'
+#' # several pollutants, no plotting symbol
+#' plot_trend_smooth(mydata, pollutant = c("no2", "o3", "pm10", "pm25"))
+#'
+#' # percentiles
+#' plot_trend_smooth(
+#'   mydata,
+#'   pollutant = "o3",
+#'   statistic = "percentile",
+#'   percentile = 95
+#' )
+#' }
+plot_trend_smooth <- function(
+  mydata,
+  pollutant = "nox",
+  avg.time = "month",
+  data.thresh = 0,
+  statistic = "mean",
+  percentile = NA,
+  k = NULL,
+  deseason = FALSE,
+  simulate = FALSE,
+  n = 200,
+  autocor = FALSE,
+  type = "default",
+  cols = "brewer1",
+  auto.text = TRUE,
+  ci = TRUE,
+  alpha = 0.2,
+  plot = TRUE,
+  progress = TRUE,
+  ...
+) {
+  # validation checks
+  if (length(pollutant) > 1 && length(percentile) > 1) {
+    cli::cli_warn(
+      "You cannot choose multiple {.field percentiles} and {.field pollutants}; using {.field percentile} = {percentile[1]}."
+    )
+    percentile <- percentile[1]
+  }
+
+  # label controls
+  ylab <- quickText(
+    paste(pollutant, collapse = ", "),
+    auto.text
+  )
+  xlab <- quickText("date", auto.text)
+
+  # find time interval
+  # need this because if user has a data capture threshold, need to know
+  # original time interval. better to do this before conditioning
+  interval <- find.time.interval(mydata$date)
+
+  # equivalent number of days, used to refine interval for month/year
+  days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) / 24 / 3600
+
+  # better interval, most common interval in a year
+  interval <-
+    dplyr::case_match(
+      days,
+      31 ~ "month",
+      c(365, 366) ~ "year",
+      .default = interval
+    )
+
+  # for overall data and graph plotting
+  start.year <- startYear(mydata$date)
+  end.year <- endYear(mydata$date)
+
+  # prepare data for smoothtrend
+  mydata <-
+    prepare_smoothtrend_data(
+      mydata,
+      pollutant = pollutant,
+      type = type,
+      avg.time = avg.time,
+      statistic = statistic,
+      percentile = percentile,
+      data.thresh = data.thresh,
+      interval = interval,
+      progress = progress,
+      ...
+    )
+
+  # set new variables
+  vars <- c(type, "variable")
+
+  # prep data for modelling
+  res <-
+    mapType(
+      mydata,
+      type = vars,
+      fun = \(df) deseason_smoothtrend_data(df, deseason = deseason),
+      .include_default = TRUE
+    )
+
+  # get model fit
+  fit <-
+    mapType(
+      res,
+      type = vars,
+      fun = \(df) fit_smoothtrend_gam(df, x = "date", y = "conc", k = k, ...),
+      .include_default = TRUE
+    )
+
+  # make sure fit is a date
+  class(fit$date) <- c("POSIXct", "POSIXt")
+
+  # get facets
+  facet_fun <- NULL
+  if (any(type != "default")) {
+    if (length(type) == 2) {
+      facet_fun <- ggplot2::facet_grid(
+        cols = ggplot2::vars(.data[[type[1]]]),
+        rows = ggplot2::vars(.data[[type[2]]])
+      )
+    } else {
+      if (type == "wd") {
+        facet_fun <- facet_wd(
+          facets = ggplot2::vars(.data[[type]])
+        )
+      } else {
+        facet_fun <- ggplot2::facet_wrap(
+          facets = ggplot2::vars(.data[[type]])
+        )
+      }
+    }
+  }
+
+  # create plot
+  plt <-
+    ggplot2::ggplot(res, ggplot2::aes(x = .data$date))
+
+  if (ci) {
+    plt <-
+      ggplot2::geom_ribbon(
+        data = fit,
+        ggplot2::aes(
+          ymax = .data$upper,
+          ymin = .data$lower,
+          fill = .data$variable
+        ),
+        alpha = alpha,
+        show.legend = FALSE
+      ) +
+      ggplot2::geom_line(
+        data = fit,
+        ggplot2::aes(x = .data$date, y = .data$pred, color = .data$variable)
+      )
+  }
+
+  plt <- plt +
+    ggplot2::geom_line(
+      ggplot2::aes(y = .data$conc, color = .data$variable),
+      linewidth = 0.25
+    ) +
+    ggplot2::geom_point(
+      ggplot2::aes(y = .data$conc, color = .data$variable),
+      shape = 1
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      strip.background = ggplot2::element_rect(fill = NA, color = NA),
+      plot.caption = ggplot2::element_text(hjust = 0.5, face = "bold"),
+    ) +
+    ggplot2::labs(x = xlab, y = ylab) +
+    ggplot2::scale_color_manual(
+      values = openColours(scheme = cols, n = dplyr::n_distinct(res$variable)),
+      aesthetics = c("fill", "color"),
+      name = NULL
+    ) +
+    facet_fun
+
+  if (dplyr::n_distinct(res$variable) == 1L) {
+    plt <- plt +
+      ggplot2::guides(
+        fill = ggplot2::guide_none(),
+        color = ggplot2::guide_none()
+      )
+  }
+
+  output <- list(
+    plot = plt,
+    data = list(data = dplyr::tibble(res), fit = dplyr::tibble(fit)),
+    call = match.call()
+  )
+  class(output) <- "openair"
+
+  # output #
+  if (plot) {
+    plot(plt)
+  }
+
+  invisible(output)
+}
+
+
 #' Calculate nonparametric smooth trends
 #'
 #' Use non-parametric methods to calculate time series trends
@@ -571,7 +849,8 @@ prepare_smoothtrend_data <- function(
       percentile = percentile,
       data.thresh = data.thresh,
       prefix = prefix
-    )
+    ) |>
+      dplyr::ungroup()
 
     vars <- paste0(prefix, percentile)
 

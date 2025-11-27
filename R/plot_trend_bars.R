@@ -110,9 +110,15 @@ plot_trend_bars <- function(
         rows = ggplot2::vars(.data[[type[2]]])
       )
     } else {
-      facet_fun <- ggplot2::facet_wrap(
-        facets = ggplot2::vars(.data[[type]])
-      )
+      if (type == "wd") {
+        facet_fun <- facet_wd(
+          facets = ggplot2::vars(.data[[type]])
+        )
+      } else {
+        facet_fun <- ggplot2::facet_wrap(
+          facets = ggplot2::vars(.data[[type]])
+        )
+      }
     }
   }
 
