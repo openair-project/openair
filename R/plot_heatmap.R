@@ -1,3 +1,394 @@
+#' Plot an air quality timeseries heatmap chart
+#'
+#' The [plot_heatmap()] function provides a way of rapidly showing a large
+#' amount of data in a condensed form. In one plot, the variation in the
+#' concentration of one pollutant can to shown as a function of three other
+#' categorical properties. The default version of the plot uses y = hour of day,
+#' x = month of year and type = year to provide information on trends, seasonal
+#' effects and diurnal variations. However, x, y and type and summarising
+#' statistics can all be modified to provide a range of other similar plots.
+#'
+#' @param data The openair data frame to use to generate the [trendLevel()]
+#'   plot.
+#'
+#' @param pollutant The name of the data series in `mydata` to sample to produce
+#'   the [trendLevel()] plot.
+#'
+#' @param x,y,type The name of the data series to use as the [trendLevel()]
+#'   x-axis, y-axis or conditioning variable, passed to [cutData()]. These are
+#'   used before applying `statistic`. [trendLevel()] does not allow duplication
+#'   in `x`, `y` and `type` options.
+#'
+#' @param n.levels The number of levels to split `x`, `y` and `type` data into
+#'   if numeric. The default, `c(10, 10, 4)`, cuts numeric `x` and `y` data into
+#'   ten levels and numeric `type` data into four levels. This option is ignored
+#'   for date conditioning and factors. If less than three values are supplied,
+#'   three values are determined by recursion; if more than three values are
+#'   supplied, only the first three are used.
+#'
+#' @param cols The colour set to use to colour the [trendLevel()] surface.
+#'   `cols` is passed to [openColours()] for evaluation.
+#'
+#' @param auto.text Automatic routine text formatting. `auto.text = TRUE` passes
+#'   common `lattice` labelling terms (e.g. `xlab` for the x-axis, `ylab` for
+#'   the y-axis and `main` for the title) to the plot via [quickText()] to
+#'   provide common text formatting.  The alternative `auto.text = FALSE` turns
+#'   this option off and passes any supplied labels to the plot without
+#'   modification.
+#'
+#' @param breaks,labels If a categorical colour scale is required then `breaks`
+#'   should be specified. These should be provided as a numeric vector, e.g.,
+#'   `breaks = c(0, 50, 100, 1000)`. Users should set the maximum value of
+#'   `breaks` to exceed the maximum data value to ensure it is within the
+#'   maximum final range, e.g., 100--1000 in this case. Labels will
+#'   automatically be generated, but can be customised by passing a character
+#'   vector to `labels`, e.g., `labels = c("good", "bad", "very bad")`. In this
+#'   example, `0 - 50` will be `"good"` and so on. Note there is one less label
+#'   than break.
+#'
+#' @param statistic The statistic to apply when aggregating the data; default is
+#'   the mean. Can be one of `"mean"`, `"max"`, `"min"`, `"median"`,
+#'   `"frequency"`, `"sum"`, `"sd"`, `"percentile"`. Note that `"sd"` is the
+#'   standard deviation, `"frequency"` is the number (frequency) of valid
+#'   records in the period and `"data.cap"` is the percentage data capture.
+#'   `"percentile"` is the percentile level (%) between 0-100, which can be set
+#'   using the `"percentile"` option. Functions can also be sent directly via
+#'   `statistic`; see 'Details' for more information.
+#'
+#' @param percentile The percentile level used when `statistic = "percentile"`.
+#'   The default is 95%.
+#'
+#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
+#'   data to extract plot components and plotting them in other ways.
+#'
+#' @param ... Addition options are passed on to [cutData()].
+#'
+#' @export
+#'
+#' @return an [openair][openair-package] object
+#'
+#' @author David Carslaw
+#' @author Jack Davison
+#'
+#' @family ggplot2 time series and trend functions
+#'
+#' @examples
+#' # basic use
+#' # default statistic = "mean"
+#' plot_heatmap(mydata, pollutant = "nox")
+#'
+#' \dontrun{
+#' # example with categorical scale
+#' plot_heatmap(
+#'   mydata,
+#'   pollutant = "no2",
+#'   statistic = "max",
+#'   breaks = c(0, 50, 100, 500),
+#'   labels = c("low", "medium", "high"),
+#'   cols = c("forestgreen", "yellow", "red")
+#' )
+#' }
+plot_heatmap <- function(
+  data,
+  pollutant = "nox",
+  x = "month",
+  y = "hour",
+  type = "year",
+  n.levels = c(10, 10, 4),
+  cols = "default",
+  auto.text = TRUE,
+  labels = NA,
+  breaks = NA,
+  statistic = c(
+    "mean",
+    "max",
+    "min",
+    "median",
+    "frequency",
+    "sum",
+    "sd",
+    "percentile"
+  ),
+  percentile = 95,
+  plot = TRUE,
+  ...
+) {
+  # check length of x
+  if (length(x) > 1) {
+    x <- x[1]
+    xlab <- xlab[1]
+    cli::cli_warn(
+      c(
+        "!" = "{.fun trendLevel} does not allow multiple {.field x} values.",
+        "i" = "Setting {.field x} to '{x}'."
+      )
+    )
+  }
+
+  # check length of y
+  if (length(y) > 1) {
+    y <- y[1]
+    ylab <- ylab[1]
+    cli::cli_warn(
+      c(
+        "!" = "{.fun trendLevel} does not allow multiple {.field y} values.",
+        "i" = "Setting {.field y} to '{y}'."
+      )
+    )
+  }
+
+  # check length of type
+  if (length(type) > 1) {
+    type <- type[1]
+    cli::cli_warn(
+      c(
+        "!" = "{.fun trendLevel} does not allow multiple {.field type} values.",
+        "i" = "Setting {.field type} to '{type}'."
+      )
+    )
+  }
+
+  # ensure x, y and type are unique
+  vars <- c(pollutant, x, y, type)
+  if (length(vars) != length(unique(vars))) {
+    cli::cli_abort(
+      c(
+        "x" = "{.fun trendLevel} could not rationalise plot structure.",
+        "i" = "Duplicate term(s) in {.field pollutant} ('{pollutant}'), {.field x} ('{x}'), {.field y} ('{y}'), and {.field type} ('{type}')."
+      )
+    )
+  }
+
+  # assume pollutant scale is not a categorical value
+  category <- FALSE
+  if (!anyNA(breaks)) {
+    labels <- breaksToLabels(breaks, labels)
+    category <- TRUE
+  }
+
+  # label controls
+  xlab <- quickText(x, auto.text = auto.text)
+  ylab <- quickText(y, auto.text = auto.text)
+
+  # statistic handling
+
+  # hardcoded statistic options
+  statistic <- rlang::arg_match(statistic)
+  stat.name <- statistic
+
+  if (statistic == "mean") {
+    stat.fun <- mean
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "median") {
+    stat.fun <- stats::median
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "sd") {
+    stat.fun <- stats::sd
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "max") {
+    stat.fun <- function(x, ...) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        max(x, ...)
+      }
+    }
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "min") {
+    stat.fun <- function(x, ...) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        min(x, ...)
+      }
+    }
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "sum") {
+    stat.fun <- function(x, ...) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        sum(x, ...)
+      }
+    }
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "frequency") {
+    stat.fun <- function(x, ...) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        length(na.omit(x))
+      }
+    }
+    stat.args <- NULL
+  }
+
+  if (statistic == "percentile") {
+    if (percentile < 0 | percentile > 100) {
+      cli::cli_abort("{.field percentile} outside {0}-{100}.")
+    }
+    probs <- percentile / 100
+    stat.fun <- function(x, ...) {
+      stats::quantile(x, probs = probs, names = FALSE, ...)
+    }
+    stat.args <- list(na.rm = TRUE)
+
+    lastnum <- substr(percentile, nchar(percentile), nchar(percentile))
+    numend <- dplyr::case_match(
+      lastnum,
+      "1" ~ "st",
+      "2" ~ "nd",
+      "3" ~ "rd",
+      .default = "th"
+    )
+
+    stat.name <- paste0(percentile, numend, " Perc.")
+  }
+
+  # checkPrep
+  temp <- c(pollutant)
+  if ("date" %in% names(data)) {
+    temp <- c("date", pollutant)
+  }
+
+  # all of x, y, temp need to be handled as type here
+  data <- checkPrep(data, temp, type = c(x, y, type), remove.calm = FALSE)
+
+  # cutData
+  # different n.levels for axis and type, axes get `is.axis = TRUE`
+  newdata <-
+    data |>
+    cutData(x, n.levels = n.levels[1], is.axis = TRUE, ...) |>
+    cutData(y, n.levels = n.levels[2], is.axis = TRUE, ...) |>
+    cutData(type, n.levels = n.levels[3], ...)
+
+  # select only pollutant and axis/facet columns
+  newdata <- newdata[c(pollutant, x, y, type)]
+
+  calc_stat <- function(x) {
+    args <- append(stat.args, list(x = x))
+    rlang::exec(stat.fun, !!!args)
+  }
+  newdata <-
+    newdata |>
+    dplyr::summarise(
+      {{ pollutant }} := calc_stat(.data[[pollutant]]),
+      .by = dplyr::all_of(c(x, y, type))
+    ) |>
+    dplyr::mutate(dplyr::across(
+      dplyr::all_of(c(x, y, type)),
+      function(x) factor(x, ordered = FALSE)
+    )) |>
+    tidyr::complete(.data[[x]], .data[[y]], .data[[type]])
+
+  # handle breaks
+  category <- FALSE
+  if (!anyNA(breaks)) {
+    # assign labels if no labels are given
+    labels <- breaksToLabels(breaks, labels)
+    category <- TRUE
+    newdata <- dplyr::mutate(
+      newdata,
+      !!pollutant := cut(.data[[pollutant]], breaks = breaks, labels = labels)
+    )
+  }
+
+  # get facets
+  facet_fun <- NULL
+  if (any(type != "default")) {
+    if (length(type) == 2) {
+      facet_fun <- ggplot2::facet_grid(
+        cols = ggplot2::vars(.data[[type[1]]]),
+        rows = ggplot2::vars(.data[[type[2]]])
+      )
+    } else {
+      if (type == "wd") {
+        facet_fun <- facet_wd(
+          facets = ggplot2::vars(.data[[type]])
+        )
+      } else {
+        facet_fun <- ggplot2::facet_wrap(
+          facets = ggplot2::vars(.data[[type]])
+        )
+      }
+    }
+  }
+
+  # make plot
+  plt <- ggplot2::ggplot(
+    newdata,
+    ggplot2::aes(
+      x = num.convert(.data[[x]]),
+      y = num.convert(.data[[y]])
+    )
+  ) +
+    ggplot2::geom_tile(
+      ggplot2::aes(fill = .data[[pollutant]]),
+      show.legend = TRUE
+    ) +
+    ggplot2::labs(
+      x = xlab,
+      y = ylab,
+      fill = quickText(pollutant, auto.text = auto.text)
+    ) +
+    ggplot2::coord_cartesian(expand = FALSE) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      strip.background = ggplot2::element_rect(fill = NA, color = NA),
+      plot.caption = ggplot2::element_text(hjust = 0.5, face = "bold"),
+      axis.ticks = ggplot2::element_blank(),
+      legend.position = "right",
+      legend.key.height = ggplot2::unit(1, "null")
+    ) +
+    facet_fun
+
+  if (category) {
+    plt <- plt +
+      ggplot2::scale_fill_manual(
+        values = openColours(
+          scheme = cols,
+          n = length(labels)
+        ),
+        na.value = "grey95",
+        breaks = levels(newdata[[pollutant]]),
+        drop = FALSE
+      ) +
+      ggplot2::guides(
+        fill = ggplot2::guide_legend(reverse = TRUE)
+      )
+  } else {
+    plt <- plt +
+      ggplot2::scale_fill_gradientn(
+        colours = openColours(
+          scheme = cols
+        ),
+        na.value = "grey95"
+      )
+  }
+
+  # openair output
+  if (plot) {
+    plot(plt)
+  }
+
+  output <- list(plot = plt, data = dplyr::tibble(newdata), call = match.call())
+  class(output) <- "openair"
+  invisible(output)
+}
+
+
 #' Plot heat map trends
 #'
 #' The trendLevel function provides a way of rapidly showing a large amount of
@@ -230,13 +621,6 @@ trendLevel <- function(
         "i" = "Duplicate term(s) in {.field pollutant} ('{pollutant}'), {.field x} ('{x}'), {.field y} ('{y}'), and {.field type} ('{type}')."
       )
     )
-  }
-
-  # assume pollutant scale is not a categorical value
-  category <- FALSE
-  if (!anyNA(breaks)) {
-    labels <- breaksToLabels(breaks, labels)
-    category <- TRUE
   }
 
   # extra.args

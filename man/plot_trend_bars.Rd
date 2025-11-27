@@ -91,6 +91,7 @@ plot_trend_bars(mydata, pollutant = "so2", avg.time = "month", proportion = "wd"
 
 Other ggplot2 time series and trend functions: 
 \code{\link{plot_calendar}()},
+\code{\link{plot_heatmap}()},
 \code{\link{plot_trend_lines}()},
 \code{\link{plot_trend_smooth}()}
 }

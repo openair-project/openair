@@ -855,3 +855,14 @@ strpad <- function(y, n = NULL) {
   }
   y
 }
+
+#' Convert number-like factor levels into numbers
+#' @noRd
+num.convert <- function(x) {
+  y <- utils::type.convert(x, as.is = TRUE)
+  if (class(y) %in% c("numeric", "integer")) {
+    return(y)
+  } else {
+    return(x)
+  }
+}
