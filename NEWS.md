@@ -20,6 +20,8 @@
 
     - (!) BREAKING: The order of `xlab` and `ylim` now matches the order of `panels`. `month.last` has also been deprecated; if used and `TRUE`, this will override `panels` with a warning. The output names `output$data` will now vary based on `panels`, and the `type` column will be named `{type}_type` (e.g., "hour_type").
 
+- `cutData()` is now a generic function. `openair` exports methods for `data.frame`s (including tibbles) as well as various vector types. For example, `cutData(mydata$date, "weekend")` will return a vector equivalent `cutData(mydata, "weekend")$weekend`.
+
 - `cutData()` now contains the `drop` argument. This allows for greater control over factor levels for appended columns. For example, consider a situation in which `data` only contains dates in March and May and `type = "month"` is used:
 
     - `drop = "empty"` will ensure the resulting vector only has factor levels `"March"` and `"May"`. 
