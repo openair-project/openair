@@ -127,6 +127,10 @@
   control the number of ticks on the coordinate grid, or remove it
   altogether.
 
+- [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+  now converts `air_temp` (a common `worldmet` variable) into
+  `"Temperature"`.
+
 ### Bug Fixes
 
 - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
