@@ -139,7 +139,8 @@ calendarPlot(data, "pm10",
 The legacy \code{\link[=calendarPlot]{calendarPlot()}} function
 
 Other ggplot2 time series and trend functions: 
-\code{\link{plot_heatmap}()}
+\code{\link{plot_heatmap}()},
+\code{\link{plot_trend_bars}()}
 }
 \author{
 Jack Davison

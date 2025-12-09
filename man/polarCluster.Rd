@@ -391,6 +391,7 @@ Other polar directional analysis functions:
 \code{\link{windRose}()}
 
 Other cluster analysis functions: 
+\code{\link{plot_trend_bars}()},
 \code{\link{timeProp}()},
 \code{\link{trajCluster}()}
 }

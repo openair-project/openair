@@ -116,7 +116,8 @@ plot_heatmap(
 The legacy \code{\link[=trendLevel]{trendLevel()}} function
 
 Other ggplot2 time series and trend functions: 
-\code{\link{plot_calendar}()}
+\code{\link{plot_calendar}()},
+\code{\link{plot_trend_bars}()}
 }
 \author{
 Jack Davison
