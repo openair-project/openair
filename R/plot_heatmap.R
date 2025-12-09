@@ -1,4 +1,4 @@
-#' Plot heat map trends with `ggplot2`
+#' Plot air quality trends as a heatmap
 #'
 #' The [plot_heatmap()] function provides a way of rapidly showing a large
 #' amount of data in a condensed form. In one plot, the variation in the
@@ -10,7 +10,7 @@
 #'
 #' @param data A data frame.
 #'
-#' @param pollutant The name of the pollutant to take an average from.
+#' @param pollutant The name of the pollutant to summarise.
 #'
 #' @param x,y,type The name of the data series to use as the x-axis, y-axis or
 #'   conditioning variable, passed to [cutData()]. These are used before

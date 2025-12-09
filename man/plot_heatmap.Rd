@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_heatmap.R
 \name{plot_heatmap}
 \alias{plot_heatmap}
-\title{Plot heat map trends with \code{ggplot2}}
+\title{Plot air quality trends as a heatmap}
 \usage{
 plot_heatmap(
   data,
@@ -26,7 +26,7 @@ plot_heatmap(
 \arguments{
 \item{data}{A data frame.}
 
-\item{pollutant}{The name of the pollutant to take an average from.}
+\item{pollutant}{The name of the pollutant to summarise.}
 
 \item{x, y, type}{The name of the data series to use as the x-axis, y-axis or
 conditioning variable, passed to \code{\link[=cutData]{cutData()}}. These are used before
@@ -114,6 +114,9 @@ plot_heatmap(
 }
 \seealso{
 The legacy \code{\link[=trendLevel]{trendLevel()}} function
+
+Other ggplot2 time series and trend functions: 
+\code{\link{plot_calendar}()}
 }
 \author{
 Jack Davison
