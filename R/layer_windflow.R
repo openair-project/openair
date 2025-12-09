@@ -10,7 +10,7 @@ layer_windflow <- function(
     ends = "last",
     type = "closed"
   ),
-  limits = c(0, NA),
+  limits = c(NA, NA),
   na.rm = FALSE,
   show.legend = FALSE,
   inherit.aes = TRUE
@@ -31,9 +31,10 @@ layer_windflow <- function(
       )
     ),
     continuous_scale(
+      guide = ggplot2::guide_none(),
       "ws",
       limits = limits,
-      palette = scales::pal_area()
+      palette = scales::pal_area(c(0, 1))
     )
   )
 }
@@ -107,6 +108,7 @@ StatWindflow <- ggplot2::ggproto(
   }
 )
 
+#' @export
 makeContent.windflow <- function(x) {
   # Convert to mm units for calculations
   x_mm <- grid::convertX(grid::unit(x$x, "npc"), "mm", valueOnly = TRUE)
