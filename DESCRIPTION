@@ -32,6 +32,7 @@ Imports:
     hexbin,
     lattice,
     latticeExtra,
+    lifecycle,
     lubridate,
     mapproj,
     MASS,

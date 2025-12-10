@@ -8,8 +8,8 @@ plot_trend_bars(
   data,
   pollutant,
   group = NULL,
-  avg.time = "month",
   type = NULL,
+  avg.time = "month",
   cols = "tol",
   normalise = FALSE,
   auto_text = TRUE,
@@ -58,6 +58,8 @@ components and plotting them in other ways.}
 \item{...}{Additional arguments passed to \code{\link[=cutData]{cutData()}}.}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 This function shows time series plots as stacked bar charts. The different
 categories in the bar chart are made up from a character or factor variable
 in a data frame. The function is primarily developed to support the plotting
@@ -76,7 +78,8 @@ the legacy \code{\link[=timeProp]{timeProp()}} function
 
 Other ggplot2 time series and trend functions: 
 \code{\link{plot_calendar}()},
-\code{\link{plot_heatmap}()}
+\code{\link{plot_heatmap}()},
+\code{\link{plot_trend_smooth}()}
 
 Other cluster analysis functions: 
 \code{\link{polarCluster}()},

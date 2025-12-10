@@ -103,6 +103,7 @@
 "_PACKAGE"
 ## usethis namespace: start
 #' @importFrom latticeExtra useOuterStrips
+#' @importFrom lifecycle deprecated
 #' @importFrom lubridate as_date
 #' @importFrom lubridate ceiling_date
 #' @importFrom lubridate day

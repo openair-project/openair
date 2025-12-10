@@ -83,6 +83,8 @@ components and plotting them in other ways.}
 a \link[ggplot2:ggplot2-package]{ggplot2} plot, or \code{data.frame} if \code{plot = FALSE}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 The \code{\link[=plot_heatmap]{plot_heatmap()}} function provides a way of rapidly showing a large
 amount of data in a condensed form. In one plot, the variation in the
 concentration of one pollutant can to shown as a function of four other
@@ -117,7 +119,8 @@ The legacy \code{\link[=trendLevel]{trendLevel()}} function
 
 Other ggplot2 time series and trend functions: 
 \code{\link{plot_calendar}()},
-\code{\link{plot_trend_bars}()}
+\code{\link{plot_trend_bars}()},
+\code{\link{plot_trend_smooth}()}
 }
 \author{
 Jack Davison

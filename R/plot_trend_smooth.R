@@ -1,3 +1,244 @@
+#' Plot air quality trends with a non-parametric smooth curve
+#'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
+#' The [plot_trend_smooth()] function provides a flexible way of estimating the
+#' trend in the concentration of a pollutant or other variable. Monthly mean
+#' values are calculated from an hourly (or higher resolution) or daily time
+#' series. There is the option to deseasonalise the data if there is evidence of
+#' a seasonal cycle.
+#'
+#' @inheritParams plot_heatmap
+#' @inheritParams timeAverage
+#'
+#' @param smooth_method,smooth_formula,smooth_se,smooth_level Options to control
+#'   various parameters for the smooth trend function. Passed to the
+#'   corresponding arguments of [ggplot2::stat_smooth()]; see that function for
+#'   definitions.
+#'
+#' @param deseason Should the data be de-deasonalized first? If `TRUE` the
+#'   function `stl` is used (seasonal trend decomposition using loess). Note
+#'   that if `TRUE` missing data are first imputed using a Kalman filter and
+#'   Kalman smooth.
+#'
+#' @param type `type` determines how the data are split i.e. conditioned, and
+#'   then plotted. The default is will produce a single plot using the entire
+#'   data. Type can be one of the built-in types as detailed in [cutData()],
+#'   e.g., `"season"`, `"year"`, `"weekday"` and so on. For example, `type =
+#'   "season"` will produce four plots --- one for each season.
+#'
+#'   It is also possible to choose `type` as another variable in the data frame.
+#'   If that variable is numeric, then the data will be split into four
+#'   quantiles (if possible) and labelled accordingly. If type is an existing
+#'   character or factor variable, then those categories/levels will be used
+#'   directly. This offers great flexibility for understanding the variation of
+#'   different variables and how they depend on one another.
+#'
+#'   Type can be up length two e.g. `type = c("season", "weekday")` will produce
+#'   a 2x2 plot split by season and day of the week. Note, when two types are
+#'   provided the first forms the columns and the second the rows.
+#'
+#' @param statistic Statistic used for calculating monthly values. Default is
+#'   `"mean"`, but can also be `"percentile"`. See [timeAverage()] for more
+#'   details.
+#'
+#' @param percentile Percentile value(s) to use if `statistic = "percentile"` is
+#'   chosen. Can be a vector of numbers e.g. `percentile = c(5, 50, 95)` will
+#'   plot the 5th, 50th and 95th percentile values together on the same plot.
+#'
+#' @export
+#' @return an [openair][openair-package] object
+#'
+#' @author Jack Davison
+#' @author David Carslaw
+#'
+#' @family ggplot2 time series and trend functions
+#' @seealso the legacy [smoothTrend()] function
+#'
+#' @examples
+#' # trend plot for nox
+#' plot_trend_smooth(mydata, pollutant = "nox")
+#'
+#' # trend plot by each of 8 wind sectors
+#' \dontrun{
+#' plot_trend_smooth(mydata, pollutant = "o3", type = "wd")
+#'
+#' # several pollutants
+#' plot_trend_smooth(mydata, pollutant = c("no2", "o3", "pm10", "pm25"))
+#'
+#' # percentiles
+#' plot_trend_smooth(
+#'   mydata,
+#'   pollutant = "o3",
+#'   statistic = "percentile",
+#'   percentile = 95
+#' )
+#' }
+plot_trend_smooth <- function(
+  data,
+  pollutant = "nox",
+  group = NULL,
+  type = NULL,
+  avg.time = "month",
+  data.thresh = 0,
+  statistic = "mean",
+  percentile = NA,
+  smooth_method = "gam",
+  smooth_formula = NULL,
+  smooth_se = TRUE,
+  smooth_level = 0.95,
+  deseason = FALSE,
+  windflow = FALSE,
+  cols = "tol",
+  auto_text = TRUE,
+  facet_opts = openair::facet_opts(),
+  plot = TRUE,
+  ...
+) {
+  type <- type %||% "default"
+
+  # can't have multiple pollutants and a grouping variable
+  if (length(pollutant) > 1 && !is.null(group)) {
+    group <- NULL
+  }
+  # can't have multiple percentiles and a grouping variable
+  if (length(percentile) > 1 && !is.null(group)) {
+    group <- NULL
+  }
+  # can't deseason and windflow simultaneously
+  if (deseason && windflow) {
+    windflow <- FALSE
+    cli::cli_warn(
+      "{.fun openair::plot_trend_smooth} does not support {.arg windflow} and {.arg deseason} simultaneously; setting {.arg windflow} to {FALSE}."
+    )
+  }
+
+  # find time interval
+  # need this because if user has a data capture threshold, need to know
+  # original time interval. better to do this before conditioning
+  interval <- find.time.interval(data$date)
+
+  # equivalent number of days, used to refine interval for month/year
+  days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) / 24 / 3600
+
+  # better interval, most common interval in a year
+  interval <-
+    dplyr::case_match(
+      days,
+      31 ~ "month",
+      c(365, 366) ~ "year",
+      .default = interval
+    )
+
+  # for overall data and graph plotting
+  start.year <- startYear(data$date)
+  end.year <- endYear(data$date)
+
+  # prep data
+  data <-
+    prepare_smoothtrend_data(
+      data,
+      pollutant = pollutant,
+      type = type,
+      group = group,
+      avg.time = avg.time,
+      statistic = statistic,
+      percentile = percentile,
+      data.thresh = data.thresh,
+      interval = interval,
+      windflow = windflow,
+      progress = FALSE,
+      ...
+    )
+
+  # set new variables
+  vars <- c(type, "variable")
+
+  # prep data
+  plotdata <-
+    mapType(
+      data,
+      type = vars,
+      fun = \(df) deseason_smoothtrend_data(df, deseason = deseason),
+      .include_default = TRUE
+    ) |>
+    dplyr::tibble()
+
+  # determine facet
+  facet_fun <- get_facet_fun(type, facet_opts = facet_opts)
+
+  # construct plot
+  plt <-
+    ggplot2::ggplot(plotdata, ggplot2::aes(x = .data$date, y = .data$conc)) +
+    ggplot2::geom_line(ggplot2::aes(color = .data$variable), alpha = 0.5) +
+    ggplot2::geom_point(
+      ggplot2::aes(color = .data$variable),
+      shape = 1,
+      alpha = 0.5
+    ) +
+    ggplot2::stat_smooth(
+      ggplot2::aes(color = .data$variable, fill = .data$variable),
+      method = smooth_method,
+      formula = smooth_formula,
+      alpha = 1 / 5,
+      se = smooth_se,
+      level = smooth_level
+    ) +
+    ggplot2::labs(
+      y = quickText(paste(pollutant, collapse = ", "), auto.text = auto_text),
+      x = NULL,
+      fill = NULL,
+      color = NULL
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      strip.background = ggplot2::element_blank(),
+      palette.fill.discrete = c(
+        openair::openColours(
+          scheme = cols,
+          n = dplyr::n_distinct(levels(plotdata$variable))
+        ),
+        "black"
+      ),
+      palette.colour.discrete = c(
+        openair::openColours(
+          scheme = cols,
+          n = dplyr::n_distinct(levels(plotdata$variable))
+        ),
+        "black"
+      )
+    ) +
+    facet_fun
+
+  # remove legend if only one item
+  if (dplyr::n_distinct(levels(plotdata$variable)) == 1) {
+    plt <-
+      plt +
+      ggplot2::guides(
+        fill = ggplot2::guide_none(),
+        color = ggplot2::guide_none()
+      )
+  }
+
+  # add windflow if requested
+  if (windflow) {
+    plt <- plt +
+      layer_windflow(aes(ws = .data$ws, wd = .data$wd, color = .data$variable))
+  }
+
+  # return
+  if (plot) {
+    return(plt)
+  } else {
+    if (!windflow) {
+      plotdata$ws <- NULL
+      plotdata$wd <- NULL
+    }
+    return(plotdata)
+  }
+}
+
 #' Calculate nonparametric smooth trends
 #'
 #' Use non-parametric methods to calculate time series trends
@@ -88,6 +329,7 @@
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
 #' @family time series and trend functions
+#' @seealso the newer [plot_trend_smooth()] function
 #' @examples
 #' # trend plot for nox
 #' smoothTrend(mydata, pollutant = "nox")
@@ -525,20 +767,29 @@ prepare_smoothtrend_data <- function(
   mydata,
   pollutant,
   type,
+  group = NULL,
   avg.time,
   statistic,
   percentile,
   data.thresh,
   interval,
+  windflow = FALSE,
   progress,
   ...
 ) {
   # default checks
   vars <- c("date", pollutant)
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  if (windflow) {
+    vars <- c(vars, "ws", "wd")
+  }
+  mydata <- checkPrep(mydata, vars, c(type, group), remove.calm = FALSE)
 
   # cutData depending on type
-  mydata <- cutData(mydata, type, ...)
+  mydata <- cutData(mydata, c(type, group), ...)
+
+  for (i in c(type, group)) {
+    mydata[i] <- factor(mydata[[i]], ordered = FALSE)
+  }
 
   # reshape data, make sure there is not a variable called 'variable'
   if ("variable" %in% names(mydata)) {
@@ -546,7 +797,7 @@ prepare_smoothtrend_data <- function(
     type <- "theVar"
   }
 
-  # in the case of multiple percentiles, these are assinged and treated
+  # in the case of multiple percentiles, these are assigned and treated
   # like multiple pollutants
   mydata <- tidyr::pivot_longer(
     mydata,
@@ -557,6 +808,11 @@ prepare_smoothtrend_data <- function(
       variable = factor
     )
   )
+
+  if (!is.null(group)) {
+    mydata$variable <- mydata[[group]]
+    mydata[[group]] <- NULL
+  }
 
   if (length(percentile) > 1) {
     vars <- c(type, "variable")
@@ -586,7 +842,7 @@ prepare_smoothtrend_data <- function(
   } else {
     mydata <- suppressWarnings(timeAverage(
       mydata,
-      type = c(type, "variable"),
+      type = c(type, group, "variable"),
       avg.time = avg.time,
       percentile = percentile,
       statistic = statistic,
@@ -597,7 +853,7 @@ prepare_smoothtrend_data <- function(
   }
 
   # timeAverage drops type if default
-  if (length(type) == 1 && type[1] == "default") {
+  if (any(type == "default")) {
     mydata$default <- "default"
   }
 
@@ -662,6 +918,8 @@ deseason_smoothtrend_data <- function(mydata, deseason) {
     results <- data.frame(
       date = mydata$date,
       conc = mydata[["value"]],
+      ws = mydata[["ws"]] %||% NA,
+      wd = mydata[["wd"]] %||% NA,
       stringsAsFactors = FALSE
     )
   }

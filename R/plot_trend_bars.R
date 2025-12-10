@@ -1,5 +1,8 @@
 #' Plot air quality trends as stacked bar charts
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
 #' This function shows time series plots as stacked bar charts. The different
 #' categories in the bar chart are made up from a character or factor variable
 #' in a data frame. The function is primarily developed to support the plotting
@@ -51,8 +54,8 @@ plot_trend_bars <- function(
   data,
   pollutant,
   group = NULL,
-  avg.time = "month",
   type = NULL,
+  avg.time = "month",
   cols = "tol",
   normalise = FALSE,
   auto_text = TRUE,
@@ -118,47 +121,7 @@ plot_trend_bars <- function(
     )
 
   # determine facet
-  facet_fun <- NULL
-  if (!is.null(type) && all(type != "default")) {
-    if (length(type) == 2) {
-      facet_fun <-
-        ggplot2::facet_grid(
-          rows = ggplot2::vars(.data[[type[1]]]),
-          cols = ggplot2::vars(.data[[type[2]]]),
-          scales = facet_opts$scales,
-          space = facet_opts$space,
-          switch = facet_opts$switch,
-          drop = facet_opts$drop,
-          axes = facet_opts$axes,
-          axis.labels = facet_opts$axis.labels
-        )
-    } else {
-      if (type == "wd") {
-        facet_fun <-
-          facet_wd(
-            facets = ggplot2::vars(.data[[type]]),
-            scales = facet_opts$scales,
-            strip.position = facet_opts$strip.position,
-            axes = facet_opts$axes,
-            axis.labels = facet_opts$axis.labels,
-            resolution = "medium"
-          )
-      } else {
-        facet_fun <-
-          ggplot2::facet_wrap(
-            facets = ggplot2::vars(.data[[type]]),
-            nrow = facet_opts$nrow,
-            ncol = facet_opts$ncol,
-            scales = facet_opts$scales,
-            space = facet_opts$space,
-            drop = facet_opts$drop,
-            strip.position = facet_opts$strip.position,
-            axes = facet_opts$axes,
-            axis.labels = facet_opts$axis.labels
-          )
-      }
-    }
-  }
+  facet_fun <- get_facet_fun(type, facet_opts = facet_opts)
 
   # might need to stack axes
   position <- ggplot2::position_stack()

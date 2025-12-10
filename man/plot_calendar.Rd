@@ -90,12 +90,13 @@ components and plotting them in other ways.}
 a \link[ggplot2:ggplot2-package]{ggplot2} plot, or \code{data.frame} if \code{plot = FALSE}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 This function will plot data by month laid out in a conventional calendar
 format. The main purpose is to help rapidly visualise potentially complex
 data in a familiar way. Users can also choose to show daily mean wind vectors
 if wind speed and direction are available.
-}
-\details{
+
 Note that is is possible to pre-calculate concentrations in some way before
 passing the data to \code{\link[=plot_calendar]{plot_calendar()}}. For example \code{\link[=rollingMean]{rollingMean()}} could be
 used to calculate rolling 8-hour mean concentrations. The data can then be
@@ -140,7 +141,8 @@ The legacy \code{\link[=calendarPlot]{calendarPlot()}} function
 
 Other ggplot2 time series and trend functions: 
 \code{\link{plot_heatmap}()},
-\code{\link{plot_trend_bars}()}
+\code{\link{plot_trend_bars}()},
+\code{\link{plot_trend_smooth}()}
 }
 \author{
 Jack Davison

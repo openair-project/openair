@@ -12,15 +12,6 @@ reference:
   desc: Import tidy air quality data from the UK and Europe.
   contents: has_concept("import functions")
   
-- title: Directional Analysis
-- subtitle: Polar Analysis
-  desc: Examine the relationship between wind speed, wind direction and pollutant
-    concentrations.
-  contents: has_concept("polar directional analysis functions")
-- subtitle: Trajectory Analysis
-  desc: Analyse and visualise HYSPLIT trajectory files.
-  contents: has_concept("trajectory analysis functions")
-  
 - title: Time Series and Trends
 - subtitle: ~
   desc: Examine how pollutant concentrations change with time.
@@ -28,7 +19,16 @@ reference:
   contents: has_concept("ggplot2 time series and trend functions")
 - subtitle: Legacy API
   contents: has_concept("time series and trend functions")
-  
+
+- title: Directional Analysis
+  desc: Examine the relationship between wind speed, wind direction and pollutant
+    concentrations.
+  contents: has_concept("polar directional analysis functions")
+
+- title: Trajectory Analysis
+  desc: Analyse and visualise HYSPLIT trajectory files.
+  contents: has_concept("trajectory analysis functions")
+
 - title: Model Evaluation
   desc: Compare models against measurements and models against other models.
   contents: has_concept("model evaluation functions")

@@ -1,5 +1,8 @@
 #' Plot air quality trends in a conventional 'calendar' format
 #'
+#' @description
+#' `r lifecycle::badge("experimental")`
+#'
 #' This function will plot data by month laid out in a conventional calendar
 #' format. The main purpose is to help rapidly visualise potentially complex
 #' data in a familiar way. Users can also choose to show daily mean wind vectors
