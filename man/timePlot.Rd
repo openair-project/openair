@@ -300,7 +300,6 @@ timePlot(mydata, pollutant = "o3", avg.time = "day", data.thresh = 75)
 Other time series and trend functions: 
 \code{\link{TheilSen}()},
 \code{\link{calendarPlot}()},
-\code{\link{runRegression}()},
 \code{\link{smoothTrend}()},
 \code{\link{timeProp}()},
 \code{\link{timeVariation}()},

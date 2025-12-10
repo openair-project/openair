@@ -37,7 +37,6 @@ reference:
   desc: Additional plotting functions for visualising air quality data.
   contents:
   - summaryPlot
-  - runRegression
   - scatterPlot
   - corPlot
   - linearRelation
@@ -51,6 +50,7 @@ reference:
   - calcPercentile
   - cutData
   - rollingMean
+  - runRegression
   - selectByDate
   - selectRunning
   - splitByDate
