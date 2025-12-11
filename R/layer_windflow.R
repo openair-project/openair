@@ -31,7 +31,7 @@ layer_windflow <- function(
         ...
       )
     ),
-    continuous_scale(
+    ggplot2::continuous_scale(
       guide = ggplot2::guide_none(),
       "ws",
       limits = limits,
@@ -76,7 +76,7 @@ GeomWindflow <- ggplot2::ggproto(
         col = coords$colour,
         fill = scales::alpha(coords$colour, coords$alpha),
         alpha = ifelse(is.na(coords$alpha), 1, coords$alpha),
-        lwd = coords$linewidth * .pt,
+        lwd = coords$linewidth * ggplot2::.pt,
         lty = coords$linetype,
         lineend = "butt"
       ),

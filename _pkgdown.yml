@@ -34,7 +34,12 @@ reference:
   contents: has_concept("model evaluation functions")
   
 - title: Other Plots
+- subtitle: ~
   desc: Additional plotting functions for visualising air quality data.
+- subtitle: New API
+  contents:
+  - plot_variation
+- subtitle: Legacy API
   contents:
   - summaryPlot
   - scatterPlot

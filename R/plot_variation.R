@@ -1,3 +1,245 @@
+#' Plot the variation in a variable with flexible conditioning
+#'
+#' This function plots the variation of a pollutant or other variable (e.g.,
+#' bootstrapped confidence interval around the mean, or a quantile range around
+#' the median). These variations are grouped by up to three different
+#' conditioning variables - `x` (x-axis), `group` (colour) and `type` (panels).
+#' `x` may usefully be a temporal variable for time series data (e.g.,
+#' `"month"`, `"year"`, etc.), but could be any factor (e.g., `"site"`) or
+#' numeric (e.g., `"no2"`, which will be binned) variable.
+#'
+#' @description `r lifecycle::badge("experimental")`
+#'
+#' @inheritParams plot_heatmap
+#'
+#' @param x,type The name of the data series to use as the x-axis or
+#'   conditioning variable, passed to [cutData()]. These are used before
+#'   applying `statistic`. `type` may be `NULL` or a vector with maximum length
+#'   2, which creates a 2D grid of plots.
+#'
+#' @param group The name of the data series to use to colour traces within a
+#'   single panel, passed to [cutData()].
+#'
+#' @param statistic One of:
+#'
+#' - `"mean"`, which displays the bootstrapped mean confidence interval in the data.
+#'
+#' - `"median"`, which displays the median value along with a quantile range.
+#'
+#'   The `stat_interval` argument helps control how the intervals are
+#'   calculated.
+#'
+#' @param stat_interval A single numeric value between `0` and `1`. When
+#'   `statistic = "mean"`, this is the confidence interval around the
+#'   bootstrapped mean. When `statistic = "median"`, this is the upper quantile
+#'   (the lower quantile is calculated using `1 - stat_interval`). `TRUE` will
+#'   use sensible defaults (`0.95` for `"mean"`, `0.75` for `"median"`) and
+#'   `FALSE` will remove intervals entirely.
+#'
+#' @export
+#'
+#' @return a [ggplot2][ggplot2::ggplot2-package] plot, or `data.frame` if `plot
+#'   = FALSE`.
+#'
+#' @author Jack Davison
+#'
+#' @seealso The legacy [timeVariation()] function
+#'
+#' @export
+plot_variation <- function(
+  data,
+  pollutant,
+  x = "month",
+  group = NULL,
+  type = NULL,
+  statistic = c("mean", "median"),
+  stat_interval = TRUE,
+  windflow = FALSE,
+  cols = "tol",
+  auto_text = TRUE,
+  facet_opts = openair::facet_opts(),
+  plot = TRUE,
+  ...
+) {
+  # disallow multiple pollutants & groups
+  if (length(pollutant) > 1L && !is.null(group)) {
+    cli::cli_abort(
+      "Please provide {.emph either} {1} {.field pollutant} and a {.field group}, {.emph or} multiple {.field pollutants} but leave {.field group} as {.code NULL}."
+    )
+  }
+
+  # match statistic input
+  statistic <- rlang::arg_match(statistic)
+
+  # get x/group/type variables
+  data <- cutData(data, x, is.axis = TRUE, ...)
+  data <- cutData(data, c(type, group), is.axis = FALSE, ...)
+
+  # always put in long format
+  data <- tidyr::pivot_longer(
+    data,
+    cols = dplyr::all_of(pollutant),
+    names_to = "variable",
+    values_to = "value",
+    names_transform = factor
+  )
+
+  # if no group, the group is the pollutant (even if only one)
+  if (is.null(group)) {
+    group <- "variable"
+  }
+
+  # calculate summaries
+  if (statistic == "mean") {
+    if (rlang::is_logical(stat_interval)) {
+      stat_interval <- ifelse(stat_interval, 0.95, 0)
+    }
+    probs <- sort(c(1 - stat_interval, stat_interval))
+    plotdata <-
+      dplyr::reframe(
+        data,
+        bootMeanDF(.data$value, conf.int = stat_interval, B = 100),
+        .by = dplyr::all_of(c(group, x, type))
+      )
+  } else if (statistic == "median") {
+    if (rlang::is_logical(stat_interval)) {
+      stat_interval <- ifelse(stat_interval, 0.75, 0.5)
+    }
+    probs <- sort(c(1 - stat_interval, stat_interval))
+    plotdata <-
+      dplyr::reframe(
+        data,
+        mean = stats::median(.data$value, na.rm = TRUE),
+        min = stats::quantile(.data$value, na.rm = TRUE, probs = probs[1]),
+        max = stats::quantile(.data$value, na.rm = TRUE, probs = probs[2]),
+        .by = dplyr::all_of(c(group, x, type))
+      )
+  }
+
+  # if windflow, need average ws/wd
+  if (windflow) {
+    winddata <-
+      data |>
+      dplyr::mutate(
+        u = -.data$ws * sin(.data$wd * pi / 180),
+        v = -.data$ws * cos(.data$wd * pi / 180)
+      ) |>
+      dplyr::summarise(
+        u = mean(u, na.rm = TRUE),
+        v = mean(v, na.rm = TRUE),
+        .by = dplyr::all_of(c(group, x, type))
+      ) |>
+      dplyr::mutate(
+        ws = sqrt(u^2 + v^2),
+        wd = atan2(u, v) * 180 / pi,
+        wd = (wd + 360) %% 360,
+        .keep = "unused"
+      ) |>
+      dplyr::mutate(dplyr::across(
+        dplyr::all_of(c(group, x, type))
+      ))
+
+    plotdata <- dplyr::left_join(plotdata, winddata, by = c(group, x, type))
+  }
+
+  # work out the facet function
+  facet_fun <- get_facet_fun(type, facet_opts)
+
+  # construct plot
+  plt <-
+    plotdata |>
+    ggplot2::ggplot(
+      ggplot2::aes(
+        x = .data[[x]],
+        y = .data$mean,
+        ymax = .data$max,
+        ymin = .data$min
+      )
+    ) +
+    facet_fun +
+    ggplot2::labs(
+      color = NULL,
+      fill = NULL,
+      x = quickText(x, auto.text = auto_text),
+      y = quickText(paste(pollutant, collapse = ", "), auto.text = auto_text)
+    ) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      strip.background = ggplot2::element_blank(),
+      palette.fill.discrete = c(
+        openair::openColours(
+          scheme = cols,
+          n = dplyr::n_distinct(levels(plotdata[[group]]))
+        ),
+        "black"
+      ),
+      palette.colour.discrete = c(
+        openair::openColours(
+          scheme = cols,
+          n = dplyr::n_distinct(levels(plotdata[[group]]))
+        ),
+        "black"
+      )
+    )
+
+  # add geoms depending on the data type
+  if (is.ordered(plotdata[[x]]) || is.numeric(plotdata[[x]])) {
+    plt <-
+      plt +
+      ggplot2::geom_line(
+        ggplot2::aes(
+          group = factor(.data[[group]], ordered = FALSE),
+          color = factor(.data[[group]], ordered = FALSE)
+        )
+      ) +
+      ggplot2::geom_crossbar(
+        ggplot2::aes(
+          fill = factor(.data[[group]], ordered = FALSE)
+        ),
+        alpha = 1 / 3,
+        color = NA
+      )
+  } else {
+    plt <-
+      plt +
+      ggplot2::geom_crossbar(
+        ggplot2::aes(
+          fill = factor(.data[[group]], ordered = FALSE)
+        ),
+        alpha = 1 / 3,
+        color = NA
+      ) +
+      ggplot2::geom_crossbar(
+        ggplot2::aes(
+          color = factor(.data[[group]], ordered = FALSE),
+          ymin = .data$mean,
+          ymax = .data$mean
+        )
+      )
+  }
+
+  # remove legend if only one item
+  if (dplyr::n_distinct(levels(plotdata[[group]])) == 1) {
+    plt <- plt +
+      ggplot2::guides(
+        color = ggplot2::guide_none(),
+        fill = ggplot2::guide_none()
+      )
+  }
+
+  # if windflow, need to add it
+  if (windflow) {
+    plt <- plt +
+      layer_windflow(ggplot2::aes(ws = ws, wd = wd, group = .data[[group]]))
+  }
+
+  if (plot) {
+    return(plt)
+  } else {
+    return(plotdata)
+  }
+}
+
 #' Temporal variation plots with flexible panel control
 #'
 #' Plots temporal variation for different variables, typically pollutant
@@ -172,6 +414,7 @@
 #'   `output <- timeVariation(mydata, "nox")`
 #' @author David Carslaw
 #' @family time series and trend functions
+#' @seealso The newer [plot_variation()] function
 #' @examples
 #'
 #' # basic use

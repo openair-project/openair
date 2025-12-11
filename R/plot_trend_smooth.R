@@ -842,7 +842,7 @@ prepare_smoothtrend_data <- function(
   } else {
     mydata <- suppressWarnings(timeAverage(
       mydata,
-      type = c(type, group, "variable"),
+      type = c(type, "variable"),
       avg.time = avg.time,
       percentile = percentile,
       statistic = statistic,
