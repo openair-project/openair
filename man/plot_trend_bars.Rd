@@ -89,7 +89,8 @@ the legacy \code{\link[=timeProp]{timeProp()}} function
 Other ggplot2 time series and trend functions: 
 \code{\link{plot_calendar}()},
 \code{\link{plot_heatmap}()},
-\code{\link{plot_trend_smooth}()}
+\code{\link{plot_trend_smooth}()},
+\code{\link{plot_trend_theilsen}()}
 
 Other cluster analysis functions: 
 \code{\link{polarCluster}()},
