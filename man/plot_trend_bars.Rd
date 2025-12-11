@@ -23,11 +23,15 @@ plot_trend_bars(
 
 \item{pollutant}{The name of the pollutant to summarise.}
 
-\item{group}{The splitting variable that makes up the bars in the bar
-chart e.g. \code{group = "cluster"} if the output from \code{polarCluster} is
-being analysed. If \code{group} is a numeric variable it is split into 4
-quantiles (by default) by \code{\link[=cutData]{cutData()}}. If \code{group} is a factor or
-character variable then the categories are used directly.}
+\item{group}{The splitting variable that makes up the bars in the bar chart
+e.g. \code{group = "cluster"} if the output from \code{polarCluster} is being
+analysed. If \code{group} is a numeric variable it is split into 4 quantiles (by
+default) by \code{\link[=cutData]{cutData()}}. If \code{group} is a factor or character variable then
+the categories are used directly.}
+
+\item{type}{The name of the data series to use as the conditioning variable,
+passed to \code{\link[=cutData]{cutData()}}. \code{type} may be \code{NULL} or a vector with maximum length
+2, which creates a 2D grid of plots.}
 
 \item{avg.time}{This defines the time period to average to. Can be \code{"sec"},
 \code{"min"}, \code{"hour"}, \code{"day"}, \code{"DSTday"}, \code{"week"}, \code{"month"}, \code{"quarter"} or
@@ -51,6 +55,11 @@ strings? \code{TRUE} will automatically, for example, subscript the 'x' in NOx
 in axis labels. \code{FALSE} will leave text unchanged, but users may refine it
 with, e.g., \code{\link[ggplot2:labs]{ggplot2::labs()}} or \code{\link[ggplot2:guides]{ggplot2::guides()}}.}
 
+\item{facet_opts}{A list of options to help control how 'facets' (different
+panels accessed through \code{type}) behave, e.g., whether different panels
+should share the same scales. Use \code{\link[=facet_opts]{facet_opts()}} as a convenient way to
+provide all necessary options.}
+
 \item{plot}{Should a plot be produced? \code{FALSE} will instead return the
 plotting data, and can be useful when analysing data to extract plot
 components and plotting them in other ways.}
@@ -62,12 +71,13 @@ components and plotting them in other ways.}
 
 This function shows time series plots as stacked bar charts. The different
 categories in the bar chart are made up from a character or factor variable
-in a data frame. The function is primarily developed to support the plotting
-of cluster analysis output from \code{\link[=polarCluster]{polarCluster()}} and \code{\link[=trajCluster]{trajCluster()}} that
-consider local and regional (back trajectory) cluster analysis respectively.
-However, the function has more general use for understanding time series
-data. In order to plot time series in this way, some sort of time aggregation
-is needed, which is controlled by the option \code{avg.time}.
+in a data frame. The function is primarily developed to support the
+plotting of cluster analysis output from \code{\link[=polarCluster]{polarCluster()}} and
+\code{\link[=trajCluster]{trajCluster()}} that consider local and regional (back trajectory) cluster
+analysis respectively. However, the function has more general use for
+understanding time series data. In order to plot time series in this way,
+some sort of time aggregation is needed, which is controlled by the option
+\code{avg.time}.
 }
 \examples{
 # monthly plot of SO2 showing the contribution by wind sector

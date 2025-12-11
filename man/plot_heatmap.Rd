@@ -73,6 +73,11 @@ strings? \code{TRUE} will automatically, for example, subscript the 'x' in NOx
 in axis labels. \code{FALSE} will leave text unchanged, but users may refine it
 with, e.g., \code{\link[ggplot2:labs]{ggplot2::labs()}} or \code{\link[ggplot2:guides]{ggplot2::guides()}}.}
 
+\item{facet_opts}{A list of options to help control how 'facets' (different
+panels accessed through \code{type}) behave, e.g., whether different panels
+should share the same scales. Use \code{\link[=facet_opts]{facet_opts()}} as a convenient way to
+provide all necessary options.}
+
 \item{plot}{Should a plot be produced? \code{FALSE} will instead return the
 plotting data, and can be useful when analysing data to extract plot
 components and plotting them in other ways.}
@@ -90,8 +95,8 @@ amount of data in a condensed form. In one plot, the variation in the
 concentration of one pollutant can to shown as a function of four other
 categorical properties. The default version of the plot uses \code{y = "hour"}
 (hour of the day) and \code{x = "month"} (month of the year), but these can be
-changed and \code{type} can additionally be passed up to two additional options to
-create grid of heatmap summaries.
+changed and \code{type} can additionally be passed up to two additional options
+to create grid of heatmap summaries.
 }
 \examples{
 # basic use

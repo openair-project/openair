@@ -1,24 +1,28 @@
 #' Plot air quality trends as stacked bar charts
 #'
-#' @description
-#' `r lifecycle::badge("experimental")`
+#' @description `r lifecycle::badge("experimental")`
 #'
-#' This function shows time series plots as stacked bar charts. The different
-#' categories in the bar chart are made up from a character or factor variable
-#' in a data frame. The function is primarily developed to support the plotting
-#' of cluster analysis output from [polarCluster()] and [trajCluster()] that
-#' consider local and regional (back trajectory) cluster analysis respectively.
-#' However, the function has more general use for understanding time series
-#' data. In order to plot time series in this way, some sort of time aggregation
-#' is needed, which is controlled by the option `avg.time`.
+#'   This function shows time series plots as stacked bar charts. The different
+#'   categories in the bar chart are made up from a character or factor variable
+#'   in a data frame. The function is primarily developed to support the
+#'   plotting of cluster analysis output from [polarCluster()] and
+#'   [trajCluster()] that consider local and regional (back trajectory) cluster
+#'   analysis respectively. However, the function has more general use for
+#'   understanding time series data. In order to plot time series in this way,
+#'   some sort of time aggregation is needed, which is controlled by the option
+#'   `avg.time`.
 #'
 #' @inheritParams plot_heatmap
 #'
-#' @param group The splitting variable that makes up the bars in the bar
-#'   chart e.g. `group = "cluster"` if the output from `polarCluster` is
-#'   being analysed. If `group` is a numeric variable it is split into 4
-#'   quantiles (by default) by [cutData()]. If `group` is a factor or
-#'   character variable then the categories are used directly.
+#' @param type The name of the data series to use as the conditioning variable,
+#'   passed to [cutData()]. `type` may be `NULL` or a vector with maximum length
+#'   2, which creates a 2D grid of plots.
+#'
+#' @param group The splitting variable that makes up the bars in the bar chart
+#'   e.g. `group = "cluster"` if the output from `polarCluster` is being
+#'   analysed. If `group` is a numeric variable it is split into 4 quantiles (by
+#'   default) by [cutData()]. If `group` is a factor or character variable then
+#'   the categories are used directly.
 #'
 #' @param avg.time This defines the time period to average to. Can be `"sec"`,
 #'   `"min"`, `"hour"`, `"day"`, `"DSTday"`, `"week"`, `"month"`, `"quarter"` or
@@ -140,11 +144,14 @@ plot_trend_bars <- function(
     ggplot2::geom_col(
       ggplot2::aes(fill = .data[[group]]),
       position = position,
-      na.rm = TRUE
+      na.rm = TRUE,
+      show.legend = TRUE
     ) +
     ggplot2::theme_bw() +
     ggplot2::theme(
       strip.background = ggplot2::element_blank(),
+      axis.title.y = marquee::element_marquee(),
+      legend.text = marquee::element_marquee(),
       palette.fill.discrete = c(
         openair::openColours(
           scheme = cols,
@@ -158,15 +165,19 @@ plot_trend_bars <- function(
       expand = ggplot2::expansion(c(0, ifelse(normalise, 0, .1))),
       labels = ylabels
     ) +
+    ggplot2::scale_fill_discrete(
+      label = label_openair,
+      drop = FALSE
+    ) +
     facet_fun +
     ggplot2::labs(
-      y = quickText(
+      y = label_openair(
         ifelse(
           normalise,
           paste("% contribution to", pollutant),
           pollutant
         ),
-        auto.text = auto_text
+        auto_text = auto_text
       ),
       x = NULL,
       fill = NULL

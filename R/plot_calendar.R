@@ -15,6 +15,7 @@
 #' maximum daily 8-hour mean concentrations.
 #'
 #' @inheritParams plot_heatmap
+#' @inheritParams timeAverage
 #'
 #' @param year Year to plot e.g. `year = 2003`. If not supplied all data
 #'   potentially spanning several years will be plotted.
@@ -59,32 +60,44 @@
 #' plot_calendar(mydata, pollutant = "o3", year = 2003)
 #'
 #' # show wind vectors
-#' calendarPlot(data, pollutant = "o3", year = 2003, annotate = "wd")
+#' plot_calendar(mydata, pollutant = "o3", year = 2003, windflow = TRUE)
 #' \dontrun{
-#' # show wind vectors scaled by wind speed and different colours
-#' calendarPlot(data,
-#'   pollutant = "o3", year = 2003, annotate = "ws",
+#' # show only specific months with selectByDate
+#' plot_calendar(
+#'   selectByDate(mydata, month = c(3, 6, 10), year = 2003),
+#'   pollutant = "o3",
+#'   year = 2003,
+#'   windflow = TRUE,
 #'   cols = "heat"
 #' )
 #'
-#' # show only specific months with selectByDate
-#' calendarPlot(selectByDate(data, month = c(3, 6, 10), year = 2003),
-#'   pollutant = "o3", year = 2003, annotate = "ws", cols = "heat"
-#' )
-#'
 #' # categorical scale example
-#' calendarPlot(data,
-#'   pollutant = "no2", breaks = c(0, 50, 100, 150, 1000),
-#'   labels = c("Very low", "Low", "High", "Very High"),
+#' plot_calendar(
+#'   mydata,
+#'   pollutant = "no2",
+#'   year = 2000,
+#'   discretise = discretise_opts(
+#'     "breaks",
+#'     breaks = c(0, 50, 100, 150, 1000),
+#'     labels = c("Very low", "Low", "High", "Very High")
+#'   ),
 #'   cols = c("lightblue", "green", "yellow", "red"), statistic = "max"
 #' )
 #'
 #' # UK daily air quality index
-#' pm10.breaks <- c(0, 17, 34, 50, 59, 67, 75, 84, 92, 100, 1000)
-#' calendarPlot(data, "pm10",
-#'   year = 1999, breaks = pm10.breaks,
-#'   labels = c(1:10), cols = "daqi", statistic = "mean", key.header = "DAQI"
-#' )
+#' pm10_breaks <- c(0, 17, 34, 50, 59, 67, 75, 84, 92, 100, 1000)
+#' plot_calendar(
+#'   mydata,
+#'   "pm10",
+#'   year = 1999,
+#'   discretise = discretise_opts(
+#'     "breaks",
+#'     breaks = pm10_breaks,
+#'     labels = as.character(1:10)
+#'   ),
+#'   cols = "daqi",
+#'   statistic = "mean"
+#' ) + ggplot2::labs(fill = "DAQI")
 #' }
 plot_calendar <-
   function(
@@ -336,7 +349,7 @@ plot_calendar <-
       ggplot2::labs(
         x = NULL,
         y = NULL,
-        fill = quickText(pollutant)
+        fill = label_openair(pollutant, auto_text = auto_text)
       ) +
       ggplot2::theme_bw() +
       ggplot2::theme(
@@ -344,7 +357,8 @@ plot_calendar <-
         axis.text.y.left = ggplot2::element_blank(),
         axis.ticks.y.left = ggplot2::element_blank(),
         axis.ticks.x.bottom = ggplot2::element_blank(),
-        legend.key.height = ggplot2::unit(1, "null")
+        legend.key.height = ggplot2::unit(1, "null"),
+        legend.title = marquee::element_marquee()
       ) +
       color_theme +
       discrete_scale +
@@ -383,7 +397,7 @@ plot_calendar <-
       plt <-
         plt +
         layer_windflow(
-          aes(ws = ws, wd = wd),
+          ggplot2::aes(ws = .data$ws, wd = .data$wd),
           range = c(0, 0.5),
           show.legend = FALSE
         )

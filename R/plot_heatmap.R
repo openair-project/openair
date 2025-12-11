@@ -1,15 +1,14 @@
 #' Plot air quality trends as a heatmap
 #'
-#' @description
-#' `r lifecycle::badge("experimental")`
+#' @description `r lifecycle::badge("experimental")`
 #'
-#' The [plot_heatmap()] function provides a way of rapidly showing a large
-#' amount of data in a condensed form. In one plot, the variation in the
-#' concentration of one pollutant can to shown as a function of four other
-#' categorical properties. The default version of the plot uses `y = "hour"`
-#' (hour of the day) and `x = "month"` (month of the year), but these can be
-#' changed and `type` can additionally be passed up to two additional options to
-#' create grid of heatmap summaries.
+#'   The [plot_heatmap()] function provides a way of rapidly showing a large
+#'   amount of data in a condensed form. In one plot, the variation in the
+#'   concentration of one pollutant can to shown as a function of four other
+#'   categorical properties. The default version of the plot uses `y = "hour"`
+#'   (hour of the day) and `x = "month"` (month of the year), but these can be
+#'   changed and `type` can additionally be passed up to two additional options
+#'   to create grid of heatmap summaries.
 #'
 #' @param data A data frame.
 #'
@@ -59,6 +58,11 @@
 #'
 #' @param percentile The percentile level used when `statistic = "percentile"`.
 #'   The default is 95%.
+#'
+#' @param facet_opts A list of options to help control how 'facets' (different
+#'   panels accessed through `type`) behave, e.g., whether different panels
+#'   should share the same scales. Use [facet_opts()] as a convenient way to
+#'   provide all necessary options.
 #'
 #' @param plot Should a plot be produced? `FALSE` will instead return the
 #'   plotting data, and can be useful when analysing data to extract plot
@@ -145,10 +149,6 @@ plot_heatmap <- function(
       )
     )
   }
-
-  # label controls
-  xlab <- quickText(x, auto.text = auto_text)
-  ylab <- quickText(y, auto.text = auto_text)
 
   # statistic handling
   stat.name <- statistic
@@ -311,7 +311,10 @@ plot_heatmap <- function(
       )
     )
 
-    discrete_scale <- ggplot2::scale_fill_discrete(drop = FALSE)
+    discrete_scale <- ggplot2::scale_fill_discrete(
+      drop = FALSE,
+      label = label_openair
+    )
   } else {
     color_theme <- ggplot2::theme(
       palette.fill.continuous = openair::openColours(
@@ -338,12 +341,17 @@ plot_heatmap <- function(
     ) +
     ggplot2::coord_cartesian(expand = FALSE) +
     ggplot2::labs(
-      x = quickText(x),
-      y = quickText(y),
-      fill = quickText(pollutant)
+      x = label_openair(x, auto_text = auto_text),
+      y = label_openair(y, auto_text = auto_text),
+      fill = label_openair(pollutant, auto_text = auto_text)
     ) +
     ggplot2::theme_bw() +
     ggplot2::theme(
+      axis.title.x = marquee::element_marquee(),
+      axis.title.y = marquee::element_marquee(),
+      legend.title = marquee::element_marquee(),
+      legend.text = marquee::element_marquee(),
+      strip.text = marquee::element_marquee(),
       strip.background = ggplot2::element_blank()
     ) +
     color_theme +
@@ -363,7 +371,11 @@ plot_heatmap <- function(
   # windflow
   if (windflow) {
     plt <-
-      plt + layer_windflow(aes(ws = ws, wd = wd), show.legend = FALSE)
+      plt +
+      layer_windflow(
+        ggplot2::aes(ws = .data$ws, wd = .data$wd),
+        show.legend = FALSE
+      )
   }
 
   # don't drop scales

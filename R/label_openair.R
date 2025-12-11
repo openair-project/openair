@@ -1,5 +1,77 @@
 #' Automatic text formatting for openair
 #'
+#' @description `r lifecycle::badge("experimental")`
+#'
+#'   This workhorse function automatically applies routing text formatting to
+#'   common words in air quality and meteorological science (for example,
+#'   subscripting the 'x' in NOx). Unlike [quickText()], it is fully vectorised
+#'   and returns a character string.
+#'
+#' @param x A character vector.
+#'
+#' @param style The type of formatting to use. Currently limited to `"marquee"`
+#'   for use with, e.g., [marquee::marquee_grob()].
+#'
+#' @param auto_text Perform the formatting of the data? Used internally by
+#'   `openair` functions to turn on and off label formatting.
+#'
+#' @author Jack Davison
+#'
+#' @export
+label_openair <- function(x, style = "marquee", auto_text = TRUE) {
+  if (!auto_text) {
+    return(x)
+  }
+  style <- rlang::arg_match(style)
+
+  fmt <- function(x, str, out) {
+    for (i in str) {
+      x <- stringr::str_replace_all(
+        x,
+        pattern = paste0("\\b", i, "\\b"),
+        replacement = out
+      )
+    }
+    x
+  }
+
+  x |>
+    fmt(c("no2", "NO2"), "NO{.sub 2}") |>
+    fmt(c("nox", "NOX", "NOx"), "NO{.sub x}") |>
+    fmt(c("nh3", "NH3"), "NH{.sub 3}") |>
+    fmt(c("co"), "CO") |>
+    fmt(c("nmhc"), "NMHC") |>
+    fmt(c("ws", "WS"), "wind spd.") |>
+    fmt(c("wd", "WD"), "wind dir.") |>
+    fmt(c("air_temp"), "temperature") |>
+    fmt(c("rh"), "relative humidity") |>
+    fmt(c("pm10", "PM10"), "PM{.sub 10}") |>
+    fmt(c("pm1", "PM1"), "PM{.sub 1}") |>
+    fmt(c("pm4", "PM4"), "PM{.sub 4}") |>
+    fmt(c("pm25", "PM25", "pm2.5", "PM2.5"), "PM{.sub 2.5}") |>
+    fmt(c("pmt", "PMt"), "PM{.sub total}") |>
+    fmt(c("pmc", "PMc", "PMcoarse", "pmcoarse"), "PM{.sub coarse}") |>
+    fmt(c("pmf", "PMf", "PMfine", "pmfine"), "PM{.sub fine}") |>
+    fmt(c("o3", "O3", "ozone"), "O{.sub 3}") |>
+    fmt(c("co2", "CO2"), "CO{.sub 2}") |>
+    fmt(c("so2", "SO2"), "SO{.sub 2}") |>
+    fmt(c("h2s", "H2S"), "H{.sub 2}S") |>
+    fmt(c("ch4", "CH4"), "CH{.sub 4}") |>
+    fmt(c("dgrC", "degreeC", "deg. C", "degreesC"), "{.sup o}C") |>
+    fmt(c("Delta", "delta"), "\\u0394") |>
+    fmt(c("ug/m3", "ug.m-3", "ug m-3", "ugm-3"), "\\u03bcg m{.sup -3}") |>
+    fmt(c("mg/m3", "mg.m-3", "mg m-3", "mgm-3"), "mg m{.sup -3}") |>
+    fmt(c("ng/m3", "ng.m-3", "ng m-3", "ngm-3"), "ng m{.sup -3}") |>
+    fmt(c("m/s2", "m.s-2", "m s-2"), "m s{.sup -2}") |>
+    fmt(c("m/s", "m.s-1", "m s-1"), "m s{.sup -1}") |>
+    fmt(c("km2"), "km{.sup 2}") |>
+    fmt(c("g/km", "g.km-1", "g km-1"), "g km{.sup -1}") |>
+    fmt(c("g/s", "g.s-1", "g s-1"), "g s{.sup -1}") |>
+    fmt(c("r2", "R2"), "R{.sup 2}")
+}
+
+#' Automatic text formatting for openair
+#'
 #' Workhorse function that automatically applies routine text formatting to
 #' common expressions and data names used in openair.
 #'
@@ -19,7 +91,6 @@
 #' @author Karl Ropkins.
 #' @examples
 #'
-#'
 #' # example 1
 #' ## see axis formatting in an openair plot, e.g.:
 #' scatterPlot(mydata, x = "no2", y = "pm10")
@@ -30,7 +101,6 @@
 #'   xlab = quickText("my no2 label"),
 #'   ylab = quickText("pm10 [ ug.m-3 ]")
 #' )
-#'
 quickText <- function(text, auto.text = TRUE) {
   ## the lookup table version
 

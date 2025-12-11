@@ -31,6 +31,11 @@ plot_trend_smooth(
 
 \item{pollutant}{The name of the pollutant to summarise.}
 
+\item{group}{The name of the data series to use as a grouping variable within
+each panel, passed to \code{\link[=cutData]{cutData()}}. The grouping variable is mapped to a
+colour, and so cannot be used if the colour channel is already in use
+(e.g., if multiple \code{pollutants} have been specified).}
+
 \item{type}{\code{type} determines how the data are split i.e. conditioned, and
 then plotted. The default is will produce a single plot using the entire
 data. Type can be one of the built-in types as detailed in \code{\link[=cutData]{cutData()}},
@@ -102,6 +107,11 @@ strings? \code{TRUE} will automatically, for example, subscript the 'x' in NOx
 in axis labels. \code{FALSE} will leave text unchanged, but users may refine it
 with, e.g., \code{\link[ggplot2:labs]{ggplot2::labs()}} or \code{\link[ggplot2:guides]{ggplot2::guides()}}.}
 
+\item{facet_opts}{A list of options to help control how 'facets' (different
+panels accessed through \code{type}) behave, e.g., whether different panels
+should share the same scales. Use \code{\link[=facet_opts]{facet_opts()}} as a convenient way to
+provide all necessary options.}
+
 \item{plot}{Should a plot be produced? \code{FALSE} will instead return the
 plotting data, and can be useful when analysing data to extract plot
 components and plotting them in other ways.}
@@ -114,11 +124,11 @@ an \link[=openair-package]{openair} object
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-The \code{\link[=plot_trend_smooth]{plot_trend_smooth()}} function provides a flexible way of estimating the
-trend in the concentration of a pollutant or other variable. Monthly mean
-values are calculated from an hourly (or higher resolution) or daily time
-series. There is the option to deseasonalise the data if there is evidence of
-a seasonal cycle.
+The \code{\link[=plot_trend_smooth]{plot_trend_smooth()}} function provides a flexible way of estimating
+the trend in the concentration of a pollutant or other variable. Monthly
+mean values are calculated from an hourly (or higher resolution) or daily
+time series. There is the option to deseasonalise the data if there is
+evidence of a seasonal cycle.
 }
 \examples{
 # trend plot for nox

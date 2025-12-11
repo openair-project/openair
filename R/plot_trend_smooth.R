@@ -1,16 +1,20 @@
 #' Plot air quality trends with a non-parametric smooth curve
 #'
-#' @description
-#' `r lifecycle::badge("experimental")`
+#' @description `r lifecycle::badge("experimental")`
 #'
-#' The [plot_trend_smooth()] function provides a flexible way of estimating the
-#' trend in the concentration of a pollutant or other variable. Monthly mean
-#' values are calculated from an hourly (or higher resolution) or daily time
-#' series. There is the option to deseasonalise the data if there is evidence of
-#' a seasonal cycle.
+#'   The [plot_trend_smooth()] function provides a flexible way of estimating
+#'   the trend in the concentration of a pollutant or other variable. Monthly
+#'   mean values are calculated from an hourly (or higher resolution) or daily
+#'   time series. There is the option to deseasonalise the data if there is
+#'   evidence of a seasonal cycle.
 #'
 #' @inheritParams plot_heatmap
 #' @inheritParams timeAverage
+#'
+#' @param group The name of the data series to use as a grouping variable within
+#'   each panel, passed to [cutData()]. The grouping variable is mapped to a
+#'   colour, and so cannot be used if the colour channel is already in use
+#'   (e.g., if multiple `pollutants` have been specified).
 #'
 #' @param smooth_method,smooth_formula,smooth_se,smooth_level Options to control
 #'   various parameters for the smooth trend function. Passed to the
@@ -186,7 +190,10 @@ plot_trend_smooth <- function(
       level = smooth_level
     ) +
     ggplot2::labs(
-      y = quickText(paste(pollutant, collapse = ", "), auto.text = auto_text),
+      y = label_openair(
+        paste(pollutant, collapse = ", "),
+        auto_text = auto_text
+      ),
       x = NULL,
       fill = NULL,
       color = NULL
@@ -194,6 +201,8 @@ plot_trend_smooth <- function(
     ggplot2::theme_bw() +
     ggplot2::theme(
       strip.background = ggplot2::element_blank(),
+      strip.text = marquee::element_marquee(),
+      axis.title.y = marquee::element_marquee(),
       palette.fill.discrete = c(
         openair::openColours(
           scheme = cols,
@@ -224,7 +233,11 @@ plot_trend_smooth <- function(
   # add windflow if requested
   if (windflow) {
     plt <- plt +
-      layer_windflow(aes(ws = .data$ws, wd = .data$wd, color = .data$variable))
+      layer_windflow(ggplot2::aes(
+        ws = .data$ws,
+        wd = .data$wd,
+        color = .data$variable
+      ))
   }
 
   # return

@@ -35,6 +35,7 @@ Imports:
     lifecycle,
     lubridate,
     mapproj,
+    marquee,
     MASS,
     methods,
     mgcv,
@@ -44,6 +45,7 @@ Imports:
     rlang,
     scales,
     stats,
+    stringr,
     tibble,
     tidyr,
     utils

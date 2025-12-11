@@ -4,6 +4,7 @@ facet_wd <- function(
   facets,
   scales = "fixed",
   strip.position = "top",
+  labeller = "label_value",
   axes = "margin",
   axis.labels = "all",
   resolution = c("low", "medium", "high")
@@ -20,7 +21,7 @@ facet_wd <- function(
     params = list(
       facets = rlang::quos_auto_name(facets),
       strip.position = strip.position,
-      labeller = "label_value",
+      labeller = labeller,
       free = free,
       axes = axes,
       drop = FALSE,

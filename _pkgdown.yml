@@ -68,6 +68,7 @@ reference:
   contents:
   - facet_opts
   - discretise_opts
+  - label_openair
 - subtitle: Legacy API
   contents:
   - drawOpenKey

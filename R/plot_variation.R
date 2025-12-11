@@ -160,11 +160,17 @@ plot_variation <- function(
     ggplot2::labs(
       color = NULL,
       fill = NULL,
-      x = quickText(x, auto.text = auto_text),
-      y = quickText(paste(pollutant, collapse = ", "), auto.text = auto_text)
+      x = label_openair(x, auto_text = auto_text),
+      y = label_openair(
+        paste(pollutant, collapse = ", "),
+        auto_text = auto_text
+      )
     ) +
     ggplot2::theme_bw() +
     ggplot2::theme(
+      axis.title.x = marquee::element_marquee(),
+      axis.title.y = marquee::element_marquee(),
+      legend.text = marquee::element_marquee(),
       strip.background = ggplot2::element_blank(),
       palette.fill.discrete = c(
         openair::openColours(
@@ -180,6 +186,10 @@ plot_variation <- function(
         ),
         "black"
       )
+    ) +
+    ggplot2::scale_color_discrete(
+      label = label_openair,
+      aesthetics = c("color", "fill")
     )
 
   # add geoms depending on the data type
@@ -230,7 +240,11 @@ plot_variation <- function(
   # if windflow, need to add it
   if (windflow) {
     plt <- plt +
-      layer_windflow(ggplot2::aes(ws = ws, wd = wd, group = .data[[group]]))
+      layer_windflow(ggplot2::aes(
+        ws = .data$ws,
+        wd = .data$wd,
+        group = .data[[group]]
+      ))
   }
 
   if (plot) {
@@ -558,7 +572,7 @@ timeVariation <- function(
 
   # month.last deprecation
   if ("month.last" %in% names(extra.args)) {
-    if (isTrue(extra.args$month.last)) {
+    if (isTRUE(extra.args$month.last)) {
       cli::cli_warn(c(
         "!" = "{.arg month.last} has been deprecated. Please use the {.arg panels} argument for flexible control over panels.",
         "i" = "Setting {.arg panels} to {.code c('hour.weekday', 'hour', 'weekday', 'month')}."
