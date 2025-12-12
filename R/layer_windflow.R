@@ -11,7 +11,7 @@ layer_windflow <- function(
     type = "closed"
   ),
   limits = c(NA, NA),
-  range = c(0, 1),
+  range = c(0.1, 1),
   na.rm = FALSE,
   show.legend = FALSE,
   inherit.aes = TRUE
@@ -35,6 +35,7 @@ layer_windflow <- function(
       guide = ggplot2::guide_none(),
       "ws",
       limits = limits,
+      oob = scales::oob_squish,
       palette = scales::pal_area(range = range)
     )
   )

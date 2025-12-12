@@ -60,7 +60,9 @@ on).}
 
 \item{windflow}{If \code{TRUE}, arrows showing the average magnitude and direction
 of wind within each bin will be shown. Note that this requires the columns
-\code{"ws"} and \code{"wd"} to be present in \code{data}.}
+\code{"ws"} and \code{"wd"} to be present in \code{data}. Alternatively, \code{\link[=windflow_opts]{windflow_opts()}}
+allows for greater customisation of the arrows (e.g., wind speed ranges,
+relative size of arrows, arrow appearance).}
 
 \item{limits}{The limits of the colour scale, in the form \code{c(min, max)}. An
 \code{NA} uses the relevant limit of the input data. Not applied if the data is
@@ -125,6 +127,7 @@ The legacy \code{\link[=trendLevel]{trendLevel()}} function
 Other ggplot2 time series and trend functions: 
 \code{\link{plot_calendar}()},
 \code{\link{plot_trend_bars}()},
+\code{\link{plot_trend_lines}()},
 \code{\link{plot_trend_smooth}()},
 \code{\link{plot_trend_theilsen}()}
 }

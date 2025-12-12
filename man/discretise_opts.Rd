@@ -43,7 +43,8 @@ scale.
 }
 \seealso{
 Other ggplot2 plot utilities: 
-\code{\link{facet_opts}()}
+\code{\link{facet_opts}()},
+\code{\link{windflow_opts}()}
 }
 \author{
 Jack Davison

@@ -110,7 +110,7 @@ plot_calendar <-
     month = NULL,
     discretise = NULL,
     windflow = FALSE,
-    cols = "heat",
+    cols = "viridis",
     limits = NULL,
     show_year = TRUE,
     w_shift = 0,
@@ -120,6 +120,10 @@ plot_calendar <-
     plot = TRUE,
     ...
   ) {
+    if (rlang::is_logical(windflow)) {
+      windflow <- windflow_opts(windflow = windflow, range = c(0, 0.5))
+    }
+
     # check w.shift
     if (w_shift < 0 || w_shift > 6) {
       cli::cli_abort("{.field w_shift} should be between {0} and {6}.")
@@ -131,7 +135,7 @@ plot_calendar <-
       year = year,
       month = month,
       pollutant = pollutant,
-      annotate = ifelse(windflow, "ws", "date")
+      annotate = ifelse(windflow$windflow, "ws", "date")
     )
 
     # all the days in the period - to be bound later
@@ -247,7 +251,7 @@ plot_calendar <-
       dplyr::mutate(value = .data$conc.mat)
 
     # handle windflow
-    if (windflow) {
+    if (windflow$windflow) {
       wd <- original_data |>
         dplyr::mutate(wd = .data$wd * 2 * pi / 360) |>
         mapType(
@@ -336,7 +340,7 @@ plot_calendar <-
         colour = "grey25",
         ggplot2::aes(label = .data$date.mat),
         show.legend = FALSE,
-        size = ifelse(windflow, 0, 2.5)
+        size = ifelse(windflow$windflow, 0, 2.5)
       ) +
       ggplot2::geom_text(
         data = ~ dplyr::filter(.x, is.na(.data$date)),
@@ -351,14 +355,12 @@ plot_calendar <-
         y = NULL,
         fill = label_openair(pollutant, auto_text = auto_text)
       ) +
-      ggplot2::theme_bw() +
+      theme_oa_modern() +
       ggplot2::theme(
-        strip.background = ggplot2::element_blank(),
         axis.text.y.left = ggplot2::element_blank(),
         axis.ticks.y.left = ggplot2::element_blank(),
         axis.ticks.x.bottom = ggplot2::element_blank(),
-        legend.key.height = ggplot2::unit(1, "null"),
-        legend.title = marquee::element_marquee()
+        legend.key.height = ggplot2::unit(1, "null")
       ) +
       color_theme +
       discrete_scale +
@@ -393,12 +395,14 @@ plot_calendar <-
     }
 
     # windflow
-    if (windflow) {
+    if (windflow$windflow) {
       plt <-
         plt +
         layer_windflow(
           ggplot2::aes(ws = .data$ws, wd = .data$wd),
-          range = c(0, 0.5),
+          range = windflow$windflow,
+          arrow = windflow$arrow,
+          limits = windflow$windflow,
           show.legend = FALSE
         )
     }

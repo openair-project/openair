@@ -46,7 +46,9 @@
 #'
 #' @param windflow If `TRUE`, arrows showing the average magnitude and direction
 #'   of wind within each bin will be shown. Note that this requires the columns
-#'   `"ws"` and `"wd"` to be present in `data`.
+#'   `"ws"` and `"wd"` to be present in `data`. Alternatively, [windflow_opts()]
+#'   allows for greater customisation of the arrows (e.g., wind speed ranges,
+#'   relative size of arrows, arrow appearance).
 #'
 #' @param statistic The statistic to apply when aggregating the data; default is
 #'   the mean. Can be one of `"mean"`, `"max"`, `"min"`, `"median"`,
@@ -129,6 +131,10 @@ plot_heatmap <- function(
 ) {
   # ensure statistic is valid
   statistic <- rlang::arg_match(statistic)
+
+  if (rlang::is_logical(windflow)) {
+    windflow <- windflow_opts(windflow = windflow)
+  }
 
   # check length of x
   if (length(x) > 1 || length(y) > 1 || length(type) > 2) {
@@ -228,7 +234,7 @@ plot_heatmap <- function(
   if ("date" %in% names(data)) {
     temp <- c(temp, "date")
   }
-  if (windflow) {
+  if (windflow$windflow) {
     temp <- c(temp, "ws", "wd")
   }
 
@@ -245,7 +251,7 @@ plot_heatmap <- function(
 
   # select only pollutant and axis/facet columns
   to_keep <- c(pollutant, x, y, type)
-  if (windflow) {
+  if (windflow$windflow) {
     to_keep <- c(to_keep, "ws", "wd")
   }
   newdata <- dplyr::select(newdata, dplyr::any_of(to_keep))
@@ -270,7 +276,7 @@ plot_heatmap <- function(
     dplyr::tibble()
 
   # if want windflow, add this to the data
-  if (windflow) {
+  if (windflow$windflow) {
     winddata <-
       newdata |>
       dplyr::mutate(
@@ -345,15 +351,7 @@ plot_heatmap <- function(
       y = label_openair(y, auto_text = auto_text),
       fill = label_openair(pollutant, auto_text = auto_text)
     ) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(
-      axis.title.x = marquee::element_marquee(),
-      axis.title.y = marquee::element_marquee(),
-      legend.title = marquee::element_marquee(),
-      legend.text = marquee::element_marquee(),
-      strip.text = marquee::element_marquee(),
-      strip.background = ggplot2::element_blank()
-    ) +
+    theme_oa_classic() +
     color_theme +
     discrete_scale +
     facet_fun
@@ -369,11 +367,14 @@ plot_heatmap <- function(
   }
 
   # windflow
-  if (windflow) {
+  if (windflow$windflow) {
     plt <-
       plt +
       layer_windflow(
         ggplot2::aes(ws = .data$ws, wd = .data$wd),
+        limits = windflow$limits,
+        arrow = windflow$arrow,
+        range = windflow$range,
         show.legend = FALSE
       )
   }

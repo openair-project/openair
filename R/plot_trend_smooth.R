@@ -102,6 +102,10 @@ plot_trend_smooth <- function(
 ) {
   type <- type %||% "default"
 
+  if (rlang::is_logical(windflow)) {
+    windflow <- windflow_opts(windflow = windflow)
+  }
+
   # can't have multiple pollutants and a grouping variable
   if (length(pollutant) > 1 && !is.null(group)) {
     group <- NULL
@@ -111,10 +115,10 @@ plot_trend_smooth <- function(
     group <- NULL
   }
   # can't deseason and windflow simultaneously
-  if (deseason && windflow) {
-    windflow <- FALSE
+  if (deseason && windflow$windflow) {
+    windflow$windflow <- FALSE
     cli::cli_warn(
-      "{.fun openair::plot_trend_smooth} does not support {.arg windflow} and {.arg deseason} simultaneously; setting {.arg windflow} to {FALSE}."
+      "{.fun openair::plot_trend_smooth} does not support {.arg windflow} and {.arg deseason} simultaneously."
     )
   }
 
@@ -151,7 +155,7 @@ plot_trend_smooth <- function(
       percentile = percentile,
       data.thresh = data.thresh,
       interval = interval,
-      windflow = windflow,
+      windflow = windflow$windflow,
       progress = FALSE,
       ...
     )
@@ -198,11 +202,8 @@ plot_trend_smooth <- function(
       fill = NULL,
       color = NULL
     ) +
-    ggplot2::theme_bw() +
+    theme_oa_classic() +
     ggplot2::theme(
-      strip.background = ggplot2::element_blank(),
-      strip.text = marquee::element_marquee(),
-      axis.title.y = marquee::element_marquee(),
       palette.fill.discrete = c(
         openair::openColours(
           scheme = cols,
@@ -231,13 +232,18 @@ plot_trend_smooth <- function(
   }
 
   # add windflow if requested
-  if (windflow) {
+  if (windflow$windflow) {
     plt <- plt +
-      layer_windflow(ggplot2::aes(
-        ws = .data$ws,
-        wd = .data$wd,
-        color = .data$variable
-      ))
+      layer_windflow(
+        ggplot2::aes(
+          ws = .data$ws,
+          wd = .data$wd,
+          color = .data$variable
+        ),
+        arrow = windflow$arrow,
+        limits = windflow$limits,
+        range = windflow$range
+      )
   }
 
   # return

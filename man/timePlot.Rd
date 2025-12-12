@@ -297,6 +297,8 @@ timePlot(mydata, pollutant = "o3", avg.time = "day", data.thresh = 75)
 
 }
 \seealso{
+the newer \code{\link[=plot_trend_lines]{plot_trend_lines()}} function
+
 Other time series and trend functions: 
 \code{\link{TheilSen}()},
 \code{\link{calendarPlot}()},

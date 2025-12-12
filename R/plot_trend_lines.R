@@ -1,3 +1,195 @@
+#' Plot air quality trends using a tradition line chart
+#'
+#' @description `r lifecycle::badge("experimental")`
+#'
+#'   The [plot_trend_lines()] function simply plots a traditional line chart of
+#'   air pollution data. Some additional functionality is also included, such as
+#'   self-contained time-averaging and the addition of 'windflow' wind arrows.
+#'
+#' @inheritParams plot_trend_smooth
+#' @inheritParams timeAverage
+#'
+#' @param date_pad Should missing data be padded-out? This is useful where a
+#'   data frame consists of two or more "chunks" of data with time gaps between
+#'   them. By setting `date.pad = TRUE` the time gaps between the chunks are
+#'   shown properly, rather than with a line connecting each chunk. For
+#'   irregular data, set to `FALSE`. Note, this should not be set for `type`
+#'   other than `default`.
+#'
+#' @export
+#' @return an [openair][openair-package] object
+#'
+#' @author Jack Davison
+#' @author David Carslaw
+#'
+#' @family ggplot2 time series and trend functions
+#' @seealso the legacy [smoothTrend()] function
+#'
+#' @examples
+#' # trend plot for nox
+#' plot_trend_smooth(mydata, pollutant = "nox")
+#'
+#' # trend plot by each of 8 wind sectors
+#' \dontrun{
+#' plot_trend_smooth(mydata, pollutant = "o3", type = "wd")
+#'
+#' # several pollutants
+#' plot_trend_smooth(mydata, pollutant = c("no2", "o3", "pm10", "pm25"))
+#'
+#' # percentiles
+#' plot_trend_smooth(
+#'   mydata,
+#'   pollutant = "o3",
+#'   statistic = "percentile",
+#'   percentile = 95
+#' )
+#' }
+plot_trend_lines <- function(
+  data,
+  pollutant,
+  group = NULL,
+  type = NULL,
+  avg.time = "default",
+  data.thresh = 0,
+  statistic = "mean",
+  percentile = NA,
+  date_pad = FALSE,
+  windflow = FALSE,
+  cols = "tol",
+  auto_text = TRUE,
+  facet_opts = openair::facet_opts(),
+  plot = TRUE,
+  ...
+) {
+  type <- type %||% "default"
+
+  if (rlang::is_logical(windflow)) {
+    windflow <- windflow_opts(windflow = windflow)
+  }
+
+  # warning messages and other checks
+  if (length(percentile) > 1 && length(pollutant) > 1) {
+    cli::cli_abort(
+      "Only one {.field pollutant} allowed when considering more than one {.field percentile}."
+    )
+  }
+
+  # check & cut data
+  data <- prepare_timeplot_data(
+    mydata = data,
+    pollutant = pollutant,
+    type = c(type, group),
+    avg.time = avg.time,
+    date.pad = date_pad,
+    windflow = windflow$windflow,
+    ...
+  )
+
+  # time average & reshape data
+  data <- time_average_timeplot_data(
+    mydata = data,
+    pollutant = pollutant,
+    type = c(type, group),
+    statistic = statistic,
+    avg.time = avg.time,
+    data.thresh = data.thresh,
+    percentile = percentile,
+    windflow = if (windflow$windflow) {
+      TRUE
+    } else {
+      NULL
+    }
+  )
+  pollutant <- data$pollutant
+  plotdata <- data$data
+
+  # get facet approach
+  facet_fun <- get_facet_fun(type, facet_opts)
+
+  # if group is null, we use the 'variable' column
+  if (is.null(group)) {
+    group <- "variable"
+  }
+
+  plotdata <-
+    dplyr::mutate(
+      dplyr::ungroup(plotdata),
+      dplyr::across(
+        dplyr::where(is.factor),
+        \(x) factor(x, ordered = FALSE)
+      )
+    )
+
+  # construct plot
+  plt <-
+    ggplot2::ggplot(
+      plotdata,
+      ggplot2::aes(x = .data$date, y = .data$value)
+    ) +
+    ggplot2::geom_line(ggplot2::aes(
+      color = label_openair(.data[[group]], auto_text = auto_text)
+    )) +
+    theme_oa_classic() +
+    ggplot2::theme(
+      palette.fill.discrete = c(
+        openair::openColours(
+          scheme = cols,
+          n = dplyr::n_distinct(plotdata[[group]])
+        ),
+        "black"
+      ),
+      palette.colour.discrete = c(
+        openair::openColours(
+          scheme = cols,
+          n = dplyr::n_distinct(plotdata[[group]])
+        ),
+        "black"
+      )
+    ) +
+    ggplot2::labs(
+      y = label_openair(
+        paste(pollutant, collapse = ", "),
+        auto_text = auto_text
+      ),
+      x = NULL,
+      color = NULL
+    ) +
+    facet_fun
+
+  # remove legend if only one item
+  if (dplyr::n_distinct(levels(plotdata[[group]])) == 1) {
+    plt <-
+      plt +
+      ggplot2::guides(
+        fill = ggplot2::guide_none(),
+        color = ggplot2::guide_none()
+      )
+  }
+
+  # add windflow if requested
+  if (windflow$windflow) {
+    plt <- plt +
+      layer_windflow(
+        ggplot2::aes(
+          ws = .data$ws,
+          wd = .data$wd,
+          color = label_openair(.data[[group]], auto_text = auto_text)
+        ),
+        arrow = windflow$arrow,
+        limits = windflow$limits,
+        range = windflow$range
+      )
+  }
+
+  # return
+  if (plot) {
+    return(plt)
+  } else {
+    return(plotdata)
+  }
+}
+
+
 #' Plot time series, perhaps for multiple pollutants, grouped or in separate
 #' panels.
 #'
@@ -160,6 +352,7 @@
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
 #' @family time series and trend functions
+#' @seealso the newer [plot_trend_lines()] function
 #' @examples
 #'
 #' # basic use, single pollutant
@@ -789,7 +982,7 @@ time_average_timeplot_data <- function(
   }
 
   # timeAverage drops type if default
-  if (type == "default") {
+  if (any(type == "default")) {
     mydata$default <- "default"
   }
 

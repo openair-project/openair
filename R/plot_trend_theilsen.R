@@ -303,14 +303,7 @@ plot_trend_theilsen <- function(
       ggplot2::aes(y = .data$conc, x = .data$date, color = "Data"),
       shape = 1
     ) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(
-      strip.background = ggplot2::element_rect(fill = NA, color = NA),
-      strip.text = marquee::element_marquee(),
-      strip.text.x = marquee::element_marquee(),
-      strip.text.y = marquee::element_marquee(),
-      axis.title.y = marquee::element_marquee()
-    ) +
+    theme_oa_classic() +
     ggplot2::geom_abline(
       data = res2,
       ggplot2::aes(slope = .data$b, intercept = .data$a, color = "TheilSen"),

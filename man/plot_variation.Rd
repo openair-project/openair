@@ -51,7 +51,9 @@ use sensible defaults (\code{0.95} for \code{"mean"}, \code{0.75} for \code{"med
 
 \item{windflow}{If \code{TRUE}, arrows showing the average magnitude and direction
 of wind within each bin will be shown. Note that this requires the columns
-\code{"ws"} and \code{"wd"} to be present in \code{data}.}
+\code{"ws"} and \code{"wd"} to be present in \code{data}. Alternatively, \code{\link[=windflow_opts]{windflow_opts()}}
+allows for greater customisation of the arrows (e.g., wind speed ranges,
+relative size of arrows, arrow appearance).}
 
 \item{cols}{The colour palette to use. See \code{\link[=openColours]{openColours()}}.}
 

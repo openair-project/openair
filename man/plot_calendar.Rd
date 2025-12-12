@@ -14,7 +14,7 @@ plot_calendar(
   month = NULL,
   discretise = NULL,
   windflow = FALSE,
-  cols = "heat",
+  cols = "viridis",
   limits = NULL,
   show_year = TRUE,
   w_shift = 0,
@@ -60,7 +60,9 @@ on).}
 
 \item{windflow}{If \code{TRUE}, arrows showing the average magnitude and direction
 of wind within each bin will be shown. Note that this requires the columns
-\code{"ws"} and \code{"wd"} to be present in \code{data}.}
+\code{"ws"} and \code{"wd"} to be present in \code{data}. Alternatively, \code{\link[=windflow_opts]{windflow_opts()}}
+allows for greater customisation of the arrows (e.g., wind speed ranges,
+relative size of arrows, arrow appearance).}
 
 \item{cols}{The colour palette to use. See \code{\link[=openColours]{openColours()}}.}
 
@@ -166,6 +168,7 @@ The legacy \code{\link[=calendarPlot]{calendarPlot()}} function
 Other ggplot2 time series and trend functions: 
 \code{\link{plot_heatmap}()},
 \code{\link{plot_trend_bars}()},
+\code{\link{plot_trend_lines}()},
 \code{\link{plot_trend_smooth}()},
 \code{\link{plot_trend_theilsen}()}
 }

@@ -166,12 +166,8 @@ plot_variation <- function(
         auto_text = auto_text
       )
     ) +
-    ggplot2::theme_bw() +
+    theme_oa_classic() +
     ggplot2::theme(
-      axis.title.x = marquee::element_marquee(),
-      axis.title.y = marquee::element_marquee(),
-      legend.text = marquee::element_marquee(),
-      strip.background = ggplot2::element_blank(),
       palette.fill.discrete = c(
         openair::openColours(
           scheme = cols,

@@ -147,11 +147,8 @@ plot_trend_bars <- function(
       na.rm = TRUE,
       show.legend = TRUE
     ) +
-    ggplot2::theme_bw() +
+    theme_oa_classic() +
     ggplot2::theme(
-      strip.background = ggplot2::element_blank(),
-      axis.title.y = marquee::element_marquee(),
-      legend.text = marquee::element_marquee(),
       palette.fill.discrete = c(
         openair::openColours(
           scheme = cols,
