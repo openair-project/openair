@@ -66,8 +66,7 @@ reference:
   desc: Tools for refining openair plots.
 - subtitle: New API
   contents:
-  - facet_opts
-  - discretise_opts
+  - has_concept("ggplot2 plot utilities")
   - label_openair
 - subtitle: Legacy API
   contents:

@@ -1,32 +1,34 @@
 #' Plot an air quality timeseries chart with Theil-Sen slope estimates
 #'
-#' The [plot_trend_theilsen()] function provides a collection of functions to
-#' analyse trends in air pollution data. It is flexible in the sense that it can
-#' be applied to data in many ways, e.g., by day of the week, hour of day and
-#' wind direction. This flexibility makes it much easier to draw inferences from
-#' data e.g. why is there a strong downward trend in concentration from one wind
-#' sector and not another, or why trends on one day of the week or a certain
-#' time of day are unexpected.
+#' @description `r lifecycle::badge("experimental")`
 #'
-#' For data that are strongly seasonal, perhaps from a background site, or a
-#' pollutant such as ozone, it will be important to deseasonalise the data
-#' (using the option `deseason = TRUE`. Similarly, for data that increase, then
-#' decrease, or show sharp changes it may be better to use
-#' [plot_trend_smooth()].
+#'   The [plot_trend_theilsen()] function provides a collection of functions to
+#'   analyse trends in air pollution data. It is flexible in the sense that it
+#'   can be applied to data in many ways, e.g., by day of the week, hour of day
+#'   and wind direction. This flexibility makes it much easier to draw
+#'   inferences from data e.g. why is there a strong downward trend in
+#'   concentration from one wind sector and not another, or why trends on one
+#'   day of the week or a certain time of day are unexpected.
 #'
-#' A minimum of 6 points are required for trend estimates to be made.
+#'   For data that are strongly seasonal, perhaps from a background site, or a
+#'   pollutant such as ozone, it will be important to deseasonalise the data
+#'   (using the option `deseason = TRUE`. Similarly, for data that increase,
+#'   then decrease, or show sharp changes it may be better to use
+#'   [plot_trend_smooth()].
 #'
-#' Note that the symbols shown next to each trend estimate relate to how
-#' statistically significant the trend estimate is: p $<$ 0.001 =
+#'   A minimum of 6 points are required for trend estimates to be made.
+#'
+#'   Note that the symbols shown next to each trend estimate relate to how
+#'   statistically significant the trend estimate is: p $<$ 0.001 =
 #' ***, p $<$ 0.01 = **, p $<$ 0.05 = * and p $<$ 0.1 = $+$.
 #'
-#' Some of the code used in [TheilSen()] is based on that from Rand Wilcox. This
-#' mostly relates to the Theil-Sen slope estimates and uncertainties. Further
-#' modifications have been made to take account of correlated data based on
-#' Kunsch (1989). The basic function has been adapted to take account of
-#' auto-correlated data using block bootstrap simulations if `autocor = TRUE`
-#' (Kunsch, 1989). We follow the suggestion of Kunsch (1989) of setting the
-#' block length to n(1/3) where n is the length of the time series.
+#'   Some of the code used in [TheilSen()] is based on that from Rand Wilcox.
+#'   This mostly relates to the Theil-Sen slope estimates and uncertainties.
+#'   Further modifications have been made to take account of correlated data
+#'   based on Kunsch (1989). The basic function has been adapted to take account
+#'   of auto-correlated data using block bootstrap simulations if `autocor =
+#'   TRUE` (Kunsch, 1989). We follow the suggestion of Kunsch (1989) of setting
+#'   the block length to n(1/3) where n is the length of the time series.
 #'
 #' @inheritParams plot_heatmap
 #' @inheritParams timeAverage

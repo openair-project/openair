@@ -78,7 +78,7 @@ or similar extension functions depending on the value the user has passed to
 }
 \seealso{
 Other ggplot2 plot utilities: 
-\code{\link{discretise_opts}()},
+\code{\link{discretise_breaks}()},
 \code{\link{windflow_opts}()}
 }
 \author{

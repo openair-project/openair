@@ -54,7 +54,7 @@ use the \code{month} option where month is a numeric 1:12 e.g. \code{month = c(1
 
 \item{discretise}{Options to discretise the continuous scale into discrete
 bins. Providing an integer will split the scale into that number of
-quantiles. Alternatively, \code{\link[=discretise_opts]{discretise_opts()}} allows for extensive
+quantiles. Alternatively, \code{\link[=discretise_breaks]{discretise_breaks()}} allows for extensive
 customisation (e.g., defining specific bin widths, breaks, labels, and so
 on).}
 
