@@ -36,12 +36,13 @@ discretise_breaks <- function(
 discretise_interval <- function(
   n = NULL,
   length = NULL,
-  ...
+  labels = NULL
 ) {
   list(
     method = "interval",
     n = n,
     length = length,
+    labels = labels,
     ...
   )
 }
@@ -51,12 +52,12 @@ discretise_interval <- function(
 #' @export
 discretise_number <- function(
   n = NULL,
-  ...
+  labels = NULL
 ) {
   list(
     method = "number",
     n = n,
-    ...
+    labels = labels
   )
 }
 
@@ -67,16 +68,16 @@ discretise_width <- function(
   width = NULL,
   center = NULL,
   boundary = NULL,
-  closed = "right",
-  ...
+  labels = NULL,
+  closed = "right"
 ) {
   list(
     method = "width",
     width = width,
     center = center,
     boundary = boundary,
-    closed = closed,
-    ...
+    labels = labels,
+    closed = closed
   )
 }
 
@@ -110,5 +111,11 @@ cut_discrete_values <- function(x, opts) {
   } else {
     x <- cut(x, breaks = opts$breaks, labels = opts$labels)
   }
+
+  if (is.null(opts$labels)) {
+    levels(x) <- gsub("\\(|\\]|\\[|\\)", "", levels(x))
+    levels(x) <- gsub(",", " to ", levels(x))
+  }
+
   x
 }

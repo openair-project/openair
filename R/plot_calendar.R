@@ -1,18 +1,17 @@
 #' Plot air quality trends in a conventional 'calendar' format
 #'
-#' @description
-#' `r lifecycle::badge("experimental")`
+#' @description `r lifecycle::badge("experimental")`
 #'
-#' This function will plot data by month laid out in a conventional calendar
-#' format. The main purpose is to help rapidly visualise potentially complex
-#' data in a familiar way. Users can also choose to show daily mean wind vectors
-#' if wind speed and direction are available.
+#'   This function will plot data by month laid out in a conventional calendar
+#'   format. The main purpose is to help rapidly visualise potentially complex
+#'   data in a familiar way. Users can also choose to show daily mean wind
+#'   vectors if wind speed and direction are available.
 #'
-#' Note that is is possible to pre-calculate concentrations in some way before
-#' passing the data to [plot_calendar()]. For example [rollingMean()] could be
-#' used to calculate rolling 8-hour mean concentrations. The data can then be
-#' passed to [plot_calendar()] and `statistic = "max"` chosen, which will plot
-#' maximum daily 8-hour mean concentrations.
+#'   Note that is is possible to pre-calculate concentrations in some way before
+#'   passing the data to [plot_calendar()]. For example [rollingMean()] could be
+#'   used to calculate rolling 8-hour mean concentrations. The data can then be
+#'   passed to [plot_calendar()] and `statistic = "max"` chosen, which will plot
+#'   maximum daily 8-hour mean concentrations.
 #'
 #' @inheritParams plot_heatmap
 #' @inheritParams timeAverage
@@ -355,7 +354,7 @@ plot_calendar <-
         y = NULL,
         fill = label_openair(pollutant, auto_text = auto_text)
       ) +
-      theme_oa_modern() +
+      theme_oa_classic() +
       ggplot2::theme(
         axis.text.y.left = ggplot2::element_blank(),
         axis.ticks.y.left = ggplot2::element_blank(),
@@ -400,9 +399,9 @@ plot_calendar <-
         plt +
         layer_windflow(
           ggplot2::aes(ws = .data$ws, wd = .data$wd),
-          range = windflow$windflow,
+          range = windflow$range,
           arrow = windflow$arrow,
-          limits = windflow$windflow,
+          limits = windflow$limits,
           show.legend = FALSE
         )
     }
