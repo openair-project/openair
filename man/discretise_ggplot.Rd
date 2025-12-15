@@ -15,16 +15,16 @@ discretise_breaks(
   dig.lab = 3
 )
 
-discretise_interval(n = NULL, length = NULL, ...)
+discretise_interval(n = NULL, length = NULL, labels = NULL)
 
-discretise_number(n = NULL, ...)
+discretise_number(n = NULL, labels = NULL)
 
 discretise_width(
   width = NULL,
   center = NULL,
   boundary = NULL,
-  closed = "right",
-  ...
+  labels = NULL,
+  closed = "right"
 )
 }
 \arguments{
@@ -50,8 +50,6 @@ discretise_width(
 \item{n}{number of intervals to create, OR}
 
 \item{length}{length of each interval}
-
-\item{...}{further arguments passed to or from other methods.}
 
 \item{width}{The bin width.}
 

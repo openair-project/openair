@@ -299,6 +299,7 @@ plot_calendar <-
       )
 
       discrete_scale <- ggplot2::scale_fill_discrete(
+        label = label_openair,
         drop = FALSE,
         na.value = "grey95",
         breaks = levels(plotdata$conc.mat)

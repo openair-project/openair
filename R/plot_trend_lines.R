@@ -127,7 +127,7 @@ plot_trend_lines <- function(
       ggplot2::aes(x = .data$date, y = .data$value)
     ) +
     ggplot2::geom_line(ggplot2::aes(
-      color = label_openair(.data[[group]], auto_text = auto_text)
+      color = .data[[group]]
     )) +
     theme_oa_classic() +
     ggplot2::theme(
@@ -154,10 +154,13 @@ plot_trend_lines <- function(
       x = NULL,
       color = NULL
     ) +
-    facet_fun
+    facet_fun +
+    ggplot2::scale_color_discrete(
+      label = label_openair
+    )
 
   # remove legend if only one item
-  if (dplyr::n_distinct(levels(plotdata[[group]])) == 1) {
+  if (dplyr::n_distinct(plotdata[[group]]) == 1) {
     plt <-
       plt +
       ggplot2::guides(
@@ -173,7 +176,7 @@ plot_trend_lines <- function(
         ggplot2::aes(
           ws = .data$ws,
           wd = .data$wd,
-          color = label_openair(.data[[group]], auto_text = auto_text)
+          color = .data[[group]]
         ),
         arrow = windflow$arrow,
         limits = windflow$limits,

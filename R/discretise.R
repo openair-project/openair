@@ -42,8 +42,7 @@ discretise_interval <- function(
     method = "interval",
     n = n,
     length = length,
-    labels = labels,
-    ...
+    labels = labels
   )
 }
 

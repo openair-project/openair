@@ -2,26 +2,37 @@
 % Please edit documentation in R/label_openair.R
 \name{label_openair}
 \alias{label_openair}
+\alias{labeller_openair}
 \title{Automatic text formatting for openair}
 \usage{
-label_openair(x, style = "marquee", auto_text = TRUE)
+label_openair(x, parse = TRUE, auto_text = TRUE)
+
+labeller_openair(auto_text = TRUE)
 }
 \arguments{
 \item{x}{A character vector.}
 
-\item{style}{The type of formatting to use. Currently limited to \code{"marquee"}
-for use with, e.g., \code{\link[marquee:marquee_grob]{marquee::marquee_grob()}}.}
+\item{parse}{If \code{TRUE}, this function will output an expression that can be
+plugged straight into, for example, \code{\link[ggplot2:labs]{ggplot2::labs()}}. If \code{FALSE}, an
+unevaluated character string will be returned, which could be useful if
+another function will deal with parsing (e.g., a labeller function in
+\code{\link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}}).}
 
 \item{auto_text}{Perform the formatting of the data? Used internally by
-\code{openair} functions to turn on and off label formatting.}
+\code{openair} functions to turn on and off label formatting. If \code{FALSE}, \code{x}
+will be returned unchanged.}
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-This workhorse function automatically applies routing text formatting to
-common words in air quality and meteorological science (for example,
-subscripting the 'x' in NOx). Unlike \code{\link[=quickText]{quickText()}}, it is fully vectorised
-and returns a character string.
+\code{\link[=label_openair]{label_openair()}} is a  workhorse function automatically applies routing
+text formatting to common words in air quality and meteorological science
+(for example, subscripting the 'x' in NOx). Unlike \code{\link[=quickText]{quickText()}}, it is
+fully vectorised and can optionally return an unparsed character string.
+
+\code{\link[=labeller_openair]{labeller_openair()}} generates a \code{\link[ggplot2:labeller]{ggplot2::labeller()}} function. This is
+intended to be used with the \code{labeller} argument of
+\code{\link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}} or \code{\link[ggplot2:facet_grid]{ggplot2::facet_grid()}}.
 }
 \author{
 Jack Davison

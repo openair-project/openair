@@ -2,29 +2,38 @@
 #'
 #' @description `r lifecycle::badge("experimental")`
 #'
-#'   This workhorse function automatically applies routing text formatting to
-#'   common words in air quality and meteorological science (for example,
-#'   subscripting the 'x' in NOx). Unlike [quickText()], it is fully vectorised
-#'   and returns a character string.
+#'   [label_openair()] is a  workhorse function automatically applies routing
+#'   text formatting to common words in air quality and meteorological science
+#'   (for example, subscripting the 'x' in NOx). Unlike [quickText()], it is
+#'   fully vectorised and can optionally return an unparsed character string.
+#'
+#'   [labeller_openair()] generates a [ggplot2::labeller()] function. This is
+#'   intended to be used with the `labeller` argument of
+#'   [ggplot2::facet_wrap()] or [ggplot2::facet_grid()].
 #'
 #' @param x A character vector.
 #'
-#' @param style The type of formatting to use. Currently limited to `"marquee"`
-#'   for use with, e.g., [marquee::marquee_grob()].
+#' @param parse If `TRUE`, this function will output an expression that can be
+#'   plugged straight into, for example, [ggplot2::labs()]. If `FALSE`, an
+#'   unevaluated character string will be returned, which could be useful if
+#'   another function will deal with parsing (e.g., a labeller function in
+#'   [ggplot2::facet_wrap()]).
 #'
 #' @param auto_text Perform the formatting of the data? Used internally by
-#'   `openair` functions to turn on and off label formatting.
+#'   `openair` functions to turn on and off label formatting. If `FALSE`, `x`
+#'   will be returned unchanged.
 #'
 #' @author Jack Davison
 #'
+#' @rdname label_openair
+#' @order 1
 #' @export
-label_openair <- function(x, style = "marquee", auto_text = TRUE) {
+label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
   if (!auto_text) {
     return(x)
   }
-  style <- rlang::arg_match(style)
 
-  fmt <- function(x, str, out) {
+  oafmt <- function(x, str, out) {
     for (i in str) {
       x <- stringr::str_replace_all(
         x,
@@ -35,39 +44,92 @@ label_openair <- function(x, style = "marquee", auto_text = TRUE) {
     x
   }
 
-  x |>
-    fmt(c("no2", "NO2"), "NO{.sub 2}") |>
-    fmt(c("nox", "NOX", "NOx"), "NO{.sub x}") |>
-    fmt(c("nh3", "NH3"), "NH{.sub 3}") |>
-    fmt(c("co"), "CO") |>
-    fmt(c("nmhc"), "NMHC") |>
-    fmt(c("ws", "WS"), "wind spd.") |>
-    fmt(c("wd", "WD"), "wind dir.") |>
-    fmt(c("air_temp"), "temperature") |>
-    fmt(c("rh"), "relative humidity") |>
-    fmt(c("pm10", "PM10"), "PM{.sub 10}") |>
-    fmt(c("pm1", "PM1"), "PM{.sub 1}") |>
-    fmt(c("pm4", "PM4"), "PM{.sub 4}") |>
-    fmt(c("pm25", "PM25", "pm2.5", "PM2.5"), "PM{.sub 2.5}") |>
-    fmt(c("pmt", "PMt"), "PM{.sub total}") |>
-    fmt(c("pmc", "PMc", "PMcoarse", "pmcoarse"), "PM{.sub coarse}") |>
-    fmt(c("pmf", "PMf", "PMfine", "pmfine"), "PM{.sub fine}") |>
-    fmt(c("o3", "O3", "ozone"), "O{.sub 3}") |>
-    fmt(c("co2", "CO2"), "CO{.sub 2}") |>
-    fmt(c("so2", "SO2"), "SO{.sub 2}") |>
-    fmt(c("h2s", "H2S"), "H{.sub 2}S") |>
-    fmt(c("ch4", "CH4"), "CH{.sub 4}") |>
-    fmt(c("dgrC", "degreeC", "deg. C", "degreesC"), "{.sup o}C") |>
-    fmt(c("Delta", "delta"), "\\u0394") |>
-    fmt(c("ug/m3", "ug.m-3", "ug m-3", "ugm-3"), "\\u03bcg m{.sup -3}") |>
-    fmt(c("mg/m3", "mg.m-3", "mg m-3", "mgm-3"), "mg m{.sup -3}") |>
-    fmt(c("ng/m3", "ng.m-3", "ng m-3", "ngm-3"), "ng m{.sup -3}") |>
-    fmt(c("m/s2", "m.s-2", "m s-2"), "m s{.sup -2}") |>
-    fmt(c("m/s", "m.s-1", "m s-1"), "m s{.sup -1}") |>
-    fmt(c("km2"), "km{.sup 2}") |>
-    fmt(c("g/km", "g.km-1", "g km-1"), "g km{.sup -1}") |>
-    fmt(c("g/s", "g.s-1", "g s-1"), "g s{.sup -1}") |>
-    fmt(c("r2", "R2"), "R{.sup 2}")
+  out <-
+    x |>
+    # pollutants
+    oafmt(c("no2", "NO2"), "NO[2]") |>
+    oafmt(c("nox", "NOX", "NOx"), "NO[x]") |>
+    oafmt(c("nh3", "NH3"), "NH[3]") |>
+    oafmt(c("co"), "CO") |>
+    oafmt(c("nmhc"), "NMHC") |>
+    oafmt(c("pm10", "PM10"), "PM[10]") |>
+    oafmt(c("pm1", "PM1"), "PM[1]") |>
+    oafmt(c("pm4", "PM4"), "PM[4]") |>
+    oafmt(c("pm25", "PM25", "pm2.5", "PM2.5"), "PM[2.5]") |>
+    oafmt(c("pmt", "PMt"), "PM[total]") |>
+    oafmt(c("pmc", "PMc", "PMcoarse", "pmcoarse"), "PM[coarse]") |>
+    oafmt(c("pmf", "PMf", "PMfine", "pmfine"), "PM[fine]") |>
+    oafmt(c("o3", "O3", "ozone"), "O[3]") |>
+    oafmt(c("co2", "CO2"), "CO[2]") |>
+    oafmt(c("so2", "SO2"), "SO[2]") |>
+    oafmt(c("h2s", "H2S"), "H[2]S") |>
+    oafmt(c("ch4", "CH4"), "CH[4]") |>
+    # met variables
+    oafmt(c("ws", "WS"), "wind spd.") |>
+    oafmt(c("wd", "WD"), "wind dir.") |>
+    oafmt(c("air_temp"), "temperature") |>
+    oafmt(c("rh"), "relative humidity") |>
+    # units
+    oafmt(c("Delta", "delta"), "\\u0394") |>
+    oafmt(c("dgrC", "degreeC", "deg. C", "degreesC"), "{}^{o}*C") |>
+    oafmt(c("ug/m3", "ug.m-3", "ug m-3", "ugm-3"), "\\u03bcg m^{-3}") |>
+    oafmt(c("mg/m3", "mg.m-3", "mg m-3", "mgm-3"), "mg m^{-3}") |>
+    oafmt(c("ng/m3", "ng.m-3", "ng m-3", "ngm-3"), "ng m^{-3}") |>
+    oafmt(c("m/s2", "m.s-2", "m s-2"), "m s^{-2}") |>
+    oafmt(c("m/s", "m.s-1", "m s-1"), "m s^{-1}") |>
+    oafmt(c("km2"), "km^{2}") |>
+    oafmt(c("g/km", "g.km-1", "g km-1"), "g km^{-1}") |>
+    oafmt(c("g/s", "g.s-1", "g s-1"), "g s^{-1}") |>
+    oafmt(c("r2", "R2"), "R^{2}") |>
+    # plotmath exceptions
+    stringr::str_replace_all(",", "*','*") |>
+    stringr::str_replace_all("\\.", "*'.'*") |>
+    stringr::str_replace_all(" ", "~")
+
+  # turn a single \n into atop()
+  out <-
+    sapply(
+      out,
+      \(x) {
+        if (grepl("\n", x)) {
+          splits <- strsplit(x, "\n")[[1]]
+          paste0(
+            "atop(",
+            splits[1],
+            ",",
+            paste(splits[-1], collapse = "~"),
+            ")"
+          )
+        } else {
+          x
+        }
+      },
+      USE.NAMES = FALSE
+    )
+
+  # if parse, evaluate
+  if (parse) {
+    sapply(
+      out,
+      \(x) eval(parse(text = paste0("expression(paste(", x, "))")))
+    )
+  } else {
+    out
+  }
+}
+
+#' @rdname label_openair
+#' @order 2
+#' @export
+labeller_openair <- function(auto_text = TRUE) {
+  if (auto_text) {
+    ggplot2::as_labeller(
+      \(x) label_openair(x, parse = FALSE, auto_text = TRUE),
+      default = ggplot2::label_parsed
+    )
+  } else {
+    ggplot2::label_value
+  }
 }
 
 #' Automatic text formatting for openair

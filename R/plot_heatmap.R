@@ -318,8 +318,10 @@ plot_heatmap <- function(
     )
 
     discrete_scale <- ggplot2::scale_fill_discrete(
+      label = label_openair,
       drop = FALSE,
-      label = label_openair
+      na.value = "grey95",
+      breaks = levels(plotdata[[pollutant]])
     )
   } else {
     color_theme <- ggplot2::theme(

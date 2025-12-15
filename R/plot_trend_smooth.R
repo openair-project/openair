@@ -219,7 +219,12 @@ plot_trend_smooth <- function(
         "black"
       )
     ) +
-    facet_fun
+    facet_fun +
+    ggplot2::scale_color_discrete(
+      label = label_openair,
+      drop = FALSE,
+      aesthetics = c("fill", "colour")
+    )
 
   # remove legend if only one item
   if (dplyr::n_distinct(levels(plotdata$variable)) == 1) {
@@ -709,7 +714,7 @@ smoothTrend <- function(
       if (group.number == 1) {
         # otherwise this is called every time
 
-        panel.shade(
+        panel_shade(
           res,
           start.year,
           end.year,

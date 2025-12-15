@@ -63,6 +63,8 @@
 #'
 #' @family ggplot2 time series and trend functions
 #'
+#' @export
+#'
 #' @references
 #'
 #' Helsel, D., Hirsch, R., 2002. Statistical methods in water resources. US

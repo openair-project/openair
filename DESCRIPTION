@@ -35,7 +35,6 @@ Imports:
     lifecycle,
     lubridate,
     mapproj,
-    marquee,
     MASS,
     methods,
     mgcv,
