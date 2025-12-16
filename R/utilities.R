@@ -7,6 +7,7 @@ dateTypes <- c(
   "weekday",
   "weekend",
   "monthyear",
+  "yearmonth",
   "gmtbst",
   "bstgmt",
   "dst",
