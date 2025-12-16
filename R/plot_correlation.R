@@ -1,17 +1,332 @@
+#' Plot a correlation matrix with conditioning
+#'
+#' @description `r lifecycle::badge("experimental")`
+#'
+#'   This function calculates and visualises correlation matrices between air
+#'   quality pollutants (or any other numeric variables). The primary purpose is
+#'   as a tool for exploratory data analysis. Hierarchical clustering is used to
+#'   group variables that are most similar to one another, if `cluster = TRUE`.
+#'   It is also possible to use the `openair` type option to condition the data
+#'   in many flexible ways.
+#'
+#' @inheritParams plot_heatmap
+#'
+#' @param pollutant If `NULL`, all numeric columns in `data` will be correlated
+#'   with one another. `pollutant`, as in other `openair` functions, may also be
+#'   a vector of column names to use instead.
+#'
+#' @param cols The colour palette to use. See [openColours()]. Note that
+#'   [plot_correlation()] fixes the colour scale between `-1` and `1`, so a
+#'   'diverging' palette is recommended.
+#'
+#' @param cluster Should the data be ordered according to cluster analysis? If
+#'   `TRUE` hierarchical clustering is applied to the correlation matrices using
+#'   `hclust` to group similar variables together.
+#'
+#' @param method The correlation method to use. Can be `"pearson"`, `"spearman"`
+#'   or `"kendall"`.
+#'
+#' @param use How to handle missing values in the `cor` function. The default is
+#'   `"pairwise.complete.obs"`. Care should be taken with the choice of how to
+#'   handle missing data when considering pair-wise correlations.
+#'
+#' @param annotate What to annotate each correlation tile with. One of:
+#' - `"cor"`, the correlation coefficient to 2 decimal places.
+#' - `"signif"`, an X marker if the correlation is significant.
+#' - `"stars"`, standard significance stars.
+#' - `"none"`, no annotation.
+#'
+#' @param cols_annotation The colour to use to colour text annotations. If two
+#'   colours are defined, the first will be used for positive correlations and
+#'   the second for negative correlations.
+#'
+#' @param triangle One of `"all"` (to show the complete matrix), `"lower"` (to
+#'   show the bottom triangle) or `"upper"` (to show the upper triangle).
+#'
+#' @param diagonal When `TRUE`, the 'diagonal' of the plot (where the
+#'   correlation is always `1`) will be shown. `FALSE` removes this.
+#'
+#' @export
+#'
+#' @seealso The legacy [corPlot()] function.
+#'
+#' @author Jack Davison
+#'
+#' @examples
+#' # basic corrgram plot
+#' plot_correlation(mydata)
+#'
+#' # plot by season ... and so on
+#' plot_correlation(mydata, type = "season")
+#'
+#' # recover dendrogram when cluster = TRUE and plot it
+#' res <- plot_correlation(mydata, plot = FALSE)
+#' plot(res$hclust)
+#'
+#' \dontrun{
+#' # more interesting are hydrocarbon measurements
+#' hc <- importAURN(site = "my1", year = 2005, hc = TRUE)
+#'
+#' # now it is possible to see the hydrocarbons that behave most
+#' # similarly to one another
+#' plot_correlation(hc, annotate = "none", cols = "Spectral")
+#' }
+plot_correlation <- function(
+  data,
+  pollutant = NULL,
+  type = "default",
+  cluster = TRUE,
+  method = "pearson",
+  use = "pairwise.complete.obs",
+  annotate = c("cor", "signif", "stars", "none"),
+  triangle = c("all", "lower", "upper"),
+  diagonal = TRUE,
+  discretise = NULL,
+  cols = "PRGn",
+  cols_annotation = "black",
+  auto_text = TRUE,
+  facet_opts = openair::facet_opts(),
+  plot = TRUE,
+  ...
+) {
+  triangle <- rlang::arg_match(triangle)
+  annotate <- rlang::arg_match(annotate)
+
+  # make sure date is present for types requiring it
+  if (any(type %in% dateTypes) && !"date" %in% names(mydata)) {
+    cli::cli_abort(
+      "{.arg data} requires a 'date' column when {.arg type} is {type}."
+    )
+  }
+
+  # null case
+  if (is.null(pollutant)) {
+    pollutant <- data |> dplyr::select(dplyr::where(is.numeric)) |> names()
+  }
+
+  # keep date if about
+  pollutant <- unique(pollutant)
+  if (any(type %in% dateTypes)) {
+    pollutant <- unique(c("date", pollutant))
+  }
+
+  # check data input
+  data <- checkPrep(
+    data,
+    pollutant,
+    type = type,
+    remove.calm = FALSE
+  )
+
+  # remove variables where all are NA
+  data <- data[, sapply(data, function(x) !all(is.na(x)))]
+  data <- data[, sapply(data, function(x) {
+    dplyr::n_distinct(x, na.rm = TRUE) > 1
+  })]
+
+  # cut data depending on type
+  data <- cutData(data, type, ...)
+
+  # proper names of labelling
+  pollutant <- names(data[, sapply(data, is.numeric)])
+
+  # number of pollutants
+  if (dplyr::n_distinct(pollutant) < 2) {
+    cli::cli_abort(
+      "{.fun openair::plot_correlation} requires at least two numeric fields to compare."
+    )
+  }
+
+  # drop date column if its still here
+  data <- dplyr::select(data, dplyr::all_of(c(type, pollutant)))
+
+  # get an overall correlation cluster if clustering
+  if (cluster) {
+    cor_matrix <-
+      data |>
+      dplyr::select(dplyr::where(is.numeric)) |>
+      cor(use = use, method = method, ...)
+
+    hc <- hclust(as.dist(1 - cor_matrix), method = "complete")
+
+    var_order <- hc$labels[hc$order]
+  } else {
+    hc <- NULL
+  }
+
+  # get a correlation matrix per type
+  plotdata <-
+    mapType(
+      data,
+      type,
+      \(df) {
+        df <- dplyr::select(df, dplyr::where(is.numeric))
+        vars <- names(df)
+        expand.grid(x = vars, y = vars, stringsAsFactors = FALSE) |>
+          dplyr::rowwise() |>
+          dplyr::mutate(
+            test = list(cor.test(
+              df[[.data$x]],
+              df[[.data$y]],
+              use = use,
+              method = method,
+              ...
+            )),
+            cor = .data$test$estimate,
+            pval = .data$test$p.value,
+            psig = dplyr::if_else(
+              .data$pval < 0.05,
+              "X",
+              ""
+            ),
+            pstars = dplyr::case_when(
+              .data$pval < 0.001 ~ "\U2736\U2736\U2736",
+              .data$pval < 0.01 ~ "\U2736\U2736",
+              .data$pval < 0.05 ~ "\U2736",
+              TRUE ~ ""
+            )
+          ) |>
+          dplyr::select(-"test")
+      }
+    )
+
+  # if clustering, turn to factor
+  if (cluster) {
+    plotdata <-
+      dplyr::mutate(
+        plotdata,
+        dplyr::across(c("x", "y"), \(x) factor(x, levels = var_order))
+      )
+  } else {
+    plotdata <-
+      dplyr::mutate(
+        plotdata,
+        dplyr::across(c("x", "y"), \(x) factor(x))
+      )
+  }
+
+  # deal with triangle & diagonal args
+  if (triangle == "lower") {
+    plotdata <-
+      dplyr::filter(
+        plotdata,
+        as.numeric(.data$x) >= as.numeric(.data$y)
+      )
+  }
+  if (triangle == "upper") {
+    plotdata <-
+      dplyr::filter(
+        plotdata,
+        as.numeric(.data$x) <= as.numeric(.data$y)
+      )
+  }
+  if (!diagonal) {
+    plotdata <-
+      dplyr::filter(
+        plotdata,
+        as.numeric(.data$x) != as.numeric(.data$y)
+      )
+  }
+
+  # discretise
+  if (!is.null(discretise)) {
+    cut_vals <- cut_discrete_values(c(-1, 1, plotdata$cor), opts = discretise)
+    plotdata$cor_value <- cut_vals[-(1:2)]
+    fill_scale <- list(
+      ggplot2::scale_fill_manual(
+        values = openColours(scheme = cols, n = length(levels(cut_vals))),
+        drop = FALSE
+      ),
+      ggplot2::guides(fill = ggplot2::guide_legend(reverse = TRUE))
+    )
+  } else {
+    plotdata$cor_value <- plotdata$cor
+    fill_scale <- ggplot2::scale_fill_gradientn(
+      colours = openColours(scheme = cols),
+      limits = c(-1, 1)
+    )
+  }
+
+  # get faceting strategy
+  facet_fun <- get_facet_fun(type, facet_opts)
+
+  # make plot
+  plt <-
+    ggplot2::ggplot(plotdata, ggplot2::aes(x = .data$x, y = .data$y)) +
+    ggplot2::geom_raster(
+      ggplot2::aes(fill = .data$cor_value),
+      show.legend = TRUE
+    )
+
+  showpos <- function(x) {
+    x[x > 0] <- paste0("+", x[x > 0])
+    x
+  }
+
+  if (annotate != "none") {
+    plt <-
+      plt +
+      ggplot2::geom_text(
+        ggplot2::aes(
+          color = .data$cor < 0,
+          label = if (annotate == "cor") {
+            showpos(round(.data$cor, digits = 2))
+          } else if (annotate == "stars") {
+            .data$pstars
+          } else if (annotate == "signif") {
+            .data$psig
+          }
+        ),
+        size = 2.5
+      ) +
+      ggplot2::scale_color_manual(
+        values = openColours(cols_annotation, n = 2)
+      ) +
+      ggplot2::guides(color = ggplot2::guide_none())
+  }
+
+  plt <- plt +
+    ggplot2::coord_cartesian(ratio = 1, expand = FALSE) +
+    theme_oa_classic() +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(angle = 90, hjust = 1, vjust = 0.5)
+    ) +
+    ggplot2::labs(
+      x = NULL,
+      y = NULL,
+      fill = NULL
+    ) +
+    ggplot2::scale_x_discrete(label = label_openair) +
+    ggplot2::scale_y_discrete(label = label_openair) +
+    facet_fun +
+    fill_scale
+
+  if (plot) {
+    return(plt)
+  } else {
+    return(
+      list(
+        data = plotdata,
+        hclust = hc
+      )
+    )
+  }
+}
+
 #' Correlation matrices with conditioning
 #'
 #' Function to to draw and visualise correlation matrices using lattice. The
 #' primary purpose is as a tool for exploratory data analysis. Hierarchical
 #' clustering is used to group similar variables.
 #'
-#' The `corPlot` function plots correlation matrices. The implementation
-#' relies heavily on that shown in Sarkar (2007), with a few extensions.
+#' The `corPlot` function plots correlation matrices. The implementation relies
+#' heavily on that shown in Sarkar (2007), with a few extensions.
 #'
 #' Correlation matrices are a very effective way of understating relationships
-#' between many variables. The `corPlot` shows the correlation coded in
-#' three ways: by shape (ellipses), colour and the numeric value. The ellipses
-#' can be thought of as visual representations of scatter plot. With a perfect
-#' positive correlation a line at 45 degrees positive slope is drawn. For zero
+#' between many variables. The `corPlot` shows the correlation coded in three
+#' ways: by shape (ellipses), colour and the numeric value. The ellipses can be
+#' thought of as visual representations of scatter plot. With a perfect positive
+#' correlation a line at 45 degrees positive slope is drawn. For zero
 #' correlation the shape becomes a circle. See examples below.
 #'
 #' With many different variables it can be difficult to see relationships
@@ -22,68 +337,66 @@
 #'
 #' If clustering is chosen it is also possible to add a dendrogram using the
 #' option `dendrogram = TRUE`. Note that dendrogramscan only be plotted for
-#' `type = "default"` i.e. when there is only a single panel. The
-#' dendrogram can also be recovered from the plot object itself and plotted more
-#' clearly; see examples below.
+#' `type = "default"` i.e. when there is only a single panel. The dendrogram can
+#' also be recovered from the plot object itself and plotted more clearly; see
+#' examples below.
 #'
-#' It is also possible to use the `openair` type option to condition the
-#' data in many flexible ways, although this may become difficult to visualise
-#' with too many panels.
+#' It is also possible to use the `openair` type option to condition the data in
+#' many flexible ways, although this may become difficult to visualise with too
+#' many panels.
 #'
 #' @param mydata A data frame which should consist of some numeric columns.
 #' @param pollutants the names of data-series in `mydata` to be plotted by
-#'   `corPlot`. The default option `NULL` and the alternative
-#'   \dQuote{all} use all available valid (numeric) data.
-#' @param type `type` determines how the data are split i.e. conditioned,
-#'   and then plotted. The default is will produce a single plot using the
-#'   entire data. Type can be one of the built-in types as detailed in
-#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, `type = "season"` will produce four plots --- one for
-#'   each season.
+#'   `corPlot`. The default option `NULL` and the alternative \dQuote{all} use
+#'   all available valid (numeric) data.
+#' @param type `type` determines how the data are split i.e. conditioned, and
+#'   then plotted. The default is will produce a single plot using the entire
+#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
+#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+#'   `type = "season"` will produce four plots --- one for each season.
 #'
-#'   It is also possible to choose `type` as another variable in the data
-#'   frame. If that variable is numeric, then the data will be split into four
+#'   It is also possible to choose `type` as another variable in the data frame.
+#'   If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #' @param cluster Should the data be ordered according to cluster analysis. If
-#'   `TRUE` hierarchical clustering is applied to the correlation matrices
-#'   using `hclust` to group similar variables together. With many
-#'   variables clustering can greatly assist interpretation.
+#'   `TRUE` hierarchical clustering is applied to the correlation matrices using
+#'   `hclust` to group similar variables together. With many variables
+#'   clustering can greatly assist interpretation.
 #' @param method The correlation method to use. Can be \dQuote{pearson},
 #'   \dQuote{spearman} or \dQuote{kendall}.
 #' @param use How to handle missing values in the `cor` function. The default is
 #'   "pairwise.complete.obs". Care should be taken with the choice of how to
 #'   handle missing data when considering pair-wise correlations.
-#' @param dendrogram Should a dendrogram be plotted? When `TRUE` a
-#'   dendrogram is shown on the right of the plot. Note that this will only work
-#'   for `type = "default"`.
+#' @param dendrogram Should a dendrogram be plotted? When `TRUE` a dendrogram is
+#'   shown on the right of the plot. Note that this will only work for `type =
+#'   "default"`.
 #' @param lower Should only the lower triangle be plotted?
 #' @param cols Colours to be used for plotting. Options include
 #'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{spectral},
-#'   \dQuote{hue}, \dQuote{greyscale} and user defined (see `openColours`
-#'   for more details).
-#' @param r.thresh Values of greater than `r.thresh` will be shown in bold
-#'   type. This helps to highlight high correlations.
+#'   \dQuote{hue}, \dQuote{greyscale} and user defined (see `openColours` for
+#'   more details).
+#' @param r.thresh Values of greater than `r.thresh` will be shown in bold type.
+#'   This helps to highlight high correlations.
 #' @param text.col The colour of the text used to show the correlation values.
 #'   The first value controls the colour of negative correlations and the second
 #'   positive.
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
-#'   titles and axis labels will automatically try and format pollutant names
-#'   and units properly e.g.  by subscripting the `2' in NO2.
-#' @param plot Should a plot be produced? `FALSE` can be useful when
-#'   analysing data to extract corPlot components and plotting them in other
-#'   ways.
-#' @param ... Other graphical parameters passed onto `lattice:levelplot`,
-#'   with common axis and title labelling options (such as `xlab`,
-#'   `ylab`, `main`) being passed via `quickText` to handle
-#'   routine formatting.
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
+#'   axis labels will automatically try and format pollutant names and units
+#'   properly e.g.  by subscripting the `2' in NO2.
+#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
+#'   data to extract corPlot components and plotting them in other ways.
+#' @param ... Other graphical parameters passed onto `lattice:levelplot`, with
+#'   common axis and title labelling options (such as `xlab`, `ylab`, `main`)
+#'   being passed via `quickText` to handle routine formatting.
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw --- but mostly based on code contained in Sarkar (2007)
-#' @seealso `taylor.diagram` from the `plotrix` package from which
-#'   some of the annotation code was used.
+#' @seealso `taylor.diagram` from the `plotrix` package from which some of the
+#'   annotation code was used.
+#' @seealso The newer [plot_correlation()] function.
 #' @references Sarkar, D. (2007). Lattice Multivariate Data Visualization with
 #'   R. New York: Springer.
 #'

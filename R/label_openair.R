@@ -65,8 +65,8 @@ label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
     oafmt(c("h2s", "H2S"), "H[2]S") |>
     oafmt(c("ch4", "CH4"), "CH[4]") |>
     # met variables
-    oafmt(c("ws", "WS"), "wind spd.") |>
-    oafmt(c("wd", "WD"), "wind dir.") |>
+    oafmt(c("ws", "WS"), "wind speed") |>
+    oafmt(c("wd", "WD"), "wind dir") |>
     oafmt(c("air_temp"), "temperature") |>
     oafmt(c("rh"), "relative humidity") |>
     # units
@@ -85,6 +85,17 @@ label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
     stringr::str_replace_all(",", "*','*") |>
     stringr::str_replace_all("\\.", "*'.'*") |>
     stringr::str_replace_all(" ", "~")
+
+  # ensure value doesn't start with number
+  out <- sapply(
+    out,
+    \(x) {
+      if (stringr::str_starts(x, "\\d+")) {
+        x <- stringr::str_replace(x, "(\\d+)", "'\\1'*")
+      }
+      x
+    }
+  )
 
   # turn a single \n into atop()
   out <-
