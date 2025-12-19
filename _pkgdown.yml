@@ -39,6 +39,7 @@ reference:
 - subtitle: New API
   contents:
   - plot_variation
+  - plot_xy_scatter
   - plot_correlation
 - subtitle: Legacy API
   contents:

@@ -90,7 +90,7 @@ label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
   out <- sapply(
     out,
     \(x) {
-      if (stringr::str_starts(x, "\\d+")) {
+      if (!is.na(x) && stringr::str_starts(x, "\\d+")) {
         x <- stringr::str_replace(x, "(\\d+)", "'\\1'*")
       }
       x
@@ -102,7 +102,7 @@ label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
     sapply(
       out,
       \(x) {
-        if (grepl("\n", x)) {
+        if (!is.na(x) && grepl("\n", x)) {
           splits <- strsplit(x, "\n")[[1]]
           paste0(
             "atop(",
@@ -117,6 +117,12 @@ label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
       },
       USE.NAMES = FALSE
     )
+
+  # don't let a label end with a *
+  out[stringr::str_ends(out, "\\*")] <- stringr::str_sub(
+    out[stringr::str_ends(out, "\\*")],
+    end = -2
+  )
 
   # if parse, evaluate
   if (parse) {

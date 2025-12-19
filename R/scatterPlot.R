@@ -1,3 +1,523 @@
+#' Plot the relationship between two (or more) variables using scatter plot
+#' variations
+#'
+#' @description `r lifecycle::badge("experimental")`
+#'
+#'   This family of functions allows for two or more pollutants to be directly
+#'   compared using a relational diagram, with convenient time averaging. This
+#'   family of plotting functions encompasses:
+#'   - [plot_xy_scatter()], which plots a conventional scatter plot
+#'   - [plot_xy_bins()], which bins large amount of data either in square or hexagonal bins
+#'
+#' @inheritParams shared_ggplot_params
+#' @inheritParams timeAverage
+#'
+#' @param x,y The columns of `data` to use as the x and y variables.
+#'
+#' @param z The column of `data` to colour by. This is not passed though
+#'   [cutData()], so a colour
+#'
+#' @param group_col,group_shp Columns of `data` to use to condition the data
+#'   within each panel, passed to [cutData()]. `group_col` maps to the colour
+#'   aesthetic and `group_shp` to the marker shape aesthetic.
+#'
+#' @seealso the legacy [scatterPlot()] function
+#'
+#' @rdname plot_xy
+#' @order 1
+#' @export
+#'
+#' @examples
+#' dat2004 <- selectByDate(mydata, year = 2004)
+#'
+#' # basic use, single pollutant
+#' plot_xy_scatter(dat2004, x = "nox", y = "no2")
+#'
+#' \dontrun{
+#' # scatterPlot by year
+#' plot_xy_scatter(mydata, x = "nox", y = "no2", type = "year")
+#' }
+#'
+#' # examine group and type arguments
+#' plot_xy_scatter(
+#'   dat2004,
+#'   x = "nox",
+#'   y = "no2",
+#'   group_col = "weekday",
+#'   group_shp = "season",
+#'   type = "weekend"
+#' )
+#'
+#' # example of the use of continuous where colour is used to show
+#' # different levels of a third (numeric) variable
+#' # plot daily averages and choose a filled plot symbol (pch = 16)
+#' # select only 2004
+#' \dontrun{
+#'
+#' plot_xy_scatter(dat2004, x = "nox", y = "no2", z = "co", avg.time = "day")
+#'
+#' # also works with the x-axis in date format (alternative to plot_trend_*())
+#' plot_xy_scatter(
+#'   mydata,
+#'   x = "date",
+#'   y = "no2",
+#'   avg.time = "month"
+#' )
+#'
+#' # multiple types and grouping variable and continuous colour scale
+#' plot_xy_scatter(
+#'   mydata,
+#'   x = "nox",
+#'   y = "no2",
+#'   z = "o3",
+#'   type = c("season", "weekend")
+#' )
+#'
+#' # use binning
+#' plot_xy_bins(mydata, x = "nox", y = "no2", method = "bin")
+#' plot_xy_bins(mydata, x = "nox", y = "no2", method = "hexbin")
+#' plot_xy_bins(mydata, x = "nox", y = "no2", method = "density")
+#' }
+plot_xy_scatter <- function(
+  data,
+  x,
+  y,
+  z = NULL,
+  group_col = NULL,
+  group_shp = NULL,
+  type = NULL,
+  avg.time = "default",
+  data.thresh = 0,
+  statistic = "mean",
+  percentile = NA,
+  discretise = NULL,
+  cols = NULL,
+  windflow = FALSE,
+  facet_opts = openair::facet_opts(),
+  auto_text = TRUE,
+  plot = TRUE,
+  ...
+) {
+  # deal with logical windflow
+  if (rlang::is_logical(windflow)) {
+    windflow <- windflow_opts(windflow = windflow)
+  }
+
+  # can't colour by a category and a z var
+  if (!is.null(group_col) && !is.null(z)) {
+    cli::cli_abort(
+      "{.arg group_col} and {.arg z} cannot be used simultaneously in {.fun openair::plot_xy_scatter}."
+    )
+  }
+
+  # check data
+  vars <- c(x, y)
+  if (!is.null(z)) {
+    vars <- c(vars, z)
+  }
+  if (
+    (!is.null(type) && any(type %in% dateTypes)) ||
+      (!is.null(group_col) && group_col %in% dateTypes) ||
+      (!is.null(group_shp) && group_shp %in% dateTypes) ||
+      avg.time != "default"
+  ) {
+    vars <- c(vars, "date")
+  }
+  if (windflow$windflow) {
+    vars <- c(vars, "ws", "wd")
+  }
+
+  data <- checkPrep(data, unique(vars), type = c(type, group_shp, group_col)) |>
+    tidyr::drop_na()
+
+  # cut data
+  plotdata <- cutData(data, c(type, group_shp, group_col), ...)
+
+  # time average, if requested
+  if (avg.time != "default") {
+    plotdata <- openair::timeAverage(
+      plotdata,
+      avg.time = avg.time,
+      data.thresh = data.thresh,
+      statistic = statistic,
+      type = c(type, group_shp, group_col) %||% "default"
+    )
+  }
+
+  # deal with aesthetics for point & windflow
+  point_aes <- ggplot2::aes()
+  windflow_aes <- ggplot2::aes(ws = .data$ws, wd = .data$wd)
+
+  # Add color if needed
+  color_var <- group_col %||% z
+  if (!is.null(color_var)) {
+    point_aes <- modifyList(point_aes, ggplot2::aes(color = .data[[color_var]]))
+    windflow_aes <- modifyList(
+      windflow_aes,
+      ggplot2::aes(color = .data[[color_var]])
+    )
+    plotdata <- dplyr::arrange(plotdata, .data[[color_var]])
+  }
+
+  # Add shape if needed
+  if (!is.null(group_shp)) {
+    point_aes <- modifyList(point_aes, ggplot2::aes(shape = .data[[group_shp]]))
+  }
+
+  if (!is.null(z)) {
+    plotdata[z] <- cut_discrete_values(plotdata[[z]], opts = discretise)
+  }
+
+  # construct plot
+  plt <-
+    ggplot2::ggplot(plotdata, ggplot2::aes(x = .data[[x]], y = .data[[y]])) +
+    ggplot2::geom_point(
+      point_aes
+    ) +
+    theme_oa_classic() +
+    get_facet_fun(type, facet_opts) +
+    ggplot2::labs(
+      x = label_openair(x, auto_text = auto_text),
+      y = label_openair(y, auto_text = auto_text)
+    )
+
+  # deal with discrete colour colour
+  if (!is.null(group_col) || (!is.null(z) && !is.null(discretise))) {
+    plt <- plt +
+      ggplot2::scale_color_manual(
+        values = openColours(
+          cols %||% ifelse(!is.null(group_col), "tol", "viridis"),
+          n = dplyr::n_distinct(plotdata[[group_col %||% z]])
+        ),
+        label = \(x) label_openair(x, auto_text = auto_text)
+      ) +
+      ggplot2::labs(
+        color = label_openair(group_col %||% z, auto_text = auto_text)
+      )
+  }
+
+  # deal with continuous colour
+  if (!is.null(z) && is.null(discretise)) {
+    plt <- plt +
+      ggplot2::scale_color_gradientn(
+        colours = openColours(
+          cols %||% "viridis"
+        )
+      ) +
+      ggplot2::labs(
+        color = label_openair(group_col %||% z, auto_text = auto_text)
+      )
+  }
+
+  # set shape scales
+  if (!is.null(group_shp)) {
+    plt <- plt +
+      ggplot2::scale_shape_discrete(label = \(x) {
+        label_openair(x, auto_text = auto_text)
+      }) +
+      ggplot2::labs(
+        shape = label_openair(group_shp, auto_text = auto_text)
+      )
+  }
+
+  # add windflow labels if required
+  if (windflow$windflow) {
+    plt <- plt +
+      layer_windflow(
+        mapping = windflow_aes,
+        range = windflow$range,
+        limits = windflow$limits
+      )
+  }
+
+  # return
+  if (plot) {
+    return(plt)
+  } else {
+    return(plotdata)
+  }
+}
+
+#' @inheritParams ggplot2::stat_bin_2d
+#'
+#' @param method One of:
+#' - `"bin"`, which bins the data using square bins
+#' - `"hexbin"`, which uses regular hexagonal binning, or
+#' - `"density"`, which fits a 2D kernel density estimation.
+#'
+#' @param dist How far from the original data predictions should be made; passed
+#'   to [mgcv::exclude.too.far()]. Values should be between 0 and 1. Used in
+#'   [plot_xy_bins()] when `method = "density"`.
+#'
+#' @param adjust Adjustment factor to kernel density bandwidth. Used in
+#'   [plot_xy_bins()] when `method = "density"`.
+#'
+#' @rdname plot_xy
+#' @order 2
+#' @export
+plot_xy_bins <- function(
+  data,
+  x,
+  y,
+  type = NULL,
+  avg.time = "default",
+  data.thresh = 0,
+  statistic = "mean",
+  percentile = NA,
+  method = c("bin", "hexbin", "density"),
+  binwidth = NULL,
+  bins = 30,
+  breaks = NULL,
+  adjust = 1,
+  dist = 0.02,
+  discretise = NULL,
+  cols = "viridis",
+  facet_opts = openair::facet_opts(),
+  auto_text = TRUE,
+  plot = TRUE,
+  ...
+) {
+  # input validation
+  method <- rlang::arg_match(method)
+
+  # check data
+  vars <- c(x, y)
+  if (
+    (!is.null(type) && any(type %in% dateTypes)) ||
+      avg.time != "default"
+  ) {
+    vars <- c(vars, "date")
+  }
+
+  data <- checkPrep(data, unique(vars), type = c(type))
+
+  # cut data
+  plotdata <- cutData(data, c(type), ...) |>
+    tidyr::drop_na()
+
+  # time average, if requested
+  if (avg.time != "default") {
+    plotdata <- openair::timeAverage(
+      plotdata,
+      avg.time = avg.time,
+      data.thresh = data.thresh,
+      statistic = statistic,
+      type = c(type) %||% "default"
+    )
+  }
+
+  # if method is density, need to turn
+  if (method == "density") {
+    plotdata <-
+      mapType(
+        plotdata,
+        type = type,
+        fun = \(df) {
+          k <- MASS::kde2d(
+            df[[x]],
+            y = df[[y]],
+            n = bins,
+            lims = c(range(plotdata[[x]]), range(plotdata[[y]]))
+          )
+          grid <- expand.grid(x = k$x, y = k$y) |>
+            dplyr::mutate(z = as.vector(k$z) * nrow(df)) |>
+            setNames(c(x, y, "count"))
+          id <- mgcv::exclude.too.far(
+            grid[[x]],
+            grid[[y]],
+            df[[x]],
+            df[[y]],
+            dist = dist
+          )
+          grid[!id, ]
+        }
+      ) |>
+      dplyr::tibble()
+  }
+
+  # construct plot
+  plt <-
+    ggplot2::ggplot(plotdata, ggplot2::aes(x = .data[[x]], y = .data[[y]])) +
+    get_facet_fun(type, facet_opts)
+
+  # two different methods offered by ggplot2
+  if (method == "hexbin") {
+    plt <- plt +
+      ggplot2::stat_bin_hex(
+        ggplot2::aes(
+          fill = cut_discrete_values(
+            ggplot2::after_stat(.data$count),
+            opts = discretise
+          )
+        ),
+        bins = bins,
+        binwidth = binwidth,
+        show.legend = TRUE
+      )
+  } else if (method == "bin") {
+    plt <- plt +
+      ggplot2::stat_bin_2d(
+        ggplot2::aes(
+          fill = cut_discrete_values(
+            ggplot2::after_stat(.data$count),
+            opts = discretise
+          )
+        ),
+        bins = bins,
+        binwidth = binwidth,
+        breaks = breaks,
+        show.legend = TRUE
+      ) +
+      ggplot2::coord_cartesian(expand = FALSE)
+  } else if (method == "density") {
+    plt <- plt +
+      ggplot2::geom_tile(
+        ggplot2::aes(
+          fill = cut_discrete_values(
+            .data$count,
+            opts = discretise
+          )
+        ),
+        show.legend = TRUE
+      ) +
+      ggplot2::coord_cartesian(expand = FALSE)
+  }
+
+  plt <-
+    plt +
+    theme_oa_classic() +
+    ggplot2::labs(
+      x = label_openair(x, auto_text = auto_text),
+      y = label_openair(y, auto_text = auto_text),
+      fill = "Count"
+    )
+
+  # colour scales
+  if (!is.null(discretise)) {
+    # need to do something funky here to access the number of colours we need if we haven't already cut it
+    if (method == "density") {
+      n_colors <- plotdata$count |>
+        cut_discrete_values(opts = discretise) |>
+        levels() |>
+        length()
+    } else {
+      n_colors <- ggplot2::get_layer_data(plt)$count |>
+        cut_discrete_values(opts = discretise) |>
+        levels() |>
+        length()
+    }
+    plt <- plt +
+      ggplot2::scale_fill_manual(
+        values = openColours(
+          cols,
+          n = n_colors
+        ),
+        drop = FALSE
+      )
+  } else {
+    plt <- plt +
+      ggplot2::scale_fill_gradientn(
+        colours = openColours(cols)
+      )
+  }
+
+  # return
+  if (plot) {
+    return(plt)
+  } else {
+    return(plotdata)
+  }
+}
+
+# plot_xy_level <- function(
+#   data,
+#   x,
+#   y,
+#   z,
+#   type = NULL,
+#   avg.time = "default",
+#   data.thresh = 0,
+#   statistic = "mean",
+#   percentile = NA,
+#   n_int = 300,
+#   k = NA,
+#   dist = 0.02,
+#   discretise = NULL,
+#   cols = "viridis",
+#   facet_opts = openair::facet_opts(),
+#   auto_text = TRUE,
+#   plot = TRUE,
+#   ...
+# ) {
+#   # check data
+#   vars <- c(x, y, z)
+#   if (
+#     (!is.null(type) && type %in% dateTypes) ||
+#       avg.time != "default"
+#   ) {
+#     vars <- c(vars, "date")
+#   }
+#
+#   data <- checkPrep(data, unique(vars), type = c(type))
+#
+#   # cut data
+#   plotdata <- cutData(data, c(type), ...)
+#
+#   # time average, if requested
+#   if (avg.time != "default") {
+#     plotdata <- openair::timeAverage(
+#       plotdata,
+#       avg.time = avg.time,
+#       data.thresh = data.thresh,
+#       statistic = statistic,
+#       type = c(type) %||% "default"
+#     )
+#   }
+#
+#   plotdata <- tidyr::drop_na(plotdata)
+#
+#   names(plotdata)[names(plotdata) %in% c(x, y)] <- c("xgrid", "ygrid")
+#
+#   form <- formula(paste(
+#     z,
+#     "~ ti(xgrid, k = ",
+#     k,
+#     ") + ti(ygrid, k = ",
+#     k,
+#     ") + ti(xgrid, ygrid, k = ",
+#     k,
+#     ")",
+#     sep = ""
+#   ))
+#
+#   newdata <- expand.grid(
+#     xgrid = pretty(plotdata$xgrid, n = n_int),
+#     ygrid = pretty(plotdata$ygrid, n = n_int)
+#   )
+#
+#   mod <- mgcv::gam(form, data = plotdata)
+#
+#   newdata[, z] <- as.vector(mgcv::predict.gam(mod, newdata = newdata))
+#
+#   id <- mgcv::exclude.too.far(
+#     newdata$xgrid,
+#     newdata$ygrid,
+#     plotdata$xgrid,
+#     plotdata$ygrid,
+#     dist = 0.02
+#   )
+#
+#   newdata[!id, ] |>
+#     ggplot2::ggplot(ggplot2::aes(
+#       x = .data$xgrid,
+#       y = .data$ygrid,
+#       fill = .data[[z]]
+#     )) +
+#     ggplot2::geom_tile() +
+#     theme_oa_classic() +
+#     ggplot2::coord_cartesian(expand = F)
+# }
+
 #' Flexible scatter plots
 #'
 #' Scatter plots with conditioning and three main approaches: conventional
@@ -215,6 +735,7 @@
 #' @import mapproj hexbin
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
+#' @seealso the newer [plot_xy_scatter()] function
 #' @seealso [linearRelation()], [timePlot()] and
 #'   [timeAverage()] for details on selecting averaging times and other
 #'   statistics in a flexible way

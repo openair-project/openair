@@ -1,10 +1,10 @@
 #' Discretise continuous scales in `openair` plotting functions
 #'
 #' These functions are used in the `discretise` argument of many `openair`
-#' plotting functions. [discretise_breaks()] is a way to define breaks directly.
-#' The other functions use one of [ggplot2::cut_interval()],
-#' [ggplot2::cut_number()] or [ggplot2::cut_width()] to discretise a continuous
-#' scale, which can be more useful short-hands.
+#' plotting functions to bin a continuous colour scale. [discretise_breaks()] is
+#' a way to define breaks directly. The other functions use one of
+#' [ggplot2::cut_interval()], [ggplot2::cut_number()] or [ggplot2::cut_width()]
+#' to discretise a continuous scale, which can be more useful short-hands.
 #'
 #' @inheritParams base::cut
 #' @inheritParams ggplot2::cut_width
@@ -13,6 +13,25 @@
 #' @rdname discretise_ggplot
 #' @order 1
 #' @export
+#'
+#' @examples
+#' plot_heatmap(mydata, "no2")
+#'
+#' # 5 groups with equal range
+#' plot_heatmap(mydata, "no2", discretise = discretise_interval(5))
+#'
+#' # 5 groups with the same number of observations
+#' plot_heatmap(mydata, "no2", discretise = discretise_number(5))
+#'
+#' # however many groups with width 5
+#' plot_heatmap(mydata, "no2", discretise = discretise_width(5))
+#'
+#' # defined (irregular) breaks
+#' plot_heatmap(
+#'   mydata,
+#'   "no2",
+#'   discretise = discretise_breaks(c(20, 25, 30, 40, 50, 100))
+#' )
 discretise_breaks <- function(
   breaks,
   labels = NULL,
@@ -82,8 +101,12 @@ discretise_width <- function(
 
 #' @noRd
 cut_discrete_values <- function(x, opts) {
+  if (is.null(opts)) {
+    return(x)
+  }
+
   if (is.numeric(opts) || is.integer(opts)) {
-    opts <- discretise_interval(
+    opts <- discretise_number(
       n = opts
     )
   }
@@ -108,7 +131,7 @@ cut_discrete_values <- function(x, opts) {
       labels = opts$labels
     )
   } else {
-    x <- cut(x, breaks = opts$breaks, labels = opts$labels)
+    x <- cut(x, breaks = opts$breaks, labels = opts$labels, dig.lab = 50)
   }
 
   if (is.null(opts$labels)) {

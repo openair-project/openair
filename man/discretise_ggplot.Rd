@@ -67,10 +67,29 @@ or left edges of bins are included in the bin.}
 }
 \description{
 These functions are used in the \code{discretise} argument of many \code{openair}
-plotting functions. \code{\link[=discretise_breaks]{discretise_breaks()}} is a way to define breaks directly.
-The other functions use one of \code{\link[ggplot2:cut_interval]{ggplot2::cut_interval()}},
-\code{\link[ggplot2:cut_interval]{ggplot2::cut_number()}} or \code{\link[ggplot2:cut_interval]{ggplot2::cut_width()}} to discretise a continuous
-scale, which can be more useful short-hands.
+plotting functions to bin a continuous colour scale. \code{\link[=discretise_breaks]{discretise_breaks()}} is
+a way to define breaks directly. The other functions use one of
+\code{\link[ggplot2:cut_interval]{ggplot2::cut_interval()}}, \code{\link[ggplot2:cut_interval]{ggplot2::cut_number()}} or \code{\link[ggplot2:cut_interval]{ggplot2::cut_width()}}
+to discretise a continuous scale, which can be more useful short-hands.
+}
+\examples{
+plot_heatmap(mydata, "no2")
+
+# 5 groups with equal range
+plot_heatmap(mydata, "no2", discretise = discretise_interval(5))
+
+# 5 groups with the same number of observations
+plot_heatmap(mydata, "no2", discretise = discretise_number(5))
+
+# however many groups with width 5
+plot_heatmap(mydata, "no2", discretise = discretise_width(5))
+
+# defined (irregular) breaks
+plot_heatmap(
+  mydata,
+  "no2",
+  discretise = discretise_breaks(c(20, 25, 30, 40, 50, 100))
+)
 }
 \seealso{
 Other ggplot2 plot utilities: 

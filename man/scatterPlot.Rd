@@ -375,6 +375,8 @@ scatterPlot(mydata,
 }
 }
 \seealso{
+the newer \code{\link[=plot_xy_scatter]{plot_xy_scatter()}} function
+
 \code{\link[=linearRelation]{linearRelation()}}, \code{\link[=timePlot]{timePlot()}} and
 \code{\link[=timeAverage]{timeAverage()}} for details on selecting averaging times and other
 statistics in a flexible way
