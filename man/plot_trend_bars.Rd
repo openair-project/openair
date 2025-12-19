@@ -21,7 +21,8 @@ plot_trend_bars(
 \arguments{
 \item{data}{A data frame.}
 
-\item{pollutant}{The name of the pollutant to summarise.}
+\item{pollutant}{The names of the pollutants to plot; these should be columns
+in \code{data}.}
 
 \item{group}{The splitting variable that makes up the bars in the bar chart
 e.g. \code{group = "cluster"} if the output from \code{polarCluster} is being

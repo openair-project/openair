@@ -30,7 +30,7 @@
 #'   TRUE` (Kunsch, 1989). We follow the suggestion of Kunsch (1989) of setting
 #'   the block length to n(1/3) where n is the length of the time series.
 #'
-#' @inheritParams plot_heatmap
+#' @inheritParams shared_ggplot_params
 #' @inheritParams timeAverage
 #'
 #' @param deseason Should the data be de-deasonalized first? If `TRUE` the

@@ -321,7 +321,7 @@ plot_xy_bins <- function(
           )
           grid <- expand.grid(x = k$x, y = k$y) |>
             dplyr::mutate(z = as.vector(k$z) * nrow(df)) |>
-            setNames(c(x, y, "count"))
+            stats::setNames(c(x, y, "count"))
           id <- mgcv::exclude.too.far(
             grid[[x]],
             grid[[y]],

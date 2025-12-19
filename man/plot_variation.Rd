@@ -23,7 +23,8 @@ plot_variation(
 \arguments{
 \item{data}{A data frame.}
 
-\item{pollutant}{The name of the pollutant to summarise.}
+\item{pollutant}{The names of the pollutants to plot; these should be columns
+in \code{data}.}
 
 \item{x, type}{The name of the data series to use as the x-axis or
 conditioning variable, passed to \code{\link[=cutData]{cutData()}}. These are used before
@@ -71,7 +72,7 @@ provide all necessary options.}
 plotting data, and can be useful when analysing data to extract plot
 components and plotting them in other ways.}
 
-\item{...}{Not currently used.}
+\item{...}{Passed to \code{\link[=cutData]{cutData()}}.}
 }
 \value{
 a \link[ggplot2:ggplot2-package]{ggplot2} plot, or \code{data.frame} if \code{plot = FALSE}.

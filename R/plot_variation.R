@@ -10,7 +10,7 @@
 #'
 #' @description `r lifecycle::badge("experimental")`
 #'
-#' @inheritParams plot_heatmap
+#' @inheritParams shared_ggplot_params
 #'
 #' @param x,type The name of the data series to use as the x-axis or
 #'   conditioning variable, passed to [cutData()]. These are used before

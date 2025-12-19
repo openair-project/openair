@@ -25,7 +25,8 @@ plot_trend_lines(
 \arguments{
 \item{data}{A data frame.}
 
-\item{pollutant}{The name of the pollutant to summarise.}
+\item{pollutant}{The names of the pollutants to plot; these should be columns
+in \code{data}.}
 
 \item{group}{The name of the data series to use as a grouping variable within
 each panel, passed to \code{\link[=cutData]{cutData()}}. The grouping variable is mapped to a
@@ -111,7 +112,7 @@ provide all necessary options.}
 plotting data, and can be useful when analysing data to extract plot
 components and plotting them in other ways.}
 
-\item{...}{Not currently used.}
+\item{...}{Passed to \code{\link[=cutData]{cutData()}}.}
 }
 \value{
 an \link[=openair-package]{openair} object

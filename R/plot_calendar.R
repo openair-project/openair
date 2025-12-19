@@ -13,7 +13,7 @@
 #'   passed to [plot_calendar()] and `statistic = "max"` chosen, which will plot
 #'   maximum daily 8-hour mean concentrations.
 #'
-#' @inheritParams plot_heatmap
+#' @inheritParams shared_ggplot_params
 #' @inheritParams timeAverage
 #'
 #' @param year Year to plot e.g. `year = 2003`. If not supplied all data
@@ -110,7 +110,6 @@ plot_calendar <-
     discretise = NULL,
     windflow = FALSE,
     cols = "viridis",
-    limits = NULL,
     show_year = TRUE,
     w_shift = 0,
     w_abbr_length = 1,
@@ -377,22 +376,12 @@ plot_calendar <-
         breaks = 1:7
       )
 
-    # limits
-    if (!is.null(limits) && is.numeric(plotdata$conc.mat)) {
-      plt <-
-        plt +
-        ggplot2::scale_fill_continuous(
-          limits = limits,
-          oob = scales::oob_squish,
-          na.value = "grey95"
-        )
-    } else if (is.numeric(plotdata$conc.mat)) {
-      plt <-
-        plt +
-        ggplot2::scale_fill_continuous(
-          na.value = "grey95"
-        )
-    }
+    # colours
+    plt <-
+      plt +
+      ggplot2::scale_fill_continuous(
+        na.value = "grey95"
+      )
 
     # windflow
     if (windflow$windflow) {

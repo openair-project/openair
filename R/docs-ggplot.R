@@ -5,6 +5,9 @@
 #'
 #' @param data A data frame.
 #'
+#' @param pollutant The names of the pollutants to plot; these should be columns
+#'   in `data`.
+#'
 #' @param type The column(s) of `data` to use to split the plot into separate
 #'   facets, passed to [cutData()]. `type` may be `NULL` or a vector with
 #'   maximum length 2, which creates a 2D grid of plots.
@@ -42,6 +45,9 @@
 #'   plotting data, and can be useful when analysing data to extract plot
 #'   components and plotting them in other ways.
 #'
+#' @param ... Passed to [cutData()].
+#'
+#' @aliases docs-ggplot-internal
 #' @keywords internal
 #' @aliases NULL
 NULL

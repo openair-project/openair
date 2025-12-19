@@ -15,7 +15,6 @@ plot_calendar(
   discretise = NULL,
   windflow = FALSE,
   cols = "viridis",
-  limits = NULL,
   show_year = TRUE,
   w_shift = 0,
   w_abbr_length = 1,
@@ -28,7 +27,8 @@ plot_calendar(
 \arguments{
 \item{data}{A data frame.}
 
-\item{pollutant}{The name of the pollutant to summarise.}
+\item{pollutant}{The names of the pollutants to plot; these should be columns
+in \code{data}.}
 
 \item{statistic}{Statistic passed to \code{\link[=timeAverage]{timeAverage()}}. Note that if \code{statistic \%in\% c("max", "min")} and \code{annotate} is "ws" or "wd", the hour
 corresponding to the maximum/minimum concentration of \code{polluant} is used to
@@ -66,10 +66,6 @@ relative size of arrows, arrow appearance).}
 
 \item{cols}{The colour palette to use. See \code{\link[=openColours]{openColours()}}.}
 
-\item{limits}{The limits of the colour scale, in the form \code{c(min, max)}. An
-\code{NA} uses the relevant limit of the input data. Not applied if the data is
-discretised.}
-
 \item{show_year}{If only a single year is being plotted, should the calendar
 labels include the year label? \code{TRUE} creates labels like "January-2000",
 \code{FALSE} labels just as "January". If multiple years of data are detected,
@@ -98,7 +94,7 @@ provide all necessary options.}
 plotting data, and can be useful when analysing data to extract plot
 components and plotting them in other ways.}
 
-\item{...}{Not currently used.}
+\item{...}{Passed to \code{\link[=cutData]{cutData()}}.}
 }
 \value{
 a \link[ggplot2:ggplot2-package]{ggplot2} plot, or \code{data.frame} if \code{plot = FALSE}.

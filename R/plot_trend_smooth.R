@@ -8,7 +8,7 @@
 #'   time series. There is the option to deseasonalise the data if there is
 #'   evidence of a seasonal cycle.
 #'
-#' @inheritParams plot_heatmap
+#' @inheritParams shared_ggplot_params
 #' @inheritParams timeAverage
 #'
 #' @param group The name of the data series to use as a grouping variable within

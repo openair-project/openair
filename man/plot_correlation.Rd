@@ -30,6 +30,10 @@ plot_correlation(
 with one another. \code{pollutant}, as in other \code{openair} functions, may also be
 a vector of column names to use instead.}
 
+\item{type}{The column(s) of \code{data} to use to split the plot into separate
+facets, passed to \code{\link[=cutData]{cutData()}}. \code{type} may be \code{NULL} or a vector with
+maximum length 2, which creates a 2D grid of plots.}
+
 \item{cluster}{Should the data be ordered according to cluster analysis? If
 \code{TRUE} hierarchical clustering is applied to the correlation matrices using
 \code{hclust} to group similar variables together.}
@@ -83,7 +87,7 @@ provide all necessary options.}
 plotting data, and can be useful when analysing data to extract plot
 components and plotting them in other ways.}
 
-\item{...}{Not currently used.}
+\item{...}{Passed to \code{\link[=cutData]{cutData()}}.}
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}

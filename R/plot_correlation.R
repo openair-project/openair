@@ -9,7 +9,7 @@
 #'   It is also possible to use the `openair` type option to condition the data
 #'   in many flexible ways.
 #'
-#' @inheritParams plot_heatmap
+#' @inheritParams shared_ggplot_params
 #'
 #' @param pollutant If `NULL`, all numeric columns in `data` will be correlated
 #'   with one another. `pollutant`, as in other `openair` functions, may also be
@@ -93,7 +93,7 @@ plot_correlation <- function(
   annotate <- rlang::arg_match(annotate)
 
   # make sure date is present for types requiring it
-  if (any(type %in% dateTypes) && !"date" %in% names(mydata)) {
+  if (any(type %in% dateTypes) && !"date" %in% names(data)) {
     cli::cli_abort(
       "{.arg data} requires a 'date' column when {.arg type} is {type}."
     )
@@ -165,7 +165,7 @@ plot_correlation <- function(
         expand.grid(x = vars, y = vars, stringsAsFactors = FALSE) |>
           dplyr::rowwise() |>
           dplyr::mutate(
-            test = list(cor.test(
+            test = list(stats::cor.test(
               df[[.data$x]],
               df[[.data$y]],
               use = use,

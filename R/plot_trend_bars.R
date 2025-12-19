@@ -12,7 +12,7 @@
 #'   some sort of time aggregation is needed, which is controlled by the option
 #'   `avg.time`.
 #'
-#' @inheritParams plot_heatmap
+#' @inheritParams shared_ggplot_params
 #'
 #' @param type The name of the data series to use as the conditioning variable,
 #'   passed to [cutData()]. `type` may be `NULL` or a vector with maximum length

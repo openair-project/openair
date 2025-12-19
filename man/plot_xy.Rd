@@ -131,7 +131,7 @@ with, e.g., \code{\link[ggplot2:labs]{ggplot2::labs()}} or \code{\link[ggplot2:g
 plotting data, and can be useful when analysing data to extract plot
 components and plotting them in other ways.}
 
-\item{...}{Additional arguments for other functions calling \code{\link[=timeAverage]{timeAverage()}}.}
+\item{...}{Passed to \code{\link[=cutData]{cutData()}}.}
 
 \item{method}{One of:
 \itemize{

@@ -10,15 +10,13 @@
 #'   changed and `type` can additionally be passed up to two additional options
 #'   to create grid of heatmap summaries.
 #'
-#' @param data A data frame.
+#' @inheritParams shared_ggplot_params
+#' @inheritParams timeAverage
 #'
 #' @param pollutant The name of the pollutant to summarise.
 #'
-#' @param x,y,type The name of the data series to use as the x-axis, y-axis or
-#'   conditioning variable, passed to [cutData()]. These are used before
-#'   applying `statistic`. `type` may be `NULL` or a vector with maximum length
-#'   2, which creates a 2D grid of plots. Duplication is not permitted between
-#'   `x`, `y` and `type`.
+#' @param x,y The columns of `data` to use for the x- and y-axes of the plot,
+#'   passed to [cutData()]. These are used before applying `statistic`.
 #'
 #' @param n_levels The number of levels to split `x`, `y` and `type` data into
 #'   if numeric. The default, `c(10, 10, 4)`, cuts numeric `x` and `y` data into
@@ -31,46 +29,7 @@
 #'   `NA` uses the relevant limit of the input data. Not applied if the data is
 #'   discretised.
 #'
-#' @param cols The colour palette to use. See [openColours()].
-#'
-#' @param auto_text Perform automatic text formatting on common character
-#'   strings? `TRUE` will automatically, for example, subscript the 'x' in NOx
-#'   in axis labels. `FALSE` will leave text unchanged, but users may refine it
-#'   with, e.g., [ggplot2::labs()] or [ggplot2::guides()].
-#'
-#' @param discretise Options to discretise the continuous scale into discrete
-#'   bins. Providing an integer will split the scale into that number of
-#'   quantiles. Alternatively, [discretise_breaks()] allows for extensive
-#'   customisation (e.g., defining specific bin widths, breaks, labels, and so
-#'   on).
-#'
-#' @param windflow If `TRUE`, arrows showing the average magnitude and direction
-#'   of wind within each bin will be shown. Note that this requires the columns
-#'   `"ws"` and `"wd"` to be present in `data`. Alternatively, [windflow_opts()]
-#'   allows for greater customisation of the arrows (e.g., wind speed ranges,
-#'   relative size of arrows, arrow appearance).
-#'
-#' @param statistic The statistic to apply when aggregating the data; default is
-#'   the mean. Can be one of `"mean"`, `"max"`, `"min"`, `"median"`,
-#'   `"frequency"`, `"sum"`, `"sd"`, `"percentile"`. Note that `"sd"` is the
-#'   standard deviation, `"frequency"` is the number (frequency) of valid
-#'   records in the period and `"data.cap"` is the percentage data capture.
-#'   `"percentile"` is the percentile level (%) between 0-100, which can be set
-#'   using the `"percentile"` option.
-#'
-#' @param percentile The percentile level used when `statistic = "percentile"`.
-#'   The default is 95%.
-#'
-#' @param facet_opts A list of options to help control how 'facets' (different
-#'   panels accessed through `type`) behave, e.g., whether different panels
-#'   should share the same scales. Use [facet_opts()] as a convenient way to
-#'   provide all necessary options.
-#'
-#' @param plot Should a plot be produced? `FALSE` will instead return the
-#'   plotting data, and can be useful when analysing data to extract plot
-#'   components and plotting them in other ways.
-#'
-#' @param ... Not currently used.
+#' @param ... Passed to [cutData()].
 #'
 #' @export
 #'
@@ -95,8 +54,7 @@
 #'   pollutant = "no2",
 #'   statistic = "max",
 #'   cols = c("forestgreen", "yellow", "red"),
-#'   discretise = discretise_opts(
-#'     method = "breaks",
+#'   discretise = discretise_breaks(
 #'     breaks = c(0, 2, 50, 100, 500),
 #'     labels = c("low", "hi", "medium", "high"),
 #'   )

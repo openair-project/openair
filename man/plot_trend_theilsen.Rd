@@ -26,15 +26,12 @@ plot_trend_theilsen(
 \arguments{
 \item{data}{A data frame.}
 
-\item{pollutant}{The name of the pollutant to summarise.}
+\item{pollutant}{The names of the pollutants to plot; these should be columns
+in \code{data}.}
 
-\item{type}{\code{type} allows \code{\link[=timeAverage]{timeAverage()}} to be applied to cases where there
-are groups of data that need to be split and the function applied to each
-group. The most common example is data with multiple sites identified with
-a column representing site name e.g. \code{type = "site"}. More generally,
-\code{type} should be used where the date repeats for a particular grouping
-variable. However, if type is not supplied the data will still be averaged
-but the grouping variables (character or factor) will be dropped.}
+\item{type}{The column(s) of \code{data} to use to split the plot into separate
+facets, passed to \code{\link[=cutData]{cutData()}}. \code{type} may be \code{NULL} or a vector with
+maximum length 2, which creates a 2D grid of plots.}
 
 \item{avg.time}{This defines the time period to average to. Can be \code{"sec"},
 \code{"min"}, \code{"hour"}, \code{"day"}, \code{"DSTday"}, \code{"week"}, \code{"month"}, \code{"quarter"} or
@@ -68,7 +65,7 @@ the mean. Can be one of \code{"mean"}, \code{"max"}, \code{"min"}, \code{"median
 standard deviation, \code{"frequency"} is the number (frequency) of valid
 records in the period and \code{"data.cap"} is the percentage data capture.
 \code{"percentile"} is the percentile level (\%) between 0-100, which can be set
-using the \code{"percentile"} option.}
+using the \code{"percentile"} option --- see below. Not used if \code{avg.time = "default"}.}
 
 \item{percentile}{The percentile level used when \code{statistic = "percentile"}.
 The default is 95\%.}

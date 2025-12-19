@@ -28,11 +28,12 @@ plot_heatmap(
 
 \item{pollutant}{The name of the pollutant to summarise.}
 
-\item{x, y, type}{The name of the data series to use as the x-axis, y-axis or
-conditioning variable, passed to \code{\link[=cutData]{cutData()}}. These are used before
-applying \code{statistic}. \code{type} may be \code{NULL} or a vector with maximum length
-2, which creates a 2D grid of plots. Duplication is not permitted between
-\code{x}, \code{y} and \code{type}.}
+\item{x, y}{The columns of \code{data} to use for the x- and y-axes of the plot,
+passed to \code{\link[=cutData]{cutData()}}. These are used before applying \code{statistic}.}
+
+\item{type}{The column(s) of \code{data} to use to split the plot into separate
+facets, passed to \code{\link[=cutData]{cutData()}}. \code{type} may be \code{NULL} or a vector with
+maximum length 2, which creates a 2D grid of plots.}
 
 \item{n_levels}{The number of levels to split \code{x}, \code{y} and \code{type} data into
 if numeric. The default, \code{c(10, 10, 4)}, cuts numeric \code{x} and \code{y} data into
@@ -47,7 +48,7 @@ the mean. Can be one of \code{"mean"}, \code{"max"}, \code{"min"}, \code{"median
 standard deviation, \code{"frequency"} is the number (frequency) of valid
 records in the period and \code{"data.cap"} is the percentage data capture.
 \code{"percentile"} is the percentile level (\%) between 0-100, which can be set
-using the \code{"percentile"} option.}
+using the \code{"percentile"} option --- see below. Not used if \code{avg.time = "default"}.}
 
 \item{percentile}{The percentile level used when \code{statistic = "percentile"}.
 The default is 95\%.}
@@ -84,7 +85,7 @@ provide all necessary options.}
 plotting data, and can be useful when analysing data to extract plot
 components and plotting them in other ways.}
 
-\item{...}{Not currently used.}
+\item{...}{Passed to \code{\link[=cutData]{cutData()}}.}
 }
 \value{
 a \link[ggplot2:ggplot2-package]{ggplot2} plot, or \code{data.frame} if \code{plot = FALSE}.
@@ -113,8 +114,7 @@ plot_heatmap(
   pollutant = "no2",
   statistic = "max",
   cols = c("forestgreen", "yellow", "red"),
-  discretise = discretise_opts(
-    method = "breaks",
+  discretise = discretise_breaks(
     breaks = c(0, 2, 50, 100, 500),
     labels = c("low", "hi", "medium", "high"),
   )
