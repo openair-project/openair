@@ -31,6 +31,8 @@
 #'
 #' @param ... Passed to [cutData()].
 #'
+#' @inheritSection shared_ggplot_params Conditioning with `type`
+#'
 #' @export
 #'
 #' @return a [ggplot2][ggplot2::ggplot2-package] plot, or `data.frame` if `plot

@@ -21,6 +21,8 @@
 #'   within each panel, passed to [cutData()]. `group_col` maps to the colour
 #'   aesthetic and `group_shp` to the marker shape aesthetic.
 #'
+#' @inheritSection shared_ggplot_params Conditioning with `type`
+#'
 #' @seealso the legacy [scatterPlot()] function
 #'
 #' @rdname plot_xy

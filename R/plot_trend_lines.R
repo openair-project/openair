@@ -16,6 +16,8 @@
 #'   irregular data, set to `FALSE`. Note, this should not be set for `type`
 #'   other than `default`.
 #'
+#' @inheritSection shared_ggplot_params Conditioning with `type`
+#'
 #' @export
 #' @return an [openair][openair-package] object
 #'

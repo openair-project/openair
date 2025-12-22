@@ -46,6 +46,8 @@
 #' @param diagonal When `TRUE`, the 'diagonal' of the plot (where the
 #'   correlation is always `1`) will be shown. `FALSE` removes this.
 #'
+#' @inheritSection shared_ggplot_params Conditioning with `type`
+#'
 #' @export
 #'
 #' @seealso The legacy [corPlot()] function.

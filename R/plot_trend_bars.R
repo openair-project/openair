@@ -40,7 +40,7 @@
 #'   100. This is helpful to show the relative (percentage) contribution of the
 #'   proportions.
 #'
-#' @param ... Additional arguments passed to [cutData()].
+#' @inheritSection shared_ggplot_params Conditioning with `type`
 #'
 #' @family ggplot2 time series and trend functions
 #' @family cluster analysis functions

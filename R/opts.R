@@ -21,7 +21,6 @@ facet_opts <- function(
   ncol = NULL,
   scales = "fixed",
   space = "fixed",
-  labeller = "label_value",
   drop = FALSE,
   strip.position = "top",
   switch = NULL,

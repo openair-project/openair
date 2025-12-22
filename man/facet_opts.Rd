@@ -9,7 +9,6 @@ facet_opts(
   ncol = NULL,
   scales = "fixed",
   space = "fixed",
-  labeller = "label_value",
   drop = FALSE,
   strip.position = "top",
   switch = NULL,
@@ -30,17 +29,6 @@ If \code{"free_y"} their height will be proportional to the length of the
 y scale; if \code{"free_x"} their width will be proportional to the
 length of the x scale; or if \code{"free"} both height and width will
 vary.  This setting has no effect unless the appropriate scales also vary.}
-
-\item{labeller}{A function that takes one data frame of labels and
-returns a list or data frame of character vectors. Each input
-column corresponds to one factor. Thus there will be more than
-one with \code{vars(cyl, am)}. Each output
-column gets displayed as one separate line in the strip
-label. This function should inherit from the "labeller" S3 class
-for compatibility with \code{\link[ggplot2:labeller]{labeller()}}. You can use different labeling
-functions for different kind of labels, for example use \code{\link[ggplot2:label_parsed]{label_parsed()}} for
-formatting facet labels. \code{\link[ggplot2:label_value]{label_value()}} is used by default,
-check it for more details and pointers to other options.}
 
 \item{drop}{If \code{TRUE}, the default, all factor levels not used in the
 data will automatically be dropped. If \code{FALSE}, all factor levels

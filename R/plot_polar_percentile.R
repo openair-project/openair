@@ -17,6 +17,8 @@
 #' @param wd_angle The angle to bin the wind direction to. Should divide into
 #'   360 with no remainders; e.g., `5`, `10`, `12`, `15`, etc.
 #'
+#' @inheritSection shared_ggplot_params Conditioning with `type`
+#'
 #' @seealso the legacy [percentileRose()] function
 #' @family ggplot2 directional analysis functions
 #' @author Jack Davison

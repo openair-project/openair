@@ -51,6 +51,8 @@
 #'   chosen. Can be a vector of numbers e.g. `percentile = c(5, 50, 95)` will
 #'   plot the 5th, 50th and 95th percentile values together on the same plot.
 #'
+#' @inheritSection shared_ggplot_params Conditioning with `type`
+#'
 #' @export
 #' @return an [openair][openair-package] object
 #'

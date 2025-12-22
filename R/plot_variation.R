@@ -36,6 +36,8 @@
 #'   use sensible defaults (`0.95` for `"mean"`, `0.75` for `"median"`) and
 #'   `FALSE` will remove intervals entirely.
 #'
+#' @inheritSection shared_ggplot_params Conditioning with `type`
+#'
 #' @export
 #'
 #' @return a [ggplot2][ggplot2::ggplot2-package] plot, or `data.frame` if `plot

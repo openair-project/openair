@@ -55,7 +55,7 @@
 #'   autocorrelation increases the uncertainty of the trend estimate ---
 #'   sometimes by a large amount.
 #'
-#' @param ... Passed to [cutData()].
+#' @inheritSection shared_ggplot_params Conditioning with `type`
 #'
 #' @author David Carslaw
 #' @author Jack Davison

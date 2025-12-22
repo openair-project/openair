@@ -89,6 +89,59 @@ conditioning variables - \code{x} (x-axis), \code{group} (colour) and \code{type
 \code{"month"}, \code{"year"}, etc.), but could be any factor (e.g., \code{"site"}) or
 numeric (e.g., \code{"no2"}, which will be binned) variable.
 }
+\section{Conditioning with \code{type}}{
+
+
+Many \code{openair} plotting functions can be conditioned by using the \code{type}
+argument. This splits a single plot into a grid of smaller plots,
+popularised under the name "small multiples" by Edward Tufte and more
+recently referred to as "faceting" (e.g., in \code{\link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}}).
+\code{type} is always passed to \code{\link[=cutData]{cutData()}}, meaning various presets like
+\code{"year"} or \code{"month"} can be used, and numeric variables are automatically
+binned.
+
+If a single \code{type} is given, the default behaviour is for each panel to
+wrap into a roughly square grid. If two \code{type}s are given, the first will
+be used for the rows of the resulting grid and the second for the columns.
+
+Not all plots can take two \code{type}s. This is usually because one facet
+dimension is already reserved for the specific plot type. For example, in
+\code{\link[=plot_calendar]{plot_calendar()}}, the plot is always faceted by \code{"month"} even if \code{type = NULL}.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# one type (square 2D grid)
+plot_heatmap(mydata, "no2", type = "year")
+
+# two types (two 'axes' of types)
+plot_heatmap(mydata, "no2", type = c("o3", "weekend"))
+}\if{html}{\out{</div>}}
+
+Functions with \code{type} also possess the \code{facet_opts} argument, which takes
+the \code{\link[=facet_opts]{facet_opts()}} function. This allows for finer control of how faceting
+works. This includes:
+\itemize{
+\item The number of rows/columns when only one \code{type} has been given.
+\item Whether axes should share the same x/y limits, or if each panel should
+have unique scales.
+\item If scales are free, whether each panel should have a different size
+proportional to their scales.
+\item On which side of the plot where the facet labels should be drawn.
+\item Whether all axes and axis labels should be drawn, or whether they should
+only be drawn on the margins.
+}
+
+Note that not all options will apply to all plots. For example, plots on a
+polar axis always have fixed x-axes that are mapped to the compass
+directions.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{plot_heatmap(
+  mydata,
+  "no2",
+  type = "year",
+  facet_opts = facet_opts(nrow = 2, axes = "all_y", strip.position = "right")
+)
+}\if{html}{\out{</div>}}
+}
+
 \seealso{
 The legacy \code{\link[=timeVariation]{timeVariation()}} function
 }

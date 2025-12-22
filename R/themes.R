@@ -6,6 +6,7 @@ theme_oa_classic <- function(
   base_line_size = base_size / 22,
   base_rect_size = base_size / 22
 ) {
+  type <- rlang::arg_match(type)
   if (type == "cartesian") {
     theme <- ggplot2::`%+replace%`(
       ggplot2::theme_bw(
