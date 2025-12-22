@@ -41,6 +41,10 @@
 #'   should share the same scales. Use [facet_opts()] as a convenient way to
 #'   provide all necessary options.
 #'
+#' @param r_axis_inside Either a numeric value, setting a theta axis value at
+#'   which the axis should be placed inside the panel, or `FALSE`, which will
+#'   place it outside of panel on a vertical axis.
+#'
 #' @param plot Should a plot be produced? `FALSE` will instead return the
 #'   plotting data, and can be useful when analysing data to extract plot
 #'   components and plotting them in other ways.

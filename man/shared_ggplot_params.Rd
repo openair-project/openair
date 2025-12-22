@@ -42,6 +42,10 @@ panels accessed through \code{type}) behave, e.g., whether different panels
 should share the same scales. Use \code{\link[=facet_opts]{facet_opts()}} as a convenient way to
 provide all necessary options.}
 
+\item{r_axis_inside}{Either a numeric value, setting a theta axis value at
+which the axis should be placed inside the panel, or \code{FALSE}, which will
+place it outside of panel on a vertical axis.}
+
 \item{plot}{Should a plot be produced? \code{FALSE} will instead return the
 plotting data, and can be useful when analysing data to extract plot
 components and plotting them in other ways.}

@@ -1,5 +1,194 @@
 #' Function to plot percentiles by wind direction
 #'
+#' [plot_polar_percentile()] plots percentiles by wind direction with flexible
+#' conditioning. The plot can display any number of percentile lines, though
+#' useful defaults have been chosen. It is most useful for showing the
+#' distribution of concentrations by wind direction and often can reveal
+#' different sources, e.g., those that only affect high percentile
+#' concentrations such as a chimney stack.
+#'
+#' @inheritParams shared_ggplot_params
+#'
+#' @param pollutant One or more pollutants in `data` to calculate percentiles
+#'   for. Multiple pollutants limit the number of allowed `type`s to one.
+#'
+#' @param percentile Any number of percentiles (`0` to `100`) to calculate.
+#'
+#' @param wd_angle The angle to bin the wind direction to. Should divide into
+#'   360 with no remainders; e.g., `5`, `10`, `12`, `15`, etc.
+#'
+#' @seealso the legacy [percentileRose()] function
+#' @family ggplot2 directional analysis functions
+#' @author Jack Davison
+#'
+#' @export
+plot_polar_percentile <- function(
+  data,
+  pollutant,
+  type = NULL,
+  percentile = c(25, 50, 75, 90, 95),
+  wd_angle = 10,
+  r_axis_inside = 315,
+  cols = "turbo",
+  auto_text = TRUE,
+  facet_opts = openair::facet_opts(),
+  plot = TRUE,
+  ...
+) {
+  # make sure percentiles are in order
+  percentile <- sort(percentile)
+
+  # check arguments
+  if (360 %% wd_angle != 0) {
+    cli::cli_abort(
+      "360 must be divisible by {.arg wd_angle}; e.g., {(10:45)[360 %% 10:45 == 0]}."
+    )
+  }
+
+  # check type length & pollutant
+  if (length(pollutant) > 1 && !is.null(type) && length(type) > 1) {
+    cli::cli_abort(
+      "If more than one {.arg pollutant} is defined, only one {.arg type} can be given."
+    )
+  }
+
+  # always reshape data
+  data <-
+    tidyr::pivot_longer(
+      data,
+      cols = dplyr::all_of(pollutant),
+      names_to = "pollutant_name",
+      values_to = "pollutant_value"
+    )
+
+  # check input
+  vars <- c("wd", "pollutant_name", "pollutant_value")
+  if (any(type %in% dateTypes)) {
+    vars <- c(vars, "date")
+  }
+
+  # check and cut data
+  data <- checkPrep(data, vars, type = type, remove.calm = TRUE)
+  data <- cutData(data, type)
+
+  # ammend type if multiple pollutants
+  if (length(pollutant) > 1) {
+    type <- c("pollutant_name", type)
+  }
+
+  # round wd to nearest wd_angle
+  data$wd <- floor(data$wd / wd_angle) * wd_angle
+  data$wd[data$wd == 360] <- 0
+
+  # create all combinations of wd & type
+  all_combos <-
+    dplyr::tibble(wd = seq(0, 360 - wd_angle, wd_angle)) |>
+    tidyr::crossing(
+      data |>
+        dplyr::select(dplyr::all_of(type)) |>
+        dplyr::distinct()
+    )
+
+  # pad data with all wind directions
+  data <-
+    dplyr::full_join(
+      all_combos,
+      data,
+      by = c(type, "wd")
+    ) |>
+    dplyr::arrange(.data$wd)
+
+  # get quantile values
+  plotdata <-
+    data |>
+    dplyr::reframe(
+      value = quantile(
+        .data$pollutant_value,
+        percentile / 100,
+        na.rm = TRUE
+      ),
+      .by = dplyr::all_of(c(type, "wd"))
+    ) |>
+    dplyr::mutate(
+      p = percentile,
+      .by = dplyr::all_of(c(type, "wd"))
+    ) |>
+    dplyr::filter(!is.na(.data$wd))
+
+  # fill missing values - useful w/ missing wds
+  plotdata <-
+    mapType(
+      plotdata,
+      c(type, "p"),
+      \(df) tidyr::fill(df, dplyr::all_of("value"), .direction = "down")
+    )
+
+  # ensure 360 is represented to complete the circle
+  plotdata <-
+    mapType(
+      plotdata,
+      type,
+      \(df) {
+        dplyr::bind_rows(
+          df,
+          df |>
+            dplyr::filter(.data$wd == 0) |>
+            dplyr::mutate(wd = 360)
+        ) |>
+          dplyr::arrange(.data$wd)
+      }
+    )
+
+  # ensure percentile is a factor
+  plotdata$p <- factor(plotdata$p, levels = percentile)
+
+  # create plot
+  plt <-
+    ggplot2::ggplot(
+      plotdata,
+      ggplot2::aes(x = .data$wd, y = .data$value)
+    ) +
+    ggplot2::geom_step(
+      ggplot2::aes(color = .data$p),
+      direction = "mid",
+      linewidth = 1
+    ) +
+    ggplot2::coord_radial(r.axis.inside = r_axis_inside) +
+    ggplot2::scale_x_continuous(
+      limits = c(0, 360),
+      expand = ggplot2::expansion(),
+      oob = scales::oob_keep,
+      breaks = seq(0, 270, 90),
+      labels = c("N", "E", "S", "W")
+    ) +
+    ggplot2::scale_color_manual(
+      values = openColours(cols, n = length(percentile))
+    ) +
+    ggplot2::labs(
+      x = NULL,
+      y = NULL,
+      color = label_openair(paste(
+        paste(pollutant, collapse = ", "),
+        "Percentile"
+      ))
+    ) +
+    theme_oa_classic("polar") +
+    ggplot2::guides(
+      color = ggplot2::guide_legend(reverse = T)
+    ) +
+    get_facet_fun(type, facet_opts)
+
+  # return
+  if (plot) {
+    return(plt)
+  } else {
+    return(plotdata)
+  }
+}
+
+
+#' Function to plot percentiles by wind direction
+#'
 #' `percentileRose` plots percentiles by wind direction with flexible
 #' conditioning. The plot can display multiple percentile lines or filled areas.
 #'
@@ -66,6 +255,7 @@
 #'   passed to `xyplot` via `quickText` to handle routine formatting.
 #' @export
 #' @return an [openair][openair-package] object
+#' @seealso the newer [plot_polar_percentile()] function
 #' @family polar directional analysis functions
 #' @author David Carslaw
 #' @references Ashbaugh, L.L., Malm, W.C., Sadeh, W.Z., 1985. A residence time

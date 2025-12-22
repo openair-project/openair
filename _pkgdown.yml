@@ -21,8 +21,12 @@ reference:
   contents: has_concept("time series and trend functions")
 
 - title: Directional Analysis
+- subtitle: ~
   desc: Examine the relationship between wind speed, wind direction and pollutant
     concentrations.
+- subtitle: New API
+  contents: has_concept("ggplot2 directional analysis functions")
+- subtitle: Legacy API
   contents: has_concept("polar directional analysis functions")
 
 - title: Trajectory Analysis
