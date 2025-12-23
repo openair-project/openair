@@ -67,6 +67,8 @@ components and plotting them in other ways.}
 \item{...}{Passed to \code{\link[=cutData]{cutData()}}.}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 \code{\link[=plot_polar_percentile]{plot_polar_percentile()}} plots percentiles by wind direction with flexible
 conditioning. The plot can display any number of percentile lines, though
 useful defaults have been chosen. It is most useful for showing the

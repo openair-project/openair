@@ -1,11 +1,13 @@
 #' Function to plot percentiles by wind direction
 #'
-#' [plot_polar_percentile()] plots percentiles by wind direction with flexible
-#' conditioning. The plot can display any number of percentile lines, though
-#' useful defaults have been chosen. It is most useful for showing the
-#' distribution of concentrations by wind direction and often can reveal
-#' different sources, e.g., those that only affect high percentile
-#' concentrations such as a chimney stack.
+#' @description `r lifecycle::badge("experimental")`
+#'
+#'   [plot_polar_percentile()] plots percentiles by wind direction with flexible
+#'   conditioning. The plot can display any number of percentile lines, though
+#'   useful defaults have been chosen. It is most useful for showing the
+#'   distribution of concentrations by wind direction and often can reveal
+#'   different sources, e.g., those that only affect high percentile
+#'   concentrations such as a chimney stack.
 #'
 #' @inheritParams shared_ggplot_params
 #'

@@ -96,9 +96,11 @@ components and plotting them in other ways.}
 \item{...}{Passed to \code{\link[=cutData]{cutData()}}.}
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 \code{\link[=plot_polar_heatmap]{plot_polar_heatmap()}} is a variation of \code{\link[=plot_heatmap]{plot_heatmap()}} for which \code{x} is
-set to be \code{"wd"} and \code{y} is treated as a continuous variable to be split into
-regular bins. \code{y} defaults to \code{"ws"}, providing a classic 'directional
+set to be \code{"wd"} and \code{y} is treated as a continuous variable to be split
+into regular bins. \code{y} defaults to \code{"ws"}, providing a classic 'directional
 analysis' plot which can help identify where higher concentrations of
 pollution may be coming from.
 }

@@ -1,10 +1,12 @@
 #' Plot a heatmap by wind direction
 #'
-#' [plot_polar_heatmap()] is a variation of [plot_heatmap()] for which `x` is
-#' set to be `"wd"` and `y` is treated as a continuous variable to be split into
-#' regular bins. `y` defaults to `"ws"`, providing a classic 'directional
-#' analysis' plot which can help identify where higher concentrations of
-#' pollution may be coming from.
+#' @description `r lifecycle::badge("experimental")`
+#'
+#'   [plot_polar_heatmap()] is a variation of [plot_heatmap()] for which `x` is
+#'   set to be `"wd"` and `y` is treated as a continuous variable to be split
+#'   into regular bins. `y` defaults to `"ws"`, providing a classic 'directional
+#'   analysis' plot which can help identify where higher concentrations of
+#'   pollution may be coming from.
 #'
 #' @inheritParams shared_ggplot_params
 #' @inheritParams plot_heatmap
