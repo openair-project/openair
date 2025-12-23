@@ -40,6 +40,7 @@
 #'   100. This is helpful to show the relative (percentage) contribution of the
 #'   proportions.
 #'
+#' @inheritSection shared_ggplot_params Controlling scales
 #' @inheritSection shared_ggplot_params Conditioning with `type`
 #'
 #' @family ggplot2 time series and trend functions
@@ -60,13 +61,18 @@ plot_trend_bars <- function(
   group = NULL,
   type = NULL,
   avg.time = "month",
-  cols = "tol",
   normalise = FALSE,
+  scale_x = openair::scale_opts(),
+  scale_y = openair::scale_opts(),
+  cols = "tol",
   auto_text = TRUE,
   facet_opts = openair::facet_opts(),
   plot = TRUE,
   ...
 ) {
+  scale_y <- resolve_scale_opts(scale_y)
+  scale_x <- resolve_scale_opts(scale_x)
+
   # variables needed
   vars <- c("date", pollutant)
   group <- group %||% "default"
@@ -125,7 +131,11 @@ plot_trend_bars <- function(
     )
 
   # determine facet
-  facet_fun <- get_facet_fun(type, facet_opts = facet_opts)
+  facet_fun <- get_facet_fun(
+    type,
+    facet_opts = facet_opts,
+    auto_text = auto_text
+  )
 
   # might need to stack axes
   position <- ggplot2::position_stack()
@@ -157,10 +167,28 @@ plot_trend_bars <- function(
         "black"
       )
     ) +
-    ggplot2::scale_x_datetime(expand = FALSE) +
+    ggplot2::scale_x_datetime(
+      expand = FALSE,
+      limits = scale_x$limits,
+      breaks = scale_x$breaks,
+      labels = scale_x$labels,
+      date_breaks = scale_x$date_breaks,
+      date_labels = scale_x$date_labels,
+      position = scale_x$position %||% "bottom",
+      sec.axis = scale_x$sec.axis
+    ) +
     ggplot2::scale_y_continuous(
       expand = ggplot2::expansion(c(0, ifelse(normalise, 0, .1))),
-      labels = ylabels
+      labels = if (ggplot2::is_waiver(scale_y$labels)) {
+        ylabels
+      } else {
+        scale_y$labels
+      },
+      limits = scale_y$limits,
+      breaks = scale_y$breaks,
+      position = scale_y$position %||% "left",
+      sec.axis = scale_y$sec.axis,
+      transform = scale_y$transform
     ) +
     ggplot2::scale_fill_discrete(
       label = label_openair,

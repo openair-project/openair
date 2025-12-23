@@ -1,6 +1,6 @@
 # Work out which faceting function is needed for a plot, based on type input and
 # facet options
-get_facet_fun <- function(type, facet_opts) {
+get_facet_fun <- function(type, facet_opts, auto_text) {
   if (all(type == "default")) {
     type <- NULL
   }
@@ -9,7 +9,7 @@ get_facet_fun <- function(type, facet_opts) {
     if (length(type) == 2) {
       facet_fun <-
         ggplot2::facet_grid(
-          labeller = labeller_openair(),
+          labeller = labeller_openair(auto_text),
           rows = ggplot2::vars(.data[[type[1]]]),
           cols = ggplot2::vars(.data[[type[2]]]),
           scales = facet_opts$scales,
@@ -23,7 +23,7 @@ get_facet_fun <- function(type, facet_opts) {
       if (type == "wd") {
         facet_fun <-
           facet_wd(
-            labeller = labeller_openair(),
+            labeller = labeller_openair(auto_text),
             facets = ggplot2::vars(.data[[type]]),
             scales = facet_opts$scales,
             strip.position = facet_opts$strip.position,
@@ -34,7 +34,7 @@ get_facet_fun <- function(type, facet_opts) {
       } else {
         facet_fun <-
           ggplot2::facet_wrap(
-            labeller = labeller_openair(),
+            labeller = labeller_openair(auto_text),
             facets = ggplot2::vars(.data[[type]]),
             nrow = facet_opts$nrow,
             ncol = facet_opts$ncol,

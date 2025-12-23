@@ -16,6 +16,7 @@
 #'   irregular data, set to `FALSE`. Note, this should not be set for `type`
 #'   other than `default`.
 #'
+#' @inheritSection shared_ggplot_params Controlling scales
 #' @inheritSection shared_ggplot_params Conditioning with `type`
 #'
 #' @export
@@ -57,12 +58,17 @@ plot_trend_lines <- function(
   percentile = NA,
   date_pad = FALSE,
   windflow = FALSE,
+  scale_x = openair::scale_opts(),
+  scale_y = openair::scale_opts(),
   cols = "tol",
   auto_text = TRUE,
   facet_opts = openair::facet_opts(),
   plot = TRUE,
   ...
 ) {
+  scale_x <- resolve_scale_opts(scale_x)
+  scale_y <- resolve_scale_opts(scale_y)
+
   type <- type %||% "default"
 
   if (rlang::is_logical(windflow)) {
@@ -105,8 +111,12 @@ plot_trend_lines <- function(
   pollutant <- data$pollutant
   plotdata <- data$data
 
-  # get facet approach
-  facet_fun <- get_facet_fun(type, facet_opts)
+  # determine facet
+  facet_fun <- get_facet_fun(
+    type,
+    facet_opts = facet_opts,
+    auto_text = auto_text
+  )
 
   # if group is null, we use the 'variable' column
   if (is.null(group)) {
@@ -157,6 +167,23 @@ plot_trend_lines <- function(
       color = NULL
     ) +
     facet_fun +
+    ggplot2::scale_y_continuous(
+      breaks = scale_y$breaks,
+      labels = scale_y$labels,
+      limits = scale_y$limits,
+      transform = scale_y$transform,
+      position = scale_y$position %||% "left",
+      sec.axis = scale_y$sec.axis
+    ) +
+    ggplot2::scale_x_datetime(
+      breaks = scale_x$breaks,
+      labels = scale_x$labels,
+      limits = scale_x$limits,
+      date_breaks = scale_x$date_breaks,
+      date_labels = scale_x$date_labels,
+      position = scale_x$position %||% "bottom",
+      sec.axis = scale_x$sec.axis
+    ) +
     ggplot2::scale_color_discrete(
       label = label_openair
     )

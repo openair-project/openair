@@ -17,6 +17,7 @@
 #' @param wd_angle The angle to bin the wind direction to. Should divide into
 #'   360 with no remainders; e.g., `5`, `10`, `12`, `15`, etc.
 #'
+#' @inheritSection shared_ggplot_params Controlling scales
 #' @inheritSection shared_ggplot_params Conditioning with `type`
 #'
 #' @seealso the legacy [percentileRose()] function
@@ -31,12 +32,17 @@ plot_polar_percentile <- function(
   percentile = c(25, 50, 75, 90, 95),
   wd_angle = 10,
   r_axis_inside = 315,
+  inner_radius = 0.1,
+  scale_y = openair::scale_opts(),
   cols = "turbo",
   auto_text = TRUE,
   facet_opts = openair::facet_opts(),
   plot = TRUE,
   ...
 ) {
+  # scales
+  scale_y <- resolve_scale_opts(scale_y)
+
   # make sure percentiles are in order
   percentile <- sort(percentile)
 
@@ -155,30 +161,45 @@ plot_polar_percentile <- function(
       direction = "mid",
       linewidth = 1
     ) +
-    ggplot2::coord_radial(r.axis.inside = r_axis_inside) +
-    ggplot2::scale_x_continuous(
-      limits = c(0, 360),
-      expand = ggplot2::expansion(),
-      oob = scales::oob_keep,
-      breaks = seq(0, 270, 90),
-      labels = c("N", "E", "S", "W")
+    ggplot2::coord_radial(
+      r.axis.inside = r_axis_inside,
+      inner.radius = inner_radius
+    ) +
+    scale_x_compass() +
+    ggplot2::scale_y_continuous(
+      breaks = scale_y$breaks,
+      limits = scale_y$limits,
+      labels = scale_y$labels,
+      transform = scale_y$transform,
+      sec.axis = scale_y$sec.axis,
+      position = scale_y$position %||% "left",
+      expand = ggplot2::expansion()
     ) +
     ggplot2::scale_color_manual(
-      values = openColours(cols, n = length(percentile))
+      values = openColours(cols, n = length(percentile)),
+      label = \(x) label_openair(x, auto_text = auto_text),
+      drop = FALSE
     ) +
     ggplot2::labs(
       x = NULL,
       y = NULL,
-      color = label_openair(paste(
-        paste(pollutant, collapse = ", "),
-        "Percentile"
-      ))
+      color = label_openair(
+        paste(
+          paste(pollutant, collapse = ", "),
+          "Percentile"
+        ),
+        auto_text = auto_text
+      )
     ) +
     theme_oa_classic("polar") +
     ggplot2::guides(
       color = ggplot2::guide_legend(reverse = T)
     ) +
-    get_facet_fun(type, facet_opts)
+    get_facet_fun(
+      type,
+      facet_opts = facet_opts,
+      auto_text = auto_text
+    )
 
   # return
   if (plot) {

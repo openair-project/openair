@@ -13,9 +13,10 @@ plot_heatmap(
   n_levels = c(10, 10, 4),
   statistic = c("mean", "max", "min", "median", "frequency", "sum", "sd", "percentile"),
   percentile = 95,
+  min_bin = 1,
   discretise = NULL,
   windflow = FALSE,
-  limits = NULL,
+  scale_cols = openair::scale_opts(),
   cols = "turbo",
   auto_text = TRUE,
   facet_opts = openair::facet_opts(),
@@ -53,6 +54,10 @@ using the \code{"percentile"} option --- see below. Not used if \code{avg.time =
 \item{percentile}{The percentile level used when \code{statistic = "percentile"}.
 The default is 95\%.}
 
+\item{min_bin}{The minimum number of measurements to use to calculate a
+binned statistic. If the number is below \code{min_bin}, the value will be
+dropped from the returned plot and/or data.}
+
 \item{discretise}{Options to discretise the continuous scale into discrete
 bins. Providing an integer will split the scale into that number of
 quantiles. Alternatively, \code{\link[=discretise_breaks]{discretise_breaks()}} allows for extensive
@@ -64,10 +69,6 @@ of wind within each bin will be shown. Note that this requires the columns
 \code{"ws"} and \code{"wd"} to be present in \code{data}. Alternatively, \code{\link[=windflow_opts]{windflow_opts()}}
 allows for greater customisation of the arrows (e.g., wind speed ranges,
 relative size of arrows, arrow appearance).}
-
-\item{limits}{The limits of the colour scale, in the form \code{c(min, max)}. An
-\code{NA} uses the relevant limit of the input data. Not applied if the data is
-discretised.}
 
 \item{cols}{The colour palette to use. See \code{\link[=openColours]{openColours()}}.}
 
@@ -101,6 +102,52 @@ categorical properties. The default version of the plot uses \code{y = "hour"}
 changed and \code{type} can additionally be passed up to two additional options
 to create grid of heatmap summaries.
 }
+\section{Controlling scales}{
+
+
+In \code{openair}, a 'scale' is anything expressed in a numeric or date range.
+This includes axes and colour bars. Most \code{openair} plotting functions
+possess arguments in the pattern \verb{scale_*} to control these - e.g.,
+\code{scale_x}, \code{scale_y}, and \code{scale_col}.
+
+If these arguments are passed a single number, this will set the maximum of
+the scale to be that number. If two numbers are provided, these will be
+used as the scale range.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# x axis goes up to 100
+plot_xy_scatter(mydata, "nox", "no2", scale_x = 100)
+
+# x axis is between 50 and 150
+plot_xy_scatter(mydata, "nox", "no2", scale_x = c(50, 150))
+}\if{html}{\out{</div>}}
+
+These \verb{scale_*} options can also be provided with the \code{\link[=scale_opts]{scale_opts()}}
+function, which allows for further customisation, such as:
+\itemize{
+\item Where to add major axis/legend breaks, and how to label them.
+\item Whether to transform the scale (e.g., a log or sqrt transform).
+\item Where to place the axis, and whether to draw a second one (axes only).
+}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{plot_xy_scatter(
+  mydata,
+  "nox",
+  "no2",
+  scale_x = scale_opts(
+    transform = "pseudo_log",
+    breaks = c(1, 3, 10, 30, 100, 300, 1000, 3000),
+    sec.axis = ggplot2::sec_axis(~.)
+  )
+)
+}\if{html}{\out{</div>}}
+
+Take care with date scales (e.g., \code{scale_x} in \code{\link[=plot_trend_bars]{plot_trend_bars()}});
+\code{limits} should be provided as POSIXct objects. This is likely to be
+refined in future. Note that, for date scales, \code{date_breaks} and
+\code{date_labels} can be used to more easily refine the appearance of the
+scale.
+}
+
 \section{Conditioning with \code{type}}{
 
 

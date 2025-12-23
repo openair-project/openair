@@ -15,6 +15,8 @@ plot_trend_theilsen(
   alpha = 0.05,
   deseason = FALSE,
   autocor = FALSE,
+  scale_x = openair::scale_opts(),
+  scale_y = openair::scale_opts(),
   cols = "tol",
   slope_unit = NULL,
   auto_text = TRUE,
@@ -84,6 +86,18 @@ estimates? The default is \code{FALSE}. Generally, accounting for
 autocorrelation increases the uncertainty of the trend estimate ---
 sometimes by a large amount.}
 
+\item{scale_x}{Options for the x-axis scale of the plot. If a single number,
+this will set an upper scale limit. If greater than one number, the range
+of the input will be used as the axis limits. Can also be \code{\link[=scale_opts]{scale_opts()}},
+which permit further customisation such as setting axis breaks, labels and
+scale transforms.}
+
+\item{scale_y}{Options for the y-axis scale of the plot. If a single number,
+this will set an upper scale limit. If greater than one number, the range
+of the input will be used as the axis limits. Can also be \code{\link[=scale_opts]{scale_opts()}},
+which permit further customisation such as setting axis breaks, labels and
+scale transforms.}
+
 \item{cols}{The colour scheme to use in the plot. Passed to \code{\link[=openColours]{openColours()}}.
 Likely more usefully, three colours can be defined in a single vector. For
 example, when \code{cols = c("blue", "red", "green")}, the data will be coloured
@@ -138,6 +152,52 @@ based on Kunsch (1989). The basic function has been adapted to take account
 of auto-correlated data using block bootstrap simulations if \code{autocor = TRUE} (Kunsch, 1989). We follow the suggestion of Kunsch (1989) of setting
 the block length to n(1/3) where n is the length of the time series.
 }
+\section{Controlling scales}{
+
+
+In \code{openair}, a 'scale' is anything expressed in a numeric or date range.
+This includes axes and colour bars. Most \code{openair} plotting functions
+possess arguments in the pattern \verb{scale_*} to control these - e.g.,
+\code{scale_x}, \code{scale_y}, and \code{scale_col}.
+
+If these arguments are passed a single number, this will set the maximum of
+the scale to be that number. If two numbers are provided, these will be
+used as the scale range.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# x axis goes up to 100
+plot_xy_scatter(mydata, "nox", "no2", scale_x = 100)
+
+# x axis is between 50 and 150
+plot_xy_scatter(mydata, "nox", "no2", scale_x = c(50, 150))
+}\if{html}{\out{</div>}}
+
+These \verb{scale_*} options can also be provided with the \code{\link[=scale_opts]{scale_opts()}}
+function, which allows for further customisation, such as:
+\itemize{
+\item Where to add major axis/legend breaks, and how to label them.
+\item Whether to transform the scale (e.g., a log or sqrt transform).
+\item Where to place the axis, and whether to draw a second one (axes only).
+}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{plot_xy_scatter(
+  mydata,
+  "nox",
+  "no2",
+  scale_x = scale_opts(
+    transform = "pseudo_log",
+    breaks = c(1, 3, 10, 30, 100, 300, 1000, 3000),
+    sec.axis = ggplot2::sec_axis(~.)
+  )
+)
+}\if{html}{\out{</div>}}
+
+Take care with date scales (e.g., \code{scale_x} in \code{\link[=plot_trend_bars]{plot_trend_bars()}});
+\code{limits} should be provided as POSIXct objects. This is likely to be
+refined in future. Note that, for date scales, \code{date_breaks} and
+\code{date_labels} can be used to more easily refine the appearance of the
+scale.
+}
+
 \section{Conditioning with \code{type}}{
 
 

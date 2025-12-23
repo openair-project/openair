@@ -36,6 +36,7 @@
 #'   use sensible defaults (`0.95` for `"mean"`, `0.75` for `"median"`) and
 #'   `FALSE` will remove intervals entirely.
 #'
+#' @inheritSection shared_ggplot_params Controlling scales
 #' @inheritSection shared_ggplot_params Conditioning with `type`
 #'
 #' @export
@@ -57,12 +58,15 @@ plot_variation <- function(
   statistic = c("mean", "median"),
   stat_interval = TRUE,
   windflow = FALSE,
+  scale_y = openair::scale_opts(),
   cols = "tol",
   auto_text = TRUE,
   facet_opts = openair::facet_opts(),
   plot = TRUE,
   ...
 ) {
+  scale_y <- resolve_scale_opts(scale_y)
+
   # disallow multiple pollutants & groups
   if (length(pollutant) > 1L && !is.null(group)) {
     cli::cli_abort(
@@ -144,9 +148,6 @@ plot_variation <- function(
     plotdata <- dplyr::left_join(plotdata, winddata, by = c(group, x, type))
   }
 
-  # work out the facet function
-  facet_fun <- get_facet_fun(type, facet_opts)
-
   # construct plot
   plt <-
     plotdata |>
@@ -158,7 +159,11 @@ plot_variation <- function(
         ymin = .data$min
       )
     ) +
-    facet_fun +
+    get_facet_fun(
+      type,
+      facet_opts = facet_opts,
+      auto_text = auto_text
+    ) +
     ggplot2::labs(
       color = NULL,
       fill = NULL,
@@ -169,21 +174,21 @@ plot_variation <- function(
       )
     ) +
     theme_oa_classic() +
-    ggplot2::theme(
-      palette.fill.discrete = c(
-        openair::openColours(
-          scheme = cols,
-          n = dplyr::n_distinct(levels(plotdata[[group]]))
-        ),
-        "black"
+    ggplot2::scale_color_manual(
+      values = openair::openColours(
+        scheme = cols,
+        n = dplyr::n_distinct(levels(plotdata[[group]]))
       ),
-      palette.colour.discrete = c(
-        openair::openColours(
-          scheme = cols,
-          n = dplyr::n_distinct(levels(plotdata[[group]]))
-        ),
-        "black"
-      )
+      label = \(x) label_openair(x, auto_text = auto_text),
+      drop = FALSE
+    ) +
+    ggplot2::scale_y_continuous(
+      breaks = scale_y$breaks,
+      labels = scale_y$labels,
+      limits = scale_y$limits,
+      transform = scale_y$transform,
+      position = scale_y$position %||% "left",
+      sec.axis = scale_y$sec.axis
     ) +
     ggplot2::scale_color_discrete(
       label = label_openair,

@@ -15,9 +15,9 @@
 #'   with one another. `pollutant`, as in other `openair` functions, may also be
 #'   a vector of column names to use instead.
 #'
-#' @param cols The colour palette to use. See [openColours()]. Note that
-#'   [plot_correlation()] fixes the colour scale between `-1` and `1`, so a
-#'   'diverging' palette is recommended.
+#' @param cols The colour palette to use. See [openColours()]. Note that, by
+#'   default, [plot_correlation()] fixes the colour scale between `-1` and `1`,
+#'   so a 'diverging' palette is recommended.
 #'
 #' @param cluster Should the data be ordered according to cluster analysis? If
 #'   `TRUE` hierarchical clustering is applied to the correlation matrices using
@@ -46,6 +46,7 @@
 #' @param diagonal When `TRUE`, the 'diagonal' of the plot (where the
 #'   correlation is always `1`) will be shown. `FALSE` removes this.
 #'
+#' @inheritSection shared_ggplot_params Controlling scales
 #' @inheritSection shared_ggplot_params Conditioning with `type`
 #'
 #' @export
@@ -84,6 +85,7 @@ plot_correlation <- function(
   triangle = c("all", "lower", "upper"),
   diagonal = TRUE,
   discretise = NULL,
+  scale_col = c(-1, 1),
   cols = "PRGn",
   cols_annotation = "black",
   auto_text = TRUE,
@@ -93,6 +95,7 @@ plot_correlation <- function(
 ) {
   triangle <- rlang::arg_match(triangle)
   annotate <- rlang::arg_match(annotate)
+  scale_col <- resolve_scale_opts(scale_col)
 
   # make sure date is present for types requiring it
   if (any(type %in% dateTypes) && !"date" %in% names(data)) {
@@ -237,6 +240,7 @@ plot_correlation <- function(
     fill_scale <- list(
       ggplot2::scale_fill_manual(
         values = openColours(scheme = cols, n = length(levels(cut_vals))),
+        label = \(x) label_openair(x, auto_text = auto_text),
         drop = FALSE
       ),
       ggplot2::guides(fill = ggplot2::guide_legend(reverse = TRUE))
@@ -245,12 +249,20 @@ plot_correlation <- function(
     plotdata$cor_value <- plotdata$cor
     fill_scale <- ggplot2::scale_fill_gradientn(
       colours = openColours(scheme = cols),
-      limits = c(-1, 1)
+      limits = scale_col$limits,
+      breaks = scale_col$breaks,
+      labels = scale_col$labels,
+      transform = scale_col$transform,
+      oob = scales::oob_squish
     )
   }
 
-  # get faceting strategy
-  facet_fun <- get_facet_fun(type, facet_opts)
+  # determine facet
+  facet_fun <- get_facet_fun(
+    type,
+    facet_opts = facet_opts,
+    auto_text = auto_text
+  )
 
   # make plot
   plt <-
@@ -282,7 +294,9 @@ plot_correlation <- function(
         size = 2.5
       ) +
       ggplot2::scale_color_manual(
-        values = openColours(cols_annotation, n = 2)
+        values = openColours(cols_annotation, n = 2),
+        label = \(x) label_openair(x, auto_text = auto_text),
+        drop = FALSE
       ) +
       ggplot2::guides(color = ggplot2::guide_none())
   }

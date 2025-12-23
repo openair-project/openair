@@ -41,15 +41,88 @@
 #'   should share the same scales. Use [facet_opts()] as a convenient way to
 #'   provide all necessary options.
 #'
+#' @param scale_x Options for the x-axis scale of the plot. If a single number,
+#'   this will set an upper scale limit. If greater than one number, the range
+#'   of the input will be used as the axis limits. Can also be [scale_opts()],
+#'   which permit further customisation such as setting axis breaks, labels and
+#'   scale transforms.
+#'
+#' @param scale_y Options for the y-axis scale of the plot. If a single number,
+#'   this will set an upper scale limit. If greater than one number, the range
+#'   of the input will be used as the axis limits. Can also be [scale_opts()],
+#'   which permit further customisation such as setting axis breaks, labels and
+#'   scale transforms.
+#'
+#' @param scale_col Options for the colour scale of the plot. If a single
+#'   number, this will set an upper scale limit. If greater than one number, the
+#'   range of the input will be used as the axis limits. Can also be
+#'   [scale_opts()], which permit further customisation such as setting axis
+#'   breaks, labels and scale transforms. Note that these options will not apply
+#'   if `discretise` is used, as this overrides the continuous scale.
+#'
 #' @param r_axis_inside Either a numeric value, setting a theta axis value at
 #'   which the axis should be placed inside the panel, or `FALSE`, which will
 #'   place it outside of panel on a vertical axis.
+#'
+#' @param inner_radius A numeric between 0 and 1 setting the size of a inner
+#'   radius hole.
+#'
+#' @param min_bin The minimum number of measurements to use to calculate a
+#'   binned statistic. If the number is below `min_bin`, the value will be
+#'   dropped from the returned plot and/or data.
 #'
 #' @param plot Should a plot be produced? `FALSE` will instead return the
 #'   plotting data, and can be useful when analysing data to extract plot
 #'   components and plotting them in other ways.
 #'
 #' @param ... Passed to [cutData()].
+#'
+#' @section Controlling scales:
+#'
+#'   In `openair`, a 'scale' is anything expressed in a numeric or date range.
+#'   This includes axes and colour bars. Most `openair` plotting functions
+#'   possess arguments in the pattern `scale_*` to control these - e.g.,
+#'   `scale_x`, `scale_y`, and `scale_col`.
+#'
+#'   If these arguments are passed a single number, this will set the maximum of
+#'   the scale to be that number. If two numbers are provided, these will be
+#'   used as the scale range.
+#'
+#'   ```
+#'   # x axis goes up to 100
+#'   plot_xy_scatter(mydata, "nox", "no2", scale_x = 100)
+#'
+#'   # x axis is between 50 and 150
+#'   plot_xy_scatter(mydata, "nox", "no2", scale_x = c(50, 150))
+#'   ```
+#'
+#'   These `scale_*` options can also be provided with the [scale_opts()]
+#'   function, which allows for further customisation, such as:
+#'
+#'   - Where to add major axis/legend breaks, and how to label them.
+#'
+#'   - Whether to transform the scale (e.g., a log or sqrt transform).
+#'
+#'   - Where to place the axis, and whether to draw a second one (axes only).
+#'
+#'   ```
+#'   plot_xy_scatter(
+#'     mydata,
+#'     "nox",
+#'     "no2",
+#'     scale_x = scale_opts(
+#'       transform = "pseudo_log",
+#'       breaks = c(1, 3, 10, 30, 100, 300, 1000, 3000),
+#'       sec.axis = ggplot2::sec_axis(~.)
+#'     )
+#'   )
+#'   ```
+#'
+#'   Take care with date scales (e.g., `scale_x` in [plot_trend_bars()]);
+#'   `limits` should be provided as POSIXct objects. This is likely to be
+#'   refined in future. Note that, for date scales, `date_breaks` and
+#'   `date_labels` can be used to more easily refine the appearance of the
+#'   scale.
 #'
 #' @section Conditioning with `type`:
 #'

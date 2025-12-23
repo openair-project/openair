@@ -25,12 +25,9 @@
 #'   three values are determined by recursion; if more than three values are
 #'   supplied, only the first three are used.
 #'
-#' @param limits The limits of the colour scale, in the form `c(min, max)`. An
-#'   `NA` uses the relevant limit of the input data. Not applied if the data is
-#'   discretised.
-#'
 #' @param ... Passed to [cutData()].
 #'
+#' @inheritSection shared_ggplot_params Controlling scales
 #' @inheritSection shared_ggplot_params Conditioning with `type`
 #'
 #' @export
@@ -80,9 +77,10 @@ plot_heatmap <- function(
     "percentile"
   ),
   percentile = 95,
+  min_bin = 1,
   discretise = NULL,
   windflow = FALSE,
-  limits = NULL,
+  scale_cols = openair::scale_opts(),
   cols = "turbo",
   auto_text = TRUE,
   facet_opts = openair::facet_opts(),
@@ -91,6 +89,7 @@ plot_heatmap <- function(
 ) {
   # ensure statistic is valid
   statistic <- rlang::arg_match(statistic)
+  scale_col <- resolve_scale_opts(scale_col)
 
   if (rlang::is_logical(windflow)) {
     windflow <- windflow_opts(windflow = windflow)
@@ -227,8 +226,17 @@ plot_heatmap <- function(
     newdata |>
     dplyr::summarise(
       {{ pollutant }} := calc_stat(.data[[pollutant]]),
+      n = dplyr::n(),
       .by = dplyr::all_of(c(x, y, type))
     ) |>
+    dplyr::mutate(
+      {{ pollutant }} := dplyr::if_else(
+        .data$n < min_bin,
+        NA,
+        .data[[pollutant]]
+      )
+    ) |>
+    tidyr::drop_na(dplyr::all_of(c(x, y, type, pollutant))) |>
     dplyr::mutate(dplyr::across(
       dplyr::all_of(c(x, y, type)),
       function(x) factor(x, ordered = FALSE)
@@ -262,37 +270,35 @@ plot_heatmap <- function(
     plotdata <- dplyr::left_join(plotdata, winddata, by = c(x, y, type))
   }
 
-  # discretisation
-  discrete_scale <- NULL
+  # scale colours
   if (!is.null(discretise)) {
     plotdata[pollutant] <- cut_discrete_values(
       plotdata[[pollutant]],
       opts = discretise
     )
 
-    color_theme <- ggplot2::theme(
-      palette.fill.discrete = openair::openColours(
-        scheme = cols,
-        n = dplyr::n_distinct(levels(plotdata[[pollutant]]))
+    color_scale <- list(
+      ggplot2::scale_fill_discrete(
+        label = label_openair,
+        drop = FALSE,
+        na.value = "grey95",
+        breaks = levels(plotdata[[pollutant]])
+      ),
+      ggplot2::guides(
+        fill = ggplot2::guide_legend(reverse = TRUE)
       )
-    )
-
-    discrete_scale <- ggplot2::scale_fill_discrete(
-      label = label_openair,
-      drop = FALSE,
-      na.value = "grey95",
-      breaks = levels(plotdata[[pollutant]])
     )
   } else {
-    color_theme <- ggplot2::theme(
-      palette.fill.continuous = openair::openColours(
-        scheme = cols
+    color_scale <-
+      ggplot2::scale_fill_gradientn(
+        values = openair::openColours(scheme = cols),
+        limits = scale_col$limits,
+        breaks = scale_col$breaks,
+        labels = scale_col$labels,
+        transform = scale_col$transform,
+        oob = scales::oob_squish
       )
-    )
   }
-
-  # determine facet
-  facet_fun <- get_facet_fun(type, facet_opts = facet_opts)
 
   # build plot
   plt <-
@@ -314,19 +320,12 @@ plot_heatmap <- function(
       fill = label_openair(pollutant, auto_text = auto_text)
     ) +
     theme_oa_classic() +
-    color_theme +
-    discrete_scale +
-    facet_fun
-
-  # limits
-  if (!is.null(limits) && is.numeric(plotdata[[pollutant]])) {
-    plt <-
-      plt +
-      ggplot2::scale_fill_continuous(
-        limits = limits,
-        oob = scales::oob_squish
-      )
-  }
+    color_scale +
+    get_facet_fun(
+      type,
+      facet_opts = facet_opts,
+      auto_text = auto_text
+    )
 
   # windflow
   if (windflow$windflow) {
@@ -340,8 +339,6 @@ plot_heatmap <- function(
         show.legend = FALSE
       )
   }
-
-  # don't drop scales
 
   # return plot or data
   if (plot) {

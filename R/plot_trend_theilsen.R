@@ -55,6 +55,7 @@
 #'   autocorrelation increases the uncertainty of the trend estimate ---
 #'   sometimes by a large amount.
 #'
+#' @inheritSection shared_ggplot_params Controlling scales
 #' @inheritSection shared_ggplot_params Conditioning with `type`
 #'
 #' @author David Carslaw
@@ -114,6 +115,8 @@ plot_trend_theilsen <- function(
   alpha = 0.05,
   deseason = FALSE,
   autocor = FALSE,
+  scale_x = openair::scale_opts(),
+  scale_y = openair::scale_opts(),
   cols = "tol",
   slope_unit = NULL,
   auto_text = TRUE,
@@ -122,6 +125,8 @@ plot_trend_theilsen <- function(
   ...
 ) {
   type <- type %||% "default"
+  scale_x <- resolve_scale_opts(scale_x)
+  scale_y <- resolve_scale_opts(scale_y)
 
   # find time interval
   # need this because if user has a data capture threshold, need to know
@@ -292,8 +297,12 @@ plot_trend_theilsen <- function(
     res2$p.stars
   )
 
-  # get facets
-  facet_fun <- get_facet_fun(type, facet_opts)
+  # determine facet
+  facet_fun <- get_facet_fun(
+    type,
+    facet_opts = facet_opts,
+    auto_text = auto_text
+  )
 
   # construct plot
   plt <-
@@ -348,12 +357,31 @@ plot_trend_theilsen <- function(
       x = NULL,
       y = label_openair(pollutant, auto_text = auto_text)
     ) +
+    ggplot2::scale_y_continuous(
+      breaks = scale_y$breaks,
+      labels = scale_y$labels,
+      limits = scale_y$limits,
+      transform = scale_y$transform,
+      position = scale_y$position %||% "left",
+      sec.axis = scale_y$sec.axis
+    ) +
+    ggplot2::scale_x_datetime(
+      breaks = scale_x$breaks,
+      labels = scale_x$labels,
+      limits = scale_x$limits,
+      date_breaks = scale_x$date_breaks,
+      date_labels = scale_x$date_labels,
+      position = scale_x$position %||% "bottom",
+      sec.axis = scale_x$sec.axis
+    ) +
     ggplot2::scale_color_manual(
       breaks = c("Data", "TheilSen", "Label"),
       values = openair::openColours(
         scheme = cols,
         n = 3
-      )
+      ),
+      label = \(x) label_openair(x, auto_text = auto_text),
+      drop = FALSE
     ) +
     facet_fun
 

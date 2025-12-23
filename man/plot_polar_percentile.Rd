@@ -11,6 +11,8 @@ plot_polar_percentile(
   percentile = c(25, 50, 75, 90, 95),
   wd_angle = 10,
   r_axis_inside = 315,
+  inner_radius = 0.1,
+  scale_y = openair::scale_opts(),
   cols = "turbo",
   auto_text = TRUE,
   facet_opts = openair::facet_opts(),
@@ -36,6 +38,15 @@ maximum length 2, which creates a 2D grid of plots.}
 \item{r_axis_inside}{Either a numeric value, setting a theta axis value at
 which the axis should be placed inside the panel, or \code{FALSE}, which will
 place it outside of panel on a vertical axis.}
+
+\item{inner_radius}{A numeric between 0 and 1 setting the size of a inner
+radius hole.}
+
+\item{scale_y}{Options for the y-axis scale of the plot. If a single number,
+this will set an upper scale limit. If greater than one number, the range
+of the input will be used as the axis limits. Can also be \code{\link[=scale_opts]{scale_opts()}},
+which permit further customisation such as setting axis breaks, labels and
+scale transforms.}
 
 \item{cols}{The colour palette to use. See \code{\link[=openColours]{openColours()}}.}
 
@@ -63,6 +74,52 @@ distribution of concentrations by wind direction and often can reveal
 different sources, e.g., those that only affect high percentile
 concentrations such as a chimney stack.
 }
+\section{Controlling scales}{
+
+
+In \code{openair}, a 'scale' is anything expressed in a numeric or date range.
+This includes axes and colour bars. Most \code{openair} plotting functions
+possess arguments in the pattern \verb{scale_*} to control these - e.g.,
+\code{scale_x}, \code{scale_y}, and \code{scale_col}.
+
+If these arguments are passed a single number, this will set the maximum of
+the scale to be that number. If two numbers are provided, these will be
+used as the scale range.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# x axis goes up to 100
+plot_xy_scatter(mydata, "nox", "no2", scale_x = 100)
+
+# x axis is between 50 and 150
+plot_xy_scatter(mydata, "nox", "no2", scale_x = c(50, 150))
+}\if{html}{\out{</div>}}
+
+These \verb{scale_*} options can also be provided with the \code{\link[=scale_opts]{scale_opts()}}
+function, which allows for further customisation, such as:
+\itemize{
+\item Where to add major axis/legend breaks, and how to label them.
+\item Whether to transform the scale (e.g., a log or sqrt transform).
+\item Where to place the axis, and whether to draw a second one (axes only).
+}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{plot_xy_scatter(
+  mydata,
+  "nox",
+  "no2",
+  scale_x = scale_opts(
+    transform = "pseudo_log",
+    breaks = c(1, 3, 10, 30, 100, 300, 1000, 3000),
+    sec.axis = ggplot2::sec_axis(~.)
+  )
+)
+}\if{html}{\out{</div>}}
+
+Take care with date scales (e.g., \code{scale_x} in \code{\link[=plot_trend_bars]{plot_trend_bars()}});
+\code{limits} should be provided as POSIXct objects. This is likely to be
+refined in future. Note that, for date scales, \code{date_breaks} and
+\code{date_labels} can be used to more easily refine the appearance of the
+scale.
+}
+
 \section{Conditioning with \code{type}}{
 
 
@@ -118,6 +175,9 @@ directions.
 
 \seealso{
 the legacy \code{\link[=percentileRose]{percentileRose()}} function
+
+Other ggplot2 directional analysis functions: 
+\code{\link{plot_polar_heatmap}()}
 }
 \author{
 Jack Davison

@@ -94,6 +94,7 @@ plot_heatmap(
 \seealso{
 Other ggplot2 plot utilities: 
 \code{\link{facet_opts}()},
+\code{\link{scale_opts}()},
 \code{\link{windflow_opts}()}
 }
 \concept{ggplot2 plot utilities}

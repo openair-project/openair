@@ -1,3 +1,259 @@
+#' Plot a heatmap by wind direction
+#'
+#' [plot_polar_heatmap()] is a variation of [plot_heatmap()] for which `x` is
+#' set to be `"wd"` and `y` is treated as a continuous variable to be split into
+#' regular bins. `y` defaults to `"ws"`, providing a classic 'directional
+#' analysis' plot which can help identify where higher concentrations of
+#' pollution may be coming from.
+#'
+#' @inheritParams shared_ggplot_params
+#' @inheritParams plot_heatmap
+#'
+#' @inheritSection shared_ggplot_params Controlling scales
+#' @inheritSection shared_ggplot_params Conditioning with `type`
+#'
+#' @seealso the legacy [polarFreq()] function
+#' @family ggplot2 directional analysis functions
+#' @author Jack Davison
+#'
+#' @export
+plot_polar_heatmap <- function(
+  data,
+  pollutant,
+  y = "ws",
+  type = NULL,
+  statistic = c(
+    "mean",
+    "max",
+    "min",
+    "median",
+    "frequency",
+    "sum",
+    "sd",
+    "percentile"
+  ),
+  percentile = 95,
+  wd_angle = 10,
+  y_int = 1,
+  min_bin = 1,
+  discretise = NULL,
+  r_axis_inside = 315,
+  inner_radius = 0.1,
+  scale_y = openair::scale_opts(),
+  scale_col = openair::scale_opts(),
+  cols = "turbo",
+  auto_text = TRUE,
+  facet_opts = openair::facet_opts(),
+  plot = TRUE,
+  ...
+) {
+  # scales
+  scale_y <- resolve_scale_opts(scale_y)
+  scale_col <- resolve_scale_opts(scale_col)
+
+  # ensure statistic is valid
+  statistic <- rlang::arg_match(statistic)
+
+  # check length of x
+  if (length(y) > 1 || length(type) > 2) {
+    cli::cli_abort(
+      c(
+        "{.fun openair::plot_polar_heatmap} may only have one {.arg y} and up to two {.arg type}s."
+      )
+    )
+  }
+
+  # wd_angle must be evenly divisible
+  if (360 %% wd_angle != 0) {
+    cli::cli_abort(
+      "360 must be divisible by {.arg wd_angle}; e.g., {(10:45)[360 %% 10:45 == 0]}."
+    )
+  }
+
+  if (statistic == "mean") {
+    stat.fun <- mean
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "median") {
+    stat.fun <- stats::median
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "sd") {
+    stat.fun <- stats::sd
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "max") {
+    stat.fun <- function(x, ...) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        max(x, ...)
+      }
+    }
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "min") {
+    stat.fun <- function(x, ...) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        min(x, ...)
+      }
+    }
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "sum") {
+    stat.fun <- function(x, ...) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        sum(x, ...)
+      }
+    }
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "frequency") {
+    stat.fun <- function(x, ...) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        length(na.omit(x))
+      }
+    }
+    stat.args <- NULL
+  }
+
+  if (statistic == "percentile") {
+    if (percentile < 0 | percentile > 100) {
+      cli::cli_abort("{.field percentile} outside {0}-{100}.")
+    }
+    probs <- percentile / 100
+    stat.fun <- function(x, ...) {
+      stats::quantile(x, probs = probs, names = FALSE, ...)
+    }
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  # checkPrep
+  vars <- c(pollutant, y, "wd")
+  if (any(type %in% dateTypes)) {
+    vars <- c(vars, "date")
+  }
+  data <- checkPrep(data, vars, type = type, remove.calm = FALSE)
+
+  # cutData
+  newdata <- cutData(data, type, ...)
+
+  # select only pollutant and axis/facet columns
+  newdata <- dplyr::select(newdata, dplyr::any_of(c(pollutant, "wd", y, type)))
+
+  # calculate the statistic
+  calc_stat <- function(x) {
+    args <- append(stat.args, list(x = x))
+    rlang::exec(stat.fun, !!!args)
+  }
+
+  # round wd to nearest wd_angle
+  newdata$wd <- floor(newdata$wd / wd_angle) * wd_angle
+  newdata$wd[newdata$wd == 360] <- 0
+  newdata[y] <- floor(newdata[[y]] / y_int) * y_int
+
+  # get plotting data
+  plotdata <-
+    newdata |>
+    dplyr::summarise(
+      {{ pollutant }} := calc_stat(.data[[pollutant]]),
+      n = dplyr::n(),
+      .by = dplyr::all_of(c("wd", y, type))
+    ) |>
+    dplyr::mutate(
+      {{ pollutant }} := dplyr::if_else(n < min_bin, NA, .data[[pollutant]])
+    ) |>
+    tidyr::drop_na(dplyr::all_of(c(pollutant, y, "wd"))) |>
+    dplyr::tibble()
+
+  # colours
+  if (!is.null(discretise)) {
+    plotdata[pollutant] <- cut_discrete_values(
+      plotdata[[pollutant]],
+      opts = discretise
+    )
+    colour_scale <- list(
+      ggplot2::scale_fill_manual(
+        values = openColours(
+          scheme = cols,
+          n = dplyr::n_distinct(plotdata[[pollutant]])
+        ),
+        label = \(x) label_openair(x, auto_text = auto_text),
+        drop = FALSE
+      ),
+      ggplot2::guides(fill = ggplot2::guide_legend(reverse = TRUE))
+    )
+  } else {
+    colour_scale <- ggplot2::scale_fill_gradientn(
+      colours = openColours(
+        scheme = cols
+      ),
+      limits = scale_col$limits,
+      breaks = scale_col$breaks,
+      labels = scale_col$labels,
+      transform = scale_col$transform,
+      oob = scales::oob_squish
+    )
+  }
+
+  # construct plot
+  plt <-
+    ggplot2::ggplot(
+      plotdata,
+      ggplot2::aes(x = .data$wd, y = .data[[y]])
+    ) +
+    ggplot2::geom_tile(
+      ggplot2::aes(fill = .data[[pollutant]]),
+      show.legend = TRUE
+    ) +
+    ggplot2::coord_radial(
+      r.axis.inside = r_axis_inside,
+      inner.radius = inner_radius
+    ) +
+    scale_x_compass() +
+    ggplot2::scale_y_continuous(
+      breaks = scale_y$breaks,
+      limits = scale_y$limits,
+      labels = scale_y$labels,
+      sec.axis = scale_y$sec.axis,
+      position = scale_y$position %||% "left",
+      expand = ggplot2::expansion()
+    ) +
+    theme_oa_classic("polar") +
+    ggplot2::labs(
+      x = NULL,
+      y = NULL,
+      fill = label_openair(
+        paste(statistic, paste(pollutant, collapse = ", ")),
+        auto_text = auto_text
+      )
+    ) +
+    colour_scale +
+    get_facet_fun(
+      type,
+      facet_opts = facet_opts,
+      auto_text = auto_text
+    )
+
+  if (plot) {
+    return(plt)
+  } else {
+    return(plotdata)
+  }
+}
+
 #' Function to plot wind speed/direction frequencies and other statistics
 #'
 #' `polarFreq` primarily plots wind speed-direction frequencies in

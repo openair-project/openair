@@ -85,3 +85,57 @@ windflow_opts <- function(
     windflow = windflow
   )
 }
+
+#' Define scale options for openair `ggplot2` plots
+#'
+#' This function conveniently allows for options to be defined in relation to
+#' the various scales of `openair` plots. These arguments are automatically
+#' passed to [ggplot2::continuous_scale()]. Note that, for certain plots, not
+#' all of these may be controllable for the user (for example, if a scale
+#' transformation would not make sense as in the y-axis of
+#' [plot_polar_heatmap()]). `date_breaks` and `date_labels` only apply to
+#' date(time) axes (e.g., in [plot_trend_bars()]).
+#'
+#' @inheritParams ggplot2::scale_x_continuous
+#' @inheritParams ggplot2::scale_x_datetime
+#'
+#' @author Jack Davison
+#' @family ggplot2 plot utilities
+#'
+#' @export
+scale_opts <- function(
+  limits = NULL,
+  breaks = ggplot2::waiver(),
+  labels = ggplot2::waiver(),
+  date_breaks = ggplot2::waiver(),
+  date_labels = ggplot2::waiver(),
+  transform = scales::transform_identity(),
+  position = NULL,
+  sec.axis = ggplot2::waiver()
+) {
+  list(
+    limits = limits,
+    breaks = breaks,
+    labels = labels,
+    date_breaks = date_breaks,
+    date_labels = date_labels,
+    transform = transform,
+    position = position,
+    sec.axis = sec.axis
+  )
+}
+
+#' Function that resolves scale option logic
+#' @noRd
+resolve_scale_opts <- function(x) {
+  if (is.numeric(x)) {
+    if (length(x) == 1) {
+      x <- scale_opts(limits = c(NA, x[!is.na(x)]))
+    } else if (length(x) == 2) {
+      x <- scale_opts(limits = x)
+    } else {
+      x <- scale_opts(limits = range(x, na.rm = TRUE))
+    }
+  }
+  return(x)
+}

@@ -51,6 +51,7 @@
 #'   chosen. Can be a vector of numbers e.g. `percentile = c(5, 50, 95)` will
 #'   plot the 5th, 50th and 95th percentile values together on the same plot.
 #'
+#' @inheritSection shared_ggplot_params Controlling scales
 #' @inheritSection shared_ggplot_params Conditioning with `type`
 #'
 #' @export
@@ -96,6 +97,8 @@ plot_trend_smooth <- function(
   smooth_level = 0.95,
   deseason = FALSE,
   windflow = FALSE,
+  scale_x = openair::scale_opts(),
+  scale_y = openair::scale_opts(),
   cols = "tol",
   auto_text = TRUE,
   facet_opts = openair::facet_opts(),
@@ -103,6 +106,8 @@ plot_trend_smooth <- function(
   ...
 ) {
   type <- type %||% "default"
+  scale_x <- resolve_scale_opts(scale_x)
+  scale_y <- resolve_scale_opts(scale_y)
 
   if (rlang::is_logical(windflow)) {
     windflow <- windflow_opts(windflow = windflow)
@@ -176,7 +181,11 @@ plot_trend_smooth <- function(
     dplyr::tibble()
 
   # determine facet
-  facet_fun <- get_facet_fun(type, facet_opts = facet_opts)
+  facet_fun <- get_facet_fun(
+    type,
+    facet_opts = facet_opts,
+    auto_text = auto_text
+  )
 
   # construct plot
   plt <-
@@ -205,28 +214,33 @@ plot_trend_smooth <- function(
       color = NULL
     ) +
     theme_oa_classic() +
-    ggplot2::theme(
-      palette.fill.discrete = c(
-        openair::openColours(
-          scheme = cols,
-          n = dplyr::n_distinct(levels(plotdata$variable))
-        ),
-        "black"
-      ),
-      palette.colour.discrete = c(
-        openair::openColours(
-          scheme = cols,
-          n = dplyr::n_distinct(levels(plotdata$variable))
-        ),
-        "black"
-      )
+    ggplot2::scale_y_continuous(
+      breaks = scale_y$breaks,
+      labels = scale_y$labels,
+      limits = scale_y$limits,
+      transform = scale_y$transform,
+      position = scale_y$position %||% "left",
+      sec.axis = scale_y$sec.axis
     ) +
-    facet_fun +
-    ggplot2::scale_color_discrete(
-      label = label_openair,
+    ggplot2::scale_x_datetime(
+      breaks = scale_x$breaks,
+      labels = scale_x$labels,
+      limits = scale_x$limits,
+      date_breaks = scale_x$date_breaks,
+      date_labels = scale_x$date_labels,
+      position = scale_x$position %||% "bottom",
+      sec.axis = scale_x$sec.axis
+    ) +
+    ggplot2::scale_color_manual(
+      values = openair::openColours(
+        scheme = cols,
+        n = dplyr::n_distinct(levels(plotdata$variable))
+      ),
+      label = \(x) label_openair(x, auto_text = auto_text),
       drop = FALSE,
-      aesthetics = c("fill", "colour")
-    )
+      aesthetics = c("colour", "fill")
+    ) +
+    facet_fun
 
   # remove legend if only one item
   if (dplyr::n_distinct(levels(plotdata$variable)) == 1) {
