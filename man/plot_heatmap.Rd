@@ -16,7 +16,7 @@ plot_heatmap(
   min_bin = 1,
   discretise = NULL,
   windflow = FALSE,
-  scale_cols = openair::scale_opts(),
+  scale_col = openair::scale_opts(),
   cols = "turbo",
   auto_text = TRUE,
   facet_opts = openair::facet_opts(),
@@ -69,6 +69,13 @@ of wind within each bin will be shown. Note that this requires the columns
 \code{"ws"} and \code{"wd"} to be present in \code{data}. Alternatively, \code{\link[=windflow_opts]{windflow_opts()}}
 allows for greater customisation of the arrows (e.g., wind speed ranges,
 relative size of arrows, arrow appearance).}
+
+\item{scale_col}{Options for the colour scale of the plot. If a single
+number, this will set an upper scale limit. If greater than one number, the
+range of the input will be used as the axis limits. Can also be
+\code{\link[=scale_opts]{scale_opts()}}, which permit further customisation such as setting axis
+breaks, labels and scale transforms. Note that these options will not apply
+if \code{discretise} is used, as this overrides the continuous scale.}
 
 \item{cols}{The colour palette to use. See \code{\link[=openColours]{openColours()}}.}
 

@@ -483,7 +483,8 @@ plot_xy_bins <- function(
         limits = scale_col$limits,
         breaks = scale_col$breaks,
         labels = scale_col$labels,
-        transform = scale_col$transform
+        transform = scale_col$transform,
+        oob = scales::oob_squish()
       )
   }
 

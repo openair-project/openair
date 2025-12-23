@@ -8,6 +8,14 @@
 #'   analysis' plot which can help identify where higher concentrations of
 #'   pollution may be coming from.
 #'
+#' @param y A column of the data to use as the 'y-axis' (radial axis) variable.
+#'   Will be binned into a regular grid of widths `y_int`. Defaults to `"ws"`,
+#'   which is the `openair`-standard name for wind speed.
+#'
+#' @param y_int The width of y-axis bins. Each element of `y` is rounded to the
+#'   floor of its bin. For example, `y_int = 2` would bin the numbers `1:10`
+#'   into `c(0, 2, 2, 4, 4, 6, 6, 8, 8, 10)`.
+#'
 #' @inheritParams shared_ggplot_params
 #' @inheritParams plot_heatmap
 #'

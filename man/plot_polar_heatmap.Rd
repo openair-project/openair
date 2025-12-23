@@ -32,6 +32,10 @@ plot_polar_heatmap(
 \item{pollutant}{The names of the pollutants to plot; these should be columns
 in \code{data}.}
 
+\item{y}{A column of the data to use as the 'y-axis' (radial axis) variable.
+Will be binned into a regular grid of widths \code{y_int}. Defaults to \code{"ws"},
+which is the \code{openair}-standard name for wind speed.}
+
 \item{type}{The column(s) of \code{data} to use to split the plot into separate
 facets, passed to \code{\link[=cutData]{cutData()}}. \code{type} may be \code{NULL} or a vector with
 maximum length 2, which creates a 2D grid of plots.}
@@ -46,6 +50,13 @@ using the \code{"percentile"} option --- see below. Not used if \code{avg.time =
 
 \item{percentile}{The percentile level used when \code{statistic = "percentile"}.
 The default is 95\%.}
+
+\item{wd_angle}{The angle to bin the wind direction to. Should divide into
+360 with no remainders; e.g., \code{5}, \code{10}, \code{12}, \code{15}, etc.}
+
+\item{y_int}{The width of y-axis bins. Each element of \code{y} is rounded to the
+floor of its bin. For example, \code{y_int = 2} would bin the numbers \code{1:10}
+into \code{c(0, 2, 2, 4, 4, 6, 6, 8, 8, 10)}.}
 
 \item{min_bin}{The minimum number of measurements to use to calculate a
 binned statistic. If the number is below \code{min_bin}, the value will be

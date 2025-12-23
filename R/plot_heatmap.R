@@ -80,7 +80,7 @@ plot_heatmap <- function(
   min_bin = 1,
   discretise = NULL,
   windflow = FALSE,
-  scale_cols = openair::scale_opts(),
+  scale_col = openair::scale_opts(),
   cols = "turbo",
   auto_text = TRUE,
   facet_opts = openair::facet_opts(),
@@ -291,7 +291,7 @@ plot_heatmap <- function(
   } else {
     color_scale <-
       ggplot2::scale_fill_gradientn(
-        values = openair::openColours(scheme = cols),
+        colours = openair::openColours(scheme = cols),
         limits = scale_col$limits,
         breaks = scale_col$breaks,
         labels = scale_col$labels,

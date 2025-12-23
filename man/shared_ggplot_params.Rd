@@ -61,6 +61,9 @@ range of the input will be used as the axis limits. Can also be
 breaks, labels and scale transforms. Note that these options will not apply
 if \code{discretise} is used, as this overrides the continuous scale.}
 
+\item{wd_angle}{The angle to bin the wind direction to. Should divide into
+360 with no remainders; e.g., \code{5}, \code{10}, \code{12}, \code{15}, etc.}
+
 \item{r_axis_inside}{Either a numeric value, setting a theta axis value at
 which the axis should be placed inside the panel, or \code{FALSE}, which will
 place it outside of panel on a vertical axis.}

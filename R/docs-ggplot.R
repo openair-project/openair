@@ -60,6 +60,9 @@
 #'   breaks, labels and scale transforms. Note that these options will not apply
 #'   if `discretise` is used, as this overrides the continuous scale.
 #'
+#' @param wd_angle The angle to bin the wind direction to. Should divide into
+#'   360 with no remainders; e.g., `5`, `10`, `12`, `15`, etc.
+#'
 #' @param r_axis_inside Either a numeric value, setting a theta axis value at
 #'   which the axis should be placed inside the panel, or `FALSE`, which will
 #'   place it outside of panel on a vertical axis.
