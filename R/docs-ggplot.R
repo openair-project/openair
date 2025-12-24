@@ -74,6 +74,10 @@
 #'   binned statistic. If the number is below `min_bin`, the value will be
 #'   dropped from the returned plot and/or data.
 #'
+#' @param obs,mod The names of the columns to summarise, one for observations
+#'   (`obs`) and one for modelled values (`mod`); these should be columns in
+#'   `data`.
+#'
 #' @param plot Should a plot be produced? `FALSE` will instead return the
 #'   plotting data, and can be useful when analysing data to extract plot
 #'   components and plotting them in other ways.

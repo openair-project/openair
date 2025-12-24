@@ -34,7 +34,11 @@ reference:
   contents: has_concept("trajectory analysis functions")
 
 - title: Model Evaluation
+- subtitle: ~
   desc: Compare models against measurements and models against other models.
+- subtitle: New API
+  contents: has_concept("ggplot2 model evaluation functions")
+- subtitle: Legacy API
   contents: has_concept("model evaluation functions")
   
 - title: Other Plots

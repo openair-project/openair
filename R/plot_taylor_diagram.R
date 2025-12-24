@@ -1,3 +1,233 @@
+#' Taylor Diagram for model evaluation
+#'
+#' The Taylor Diagram is a very useful model evaluation tool. The diagram
+#' provides a way of showing how three complementary model performance
+#' statistics vary simultaneously. These statistics are the correlation
+#' coefficient R, the standard deviation (sigma) and the (centred)
+#' root-mean-square error. These three statistics can be plotted on one (2D)
+#' graph because of the way they are related to one another which can be
+#' represented through the Law of Cosines.
+#'
+#' @param obs,mod The names of the columns to summarise, one for observations
+#'   (`obs`) and one for modelled values (`mod`); these should be columns in
+#'   `data`.
+#'
+#' @param cols_obs,cols_crmse Colours to use for the observed value marker and
+#'   radiating CRMSE axes. Passed to [openColours()], though most usefully
+#'   provided as a single colour (e.g, `"black"`).
+#'
+#' @inheritParams shared_ggplot_params
+#'
+#' @inheritSection shared_ggplot_params Controlling scales
+#' @inheritSection shared_ggplot_params Conditioning with `type`
+#'
+#' @family ggplot2 model evaluation functions
+#' @seealso the legacy [TaylorDiagram()] function
+#' @author Jack Davison
+#'
+#' @export
+#'
+#' @references
+#'
+#' Taylor, K.E.: Summarizing multiple aspects of model performance in a single
+#' diagram. J.  Geophys. Res., 106, 7183-7192, 2001 (also see PCMDI Report 55).
+#'
+#' @examples
+#' \dontrun{
+#' # create a small dataset
+#' mod_data <- dplyr::select(mydata, date, nox)
+#'
+#' # lets create some fake modelled values
+#' mod_data <-
+#'   dplyr::mutate(
+#'     mod_data,
+#'     model1 = jitter(nox, factor = 100),
+#'     model2 = jitter(nox, factor = 100) * 1.5,
+#'     model3 = jitter(nox, factor = 1000)
+#'   ) |>
+#'   tidyr::pivot_longer(model1:model3)
+#'
+#' # plot this on a taylor diagram
+#' plot_taylor_diagram(mod_data, "nox", "value", group = "name")
+#'
+#' }
+plot_taylor_diagram <- function(
+  data,
+  obs,
+  mod,
+  group = NULL,
+  type = NULL,
+  scale_y = openair::scale_opts(),
+  cols = "tol",
+  cols_obs = "black",
+  cols_crmse = "goldenrod",
+  facet_opts = openair::facet_opts(),
+  auto_text = TRUE,
+  plot = TRUE,
+  ...
+) {
+  # eval inputs
+  type <- type %||% "default"
+  scale_y <- resolve_scale_opts(scale_y)
+
+  # if no group, create a dummy
+  if (is.null(group)) {
+    data$group <- "(all)"
+    group <- "group"
+  }
+
+  # check data inputs and cut data
+  vars <- c(obs, mod, group)
+  if (any(type %in% dateTypes) || any(group %in% dateTypes)) {
+    vars <- unique(c(vars, "date"))
+  }
+  data <- checkPrep(
+    data,
+    vars,
+    type = c(type, group),
+    remove.calm = FALSE,
+    remove.neg = FALSE
+  )
+  data <- cutData(data, c(group, type), ...)
+
+  # function to calculate taylor stats
+  make_taylor_stats <- function(obs, mod) {
+    r <- cor(obs, mod, use = "pairwise")
+    r[r < 0] <- 0
+    sd_obs <- sd(obs, na.rm = TRUE)
+    sd_mod <- sd(mod, na.rm = TRUE)
+    res <- data.frame(r, sd_obs, sd_mod)
+    res
+  }
+
+  # calculate taylor stats
+  plotdata <-
+    dplyr::reframe(
+      data,
+      make_taylor_stats(.data[[obs]], .data[[mod]]),
+      .by = dplyr::all_of(c(type, group))
+    )
+
+  # check no differences in obs sd within panels
+  purrr::walk(
+    .x = split(plotdata, plotdata[type], drop = TRUE),
+    .f = \(df) {
+      if (dplyr::n_distinct(df$sd_obs) > 1) {
+        cli::cli_abort(
+          "Observed standard deviation is not equal between groups within the same facet."
+        )
+      }
+    }
+  )
+
+  # create CRMSE grids for each panel
+  crmse_grid <-
+    mapType(
+      plotdata,
+      type,
+      \(df) {
+        crmse <- function(o, m, r) {
+          sqrt(o^2 + m^2 - 2 * o * m * r)
+        }
+
+        nicerange <- pretty(c(plotdata$sd_mod, plotdata$sd_obs))
+
+        crmse_grid <-
+          expand.grid(
+            m = pretty(c(0, nicerange), n = 50),
+            cor = seq(0, 1, 0.01)
+          ) |>
+          dplyr::mutate(crmse = crmse(o = df$sd_obs[1], m, cor))
+
+        return(crmse_grid)
+      }
+    )
+
+  # create plot
+  plt <-
+    ggplot2::ggplot() +
+    ggplot2::geom_hline(
+      data = dplyr::slice_head(plotdata, by = dplyr::all_of(type)),
+      ggplot2::aes(yintercept = .data$sd_obs),
+      colour = openColours(cols_obs, n = 1),
+      lty = 2
+    ) +
+    ggplot2::geom_contour(
+      data = crmse_grid,
+      inherit.aes = FALSE,
+      na.rm = TRUE,
+      ggplot2::aes(x = cor, y = m, z = crmse),
+      breaks = pretty(crmse_grid$crmse, n = 5),
+      lty = 2,
+      colour = openColours(cols_crmse, n = 1)
+    ) +
+    ggplot2::geom_point(
+      data = dplyr::slice_head(plotdata, by = dplyr::all_of(type)),
+      ggplot2::aes(x = 1, y = .data$sd_obs),
+      colour = openColours(cols_obs, n = 1),
+      size = 4
+    ) +
+    ggplot2::geom_point(
+      data = plotdata,
+      ggplot2::aes(x = .data$r, y = .data$sd_mod, colour = .data[[group]]),
+      size = 4,
+      show.legend = dplyr::n_distinct(plotdata[[group]]) > 1
+    ) +
+    ggplot2::coord_radial(
+      end = pi / 2,
+      thetalim = c(0, 1),
+      expand = F,
+      rlim = c(0, NA),
+      reverse = "theta"
+    ) +
+    ggplot2::scale_x_continuous(
+      transform = scales::new_transform(
+        name = "cosine",
+        transform = \(x) acos(x),
+        inverse = \(x) cos(x),
+        domain = c(0, 1)
+      ),
+      breaks = c(seq(0.1, 0.9, 0.1), 0.95, 0.99),
+      labels = c(seq(0.1, 0.9, 0.1), 0.95, 0.99),
+      guide = ggplot2::guide_axis_theta(angle = 90)
+    ) +
+    ggplot2::scale_y_continuous(
+      sec.axis = ggplot2::dup_axis(name = NULL),
+      limits = c(0, max(crmse_grid$m)),
+      breaks = scale_y$breaks,
+      labels = scale_y$labels
+    ) +
+    ggplot2::scale_color_manual(
+      values = openair::openColours(
+        scheme = cols,
+        n = dplyr::n_distinct(plotdata[[group]])
+      ),
+      label = \(x) label_openair(x, auto_text = auto_text)
+    ) +
+    theme_oa_classic() +
+    ggplot2::theme(
+      panel.border = ggplot2::element_blank(),
+      axis.line.r = ggplot2::element_line(),
+      axis.line.theta = ggplot2::element_line(),
+      panel.grid.minor = ggplot2::element_blank(),
+      panel.grid.major.y = ggplot2::element_blank()
+    ) +
+    ggplot2::labs(
+      x = "standard deviation",
+      y = "standard deviation",
+      color = NULL
+    ) +
+    get_facet_fun(type, facet_opts = facet_opts, auto_text = auto_text)
+
+  # return
+  if (plot) {
+    return(plt)
+  } else {
+    return(plotdata)
+  }
+}
+
+
 #' Taylor Diagram for model evaluation with conditioning
 #'
 #' Function to draw Taylor Diagrams for model evaluation. The function allows
