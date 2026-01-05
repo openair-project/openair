@@ -1,0 +1,202 @@
+#' Discretise continuous scales in `openair` plotting functions
+#'
+#' @description `r lifecycle::badge("experimental")`
+#'
+#'   These functions are used in the `discretise` argument of many `openair`
+#'   plotting functions to bin a continuous colour scale.
+#'
+#'   - [disc_breaks()] is a way to define breaks directly, by giving direct access to the `breaks` argument.
+#'
+#'   - [disc_interval()], [disc_number()] and [disc_width()] use [ggplot2::cut_interval()], [ggplot2::cut_number()] or [ggplot2::cut_width()], respectively. These give convenient ways to discretise a scale.
+#'
+#'   - [disc_width_n()] acts like [disc_width()] for a certain number of intervals, then combines the rest of the data into a single bin. This is similar logic to [windRose()].
+#'
+#' @inheritParams base::cut
+#' @inheritParams ggplot2::cut_width
+#'
+#' @param n_ints In [disc_width_n()], the number of intervals to create using
+#'   `width`.
+#'
+#' @param start In [disc_width_n()], where to start interval creation. If
+#'   `NULL`, will pick a 'pretty' start point based on the scale limits.
+#'
+#' @family ggplot2 plot utilities
+#' @rdname disc_ggplot
+#' @order 1
+#' @export
+#'
+#' @examples
+#' plot_heatmap(mydata, "no2")
+#'
+#' # 5 groups with equal range
+#' plot_heatmap(mydata, "no2", discretise = disc_interval(5))
+#'
+#' # 5 groups with the same number of observations
+#' plot_heatmap(mydata, "no2", discretise = disc_number(5))
+#'
+#' # however many groups with width 5
+#' plot_heatmap(mydata, "no2", discretise = disc_width(5))
+#'
+#' # defined (irregular) breaks
+#' plot_heatmap(
+#'   mydata,
+#'   "no2",
+#'   discretise = disc_breaks(c(20, 25, 30, 40, 50, 100))
+#' )
+disc_breaks <- function(
+  breaks,
+  labels = NULL,
+  closed = "right",
+  dig.lab = 3
+) {
+  closed <- rlang::arg_match(closed, c("left", "right"))
+  list(
+    method = "breaks",
+    breaks = breaks,
+    labels = labels,
+    right = closed == "right",
+    dig.lab = dig.lab
+  )
+}
+
+#' @rdname disc_ggplot
+#' @order 2
+#' @export
+disc_interval <- function(
+  n = NULL,
+  length = NULL,
+  labels = NULL
+) {
+  list(
+    method = "interval",
+    n = n,
+    length = length,
+    labels = labels
+  )
+}
+
+#' @rdname disc_ggplot
+#' @order 3
+#' @export
+disc_number <- function(
+  n = NULL,
+  labels = NULL
+) {
+  list(
+    method = "number",
+    n = n,
+    labels = labels
+  )
+}
+
+#' @rdname disc_ggplot
+#' @order 4
+#' @export
+disc_width <- function(
+  width = NULL,
+  center = NULL,
+  boundary = NULL,
+  labels = NULL,
+  closed = "right"
+) {
+  closed <- rlang::arg_match(closed, c("left", "right"))
+  list(
+    method = "width",
+    width = width,
+    center = center,
+    boundary = boundary,
+    labels = labels,
+    closed = closed
+  )
+}
+
+#' @rdname disc_ggplot
+#' @order 5
+#' @export
+disc_width_n <- function(
+  width = NULL,
+  n_ints = 4L,
+  start = NULL,
+  closed = "right",
+  dig.lab = 3
+) {
+  closed <- rlang::arg_match(closed, c("left", "right"))
+  list(
+    method = "width_n",
+    width = width,
+    n_ints = n_ints,
+    start = start,
+    closed = closed,
+    dig.lab = dig.lab
+  )
+}
+
+#' @noRd
+cut_discrete_values <- function(x, opts) {
+  if (is.null(opts)) {
+    return(x)
+  }
+
+  if (is.numeric(opts) || is.integer(opts)) {
+    opts <- disc_number(
+      n = opts
+    )
+  }
+
+  if (opts$method == "interval") {
+    x <- ggplot2::cut_interval(
+      x = x,
+      n = opts$n,
+      length = opts$length,
+      labels = opts$labels
+    )
+  } else if (opts$method == "number") {
+    x <- ggplot2::cut_number(
+      x = x,
+      n = opts$n,
+      labels = opts$labels
+    )
+  } else if (opts$method == "width") {
+    x <- ggplot2::cut_width(
+      x = x,
+      width = opts$width,
+      labels = opts$labels
+    )
+  } else if (opts$method == "width_n") {
+    start <- opts$start %||% min(pretty(x), na.rm = TRUE)
+
+    breaks <- seq(start, by = opts$width, length.out = opts$n_ints)
+
+    if (min(x, na.rm = TRUE) < min(breaks)) {
+      breaks <- c(min(x, na.rm = TRUE), breaks)
+    }
+
+    if (max(x, na.rm = TRUE) > max(breaks)) {
+      breaks <- c(breaks, max(x, na.rm = TRUE))
+    }
+
+    x <- cut(
+      x,
+      breaks = breaks,
+      right = opts$closed == "right",
+      dig.lab = opts$dig.lab,
+      include.lowest = TRUE
+    )
+  } else {
+    x <- cut(
+      x,
+      breaks = opts$breaks,
+      labels = opts$labels,
+      right = opts$right,
+      dig.lab = opts$dig.lab,
+      include.lowest = TRUE
+    )
+  }
+
+  if (is.null(opts$labels)) {
+    levels(x) <- gsub("\\(|\\]|\\[|\\)", "", levels(x))
+    levels(x) <- gsub(",", " to ", levels(x))
+  }
+
+  x
+}

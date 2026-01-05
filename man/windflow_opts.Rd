@@ -37,7 +37,7 @@ arrows.
 }
 \seealso{
 Other ggplot2 plot utilities: 
-\code{\link{discretise_breaks}()},
+\code{\link{disc_breaks}()},
 \code{\link{facet_opts}()},
 \code{\link{scale_opts}()}
 }

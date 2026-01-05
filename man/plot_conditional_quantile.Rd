@@ -74,15 +74,17 @@ components and plotting them in other ways.}
 \item{...}{Passed to \code{\link[=cutData]{cutData()}}.}
 }
 \description{
-Conditional quantiles are a very useful way of considering model performance
-against observations for continuous measurements (Wilks, 2005). The
-conditional quantile plot splits the data into evenly spaced bins. For each
-predicted value bin e.g. from 0 to 10~ppb the \emph{corresponding} values of the
-observations are identified and the median, 25/75th and 10/90 percentile
-(quantile) calculated for that bin. The data are plotted to show how these
-values vary across all bins. For a time series of observations and
-predictions that agree precisely the median value of the predictions will
-equal that for the observations for each bin.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
+Conditional quantiles are a very useful way of considering model
+performance against observations for continuous measurements (Wilks, 2005).
+The conditional quantile plot splits the data into evenly spaced bins. For
+each predicted value bin e.g. from 0 to 10~ppb the \emph{corresponding} values
+of the observations are identified and the median, 25/75th and 10/90
+percentile (quantile) calculated for that bin. The data are plotted to show
+how these values vary across all bins. For a time series of observations
+and predictions that agree precisely the median value of the predictions
+will equal that for the observations for each bin.
 }
 \section{Controlling scales}{
 
@@ -192,16 +194,20 @@ mod_data <- dplyr::select(mydata, date, nox)
 mod_data <-
   dplyr::mutate(
     mod_data,
-    model1 = jitter(nox, factor = 100),
-    model2 = jitter(nox, factor = 100) * 1.5,
-    model3 = jitter(nox, factor = 1000)
-  ) |>
-  tidyr::pivot_longer(model1:model3)
+    mod = jitter(nox, factor = 1000)
+  )
 
 # plot this on a taylor diagram
-plot_taylor_diagram(mod_data, "nox", "value", group = "name")
-
+plot_conditional_quantile(mod_data, "nox", "mod")
 }
+}
+\references{
+Murphy, A. H., B.G. Brown and Y. Chen. (1989) Diagnostic Verification of
+Temperature Forecasts, Weather and Forecasting, Volume: 4, Issue: 4, Pages:
+485-501.
+
+Wilks, D. S., 2005. Statistical Methods in the Atmospheric Sciences, Volume
+91, Second Edition (International Geophysics), 2nd Edition. Academic Press.
 }
 \seealso{
 the legacy \code{\link[=conditionalQuantile]{conditionalQuantile()}} function

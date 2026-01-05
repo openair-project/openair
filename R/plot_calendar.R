@@ -18,6 +18,7 @@
 #'
 #' @param year Year to plot e.g. `year = 2003`. If not supplied all data
 #'   potentially spanning several years will be plotted.
+#'
 #' @param month If only certain month are required. By default the function will
 #'   plot an entire year even if months are missing. To only plot certain months
 #'   use the `month` option where month is a numeric 1:12 e.g. `month = c(1,
@@ -75,8 +76,7 @@
 #'   mydata,
 #'   pollutant = "no2",
 #'   year = 2000,
-#'   discretise = discretise_opts(
-#'     "breaks",
+#'   discretise = disc_breaks(
 #'     breaks = c(0, 50, 100, 150, 1000),
 #'     labels = c("Very low", "Low", "High", "Very High")
 #'   ),
@@ -89,8 +89,7 @@
 #'   mydata,
 #'   "pm10",
 #'   year = 1999,
-#'   discretise = discretise_opts(
-#'     "breaks",
+#'   discretise = disc_breaks(
 #'     breaks = pm10_breaks,
 #'     labels = as.character(1:10)
 #'   ),
@@ -374,13 +373,6 @@ plot_calendar <-
       ggplot2::scale_x_continuous(
         labels = weekday.abb,
         breaks = 1:7
-      )
-
-    # colours
-    plt <-
-      plt +
-      ggplot2::scale_fill_continuous(
-        na.value = "grey95"
       )
 
     # windflow

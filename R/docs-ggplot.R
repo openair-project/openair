@@ -26,7 +26,7 @@
 #'
 #' @param discretise Options to discretise the continuous scale into discrete
 #'   bins. Providing an integer will split the scale into that number of
-#'   quantiles. Alternatively, [discretise_breaks()] allows for extensive
+#'   bins. Alternatively, [disc_breaks()] allows for extensive
 #'   customisation (e.g., defining specific bin widths, breaks, labels, and so
 #'   on).
 #'

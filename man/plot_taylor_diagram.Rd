@@ -192,6 +192,10 @@ plot_taylor_diagram(mod_data, "nox", "value", group = "name")
 
 }
 }
+\references{
+Taylor, K.E.: Summarizing multiple aspects of model performance in a single
+diagram. J.  Geophys. Res., 106, 7183-7192, 2001 (also see PCMDI Report 55).
+}
 \seealso{
 the legacy \code{\link[=TaylorDiagram]{TaylorDiagram()}} function
 

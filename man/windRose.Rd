@@ -18,7 +18,7 @@ windRose(
   cols = "default",
   grid.line = NULL,
   width = 1,
-  seg = NULL,
+  seg = 0.9,
   auto.text = TRUE,
   breaks = 4,
   offset = 10,

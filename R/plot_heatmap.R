@@ -278,7 +278,11 @@ plot_heatmap <- function(
     )
 
     color_scale <- list(
-      ggplot2::scale_fill_discrete(
+      ggplot2::scale_fill_manual(
+        values = openair::openColours(
+          scheme = cols,
+          n = length(levels(plotdata[[pollutant]]))
+        ),
         label = label_openair,
         drop = FALSE,
         na.value = "grey95",

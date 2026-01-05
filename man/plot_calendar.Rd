@@ -54,7 +54,7 @@ use the \code{month} option where month is a numeric 1:12 e.g. \code{month = c(1
 
 \item{discretise}{Options to discretise the continuous scale into discrete
 bins. Providing an integer will split the scale into that number of
-quantiles. Alternatively, \code{\link[=discretise_breaks]{discretise_breaks()}} allows for extensive
+bins. Alternatively, \code{\link[=disc_breaks]{disc_breaks()}} allows for extensive
 customisation (e.g., defining specific bin widths, breaks, labels, and so
 on).}
 
@@ -134,8 +134,7 @@ plot_calendar(
   mydata,
   pollutant = "no2",
   year = 2000,
-  discretise = discretise_opts(
-    "breaks",
+  discretise = disc_breaks(
     breaks = c(0, 50, 100, 150, 1000),
     labels = c("Very low", "Low", "High", "Very High")
   ),
@@ -148,8 +147,7 @@ plot_calendar(
   mydata,
   "pm10",
   year = 1999,
-  discretise = discretise_opts(
-    "breaks",
+  discretise = disc_breaks(
     breaks = pm10_breaks,
     labels = as.character(1:10)
   ),

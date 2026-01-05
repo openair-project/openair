@@ -62,7 +62,7 @@ correlation is always \code{1}) will be shown. \code{FALSE} removes this.}
 
 \item{discretise}{Options to discretise the continuous scale into discrete
 bins. Providing an integer will split the scale into that number of
-quantiles. Alternatively, \code{\link[=discretise_breaks]{discretise_breaks()}} allows for extensive
+bins. Alternatively, \code{\link[=disc_breaks]{disc_breaks()}} allows for extensive
 customisation (e.g., defining specific bin widths, breaks, labels, and so
 on).}
 

@@ -93,7 +93,7 @@ date(time) axes (e.g., in \code{\link[=plot_trend_bars]{plot_trend_bars()}}).
 }
 \seealso{
 Other ggplot2 plot utilities: 
-\code{\link{discretise_breaks}()},
+\code{\link{disc_breaks}()},
 \code{\link{facet_opts}()},
 \code{\link{windflow_opts}()}
 }
