@@ -143,6 +143,20 @@ plot_taylor_diagram <- function(
       }
     )
 
+  # contour functions
+  if (rlang::is_installed("geomtextpath")) {
+    contour_fun <- geomtextpath::geom_textcontour
+  } else {
+    cli::cli_inform(
+      c(
+        "i" = "Install the {.pkg geomtextpath} package for direct labelling of centred RMSE contours in {.fun openair::plot_taylor_diagram}."
+      ),
+      .frequency = "regularly",
+      .frequency_id = "geomtextpath"
+    )
+    contour_fun <- ggplot2::geom_contour
+  }
+
   # create plot
   plt <-
     ggplot2::ggplot() +
@@ -152,7 +166,7 @@ plot_taylor_diagram <- function(
       colour = openColours(cols_obs, n = 1),
       lty = 2
     ) +
-    ggplot2::geom_contour(
+    contour_fun(
       data = crmse_grid,
       inherit.aes = FALSE,
       na.rm = TRUE,

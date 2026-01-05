@@ -49,6 +49,7 @@ Imports:
     tidyr,
     utils
 Suggests:
+    geomtextpath,
     KernSmooth,
     knitr,
     mapdata,
