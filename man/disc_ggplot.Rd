@@ -94,11 +94,20 @@ plot_heatmap(mydata, "no2", discretise = disc_number(5))
 # however many groups with width 5
 plot_heatmap(mydata, "no2", discretise = disc_width(5))
 
-# defined (irregular) breaks
+# 4 groups with width 5, and then the rest of the data
+plot_heatmap(mydata, "no2", discretise = disc_width_n(5, 4))
+
+# approximately 5 'pretty' breaks
+plot_heatmap(mydata, "no2", discretise = disc_pretty(5))
+
+# defined (irregular) breaks - with optional labels
 plot_heatmap(
   mydata,
   "no2",
-  discretise = disc_breaks(c(20, 25, 30, 40, 50, 100))
+  discretise = disc_breaks(
+    c(20, 25, 30, 40, 50, 100),
+    labels = c("Very Low", "Low", "Medium", "High", "Very High")
+  )
 )
 }
 \seealso{
