@@ -6,6 +6,7 @@
 \alias{disc_number}
 \alias{disc_width}
 \alias{disc_width_n}
+\alias{disc_pretty}
 \title{Discretise continuous scales in \code{openair} plotting functions}
 \usage{
 disc_breaks(breaks, labels = NULL, closed = "right", dig.lab = 3)
@@ -29,6 +30,8 @@ disc_width_n(
   closed = "right",
   dig.lab = 3
 )
+
+disc_pretty(n = NULL, closed = "right", dig.lab = 3)
 }
 \arguments{
 \item{breaks}{either a numeric vector of two or more unique cut points or a
@@ -76,6 +79,7 @@ plotting functions to bin a continuous colour scale.
 \item \code{\link[=disc_breaks]{disc_breaks()}} is a way to define breaks directly, by giving direct access to the \code{breaks} argument.
 \item \code{\link[=disc_interval]{disc_interval()}}, \code{\link[=disc_number]{disc_number()}} and \code{\link[=disc_width]{disc_width()}} use \code{\link[ggplot2:cut_interval]{ggplot2::cut_interval()}}, \code{\link[ggplot2:cut_interval]{ggplot2::cut_number()}} or \code{\link[ggplot2:cut_interval]{ggplot2::cut_width()}}, respectively. These give convenient ways to discretise a scale.
 \item \code{\link[=disc_width_n]{disc_width_n()}} acts like \code{\link[=disc_width]{disc_width()}} for a certain number of intervals, then combines the rest of the data into a single bin. This is similar logic to \code{\link[=windRose]{windRose()}}.
+\item \code{\link[=disc_pretty]{disc_pretty()}} uses \code{\link[=pretty]{pretty()}} to work out pleasantly spaced breakpoints. Note that \code{n} is \emph{approximate} in this case; it may not be possible to create exactly \code{n} 'pretty' breakpoints. The upper and lower limits are also not likely to be 'pretty' as they will be set to the limits of the scale.
 }
 }
 \examples{
