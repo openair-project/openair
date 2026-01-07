@@ -25,25 +25,26 @@ cutData(
 
 \item{type}{A string giving the way in which the data frame should be split.
 Pre-defined values are: \code{"default"}, \code{"year"}, \code{"hour"}, \code{"month"},
-\code{"season"}, \code{"weekday"}, \code{"site"}, \code{"weekend"}, \code{"monthyear"}, \code{"daylight"},
-\code{"dst"} (daylight saving time).
+\code{"season"}, \code{"weekday"}, \code{"site"}, \code{"weekend"}, \code{"monthyear"},
+\code{"daylight"}, \code{"dst"} (daylight saving time).
 
-\code{type} can also be the name of a numeric or factor. If a numeric column name
-is supplied \code{\link[=cutData]{cutData()}} will split the data into four quantiles. Factors
-levels will be used to split the data without any adjustment.}
+\code{type} can also be the name of a numeric or factor. If a numeric column
+name is supplied \code{\link[=cutData]{cutData()}} will split the data into four quantiles.
+Factors levels will be used to split the data without any adjustment.}
 
 \item{names}{By default, the columns created by \code{\link[=cutData]{cutData()}} are named after
-their \code{type} option. Specifying \code{names} defines other names for the columns,
-which map onto the \code{type} options in the same order they are given. The
-length of \code{names} should therefore be equal to the length of \code{type}.}
+their \code{type} option. Specifying \code{names} defines other names for the
+columns, which map onto the \code{type} options in the same order they are
+given. The length of \code{names} should therefore be equal to the length of
+\code{type}.}
 
 \item{suffix}{If \code{name} is not specified, \code{suffix} will be appended to any
 added columns that would otherwise overwrite existing columns. For example,
 \code{cutData(mydata, "nox", suffix = "_cuts")} would append a \code{nox_cuts} column
 rather than overwriting \code{nox}.}
 
-\item{hemisphere}{Can be \code{"northern"} or \code{"southern"}, used to split data into
-seasons.}
+\item{hemisphere}{Can be \code{"northern"} or \code{"southern"}, used to split data
+into seasons.}
 
 \item{n.levels}{Number of quantiles to split numeric data into.}
 
@@ -58,9 +59,9 @@ labels for axes.}
 \item{local.tz}{Used for identifying whether a date has daylight savings time
 (DST) applied or not. Examples include \code{local.tz = "Europe/London"},
 \code{local.tz = "America/New_York"}, i.e., time zones that assume DST.
-\url{https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones} shows time zones
-that should be valid for most systems. It is important that the original
-data are in GMT (UTC) or a fixed offset from GMT.}
+\url{https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones} shows time
+zones that should be valid for most systems. It is important that the
+original data are in GMT (UTC) or a fixed offset from GMT.}
 
 \item{latitude, longitude}{The decimal latitude and longitudes used when \code{type = "daylight"}. Note that locations west of Greenwich have negative
 longitudes.}
@@ -78,9 +79,9 @@ For example, for \code{type = "hour"} when the data only contains data for 1 AM
 and 5 AM, the factor levels, \code{1}, \code{2}, \code{3}, \code{4} and \code{5} will be retained.
 }
 
-Some of these options only apply to certain \code{type} options. For example, for
-\code{type = "year"}, \code{"outside"} is equivalent to \code{"none"} as there is no fixed
-range of years to use in the \code{"none"} case.}
+Some of these options only apply to certain \code{type} options. For example,
+for \code{type = "year"}, \code{"outside"} is equivalent to \code{"none"} as there is no
+fixed range of years to use in the \code{"none"} case.}
 
 \item{...}{All additional parameters are passed on to next function(s).}
 }
@@ -109,13 +110,12 @@ way through a year; rather than starting in January.
 \item \code{"weekend"} splits the data by weekday and weekend.
 \item \code{"weekday"} splits the data by day of the week - ordered to start Monday.
 \item \code{"season"} splits data up by season. In the northern hemisphere winter =
-December, January, February; spring = March, April, May etc. These definitions
-will change of \code{hemisphere = "southern"}.
+December, January, February; spring = March, April, May etc. These
+definitions will change of \code{hemisphere = "southern"}.
 \item \code{"seasonyear"} (or \code{"yearseason"}) will split the data into year-season
-intervals, keeping the months of a season together. For example, December 2010
-is considered as part of winter 2011 (with January and February 2011). This
-makes it easier to consider contiguous seasons. In contrast, \code{type = "season"}
-will just split the data into four seasons regardless of the year.
+intervals, keeping the months of a season together. For example, December
+2010 is considered as part of winter 2011 (with January and February 2011).
+This makes it easier to consider contiguous seasons. In contrast, \code{type = "season"} will just split the data into four seasons regardless of the year.
 \item \code{"daylight"} splits the data relative to estimated sunrise and sunset to
 give either daylight or nighttime. The cut is made by \code{cutDaylight} but more
 conveniently accessed via \code{cutData}, e.g. \code{cutData(mydata, type = "daylight", latitude = my.latitude, longitude = my.longitude)}. The daylight estimation,
@@ -126,7 +126,8 @@ is based on NOAA methods. Measurement location should be set using \code{latitud
 (+ to North; - to South) and \code{longitude} (+ to East; - to West).
 \item \code{"dst"} will split the data by hours that are in daylight saving time (DST)
 and hours that are not for appropriate time zones. The option also requires
-that the local time zone is given e.g. \code{local.tz = "Europe/London"}, \code{local.tz = "America/New_York"}. Each of the two periods will be in
+that the local time zone is given e.g. \code{local.tz = "Europe/London"},
+\code{local.tz = "America/New_York"}. Each of the two periods will be in
 \emph{local time}. The main purpose of this option is to test whether there
 is a shift in the diurnal profile when DST and non-DST hours are compared.
 This option is particularly useful with the \code{\link[=timeVariation]{timeVariation()}} function. For
@@ -148,13 +149,15 @@ a column \code{date}. If a user already has a column with a name of one of the
 date-based types it will not be used.
 }
 \examples{
-## split data by day of the week
+# split data by day of the week
 mydata <- cutData(mydata, type = "weekday")
 names(mydata)
 head(mydata)
 }
 \author{
 David Carslaw
+
+Jack Davison
 
 Karl Ropkins (\code{"daylight"} option)
 }

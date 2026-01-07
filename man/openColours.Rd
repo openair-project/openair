@@ -64,8 +64,8 @@ plots and with figures made in Tableau or Observable Plot.
 quality index; "daqi" (a palette of 10 colours, corresponding to each index
 value) or "daqi.bands" (4 colours, corresponding to each band - Low,
 Moderate, High, and Very High). These colours were taken directly from
-\url{https://uk-air.defra.gov.uk/air-pollution/daqi} and may be useful in
-figures like \code{\link[=calendarPlot]{calendarPlot()}}.
+\url{https://check-air-quality.service.gov.uk/} and may be useful in figures
+like \code{\link[=calendarPlot]{calendarPlot()}}.
 \item "gaf.cat", "gaf.focus" and "gaf.seq", colours recommended by the UK Government Analysis function
 (\url{https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/}).
 "gaf.cat" will return the 'categorical' palette (max 6 colours),
@@ -115,7 +115,7 @@ cols
 \references{
 \url{https://colorbrewer2.org/}
 
-\url{https://uk-air.defra.gov.uk/air-pollution/daqi}
+\url{https://check-air-quality.service.gov.uk/}
 
 \url{https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/}
 }
