@@ -117,9 +117,9 @@
 #'   - `"24_hour"`: 24-hour rolling mean concentrations for particulates.
 #'   - `"daily_max_8"`: Maximum daily rolling 8-hour maximum for O3 and CO.
 #'   - `"daqi"`: Daily Air Quality Index (DAQI). See
-#'   [here](https://uk-air.defra.gov.uk/air-pollution/daqi?view=more-info) for
-#'   more details of how the index is defined. Note that this `data_type` is not
-#'   available for locally managed monitoring networks.
+#'   [here](https://www.gov.uk/government/publications/health-effects-of-air-pollution)
+#'   for more details of how the index is defined. Note that this `data_type` is
+#'   not available for locally managed monitoring networks.
 #' @param pollutant Pollutants to import. If omitted will import all pollutants
 #'   from a site. To import only NOx and NO2 for example use `pollutant =
 #'   c("nox", "no2")`. Pollutant names can be upper or lower case.
