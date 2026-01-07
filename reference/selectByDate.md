@@ -27,8 +27,8 @@ selectByDate(
 - start:
 
   A start date or date-time string in the form d/m/yyyy, m/d/yyyy,
-  d/m/yyyy HH:MM, m/d/yyyy HH:MM, d/m/yyyy HH:MM:SS or m/d/yyyy
-  HH:MM:SS.
+  d/m/yyyy HH:MM, m/d/yyyy HH:MM, d/m/yyyy HH:MM:SS, m/d/yyyy HH:MM:SS,
+  yyyy-mm-dd, yyyy-mm-dd HH:MM or yyyy-mm-dd HH:MM:SS.
 
 - end:
 

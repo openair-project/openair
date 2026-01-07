@@ -91,7 +91,7 @@ importUKAQ(
   - `"daily_max_8"`: Maximum daily rolling 8-hour maximum for O3 and CO.
 
   - `"daqi"`: Daily Air Quality Index (DAQI). See
-    [here](https://uk-air.defra.gov.uk/air-pollution/daqi?view=more-info)
+    [here](https://www.gov.uk/government/publications/health-effects-of-air-pollution)
     for more details of how the index is defined. Note that this
     `data_type` is not available for locally managed monitoring
     networks.

@@ -74,8 +74,8 @@ The following schemes are made available by `openColours()`:
   quality index; "daqi" (a palette of 10 colours, corresponding to each
   index value) or "daqi.bands" (4 colours, corresponding to each band -
   Low, Moderate, High, and Very High). These colours were taken directly
-  from <https://uk-air.defra.gov.uk/air-pollution/daqi> and may be
-  useful in figures like
+  from <https://check-air-quality.service.gov.uk/> and may be useful in
+  figures like
   [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md).
 
 - "gaf.cat", "gaf.focus" and "gaf.seq", colours recommended by the UK
@@ -115,7 +115,7 @@ names. To see the full list of names, type
 
 <https://colorbrewer2.org/>
 
-<https://uk-air.defra.gov.uk/air-pollution/daqi>
+<https://check-air-quality.service.gov.uk/>
 
 <https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/>
 

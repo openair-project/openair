@@ -200,12 +200,14 @@ of the date-based types it will not be used.
 
 David Carslaw
 
+Jack Davison
+
 Karl Ropkins (`"daylight"` option)
 
 ## Examples
 
 ``` r
-## split data by day of the week
+# split data by day of the week
 mydata <- cutData(mydata, type = "weekday")
 names(mydata)
 #>  [1] "date"    "ws"      "wd"      "nox"     "no2"     "o3"      "pm10"   
