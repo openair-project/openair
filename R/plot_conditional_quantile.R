@@ -14,6 +14,9 @@
 #'
 #' @inheritParams shared_ggplot_params
 #'
+#' @param bins Number of bins to be used in calculating the different quantile
+#'   levels.
+#'
 #' @param cols The colour palette to use. See [openColours()]. The first colour
 #'   will be used for the 10/90 percentile band, the second for the 25/75 band,
 #'   and the third for the median line.
@@ -114,7 +117,7 @@ plot_conditional_quantile <- function(
       ),
       breaks_lower = mod_breaks[.data$mod_bin],
       breaks_upper = mod_breaks[.data$mod_bin + 1],
-      {{ mod }} := (breaks_lower + breaks_upper) / 2
+      {{ mod }} := (.data$breaks_lower + .data$breaks_upper) / 2
     ) |>
     dplyr::select(-c("mod_bin", "breaks_lower", "breaks_upper")) |>
     dplyr::reframe(
@@ -150,7 +153,7 @@ plot_conditional_quantile <- function(
       ),
       breaks_lower = mod_breaks[.data$obs_bin],
       breaks_upper = mod_breaks[.data$obs_bin + 1],
-      {{ obs }} := (breaks_lower + breaks_upper) / 2
+      {{ obs }} := (.data$breaks_lower + .data$breaks_upper) / 2
     ) |>
     dplyr::select(-c("obs_bin", "breaks_lower", "breaks_upper")) |>
     dplyr::reframe(

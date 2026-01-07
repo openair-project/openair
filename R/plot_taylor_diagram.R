@@ -16,6 +16,10 @@
 #'   radiating CRMSE axes. Passed to [openColours()], though most usefully
 #'   provided as a single colour (e.g, `"black"`).
 #'
+#' @param show_negative_cor Should the negative correlation quadrant be
+#'   displayed? If `FALSE`, negative correlations will be set to `0` to still
+#'   appear on the single-quadrant Taylor Diagram.
+#'
 #' @inheritParams shared_ggplot_params
 #'
 #' @inheritSection shared_ggplot_params Controlling scales
@@ -57,6 +61,7 @@ plot_taylor_diagram <- function(
   mod,
   group = NULL,
   type = NULL,
+  show_negative_cor = FALSE,
   scale_y = openair::scale_opts(),
   cols = "tol",
   cols_obs = "black",
@@ -93,7 +98,9 @@ plot_taylor_diagram <- function(
   # function to calculate taylor stats
   make_taylor_stats <- function(obs, mod) {
     r <- cor(obs, mod, use = "pairwise")
-    r[r < 0] <- 0
+    if (!show_negative_cor) {
+      r[r < 0] <- 0
+    }
     sd_obs <- sd(obs, na.rm = TRUE)
     sd_mod <- sd(mod, na.rm = TRUE)
     res <- data.frame(r, sd_obs, sd_mod)
@@ -135,9 +142,9 @@ plot_taylor_diagram <- function(
         crmse_grid <-
           expand.grid(
             m = pretty(c(0, nicerange), n = 50),
-            cor = seq(0, 1, 0.01)
+            cor = seq(ifelse(show_negative_cor, -1, 0), 1, 0.01)
           ) |>
-          dplyr::mutate(crmse = crmse(o = df$sd_obs[1], m, cor))
+          dplyr::mutate(crmse = crmse(o = df$sd_obs[1], .data$m, .data$cor))
 
         return(crmse_grid)
       }
@@ -157,9 +164,17 @@ plot_taylor_diagram <- function(
     contour_fun <- ggplot2::geom_contour
   }
 
+  x_breaks <- c(0, seq(0.1, 0.9, 0.1), 0.95, 0.99, 1)
+  if (show_negative_cor) {
+    x_breaks <- sort(unique(c(x_breaks, x_breaks * -1)))
+  }
+
   # create plot
   plt <-
     ggplot2::ggplot() +
+    ggplot2::geom_vline(
+      xintercept = 0
+    ) +
     ggplot2::geom_hline(
       data = dplyr::slice_head(plotdata, by = dplyr::all_of(type)),
       ggplot2::aes(yintercept = .data$sd_obs),
@@ -170,7 +185,7 @@ plot_taylor_diagram <- function(
       data = crmse_grid,
       inherit.aes = FALSE,
       na.rm = TRUE,
-      ggplot2::aes(x = cor, y = m, z = crmse),
+      ggplot2::aes(x = .data$cor, y = .data$m, z = .data$crmse),
       breaks = pretty(crmse_grid$crmse, n = 5),
       lty = 2,
       colour = openColours(cols_crmse, n = 1)
@@ -188,8 +203,9 @@ plot_taylor_diagram <- function(
       show.legend = dplyr::n_distinct(plotdata[[group]]) > 1
     ) +
     ggplot2::coord_radial(
+      start = ifelse(show_negative_cor, -pi / 2, 0),
       end = pi / 2,
-      thetalim = c(0, 1),
+      thetalim = range(x_breaks),
       expand = F,
       rlim = c(0, NA),
       reverse = "theta"
@@ -201,8 +217,8 @@ plot_taylor_diagram <- function(
         inverse = \(x) cos(x),
         domain = c(0, 1)
       ),
-      breaks = c(seq(0.1, 0.9, 0.1), 0.95, 0.99),
-      labels = c(seq(0.1, 0.9, 0.1), 0.95, 0.99),
+      breaks = x_breaks,
+      labels = scales::label_comma(),
       guide = ggplot2::guide_axis_theta(angle = 90)
     ) +
     ggplot2::scale_y_continuous(
@@ -228,7 +244,7 @@ plot_taylor_diagram <- function(
     ) +
     ggplot2::labs(
       x = "standard deviation",
-      y = "standard deviation",
+      y = dplyr::if_else(show_negative_cor, "", "standard deviation"),
       color = NULL
     ) +
     get_facet_fun(type, facet_opts = facet_opts, auto_text = auto_text)

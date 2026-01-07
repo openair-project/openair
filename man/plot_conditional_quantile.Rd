@@ -33,6 +33,9 @@ plot_conditional_quantile(
 facets, passed to \code{\link[=cutData]{cutData()}}. \code{type} may be \code{NULL} or a vector with
 maximum length 2, which creates a 2D grid of plots.}
 
+\item{bins}{Number of bins to be used in calculating the different quantile
+levels.}
+
 \item{min_bin}{The minimum number of measurements to use to calculate a
 binned statistic. If the number is below \code{min_bin}, the value will be
 dropped from the returned plot and/or data.}

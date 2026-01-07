@@ -10,6 +10,7 @@ plot_taylor_diagram(
   mod,
   group = NULL,
   type = NULL,
+  show_negative_cor = FALSE,
   scale_y = openair::scale_opts(),
   cols = "tol",
   cols_obs = "black",
@@ -35,6 +36,10 @@ use the colour aesthetic.}
 \item{type}{The column(s) of \code{data} to use to split the plot into separate
 facets, passed to \code{\link[=cutData]{cutData()}}. \code{type} may be \code{NULL} or a vector with
 maximum length 2, which creates a 2D grid of plots.}
+
+\item{show_negative_cor}{Should the negative correlation quadrant be
+displayed? If \code{FALSE}, negative correlations will be set to \code{0} to still
+appear on the single-quadrant Taylor Diagram.}
 
 \item{scale_y}{Options for the y-axis scale of the plot. If a single number,
 this will set an upper scale limit. If greater than one number, the range
