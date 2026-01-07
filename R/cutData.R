@@ -7,35 +7,35 @@
 #' This section give a brief description of each of the define levels of `type`.
 #' Note that all time dependent types require a column `date`.
 #'
-#' - `"default"` does not split the data but will describe the levels as a date
+#'  - `"default"` does not split the data but will describe the levels as a date
 #' range in the format "day month year".
 #'
-#' - `"year"` splits the data by each year.
+#'  - `"year"` splits the data by each year.
 #'
-#' - `"month"` splits the data by month of the year.
+#'  - `"month"` splits the data by month of the year.
 #'
-#' - `"hour"` splits the data by hour of the day.
+#'  - `"hour"` splits the data by hour of the day.
 #'
-#' - `"monthyear"` splits the data by year and month. It differs from month in
+#'  - `"monthyear"` splits the data by year and month. It differs from month in
 #' that a level is defined for each month of the data set. This is useful
 #' sometimes to show an ordered sequence of months if the data set starts half
 #' way through a year; rather than starting in January.
 #'
-#' - `"weekend"` splits the data by weekday and weekend.
+#'  - `"weekend"` splits the data by weekday and weekend.
 #'
-#' - `"weekday"` splits the data by day of the week - ordered to start Monday.
+#'  - `"weekday"` splits the data by day of the week - ordered to start Monday.
 #'
-#' - `"season"` splits data up by season. In the northern hemisphere winter =
+#'  - `"season"` splits data up by season. In the northern hemisphere winter =
 #' December, January, February; spring = March, April, May etc. These
 #' definitions will change of `hemisphere = "southern"`.
 #'
-#' - `"seasonyear"` (or `"yearseason"`) will split the data into year-season
+#'  - `"seasonyear"` (or `"yearseason"`) will split the data into year-season
 #' intervals, keeping the months of a season together. For example, December
 #' 2010 is considered as part of winter 2011 (with January and February 2011).
 #' This makes it easier to consider contiguous seasons. In contrast, `type =
 #' "season"` will just split the data into four seasons regardless of the year.
 #'
-#' - `"daylight"` splits the data relative to estimated sunrise and sunset to
+#'  - `"daylight"` splits the data relative to estimated sunrise and sunset to
 #' give either daylight or nighttime. The cut is made by `cutDaylight` but more
 #' conveniently accessed via `cutData`, e.g. `cutData(mydata, type = "daylight",
 #' latitude = my.latitude, longitude = my.longitude)`. The daylight estimation,
@@ -45,11 +45,11 @@
 #' is based on NOAA methods. Measurement location should be set using `latitude`
 #' (+ to North; - to South) and `longitude` (+ to East; - to West).
 #'
-#' - `"dst"` will split the data by hours that are in daylight saving time (DST)
+#'  - `"dst"` will split the data by hours that are in daylight saving time (DST)
 #' and hours that are not for appropriate time zones. The option also requires
 #' that the local time zone is given e.g. `local.tz = "Europe/London"`,
 #' `local.tz = "America/New_York"`. Each of the two periods will be in
-#' *local time*. The main purpose of this option is to test whether there
+#'  *local time*. The main purpose of this option is to test whether there
 #' is a shift in the diurnal profile when DST and non-DST hours are compared.
 #' This option is particularly useful with the [timeVariation()] function. For
 #' example, close to the source of road vehicle emissions, "rush-hour" will tend
@@ -62,7 +62,7 @@
 #' whether the variation in a pollutant is driven by man-made emissions or
 #' natural processes.
 #'
-#' - `"wd"` splits the data by 8 wind sectors and requires a column `wd`: "NE",
+#'  - `"wd"` splits the data by 8 wind sectors and requires a column `wd`: "NE",
 #' "E", "SE", "S", "SW", "W", "NW", "N".
 #'
 #' Note that all the date-based types, e.g., `"month"`/`"year"` are derived from
@@ -71,62 +71,62 @@
 #'
 #' @param x A data frame containing a field `date`.
 #' @param type A string giving the way in which the data frame should be split.
-#'  Pre-defined values are: `"default"`, `"year"`, `"hour"`, `"month"`,
-#'  `"season"`, `"weekday"`, `"site"`, `"weekend"`, `"monthyear"`,
-#'  `"daylight"`, `"dst"` (daylight saving time).
+#'   Pre-defined values are: `"default"`, `"year"`, `"hour"`, `"month"`,
+#'   `"season"`, `"weekday"`, `"site"`, `"weekend"`, `"monthyear"`,
+#'   `"daylight"`, `"dst"` (daylight saving time).
 #'
-#'  `type` can also be the name of a numeric or factor. If a numeric column
-#'  name is supplied [cutData()] will split the data into four quantiles.
-#'  Factors levels will be used to split the data without any adjustment.
+#'   `type` can also be the name of a numeric or factor. If a numeric column
+#'   name is supplied [cutData()] will split the data into four quantiles.
+#'   Factors levels will be used to split the data without any adjustment.
 #' @param names By default, the columns created by [cutData()] are named after
-#'  their `type` option. Specifying `names` defines other names for the
-#'  columns, which map onto the `type` options in the same order they are
-#'  given. The length of `names` should therefore be equal to the length of
-#'  `type`.
+#'   their `type` option. Specifying `names` defines other names for the
+#'   columns, which map onto the `type` options in the same order they are
+#'   given. The length of `names` should therefore be equal to the length of
+#'   `type`.
 #' @param suffix If `name` is not specified, `suffix` will be appended to any
-#'  added columns that would otherwise overwrite existing columns. For example,
-#'  `cutData(mydata, "nox", suffix = "_cuts")` would append a `nox_cuts` column
-#'  rather than overwriting `nox`.
+#'   added columns that would otherwise overwrite existing columns. For example,
+#'   `cutData(mydata, "nox", suffix = "_cuts")` would append a `nox_cuts` column
+#'   rather than overwriting `nox`.
 #' @param hemisphere Can be `"northern"` or `"southern"`, used to split data
-#'  into seasons.
+#'   into seasons.
 #' @param n.levels Number of quantiles to split numeric data into.
 #' @param start.day What day of the week should the `type = "weekday"` start on?
-#'  The user can change the start day by supplying an integer between 0 and 6.
-#'  Sunday = 0, Monday = 1, ... For example to start the weekday plots on a
-#'  Saturday, choose `start.day = 6`.
+#'   The user can change the start day by supplying an integer between 0 and 6.
+#'   Sunday = 0, Monday = 1, ... For example to start the weekday plots on a
+#'   Saturday, choose `start.day = 6`.
 #' @param is.axis A logical (`TRUE`/`FALSE`), used to request shortened cut
-#'  labels for axes.
+#'   labels for axes.
 #' @param local.tz Used for identifying whether a date has daylight savings time
-#'  (DST) applied or not. Examples include `local.tz = "Europe/London"`,
-#'  `local.tz = "America/New_York"`, i.e., time zones that assume DST.
-#'  <https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones> shows time
-#'  zones that should be valid for most systems. It is important that the
-#'  original data are in GMT (UTC) or a fixed offset from GMT.
+#'   (DST) applied or not. Examples include `local.tz = "Europe/London"`,
+#'   `local.tz = "America/New_York"`, i.e., time zones that assume DST.
+#'   <https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones> shows time
+#'   zones that should be valid for most systems. It is important that the
+#'   original data are in GMT (UTC) or a fixed offset from GMT.
 #' @param latitude,longitude The decimal latitude and longitudes used when `type
-#'  = "daylight"`. Note that locations west of Greenwich have negative
-#'  longitudes.
+#'   = "daylight"`. Note that locations west of Greenwich have negative
+#'   longitudes.
 #' @param drop How to handle empty factor levels. One of:
 #'
-#' - `"default"`: Sensible defaults selected on a case-by-case basis for
-#'  different `type` options.
+#'  - `"default"`: Sensible defaults selected on a case-by-case basis for
+#'   different `type` options.
 #'
-#' - `"empty"`: Drop all empty factor levels.
+#'  - `"empty"`: Drop all empty factor levels.
 #'
-#' - `"none"`: Retain all empty factor levels, where possible. For example,
-#'  for `type = "hour"`, all factor levels from `0` and `23` will be
-#'  represented.
+#'  - `"none"`: Retain all empty factor levels, where possible. For example,
+#'   for `type = "hour"`, all factor levels from `0` and `23` will be
+#'   represented.
 #'
-#' - `"outside"`: Retain empty factor levels within the range of the data.
-#'  For example, for `type = "hour"` when the data only contains data for 1 AM
-#'  and 5 AM, the factor levels, `1`, `2`, `3`, `4` and `5` will be retained.
+#'  - `"outside"`: Retain empty factor levels within the range of the data.
+#'   For example, for `type = "hour"` when the data only contains data for 1 AM
+#'   and 5 AM, the factor levels, `1`, `2`, `3`, `4` and `5` will be retained.
 #'
-#'  Some of these options only apply to certain `type` options. For example,
-#'  for `type = "year"`, `"outside"` is equivalent to `"none"` as there is no
-#'  fixed range of years to use in the `"none"` case.
+#'   Some of these options only apply to certain `type` options. For example,
+#'   for `type = "year"`, `"outside"` is equivalent to `"none"` as there is no
+#'   fixed range of years to use in the `"none"` case.
 #' @param ... All additional parameters are passed on to next function(s).
 #' @export
 #' @return Returns the data frame, `x`, with columns appended as defined by
-#'  `type` and `name`.
+#'   `type` and `name`.
 #' @author David Carslaw
 #' @author Jack Davison
 #' @author Karl Ropkins (`"daylight"` option)
@@ -323,8 +323,7 @@ cutData <- function(
   return(x)
 }
 
-#' Drop missing values and warn that it has happened
-#' @noRd
+# Drop missing values and warn that it has happened
 dropNAbyType <- function(x, type) {
   if (anyNA(x[[type]])) {
     lenNA <- length(which(is.na(x[[type]])))
@@ -336,8 +335,7 @@ dropNAbyType <- function(x, type) {
   return(x)
 }
 
-#' Cut a numeric vector into quantiles
-#' @noRd
+# Cut a numeric vector into quantiles
 cutVecNumeric <- function(x, type, n.levels, is.axis) {
   temp.levels <-
     levels(cut(
@@ -372,8 +370,7 @@ cutVecNumeric <- function(x, type, n.levels, is.axis) {
   return(x)
 }
 
-#' Cut a vector into a 'year' factor
-#' @noRd
+# Cut a vector into a 'year' factor
 cutVecYear <- function(x, drop) {
   x <- lubridate::year(x)
   if (drop %in% c("default", "none", "outside")) {
@@ -386,8 +383,7 @@ cutVecYear <- function(x, drop) {
   x
 }
 
-#' Cut a vector into a 'hour' factor
-#' @noRd
+# Cut a vector into a 'hour' factor
 cutVecHour <- function(x, drop) {
   x <- lubridate::hour(x)
   if (drop %in% c("none")) {
@@ -402,8 +398,7 @@ cutVecHour <- function(x, drop) {
   x
 }
 
-#' Cut a vector into a factor of weeks of the year
-#' @noRd
+# Cut a vector into a factor of weeks of the year
 cutVecWeek <- function(x, drop) {
   x <- as.numeric(format(x, "%W"))
   if (drop %in% c("none")) {
@@ -418,8 +413,7 @@ cutVecWeek <- function(x, drop) {
   return(x)
 }
 
-#' Cut a date vector into weekday/weekend
-#' @noRd
+# Cut a date vector into weekday/weekend
 cutVecWeekend <- function(x, drop) {
   wdays <- lubridate::wday(x, week_start = 1L)
   x <- dplyr::case_match(wdays, 1:5 ~ "weekday", 6:7 ~ "weekend")
@@ -433,8 +427,7 @@ cutVecWeekend <- function(x, drop) {
   return(x)
 }
 
-#' Cut a date vector into weekdays
-#' @noRd
+# Cut a date vector into weekdays
 cutVecWeekday <- function(x, is.axis, start.day, drop) {
   if (start.day == 0L) {
     start.day <- 7L
@@ -455,8 +448,7 @@ cutVecWeekday <- function(x, is.axis, start.day, drop) {
   return(x)
 }
 
-#' Cut a vector into an ordered 'month' factor
-#' @noRd
+# Cut a vector into an ordered 'month' factor
 cutVecMonth <- function(x, is.axis, drop) {
   x <- lubridate::month(x, label = TRUE, abbr = is.axis)
   levels <- levels(x)
@@ -473,8 +465,7 @@ cutVecMonth <- function(x, is.axis, drop) {
   return(x)
 }
 
-#' Cut a vector into 'monthyears' (e.g., January 2020)
-#' @noRd
+# Cut a vector into 'monthyears' (e.g., January 2020)
 cutVecMonthyear <- function(x, is.axis, drop) {
   str <- "%B %Y"
   if (is.axis) {
@@ -515,8 +506,7 @@ cutVecMonthyear <- function(x, is.axis, drop) {
   return(x)
 }
 
-#' Cut into season year (e.g., Summer 2020)
-#' @noRd
+# Cut into season year (e.g., Summer 2020)
 cutVecSeasonyear <- function(x, hemisphere, is.axis, drop) {
   sep <- ifelse(is.axis, "\n", "-")
 
@@ -562,8 +552,7 @@ cutVecSeasonyear <- function(x, hemisphere, is.axis, drop) {
   return(x)
 }
 
-#' Cut wind direction into bins
-#' @noRd
+# Cut wind direction into bins
 cutVecWinddir <- function(x, drop) {
   x <- cut(
     x,
@@ -586,8 +575,7 @@ cutVecWinddir <- function(x, drop) {
   return(x)
 }
 
-#' Cut dates into DST
-#' @noRd
+# Cut dates into DST
 cutVecDST <- function(x, local.tz, drop) {
   ## how to extract BST/GMT
   if (is.null(local.tz)) {
@@ -616,16 +604,14 @@ cutVecDST <- function(x, local.tz, drop) {
   return(x)
 }
 
-#' Cut date vector into daylight or not
-#'
-#' calculations use (lat, long) position relative to sun to estimate if daylight
-#' or nighttime hour solar.noon.lst, etc are factions of day seconds into that
-#' day = p.time * 86400 so for example sunset time is as.POSIXct(sunset.time.lst
-#' * 86400, origin = format(x$date, "%Y-%m-%d")) (assuming you do not run into
-#' next day!) currently unsure about extremes long nights and days at poles need
-#' checking
-#'
-#' @noRd
+# Cut date vector into daylight or not
+#
+# calculations use (lat, long) position relative to sun to estimate if daylight
+# or nighttime hour solar.noon.lst, etc are factions of day seconds into that
+# day = p.time * 86400 so for example sunset time is as.POSIXct(sunset.time.lst
+# * 86400, origin = format(x$date, "%Y-%m-%d")) (assuming you do not run into
+# next day!) currently unsure about extremes long nights and days at poles need
+# checking
 cutVecDaylight <- function(
   x,
   latitude = 51.522393,
@@ -642,9 +628,7 @@ cutVecDaylight <- function(
     lubridate::force_tz(x$date[1], "UTC") - x$date[1]
   )
 
-  ###################
   # temp functions
-  ###################
   rad <- function(x) {
     x * pi / 180
   }
@@ -652,14 +636,10 @@ cutVecDaylight <- function(
     x * (180 / pi)
   }
 
-  ###############
   # get local time
-  ###############
   temp <- x$date
 
-  #################
   # make julian.refs
-  #################
   # ref Gregorian calendar back extrapolated.
   # assumed good for years between 1800 and 2100
 
@@ -676,9 +656,7 @@ cutVecDaylight <- function(
     (local.hour.offset / 24)
   julian.century <- (julian.century - 2451545) / 36525
 
-  ##################
   # main calcs
-  ##################
   # as of noaa
 
   geom.mean.long.sun.deg <-
@@ -767,9 +745,7 @@ cutVecDaylight <- function(
 
   sunlight.duration.minutes <- 8 * ha.sunrise.deg
 
-  #################################
   # daylight factor
-  #################################
   # need to confirm dusk/dawn handing
 
   daylight <- ifelse(
@@ -812,8 +788,7 @@ cutVecDaylight <- function(
   return(x)
 }
 
-#' Cut a vector into seasons
-#' @noRd
+# Cut a vector into seasons
 cutVecSeason <- function(x, hemisphere, is.axis, drop) {
   sep <- ifelse(is.axis, "\n", " ")
   hemisphere <- rlang::arg_match(hemisphere, c("northern", "southern"))
