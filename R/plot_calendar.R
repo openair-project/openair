@@ -108,6 +108,7 @@ plot_calendar <-
     month = NULL,
     discretise = NULL,
     windflow = FALSE,
+    scale_col = openair::scale_opts(),
     cols = "viridis",
     show_year = TRUE,
     w_shift = 0,
@@ -117,9 +118,8 @@ plot_calendar <-
     plot = TRUE,
     ...
   ) {
-    if (rlang::is_logical(windflow)) {
-      windflow <- windflow_opts(windflow = windflow, range = c(0, 0.5))
-    }
+    scale_col <- resolve_scale_opts(scale_col)
+    windflow <- resolve_windflow_opts(windflow, range = c(0, 0.5))
 
     # check w.shift
     if (w_shift < 0 || w_shift > 6) {
@@ -282,32 +282,33 @@ plot_calendar <-
     }
 
     # discretisation
-    discrete_scale <- NULL
     if (!is.null(discretise)) {
       plotdata$conc.mat <- cut_discrete_values(
         plotdata$conc.mat,
         opts = discretise
       )
 
-      color_theme <- ggplot2::theme(
-        palette.fill.discrete = openair::openColours(
+      color_scale <- ggplot2::scale_fill_manual(
+        values = openair::openColours(
           scheme = cols,
           n = dplyr::n_distinct(levels(plotdata$conc.mat))
-        )
-      )
-
-      discrete_scale <- ggplot2::scale_fill_discrete(
+        ),
         label = label_openair,
         drop = FALSE,
         na.value = "grey95",
         breaks = levels(plotdata$conc.mat)
       )
     } else {
-      color_theme <- ggplot2::theme(
-        palette.fill.continuous = openair::openColours(
-          scheme = cols
+      color_scale <-
+        ggplot2::scale_fill_gradientn(
+          colours = openair::openColours(scheme = cols),
+          limits = scale_col$limits,
+          breaks = scale_col$breaks,
+          labels = scale_col$labels,
+          transform = scale_col$transform,
+          oob = scales::oob_squish,
+          na.value = "grey95"
         )
-      )
     }
 
     # weekday labels
@@ -335,7 +336,7 @@ plot_calendar <-
       ) +
       ggplot2::geom_text(
         data = ~ dplyr::filter(.x, !is.na(.data$date)),
-        colour = "grey25",
+        colour = "grey10",
         ggplot2::aes(label = .data$date.mat),
         show.legend = FALSE,
         size = ifelse(windflow$windflow, 0, 2.5)
@@ -360,8 +361,7 @@ plot_calendar <-
         axis.ticks.x.bottom = ggplot2::element_blank(),
         legend.key.height = ggplot2::unit(1, "null")
       ) +
-      color_theme +
-      discrete_scale +
+      color_scale +
       ggplot2::facet_wrap(
         ggplot2::vars(.data$cuts),
         nrow = facet_opts$nrow,

@@ -90,10 +90,7 @@ plot_heatmap <- function(
   # ensure statistic is valid
   statistic <- rlang::arg_match(statistic)
   scale_col <- resolve_scale_opts(scale_col)
-
-  if (rlang::is_logical(windflow)) {
-    windflow <- windflow_opts(windflow = windflow)
-  }
+  windflow <- resolve_windflow_opts(windflow)
 
   # check length of x
   if (length(x) > 1 || length(y) > 1 || length(type) > 2) {

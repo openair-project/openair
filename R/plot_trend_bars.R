@@ -158,15 +158,6 @@ plot_trend_bars <- function(
       show.legend = TRUE
     ) +
     theme_oa_classic() +
-    ggplot2::theme(
-      palette.fill.discrete = c(
-        openair::openColours(
-          scheme = cols,
-          n = dplyr::n_distinct(levels(plotdata[[group]]))
-        ),
-        "black"
-      )
-    ) +
     ggplot2::scale_x_datetime(
       expand = FALSE,
       limits = scale_x$limits,
@@ -190,7 +181,11 @@ plot_trend_bars <- function(
       sec.axis = scale_y$sec.axis,
       transform = scale_y$transform
     ) +
-    ggplot2::scale_fill_discrete(
+    ggplot2::scale_fill_manual(
+      values = openair::openColours(
+        scheme = cols,
+        n = dplyr::n_distinct(levels(plotdata[[group]]))
+      ),
       label = label_openair,
       drop = FALSE
     ) +

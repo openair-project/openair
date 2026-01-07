@@ -68,12 +68,9 @@ plot_trend_lines <- function(
 ) {
   scale_x <- resolve_scale_opts(scale_x)
   scale_y <- resolve_scale_opts(scale_y)
+  windflow <- resolve_windflow_opts(windflow)
 
   type <- type %||% "default"
-
-  if (rlang::is_logical(windflow)) {
-    windflow <- windflow_opts(windflow = windflow)
-  }
 
   # warning messages and other checks
   if (length(percentile) > 1 && length(pollutant) > 1) {
@@ -142,22 +139,6 @@ plot_trend_lines <- function(
       color = .data[[group]]
     )) +
     theme_oa_classic() +
-    ggplot2::theme(
-      palette.fill.discrete = c(
-        openair::openColours(
-          scheme = cols,
-          n = dplyr::n_distinct(plotdata[[group]])
-        ),
-        "black"
-      ),
-      palette.colour.discrete = c(
-        openair::openColours(
-          scheme = cols,
-          n = dplyr::n_distinct(plotdata[[group]])
-        ),
-        "black"
-      )
-    ) +
     ggplot2::labs(
       y = label_openair(
         paste(pollutant, collapse = ", "),
@@ -184,7 +165,11 @@ plot_trend_lines <- function(
       position = scale_x$position %||% "bottom",
       sec.axis = scale_x$sec.axis
     ) +
-    ggplot2::scale_color_discrete(
+    ggplot2::scale_color_manual(
+      values = openair::openColours(
+        scheme = cols,
+        n = dplyr::n_distinct(plotdata[[group]])
+      ),
       label = label_openair
     )
 

@@ -8,10 +8,11 @@
 #' another data series, defined by `pollutant`, for wind speed. It is
 #' recommended to use [pollutionRose()] for plotting pollutant concentrations.
 #'
-#' The option `statistic = "prop.mean"` provides a measure of the relative
-#' contribution of each bin to the panel mean, and is intended for use with
-#' `pollutionRose`.
+#' @seealso the legacy [windRose()] and [pollutionRose()] functions
+#' @family ggplot2 directional analysis functions
+#' @author Jack Davison
 #'
+#' @noRd
 plot_windrose <- function(
   data,
   pollutant = "ws",

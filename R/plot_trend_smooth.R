@@ -108,10 +108,7 @@ plot_trend_smooth <- function(
   type <- type %||% "default"
   scale_x <- resolve_scale_opts(scale_x)
   scale_y <- resolve_scale_opts(scale_y)
-
-  if (rlang::is_logical(windflow)) {
-    windflow <- windflow_opts(windflow = windflow)
-  }
+  windflow <- resolve_windflow_opts(windflow)
 
   # can't have multiple pollutants and a grouping variable
   if (length(pollutant) > 1 && !is.null(group)) {

@@ -95,11 +95,7 @@ plot_xy_scatter <- function(
   scale_x = resolve_scale_opts(scale_x)
   scale_y = resolve_scale_opts(scale_y)
   scale_col = resolve_scale_opts(scale_col)
-
-  # deal with logical windflow
-  if (rlang::is_logical(windflow)) {
-    windflow <- windflow_opts(windflow = windflow)
-  }
+  windflow <- resolve_windflow_opts(windflow)
 
   # can't colour by a category and a z var
   if (!is.null(group_col) && !is.null(z)) {
