@@ -1,177 +1,3 @@
-#' Plot a traditional wind rose plot
-#'
-#' Data are summarised by direction, typically by 45, 30, or 10 degrees and by
-#' different wind speed categories. The plots show the proportion of time that
-#' the wind is from a certain angle and wind speed range.
-#'
-#' The argument `pollutant` uses the same plotting structure but substitutes
-#' another data series, defined by `pollutant`, for wind speed. It is
-#' recommended to use [pollutionRose()] for plotting pollutant concentrations.
-#'
-#' @seealso the legacy [windRose()] and [pollutionRose()] functions
-#' @family ggplot2 directional analysis functions
-#' @author Jack Davison
-#'
-#' @noRd
-plot_windrose <- function(
-  data,
-  pollutant = "ws",
-  type = "default",
-  statistic = c("count", "freq"),
-  discretise = disc_width_n(width = 2, n_ints = 4L),
-  wd_angle = 30,
-  calm_thresh = 0,
-  width = 0.8,
-  r_axis_inside = 315,
-  inner_radius = 0.1,
-  scale_y = openair::scale_opts(),
-  cols = "viridis",
-  auto_text = TRUE,
-  facet_opts = openair::facet_opts(),
-  plot = TRUE,
-  ...
-) {
-  wd <- "wd"
-  ws <- "ws"
-  scale_y <- resolve_scale_opts(scale_y)
-
-  # make sure ws and wd and numeric
-  data <- checkNum(data, vars = c(ws, wd))
-
-  # only allow even angles
-  if (360 %% wd_angle != 0) {
-    cli::cli_abort(
-      c(
-        "!" = "In {.fun openair::windRose}, {.arg wd_angle} will produce some spoke overlap.",
-        "i" = "Suggest one of: {(5:45)[360 %% 5:45 == 0]}."
-      )
-    )
-  }
-
-  # variables we need
-  vars <- c(wd, ws)
-
-  # will remove negative ws in check.prep
-  if (any(type %in% dateTypes)) {
-    vars <- c(vars, "date")
-  }
-  if (!is.null(pollutant)) {
-    vars <- c(vars, pollutant)
-  }
-
-  # cut data
-  data <- cutData(data, type, ...)
-
-  # check data
-  data <- checkPrep(
-    data,
-    vars,
-    type,
-    remove.calm = FALSE,
-    remove.neg = TRUE
-  )
-
-  # remove lines where ws is missing
-  # wd can be NA and ws 0 (calm)
-  id <- which(is.na(data[[ws]]))
-  if (length(id) > 0) {
-    data <- data[-id, ]
-  }
-
-  # bin wind directions
-  data[[wd]] <- wd_angle * ceiling(data[[wd]] / wd_angle - 0.5)
-  data[[wd]][data[[wd]] == 0] <- 360
-
-  # flag calms as negatives
-  calm_condition <- if (calm_thresh == 0) {
-    data[[ws]] == 0
-  } else {
-    data[[ws]] < calm_thresh
-  }
-  data[[wd]][calm_condition] <- -999
-
-  # cut the pollutant column - or create a dummy
-  if (!is.null(pollutant)) {
-    data <- tidyr::drop_na(data, dplyr::all_of(pollutant))
-    data$pollutant_bin <- cut_discrete_values(
-      data[[pollutant]],
-      opts = discretise
-    )
-  } else {
-    data$bin <- factor("(all)")
-  }
-
-  plotdata <-
-    dplyr::summarise(
-      data,
-      n = dplyr::n(),
-      .by = dplyr::all_of(c(wd, "pollutant_bin", type))
-    ) |>
-    dplyr::mutate(
-      f = n / sum(n, na.rm = TRUE),
-      .by = dplyr::all_of(c(type))
-    )
-
-  # define y labels and aesthetics
-  if (statistic == "count") {
-    plot_aes <- ggplot2::aes(x = .data[[wd]], y = .data$n)
-    label_y <- scales::label_comma()
-  } else {
-    plot_aes <- ggplot2::aes(x = .data[[wd]], y = .data$f)
-    label_y <- scales::label_percent()
-  }
-
-  # if user defines scale labels, overwrite defaults
-  if (!ggplot2::is_waiver(scale_y$labels)) {
-    label_y <- scale_y$labels
-  }
-
-  # construct plot
-  plt <-
-    plotdata |>
-    dplyr::filter(.data$wd != -999) |>
-    ggplot2::ggplot(plot_aes) +
-    ggplot2::geom_col(
-      ggplot2::aes(fill = forcats::fct_rev(.data$pollutant_bin)),
-      width = wd_angle * width,
-      show.legend = length(levels(plotdata$pollutant_bin)) > 1
-    ) +
-    ggplot2::coord_radial(
-      inner.radius = inner_radius,
-      r.axis.inside = r_axis_inside
-    ) +
-    ggplot2::scale_y_continuous(
-      expand = ggplot2::expansion(c(0, .05)),
-      labels = label_y,
-      limits = scale_y$limits,
-      breaks = scale_y$breaks,
-      transform = scale_y$transform,
-      sec.axis = scale_y$sec.axis,
-      position = scale_y$position %||% "left"
-    ) +
-    ggplot2::scale_fill_manual(
-      values = rev(openColours(
-        cols,
-        n = length(levels(plotdata$pollutant_bin))
-      ))
-    ) +
-    scale_x_compass() +
-    theme_oa_classic("polar") +
-    ggplot2::labs(
-      x = NULL,
-      y = NULL,
-      fill = label_openair(x = pollutant, auto_text = auto_text)
-    ) +
-    get_facet_fun(type, facet_opts, auto_text)
-
-  if (plot) {
-    return(plt)
-  } else {
-    return(plotdata)
-  }
-}
-
-
 #' Pollution rose variation of the traditional wind rose plot
 #'
 #' The traditional wind rose plot that plots wind speed and wind direction by
@@ -495,7 +321,7 @@ windRose <- function(
   cols = "default",
   grid.line = NULL,
   width = 1,
-  seg = 0.9,
+  seg = NULL,
   auto.text = TRUE,
   breaks = 4,
   offset = 10,
@@ -517,60 +343,85 @@ windRose <- function(
   plot = TRUE,
   ...
 ) {
-  # make sure ws and wd and numeric
-  mydata <- checkNum(mydata, vars = c(ws, wd))
-
-  if (360 / angle != round(360 / angle)) {
-    cli::cli_warn(
-      c(
-        "!" = "In {.fun openair::windRose}, {.arg angle} will produce some spoke overlap.",
-        "i" = "Suggest one of: {(5:45)[360 %% 5:45 == 0]}."
-      )
-    )
-  }
-  if (angle < 3) {
-    cli::cli_warn(c(
-      "!" = "In {.fun openair::windRose}, {.arg angle} is too small.",
-      "i" = "Enforcing {.arg angle} = {3}."
-    ))
-    angle <- 3
+  if (is.null(seg)) {
+    seg <- 0.9
   }
 
-  # greyscale handling
+  ## greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
     trellis.par.set(list(strip.background = list(col = "white")))
-    # other local colours
+    ## other local colours
     calm.col <- "black"
   } else {
     calm.col <- "forestgreen"
   }
 
-  # set graphics
+  ## set graphics
   current.strip <- trellis.par.get("strip.background")
   current.font <- trellis.par.get("fontsize")
 
-  # reset graphic parameters
+  ## reset graphic parameters
   on.exit(trellis.par.set(
     fontsize = current.font
   ))
 
-  # extra args setup
+  # make sure ws and wd and numeric
+  mydata <- checkNum(mydata, vars = c(ws, wd))
+
+  if (360 / angle != round(360 / angle)) {
+    warning(
+      "In windRose(...):\n  angle will produce some spoke overlap",
+      "\n  suggest one of: 5, 6, 8, 9, 10, 12, 15, 30, 45, etc.",
+      call. = FALSE
+    )
+  }
+  if (angle < 3) {
+    warning(
+      "In windRose(...):\n  angle too small",
+      "\n  enforcing 'angle = 3'",
+      call. = FALSE
+    )
+    angle <- 3
+  }
+
+  ## extra args setup
   extra <- list(...)
 
-  # label controls
-  extra$xlab <- quickText(extra$xlab %||% "", auto.text)
-  extra$ylab <- quickText(extra$ylab %||% "", auto.text)
-  extra$main <- quickText(extra$main %||% "", auto.text)
+  ## label controls
+  extra$xlab <- if ("xlab" %in% names(extra)) {
+    quickText(extra$xlab, auto.text)
+  } else {
+    quickText("", auto.text)
+  }
+  extra$ylab <- if ("ylab" %in% names(extra)) {
+    quickText(extra$ylab, auto.text)
+  } else {
+    quickText("", auto.text)
+  }
+  extra$main <- if ("main" %in% names(extra)) {
+    quickText(extra$main, auto.text)
+  } else {
+    quickText("", auto.text)
+  }
 
   if ("fontsize" %in% names(extra)) {
     trellis.par.set(fontsize = list(text = extra$fontsize))
   }
 
-  # preset statitistics
+  ## preset statitistics
 
   if (is.character(statistic)) {
+    ## allowed cases
     ok.stat <- c("prop.count", "prop.mean", "abs.count", "frequency")
-    statistic <- rlang::arg_match(statistic, ok.stat, multiple = FALSE)
+
+    if (!is.character(statistic) || !statistic[1] %in% ok.stat) {
+      warning(
+        "In windRose(...):\n  statistic unrecognised",
+        "\n  enforcing statistic = 'prop.count'",
+        call. = FALSE
+      )
+      statistic <- "prop.count"
+    }
 
     if (statistic == "prop.count") {
       stat.fun <- length
@@ -604,9 +455,14 @@ windRose <- function(
   }
 
   if (is.list(statistic)) {
-    # this section has no testing/protection but allows users to supply a
-    # function scale it by total data or panel convert proportions to percentage
-    # label it
+    ## IN DEVELOPMENT
+
+    ## this section has no testing/protection
+    ## but allows users to supply a function
+    ## scale it by total data or panel
+    ## convert proportions to percentage
+    ## label it
+
     stat.fun <- statistic$fun
     stat.unit <- statistic$unit
     stat.scale <- statistic$scale
@@ -616,14 +472,11 @@ windRose <- function(
     stat.labcalm <- statistic$labcalm
   }
 
-  # variables we need
+  ## variables we need
   vars <- c(wd, ws)
 
-  # i.e. not two sets of ws/wd
-  diff <- FALSE
-
-  # will remove negative ws in check.prep
-  rm.neg <- TRUE
+  diff <- FALSE ## i.e. not two sets of ws/wd
+  rm.neg <- TRUE ## will remove negative ws in check.prep
 
   ## case where two met data sets are to be compared
   if (!is.na(ws2) & !is.na(wd2)) {
@@ -673,10 +526,8 @@ windRose <- function(
     vars <- c(vars, pollutant)
   }
 
-  # cut data
   mydata <- cutData(mydata, type, ...)
 
-  # check data
   mydata <- checkPrep(
     mydata,
     vars,
@@ -696,15 +547,16 @@ windRose <- function(
     mydata <- mydata[-id, ]
   }
 
-  # if no pollutant, set ws to pollutant
-  pollutant <- pollutant %||% ws
+  if (is.null(pollutant)) {
+    pollutant <- ws
+  }
 
   mydata$x <- mydata[[pollutant]]
 
   mydata[[wd]] <- angle * ceiling(mydata[[wd]] / angle - 0.5)
   mydata[[wd]][mydata[[wd]] == 0] <- 360
 
-  # flag calms as negatives
+  ## flag calms as negatives
   if (calm.thresh == 0) {
     mydata[[wd]][mydata[, ws] == 0] <- -999 ## set wd to flag where there are calms
   } else {
@@ -819,6 +671,46 @@ windRose <- function(
     weights
   }
 
+  if (paddle) {
+    poly <- function(wd, len1, len2, width, colour, x.off = 0, y.off = 0) {
+      theta <- wd * pi / 180
+      len1 <- len1 + off.set
+      len2 <- len2 + off.set
+      x1 <- len1 * sin(theta) - width * cos(theta) + x.off
+      x2 <- len1 * sin(theta) + width * cos(theta) + x.off
+      x3 <- len2 * sin(theta) - width * cos(theta) + x.off
+      x4 <- len2 * sin(theta) + width * cos(theta) + x.off
+      y1 <- len1 * cos(theta) + width * sin(theta) + y.off
+      y2 <- len1 * cos(theta) - width * sin(theta) + y.off
+      y3 <- len2 * cos(theta) + width * sin(theta) + y.off
+      y4 <- len2 * cos(theta) - width * sin(theta) + y.off
+      lpolygon(
+        c(x1, x2, x4, x3),
+        c(y1, y2, y4, y3),
+        col = colour,
+        border = border
+      )
+    }
+  } else {
+    poly <- function(wd, len1, len2, width, colour, x.off = 0, y.off = 0) {
+      len1 <- len1 + off.set
+      len2 <- len2 + off.set
+
+      theta <- seq(
+        (wd - seg * angle / 2),
+        (wd + seg * angle / 2),
+        length.out = (angle - 2) * 10
+      )
+      theta <- ifelse(theta < 1, 360 - theta, theta)
+      theta <- theta * pi / 180
+      x1 <- len1 * sin(theta) + x.off
+      x2 <- rev(len2 * sin(theta) + x.off)
+      y1 <- len1 * cos(theta) + x.off
+      y2 <- rev(len2 * cos(theta) + x.off)
+      lpolygon(c(x1, x2), c(y1, y2), col = colour, border = border)
+    }
+  }
+
   # prepare grid for each type
   results <- mapType(
     mydata,
@@ -843,7 +735,7 @@ windRose <- function(
     wds <- seq(10, 360, 10)
     tmp <- angle * ceiling(wds / angle - 0.5)
     id <- which(tmp == 0)
-    if (length(id) > 0) {
+    if (length(id > 0)) {
       tmp[id] <- 360
     }
     tmp <- table(tmp) ## number of sectors spanned
@@ -925,46 +817,6 @@ windRose <- function(
     length.out = length(labs)
   )^4
   box.widths <- box.widths * max.freq * angle / 5
-
-  if (paddle) {
-    poly <- function(wd, len1, len2, width, colour, x.off = 0, y.off = 0) {
-      theta <- wd * pi / 180
-      len1 <- len1 + off.set
-      len2 <- len2 + off.set
-      x1 <- len1 * sin(theta) - width * cos(theta) + x.off
-      x2 <- len1 * sin(theta) + width * cos(theta) + x.off
-      x3 <- len2 * sin(theta) - width * cos(theta) + x.off
-      x4 <- len2 * sin(theta) + width * cos(theta) + x.off
-      y1 <- len1 * cos(theta) + width * sin(theta) + y.off
-      y2 <- len1 * cos(theta) - width * sin(theta) + y.off
-      y3 <- len2 * cos(theta) + width * sin(theta) + y.off
-      y4 <- len2 * cos(theta) - width * sin(theta) + y.off
-      lpolygon(
-        c(x1, x2, x4, x3),
-        c(y1, y2, y4, y3),
-        col = colour,
-        border = border
-      )
-    }
-  } else {
-    poly <- function(wd, len1, len2, width, colour, x.off = 0, y.off = 0) {
-      len1 <- len1 + off.set
-      len2 <- len2 + off.set
-
-      theta <- seq(
-        (wd - seg * angle / 2),
-        (wd + seg * angle / 2),
-        length.out = (angle - 2) * 10
-      )
-      theta <- ifelse(theta < 1, 360 - theta, theta)
-      theta <- theta * pi / 180
-      x1 <- len1 * sin(theta) + x.off
-      x2 <- rev(len2 * sin(theta) + x.off)
-      y1 <- len1 * cos(theta) + x.off
-      y2 <- rev(len2 * cos(theta) + x.off)
-      lpolygon(c(x1, x2), c(y1, y2), col = colour, border = border)
-    }
-  }
 
   ## key, colorkey, legend
   legend <- list(
