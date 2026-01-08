@@ -66,6 +66,7 @@ plot_variation <- function(
   ...
 ) {
   scale_y <- resolve_scale_opts(scale_y)
+  windflow <- resolve_windflow_opts(windflow)
 
   # disallow multiple pollutants & groups
   if (length(pollutant) > 1L && !is.null(group)) {
@@ -123,7 +124,7 @@ plot_variation <- function(
   }
 
   # if windflow, need average ws/wd
-  if (windflow) {
+  if (windflow$windflow) {
     winddata <-
       data |>
       dplyr::mutate(
@@ -179,8 +180,9 @@ plot_variation <- function(
         scheme = cols,
         n = dplyr::n_distinct(levels(plotdata[[group]]))
       ),
-      label = \(x) label_openair(x, auto_text = auto_text),
-      drop = FALSE
+      label = label_openair,
+      drop = FALSE,
+      aesthetics = c("color", "fill")
     ) +
     ggplot2::scale_y_continuous(
       breaks = scale_y$breaks,
@@ -189,10 +191,6 @@ plot_variation <- function(
       transform = scale_y$transform,
       position = scale_y$position %||% "left",
       sec.axis = scale_y$sec.axis
-    ) +
-    ggplot2::scale_color_discrete(
-      label = label_openair,
-      aesthetics = c("color", "fill")
     )
 
   # add geoms depending on the data type
@@ -241,13 +239,18 @@ plot_variation <- function(
   }
 
   # if windflow, need to add it
-  if (windflow) {
+  if (windflow$windflow) {
     plt <- plt +
-      layer_windflow(ggplot2::aes(
-        ws = .data$ws,
-        wd = .data$wd,
-        group = .data[[group]]
-      ))
+      layer_windflow(
+        ggplot2::aes(
+          ws = .data$ws,
+          wd = .data$wd,
+          group = .data[[group]]
+        ),
+        limits = windflow$limits,
+        range = windflow$range,
+        arrow = windflow$arrow
+      )
   }
 
   if (plot) {

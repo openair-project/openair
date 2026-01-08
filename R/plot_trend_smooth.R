@@ -256,11 +256,11 @@ plot_trend_smooth <- function(
         ggplot2::aes(
           ws = .data$ws,
           wd = .data$wd,
-          color = .data$variable
+          group = .data$variable
         ),
-        arrow = windflow$arrow,
         limits = windflow$limits,
-        range = windflow$range
+        range = windflow$range,
+        arrow = windflow$arrow
       )
   }
 

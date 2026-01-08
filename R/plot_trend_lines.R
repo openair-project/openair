@@ -190,11 +190,11 @@ plot_trend_lines <- function(
         ggplot2::aes(
           ws = .data$ws,
           wd = .data$wd,
-          color = .data[[group]]
+          group = .data[[group]]
         ),
-        arrow = windflow$arrow,
         limits = windflow$limits,
-        range = windflow$range
+        range = windflow$range,
+        arrow = windflow$arrow
       )
   }
 

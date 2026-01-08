@@ -335,8 +335,8 @@ plot_heatmap <- function(
       layer_windflow(
         ggplot2::aes(ws = .data$ws, wd = .data$wd),
         limits = windflow$limits,
-        arrow = windflow$arrow,
         range = windflow$range,
+        arrow = windflow$arrow,
         show.legend = FALSE
       )
   }

@@ -252,8 +252,9 @@ plot_xy_scatter <- function(
     plt <- plt +
       layer_windflow(
         mapping = windflow_aes,
+        limits = windflow$limits,
         range = windflow$range,
-        limits = windflow$limits
+        arrow = windflow$arrow
       )
   }
 

@@ -1,0 +1,277 @@
+---
+title: "A New API for openair"
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(openair)
+```
+
+## Introduction
+
+### What is changing?
+
+The openair package is undergoing a significant update to its plotting functions, transitioning from the `lattice` graphics system to `ggplot2`. This change aims to enhance the user experience by providing more flexible and customisable visualisations.
+
+It is possible that, in future, non-plotting functions in `openair` will also gain a more modern, refreshed API. This will be communicated as this occurs, but the current focus is on plotting as this is where the greatest benefit to users can be realised.
+
+### Why change lattice for ggplot2?
+
+The `openair` package has traditionally used the `lattice` graphics system for its plotting functions. However, `ggplot2` has become the more popular choice in the R community due to its flexibility and ease of use. By transitioning to `ggplot2`, `openair` can provide users with more customisable and consistent plotting capability.
+
+Specific reasons for adopting `ggplot2` include:
+
+- **Customisation**: `ggplot2` offers extensive options for customizing plots, making it easier for users to tailor visualisations to their specific needs, including after the plot has been created (e.g., adding annotations, changing themes).
+
+- **'Tidydata principles**: `ggplot2` is built around the tidy data principles, which align well with modern data analysis workflows in R.
+
+- **Community Support**: ggplot2 has a large and active user community, providing ample resources and support for users.
+
+- **Extensions**: ggplot2 has a rich ecosystem of extensions that add additional functionality and plot types.
+
+This also gives us the opportunity to revise and improve the API of openair plotting functions, ensuring function argument behaviour is more consistent between different plotting functions. Ideally, if a user knows how one openair plotting function works, they should be able to easily use another.
+
+### What about the old functions?
+
+It is not planned that the old `lattice`-based functions will be removed. We recognise that `openair` is a very old package with a large and varied user-base, and that many users have existing scripts and workflows that depend on the current functions. Therefore, backward compatibility is a priority, and any breaking changes will be communicated well in advance.
+
+That being said, we encourage users to start using the new `ggplot2`-based functions as they become available, as these will receive ongoing development and new features. Over time, it is likely that more focus will be placed on the new functions, with the old functions being maintained primarily for compatibility.
+
+The current migration strategy is as follows:
+
+- Old functions will remain available in the package for the foreseeable future.
+
+- New `ggplot2`-based functions will be introduced alongside the old functions. The documentation of the legacy functions may make reference to the newer functions to encourage their adoption.
+
+- Once the new functions have been fully developed and tested, they will be promoted as the preferred option for users, including in the `openair` book and in any future training materials.
+
+- `lattice` and other legacy packages will likely be demoted to 'Suggests' status in the package, reducing the number of dependencies required for installation.
+
+## New Features
+
+### The `group` argument
+
+Many new openair functions now include a `group` argument which is almost always treated identically to `type`. `type` still facets plots (i.e., splits them into multiple panels) whereas `group` will colour by the variable.
+
+```{r}
+plot_trend_lines(mydata, "no2", group = "weekend", avg.time = "month")
+```
+
+There are occasionally variations on this when `group` could map to multiple different channels (i.e., colour *and* shape). In these instances, the argument is named more specifically to indicate which channel it controls.
+
+```{r}
+plot_xy_scatter(
+  mydata,
+  "no2",
+  "pm10",
+  group_col = "weekday",
+  group_shp = "weekend"
+)
+```
+
+### Scale Control
+
+In the legacy `openair` functions, there was no consistent method to control the 'scalesof plots - either the axes or colour scales. Each function allowed for different ways to control these features to different extents. In the new API, there are consistent arguments to control these features across all plotting functions. This is achieved using `scale_opts()` helper function, though there are useful shortcuts for just setting scale limits.
+
+```{r}
+plot_heatmap(mydata, "no2")
+
+# set upper limit
+plot_heatmap(mydata, "no2", scale_col = 60)
+
+# set both limits
+plot_heatmap(mydata, "no2", scale_col = c(10, 60))
+
+# full control
+plot_heatmap(
+  mydata,
+  "no2",
+  scale_col = scale_opts(
+    limits = c(10, 50),
+    breaks = c(10, 25, 50),
+    labels = c("Low", "Medium", "High"),
+    transform = "log10"
+  )
+)
+
+```
+
+### Facet Control
+
+Similar to scale control, there is now a consistent method to control facets across all plotting functions. This is achieved using the `facet_opts()` helper function.
+
+```{r}
+# default facet options
+plot_trend_bars(
+  mydata,
+  "no2",
+  group = "weekday",
+  avg.time = "year",
+  type = "season"
+)
+
+# custom facet options - 1 row, free x scales, free x 'space'
+plot_trend_bars(
+  mydata,
+  "no2",
+  group = "weekday",
+  avg.time = "year",
+  type = "season",
+  facet_opts = facet_opts(nrow = 1, scales = "free_x", space = "free_x")
+)
+```
+
+### Discrete Scales
+
+In the legacy `openair` plotting suite, only `calendarPlot()` and `trendLevel()` could convert their continuous colour scales into discrete ones, and this required specifying individual breaks. In the new `openair` functions, *any* continuous scale can be discretised using the `discretise` argument, with numerous options using the new `disc_*()` helpers. This gives extensive control over how continuous data is binned into discrete groups for plotting.
+
+```{r}
+plot_heatmap(mydata, "no2")
+
+# 5 groups with equal range
+plot_heatmap(mydata, "no2", discretise = disc_interval(5))
+
+# 5 groups with the same number of observations
+plot_heatmap(mydata, "no2", discretise = disc_number(5))
+
+# however many groups with width 5
+plot_heatmap(mydata, "no2", discretise = disc_width(5))
+
+# 4 groups with width 5, and then the rest of the data
+plot_heatmap(mydata, "no2", discretise = disc_width_n(5, 4))
+
+# approximately 5 'prettybreaks
+plot_heatmap(mydata, "no2", discretise = disc_pretty(5))
+
+# defined (irregular) breaks - with optional labels
+plot_heatmap(
+  mydata,
+  "no2",
+  discretise = disc_breaks(
+    c(20, 25, 30, 40, 50, 100),
+    labels = c(
+      "Very Low (20-25)",
+      "Low (25-30)",
+      "Medium (30-40)",
+      "High (40-50)",
+      "Very High (50-100)"
+    )
+  )
+)
+```
+
+### Windflow
+
+More function types can now add a customisable "windflow" arrow to show the average wind speed and direction.
+
+```{r}
+# default windflow arrows
+plot_variation(mydata, "no2", windflow = TRUE)
+
+# control windflow appearance - bigger arrows, closed ends
+plot_variation(
+  mydata,
+  "no2",
+  windflow = windflow_opts(
+    range = c(1, 3),
+    arrow = ggplot2::arrow(ends = "last", type = "closed")
+  )
+)
+
+```
+
+### Polar Coordinates
+
+`ggplot2` natively supports polar coordinates, so provides a greater control over these sorts of plots compared to `lattice`. At the moment, this includes relocating the radial axis and changing the size of the 'doughnut hole' in the midddle of the plot.
+
+```{r}
+# default
+plot_polar_heatmap(mydata, "no2")
+
+# move inner axis to outside of plot
+plot_polar_heatmap(mydata, "no2", r_axis_inside = FALSE)
+
+# control r axis position and inner radius
+plot_polar_heatmap(mydata, "no2", r_axis_inside = 45, inner_radius = 0.3)
+```
+
+## Extensibility
+
+The new `ggplot2`-based plotting functions in `openair` are designed to be more extensible. Since they return `ggplot` objects, users can easily modify and extend the plots using standard `ggplot2` functions. This allows for greater flexibility in customizing plots beyond the options provided by the legacy `openair` functions.
+
+```{r}
+plot_trend_lines(mydata, "no2", avg.time = "month", cols = "hotpink") +
+  # text and arrow
+  ggplot2::annotate(
+    "text",
+    x = as.Date("2002-06-01"),
+    y = 60,
+    label = "Notable Event!"
+  ) +
+  ggplot2::annotate(
+    "segment",
+    x = as.Date("2002-06-01"),
+    xend = as.Date("2002-06-01"),
+    y = 59,
+    yend = 45,
+    arrow = ggplot2::arrow()
+  ) +
+  # region
+  ggplot2::annotate(
+    "rect",
+    xmin = as.Date("2000-06-01"),
+    xmax = as.Date("2001-06-01"),
+    ymin = 40,
+    ymax = 60,
+    fill = "yellow",
+    alpha = 0.5
+  ) +
+  # limit value
+  ggplot2::geom_hline(yintercept = 50, linetype = "dashed", color = "blue") +
+  ggplot2::annotate(
+    "label",
+    x = as.Date("1998-03-01"),
+    y = 50,
+    label = "Limit Value",
+    color = "blue",
+    hjust = 0
+  ) +
+  # labels
+  ggplot2::labs(
+    title = "My Cool Plot",
+    subtitle = "Using the new openair plotting functions!",
+    caption = "Made by Jack"
+  ) +
+  # theme
+  ggplot2::theme_classic()
+```
+
+It is also possible to leverage the `ggplot2` extensions ecosystem to add additional functionality to `openair` plots. For example, it is facile to `patchwork` multiple `openair` plots together into a single figure.
+
+```{r}
+library(patchwork)
+
+p1 <- plot_trend_lines(mydata, "no2", avg.time = "month")
+
+p2 <- plot_variation(mydata, "no2", x = "weekday")
+
+p3 <- plot_heatmap(mydata, "no2")
+
+p1 /
+  (p2 | p3) +
+  plot_annotation(
+    title = "Combined openair plots",
+    tag_levels = "A",
+    tag_suffix = ")",
+  ) +
+  plot_layout(heights = c(0.4, 0.6))
+```
+

@@ -365,7 +365,7 @@ plot_trend_theilsen <- function(
       position = scale_y$position %||% "left",
       sec.axis = scale_y$sec.axis
     ) +
-    ggplot2::scale_x_datetime(
+    ggplot2::scale_x_date(
       breaks = scale_x$breaks,
       labels = scale_x$labels,
       limits = scale_x$limits,

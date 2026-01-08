@@ -381,9 +381,9 @@ plot_calendar <-
         plt +
         layer_windflow(
           ggplot2::aes(ws = .data$ws, wd = .data$wd),
+          limits = windflow$limits,
           range = windflow$range,
           arrow = windflow$arrow,
-          limits = windflow$limits,
           show.legend = FALSE
         )
     }
