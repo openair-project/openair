@@ -1,5 +1,60 @@
 #' Automatic text formatting for openair
 #'
+#' @description `r lifecycle::badge("experimental")`
+#'
+#'   [label_openair()] is a  workhorse function automatically applies routing
+#'   text formatting to common words in air quality and meteorological science
+#'   (for example, subscripting the 'x' in NOx). Unlike [quickText()], it is
+#'   fully vectorised and can optionally return an unparsed character string.
+#'
+#'   [labeller_openair()] generates a [ggplot2::labeller()] function. This is
+#'   intended to be used with the `labeller` argument of
+#'   [ggplot2::facet_wrap()] or [ggplot2::facet_grid()].
+#'
+#' @param x A character vector.
+#'
+#' @param parse If `TRUE`, this function will output an expression that can be
+#'   plugged straight into, for example, [ggplot2::labs()]. If `FALSE`, an
+#'   unevaluated character string will be returned, which could be useful if
+#'   another function will deal with parsing (e.g., a labeller function in
+#'   [ggplot2::facet_wrap()]).
+#'
+#' @param auto_text Perform the formatting of the data? Used internally by
+#'   `openair` functions to turn on and off label formatting. If `FALSE`, `x`
+#'   will be returned unchanged.
+#'
+#' @author Jack Davison
+#'
+#' @rdname label_openair
+#' @order 1
+#' @export
+label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
+  if (!auto_text) {
+    return(x)
+  }
+
+  sapply(
+    x,
+    \(txt) quickText(txt, auto.text = auto_text, parse = parse)
+  )
+}
+
+#' @rdname label_openair
+#' @order 2
+#' @export
+labeller_openair <- function(auto_text = TRUE) {
+  if (auto_text) {
+    ggplot2::as_labeller(
+      \(x) label_openair(x, parse = FALSE, auto_text = TRUE),
+      default = ggplot2::label_parsed
+    )
+  } else {
+    ggplot2::label_value
+  }
+}
+
+#' Automatic text formatting for openair
+#'
 #' Workhorse function that automatically applies routine text formatting to
 #' common expressions and data names used in openair.
 #'
@@ -14,11 +69,11 @@
 #'   `quickText` to `text` and returns the result. The alternative,
 #'   `FALSE`, returns `text` unchanged. (A number of `openair`
 #'   functions enable/disable `quickText` using this option.
+#' @param ... Not used.
 #' @export
 #' @return The function returns an expression for graphical evaluation.
 #' @author Karl Ropkins.
 #' @examples
-#'
 #'
 #' # example 1
 #' ## see axis formatting in an openair plot, e.g.:
@@ -30,8 +85,7 @@
 #'   xlab = quickText("my no2 label"),
 #'   ylab = quickText("pm10 [ ug.m-3 ]")
 #' )
-#'
-quickText <- function(text, auto.text = TRUE) {
+quickText <- function(text, auto.text = TRUE, ...) {
   ## the lookup table version
 
   ## #return if auto.text false
@@ -39,12 +93,21 @@ quickText <- function(text, auto.text = TRUE) {
     return(ans <- text)
   }
 
+  # are we going to actually parse this?
+  extra_args <- rlang::list2(...)
+  parse <- extra_args$parse %||% TRUE
+
   ## #return if already expression
   if (is.expression(text)) {
     return(ans <- text)
   }
 
-  ans <- paste("expression(paste('", text, " ", sep = "")
+  if (parse) {
+    ans <- paste("expression(paste('", text, " ", sep = "")
+  } else {
+    ans <- paste("paste('", text, " ", sep = "")
+  }
+
   ans <- gsub("NO2", "' 'NO' [2] * '", ans)
   ans <- gsub("no2", "' 'NO' [2] * '", ans)
   ans <- gsub("\\bno\\b", "NO", ans)
@@ -143,7 +206,11 @@ quickText <- function(text, auto.text = TRUE) {
   ans <- gsub("umol/m2/s", "' * mu * 'mol m' ^-2 * ' s' ^-1 *'", ans)
   ans <- gsub("umol/m2", "' * mu * 'mol m' ^-2 *'", ans)
 
-  ans <- paste(ans, "'))", sep = "")
+  if (parse) {
+    ans <- paste(ans, "'))", sep = "")
+  } else {
+    ans <- paste(ans, "')", sep = "")
+  }
 
   ## commands to strip unecessary * etc...
 
@@ -187,9 +254,13 @@ quickText <- function(text, auto.text = TRUE) {
 
   ## ########################
 
-  if (inherits(try(eval(parse(text = ans)), TRUE), "try-error") == FALSE) {
-    ans <- eval(parse(text = ans))
-  } else {
-    ans <- text
+  if (parse) {
+    if (inherits(try(eval(parse(text = ans)), TRUE), "try-error") == FALSE) {
+      ans <- eval(parse(text = ans))
+    } else {
+      ans <- text
+    }
   }
+
+  return(ans)
 }

@@ -855,3 +855,12 @@ strpad <- function(y, n = NULL) {
   }
   y
 }
+
+num_convert <- function(x) {
+  y <- utils::type.convert(x, as.is = TRUE)
+  if (is.numeric(y) || is.integer(y)) {
+    return(y)
+  } else {
+    return(x)
+  }
+}
