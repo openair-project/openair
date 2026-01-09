@@ -33,120 +33,10 @@ label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
     return(x)
   }
 
-  # escape some characters that can cause issues
-  out <- stringr::str_replace_all(
+  sapply(
     x,
-    "([%$?£+\\-/|&!^*(){}\\[\\]<>=:;~`'\"\\\\,@])",
-    "*'\\1'*"
+    \(txt) quickText(txt, auto.text = auto_text, parse = parse)
   )
-
-  oafmt <- function(x, str, out) {
-    for (i in str) {
-      x <- stringr::str_replace_all(
-        x,
-        pattern = paste0("\\b", i, "\\b"),
-        replacement = out
-      )
-    }
-    x
-  }
-
-  out <-
-    out |>
-    # pollutants
-    oafmt(c("no2", "NO2"), "NO[2]") |>
-    oafmt(c("nox", "NOX", "NOx"), "NO[x]") |>
-    oafmt(c("nh3", "NH3"), "NH[3]") |>
-    oafmt(c("co"), "CO") |>
-    oafmt(c("nmhc"), "NMHC") |>
-    oafmt(c("pm10", "PM10"), "PM[10]") |>
-    oafmt(c("pm1", "PM1"), "PM[1]") |>
-    oafmt(c("pm4", "PM4"), "PM[4]") |>
-    oafmt(c("pm25", "PM25", "pm2.5", "PM2.5"), "PM[2.5]") |>
-    oafmt(c("pmt", "PMt"), "PM[total]") |>
-    oafmt(c("pmc", "PMc", "PMcoarse", "pmcoarse"), "PM[coarse]") |>
-    oafmt(c("pmf", "PMf", "PMfine", "pmfine"), "PM[fine]") |>
-    oafmt(c("o3", "O3", "ozone"), "O[3]") |>
-    oafmt(c("co2", "CO2"), "CO[2]") |>
-    oafmt(c("so2", "SO2"), "SO[2]") |>
-    oafmt(c("h2s", "H2S"), "H[2]S") |>
-    oafmt(c("ch4", "CH4"), "CH[4]") |>
-    # met variables
-    oafmt(c("ws", "WS"), "wind speed") |>
-    oafmt(c("wd", "WD"), "wind dir") |>
-    oafmt(c("air_temp"), "temperature") |>
-    oafmt(c("rh"), "relative humidity") |>
-    # units
-    oafmt(c("Delta", "delta"), "\\u0394") |>
-    oafmt(c("dgrC", "degreeC", "deg. C", "degreesC"), "{}^{o}*C") |>
-    oafmt(c("ug/m3", "ug.m-3", "ug m-3", "ugm-3"), "\\u03bcg m^{-3}") |>
-    oafmt(c("mg/m3", "mg.m-3", "mg m-3", "mgm-3"), "mg m^{-3}") |>
-    oafmt(c("ng/m3", "ng.m-3", "ng m-3", "ngm-3"), "ng m^{-3}") |>
-    oafmt(c("m/s2", "m.s-2", "m s-2"), "m s^{-2}") |>
-    oafmt(c("m/s", "m.s-1", "m s-1"), "m s^{-1}") |>
-    oafmt(c("km2"), "km^{2}") |>
-    oafmt(c("g/km", "g.km-1", "g km-1"), "g km^{-1}") |>
-    oafmt(c("g/s", "g.s-1", "g s-1"), "g s^{-1}") |>
-    oafmt(c("r2", "R2"), "R^{2}") |>
-    # plotmath exceptions
-    stringr::str_replace_all(",", "*','*") |>
-    stringr::str_replace_all("\\.", "*'.'*") |>
-    stringr::str_replace_all(" ", "~")
-
-  # ensure value doesn't start with number
-  out <- sapply(
-    out,
-    \(x) {
-      if (!is.na(x) && stringr::str_starts(x, "\\d+")) {
-        x <- stringr::str_replace(x, "(\\d+)", "'\\1'*")
-      }
-      x
-    }
-  )
-
-  # turn a single \n into atop()
-  out <-
-    sapply(
-      out,
-      \(x) {
-        if (!is.na(x) && grepl("\n", x)) {
-          splits <- strsplit(x, "\n")[[1]]
-          paste0(
-            "atop(",
-            splits[1],
-            ",",
-            paste(splits[-1], collapse = "~"),
-            ")"
-          )
-        } else {
-          x
-        }
-      },
-      USE.NAMES = FALSE
-    )
-
-  # don't let a label end or start with a *
-  out[stringr::str_ends(out, "\\*")] <- stringr::str_sub(
-    out[stringr::str_ends(out, "\\*")],
-    end = -2
-  )
-  out[stringr::str_starts(out, "\\*")] <- stringr::str_sub(
-    out[stringr::str_starts(out, "\\*")],
-    start = 2
-  )
-
-  # can't have *~*
-  out <- stringr::str_replace_all(out, "\\*~\\*", "~")
-
-  # if parse, evaluate
-  if (parse) {
-    sapply(
-      out,
-      \(x) eval(parse(text = paste0("expression(paste(", x, "))")))
-    )
-  } else {
-    out
-  }
 }
 
 #' @rdname label_openair
@@ -179,6 +69,7 @@ labeller_openair <- function(auto_text = TRUE) {
 #'   `quickText` to `text` and returns the result. The alternative,
 #'   `FALSE`, returns `text` unchanged. (A number of `openair`
 #'   functions enable/disable `quickText` using this option.
+#' @param ... Not used.
 #' @export
 #' @return The function returns an expression for graphical evaluation.
 #' @author Karl Ropkins.
@@ -194,7 +85,7 @@ labeller_openair <- function(auto_text = TRUE) {
 #'   xlab = quickText("my no2 label"),
 #'   ylab = quickText("pm10 [ ug.m-3 ]")
 #' )
-quickText <- function(text, auto.text = TRUE) {
+quickText <- function(text, auto.text = TRUE, ...) {
   ## the lookup table version
 
   ## #return if auto.text false
@@ -202,12 +93,21 @@ quickText <- function(text, auto.text = TRUE) {
     return(ans <- text)
   }
 
+  # are we going to actually parse this?
+  extra_args <- rlang::list2(...)
+  parse <- extra_args$parse %||% TRUE
+
   ## #return if already expression
   if (is.expression(text)) {
     return(ans <- text)
   }
 
-  ans <- paste("expression(paste('", text, " ", sep = "")
+  if (parse) {
+    ans <- paste("expression(paste('", text, " ", sep = "")
+  } else {
+    ans <- paste("paste('", text, " ", sep = "")
+  }
+
   ans <- gsub("NO2", "' 'NO' [2] * '", ans)
   ans <- gsub("no2", "' 'NO' [2] * '", ans)
   ans <- gsub("\\bno\\b", "NO", ans)
@@ -306,7 +206,11 @@ quickText <- function(text, auto.text = TRUE) {
   ans <- gsub("umol/m2/s", "' * mu * 'mol m' ^-2 * ' s' ^-1 *'", ans)
   ans <- gsub("umol/m2", "' * mu * 'mol m' ^-2 *'", ans)
 
-  ans <- paste(ans, "'))", sep = "")
+  if (parse) {
+    ans <- paste(ans, "'))", sep = "")
+  } else {
+    ans <- paste(ans, "')", sep = "")
+  }
 
   ## commands to strip unecessary * etc...
 
@@ -350,9 +254,13 @@ quickText <- function(text, auto.text = TRUE) {
 
   ## ########################
 
-  if (inherits(try(eval(parse(text = ans)), TRUE), "try-error") == FALSE) {
-    ans <- eval(parse(text = ans))
-  } else {
-    ans <- text
+  if (parse) {
+    if (inherits(try(eval(parse(text = ans)), TRUE), "try-error") == FALSE) {
+      ans <- eval(parse(text = ans))
+    } else {
+      ans <- text
+    }
   }
+
+  return(ans)
 }
