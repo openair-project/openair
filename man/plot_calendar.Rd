@@ -54,10 +54,9 @@ plot an entire year even if months are missing. To only plot certain months
 use the \code{month} option where month is a numeric 1:12 e.g. \code{month = c(1, 12)} to only plot January and December.}
 
 \item{discretise}{Options to discretise the continuous scale into discrete
-bins. Providing an integer will split the scale into that number of
-bins. Alternatively, \code{\link[=disc_breaks]{disc_breaks()}} allows for extensive
-customisation (e.g., defining specific bin widths, breaks, labels, and so
-on).}
+bins. Providing an integer will split the scale into that number of bins.
+Alternatively, \code{\link[=disc_breaks]{disc_breaks()}} allows for extensive customisation (e.g.,
+defining specific bin widths, breaks, labels, and so on).}
 
 \item{windflow}{If \code{TRUE}, arrows showing the average magnitude and direction
 of wind within each bin will be shown. Note that this requires the columns

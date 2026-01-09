@@ -64,9 +64,11 @@ plot_xy_bins(
 \item{z}{The column of \code{data} to colour by. This is not passed though
 \code{\link[=cutData]{cutData()}}, so a colour}
 
-\item{group_col, group_shp}{Columns of \code{data} to use to condition the data
-within each panel, passed to \code{\link[=cutData]{cutData()}}. \code{group_col} maps to the colour
-aesthetic and \code{group_shp} to the marker shape aesthetic.}
+\item{group_col}{The column of \code{data} to use to condition data within each
+panel, passed to \code{\link[=cutData]{cutData()}}. This is used for the 'colour' aesthetic.}
+
+\item{group_shp}{The column of \code{data} to use to condition data within each
+panel, passed to \code{\link[=cutData]{cutData()}}. This is used for the 'shape' aesthetic.}
 
 \item{type}{The column(s) of \code{data} to use to split the plot into separate
 facets, passed to \code{\link[=cutData]{cutData()}}. \code{type} may be \code{NULL} or a vector with
@@ -110,10 +112,9 @@ using the \code{"percentile"} option --- see below. Not used if \code{avg.time =
 The default is 95\%.}
 
 \item{discretise}{Options to discretise the continuous scale into discrete
-bins. Providing an integer will split the scale into that number of
-bins. Alternatively, \code{\link[=disc_breaks]{disc_breaks()}} allows for extensive
-customisation (e.g., defining specific bin widths, breaks, labels, and so
-on).}
+bins. Providing an integer will split the scale into that number of bins.
+Alternatively, \code{\link[=disc_breaks]{disc_breaks()}} allows for extensive customisation (e.g.,
+defining specific bin widths, breaks, labels, and so on).}
 
 \item{scale_x}{Options for the x-axis scale of the plot. If a single number,
 this will set an upper scale limit. If greater than one number, the range

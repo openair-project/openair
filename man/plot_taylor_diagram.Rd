@@ -8,7 +8,9 @@ plot_taylor_diagram(
   data,
   obs,
   mod,
-  group = NULL,
+  group_col = NULL,
+  group_shp = NULL,
+  group_grp = NULL,
   type = NULL,
   show_negative_cor = FALSE,
   scale_y = openair::scale_opts(),
@@ -28,10 +30,16 @@ plot_taylor_diagram(
 (\code{obs}) and one for modelled values (\code{mod}); these should be columns in
 \code{data}.}
 
-\item{group}{The column of \code{data} to use to condition the data within each
-panel, passed to \code{\link[=cutData]{cutData()}}. This is usually achieved using colour, so
-will conflict with providing multiple \code{pollutant}s or other options which
-use the colour aesthetic.}
+\item{group_col}{The column of \code{data} to use to condition data within each
+panel, passed to \code{\link[=cutData]{cutData()}}. This is used for the 'colour' aesthetic.}
+
+\item{group_shp}{The column of \code{data} to use to condition data within each
+panel, passed to \code{\link[=cutData]{cutData()}}. This is used for the 'shape' aesthetic.}
+
+\item{group_grp}{The column of \code{data} to use to condition data within each
+panel, passed to \code{\link[=cutData]{cutData()}}. This is used for the 'group' aesthetic, which
+splits the data into separate markers but doesn't distinguish them with
+colour, shape or size.}
 
 \item{type}{The column(s) of \code{data} to use to split the plot into separate
 facets, passed to \code{\link[=cutData]{cutData()}}. \code{type} may be \code{NULL} or a vector with
@@ -193,7 +201,7 @@ mod_data <-
   tidyr::pivot_longer(model1:model3)
 
 # plot this on a taylor diagram
-plot_taylor_diagram(mod_data, "nox", "value", group = "name")
+plot_taylor_diagram(mod_data, "nox", "value", group_col = "name")
 
 }
 }

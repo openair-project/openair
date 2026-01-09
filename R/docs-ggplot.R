@@ -17,6 +17,17 @@
 #'   will conflict with providing multiple `pollutant`s or other options which
 #'   use the colour aesthetic.
 #'
+#' @param group_col The column of `data` to use to condition data within each
+#'   panel, passed to [cutData()]. This is used for the 'colour' aesthetic.
+#'
+#' @param group_shp The column of `data` to use to condition data within each
+#'   panel, passed to [cutData()]. This is used for the 'shape' aesthetic.
+#'
+#' @param group_grp The column of `data` to use to condition data within each
+#'   panel, passed to [cutData()]. This is used for the 'group' aesthetic, which
+#'   splits the data into separate markers but doesn't distinguish them with
+#'   colour, shape or size.
+#'
 #' @param cols The colour palette to use. See [openColours()].
 #'
 #' @param auto_text Perform automatic text formatting on common character
@@ -25,10 +36,9 @@
 #'   with, e.g., [ggplot2::labs()] or [ggplot2::guides()].
 #'
 #' @param discretise Options to discretise the continuous scale into discrete
-#'   bins. Providing an integer will split the scale into that number of
-#'   bins. Alternatively, [disc_breaks()] allows for extensive
-#'   customisation (e.g., defining specific bin widths, breaks, labels, and so
-#'   on).
+#'   bins. Providing an integer will split the scale into that number of bins.
+#'   Alternatively, [disc_breaks()] allows for extensive customisation (e.g.,
+#'   defining specific bin widths, breaks, labels, and so on).
 #'
 #' @param windflow If `TRUE`, arrows showing the average magnitude and direction
 #'   of wind within each bin will be shown. Note that this requires the columns

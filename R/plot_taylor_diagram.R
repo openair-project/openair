@@ -52,14 +52,16 @@
 #'   tidyr::pivot_longer(model1:model3)
 #'
 #' # plot this on a taylor diagram
-#' plot_taylor_diagram(mod_data, "nox", "value", group = "name")
+#' plot_taylor_diagram(mod_data, "nox", "value", group_col = "name")
 #'
 #' }
 plot_taylor_diagram <- function(
   data,
   obs,
   mod,
-  group = NULL,
+  group_col = NULL,
+  group_shp = NULL,
+  group_grp = NULL,
   type = NULL,
   show_negative_cor = FALSE,
   scale_y = openair::scale_opts(),
@@ -76,24 +78,37 @@ plot_taylor_diagram <- function(
   scale_y <- resolve_scale_opts(scale_y)
 
   # if no group, create a dummy
-  if (is.null(group)) {
-    data$group <- "(all)"
-    group <- "group"
+  if (is.null(group_col)) {
+    data$group_col <- "(all)"
+    group_col <- "group_col"
+  }
+  if (is.null(group_shp)) {
+    data$group_shp <- "(all)"
+    group_shp <- "group_shp"
+  }
+  if (is.null(group_grp)) {
+    data$group_grp <- "(all)"
+    group_grp <- "group_grp"
   }
 
   # check data inputs and cut data
-  vars <- c(obs, mod, group)
-  if (any(type %in% dateTypes) || any(group %in% dateTypes)) {
+  vars <- c(obs, mod, group_col, group_grp)
+  if (
+    any(type %in% dateTypes) ||
+      any(group_col %in% dateTypes) ||
+      any(group_shp %in% dateTypes) ||
+      any(group_grp %in% dateTypes)
+  ) {
     vars <- unique(c(vars, "date"))
   }
   data <- checkPrep(
     data,
     vars,
-    type = c(type, group),
+    type = c(type, group_col, group_shp, group_grp),
     remove.calm = FALSE,
     remove.neg = FALSE
   )
-  data <- cutData(data, c(group, type), ...)
+  data <- cutData(data, c(group_col, group_shp, group_grp, type), ...)
 
   # function to calculate taylor stats
   make_taylor_stats <- function(obs, mod) {
@@ -112,7 +127,7 @@ plot_taylor_diagram <- function(
     dplyr::reframe(
       data,
       make_taylor_stats(.data[[obs]], .data[[mod]]),
-      .by = dplyr::all_of(c(type, group))
+      .by = dplyr::all_of(c(type, group_col, group_shp, group_grp))
     )
 
   # check no differences in obs sd within panels
@@ -193,14 +208,20 @@ plot_taylor_diagram <- function(
     ggplot2::geom_point(
       data = dplyr::slice_head(plotdata, by = dplyr::all_of(type)),
       ggplot2::aes(x = 1, y = .data$sd_obs),
-      colour = openColours(cols_obs, n = 1),
-      size = 4
+      colour = openColours(cols_obs, n = 1)
     ) +
     ggplot2::geom_point(
       data = plotdata,
-      ggplot2::aes(x = .data$r, y = .data$sd_mod, colour = .data[[group]]),
+      ggplot2::aes(
+        x = .data$r,
+        y = .data$sd_mod,
+        colour = .data[[group_col]],
+        shape = .data[[group_shp]],
+        group = .data[[group_grp]]
+      ),
       size = 4,
-      show.legend = dplyr::n_distinct(plotdata[[group]]) > 1
+      show.legend = dplyr::n_distinct(plotdata[[group_col]]) > 1 ||
+        dplyr::n_distinct(plotdata[[group_shp]]) > 1
     ) +
     ggplot2::coord_radial(
       start = ifelse(show_negative_cor, -pi / 2, 0),
@@ -230,8 +251,11 @@ plot_taylor_diagram <- function(
     ggplot2::scale_color_manual(
       values = openair::openColours(
         scheme = cols,
-        n = dplyr::n_distinct(plotdata[[group]])
+        n = dplyr::n_distinct(plotdata[[group_col]])
       ),
+      label = \(x) label_openair(x, auto_text = auto_text)
+    ) +
+    ggplot2::scale_shape_discrete(
       label = \(x) label_openair(x, auto_text = auto_text)
     ) +
     theme_oa_classic() +
@@ -245,9 +269,17 @@ plot_taylor_diagram <- function(
     ggplot2::labs(
       x = "standard deviation",
       y = dplyr::if_else(show_negative_cor, "", "standard deviation"),
-      color = NULL
+      color = NULL,
+      shape = NULL
     ) +
     get_facet_fun(type, facet_opts = facet_opts, auto_text = auto_text)
+
+  if (dplyr::n_distinct(plotdata[[group_col]]) == 1) {
+    plt <- plt + ggplot2::guides(color = ggplot2::guide_none())
+  }
+  if (dplyr::n_distinct(plotdata[[group_shp]]) == 1) {
+    plt <- plt + ggplot2::guides(shape = ggplot2::guide_none())
+  }
 
   # return
   if (plot) {

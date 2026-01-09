@@ -18,6 +18,17 @@ panel, passed to \code{\link[=cutData]{cutData()}}. This is usually achieved usi
 will conflict with providing multiple \code{pollutant}s or other options which
 use the colour aesthetic.}
 
+\item{group_col}{The column of \code{data} to use to condition data within each
+panel, passed to \code{\link[=cutData]{cutData()}}. This is used for the 'colour' aesthetic.}
+
+\item{group_shp}{The column of \code{data} to use to condition data within each
+panel, passed to \code{\link[=cutData]{cutData()}}. This is used for the 'shape' aesthetic.}
+
+\item{group_grp}{The column of \code{data} to use to condition data within each
+panel, passed to \code{\link[=cutData]{cutData()}}. This is used for the 'group' aesthetic, which
+splits the data into separate markers but doesn't distinguish them with
+colour, shape or size.}
+
 \item{cols}{The colour palette to use. See \code{\link[=openColours]{openColours()}}.}
 
 \item{auto_text}{Perform automatic text formatting on common character
@@ -26,10 +37,9 @@ in axis labels. \code{FALSE} will leave text unchanged, but users may refine it
 with, e.g., \code{\link[ggplot2:labs]{ggplot2::labs()}} or \code{\link[ggplot2:guides]{ggplot2::guides()}}.}
 
 \item{discretise}{Options to discretise the continuous scale into discrete
-bins. Providing an integer will split the scale into that number of
-bins. Alternatively, \code{\link[=disc_breaks]{disc_breaks()}} allows for extensive
-customisation (e.g., defining specific bin widths, breaks, labels, and so
-on).}
+bins. Providing an integer will split the scale into that number of bins.
+Alternatively, \code{\link[=disc_breaks]{disc_breaks()}} allows for extensive customisation (e.g.,
+defining specific bin widths, breaks, labels, and so on).}
 
 \item{windflow}{If \code{TRUE}, arrows showing the average magnitude and direction
 of wind within each bin will be shown. Note that this requires the columns

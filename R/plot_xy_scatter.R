@@ -17,10 +17,6 @@
 #' @param z The column of `data` to colour by. This is not passed though
 #'   [cutData()], so a colour
 #'
-#' @param group_col,group_shp Columns of `data` to use to condition the data
-#'   within each panel, passed to [cutData()]. `group_col` maps to the colour
-#'   aesthetic and `group_shp` to the marker shape aesthetic.
-#'
 #' @inheritSection shared_ggplot_params Controlling scales
 #' @inheritSection shared_ggplot_params Conditioning with `type`
 #'

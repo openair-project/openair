@@ -63,10 +63,9 @@ binned statistic. If the number is below \code{min_bin}, the value will be
 dropped from the returned plot and/or data.}
 
 \item{discretise}{Options to discretise the continuous scale into discrete
-bins. Providing an integer will split the scale into that number of
-bins. Alternatively, \code{\link[=disc_breaks]{disc_breaks()}} allows for extensive
-customisation (e.g., defining specific bin widths, breaks, labels, and so
-on).}
+bins. Providing an integer will split the scale into that number of bins.
+Alternatively, \code{\link[=disc_breaks]{disc_breaks()}} allows for extensive customisation (e.g.,
+defining specific bin widths, breaks, labels, and so on).}
 
 \item{r_axis_inside}{Either a numeric value, setting a theta axis value at
 which the axis should be placed inside the panel, or \code{FALSE}, which will
