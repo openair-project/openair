@@ -33,6 +33,13 @@ label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
     return(x)
   }
 
+  # escape some characters that can cause issues
+  out <- stringr::str_replace_all(
+    x,
+    "([%$?£+\\-/|&!^*(){}\\[\\]<>=:;~`'\"\\\\,@])",
+    "*'\\1'*"
+  )
+
   oafmt <- function(x, str, out) {
     for (i in str) {
       x <- stringr::str_replace_all(
@@ -45,7 +52,7 @@ label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
   }
 
   out <-
-    x |>
+    out |>
     # pollutants
     oafmt(c("no2", "NO2"), "NO[2]") |>
     oafmt(c("nox", "NOX", "NOx"), "NO[x]") |>
@@ -118,11 +125,18 @@ label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
       USE.NAMES = FALSE
     )
 
-  # don't let a label end with a *
+  # don't let a label end or start with a *
   out[stringr::str_ends(out, "\\*")] <- stringr::str_sub(
     out[stringr::str_ends(out, "\\*")],
     end = -2
   )
+  out[stringr::str_starts(out, "\\*")] <- stringr::str_sub(
+    out[stringr::str_starts(out, "\\*")],
+    start = 2
+  )
+
+  # can't have *~*
+  out <- stringr::str_replace_all(out, "\\*~\\*", "~")
 
   # if parse, evaluate
   if (parse) {
