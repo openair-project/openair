@@ -28,6 +28,8 @@
 #'   create a name based on the name of the pollutant and the averaging period
 #'   used.
 #' @param ... Additional parameters passed to [cutData()]. For use with `type`.
+#' @return A data frame with two new columns for the rolling mean value and the
+#' number of measurements used to derive the mean.
 #' @export
 #' @author David Carslaw
 #' @examples
@@ -93,7 +95,9 @@ rollingMean <- function(
     }
 
     # call C code
-    mydata[[new.name]] <- .Call(
+
+    # returns a list with rolling value and number of measurements
+    results <- .Call(
       "rollMean",
       mydata[[pollutant]],
       width,
@@ -101,6 +105,18 @@ rollingMean <- function(
       align,
       PACKAGE = "openair"
     )
+
+    mydata[[new.name]] <- results[[1]]
+    mydata[[paste0("n_", pollutant)]] <- results[[2]]
+
+    # mydata[[new.name]] <- .Call(
+    #   "rollMean",
+    #   mydata[[pollutant]],
+    #   width,
+    #   data.thresh,
+    #   align,
+    #   PACKAGE = "openair"
+    # )
 
     # return what was put in; avoids adding missing data e.g. for factors
     if (length(dates) != nrow(mydata)) {

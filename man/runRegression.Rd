@@ -65,14 +65,3 @@ determination from road vehicles using a range of remote emission sensing
 techniques. Science of The Total Environment, 875.
 https://doi.org/10.1016/j.scitotenv.2023.162621.
 }
-\seealso{
-Other time series and trend functions: 
-\code{\link{TheilSen}()},
-\code{\link{calendarPlot}()},
-\code{\link{smoothTrend}()},
-\code{\link{timePlot}()},
-\code{\link{timeProp}()},
-\code{\link{timeVariation}()},
-\code{\link{trendLevel}()}
-}
-\concept{time series and trend functions}
