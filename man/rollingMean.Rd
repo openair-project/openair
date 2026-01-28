@@ -43,6 +43,10 @@ used.}
 
 \item{...}{Additional parameters passed to \code{\link[=cutData]{cutData()}}. For use with \code{type}.}
 }
+\value{
+A data frame with two new columns for the rolling mean value and the
+number of measurements used to derive the mean.
+}
 \description{
 This is a utility function mostly designed to calculate rolling mean
 statistics relevant to some pollutant limits, e.g., 8 hour rolling means for
