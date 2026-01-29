@@ -43,6 +43,9 @@ used.}
 
 \item{...}{Additional parameters passed to \code{\link[=cutData]{cutData()}}. For use with \code{type}.}
 }
+\value{
+A tibble with two new columns for the rolling value and the number of valid values used.
+}
 \description{
 This is a utility function mostly designed to calculate rolling mean
 statistics relevant to some pollutant limits, e.g., 8 hour rolling means for

@@ -29,6 +29,7 @@
 #'   used.
 #' @param ... Additional parameters passed to [cutData()]. For use with `type`.
 #' @export
+#' @return A tibble with two new columns for the rolling value and the number of valid values used.
 #' @author David Carslaw
 #' @examples
 #' # rolling 8-hour mean for ozone
@@ -48,6 +49,9 @@ rollingMean <- function(
 ) {
   # check inputs
   align <- rlang::arg_match(align, multiple = FALSE)
+
+  if (align == "center")
+    align = "centre"
 
   # data.thresh must be between 0 & 100
   if (data.thresh < 0 || data.thresh > 100) {
@@ -93,14 +97,12 @@ rollingMean <- function(
     }
 
     # call C code
-    mydata[[new.name]] <- .Call(
-      "rollMean",
-      mydata[[pollutant]],
-      width,
-      data.thresh,
-      align,
-      PACKAGE = "openair"
-    )
+
+    data.thresh = data.thresh / 100
+    results <- rolling_average_cpp(mydata[[pollutant]], width, align, data.thresh)
+
+    mydata[[new.name]] <- results[[1]]
+    mydata[[paste0("n_", pollutant)]] <- results[[2]]
 
     # return what was put in; avoids adding missing data e.g. for factors
     if (length(dates) != nrow(mydata)) {

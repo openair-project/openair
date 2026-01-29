@@ -70,6 +70,10 @@
     "stability",
     "y1",
     "y2",
-    "n_mean"
+    "n_mean",
+    "Lonm",
+    "Latm",
+    "Am", 
+    "Bm"
   ))
 }
