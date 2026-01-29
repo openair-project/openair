@@ -5,6 +5,7 @@ using namespace Rcpp;
 
 //' Calculate Euclidean distance for trajectories
 //' @export
+//' @keywords internal
 // [[Rcpp::export]]
 NumericMatrix distEuclid(NumericMatrix Am, NumericMatrix Bm) {
     int ncolumns = Am.ncol();
@@ -34,6 +35,7 @@ NumericMatrix distEuclid(NumericMatrix Am, NumericMatrix Bm) {
 
 //' Distance matrix based on similarity of trajectory angles
 //' @export
+//' @keywords internal
 // [[Rcpp::export]]
 NumericMatrix distAngle(NumericMatrix Lonm, NumericMatrix Latm) {
     int ncolumns = Lonm.ncol();

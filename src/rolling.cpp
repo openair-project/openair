@@ -7,6 +7,7 @@ using namespace Rcpp;
 //' @param alignment String: "left", "centre", or "right"
 //' @param threshold Numeric fraction (0-1) of non-NA data required
 //' @export
+//' @keywords internal
 // [[Rcpp::export]]
 List rolling_average_cpp(NumericVector x, int width, std::string alignment, double threshold) {
     int n = x.size();

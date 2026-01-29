@@ -18,3 +18,4 @@ rolling_average_cpp(x, width, alignment, threshold)
 \description{
 Rolling Average with Threshold
 }
+\keyword{internal}

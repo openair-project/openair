@@ -3,12 +3,14 @@
 
 #' Calculate Euclidean distance for trajectories
 #' @export
+#' @keywords internal
 distEuclid <- function(Am, Bm) {
     .Call(`_openair_distEuclid`, Am, Bm)
 }
 
 #' Distance matrix based on similarity of trajectory angles
 #' @export
+#' @keywords internal
 distAngle <- function(Lonm, Latm) {
     .Call(`_openair_distAngle`, Lonm, Latm)
 }
@@ -19,6 +21,7 @@ distAngle <- function(Lonm, Latm) {
 #' @param alignment String: "left", "centre", or "right"
 #' @param threshold Numeric fraction (0-1) of non-NA data required
 #' @export
+#' @keywords internal
 rolling_average_cpp <- function(x, width, alignment, threshold) {
     .Call(`_openair_rolling_average_cpp`, x, width, alignment, threshold)
 }

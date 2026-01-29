@@ -9,3 +9,4 @@ distEuclid(Am, Bm)
 \description{
 Calculate Euclidean distance for trajectories
 }
+\keyword{internal}

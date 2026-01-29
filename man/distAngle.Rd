@@ -9,3 +9,4 @@ distAngle(Lonm, Latm)
 \description{
 Distance matrix based on similarity of trajectory angles
 }
+\keyword{internal}
