@@ -16,6 +16,7 @@ cutData(
   local.tz = NULL,
   latitude = 51,
   longitude = -0.5,
+  drop = c("default", "empty", "outside", "none"),
   ...
 )
 }
@@ -32,9 +33,10 @@ name is supplied \code{\link[=cutData]{cutData()}} will split the data into four
 Factors levels will be used to split the data without any adjustment.}
 
 \item{names}{By default, the columns created by \code{\link[=cutData]{cutData()}} are named after
-their \code{type} option. Specifying \code{names} defines other names for the columns,
-which map onto the \code{type} options in the same order they are given. The
-length of \code{names} should therefore be equal to the length of \code{type}.}
+their \code{type} option. Specifying \code{names} defines other names for the
+columns, which map onto the \code{type} options in the same order they are
+given. The length of \code{names} should therefore be equal to the length of
+\code{type}.}
 
 \item{suffix}{If \code{name} is not specified, \code{suffix} will be appended to any
 added columns that would otherwise overwrite existing columns. For example,
@@ -63,6 +65,23 @@ original data are in GMT (UTC) or a fixed offset from GMT.}
 
 \item{latitude, longitude}{The decimal latitude and longitudes used when \code{type = "daylight"}. Note that locations west of Greenwich have negative
 longitudes.}
+
+\item{drop}{How to handle empty factor levels. One of:
+\itemize{
+\item \code{"default"}: Sensible defaults selected on a case-by-case basis for
+different \code{type} options.
+\item \code{"empty"}: Drop all empty factor levels.
+\item \code{"none"}: Retain all empty factor levels, where possible. For example,
+for \code{type = "hour"}, all factor levels from \code{0} and \code{23} will be
+represented.
+\item \code{"outside"}: Retain empty factor levels within the range of the data.
+For example, for \code{type = "hour"} when the data only contains data for 1 AM
+and 5 AM, the factor levels, \code{1}, \code{2}, \code{3}, \code{4} and \code{5} will be retained.
+}
+
+Some of these options only apply to certain \code{type} options. For example,
+for \code{type = "year"}, \code{"outside"} is equivalent to \code{"none"} as there is no
+fixed range of years to use in the \code{"none"} case.}
 
 \item{...}{All additional parameters are passed on to next function(s).}
 }
@@ -130,13 +149,15 @@ a column \code{date}. If a user already has a column with a name of one of the
 date-based types it will not be used.
 }
 \examples{
-## split data by day of the week
+# split data by day of the week
 mydata <- cutData(mydata, type = "weekday")
 names(mydata)
 head(mydata)
 }
 \author{
 David Carslaw
+
+Jack Davison
 
 Karl Ropkins (\code{"daylight"} option)
 }

@@ -120,6 +120,7 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom rlang %||%
 #' @importFrom rlang .data
+#' @importFrom rlang :=
 #' @importFrom stats aggregate
 #' @importFrom stats approx
 #' @importFrom stats arima

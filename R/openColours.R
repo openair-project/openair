@@ -49,8 +49,8 @@
 #'   quality index; "daqi" (a palette of 10 colours, corresponding to each index
 #'   value) or "daqi.bands" (4 colours, corresponding to each band - Low,
 #'   Moderate, High, and Very High). These colours were taken directly from
-#'   <https://uk-air.defra.gov.uk/air-pollution/daqi> and may be useful in
-#'   figures like [calendarPlot()].
+#'   <https://check-air-quality.service.gov.uk/> and may be useful in figures
+#'   like [calendarPlot()].
 #'
 #'   * "gaf.cat", "gaf.focus" and "gaf.seq", colours recommended by the UK Government Analysis function
 #'   (<https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/>).
@@ -91,7 +91,7 @@
 #' @author David Carslaw
 #' @author Jack Davison
 #' @references <https://colorbrewer2.org/>
-#' @references <https://uk-air.defra.gov.uk/air-pollution/daqi>
+#' @references <https://check-air-quality.service.gov.uk/>
 #' @references
 #' <https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/>
 #' @examples

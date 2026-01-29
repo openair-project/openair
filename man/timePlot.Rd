@@ -68,8 +68,8 @@ time series together in one panel.}
 \item{avg.time}{This defines the time period to average to. Can be \code{"sec"},
 \code{"min"}, \code{"hour"}, \code{"day"}, \code{"DSTday"}, \code{"week"}, \code{"month"}, \code{"quarter"} or
 \code{"year"}. For much increased flexibility a number can precede these options
-followed by a space. For example, a timeAverage of 2 months would be
-\code{period = "2 month"}. In addition, \code{avg.time} can equal \code{"season"}, in
+followed by a space. For example, an average of 2 months would be
+\code{avg.time = "2 month"}. In addition, \code{avg.time} can equal \code{"season"}, in
 which case 3-month seasonal values are calculated with spring defined as
 March, April, May and so on.
 
@@ -121,7 +121,7 @@ character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-Only one \code{type} is currently allowed in \code{timePlot}.}
+\code{type} must be of length one.}
 
 \item{cols}{Colours to be used for plotting; see \code{\link[=openColours]{openColours()}} for details.}
 

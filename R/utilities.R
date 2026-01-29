@@ -843,3 +843,15 @@ breaksToLabels <- function(breaks, labels = NA) {
   }
   return(labels)
 }
+
+#' pad out a set of numbers with zeroes to create consistent width
+#' @noRd
+strpad <- function(y, n = NULL) {
+  y <- as.character(y)
+  n <- n %||% max(nchar(y))
+  while (any(nchar(y) < n)) {
+    id <- nchar(y) < n
+    y[id] <- paste("0", y[id], sep = "")
+  }
+  y
+}

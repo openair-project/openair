@@ -16,3 +16,5 @@ README_cache
 ^vignettes/articles$
 ^revdep$
 ^CRAN-SUBMISSION$
+^[.]?air[.]toml$
+^\.vscode$

@@ -7,7 +7,8 @@
 #' @param mydata A data frame containing a `date` field in Date or POSIXct
 #'   format.
 #' @param start A start date or date-time string in the form d/m/yyyy, m/d/yyyy,
-#'   d/m/yyyy HH:MM, m/d/yyyy HH:MM, d/m/yyyy HH:MM:SS or m/d/yyyy HH:MM:SS.
+#'   d/m/yyyy HH:MM, m/d/yyyy HH:MM, d/m/yyyy HH:MM:SS, m/d/yyyy HH:MM:SS,
+#' yyyy-mm-dd, yyyy-mm-dd HH:MM or yyyy-mm-dd HH:MM:SS.
 #' @param end See `start` for format.
 #' @param year A year or years to select e.g. `year = 1998:2004` to select
 #'   1998-2004 inclusive or `year = c(1998, 2004)` to select 1998 and 2004.
@@ -109,6 +110,12 @@ selectByDate <- function(
           "ymd"
         )
       )
+
+      # check to see if supplied 'end' includes time component i.e. with a ":"
+      if (!grepl(":", end)) {
+        # get the maximum date in data on that day
+        end <- end + 3600 * 24 - 1
+      }
     }
 
     mydata <- filter(mydata, date <= end)

@@ -60,6 +60,7 @@ quickText <- function(text, auto.text = TRUE) {
   ans <- gsub("\\bwd\\b", "' 'wind dir.' '", ans)
   ans <- gsub("\\bWS\\b", "' 'wind spd.' '", ans)
   ans <- gsub("\\bWD\\b", "' 'wind dir.' '", ans)
+  ans <- gsub("air_temp", "' 'Temperature' '", ans)
   ans <- gsub("rh ", "' 'relative humidity' '", ans)
   ans <- gsub("PM10", "' 'PM' [10] * '", ans)
   ans <- gsub("pm10", "' 'PM' [10] * '", ans)

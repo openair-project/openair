@@ -1,14 +1,46 @@
 # openair (development version)
 
+## Bug Fixes
+
+- `selectByDate()` now correctly handles the `end` date if supplied when in a date format e.g. dd/mm/yyyy and selects all hours in the day if present. 
+
 ## Dependency Changes
 
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe (`|>`).
 
 ## New Features
 
+- `timeVariation()` has been almost completely rewritten, allowing for the following updates:
+
+    - Gained the `panels` argument. This allows for panels other than "hour.weekday", "hour", "month", and "weekday" to be represented in the plot assembly. The first panel will be the top row, and the re
+    
+    - `timeVariation()` will now change lines to points and polygons to rectangles for certain panel and `group` combinations: month-season, weekday-weekend, and hour-daylight.
+
+    - When `key` is `FALSE`, no key is shown for any of the four `timeVariation()` plots. Previously, any value passed to `key` would cause all four plots to display a key.
+
+    - (!) BREAKING: The order of `xlab` and `ylim` now matches the order of `panels`. `month.last` has also been deprecated; if used and `TRUE`, this will override `panels` with a warning. The output names `output$data` will now vary based on `panels`, and the `type` column will be named `{type}_type` (e.g., "hour_type").
+
+- `cutData()` now contains the `drop` argument. This allows for greater control over factor levels for appended columns. For example, consider a situation in which `data` only contains dates in March and May and `type = "month"` is used:
+
+    - `drop = "empty"` will ensure the resulting vector only has factor levels `"March"` and `"May"`. 
+    
+    - `drop = "none"` will ensure the vector has all twelve months (January, February, March, etc.).
+    
+    - `drop = "outside"` will retain 'inclusive' factor levels within the range of the data - in this case `"March"`, `"April"`, and `"May"`.
+    
+    - `drop = "default"` is the existing `cutData()` behaviour - in the case of `type = "month"`, it is equivalent to `drop = "empty"`.
+
+- `is.axis` now has an effect on `weekday`, `season`, `seasonyear` and `monthyear`.
+
 - `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
 
-- `smoothTrend()` has gained the `x.relation`, `date.format`, `key` and `key.position` arguments, in line with `timePlot()`. It has also gained the `progress` argument, passed to `timeAverage()`. 
+- `smoothTrend()` refinements:
+
+    - Gained the `x.relation`, `date.format`, `key` and `key.position` arguments, in line with `timePlot()`. 
+    
+    - Gained the `progress` argument, passed to `timeAverage()`. 
+    
+    - `avg.time` is also no longer restricted to just three options (any `timeAverage()` option is permitted), although too fine a time resolution may obscure the smooth trend for long running data.
 
 - `calendarPlot()` refinements:
 
@@ -18,17 +50,33 @@
     
     - When `statistic == "min"` and `annotation %in% c("ws", "wd")`, the ws/wd returned will correspond to the minimum daily pollutant, rather than the minimum daily ws/wd.
 
+- `timeProp()` refinements:
+
+    - `proportion` is now treated more like `type` internally. For a user, this means it can now be passed `"default"` to avoid any conditioning and create a regular period average barchart.
+
+    - `sub` can now be defined via `...`; set `sub = NA` to remove the text annotation which appears by default at the bottom of a `timeProp()` plot.
+
+    - Gained the `key` argument to remove a legend.
+    
+    - `"season"` is now a permitted `avg.time` option in `timeProp()`, better aligning it with the options in `timeAverage()`.
+    
+    - `...` is now correctly passed to `cutData()` when using `type`/`proportion`.
+
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
+
+- `quickText()` now converts `air_temp` (a common `worldmet` variable) into `"Temperature"`.
 
 ## Bug Fixes
 
-- `timePlot()` now allows duplicate dates when `time.avg` is used. The user will still recieve a warning from `timeAverage()`, which is used internally, but the plot will still be created.
+- `timePlot()` now allows duplicate dates when `time.avg` is used. The user will still receive a warning from `timeAverage()`, which is used internally, but the plot will still be created.
 
 - `importUKAQ()` now closes its `url()` connections and generally fails more gracefully when `data_type %in% c("annual", "monthly", "daqi")`. This was already the case for other data types.
 
 - The `windflow` argument of `timePlot()` now works when `"ws"` and/or `"wd"` are in `pollutant`.
 
 - `timeAverage()` will no longer leave `Uu` and `Vv` columns behind when `statistic = "data.cap"`.
+
+- `timeAverage()` now correctly passes `...` to `cutData()`.
 
 # openair 2.19.0
 
