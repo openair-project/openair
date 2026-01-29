@@ -71,6 +71,11 @@ rollingMean(
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
   For use with `type`.
 
+## Value
+
+A tibble with two new columns for the rolling value and the number of
+valid values used.
+
 ## Author
 
 David Carslaw

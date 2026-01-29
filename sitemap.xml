@@ -20,6 +20,8 @@
 <url><loc>https://openair-project.github.io/openair/reference/conditionalQuantile.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/corPlot.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/cutData.html</loc></url>
+<url><loc>https://openair-project.github.io/openair/reference/distAngle.html</loc></url>
+<url><loc>https://openair-project.github.io/openair/reference/distEuclid.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/drawOpenKey.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/importADMS.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/importEurope.html</loc></url>
@@ -43,6 +45,7 @@
 <url><loc>https://openair-project.github.io/openair/reference/pollutionRose.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/quickText.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/rollingMean.html</loc></url>
+<url><loc>https://openair-project.github.io/openair/reference/rolling_average_cpp.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/runRegression.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/scatterPlot.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/selectByDate.html</loc></url>
