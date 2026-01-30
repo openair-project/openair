@@ -35,8 +35,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // rolling_average_cpp
-List rolling_average_cpp(NumericVector x, int width, std::string alignment, double threshold);
-RcppExport SEXP _openair_rolling_average_cpp(SEXP xSEXP, SEXP widthSEXP, SEXP alignmentSEXP, SEXP thresholdSEXP) {
+List rolling_average_cpp(NumericVector x, int width, std::string alignment, double threshold, std::string statistic, Nullable<NumericVector> probs);
+RcppExport SEXP _openair_rolling_average_cpp(SEXP xSEXP, SEXP widthSEXP, SEXP alignmentSEXP, SEXP thresholdSEXP, SEXP statisticSEXP, SEXP probsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -44,7 +44,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type width(widthSEXP);
     Rcpp::traits::input_parameter< std::string >::type alignment(alignmentSEXP);
     Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
-    rcpp_result_gen = Rcpp::wrap(rolling_average_cpp(x, width, alignment, threshold));
+    Rcpp::traits::input_parameter< std::string >::type statistic(statisticSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericVector> >::type probs(probsSEXP);
+    rcpp_result_gen = Rcpp::wrap(rolling_average_cpp(x, width, alignment, threshold, statistic, probs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -52,7 +54,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_openair_distEuclid", (DL_FUNC) &_openair_distEuclid, 2},
     {"_openair_distAngle", (DL_FUNC) &_openair_distAngle, 2},
-    {"_openair_rolling_average_cpp", (DL_FUNC) &_openair_rolling_average_cpp, 4},
+    {"_openair_rolling_average_cpp", (DL_FUNC) &_openair_rolling_average_cpp, 6},
     {NULL, NULL, 0}
 };
 

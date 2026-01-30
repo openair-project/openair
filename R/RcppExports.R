@@ -15,14 +15,8 @@ distAngle <- function(Lonm, Latm) {
     .Call(`_openair_distAngle`, Lonm, Latm)
 }
 
-#' Rolling Average with Threshold
-#' @param x A numeric vector
-#' @param width Integer window width
-#' @param alignment String: "left", "centre", or "right"
-#' @param threshold Numeric fraction (0-1) of non-NA data required
-#' @export
 #' @keywords internal
-rolling_average_cpp <- function(x, width, alignment, threshold) {
-    .Call(`_openair_rolling_average_cpp`, x, width, alignment, threshold)
+rolling_average_cpp <- function(x, width, alignment, threshold, statistic = "mean", probs = NULL) {
+    .Call(`_openair_rolling_average_cpp`, x, width, alignment, threshold, statistic, probs)
 }
 
