@@ -154,6 +154,8 @@ Tools for manipulating and summarising air quality data.
   : Function to split data in different ways for conditioning
 - [`rollingMean()`](https://openair-project.github.io/openair/reference/rollingMean.md)
   : Calculate rolling mean pollutant values
+- [`rollingQuantile()`](https://openair-project.github.io/openair/reference/rollingQuantile.md)
+  : Calculate rolling quantile pollutant values
 - [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
   : Subset a data frame based on date
 - [`selectRunning()`](https://openair-project.github.io/openair/reference/selectRunning.md)
