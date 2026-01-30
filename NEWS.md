@@ -1,14 +1,12 @@
 # openair (development version)
 
-## Bug Fixes
-
-- `selectByDate()` now correctly handles the `end` date if supplied when in a date format e.g. dd/mm/yyyy and selects all hours in the day if present. 
-
 ## Dependency Changes
 
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe (`|>`).
 
 ## New Features
+
+- New function `rollingQuantile` for flexible and fast rolling quantile (percentile) calculations.
 
 - `timeVariation()` has been almost completely rewritten, allowing for the following updates:
 
@@ -77,6 +75,8 @@
 - `timeAverage()` will no longer leave `Uu` and `Vv` columns behind when `statistic = "data.cap"`.
 
 - `timeAverage()` now correctly passes `...` to `cutData()`.
+
+- `selectByDate()` now correctly handles the `end` date if supplied when in a date format e.g. dd/mm/yyyy and selects all hours in the day if present. 
 
 # openair 2.19.0
 
