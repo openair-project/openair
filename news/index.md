@@ -9,6 +9,8 @@
 
 ### New Features
 
+- New function `GaussianSmooth` for fast rolling Gaussian smoothing.
+
 - New function `rollingQuantile` for flexible and fast rolling quantile
   (percentile) calculations.
 

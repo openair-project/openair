@@ -278,6 +278,8 @@ Tools for manipulating and summarising air quality data.
   : Calculate rolling mean pollutant values
 - [`rollingQuantile()`](https://openair-project.github.io/openair/reference/rollingQuantile.md)
   : Calculate rolling quantile pollutant values
+- [`GaussianSmooth()`](https://openair-project.github.io/openair/reference/GaussianSmooth.md)
+  : Calculate rolling Gaussian smooth of pollutant values
 - [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
   : Subset a data frame based on date
 - [`selectRunning()`](https://openair-project.github.io/openair/reference/selectRunning.md)

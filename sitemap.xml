@@ -9,6 +9,7 @@
 <url><loc>https://openair-project.github.io/openair/authors.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/index.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/news/index.html</loc></url>
+<url><loc>https://openair-project.github.io/openair/reference/GaussianSmooth.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/TaylorDiagram.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/TheilSen.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/aqStats.html</loc></url>
@@ -46,6 +47,7 @@
 <url><loc>https://openair-project.github.io/openair/reference/quickText.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/rollingMean.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/rollingQuantile.html</loc></url>
+<url><loc>https://openair-project.github.io/openair/reference/rolling_gaussian_cpp.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/runRegression.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/scatterPlot.html</loc></url>
 <url><loc>https://openair-project.github.io/openair/reference/selectByDate.html</loc></url>
