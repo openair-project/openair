@@ -10,6 +10,19 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// rolling_gaussian_cpp
+List rolling_gaussian_cpp(NumericVector x, double sigma, double threshold);
+RcppExport SEXP _openair_rolling_gaussian_cpp(SEXP xSEXP, SEXP sigmaSEXP, SEXP thresholdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type sigma(sigmaSEXP);
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    rcpp_result_gen = Rcpp::wrap(rolling_gaussian_cpp(x, sigma, threshold));
+    return rcpp_result_gen;
+END_RCPP
+}
 // distEuclid
 NumericMatrix distEuclid(NumericMatrix Am, NumericMatrix Bm);
 RcppExport SEXP _openair_distEuclid(SEXP AmSEXP, SEXP BmSEXP) {
@@ -52,6 +65,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_openair_rolling_gaussian_cpp", (DL_FUNC) &_openair_rolling_gaussian_cpp, 3},
     {"_openair_distEuclid", (DL_FUNC) &_openair_distEuclid, 2},
     {"_openair_distAngle", (DL_FUNC) &_openair_distAngle, 2},
     {"_openair_rolling_average_cpp", (DL_FUNC) &_openair_rolling_average_cpp, 6},

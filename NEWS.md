@@ -6,6 +6,8 @@
 
 ## New Features
 
+- New function `GaussianSmooth` for fast rolling Gaussian smoothing.
+
 - New function `rollingQuantile` for flexible and fast rolling quantile (percentile) calculations.
 
 - `timeVariation()` has been almost completely rewritten, allowing for the following updates:
