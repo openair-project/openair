@@ -47,6 +47,7 @@ reference:
   - calcPercentile
   - cutData
   - rollingMean
+  - rollingQuantile
   - selectByDate
   - selectRunning
   - splitByDate
