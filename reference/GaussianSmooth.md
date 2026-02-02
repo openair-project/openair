@@ -13,7 +13,7 @@ GaussianSmooth(
   pollutant = "o3",
   sigma = 24L,
   type = "default",
-  data.thresh = 75,
+  data.thresh = 0,
   new.name = NULL,
   ...
 )
