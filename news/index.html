@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">openair</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.19.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.19.1.0000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,15 +54,18 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="openair-development-version">openair (development version)<a class="anchor" aria-label="anchor" href="#openair-development-version"></a></h2>
 <div class="section level3">
+<h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<ul><li><p><code><a href="../reference/selectByDate.html">selectByDate()</a></code> now correctly handles the <code>end</code> date if supplied when in a date format e.g. dd/mm/yyyy and selects all hours in the day if present.</p></li>
+<li><p><code>timeAverage</code> did not properly calculate wind speed and direction correct when <code>vector.ws = TRUE</code></p></li>
+</ul></div>
+<div class="section level3">
 <h3 id="dependency-changes-development-version">Dependency Changes<a class="anchor" aria-label="anchor" href="#dependency-changes-development-version"></a></h3>
 <ul><li>
 <code>openair</code> now depends on R v4.1 and, internally, uses the base R pipe (<code>|&gt;</code>).</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li><p>New function <code>GaussianSmooth</code> for fast rolling Gaussian smoothing.</p></li>
-<li><p>New function <code>rollingQuantile</code> for flexible and fast rolling quantile (percentile) calculations.</p></li>
-<li>
+<ul><li>
 <p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> has been almost completely rewritten, allowing for the following updates:</p>
 <ul><li><p>Gained the <code>panels</code> argument. This allows for panels other than “hour.weekday”, “hour”, “month”, and “weekday” to be represented in the plot assembly. The first panel will be the top row, and the re</p></li>
 <li><p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> will now change lines to points and polygons to rectangles for certain panel and <code>group</code> combinations: month-season, weekday-weekend, and hour-daylight.</p></li>
@@ -100,15 +103,15 @@
 </ul></li>
 <li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> have gained the <code>grid.nx</code> and <code>grid.ny</code> arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.</p></li>
 <li><p><code><a href="../reference/quickText.html">quickText()</a></code> now converts <code>air_temp</code> (a common <code>worldmet</code> variable) into <code>"Temperature"</code>.</p></li>
+<li><p><code>timeAverage</code> is much faster with the bulk of the calculations made using C++.</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<h3 id="bug-fixes-development-version-1">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version-1"></a></h3>
 <ul><li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> now allows duplicate dates when <code>time.avg</code> is used. The user will still receive a warning from <code><a href="../reference/timeAverage.html">timeAverage()</a></code>, which is used internally, but the plot will still be created.</p></li>
 <li><p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> now closes its <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">url()</a></code> connections and generally fails more gracefully when <code>data_type %in% c("annual", "monthly", "daqi")</code>. This was already the case for other data types.</p></li>
 <li><p>The <code>windflow</code> argument of <code><a href="../reference/timePlot.html">timePlot()</a></code> now works when <code>"ws"</code> and/or <code>"wd"</code> are in <code>pollutant</code>.</p></li>
 <li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> will no longer leave <code>Uu</code> and <code>Vv</code> columns behind when <code>statistic = "data.cap"</code>.</p></li>
 <li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> now correctly passes <code>...</code> to <code><a href="../reference/cutData.html">cutData()</a></code>.</p></li>
-<li><p><code><a href="../reference/selectByDate.html">selectByDate()</a></code> now correctly handles the <code>end</code> date if supplied when in a date format e.g. dd/mm/yyyy and selects all hours in the day if present.</p></li>
 </ul></div>
 </div>
     <div class="section level2">

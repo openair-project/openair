@@ -2,17 +2,21 @@
 
 ## openair (development version)
 
+### Bug Fixes
+
+- [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
+  now correctly handles the `end` date if supplied when in a date format
+  e.g. dd/mm/yyyy and selects all hours in the day if present.
+
+- `timeAverage` did not properly calculate wind speed and direction
+  correct when `vector.ws = TRUE`
+
 ### Dependency Changes
 
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe
   (`|>`).
 
 ### New Features
-
-- New function `GaussianSmooth` for fast rolling Gaussian smoothing.
-
-- New function `rollingQuantile` for flexible and fast rolling quantile
-  (percentile) calculations.
 
 - [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
   has been almost completely rewritten, allowing for the following
@@ -130,6 +134,9 @@
   now converts `air_temp` (a common `worldmet` variable) into
   `"Temperature"`.
 
+- `timeAverage` is much faster with the bulk of the calculations made
+  using C++.
+
 ### Bug Fixes
 
 - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
@@ -155,10 +162,6 @@
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
   now correctly passes `...` to
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
-
-- [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
-  now correctly handles the `end` date if supplied when in a date format
-  e.g. dd/mm/yyyy and selects all hours in the day if present.
 
 ## openair 2.19.0
 
