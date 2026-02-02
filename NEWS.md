@@ -1,14 +1,16 @@
 # openair (development version)
 
+## Bug Fixes
+
+- `selectByDate()` now correctly handles the `end` date if supplied when in a date format e.g. dd/mm/yyyy and selects all hours in the day if present. 
+
+- `timeAverage` did not properly calculate wind speed and direction correct when `vector.ws = TRUE`
+
 ## Dependency Changes
 
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe (`|>`).
 
 ## New Features
-
-- New function `GaussianSmooth` for fast rolling Gaussian smoothing.
-
-- New function `rollingQuantile` for flexible and fast rolling quantile (percentile) calculations.
 
 - `timeVariation()` has been almost completely rewritten, allowing for the following updates:
 
@@ -66,6 +68,8 @@
 
 - `quickText()` now converts `air_temp` (a common `worldmet` variable) into `"Temperature"`.
 
+- `timeAverage` is much faster with the bulk of the calculations made using C++.
+
 ## Bug Fixes
 
 - `timePlot()` now allows duplicate dates when `time.avg` is used. The user will still receive a warning from `timeAverage()`, which is used internally, but the plot will still be created.
@@ -77,8 +81,6 @@
 - `timeAverage()` will no longer leave `Uu` and `Vv` columns behind when `statistic = "data.cap"`.
 
 - `timeAverage()` now correctly passes `...` to `cutData()`.
-
-- `selectByDate()` now correctly handles the `end` date if supplied when in a date format e.g. dd/mm/yyyy and selects all hours in the day if present. 
 
 # openair 2.19.0
 

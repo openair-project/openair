@@ -63,12 +63,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// dateAggregate
+DataFrame dateAggregate(DataFrame data, std::string date_col, std::string statistic, double threshold, NumericVector probs);
+RcppExport SEXP _openair_dateAggregate(SEXP dataSEXP, SEXP date_colSEXP, SEXP statisticSEXP, SEXP thresholdSEXP, SEXP probsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< DataFrame >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< std::string >::type date_col(date_colSEXP);
+    Rcpp::traits::input_parameter< std::string >::type statistic(statisticSEXP);
+    Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type probs(probsSEXP);
+    rcpp_result_gen = Rcpp::wrap(dateAggregate(data, date_col, statistic, threshold, probs));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_openair_rolling_gaussian_cpp", (DL_FUNC) &_openair_rolling_gaussian_cpp, 3},
     {"_openair_distEuclid", (DL_FUNC) &_openair_distEuclid, 2},
     {"_openair_distAngle", (DL_FUNC) &_openair_distAngle, 2},
     {"_openair_rolling_average_cpp", (DL_FUNC) &_openair_rolling_average_cpp, 6},
+    {"_openair_dateAggregate", (DL_FUNC) &_openair_dateAggregate, 5},
     {NULL, NULL, 0}
 };
 

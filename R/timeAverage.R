@@ -207,6 +207,12 @@ timeAverage <- function(
   data.thresh <- inputs$data.thresh
   percentile <- inputs$percentile
 
+  if (statistic == "percentile" && is.na(percentile)) {
+    cli::cli_abort(
+      "No {percentile} value supplied."
+    )
+  }
+
   # flag whether a time series has already been padded to fill time gaps
   padded <- FALSE
 
@@ -224,7 +230,7 @@ timeAverage <- function(
   TZ <- attr(mydata$date, "tzone") %||% "GMT"
 
   # get an appropriate function for the statistic
-  FUN <- get_statistic_function(statistic = statistic, percentile = percentile)
+  # FUN <- get_statistic_function(statistic = statistic, percentile = percentile)
 
   # function to calculate means
   #
@@ -332,25 +338,23 @@ timeAverage <- function(
     }
 
     # calculate Uu & Vv if "wd" (& "ws") are in mydata
-    mydata <- calculate_wind_components(mydata = mydata)
+    mydata <- calculate_wind_components(mydata = mydata, vector.ws)
+
+    # if a data threshold has been set and data hasn't already been padded,
+    # pad the data to ensure that DC% calculation is accurate
+    if (data.thresh != 0 && !padded) {
+      mydata <- date.pad(mydata, type = type)
+    }
 
     # handle 'season' as special case
     if (avg.time == "season") {
       mydata <- handle_season_avgtime(mydata, type = type, ...)
     }
 
-    ## Aggregate data
-
     ## variables to split by
     vars <- c(type, "date")
     if (avg.time == "season") {
       vars <- unique(c(vars, "season"))
-    }
-
-    # if a data threshold has been set and data hasn't already been padded,
-    # pad the data to ensure that DC% calculation is accurate
-    if (data.thresh != 0 && !padded) {
-      mydata <- date.pad(mydata, type = type)
     }
 
     # cut date column into bins unless season (dealt w/ earlier)
@@ -362,37 +366,26 @@ timeAverage <- function(
         )
     }
 
-    if (data.thresh != 0) {
-      avmet <- mydata |>
-        dplyr::group_by(dplyr::across(dplyr::all_of(vars))) |>
-        dplyr::summarise(dplyr::across(
-          dplyr::where(function(x) {
-            !is.factor(x) && !is.character(x)
-          }),
-          function(x) {
-            if (sum(is.na(x)) / length(x) <= 1 - data.thresh) {
-              FUN(x)
-            } else {
-              NA
-            }
-          }
-        ))
-    } else {
-      avmet <-
-        mydata |>
-        dplyr::group_by(dplyr::across(dplyr::all_of(vars))) |>
-        dplyr::summarise(dplyr::across(
-          dplyr::where(function(x) {
-            !is.factor(x) && !is.character(x)
-          }),
-          function(x) {
-            FUN(x)
-          }
-        ))
+    # cpp version
+    avmet <- dateAggregate(
+      mydata,
+      date_col = "date",
+      statistic = statistic,
+      threshold = data.thresh,
+      probs = percentile
+    ) |>
+      mutate(date = lubridate::as_datetime(date, tz = TZ)) |>
+      dplyr::as_tibble()
+
+    # need to add season back in if used - FIX ME
+
+    if (avg.time == "season") {
+      avmet <- cutData(avmet, type = "season")
     }
 
     if ("wd" %in% names(mydata)) {
-      if (statistic != "data.cap") {
+      # vector avergaing is only need for some statistics
+      if (!statistic %in% c("data.cap", "max", "min", "sum", "frequency")) {
         if (is.numeric(mydata$wd)) {
           ## mean wd
           avmet <-
@@ -501,83 +494,6 @@ validate_timeaverage_inputs <- function(data.thresh, percentile, statistic) {
   return(list(data.thresh = data.thresh, percentile = percentile))
 }
 
-#' Get an appropriate function for the statistic
-#' @noRd
-get_statistic_function <- function(statistic, percentile) {
-  if (statistic == "mean") {
-    return(function(x) {
-      if (all(is.na(x))) {
-        NA
-      } else {
-        mean(x, na.rm = TRUE)
-      }
-    })
-  }
-  if (statistic == "median") {
-    return(function(x) {
-      median(x, na.rm = TRUE)
-    })
-  }
-  if (statistic == "frequency") {
-    return(function(x) {
-      length(na.omit(x))
-    })
-  }
-  if (statistic == "max") {
-    return(function(x) {
-      if (all(is.na(x))) {
-        NA
-      } else {
-        max(x, na.rm = TRUE)
-      }
-    })
-  }
-  if (statistic == "min") {
-    return(function(x) {
-      if (all(is.na(x))) {
-        NA
-      } else {
-        min(x, na.rm = TRUE)
-      }
-    })
-  }
-  if (statistic == "sum") {
-    return(function(x) {
-      if (all(is.na(x))) {
-        NA
-      } else {
-        sum(x, na.rm = TRUE)
-      }
-    })
-  }
-  if (statistic == "sd") {
-    return(function(x) {
-      sd(x, na.rm = TRUE)
-    })
-  }
-  if (statistic == "data.cap") {
-    return(function(x) {
-      if (all(is.na(x))) {
-        res <- 0
-      } else {
-        res <- 100 * (1 - sum(is.na(x)) / length(x))
-      }
-      res
-    })
-  }
-  if (statistic == "percentile") {
-    if (is.na(percentile)) {
-      cli::cli_abort(
-        "Please provide a {.field percentile} for use with {.code statistic = 'percentile'}."
-      )
-    }
-
-    return(function(x) {
-      quantile(x, probs = percentile, na.rm = TRUE)
-    })
-  }
-}
-
 #' Add start.date and end.date, if they exist
 #' @noRd
 bind_start_and_end_dates <- function(mydata, type, start.date, end.date, TZ) {
@@ -593,7 +509,9 @@ bind_start_and_end_dates <- function(mydata, type, start.date, end.date, TZ) {
     mydata <- bind_rows(mydata, lastLine)
   }
 
-  mydata$date <- as.POSIXct(format(mydata$date), tz = TZ)
+  # check this is necessary
+  # mydata$date <- as.POSIXct(format(mydata$date), tz = TZ)
+  mydata$date <- lubridate::as_datetime(mydata$date, tz = TZ)
 
   return(mydata)
 }
@@ -696,10 +614,10 @@ get_time_parameters <- function(mydata, avg.time) {
 
 #' Calculate Uu and Vv if wd & ws are in the data
 #' @noRd
-calculate_wind_components <- function(mydata) {
+calculate_wind_components <- function(mydata, vector.ws) {
   if ("wd" %in% names(mydata)) {
     if (is.numeric(mydata$wd)) {
-      if ("ws" %in% names(mydata)) {
+      if ("ws" %in% names(mydata) && vector.ws) {
         mydata <- dplyr::mutate(
           mydata,
           Uu = .data$ws * sin(2 * pi * .data$wd / 360),
