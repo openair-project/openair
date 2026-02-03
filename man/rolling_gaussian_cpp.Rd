@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{rolling_gaussian_cpp}
 \alias{rolling_gaussian_cpp}
-\title{Rolling Gaussian Smoother}
+\title{Fast Rolling Gaussian Smoother}
 \usage{
 rolling_gaussian_cpp(x, sigma, threshold = 0.5)
 }
@@ -14,6 +14,6 @@ rolling_gaussian_cpp(x, sigma, threshold = 0.5)
 \item{threshold}{Min fraction of valid data in window (0-1)}
 }
 \description{
-Rolling Gaussian Smoother
+Fast Rolling Gaussian Smoother
 }
 \keyword{internal}

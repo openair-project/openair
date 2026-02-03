@@ -64,17 +64,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // dateAggregate
-DataFrame dateAggregate(DataFrame data, std::string date_col, std::string statistic, double threshold, NumericVector probs);
-RcppExport SEXP _openair_dateAggregate(SEXP dataSEXP, SEXP date_colSEXP, SEXP statisticSEXP, SEXP thresholdSEXP, SEXP probsSEXP) {
+DataFrame dateAggregate(DataFrame df, std::string date_col, std::string statistic, double threshold, double probs);
+RcppExport SEXP _openair_dateAggregate(SEXP dfSEXP, SEXP date_colSEXP, SEXP statisticSEXP, SEXP thresholdSEXP, SEXP probsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< DataFrame >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< DataFrame >::type df(dfSEXP);
     Rcpp::traits::input_parameter< std::string >::type date_col(date_colSEXP);
     Rcpp::traits::input_parameter< std::string >::type statistic(statisticSEXP);
     Rcpp::traits::input_parameter< double >::type threshold(thresholdSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type probs(probsSEXP);
-    rcpp_result_gen = Rcpp::wrap(dateAggregate(data, date_col, statistic, threshold, probs));
+    Rcpp::traits::input_parameter< double >::type probs(probsSEXP);
+    rcpp_result_gen = Rcpp::wrap(dateAggregate(df, date_col, statistic, threshold, probs));
     return rcpp_result_gen;
 END_RCPP
 }

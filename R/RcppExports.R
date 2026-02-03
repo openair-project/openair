@@ -29,7 +29,7 @@ rolling_average_cpp <- function(x, width, alignment, threshold, statistic = "mea
     .Call(`_openair_rolling_average_cpp`, x, width, alignment, threshold, statistic, probs)
 }
 
-dateAggregate <- function(data, date_col = "date", statistic = "mean", threshold = 0.0, probs = as.numeric( c(0.5))) {
-    .Call(`_openair_dateAggregate`, data, date_col, statistic, threshold, probs)
+dateAggregate <- function(df, date_col = "date", statistic = "mean", threshold = 0.0, probs = 0.5) {
+    .Call(`_openair_dateAggregate`, df, date_col, statistic, threshold, probs)
 }
 
