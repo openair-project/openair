@@ -1,6 +1,6 @@
-# Rolling Gaussian Smoother
+# Fast Rolling Gaussian Smoother
 
-Rolling Gaussian Smoother
+Fast Rolling Gaussian Smoother
 
 ## Usage
 
