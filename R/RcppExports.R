@@ -10,14 +10,14 @@ rolling_gaussian_cpp <- function(x, sigma, threshold = 0.5) {
     .Call(`_openair_rolling_gaussian_cpp`, x, sigma, threshold)
 }
 
-#' Calculate Euclidean distance for trajectories
+#' Optimized Euclidean distance for trajectories
 #' @export
 #' @keywords internal
 distEuclid <- function(Am, Bm) {
     .Call(`_openair_distEuclid`, Am, Bm)
 }
 
-#' Distance matrix based on similarity of trajectory angles
+#' Optimized Distance matrix based on similarity of trajectory angles
 #' @export
 #' @keywords internal
 distAngle <- function(Lonm, Latm) {
