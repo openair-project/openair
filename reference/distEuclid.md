@@ -1,6 +1,6 @@
-# Calculate Euclidean distance for trajectories
+# Optimized Euclidean distance for trajectories
 
-Calculate Euclidean distance for trajectories
+Optimized Euclidean distance for trajectories
 
 ## Usage
 

@@ -1,6 +1,6 @@
-# Distance matrix based on similarity of trajectory angles
+# Optimized Distance matrix based on similarity of trajectory angles
 
-Distance matrix based on similarity of trajectory angles
+Optimized Distance matrix based on similarity of trajectory angles
 
 ## Usage
 
