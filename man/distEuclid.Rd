@@ -2,11 +2,11 @@
 % Please edit documentation in R/RcppExports.R
 \name{distEuclid}
 \alias{distEuclid}
-\title{Calculate Euclidean distance for trajectories}
+\title{Optimized Euclidean distance for trajectories}
 \usage{
 distEuclid(Am, Bm)
 }
 \description{
-Calculate Euclidean distance for trajectories
+Optimized Euclidean distance for trajectories
 }
 \keyword{internal}

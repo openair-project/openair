@@ -2,11 +2,11 @@
 % Please edit documentation in R/RcppExports.R
 \name{distAngle}
 \alias{distAngle}
-\title{Distance matrix based on similarity of trajectory angles}
+\title{Optimized Distance matrix based on similarity of trajectory angles}
 \usage{
 distAngle(Lonm, Latm)
 }
 \description{
-Distance matrix based on similarity of trajectory angles
+Optimized Distance matrix based on similarity of trajectory angles
 }
 \keyword{internal}
