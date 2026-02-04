@@ -19,6 +19,7 @@ rollingMean(
   data.thresh = 75,
   align = c("centre", "center", "left", "right"),
   new.name = NULL,
+  date.pad = FALSE,
   ...
 )
 ```
@@ -64,6 +65,10 @@ rollingMean(
 
   The name given to the new column. If not supplied it will create a
   name based on the name of the pollutant and the averaging period used.
+
+- date.pad:
+
+  Should missing dates be padded? Default is `FALSE`.
 
 - ...:
 

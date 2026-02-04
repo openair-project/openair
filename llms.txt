@@ -286,6 +286,8 @@ Tools for manipulating and summarising air quality data.
   : Function to extract run lengths greater than a threshold
 - [`splitByDate()`](https://openair-project.github.io/openair/reference/splitByDate.md)
   : Divide up a data frame by time
+- [`datePad()`](https://openair-project.github.io/openair/reference/datePad.md)
+  : Pad a time-series dataframe and optionally fill values by block
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
   : Function to calculate time averages for data frames
 

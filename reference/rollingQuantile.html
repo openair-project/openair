@@ -13,7 +13,7 @@ frame with the same number of rows supplied."><meta property="og:image" content=
 
     <a class="navbar-brand me-2" href="../index.html">openair</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.19.1.0000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.19.2.0000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,6 +75,7 @@ frame with the same number of rows supplied.</p>
 <span>  data.thresh <span class="op">=</span> <span class="fl">75</span>,</span>
 <span>  align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"centre"</span>, <span class="st">"center"</span>, <span class="st">"left"</span>, <span class="st">"right"</span><span class="op">)</span>,</span>
 <span>  probs <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  date.pad <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -118,6 +119,10 @@ means that the previous hours (including the current) are averaged.
 
 <dt id="arg-probs">probs<a class="anchor" aria-label="anchor" href="#arg-probs"></a></dt>
 <dd><p>Probability for quantile calculate. A number between 0 and 1. Can be more than length one e.g. <code>probs = c(0.05, 0.95)</code>.</p></dd>
+
+
+<dt id="arg-date-pad">date.pad<a class="anchor" aria-label="anchor" href="#arg-date-pad"></a></dt>
+<dd><p>Should missing dates be padded? Default is <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
