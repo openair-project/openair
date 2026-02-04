@@ -1,5 +1,302 @@
 #' Conditional quantile estimates for model evaluation
 #'
+#' @description `r lifecycle::badge("experimental")`
+#'
+#'   Conditional quantiles are a very useful way of considering model
+#'   performance against observations for continuous measurements (Wilks, 2005).
+#'   The conditional quantile plot splits the data into evenly spaced bins. For
+#'   each predicted value bin e.g. from 0 to 10~ppb the *corresponding* values
+#'   of the observations are identified and the median, 25/75th and 10/90
+#'   percentile (quantile) calculated for that bin. The data are plotted to show
+#'   how these values vary across all bins. For a time series of observations
+#'   and predictions that agree precisely the median value of the predictions
+#'   will equal that for the observations for each bin.
+#'
+#' @inheritParams shared_ggplot_params
+#'
+#' @param bins Number of bins to be used in calculating the different quantile
+#'   levels.
+#'
+#' @param cols The colour palette to use. See [openColours()]. The first colour
+#'   will be used for the 10/90 percentile band, the second for the 25/75 band,
+#'   and the third for the median line.
+#'
+#' @param col_ideal,col_histogram The colours to use for the 'ideal' case (the
+#'   1:1 diagonal line and observed value histogram) and the modelled value
+#'   histogram. Passed to [openColours()].
+#'
+#' @inheritSection shared_ggplot_params Controlling scales
+#' @inheritSection shared_ggplot_params Conditioning with `type`
+#'
+#' @family ggplot2 model evaluation functions
+#' @seealso the legacy [conditionalQuantile()] function
+#' @author Jack Davison
+#'
+#' @export
+#'
+#' @references
+#'
+#' Murphy, A. H., B.G. Brown and Y. Chen. (1989) Diagnostic Verification of
+#' Temperature Forecasts, Weather and Forecasting, Volume: 4, Issue: 4, Pages:
+#' 485-501.
+#'
+#' Wilks, D. S., 2005. Statistical Methods in the Atmospheric Sciences, Volume
+#' 91, Second Edition (International Geophysics), 2nd Edition. Academic Press.
+#'
+#' @examples
+#' \dontrun{
+#' # create a small dataset
+#' mod_data <- dplyr::select(mydata, date, nox)
+#'
+#' # lets create some fake modelled values
+#' mod_data <-
+#'   dplyr::mutate(
+#'     mod_data,
+#'     mod = jitter(nox, factor = 1000)
+#'   )
+#'
+#' # plot this on a taylor diagram
+#' plot_conditional_quantile(mod_data, "nox", "mod")
+#' }
+plot_conditional_quantile <- function(
+  data,
+  obs,
+  mod,
+  type = NULL,
+  bins = 30,
+  min_bin = 20,
+  scale_y = openair::scale_opts(),
+  scale_x = openair::scale_opts(),
+  cols = "viridis",
+  col_ideal = "grey50",
+  col_histogram = "grey70",
+  facet_opts = openair::facet_opts(),
+  auto_text = TRUE,
+  plot = TRUE,
+  ...
+) {
+  scale_y <- resolve_scale_opts(scale_y)
+  scale_x <- resolve_scale_opts(scale_x)
+  type <- type %||% "default"
+
+  # minimum bin size
+  bins[bins < 10] <- 10
+
+  # get breaks - shared between observed and modelled values, but based on
+  # modelled values
+  mod_breaks <- seq(
+    min(data[[mod]], na.rm = TRUE),
+    max(data[[mod]], na.rm = TRUE),
+    length.out = bins + 1
+  )
+
+  # cut data
+  vars <- c(mod, obs)
+  if (any(type %in% dateTypes)) {
+    vars <- c(vars, "date")
+  }
+  data <- checkPrep(
+    data,
+    vars,
+    type = type,
+    remove.calm = FALSE,
+    remove.neg = FALSE
+  ) |>
+    dplyr::filter(.data[[mod]] >= 0, .data[[obs]] >= 0)
+  data <- cutData(data, type, ...)
+
+  # get quantiles & count per modelled value
+  plotdata <-
+    data |>
+    dplyr::mutate(
+      mod_bin = cut(
+        .data[[mod]],
+        breaks = mod_breaks,
+        labels = FALSE,
+        include.lowest = TRUE
+      ),
+      breaks_lower = mod_breaks[.data$mod_bin],
+      breaks_upper = mod_breaks[.data$mod_bin + 1],
+      {{ mod }} := (.data$breaks_lower + .data$breaks_upper) / 2
+    ) |>
+    dplyr::select(-c("mod_bin", "breaks_lower", "breaks_upper")) |>
+    dplyr::reframe(
+      q = quantile(
+        .data[[obs]],
+        probs = c(0.1, 0.25, 0.5, 0.75, 0.9),
+        na.rm = TRUE
+      ),
+      n_mod = dplyr::n(),
+      .by = dplyr::all_of(c(mod, type))
+    ) |>
+    dplyr::mutate(
+      p = c(0.1, 0.25, 0.5, 0.75, 0.9) * 100,
+      p = factor(.data$p),
+      .by = dplyr::all_of(c(mod, type))
+    ) |>
+    tidyr::pivot_wider(
+      names_from = "p",
+      values_from = "q",
+      names_prefix = "p"
+    ) |>
+    dplyr::filter(!is.na(.data[[mod]]), .data$n_mod >= min_bin)
+
+  # get counts for observations
+  obs_counts <-
+    data |>
+    dplyr::mutate(
+      obs_bin = cut(
+        .data[[obs]],
+        breaks = mod_breaks,
+        labels = FALSE,
+        include.lowest = TRUE
+      ),
+      breaks_lower = mod_breaks[.data$obs_bin],
+      breaks_upper = mod_breaks[.data$obs_bin + 1],
+      {{ obs }} := (.data$breaks_lower + .data$breaks_upper) / 2
+    ) |>
+    dplyr::select(-c("obs_bin", "breaks_lower", "breaks_upper")) |>
+    dplyr::reframe(
+      n_obs = dplyr::n(),
+      .by = dplyr::all_of(c(obs, type))
+    ) |>
+    dplyr::filter(!is.na(.data[[obs]]), .data$n_obs >= min_bin)
+
+  # replace 'obs' with mod - to bind data
+  names(obs_counts)[names(obs_counts) == obs] <- mod
+
+  # join two datasets
+  plotdata <-
+    dplyr::full_join(
+      plotdata,
+      obs_counts,
+      by = c(mod, type)
+    ) |>
+    dplyr::arrange(.data[[mod]])
+
+  # get barwidths to remove spacing
+  barwidth <- mapType(
+    plotdata,
+    type,
+    \(df) {
+      diffs <- df[[mod]] - dplyr::lag(df[[mod]])
+      dplyr::as_tibble(table(diffs)) |>
+        dplyr::mutate(diffs = as.numeric(.data$diffs))
+    }
+  ) |>
+    dplyr::slice_min(order_by = .data$diffs, with_ties = FALSE) |>
+    dplyr::pull("diffs")
+
+  # a nice range for both axes
+  nice_range <- range(pretty(c(plotdata$p90, plotdata[[mod]]), na.rm = TRUE))
+
+  # rescale counts to be on same axis as the above range
+  plotdata$n_mod_rescaled <- scales::rescale(
+    plotdata$n_mod,
+    to = nice_range,
+    from = c(0, max(plotdata$n_mod, na.rm = TRUE))
+  )
+
+  # rescale counts for observations - note that we're rescaling to the modelled
+  # values to allow these to go 'off the scale' if needed
+  plotdata$n_obs_rescaled <- scales::rescale(
+    plotdata$n_obs,
+    to = nice_range,
+    from = c(0, max(plotdata$n_mod, na.rm = TRUE))
+  )
+
+  # create plot
+  plt <-
+    plotdata |>
+    ggplot2::ggplot(ggplot2::aes(x = .data[[mod]])) +
+    ggplot2::geom_abline(
+      color = openColours(col_ideal, n = 1),
+      lty = 2,
+      slope = 1,
+      intercept = 0
+    ) +
+    ggplot2::geom_col(
+      ggplot2::aes(y = .data$n_mod_rescaled),
+      fill = openColours(col_histogram, n = 1),
+      alpha = 1 / 3,
+      width = barwidth,
+      na.rm = TRUE
+    ) +
+    ggplot2::geom_col(
+      ggplot2::aes(y = .data$n_obs_rescaled),
+      color = openColours(col_ideal, n = 1),
+      fill = NA,
+      width = barwidth,
+      na.rm = TRUE
+    ) +
+    ggplot2::geom_ribbon(
+      ggplot2::aes(
+        ymin = .data$p10,
+        ymax = .data$p90,
+        fill = "10/90th percentile"
+      ),
+      alpha = 2 / 3,
+      na.rm = TRUE
+    ) +
+    ggplot2::geom_ribbon(
+      ggplot2::aes(
+        ymin = .data$p25,
+        ymax = .data$p75,
+        fill = "25/75th percentile"
+      ),
+      alpha = 2 / 3,
+      na.rm = TRUE
+    ) +
+    ggplot2::geom_line(
+      ggplot2::aes(y = .data$p50, color = "median"),
+      na.rm = TRUE
+    ) +
+    ggplot2::scale_color_manual(
+      values = openColours(cols, n = 3),
+      aesthetics = c("color", "fill"),
+      drop = TRUE
+    ) +
+    ggplot2::labs(
+      color = NULL,
+      fill = NULL,
+      x = "predicted value",
+      y = "observed value"
+    ) +
+    theme_oa_classic() +
+    ggplot2::theme(legend.position = "top") +
+    ggplot2::coord_cartesian(
+      ratio = 1,
+      xlim = nice_range,
+      ylim = nice_range
+    ) +
+    ggplot2::scale_y_continuous(
+      breaks = scale_y$breaks,
+      position = scale_y$position %||% "left",
+      expand = ggplot2::expansion(c(0, .1)),
+      sec.axis = ggplot2::sec_axis(
+        ~ scales::rescale(., c(0, max(plotdata$n_mod, na.rm = TRUE))),
+        name = "histogram sample size"
+      )
+    ) +
+    ggplot2::scale_x_continuous(
+      breaks = scale_x$breaks,
+      position = scale_x$position %||% "bottom",
+      expand = ggplot2::expansion(c(0, .1))
+    ) +
+    get_facet_fun(type, facet_opts, auto_text)
+
+  # return
+  if (plot) {
+    return(plt)
+  } else {
+    return(
+      dplyr::select(plotdata, -"n_obs_rescaled", -"n_mod_rescaled")
+    )
+  }
+}
+
+#' Conditional quantile estimates for model evaluation
+#'
 #' Function to calculate conditional quantiles with flexible conditioning. The
 #' function is for use in model evaluation and more generally to help better
 #' understand forecast predictions and how well they agree with observations.
@@ -452,7 +749,7 @@ conditionalQuantile <- function(
   invisible(trellis.last.object())
   output <- list(
     plot = thePlot,
-    data = results,
+    data = all.results,
     call = match.call()
   )
   class(output) <- "openair"

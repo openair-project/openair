@@ -28,7 +28,7 @@
 #' @importFrom stats coefficients
 #' @importFrom stats .lm.fit
 #' @export
-#' @family time series and trend functions
+#'
 #' @references
 #'
 #'

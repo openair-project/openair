@@ -161,6 +161,7 @@ Other trajectory analysis functions:
 \code{\link{trajPlot}()}
 
 Other cluster analysis functions: 
+\code{\link{plot_trend_bars}()},
 \code{\link{polarCluster}()},
 \code{\link{timeProp}()}
 }

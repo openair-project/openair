@@ -1,3 +1,355 @@
+#' Plot air quality trends as a heatmap
+#'
+#' @description `r lifecycle::badge("experimental")`
+#'
+#'   The [plot_heatmap()] function provides a way of rapidly showing a large
+#'   amount of data in a condensed form. In one plot, the variation in the
+#'   concentration of one pollutant can to shown as a function of four other
+#'   categorical properties. The default version of the plot uses `y = "hour"`
+#'   (hour of the day) and `x = "month"` (month of the year), but these can be
+#'   changed and `type` can additionally be passed up to two additional options
+#'   to create grid of heatmap summaries.
+#'
+#' @inheritParams shared_ggplot_params
+#' @inheritParams timeAverage
+#'
+#' @param pollutant The name of the pollutant to summarise.
+#'
+#' @param x,y The columns of `data` to use for the x- and y-axes of the plot,
+#'   passed to [cutData()]. These are used before applying `statistic`.
+#'
+#' @param n_levels The number of levels to split `x`, `y` and `type` data into
+#'   if numeric. The default, `c(10, 10, 4)`, cuts numeric `x` and `y` data into
+#'   ten levels and numeric `type` data into four levels. This option is ignored
+#'   for date conditioning and factors. If less than three values are supplied,
+#'   three values are determined by recursion; if more than three values are
+#'   supplied, only the first three are used.
+#'
+#' @param ... Passed to [cutData()].
+#'
+#' @inheritSection shared_ggplot_params Controlling scales
+#' @inheritSection shared_ggplot_params Conditioning with `type`
+#'
+#' @export
+#'
+#' @return a [ggplot2][ggplot2::ggplot2-package] plot, or `data.frame` if `plot
+#'   = FALSE`.
+#'
+#' @author Jack Davison
+#'
+#' @family ggplot2 time series and trend functions
+#' @seealso The legacy [trendLevel()] function
+#'
+#' @examples
+#' # basic use
+#' # default statistic = "mean"
+#' plot_heatmap(mydata, pollutant = "nox")
+#'
+#' \dontrun{
+#' # example with categorical scale
+#' plot_heatmap(
+#'   mydata,
+#'   type = "year",
+#'   pollutant = "no2",
+#'   statistic = "max",
+#'   cols = c("forestgreen", "yellow", "red"),
+#'   discretise = discretise_breaks(
+#'     breaks = c(0, 2, 50, 100, 500),
+#'     labels = c("low", "hi", "medium", "high"),
+#'   )
+#' )
+#' }
+plot_heatmap <- function(
+  data,
+  pollutant,
+  x = "month",
+  y = "hour",
+  type = NULL,
+  n_levels = c(10, 10, 4),
+  statistic = c(
+    "mean",
+    "max",
+    "min",
+    "median",
+    "frequency",
+    "sum",
+    "sd",
+    "percentile"
+  ),
+  percentile = 95,
+  min_bin = 1,
+  discretise = NULL,
+  windflow = FALSE,
+  scale_col = openair::scale_opts(),
+  cols = "turbo",
+  auto_text = TRUE,
+  facet_opts = openair::facet_opts(),
+  plot = TRUE,
+  ...
+) {
+  # ensure statistic is valid
+  statistic <- rlang::arg_match(statistic)
+  scale_col <- resolve_scale_opts(scale_col)
+  windflow <- resolve_windflow_opts(windflow)
+
+  # check length of x
+  if (length(x) > 1 || length(y) > 1 || length(type) > 2) {
+    cli::cli_abort(
+      c(
+        "{.fun openair::plot_heatmap} may only have one {.arg x}, one {.arg y} and up to two {.arg type}s."
+      )
+    )
+  }
+
+  # ensure x, y and type are unique
+  vars <- c(pollutant, x, y, type)
+  if (length(vars) != length(unique(vars))) {
+    cli::cli_abort(
+      c(
+        "x" = "{.fun openair::plot_heatmap} could not rationalise plot structure.",
+        "i" = "Duplicate term(s) in {.field pollutant} ('{pollutant}'), {.field x} ('{x}'), {.field y} ('{y}'), and {.field type} ('{type}')."
+      )
+    )
+  }
+
+  # statistic handling
+  stat.name <- statistic
+
+  if (statistic == "mean") {
+    stat.fun <- mean
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "median") {
+    stat.fun <- stats::median
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "sd") {
+    stat.fun <- stats::sd
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "max") {
+    stat.fun <- function(x, ...) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        max(x, ...)
+      }
+    }
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "min") {
+    stat.fun <- function(x, ...) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        min(x, ...)
+      }
+    }
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "sum") {
+    stat.fun <- function(x, ...) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        sum(x, ...)
+      }
+    }
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  if (statistic == "frequency") {
+    stat.fun <- function(x, ...) {
+      if (all(is.na(x))) {
+        NA
+      } else {
+        length(na.omit(x))
+      }
+    }
+    stat.args <- NULL
+  }
+
+  if (statistic == "percentile") {
+    if (percentile < 0 | percentile > 100) {
+      cli::cli_abort("{.field percentile} outside {0}-{100}.")
+    }
+    probs <- percentile / 100
+    stat.fun <- function(x, ...) {
+      stats::quantile(x, probs = probs, names = FALSE, ...)
+    }
+    stat.args <- list(na.rm = TRUE)
+  }
+
+  # checkPrep
+  temp <- c(pollutant)
+  if ("date" %in% names(data)) {
+    temp <- c(temp, "date")
+  }
+  if (windflow$windflow) {
+    temp <- c(temp, "ws", "wd")
+  }
+
+  # all of x, y, temp need to be handled as type here
+  data <- checkPrep(data, temp, type = c(x, y, type), remove.calm = FALSE)
+
+  # cutData
+  # different n.levels for axis and type, axes get `is.axis = TRUE`
+  newdata <-
+    data |>
+    cutData(x, n.levels = n_levels[1], is.axis = TRUE, ...) |>
+    cutData(y, n.levels = n_levels[2], is.axis = TRUE, ...) |>
+    cutData(type, n.levels = n_levels[3], ...)
+
+  # select only pollutant and axis/facet columns
+  to_keep <- c(pollutant, x, y, type)
+  if (windflow$windflow) {
+    to_keep <- c(to_keep, "ws", "wd")
+  }
+  newdata <- dplyr::select(newdata, dplyr::any_of(to_keep))
+
+  # calculate the statistic
+  calc_stat <- function(x) {
+    args <- append(stat.args, list(x = x))
+    rlang::exec(stat.fun, !!!args)
+  }
+
+  # get plotting data
+  plotdata <-
+    newdata |>
+    dplyr::summarise(
+      {{ pollutant }} := calc_stat(.data[[pollutant]]),
+      n = dplyr::n(),
+      .by = dplyr::all_of(c(x, y, type))
+    ) |>
+    dplyr::mutate(
+      {{ pollutant }} := dplyr::if_else(
+        .data$n < min_bin,
+        NA,
+        .data[[pollutant]]
+      )
+    ) |>
+    tidyr::drop_na(dplyr::all_of(c(x, y, type, pollutant))) |>
+    dplyr::mutate(dplyr::across(
+      dplyr::all_of(c(x, y, type)),
+      function(x) factor(x, ordered = FALSE)
+    )) |>
+    dplyr::tibble()
+
+  # if want windflow, add this to the data
+  if (windflow$windflow) {
+    winddata <-
+      newdata |>
+      dplyr::mutate(
+        u = -.data$ws * sin(.data$wd * pi / 180),
+        v = -.data$ws * cos(.data$wd * pi / 180)
+      ) |>
+      dplyr::summarise(
+        u = mean(u, na.rm = TRUE),
+        v = mean(v, na.rm = TRUE),
+        .by = dplyr::all_of(c(x, y, type))
+      ) |>
+      dplyr::mutate(
+        ws = sqrt(u^2 + v^2),
+        wd = atan2(u, v) * 180 / pi,
+        wd = (wd + 360) %% 360,
+        .keep = "unused"
+      ) |>
+      dplyr::mutate(dplyr::across(
+        dplyr::all_of(c(x, y, type)),
+        function(x) factor(x, ordered = FALSE)
+      ))
+
+    plotdata <- dplyr::left_join(plotdata, winddata, by = c(x, y, type))
+  }
+
+  # scale colours
+  if (!is.null(discretise)) {
+    plotdata[pollutant] <- cut_discrete_values(
+      plotdata[[pollutant]],
+      opts = discretise
+    )
+
+    color_scale <- list(
+      ggplot2::scale_fill_manual(
+        values = openair::openColours(
+          scheme = cols,
+          n = length(levels(plotdata[[pollutant]]))
+        ),
+        label = label_openair,
+        drop = FALSE,
+        na.value = "grey95",
+        breaks = levels(plotdata[[pollutant]])
+      ),
+      ggplot2::guides(
+        fill = ggplot2::guide_legend(reverse = TRUE)
+      )
+    )
+  } else {
+    color_scale <-
+      ggplot2::scale_fill_gradientn(
+        colours = openair::openColours(scheme = cols),
+        limits = scale_col$limits,
+        breaks = scale_col$breaks,
+        labels = scale_col$labels,
+        transform = scale_col$transform,
+        oob = scales::oob_squish
+      )
+  }
+
+  # build plot
+  plt <-
+    ggplot2::ggplot(
+      plotdata,
+      ggplot2::aes(
+        x = num_convert(.data[[x]]),
+        y = num_convert(.data[[y]])
+      )
+    ) +
+    ggplot2::geom_tile(
+      ggplot2::aes(fill = .data[[pollutant]]),
+      show.legend = TRUE
+    ) +
+    ggplot2::coord_cartesian(expand = FALSE) +
+    ggplot2::labs(
+      x = label_openair(x, auto_text = auto_text),
+      y = label_openair(y, auto_text = auto_text),
+      fill = label_openair(pollutant, auto_text = auto_text)
+    ) +
+    theme_oa_classic() +
+    color_scale +
+    get_facet_fun(
+      type,
+      facet_opts = facet_opts,
+      auto_text = auto_text
+    )
+
+  # windflow
+  if (windflow$windflow) {
+    plt <-
+      plt +
+      layer_windflow(
+        ggplot2::aes(ws = .data$ws, wd = .data$wd),
+        limits = windflow$limits,
+        range = windflow$range,
+        arrow = windflow$arrow,
+        show.legend = FALSE
+      )
+  }
+
+  # return plot or data
+  if (plot) {
+    return(plt)
+  } else {
+    return(plotdata)
+  }
+}
+
+
 #' Plot heat map trends
 #'
 #' The trendLevel function provides a way of rapidly showing a large amount of
@@ -114,6 +466,7 @@
 #' @author David Carslaw
 #' @author Jack Davison
 #' @family time series and trend functions
+#' @seealso The newer [plot_heatmap()] function
 #' @examples
 #' # basic use
 #' # default statistic = "mean"

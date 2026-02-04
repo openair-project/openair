@@ -1,3 +1,225 @@
+#' Plot air quality trends as stacked bar charts
+#'
+#' @description `r lifecycle::badge("experimental")`
+#'
+#'   This function shows time series plots as stacked bar charts. The different
+#'   categories in the bar chart are made up from a character or factor variable
+#'   in a data frame. The function is primarily developed to support the
+#'   plotting of cluster analysis output from [polarCluster()] and
+#'   [trajCluster()] that consider local and regional (back trajectory) cluster
+#'   analysis respectively. However, the function has more general use for
+#'   understanding time series data. In order to plot time series in this way,
+#'   some sort of time aggregation is needed, which is controlled by the option
+#'   `avg.time`.
+#'
+#' @inheritParams shared_ggplot_params
+#'
+#' @param type The name of the data series to use as the conditioning variable,
+#'   passed to [cutData()]. `type` may be `NULL` or a vector with maximum length
+#'   2, which creates a 2D grid of plots.
+#'
+#' @param group The splitting variable that makes up the bars in the bar chart
+#'   e.g. `group = "cluster"` if the output from `polarCluster` is being
+#'   analysed. If `group` is a numeric variable it is split into 4 quantiles (by
+#'   default) by [cutData()]. If `group` is a factor or character variable then
+#'   the categories are used directly.
+#'
+#' @param avg.time This defines the time period to average to. Can be `"sec"`,
+#'   `"min"`, `"hour"`, `"day"`, `"DSTday"`, `"week"`, `"month"`, `"quarter"` or
+#'   `"year"`. For much increased flexibility a number can precede these options
+#'   followed by a space. For example, an average of 2 months would be `avg.time
+#'   = "2 month"`. In addition, `avg.time` can equal `"season"`, in which case
+#'   3-month seasonal values are calculated with spring defined as March, April,
+#'   May and so on.
+#'
+#'   Note that `avg.time` when used in `timeProp` should be greater than the
+#'   time gap in the original data. For example, `avg.time = "day"` for hourly
+#'   data is OK, but `avg.time = "hour"` for daily data is not.
+#'
+#' @param normalise If `normalise = TRUE` then each time interval is scaled to
+#'   100. This is helpful to show the relative (percentage) contribution of the
+#'   proportions.
+#'
+#' @inheritSection shared_ggplot_params Controlling scales
+#' @inheritSection shared_ggplot_params Conditioning with `type`
+#'
+#' @family ggplot2 time series and trend functions
+#' @family cluster analysis functions
+#' @seealso the legacy [timeProp()] function
+#'
+#' @export
+#'
+#' @author Jack Davison
+#' @author David Carslaw
+#'
+#' @examples
+#' # monthly plot of SO2 showing the contribution by wind sector
+#' timeProp(mydata, pollutant = "so2", avg.time = "month", proportion = "wd")
+plot_trend_bars <- function(
+  data,
+  pollutant,
+  group = NULL,
+  type = NULL,
+  avg.time = "month",
+  normalise = FALSE,
+  scale_x = openair::scale_opts(),
+  scale_y = openair::scale_opts(),
+  cols = "tol",
+  auto_text = TRUE,
+  facet_opts = openair::facet_opts(),
+  plot = TRUE,
+  ...
+) {
+  scale_y <- resolve_scale_opts(scale_y)
+  scale_x <- resolve_scale_opts(scale_x)
+
+  # variables needed
+  vars <- c("date", pollutant)
+  group <- group %||% "default"
+
+  # check the data
+  data <- checkPrep(data, vars, c(type, group), remove.calm = FALSE)
+
+  # cut data
+  data <- cutData(data, c(type, group), ...)
+
+  # time zone of input data
+  tzone <- attr(data$date, "tzone")
+
+  # groups for dplyr
+  group_1 <- c("xleft", "xright", type)
+  group_2 <- c(type, "xleft", "xright", group)
+
+  # calculate left and right extremes of each bar, add the most common
+  # non-zero time interval to left to get right
+  plotdata <-
+    dplyr::mutate(
+      data,
+      xleft = as.POSIXct(cut(.data$date, avg.time), tz = tzone),
+      xright = .data$xleft + median(diff(.data$xleft)[diff(.data$xleft) != 0])
+    )
+
+  # summarise by group, type etc
+  plotdata <-
+    plotdata |>
+    # calculate group mean
+    dplyr::mutate(
+      mean_value = mean(.data[[pollutant]], na.rm = TRUE),
+      .by = dplyr::all_of(group_1)
+    ) |>
+    # calculate mean & count per type & pollutant, retain type mean
+    dplyr::summarise(
+      {{ pollutant }} := mean(.data[[pollutant]], na.rm = TRUE),
+      mean_value = mean(.data$mean_value, na.rm = TRUE),
+      n = dplyr::n(),
+      .by = dplyr::all_of(group_2)
+    ) |>
+    # needs specific arrangement for lattice
+    dplyr::arrange(
+      .data$xleft,
+      .data$xright,
+      .data[[group]]
+    ) |>
+    # weighted mean, with cumulative sum for bar heights
+    dplyr::mutate(
+      weighted_mean = .data[[pollutant]] * n / sum(n),
+      Var1 = tidyr::replace_na(.data$weighted_mean, 0),
+      var2 = cumsum(.data$Var1),
+      date = .data$xleft,
+      {{ group }} := factor(.data[[group]], ordered = FALSE),
+      .by = dplyr::all_of(group_1)
+    )
+
+  # determine facet
+  facet_fun <- get_facet_fun(
+    type,
+    facet_opts = facet_opts,
+    auto_text = auto_text
+  )
+
+  # might need to stack axes
+  position <- ggplot2::position_stack()
+  ylabels <- scales::label_number()
+  if (normalise) {
+    position <- ggplot2::position_fill()
+    ylabels <- scales::label_percent()
+  }
+
+  # construct plot
+  plt <-
+    ggplot2::ggplot(
+      plotdata,
+      ggplot2::aes(x = .data$xleft, y = .data$Var1)
+    ) +
+    ggplot2::geom_col(
+      ggplot2::aes(fill = .data[[group]]),
+      position = position,
+      na.rm = TRUE,
+      show.legend = TRUE
+    ) +
+    theme_oa_classic() +
+    ggplot2::scale_x_datetime(
+      expand = FALSE,
+      limits = scale_x$limits,
+      breaks = scale_x$breaks,
+      labels = scale_x$labels,
+      date_breaks = scale_x$date_breaks,
+      date_labels = scale_x$date_labels,
+      position = scale_x$position %||% "bottom",
+      sec.axis = scale_x$sec.axis
+    ) +
+    ggplot2::scale_y_continuous(
+      expand = ggplot2::expansion(c(0, ifelse(normalise, 0, .1))),
+      labels = if (ggplot2::is_waiver(scale_y$labels)) {
+        ylabels
+      } else {
+        scale_y$labels
+      },
+      limits = scale_y$limits,
+      breaks = scale_y$breaks,
+      position = scale_y$position %||% "left",
+      sec.axis = scale_y$sec.axis,
+      transform = scale_y$transform
+    ) +
+    ggplot2::scale_fill_manual(
+      values = openair::openColours(
+        scheme = cols,
+        n = dplyr::n_distinct(levels(plotdata[[group]]))
+      ),
+      label = label_openair,
+      drop = FALSE
+    ) +
+    facet_fun +
+    ggplot2::labs(
+      y = label_openair(
+        ifelse(
+          normalise,
+          paste("% contribution to", pollutant),
+          pollutant
+        ),
+        auto_text = auto_text
+      ),
+      x = NULL,
+      fill = NULL
+    )
+
+  # if there's only one colour, don't create a guide
+  if (group == "default") {
+    plt <-
+      plt +
+      ggplot2::guides(
+        fill = ggplot2::guide_none()
+      )
+  }
+
+  # return
+  if (plot) {
+    return(plt)
+  } else {
+    return(plotdata)
+  }
+}
+
 #' Time series plot with categories shown as a stacked bar chart
 #'
 #' This function shows time series plots as stacked bar charts. The different
@@ -52,6 +274,7 @@
 #' @author David Carslaw
 #' @family time series and trend functions
 #' @family cluster analysis functions
+#' @seealso the newer [plot_trend_bars()] function
 #' @examples
 #' # monthly plot of SO2 showing the contribution by wind sector
 #' timeProp(mydata, pollutant = "so2", avg.time = "month", proportion = "wd")

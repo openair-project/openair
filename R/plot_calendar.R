@@ -1,3 +1,404 @@
+#' Plot air quality trends in a conventional 'calendar' format
+#'
+#' @description `r lifecycle::badge("experimental")`
+#'
+#'   This function will plot data by month laid out in a conventional calendar
+#'   format. The main purpose is to help rapidly visualise potentially complex
+#'   data in a familiar way. Users can also choose to show daily mean wind
+#'   vectors if wind speed and direction are available.
+#'
+#'   Note that is is possible to pre-calculate concentrations in some way before
+#'   passing the data to [plot_calendar()]. For example [rollingMean()] could be
+#'   used to calculate rolling 8-hour mean concentrations. The data can then be
+#'   passed to [plot_calendar()] and `statistic = "max"` chosen, which will plot
+#'   maximum daily 8-hour mean concentrations.
+#'
+#' @inheritParams shared_ggplot_params
+#' @inheritParams timeAverage
+#'
+#' @param year Year to plot e.g. `year = 2003`. If not supplied all data
+#'   potentially spanning several years will be plotted.
+#'
+#' @param month If only certain month are required. By default the function will
+#'   plot an entire year even if months are missing. To only plot certain months
+#'   use the `month` option where month is a numeric 1:12 e.g. `month = c(1,
+#'   12)` to only plot January and December.
+#'
+#' @param statistic Statistic passed to [timeAverage()]. Note that if `statistic
+#'   %in% c("max", "min")` and `annotate` is "ws" or "wd", the hour
+#'   corresponding to the maximum/minimum concentration of `polluant` is used to
+#'   provide the associated `ws` or `wd` and not the maximum/minimum daily `ws`
+#'   or `wd`.
+#'
+#' @param w_shift Controls the order of the days of the week. By default the
+#'   plot shows Saturday first (`w_shift = 0`). To change this so that it starts
+#'   on a Monday for example, set `w_shift = 2`, and so on.
+#'
+#' @param w_abbr_length  Defines the number of letters to abbreviate the weekday
+#'   to. The default (`1`) abbreviates the days of the week to a single letter
+#'   (e.g., in English, S/S/M/T/W/T/F), `w.abbr.len = 3` would abbreviate
+#'   "Monday" to "Mon", and so on.
+#'
+#' @param show_year If only a single year is being plotted, should the calendar
+#'   labels include the year label? `TRUE` creates labels like "January-2000",
+#'   `FALSE` labels just as "January". If multiple years of data are detected,
+#'   this option is forced to be `TRUE`.
+#'
+#' @export
+#'
+#' @return a [ggplot2][ggplot2::ggplot2-package] plot, or `data.frame` if `plot
+#'   = FALSE`.
+#'
+#' @author Jack Davison
+#' @author David Carslaw
+#'
+#' @family ggplot2 time series and trend functions
+#' @seealso The legacy [calendarPlot()] function
+#'
+#' @examples
+#' # basic plot
+#' plot_calendar(mydata, pollutant = "o3", year = 2003)
+#'
+#' # show wind vectors
+#' plot_calendar(mydata, pollutant = "o3", year = 2003, windflow = TRUE)
+#' \dontrun{
+#' # show only specific months with selectByDate
+#' plot_calendar(
+#'   selectByDate(mydata, month = c(3, 6, 10), year = 2003),
+#'   pollutant = "o3",
+#'   year = 2003,
+#'   windflow = TRUE,
+#'   cols = "heat"
+#' )
+#'
+#' # categorical scale example
+#' plot_calendar(
+#'   mydata,
+#'   pollutant = "no2",
+#'   year = 2000,
+#'   discretise = disc_breaks(
+#'     breaks = c(0, 50, 100, 150, 1000),
+#'     labels = c("Very low", "Low", "High", "Very High")
+#'   ),
+#'   cols = c("lightblue", "green", "yellow", "red"), statistic = "max"
+#' )
+#'
+#' # UK daily air quality index
+#' pm10_breaks <- c(0, 17, 34, 50, 59, 67, 75, 84, 92, 100, 1000)
+#' plot_calendar(
+#'   mydata,
+#'   "pm10",
+#'   year = 1999,
+#'   discretise = disc_breaks(
+#'     breaks = pm10_breaks,
+#'     labels = as.character(1:10)
+#'   ),
+#'   cols = "daqi",
+#'   statistic = "mean"
+#' ) + ggplot2::labs(fill = "DAQI")
+#' }
+plot_calendar <-
+  function(
+    data,
+    pollutant,
+    statistic = "mean",
+    data.thresh = 0,
+    percentile = NA,
+    year = NULL,
+    month = NULL,
+    discretise = NULL,
+    windflow = FALSE,
+    scale_col = openair::scale_opts(),
+    cols = "viridis",
+    show_year = TRUE,
+    w_shift = 0,
+    w_abbr_length = 1,
+    auto_text = TRUE,
+    facet_opts = openair::facet_opts(axes = "all_x"),
+    plot = TRUE,
+    ...
+  ) {
+    scale_col <- resolve_scale_opts(scale_col)
+    windflow <- resolve_windflow_opts(windflow, range = c(0, 0.5))
+
+    # check w.shift
+    if (w_shift < 0 || w_shift > 6) {
+      cli::cli_abort("{.field w_shift} should be between {0} and {6}.")
+    }
+
+    # filter and check data
+    data <- prepare_calendar_data(
+      mydata = data,
+      year = year,
+      month = month,
+      pollutant = pollutant,
+      annotate = ifelse(windflow$windflow, "ws", "date")
+    )
+
+    # all the days in the period - to be bound later
+    all_dates <- seq(
+      lubridate::as_date(lubridate::floor_date(min(data$date), "month")),
+      lubridate::as_date(lubridate::ceiling_date(max(data$date), "month")) -
+        1,
+      by = "day"
+    )
+
+    # if statistic is max/min we want the corresponding ws/wd for the pollutant,
+    # not simply the max ws/wd
+    if (statistic %in% c("max", "min")) {
+      if (statistic == "max") {
+        which.fun <- which.max
+      } else if (statistic == "min") {
+        which.fun <- which.min
+      }
+
+      # max ws/wd for hour with max pollutant value
+      maxes <- data |>
+        dplyr::mutate(date = lubridate::as_date(.data$date)) |>
+        dplyr::group_by(date) |>
+        dplyr::slice(which.fun(.data[[pollutant]]))
+
+      # averaged data, make sure Date format (max returns POSIXct)
+      data <- timeAverage(
+        data,
+        "day",
+        statistic = statistic,
+        data.thresh = data.thresh
+      ) |>
+        dplyr::mutate(date = lubridate::as_date(.data$date))
+
+      # replace with parallel max
+      data <- dplyr::left_join(
+        dplyr::select(data, !dplyr::any_of(c("ws", "wd"))),
+        dplyr::select(maxes, !.data[[pollutant]]),
+        by = dplyr::join_by(date)
+      )
+    } else {
+      # calculate daily means
+      data <- timeAverage(
+        data,
+        "day",
+        statistic = statistic,
+        data.thresh = data.thresh,
+        percentile = percentile
+      )
+
+      data$date <- lubridate::as_date(data$date)
+    }
+
+    # make sure all days are available
+    data <-
+      dplyr::left_join(data.frame(date = all_dates), data, by = "date")
+
+    # split by year-month, and set 'type' to this
+    if (show_year) {
+      data <- dplyr::mutate(
+        data,
+        cuts = format(.data$date, "%B-%Y"),
+        cuts = ordered(.data$cuts, levels = unique(.data$cuts))
+      )
+    } else {
+      # cut just by month - although check duplicate years
+      data <- dplyr::mutate(
+        data,
+        cuts = format(.data$date, "%B"),
+        years = format(.data$date, "%Y"),
+        cuts = ordered(.data$cuts, levels = unique(.data$cuts))
+      )
+
+      # check duplicates
+      verify_duplicates <-
+        data |>
+        dplyr::count(.data$cuts, .data$years) |>
+        dplyr::add_count(.data$cuts, name = "month_counts")
+
+      # if any duplicates, set show.year = TRUE
+      if (
+        any(verify_duplicates$month_counts > 1L) ||
+          dplyr::n_distinct(verify_duplicates$years) > 1L
+      ) {
+        data <- dplyr::mutate(
+          data,
+          cuts = format(.data$date, "%B-%Y"),
+          cuts = ordered(.data$cuts, levels = unique(.data$cuts))
+        )
+      }
+
+      data <- dplyr::select(data, -"years")
+    }
+
+    type <- "cuts"
+
+    # snapshot data for later
+    original_data <- data
+
+    # timeAverage will pad-out missing months
+    if (!is.null(month)) {
+      data <- selectByDate(data, month = month)
+    }
+
+    # transform data into a calendar grid
+    plotdata <- mapType(
+      data,
+      type = type,
+      fun = \(df) prepare_calendar_grid(df, pollutant, w_shift),
+      .include_default = TRUE
+    ) |>
+      # retain actual numerical value (retain for categorical scales)
+      dplyr::mutate(value = .data$conc.mat)
+
+    # handle windflow
+    if (windflow$windflow) {
+      wd <- original_data |>
+        dplyr::mutate(wd = .data$wd * 2 * pi / 360) |>
+        mapType(
+          type = type,
+          fun = \(df) prepare_calendar_grid(df, "wd", w_shift),
+          .include_default = TRUE
+        ) |>
+        # actual numerical value (retain for categorical scales)
+        dplyr::mutate(value = .data$conc.mat)
+
+      ws <- original_data |>
+        dplyr::mutate(wd = .data$wd * 2 * pi / 360) |>
+        mapType(
+          type = type,
+          fun = \(df) prepare_calendar_grid(df, "ws", w_shift),
+          .include_default = TRUE
+        ) |>
+        dplyr::mutate(
+          # normalise wind speeds to highest daily mean
+          conc.mat = .data$conc.mat / max(.data$conc.mat, na.rm = TRUE),
+          # actual numerical value (retain for categorical scales)
+          value = .data$conc.mat
+        )
+
+      plotdata <-
+        dplyr::left_join(
+          plotdata,
+          dplyr::select(original_data, dplyr::any_of(c("date", "ws", "wd"))),
+          by = "date"
+        )
+    }
+
+    # discretisation
+    if (!is.null(discretise)) {
+      plotdata$conc.mat <- cut_discrete_values(
+        plotdata$conc.mat,
+        opts = discretise
+      )
+
+      color_scale <- ggplot2::scale_fill_manual(
+        values = openair::openColours(
+          scheme = cols,
+          n = dplyr::n_distinct(levels(plotdata$conc.mat))
+        ),
+        label = label_openair,
+        drop = FALSE,
+        na.value = "grey95",
+        breaks = levels(plotdata$conc.mat)
+      )
+    } else {
+      color_scale <-
+        ggplot2::scale_fill_gradientn(
+          colours = openair::openColours(scheme = cols),
+          limits = scale_col$limits,
+          breaks = scale_col$breaks,
+          labels = scale_col$labels,
+          transform = scale_col$transform,
+          oob = scales::oob_squish,
+          na.value = "grey95"
+        )
+    }
+
+    # weekday labels
+    weekday.abb <-
+      substr(format(ISOdate(2000, 1, 2:8), "%A"), 1, w_abbr_length)[
+        ((6:12) +
+          w_shift) %%
+          7 +
+          1
+      ]
+
+    # build plot
+    plt <-
+      ggplot2::ggplot(
+        plotdata,
+        ggplot2::aes(
+          x = .data$x,
+          y = .data$y
+        )
+      ) +
+      ggplot2::geom_tile(
+        colour = "white",
+        ggplot2::aes(fill = .data$conc.mat),
+        show.legend = TRUE
+      ) +
+      ggplot2::geom_text(
+        data = ~ dplyr::filter(.x, !is.na(.data$date)),
+        colour = "grey10",
+        ggplot2::aes(label = .data$date.mat),
+        show.legend = FALSE,
+        size = ifelse(windflow$windflow, 0, 2.5)
+      ) +
+      ggplot2::geom_text(
+        data = ~ dplyr::filter(.x, is.na(.data$date)),
+        colour = "grey75",
+        ggplot2::aes(label = .data$date.mat),
+        show.legend = FALSE,
+        size = 2.5
+      ) +
+      ggplot2::coord_cartesian(expand = FALSE, ratio = 1) +
+      ggplot2::labs(
+        x = NULL,
+        y = NULL,
+        fill = label_openair(pollutant, auto_text = auto_text)
+      ) +
+      theme_oa_classic() +
+      ggplot2::theme(
+        axis.text.y.left = ggplot2::element_blank(),
+        axis.ticks.y.left = ggplot2::element_blank(),
+        axis.ticks.x.bottom = ggplot2::element_blank(),
+        legend.key.height = ggplot2::unit(1, "null")
+      ) +
+      color_scale +
+      ggplot2::facet_wrap(
+        ggplot2::vars(.data$cuts),
+        nrow = facet_opts$nrow,
+        ncol = facet_opts$ncol,
+        strip.position = facet_opts$strip.position,
+        axes = facet_opts$axes,
+        axis.labels = facet_opts$axis.labels
+      ) +
+      ggplot2::scale_x_continuous(
+        labels = weekday.abb,
+        breaks = 1:7
+      )
+
+    # windflow
+    if (windflow$windflow) {
+      plt <-
+        plt +
+        layer_windflow(
+          ggplot2::aes(ws = .data$ws, wd = .data$wd),
+          limits = windflow$limits,
+          range = windflow$range,
+          arrow = windflow$arrow,
+          show.legend = FALSE
+        )
+    }
+
+    # don't drop scales
+
+    # return plot or data
+    if (plot) {
+      return(plt)
+    } else {
+      return(plotdata)
+    }
+  }
+
+
 #' Plot time series values in a conventional calendar format
 #'
 #' This function will plot data by month laid out in a conventional calendar
@@ -116,6 +517,7 @@
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
 #' @family time series and trend functions
+#' @seealso The newer [plot_calendar()] function
 #' @examples
 #' # basic plot
 #' calendarPlot(mydata, pollutant = "o3", year = 2003)

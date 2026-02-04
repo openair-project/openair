@@ -3,43 +3,61 @@ template:
   package: openairpkgdown
 
 reference:
+
 - title: Data
   desc: In-built data to demonstrate openair functions.
   contents: mydata
+  
 - title: Import
   desc: Import tidy air quality data from the UK and Europe.
   contents: has_concept("import functions")
+  
+- title: Time Series and Trends
+- subtitle: ~
+  desc: Examine how pollutant concentrations change with time.
+- subtitle: New API
+  contents: has_concept("ggplot2 time series and trend functions")
+- subtitle: Legacy API
+  contents: has_concept("time series and trend functions")
+
 - title: Directional Analysis
-- subtitle: Polar Analysis
+- subtitle: ~
   desc: Examine the relationship between wind speed, wind direction and pollutant
     concentrations.
+- subtitle: New API
+  contents: has_concept("ggplot2 directional analysis functions")
+- subtitle: Legacy API
   contents: has_concept("polar directional analysis functions")
-- subtitle: Trajectory Analysis
+
+- title: Trajectory Analysis
   desc: Analyse and visualise HYSPLIT trajectory files.
   contents: has_concept("trajectory analysis functions")
-- title: Time Series and Trends
-  desc: Examine how pollutant concentrations change with time.
-  contents: has_concept("time series and trend functions")
+
 - title: Model Evaluation
+- subtitle: ~
   desc: Compare models against measurements and models against other models.
+- subtitle: New API
+  contents: has_concept("ggplot2 model evaluation functions")
+- subtitle: Legacy API
   contents: has_concept("model evaluation functions")
+  
 - title: Other Plots
+- subtitle: ~
   desc: Additional plotting functions for visualising air quality data.
+- subtitle: New API
+  contents:
+  - plot_variation
+  - plot_xy_scatter
+  - plot_correlation
+- subtitle: Legacy API
   contents:
   - summaryPlot
-  - runRegression
   - scatterPlot
   - corPlot
   - linearRelation
   - calcFno2
-- title: Utilities
-- subtitle: Plot Utilities
-  desc: Tools for refining openair plots.
-  contents:
-  - openColours
-  - quickText
-  - drawOpenKey
-- subtitle: Data Utilities
+  
+- title: Data Utilities
   desc: Tools for manipulating and summarising air quality data.
   contents:
   - aqStats
@@ -47,10 +65,24 @@ reference:
   - calcPercentile
   - cutData
   - rollingMean
+  - runRegression
   - rollingQuantile
   - GaussianSmooth
   - selectByDate
   - selectRunning
   - splitByDate
   - timeAverage
+
+- title: Plot Utilities
+- subtitle: ~
+  desc: Tools for refining openair plots.
+- subtitle: New API
+  contents:
+  - has_concept("ggplot2 plot utilities")
+  - label_openair
+- subtitle: Legacy API
+  contents:
+  - drawOpenKey
+  - openColours
+  - quickText
 
