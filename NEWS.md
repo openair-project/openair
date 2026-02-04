@@ -4,6 +4,8 @@
 
 - `selectByDate()` now correctly handles the `end` date if supplied when in a date format e.g. dd/mm/yyyy and selects all hours in the day if present. 
 
+- `timeAverage` did not properly calculate wind speed and direction correct when `vector.ws = TRUE`
+
 ## Dependency Changes
 
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe (`|>`).
@@ -65,6 +67,8 @@
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
 
 - `quickText()` now converts `air_temp` (a common `worldmet` variable) into `"Temperature"`.
+
+- `timeAverage` is much faster with the bulk of the calculations made using C++.
 
 ## Bug Fixes
 

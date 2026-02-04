@@ -1,10 +1,7 @@
-#' Calculate rolling mean pollutant values
+#' Calculate rolling quantile pollutant values
 #'
-#' This is a utility function mostly designed to calculate rolling mean
-#' statistics relevant to some pollutant limits, e.g., 8 hour rolling means for
-#' ozone and 24 hour rolling means for PM10. However, the function has a more
-#' general use in helping to display rolling mean values in flexible ways with
-#' the rolling window width left, right or centre aligned. The function will try
+#' This is a utility function mostly designed to calculate rolling quantile
+#' statistics. The function will try
 #' and fill in missing time gaps to get a full time sequence but return a data
 #' frame with the same number of rows supplied.
 #'
@@ -24,36 +21,32 @@
 #'   means that the previous hours (including the current) are averaged.
 #'   `"left"` means that the forward hours are averaged. `"centre"` (or
 #'   `"center"` - the default) centres the current hour in the window.
-#' @param new.name The name given to the new column. If not supplied it will
-#'   create a name based on the name of the pollutant and the averaging period
-#'   used.
+#' @param probs Probability for quantile calculate. A number between 0 and 1. Can be more than length one e.g. `probs = c(0.05, 0.95)`.
 #' @param ... Additional parameters passed to [cutData()]. For use with `type`.
-#' @return A data frame with two new columns for the rolling mean value and the
-#' number of measurements used to derive the mean.
 #' @export
-#' @return A tibble with two new columns for the rolling value and the number of valid values used.
+#' @return A tibble with new columns for the rolling quantile value and the number of valid values used.
 #' @author David Carslaw
 #' @examples
-#' # rolling 8-hour mean for ozone
-#' mydata <- rollingMean(mydata,
-#'   pollutant = "o3", width = 8, new.name =
-#'     "rollingo3", data.thresh = 75, align = "right"
+#' # rolling 24-hour 0.05 and 0.95 quantile for ozone
+#' mydata <- rollingQuantile(mydata,
+#'   pollutant = "o3", width = 24, data.thresh = 75, align = "right", probs = c(0.05, 0.95)
 #' )
-rollingMean <- function(
+rollingQuantile <- function(
   mydata,
   pollutant = "o3",
   width = 8L,
   type = "default",
   data.thresh = 75,
   align = c("centre", "center", "left", "right"),
-  new.name = NULL,
+  probs = 0.5,
   ...
 ) {
   # check inputs
   align <- rlang::arg_match(align, multiple = FALSE)
 
-  if (align == "center")
+  if (align == "center") {
     align = "centre"
+  }
 
   # data.thresh must be between 0 & 100
   if (data.thresh < 0 || data.thresh > 100) {
@@ -62,16 +55,17 @@ rollingMean <- function(
     )
   }
 
+  if (!all(probs >= 0 & probs <= 1)) {
+    cli::cli_abort(
+      "{.field probs} must be between {.val {0L}} and {.val {1L}}."
+    )
+  }
+
   # pollutant should be numeric
   if (!is.numeric(mydata[[pollutant]])) {
     cli::cli_abort(
       "mydata{.field ${pollutant}} is not numeric - it is {class(mydata[[pollutant]])}."
     )
-  }
-
-  # create new name if not provided
-  if (is.null(new.name)) {
-    new.name <- paste("rolling", width, pollutant, sep = "")
   }
 
   # setting width < 1 crashes R
@@ -101,19 +95,19 @@ rollingMean <- function(
     # call C code
 
     data.thresh = data.thresh / 100
-    results <- rolling_average_cpp(mydata[[pollutant]], width, align, data.thresh)
+    results <- rolling_average_cpp(
+      mydata[[pollutant]],
+      width,
+      align,
+      data.thresh,
+      statistic = "quantile",
+      probs = probs
+    )
 
-    mydata[[new.name]] <- results[[1]]
-    mydata[[paste0("n_", pollutant)]] <- results[[2]]
+    results <- as.data.frame(results)
+    names(results)[1:length(probs)] <- paste0("q_", pollutant, "_", probs)
 
-    # mydata[[new.name]] <- .Call(
-    #   "rollMean",
-    #   mydata[[pollutant]],
-    #   width,
-    #   data.thresh,
-    #   align,
-    #   PACKAGE = "openair"
-    # )
+    mydata <- bind_cols(mydata, results)
 
     # return what was put in; avoids adding missing data e.g. for factors
     if (length(dates) != nrow(mydata)) {

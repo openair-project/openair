@@ -66,6 +66,8 @@ reference:
   - cutData
   - rollingMean
   - runRegression
+  - rollingQuantile
+  - GaussianSmooth
   - selectByDate
   - selectRunning
   - splitByDate

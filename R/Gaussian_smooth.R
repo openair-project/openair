@@ -1,59 +1,40 @@
-#' Calculate rolling mean pollutant values
+#' Calculate rolling Gaussian smooth of pollutant values
 #'
-#' This is a utility function mostly designed to calculate rolling mean
-#' statistics relevant to some pollutant limits, e.g., 8 hour rolling means for
-#' ozone and 24 hour rolling means for PM10. However, the function has a more
-#' general use in helping to display rolling mean values in flexible ways with
-#' the rolling window width left, right or centre aligned. The function will try
+#' This is a utility function designed to calculate rolling Gaussian smooth (kernel smoothing). The function will try
 #' and fill in missing time gaps to get a full time sequence but return a data
 #' frame with the same number of rows supplied.
+#'
+#' The function provides centre-aligned smoothing out to 3 sigma, which captures 99.7% of the data.
 #'
 #' @param mydata A data frame containing a `date` field. `mydata` must contain a
 #'   `date` field in `Date` or `POSIXct` format. The input time series must be
 #'   regular, e.g., hourly, daily.
 #' @param pollutant The name of a pollutant, e.g., `pollutant = "o3"`.
-#' @param width The averaging period (rolling window width) to use, e.g., `width
-#'   = 8` will generate 8-hour rolling mean values when hourly data are
-#'   analysed.
+#' @param sigma The value of `sigma` to use in the Gaussian.
 #' @param type Used for splitting the data further. Passed to [cutData()].
 #' @param data.thresh The % data capture threshold. No values are calculated if
-#'   data capture over the period of interest is less than this value. For
-#'   example, with `width = 8` and `data.thresh = 75` at least 6 hours are
-#'   required to calculate the mean, else `NA` is returned.
-#' @param align Specifies how the moving window should be aligned. `"right"`
-#'   means that the previous hours (including the current) are averaged.
-#'   `"left"` means that the forward hours are averaged. `"centre"` (or
-#'   `"center"` - the default) centres the current hour in the window.
+#'   data capture over the period of interest is less than this value.
 #' @param new.name The name given to the new column. If not supplied it will
 #'   create a name based on the name of the pollutant and the averaging period
 #'   used.
 #' @param ... Additional parameters passed to [cutData()]. For use with `type`.
-#' @return A data frame with two new columns for the rolling mean value and the
-#' number of measurements used to derive the mean.
 #' @export
-#' @return A tibble with two new columns for the rolling value and the number of valid values used.
+#' @return A tibble with two new columns for the Gaussian smooth value.
 #' @author David Carslaw
 #' @examples
-#' # rolling 8-hour mean for ozone
-#' mydata <- rollingMean(mydata,
-#'   pollutant = "o3", width = 8, new.name =
-#'     "rollingo3", data.thresh = 75, align = "right"
-#' )
-rollingMean <- function(
+#' # Gaussian smoother with sigma = 24
+#' mydata <- GaussianSmooth(mydata,
+#'   pollutant = "o3", sigma = 24, data.thresh = 75)
+GaussianSmooth <- function(
   mydata,
   pollutant = "o3",
-  width = 8L,
+  sigma = 24L,
   type = "default",
-  data.thresh = 75,
-  align = c("centre", "center", "left", "right"),
+  data.thresh = 0,
   new.name = NULL,
   ...
 ) {
   # check inputs
-  align <- rlang::arg_match(align, multiple = FALSE)
-
-  if (align == "center")
-    align = "centre"
 
   # data.thresh must be between 0 & 100
   if (data.thresh < 0 || data.thresh > 100) {
@@ -71,12 +52,7 @@ rollingMean <- function(
 
   # create new name if not provided
   if (is.null(new.name)) {
-    new.name <- paste("rolling", width, pollutant, sep = "")
-  }
-
-  # setting width < 1 crashes R
-  if (width < 1L) {
-    width <- 1L
+    new.name <- paste0("smooth_", pollutant)
   }
 
   # cut data
@@ -93,27 +69,17 @@ rollingMean <- function(
     # pad missing hours
     mydata <- date.pad(mydata)
 
-    # make sure function is not called with window width longer than data
-    if (width > nrow(mydata)) {
-      return(mydata)
-    }
-
     # call C code
 
     data.thresh = data.thresh / 100
-    results <- rolling_average_cpp(mydata[[pollutant]], width, align, data.thresh)
+    results <- rolling_gaussian_cpp(
+      mydata[[pollutant]],
+      sigma,
+      data.thresh
+    )
 
     mydata[[new.name]] <- results[[1]]
     mydata[[paste0("n_", pollutant)]] <- results[[2]]
-
-    # mydata[[new.name]] <- .Call(
-    #   "rollMean",
-    #   mydata[[pollutant]],
-    #   width,
-    #   data.thresh,
-    #   align,
-    #   PACKAGE = "openair"
-    # )
 
     # return what was put in; avoids adding missing data e.g. for factors
     if (length(dates) != nrow(mydata)) {

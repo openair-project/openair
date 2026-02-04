@@ -128,7 +128,7 @@ test_that("windspeed working", {
   # has ws/wd
   x1 <- timeAverage(testdat, "year")
   expect_equal(round(x1$ws, 2), 4.22)
-  expect_equal(round(x1$wd, 2), 238.53)
+  expect_equal(round(x1$wd, 2), 251.97)
 
   # vector ws
   x2 <- timeAverage(testdat, "year", vector.ws = TRUE)
