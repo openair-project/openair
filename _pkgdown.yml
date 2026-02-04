@@ -52,5 +52,6 @@ reference:
   - selectByDate
   - selectRunning
   - splitByDate
+  - datePad
   - timeAverage
 
