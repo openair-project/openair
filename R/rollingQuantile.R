@@ -22,6 +22,7 @@
 #'   `"left"` means that the forward hours are averaged. `"centre"` (or
 #'   `"center"` - the default) centres the current hour in the window.
 #' @param probs Probability for quantile calculate. A number between 0 and 1. Can be more than length one e.g. `probs = c(0.05, 0.95)`.
+#' @param date.pad Should missing dates be padded? Default is `FALSE`.
 #' @param ... Additional parameters passed to [cutData()]. For use with `type`.
 #' @export
 #' @return A tibble with new columns for the rolling quantile value and the number of valid values used.
@@ -39,6 +40,7 @@ rollingQuantile <- function(
   data.thresh = 75,
   align = c("centre", "center", "left", "right"),
   probs = 0.5,
+  date.pad = FALSE,
   ...
 ) {
   # check inputs
@@ -85,7 +87,9 @@ rollingQuantile <- function(
     dates <- mydata$date
 
     # pad missing hours
-    mydata <- date.pad(mydata)
+    if (date.pad) {
+      mydata <- datePad(mydata)
+    }
 
     # make sure function is not called with window width longer than data
     if (width > nrow(mydata)) {

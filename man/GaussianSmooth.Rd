@@ -11,6 +11,7 @@ GaussianSmooth(
   type = "default",
   data.thresh = 0,
   new.name = NULL,
+  date.pad = FALSE,
   ...
 )
 }
@@ -31,6 +32,8 @@ data capture over the period of interest is less than this value.}
 \item{new.name}{The name given to the new column. If not supplied it will
 create a name based on the name of the pollutant and the averaging period
 used.}
+
+\item{date.pad}{Should missing dates be padded? Default is \code{FALSE}.}
 
 \item{...}{Additional parameters passed to \code{\link[=cutData]{cutData()}}. For use with \code{type}.}
 }

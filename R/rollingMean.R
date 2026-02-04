@@ -27,6 +27,7 @@
 #' @param new.name The name given to the new column. If not supplied it will
 #'   create a name based on the name of the pollutant and the averaging period
 #'   used.
+#' @param date.pad Should missing dates be padded? Default is `FALSE`.
 #' @param ... Additional parameters passed to [cutData()]. For use with `type`.
 #' @export
 #' @return A tibble with two new columns for the rolling value and the number of valid values used.
@@ -45,13 +46,15 @@ rollingMean <- function(
   data.thresh = 75,
   align = c("centre", "center", "left", "right"),
   new.name = NULL,
+  date.pad = FALSE,
   ...
 ) {
   # check inputs
   align <- rlang::arg_match(align, multiple = FALSE)
 
-  if (align == "center")
+  if (align == "center") {
     align = "centre"
+  }
 
   # data.thresh must be between 0 & 100
   if (data.thresh < 0 || data.thresh > 100) {
@@ -89,7 +92,9 @@ rollingMean <- function(
     dates <- mydata$date
 
     # pad missing hours
-    mydata <- date.pad(mydata)
+    if (date.pad) {
+      mydata <- datePad(mydata)
+    }
 
     # make sure function is not called with window width longer than data
     if (width > nrow(mydata)) {
@@ -99,7 +104,12 @@ rollingMean <- function(
     # call C code
 
     data.thresh = data.thresh / 100
-    results <- rolling_average_cpp(mydata[[pollutant]], width, align, data.thresh)
+    results <- rolling_average_cpp(
+      mydata[[pollutant]],
+      width,
+      align,
+      data.thresh
+    )
 
     mydata[[new.name]] <- results[[1]]
     mydata[[paste0("n_", pollutant)]] <- results[[2]]

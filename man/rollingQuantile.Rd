@@ -12,6 +12,7 @@ rollingQuantile(
   data.thresh = 75,
   align = c("centre", "center", "left", "right"),
   probs = 0.5,
+  date.pad = FALSE,
   ...
 )
 }
@@ -38,6 +39,8 @@ means that the previous hours (including the current) are averaged.
 \code{"center"} - the default) centres the current hour in the window.}
 
 \item{probs}{Probability for quantile calculate. A number between 0 and 1. Can be more than length one e.g. \code{probs = c(0.05, 0.95)}.}
+
+\item{date.pad}{Should missing dates be padded? Default is \code{FALSE}.}
 
 \item{...}{Additional parameters passed to \code{\link[=cutData]{cutData()}}. For use with \code{type}.}
 }

@@ -48,101 +48,226 @@ try_require <- function(package, fun) {
   )
 }
 
-# function to find averaging period of data, returns "xx sec"
-# for use in filling in gaps in time series data
-# it finds the table of values of time gaps and picks the biggest
-# can't think of better way unless user specifies what the time interval is meant to be
-find.time.interval <- function(dates) {
-  # could have several sites, dates may be unordered
-  # find the most common time gap in all the data
-  dates <- unique(dates) # make sure they are unique
-
-  # work out the most common time gap of unique, ordered dates
-  id <- which.max(table(diff(as.numeric(unique(dates[order(dates)])))))
-  seconds <- as.numeric(names(id))
-
-  if ("POSIXt" %in% class(dates)) {
-    seconds <- paste(seconds, "sec")
+# -------------------------------------------------------------------------
+# Helper: Robust Time Interval Finder
+# -------------------------------------------------------------------------
+#' Find the dominant time interval in a vector of dates/times
+#'
+#' Inspect a vector of Date or POSIXt objects and return a human-readable
+#' description of the most common difference between consecutive unique,
+#' sorted timestamps. Small floating-point noise is rounded and common
+#' intervals (1 sec, 1 min, 1 hour, 1 day, 1 month, 1 year) are detected.
+#' For uncommon intervals the function returns the interval in seconds
+#' (e.g. "15 sec").
+#'
+#' @param dates A vector of Date or POSIXt timestamps.
+#' @return A character string describing the detected interval.
+#' @keywords internal
+find.time.interval <- function(dates, return.seconds = FALSE) {
+  # make sure data in POSIXct format
+  if (inherits(dates, "Date")) {
+    dates <- as.POSIXct(dates)
+  }
+  # 1. Safety check for insufficient data
+  if (length(dates) < 2) {
+    if (return.seconds) {
+      return(1)
+    } # Return numeric 1 if requested
+    return("1 sec")
   }
 
-  if (class(dates)[1] == "Date") {
-    seconds <- seconds * 3600 * 24
-    seconds <- paste(seconds, "sec")
+  # 2. Sort and unique to prepare for diff
+  d_sorted <- sort(unique(dates))
+
+  # 3. Calculate differences
+  # Round to 3 decimal places to avoid floating point noise
+  diffs <- diff(as.numeric(d_sorted))
+  diffs_rounded <- round(diffs, 3)
+
+  # 4. Find the mode (most common interval)
+  mode_seconds <- as.numeric(names(which.max(table(diffs_rounded))))
+
+  # --- NEW: Early return if numeric seconds requested ---
+  if (return.seconds) {
+    return(mode_seconds)
   }
 
-  seconds
+  # 5. Convert to string format compatible with seq() (if return.seconds = FALSE)
+  if (abs(mode_seconds - 86400) < 10) {
+    return("1 day")
+  }
+  if (abs(mode_seconds - 3600) < 5) {
+    return("1 hour")
+  }
+  if (abs(mode_seconds - 60) < 1) {
+    return("1 min")
+  }
+
+  # Logic for Month/Year
+  days <- mode_seconds / 86400
+  if (days >= 28 && days <= 31) {
+    return("1 month")
+  }
+  if (days >= 365 && days <= 366) {
+    return("1 year")
+  }
+
+  # Default fallback if no special interval is matched
+  return(paste(mode_seconds, "sec"))
 }
-
-# Function to pad out missing time data
-# assumes data have already been split by type, so just take first
-# tries to work out time interval of input based on most common gap
-# can print assumed gap to screen
-date.pad <- function(mydata, type = NULL, print.int = FALSE) {
-  # if one line, just return
+# -------------------------------------------------------------------------
+# Main Function: Date Pad with "Block" Filling
+# -------------------------------------------------------------------------
+#' Pad a time-series dataframe and optionally fill values by block
+#'
+#' Expand a dataframe that contains a 'date' column to a regular sequence
+#' of timestamps between specified start and end dates. The function can
+#' operate in two modes:
+#' - fill = FALSE: simply complete the sequence at the target interval.
+#' - fill = TRUE: regularise the data at the native interval to create
+#'   explicit blocks, then expand to the target interval and carry the
+#'   block's values forward so that intra-block timestamps inherit the
+#'   block's measured value (block-filling behaviour).
+#'
+#' The function detects the native input interval automatically if
+#' 'interval' is not supplied, supports grouping via 'type', and preserves
+#' timezones for POSIXt date columns.
+#'
+#' @param mydata Data.frame or tibble containing at least a 'date'
+#'   column (Date or POSIXt).
+#' @param type NULL or character vector of column names to group by.
+#' @param interval NULL or character string describing target interval
+#'   (e.g. "1 min", "1 hour"). If NULL, the native interval is used.
+#' @param start.date Optional start date/time. If NULL, the group's
+#'   minimum date is used.
+#' @param end.date Optional end date/time. If NULL, the group's maximum
+#'   date is used.
+#' @param fill Logical; when TRUE performs block-based filling described
+#'   above. When FALSE just completes the sequence leaving NA values.
+#' @param print.int Logical; when TRUE prints detected/selected
+#'   interval messages.
+#' @return A dataframe expanded to the requested sequence with values
+#'   filled according to 'fill'. The returned object preserves the
+#'   'date' column type and timezone (for POSIXt).
+#' @examples
+#' df <- mydata[-c(2, 4, 7), ] # Remove some rows to create gaps
+#' datePad(df)
+#' @export
+# -------------------------------------------------------------------------
+# Main Function: Date Pad with "Block" Filling
+# -------------------------------------------------------------------------
+datePad <- function(
+  mydata,
+  type = NULL,
+  interval = NULL,
+  start.date = NULL,
+  end.date = NULL,
+  fill = FALSE,
+  print.int = FALSE
+) {
+  # Basic validation
   if (nrow(mydata) < 2) {
     return(mydata)
   }
+  if (!"date" %in% names(mydata)) {
+    stop("Dataframe must contain a 'date' column.")
+  }
 
-  # time zone of data
-  TZ <- attr(mydata$date, "tzone")
-  if (is.null(TZ)) {
-    TZ <- "GMT"
-  } # as it is on Windows for BST
+  # 1. Detect Native Interval (The resolution of the INPUT data)
+  # We need this to correctly establish the "blocks" of time before expanding
+  native_interval <- find.time.interval(mydata$date)
 
-  # function to fill missing data gaps
-  # assume no missing data to begin with
-
-  # pad out missing data
-  start.date <- min(mydata$date, na.rm = TRUE)
-  end.date <- max(mydata$date, na.rm = TRUE)
-
-  # interval in seconds
-  interval <- find.time.interval(mydata$date)
-
-  # equivalent number of days, used to refine interval for month/year
-  days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) /
-    24 /
-    3600
-
-  # find time interval of data
-  if (class(mydata$date)[1] == "Date") {
-    interval <- paste(days, "day")
+  # 2. Determine Target Interval
+  if (!is.null(interval)) {
+    target_interval <- interval
+    if (print.int) message("Target interval (User): ", target_interval)
   } else {
-    # this will be in seconds
-    interval <- find.time.interval(mydata$date)
+    target_interval <- native_interval
+    if (print.int) message("Target interval (Auto): ", target_interval)
   }
 
-  # better interval, most common interval in a year
-  if (days == 31) {
-    interval <- "month"
-  }
-  if (days %in% c(365, 366)) {
-    interval <- "year"
+  # 3. Handle Timezones/Dates
+  tz_str <- attr(mydata$date, "tzone") %||% "GMT" # Helper if NULL
+
+  align_date <- function(input, ref, tz) {
+    if (is.null(input)) {
+      return(NULL)
+    }
+    if (inherits(ref, "POSIXt")) {
+      return(as.POSIXct(input, tz = tz))
+    }
+    if (inherits(ref, "Date")) {
+      return(as.Date(input))
+    }
+    input
   }
 
-  # only pad if there are missing data
-  if (length(unique(diff(mydata$date))) != 1L) {
-    all.dates <- data.frame(date = seq(start.date, end.date, by = interval))
-    mydata <- mydata |> full_join(all.dates, by = "date")
+  start.date <- align_date(start.date, mydata$date, tz_str)
+  end.date <- align_date(end.date, mydata$date, tz_str)
 
-    # add missing types - if type is present
-    if (!is.null(type) && type != "default") {
-      mydata[type] <- mydata[1, type]
+  # -----------------------------------------------------------------------
+  # Core Logic Helper
+  # -----------------------------------------------------------------------
+  process_group <- function(df) {
+    # A. Define limits for this group
+    s_date <- if (is.null(start.date)) {
+      min(df$date, na.rm = TRUE)
+    } else {
+      start.date
+    }
+    e_date <- if (is.null(end.date)) max(df$date, na.rm = TRUE) else end.date
+
+    # B. If fill=TRUE, we must strictly respect the 'Native' blocks.
+    #    We first pad to the NATIVE interval to materialize missing NAs.
+    if (fill) {
+      # 1. Regularize at NATIVE resolution (creates explicit NAs for gaps)
+      df_native <- df |>
+        tidyr::complete(date = seq(s_date, e_date, by = native_interval)) |>
+        dplyr::mutate(.block_id = dplyr::row_number()) # Unique ID for every native step
+
+      # 2. Expand to TARGET resolution
+      df_expanded <- df_native |>
+        dplyr::select(date, .block_id) |> # Keep only ID and Date for structure
+        tidyr::complete(date = seq(s_date, e_date, by = target_interval)) |>
+        tidyr::fill(.block_id, .direction = "down") # Carry the ID down (ID 1 covers 10:00, 10:15...)
+
+      # 3. Join original values back using the Block ID
+      #    This ensures 10:15 gets 10:00's value (5), and 11:15 gets 11:00's value (NA)
+      df_out <- df_expanded |>
+        dplyr::left_join(
+          select(df_native, -date),
+          by = dplyr::join_by(.block_id == .block_id)
+        ) |>
+        dplyr::select(-.block_id)
+
+      return(df_out)
+    } else {
+      # C. Simple case (No fill) - Just expand
+      df |>
+        tidyr::complete(date = seq(s_date, e_date, by = target_interval))
     }
   }
 
-  # return the same TZ that we started with
-  attr(mydata$date, "tzone") <- TZ
-
-  if (print.int) {
-    message("Input data time interval assumed is ", interval)
+  # 4. Execution
+  if (!is.null(type)) {
+    out <- mydata |>
+      dplyr::group_by(dplyr::across(dplyr::all_of(type))) |>
+      dplyr::group_modify(~ process_group(.x)) |>
+      dplyr::ungroup()
+  } else {
+    out <- process_group(mydata)
   }
 
-  # make sure date-sorted
-  mydata <- arrange(mydata, date)
+  # 5. Restore Timezone
+  if (inherits(mydata$date, "POSIXt")) {
+    attr(out$date, "tzone") <- tz_str
+  }
 
-  mydata
+  return(out)
 }
+
+# Tiny helper for NULL checks
+`%||%` <- function(a, b) if (is.null(a)) b else a
 
 # from Deepayan Sarkar
 panel.smooth.spline <-

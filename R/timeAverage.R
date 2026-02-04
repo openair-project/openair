@@ -246,6 +246,20 @@ timeAverage <- function(
       TZ = TZ
     )
 
+    # obtain time parameters; seconds in the avg.time interval and seconds in
+    # the data interval
+    time_params <- get_time_parameters(mydata = mydata, avg.time = avg.time)
+    seconds_data_interval <- time_params$seconds_data_interval
+    seconds_avgtime_interval <- time_params$seconds_avgtime_interval
+
+    # check to see if we need to expand data rather than aggregate it
+    # i.e., chosen time interval less than that of data
+
+    if (seconds_avgtime_interval < seconds_data_interval) {
+      mydata <- datePad(mydata, type = type, interval = avg.time, fill = fill)
+      return(mydata)
+    }
+
     # if interval specified, then use it to pad the data
     if (!is.na(interval)) {
       mydata <-
@@ -259,91 +273,13 @@ timeAverage <- function(
       padded <- TRUE
     }
 
-    # obtain time parameters; seconds in the avg.time interval and seconds in
-    # the data interval
-    time_params <- get_time_parameters(mydata = mydata, avg.time = avg.time)
-    seconds_data_interval <- time_params$seconds_data_interval
-    seconds_avgtime_interval <- time_params$seconds_avgtime_interval
-
-    # check to see if we need to expand data rather than aggregate it
-    # i.e., chosen time interval less than that of data
-    if (seconds_avgtime_interval < seconds_data_interval) {
-      # Store original dates for later reference
-      theDates <- mydata$date
-
-      # Get time interval from data
-      interval <- find.time.interval(mydata$date)
-
-      # get time interval as days; used for refinement
-      days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) / 24 / 3600
-
-      # refine interval for common situations
-      interval <- if (inherits(mydata$date, "Date")) {
-        paste(days, "day")
-      } else if (days %in% c(30, 31)) {
-        "month"
-      } else if (days %in% c(365, 366)) {
-        "year"
-      } else {
-        interval
-      }
-
-      # calculate full series of dates by the data interval
-      date_range <- range(mydata$date)
-      allDates <- seq(date_range[1], date_range[2], by = interval)
-      allDates <- c(allDates, max(allDates) + seconds_data_interval)
-
-      # recalculate full series of dates by the avg.time interval
-      allData <- data.frame(date = seq(min(allDates), max(allDates), avg.time))
-
-      # merge with original data, which leaves gaps to fill
-      mydata <-
-        mydata |>
-        dplyr::full_join(allData, by = dplyr::join_by("date")) |>
-        dplyr::arrange(date)
-
-      # make sure missing types are inserted
-      mydata <- tidyr::fill(
-        mydata,
-        dplyr::all_of(type),
-        .direction = c("downup")
-      )
-
-      # if `fill`, fill all other columns too
-      if (fill) {
-        # stop if irregular time series
-        if (seconds_data_interval %% seconds_avgtime_interval != 0) {
-          cli::cli_abort(
-            "Non-regular time expansion selected, or non-regular input time series."
-          )
-        }
-
-        # fill data
-        mydata <-
-          mydata |>
-          # find dates in original data, and assign each data chunk an ID
-          dplyr::mutate(
-            `__flag__` = .data$date %in% theDates,
-            `__id__` = ceiling(dplyr::consecutive_id(.data$`__flag__`) / 2) * 2
-          ) |>
-          # fill within each ID
-          dplyr::group_by(.data[["__id__"]]) |>
-          tidyr::fill(dplyr::where(is.numeric), .direction = "down") |>
-          dplyr::ungroup() |>
-          # remove helper columns
-          dplyr::select(-"__id__", -"__flag__")
-      }
-
-      return(mydata)
-    }
-
     # calculate Uu & Vv if "wd" (& "ws") are in mydata
     mydata <- calculate_wind_components(mydata = mydata, vector.ws)
 
     # if a data threshold has been set and data hasn't already been padded,
     # pad the data to ensure that DC% calculation is accurate
     if (data.thresh != 0 && !padded) {
-      mydata <- date.pad(mydata, type = type)
+      mydata <- datePad(mydata, type = type)
     }
 
     # handle 'season' as special case
@@ -552,10 +488,10 @@ pad_dates_timeavg <- function(mydata, type = NULL, interval = "month") {
 #' @noRd
 get_time_parameters <- function(mydata, avg.time) {
   # Time diff in seconds of original data
-  seconds_data_interval <- as.numeric(strsplit(
-    find.time.interval(mydata$date),
-    " "
-  )[[1]][1])
+  seconds_data_interval <- find.time.interval(
+    mydata$date,
+    return.seconds = TRUE
+  )
 
   # Parse time diff of new interval
   by2 <- strsplit(avg.time, " ", fixed = TRUE)[[1]]

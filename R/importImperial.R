@@ -205,7 +205,7 @@ importImperial <-
             x <- bind_rows(x1, x)
           }
 
-          x <- date.pad(x, type = "site") ## pad out missing dates
+          x <- datePad(x, type = "site") ## pad out missing dates
           x
         },
         error = function(ex) {

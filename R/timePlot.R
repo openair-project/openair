@@ -729,7 +729,7 @@ prepare_timeplot_data <- function(
 
   # pad out any missing date/times so that line don't extend between areas of missing data
   if (date.pad) {
-    mydata <- date.pad(mydata, type = type)
+    mydata <- datePad(mydata, type = type)
   }
 
   # cut data

@@ -17,6 +17,7 @@
 #' @param new.name The name given to the new column. If not supplied it will
 #'   create a name based on the name of the pollutant and the averaging period
 #'   used.
+#' @param date.pad Should missing dates be padded? Default is `FALSE`.
 #' @param ... Additional parameters passed to [cutData()]. For use with `type`.
 #' @export
 #' @return A tibble with two new columns for the Gaussian smooth value.
@@ -32,6 +33,7 @@ GaussianSmooth <- function(
   type = "default",
   data.thresh = 0,
   new.name = NULL,
+  date.pad = FALSE,
   ...
 ) {
   # check inputs
@@ -67,7 +69,9 @@ GaussianSmooth <- function(
     dates <- mydata$date
 
     # pad missing hours
-    mydata <- date.pad(mydata)
+    if (date.pad) {
+      mydata <- datePad(mydata)
+    }
 
     # call C code
 

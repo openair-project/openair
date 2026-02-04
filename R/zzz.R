@@ -70,7 +70,8 @@
     "n_mean",
     "Lonm",
     "Latm",
-    "Am", 
-    "Bm"
+    "Am",
+    "Bm",
+    ".block_id"
   ))
 }

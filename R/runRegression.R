@@ -69,7 +69,7 @@ runRegression <- function(
 
   ## pad missing data
   if (date.pad) {
-    mydata <- date.pad(mydata)
+    mydata <- datePad(mydata)
   }
 
   # list of rolling data frames

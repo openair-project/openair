@@ -79,7 +79,7 @@ selectRunning <- function(
   thedata <- mapType(
     mydata,
     type = type,
-    fun = \(x) date.pad(x, type = type),
+    fun = \(x) datePad(x, type = type),
     .include_default = TRUE
   )
 
