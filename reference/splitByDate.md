@@ -86,15 +86,15 @@ splitByDate(dummy,
   name = "data_type"
 )
 #>          date nox data_type
-#> 1  2026-01-30  50  measured
-#> 2  2026-01-31  60  measured
-#> 3  2026-02-01  70  measured
-#> 4  2026-02-02  80  measured
-#> 5  2026-02-03  90  measured
-#> 6  2026-02-04 100  measured
-#> 7  2026-02-05 110  modelled
-#> 8  2026-02-06 120  modelled
-#> 9  2026-02-07 130  modelled
-#> 10 2026-02-08 140  modelled
-#> 11 2026-02-09 150  modelled
+#> 1  2026-02-01  50  measured
+#> 2  2026-02-02  60  measured
+#> 3  2026-02-03  70  measured
+#> 4  2026-02-04  80  measured
+#> 5  2026-02-05  90  measured
+#> 6  2026-02-06 100  measured
+#> 7  2026-02-07 110  modelled
+#> 8  2026-02-08 120  modelled
+#> 9  2026-02-09 130  modelled
+#> 10 2026-02-10 140  modelled
+#> 11 2026-02-11 150  modelled
 ```

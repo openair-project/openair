@@ -143,11 +143,10 @@ David Carslaw
 # Statistics for 2004. NOTE! these data are in ppb/ppm so the
 # example is for illustrative purposes only
 aqStats(selectByDate(mydata, year = 2004), pollutant = "no2")
-#> # A tibble: 1 × 17
+#> # A tibble: 1 × 15
 #>   default   pollutant  year date                dat.cap  mean   min   max median
 #>   <fct>     <chr>     <dbl> <dttm>                <dbl> <dbl> <dbl> <dbl>  <dbl>
 #> 1 01 Janua… no2        2004 2004-01-01 00:00:00    99.8  55.0     0   185     51
-#> # ℹ 8 more variables: max_daily <dbl>, roll_8_max <dbl>, n_value.x <dbl>,
-#> #   roll_24_max <dbl>, n_value.y <dbl>, percentile.95 <dbl>,
-#> #   percentile.99 <dbl>, hours <int>
+#> # ℹ 6 more variables: percentile.95 <dbl>, percentile.99 <dbl>, hours <int>,
+#> #   max_daily <dbl>, roll_8_max <dbl>, roll_24_max <dbl>
 ```
