@@ -112,7 +112,7 @@ aqStats <- function(
       cols = dplyr::all_of(pollutant),
       names_to = "pollutant"
     ) |>
-    mutate(year = lubridate::year(date))
+    dplyr::mutate(year = lubridate::year(date))
 
   vars <- c(type, "pollutant", "year")
 
@@ -162,215 +162,208 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
 
   # find time interval of data and pad any missing times
   interval <- find.time.interval(mydata$date)
-  all.dates <-
-    data.frame(date = seq(start.date, end.date, by = interval))
 
-  # pad out names where needed
-  if (nrow(mydata) != nrow(all.dates)) {
-    mydata <- dplyr::full_join(mydata, all.dates, by = "date")
-    mydata[setdiff(names(mydata), c("date", "value"))] <-
-      mydata[1, setdiff(names(mydata), c("date", "value"))]
-  }
+  mydata <- datePad(
+    mydata,
+    start.date = start.date,
+    end.date = end.date,
+    interval = interval
+  )
 
-  # convenience function for basic statistics
-  timeAverageYear <- function(mydata, stat, newname = stat) {
-    df <-
-      timeAverage(
-        mydata,
-        avg.time = "year",
-        statistic = stat,
-        data.thresh = data.thresh,
-        print.int = FALSE
-      )
+  # Ensure year is present after padding
+  mydata$year <- lubridate::year(mydata$date)
 
-    names(df)[names(df) == "value"] <- newname
+  # --- 1. Main Annual Statistics (Mean, Min, Max, Median, Data Capture, Percentiles) ---
+  # We calculate these in one pass using dplyr rather than calling timeAverage repeatedly
 
-    return(df)
-  }
+  # Helper to format percentile names
+  p_names <- paste0("percentile.", percentile)
 
-  # convenience function for rolled maxes
-  maxRollTimeAverage <- function(mydata, width, newname, ...) {
-    purrr::map(
-      .x = split(mydata, ~year),
-      .f = function(x) {
-        rlang::exec(
-          rollingMean,
-          !!!rlang::list2(
-            mydata = x,
-            pollutant = "value",
-            data.thresh = data.thresh,
-            width = width,
-            new.name = "value",
-            ...
-          )
-        ) |>
-          timeAverageYear("max", newname)
-      }
+  main_stats <- mydata |>
+    dplyr::group_by(year) |>
+    dplyr::summarise(
+      # Representative date for the year (start of year)
+      date = min(date, na.rm = TRUE),
+
+      # Data Capture
+      dat.cap = sum(!is.na(value)) / dplyr::n() * 100,
+
+      # Basic Stats
+      mean = mean(value, na.rm = TRUE),
+      min = suppressWarnings(min(value, na.rm = TRUE)),
+      max = suppressWarnings(max(value, na.rm = TRUE)),
+      median = median(value, na.rm = TRUE),
+
+      # Percentiles (returns a dataframe column we unpack later)
+      pct_vals = list(quantile(
+        value,
+        probs = percentile / 100,
+        na.rm = TRUE,
+        type = 7
+      )),
+
+      # Pollutant Specific: NO2 Hours > 200
+      hours = if (grepl("no2", .data$pollutant[1], ignore.case = TRUE)) {
+        sum(value > 200, na.rm = TRUE)
+      } else {
+        NA_real_
+      },
+
+      .groups = "drop"
     ) |>
-      dplyr::bind_rows()
-  }
+    tidyr::unnest_wider(pct_vals, names_sep = "") |>
+    dplyr::rename_with(~p_names, dplyr::starts_with("pct_vals"))
 
-  # simple stats
-  Mean <- timeAverageYear(mydata, "mean")
-  Min <- timeAverageYear(mydata, "min")
-  Max <- timeAverageYear(mydata, "max")
-  Median <- timeAverageYear(mydata, "median")
-  rollMax8 <-
-    maxRollTimeAverage(mydata, width = 8L, newname = "roll_8_max", ...)
-  rollMax24 <-
-    maxRollTimeAverage(mydata, width = 24L, newname = "roll_24_max", ...)
+  # --- 2. Rolling Means (8h and 24h) ---
+  # Calculate on the whole dataset ONCE, then summarize by year.
+  # This avoids splitting data into thousands of yearly chunks.
 
-  # maximum daily mean
-  maxDaily <- timeAverage(
+  # Calculate 8-hour rolling
+  mydata_roll8 <- rollingMean(
+    mydata,
+    pollutant = "value",
+    width = 8,
+    new.name = "roll8",
+    data.thresh = data.thresh,
+    ...
+  )
+
+  # Calculate 24-hour rolling
+  mydata_roll24 <- rollingMean(
+    mydata,
+    pollutant = "value",
+    width = 24,
+    new.name = "roll24",
+    data.thresh = data.thresh,
+    ...
+  )
+
+  # Aggregating rolling maxes
+  roll_stats <- dplyr::tibble(
+    year = main_stats$year,
+    roll8_val = mydata_roll8$roll8,
+    roll24_val = mydata_roll24$roll24
+  ) |>
+    dplyr::group_by(year) |>
+    dplyr::summarise(
+      roll_8_max = suppressWarnings(max(roll8_val, na.rm = TRUE)),
+      roll_24_max = suppressWarnings(max(roll24_val, na.rm = TRUE)),
+      .groups = "drop"
+    )
+
+  # --- 3. Maximum Daily Mean ---
+  # We use timeAverage for daily means to respect data thresholds logic per day
+  daily_stats <- timeAverage(
     mydata,
     avg.time = "day",
     statistic = "mean",
-    data.thresh,
+    data.thresh = data.thresh,
     print.int = FALSE
-  ) |>
-    timeAverageYear("max", "max_daily")
+  )
 
-  # data capture
-  dataCapture <-
+  max_daily <- daily_stats |>
+    dplyr::mutate(year = lubridate::year(date)) |>
+    dplyr::group_by(year) |>
     dplyr::summarise(
-      mydata,
-      date = min(.data$date, na.rm = TRUE),
-      dat.cap = 100 * mean(!is.na(.data$value)),
-      .by = "year"
+      max_daily = suppressWarnings(max(value, na.rm = TRUE)),
+
+      # Pollutant Specific: PM10 Days > 50
+      days = if (
+        length(grep("pm10", mydata$pollutant[1], ignore.case = TRUE)) == 1
+      ) {
+        sum(value > 50, na.rm = TRUE)
+      } else {
+        NA_real_
+      },
+      .groups = "drop"
     )
 
-  # percentiles
-  Percentile <-
-    purrr::imap(
-      .x = split(mydata, ~year),
-      .f = function(x, i) {
-        calcPercentile(
-          x,
-          avg.time = "year",
-          pollutant = "value",
-          data.thresh = data.thresh,
-          percentile = percentile
-        ) |>
-          dplyr::mutate(year = as.numeric(i))
-      }
-    ) |>
-    dplyr::bind_rows()
-
-  # Tables list to merge
-  tables <- list(
-    dataCapture,
-    Mean,
-    Min,
-    Max,
-    Median,
-    maxDaily,
-    rollMax8,
-    rollMax24,
-    Percentile
-  )
-
-  # specific treatment of pollutants
-  # Ozone
+  # --- 4. Ozone Specifics (AOT40 and Rolling Targets) ---
+  o3_stats <- NULL
   if (grepl("o3", mydata$pollutant[1], ignore.case = TRUE)) {
-    # ozone greater than 100
-    rollingO3 <-
-      purrr::imap(
-        .x = split(mydata, ~year),
-        .f = function(x, i) {
-          rlang::exec(
-            rollingMean,
-            !!!rlang::list2(
-              mydata = x,
-              pollutant = "value",
-              data.thresh = data.thresh,
-              ...
-            )
-          ) |>
-            timeAverage(
-              avg.time = "day",
-              statistic = "max",
-              data.thresh = data.thresh
-            ) |>
-            dplyr::summarise(
-              roll.8.O3.gt.100 = sum(.data$rolling8value > 100, na.rm = TRUE),
-              roll.8.O3.gt.120 = sum(.data$rolling8value > 120, na.rm = TRUE)
-            ) |>
-            dplyr::mutate(year = as.numeric(i))
-        }
-      ) |>
-      dplyr::bind_rows() |>
-      dplyr::mutate(date = Mean$date)
-
-    aot40 <-
-      purrr::imap(
-        .x = split(mydata, ~year),
-        .f = function(x, i) {
-          rlang::exec(
-            AOT40,
-            !!!rlang::list2(
-              mydata = x,
-              pollutant = "value",
-              ...
-            )
-          ) |>
-            dplyr::mutate(year = as.numeric(i))
-        }
-      ) |>
-      dplyr::bind_rows() |>
-      dplyr::mutate(date = Mean$date)
-
-    tables <- append(tables, list(rollingO3, aot40))
-  }
-
-  # Nitrogen Dioxide
-  if (grepl("no2", mydata$pollutant[1], ignore.case = TRUE)) {
-    hours <-
+    # Rolling Targets (>100, >120) based on DAILY MAX of 8-hour rolling
+    # We reuse the mydata_roll8 calculated in Step 2
+    o3_rolling_targets <- mydata_roll8 |>
+      dplyr::mutate(day = lubridate::floor_date(date, "day")) |>
+      dplyr::group_by(year, day) |>
       dplyr::summarise(
-        mydata,
-        hours = sum(.data$value > 200, na.rm = TRUE),
-        .by = "year"
+        max_roll8 = suppressWarnings(max(roll8, na.rm = TRUE)),
+        .groups = "drop_last"
       ) |>
-      dplyr::mutate(date = Mean$date)
+      dplyr::summarise(
+        roll.8.O3.gt.100 = sum(max_roll8 > 100, na.rm = TRUE),
+        roll.8.O3.gt.120 = sum(max_roll8 > 120, na.rm = TRUE),
+        .groups = "drop"
+      )
 
-    tables <- append(tables, list(hours))
-  }
+    # AOT40
+    # Filter for growing season (Apr-Sept)
+    mydata_aot <- selectByDate(mydata, month = 4:9)
 
-  # Particulate Matter
-  if (length(grep("pm10", mydata$pollutant[1], ignore.case = TRUE)) == 1) {
-    days <-
-      timeAverage(
-        mydata,
-        avg.time = "day",
-        statistic = "mean",
-        data.thresh = data.thresh,
-        type = "year"
-      ) |>
-      dplyr::summarise(days = sum(.data$value > 50, na.rm = TRUE)) |>
-      dplyr::mutate(date = Mean$date, year = mydata$year[1])
+    if (nrow(mydata_aot) > 0) {
+      # cutData can be expensive, only run on filtered subset
+      mydata_aot <- cutData(mydata_aot, "daylight", ...)
 
-    tables <- append(tables, list(days))
-  }
+      aot_calc <- mydata_aot |>
+        dplyr::filter(daylight == "daylight") |>
+        dplyr::group_by(year) |>
+        dplyr::summarise(
+          AOT40 = sum(pmax(value - 80, 0), na.rm = TRUE) * 0.50, # 0.5 conversion for ppb
+          .groups = "drop"
+        )
 
-  # Combine
-  purrr::reduce(
-    .x = tables,
-    .f = function(x, y) {
-      dplyr::full_join(x, y, by = c("date", "year"))
+      o3_stats <- dplyr::full_join(o3_rolling_targets, aot_calc, by = "year")
+    } else {
+      o3_stats <- o3_rolling_targets
     }
+  }
+
+  # --- 5. Merge and Apply Thresholds ---
+
+  # Combine all frames
+  final_df <- main_stats |>
+    dplyr::left_join(max_daily, by = "year") |>
+    dplyr::left_join(roll_stats, by = "year")
+
+  if (!is.null(o3_stats)) {
+    final_df <- dplyr::left_join(final_df, o3_stats, by = "year")
+  }
+
+  # Drop temp columns if pollutant didn't match (clean up NA columns for strict output match)
+  # (Optional cleanup based on original structure, but keys are handled via logic above)
+  if (!grepl("no2", mydata$pollutant[1], ignore.case = TRUE)) {
+    final_df$hours <- NULL
+  }
+  if (!length(grep("pm10", mydata$pollutant[1], ignore.case = TRUE)) == 1) {
+    final_df$days <- NULL
+  }
+
+  # Apply Data Threshold to Summary Stats
+  # If data capture is below threshold, set stats to NA (except data capture itself)
+  # Note: Count-based stats (hours, days, exceedances) are typically not nulled by capture in AQ stats
+  # unless strictly specified, but here we follow general pattern: if data is insufficient, mean is invalid.
+
+  cols_to_mask <- setdiff(
+    names(final_df),
+    c(
+      "year",
+      "date",
+      "dat.cap",
+      "hours",
+      "days",
+      "roll.8.O3.gt.100",
+      "roll.8.O3.gt.120",
+      "AOT40"
+    )
   )
-}
 
-AOT40 <- function(mydata, pollutant, ...) {
-  ## note the assumption is the O3 is in ug/m3
-  daylight <- NULL
+  final_df <- final_df |>
+    dplyr::mutate(
+      dplyr::across(
+        dplyr::all_of(cols_to_mask),
+        ~ if_else(dat.cap < data.thresh, NA_real_, .)
+      )
+    )
 
-  ## need daylight hours in growing season (April to September)
-  mydata <- selectByDate(mydata, month = 4:9)
-  mydata <- cutData(mydata, "daylight", ...)
-  mydata <- subset(mydata, daylight == "daylight")
-  AOT40 <-
-    ifelse(mydata[[pollutant]] - 80 < 0, 0, mydata[[pollutant]] - 80)
-  AOT40 <- sum(AOT40, na.rm = TRUE) * 0.50 ## for ppb
-  AOT40 <- tibble(AOT40)
-  return(AOT40)
+  return(final_df)
 }

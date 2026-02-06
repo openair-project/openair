@@ -72,6 +72,12 @@
     "Latm",
     "Am",
     "Bm",
-    ".block_id"
+    ".block_id",
+    "daylight",
+    "max_roll8",
+    "pct_vals",
+    "roll24_val",
+    "roll8",
+    "roll8_val"
   ))
 }
