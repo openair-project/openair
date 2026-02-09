@@ -209,6 +209,8 @@ datePad <- function(
   # Core Logic Helper
   # -----------------------------------------------------------------------
   process_group <- function(df) {
+    checkDuplicateRows(df, type, fn = cli::cli_abort)
+
     # A. Define limits for this group
     s_date <- if (is.null(start.date)) {
       min(df$date, na.rm = TRUE)
@@ -249,14 +251,15 @@ datePad <- function(
   }
 
   # 4. Execution
-  if (!is.null(type)) {
-    out <- mydata |>
-      dplyr::group_by(dplyr::across(dplyr::all_of(type))) |>
-      dplyr::group_modify(~ process_group(.x)) |>
-      dplyr::ungroup()
-  } else {
-    out <- process_group(mydata)
-  }
+
+  mydata <- cutData(mydata, type = type)
+
+  out <- mapType(
+    mydata,
+    type = type,
+    fun = process_group,
+    .include_default = FALSE
+  )
 
   # 5. Restore Timezone
   if (inherits(mydata$date, "POSIXt")) {
