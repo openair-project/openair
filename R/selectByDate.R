@@ -48,134 +48,141 @@
 #'     c("dec", "jan", "feb")
 #' )
 #'
+library(dplyr)
+library(lubridate)
+
 selectByDate <- function(
   mydata,
-  start = "1/1/2008",
-  end = "31/12/2008",
-  year = 2008,
-  month = 1,
-  day = "weekday",
-  hour = 1
+  start = NULL,
+  end = NULL,
+  year = NULL,
+  month = NULL,
+  day = NULL,
+  hour = NULL
 ) {
-  ## extract variables of interest
-  vars <- names(mydata)
+  # 1. Basic Checks
+  if (!"date" %in% names(mydata)) {
+    stop("The input data frame must contain a column named 'date'.")
+  }
 
-  ## check data - mostly date format
-  mydata <- checkPrep(
-    mydata,
-    vars,
-    "default",
-    remove.calm = FALSE,
-    strip.white = FALSE
-  )
+  # Check if date is strictly Date or POSIXt (POSIXct/POSIXlt)
+  if (!inherits(mydata$date, "Date") && !inherits(mydata$date, "POSIXt")) {
+    stop("The 'date' column must be in Date or POSIXct format.")
+  }
 
-  weekday.names <- format(ISOdate(2000, 1, 3:9), "%A")
+  # 2. Filter by Date Range (Start/End)
+  if (!is.null(start)) {
+    start_date <- lubridate::parse_date_time(
+      start,
+      orders = c("dmy_HM", "dmy_HMS", "ymd_HM", "ymd_HMS", "dmy", "mdy", "ymd"),
+      quiet = TRUE
+    )
 
-  date_formats <- c("dmy", "ymd", "mdy")
+    if (is.na(start_date)) {
+      stop("Could not parse 'start' date format.")
+    }
+    mydata <- filter(mydata, date >= start_date)
+  }
 
-  if (!missing(start)) {
-    if (lubridate::is.Date(mydata$date)) {
-      start <- lubridate::as_date(start, format = date_formats)
-    } else {
-      start <- lubridate::parse_date_time(
-        start,
-        orders = c(
-          "dmy_HM",
-          "dmy_HMS",
-          "ymd_HM",
-          "ymd_HMS",
-          "dmy",
-          "mdy",
-          "ymd"
-        )
-      )
+  if (!is.null(end)) {
+    end_date <- lubridate::parse_date_time(
+      end,
+      orders = c("dmy_HM", "dmy_HMS", "ymd_HM", "ymd_HMS", "dmy", "mdy", "ymd"),
+      quiet = TRUE
+    )
+
+    if (is.na(end_date)) {
+      stop("Could not parse 'end' date format.")
     }
 
-    mydata <- filter(mydata, date >= start)
+    # If input is just a date (e.g. "2023-01-01"), include the full day (until 23:59:59)
+    if (is.character(end) && !grepl(":", end)) {
+      end_date <- end_date + days(1) - seconds(1)
+    }
+    mydata <- filter(mydata, date <= end_date)
   }
 
-  if (!missing(end)) {
-    if (lubridate::is.Date(mydata$date)) {
-      end <- lubridate::as_date(end, format = date_formats)
-    } else {
-      end <- lubridate::parse_date_time(
-        end,
-        orders = c(
-          "dmy_HM",
-          "dmy_HMS",
-          "ymd_HM",
-          "ymd_HMS",
-          "dmy",
-          "mdy",
-          "ymd"
-        )
-      )
+  # 3. Filter by Year
+  if (!is.null(year)) {
+    mydata <- filter(mydata, lubridate::year(date) %in% !!year)
+  }
 
-      # check to see if supplied 'end' includes time component i.e. with a ":"
-      if (!grepl(":", end)) {
-        # get the maximum date in data on that day
-        end <- end + 3600 * 24 - 1
-      }
+  # 4. Filter by Month
+  if (!is.null(month)) {
+    target_months <- month
+
+    # If user provided names (e.g. "Jan", "february"), convert to integers 1-12
+    if (is.character(month)) {
+      # Create lookup: "jan" -> 1, "feb" -> 2...
+      lookup <- setNames(1:12, tolower(month.abb))
+
+      # Clean input: lowercase and first 3 chars
+      clean_input <- substr(tolower(month), 1, 3)
+      target_months <- lookup[clean_input]
+
+      if (any(is.na(target_months))) stop("Invalid month name provided.")
     }
 
-    mydata <- filter(mydata, date <= end)
+    # Perform integer filter (fast)
+    mydata <- filter(mydata, lubridate::month(date) %in% !!target_months)
   }
 
-  if (!missing(year)) {
-    mydata <- mydata[which(year(mydata$date) %in% year), ]
+  # 5. Filter by Hour
+  if (!is.null(hour)) {
+    mydata <- filter(mydata, lubridate::hour(date) %in% !!hour)
   }
 
-  if (!missing(month)) {
-    if (is.numeric(month)) {
-      if (any(month < 1 | month > 12)) {
-        stop("Month must be between 1 to 12.")
-      }
-
-      mydata <- mydata[which(month(mydata$date) %in% month), ]
-    } else {
-      mydata <- subset(
-        mydata,
-        substr(
-          tolower(format(
-            date,
-            "%B"
-          )),
-          1,
-          3
-        ) %in%
-          substr(tolower(month), 1, 3)
-      )
-    }
-  }
-  if (!missing(hour)) {
-    if (any(hour < 0 | hour > 23)) {
-      stop("Hour must be between 0 to 23.")
-    }
-
-    mydata <- mydata[which(hour(mydata$date) %in% hour), ]
-  }
-
-  if (!missing(day)) {
-    days <- day
-
+  # 6. Filter by Day
+  if (!is.null(day)) {
+    # CASE A: Numeric input implies day of month (1-31)
     if (is.numeric(day)) {
-      if (any(day < 1 | day > 31)) {
-        stop("Day must be between 1 to 31.")
-      }
-      mydata <- mydata[which(day(mydata$date) %in% day), ]
+      mydata <- filter(mydata, lubridate::mday(date) %in% !!day)
+
+      # CASE B: Character input implies day of week (Mon-Sun) or "weekday"/"weekend"
     } else {
-      if (day[1] == "weekday") {
-        days <- weekday.names[1:5]
+      day_lower <- tolower(day)
+      target_wdays <- integer() # Store days as integers (Sun=1, Mon=2...Sat=7)
+
+      # Handle keywords
+      if ("weekday" %in% day_lower) {
+        target_wdays <- c(target_wdays, 2:6)
       }
-      if (day[1] == "weekend") {
-        days <- weekday.names[6:7]
+      if ("weekend" %in% day_lower) {
+        target_wdays <- c(target_wdays, 1, 7)
       }
-      mydata <- subset(
-        mydata,
-        substr(tolower(format(date, "%A")), 1, 3) %in%
-          substr(tolower(days), 1, 3)
-      )
+
+      # Handle specific names (e.g., "Monday")
+      specific <- day_lower[!day_lower %in% c("weekday", "weekend")]
+
+      if (length(specific) > 0) {
+        # Create lookup: "sun"->1 ... "sat"->7
+        # We manually map this to ensure consistency regardless of locale
+        # Note: lubridate::wday returns 1 for Sunday, 7 for Saturday
+        wday_lookup <- c(
+          "sun" = 1,
+          "mon" = 2,
+          "tue" = 3,
+          "wed" = 4,
+          "thu" = 5,
+          "fri" = 6,
+          "sat" = 7
+        )
+
+        clean_specific <- substr(specific, 1, 3)
+        mapped <- wday_lookup[clean_specific]
+
+        if (any(is.na(mapped))) {
+          stop("Invalid day name provided.")
+        }
+        target_wdays <- c(target_wdays, mapped)
+      }
+
+      target_wdays <- unique(target_wdays)
+
+      # Filter using wday integer (fast)
+      mydata <- filter(mydata, lubridate::wday(date) %in% !!target_wdays)
     }
   }
-  mydata
+
+  return(mydata)
 }
