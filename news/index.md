@@ -2,15 +2,6 @@
 
 ## openair (development version)
 
-### Bug Fixes
-
-- [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
-  now correctly handles the `end` date if supplied when in a date format
-  e.g. dd/mm/yyyy and selects all hours in the day if present.
-
-- `timeAverage` did not properly calculate wind speed and direction
-  correct when `vector.ws = TRUE`
-
 ### Dependency Changes
 
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe
@@ -162,6 +153,14 @@
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
   now correctly passes `...` to
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
+
+- [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
+  now correctly handles the `end` date if supplied when in a date format
+  e.g. dd/mm/yyyy and selects all hours in the day if present.
+
+- [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
+  did not properly calculate wind speed and direction correct when
+  `vector.ws = TRUE`
 
 ## openair 2.19.0
 
