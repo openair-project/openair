@@ -6,12 +6,12 @@
 \usage{
 selectByDate(
   mydata,
-  start = "1/1/2008",
-  end = "31/12/2008",
-  year = 2008,
-  month = 1,
-  day = "weekday",
-  hour = 1
+  start = NULL,
+  end = NULL,
+  year = NULL,
+  month = NULL,
+  day = NULL,
+  hour = NULL
 )
 }
 \arguments{

@@ -78,6 +78,8 @@
     "pct_vals",
     "roll24_val",
     "roll8",
-    "roll8_val"
+    "roll8_val",
+    "days",
+    "seconds"
   ))
 }

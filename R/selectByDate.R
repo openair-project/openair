@@ -24,6 +24,7 @@
 #' @param hour An hour or hours to select from 0-23 e.g. `hour = 0:12` to select
 #'   hours 0 to 12 inclusive.
 #' @export
+#' @importFrom stats setNames
 #' @author David Carslaw
 #' @examples
 #'
@@ -48,9 +49,6 @@
 #'     c("dec", "jan", "feb")
 #' )
 #'
-library(dplyr)
-library(lubridate)
-
 selectByDate <- function(
   mydata,
   start = NULL,
@@ -81,7 +79,7 @@ selectByDate <- function(
     if (is.na(start_date)) {
       stop("Could not parse 'start' date format.")
     }
-    mydata <- filter(mydata, date >= start_date)
+    mydata <- dplyr::filter(mydata, date >= start_date)
   }
 
   if (!is.null(end)) {
@@ -99,12 +97,12 @@ selectByDate <- function(
     if (is.character(end) && !grepl(":", end)) {
       end_date <- end_date + days(1) - seconds(1)
     }
-    mydata <- filter(mydata, date <= end_date)
+    mydata <- dplyr::filter(mydata, date <= end_date)
   }
 
   # 3. Filter by Year
   if (!is.null(year)) {
-    mydata <- filter(mydata, lubridate::year(date) %in% !!year)
+    mydata <- dplyr::filter(mydata, lubridate::year(date) %in% !!year)
   }
 
   # 4. Filter by Month
@@ -123,20 +121,20 @@ selectByDate <- function(
       if (any(is.na(target_months))) stop("Invalid month name provided.")
     }
 
-    # Perform integer filter (fast)
-    mydata <- filter(mydata, lubridate::month(date) %in% !!target_months)
+    # Perform integer dplyr::filter (fast)
+    mydata <- dplyr::filter(mydata, lubridate::month(date) %in% !!target_months)
   }
 
   # 5. Filter by Hour
   if (!is.null(hour)) {
-    mydata <- filter(mydata, lubridate::hour(date) %in% !!hour)
+    mydata <- dplyr::filter(mydata, lubridate::hour(date) %in% !!hour)
   }
 
   # 6. Filter by Day
   if (!is.null(day)) {
     # CASE A: Numeric input implies day of month (1-31)
     if (is.numeric(day)) {
-      mydata <- filter(mydata, lubridate::mday(date) %in% !!day)
+      mydata <- dplyr::filter(mydata, lubridate::mday(date) %in% !!day)
 
       # CASE B: Character input implies day of week (Mon-Sun) or "weekday"/"weekend"
     } else {
@@ -180,7 +178,7 @@ selectByDate <- function(
       target_wdays <- unique(target_wdays)
 
       # Filter using wday integer (fast)
-      mydata <- filter(mydata, lubridate::wday(date) %in% !!target_wdays)
+      mydata <- dplyr::filter(mydata, lubridate::wday(date) %in% !!target_wdays)
     }
   }
 
