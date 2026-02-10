@@ -115,47 +115,53 @@ find.time.interval <- function(dates, return.seconds = FALSE) {
   # Default fallback if no special interval is matched
   return(paste(mode_seconds, "sec"))
 }
-# -------------------------------------------------------------------------
-# Main Function: Date Pad with "Block" Filling
-# -------------------------------------------------------------------------
+
 #' Pad a time-series dataframe and optionally fill values by block
 #'
-#' Expand a dataframe that contains a 'date' column to a regular sequence
-#' of timestamps between specified start and end dates. The function can
-#' operate in two modes:
-#' - fill = FALSE: simply complete the sequence at the target interval.
-#' - fill = TRUE: regularise the data at the native interval to create
-#'   explicit blocks, then expand to the target interval and carry the
-#'   block's values forward so that intra-block timestamps inherit the
-#'   block's measured value (block-filling behaviour).
+#' Expand a dataframe that contains a 'date' column to a regular sequence of
+#' timestamps between specified start and end dates. The function can operate in
+#' two modes:
+#' - `fill = FALSE`: simply complete the sequence at the target interval.
+#' - `fill = TRUE`: regularise the data at the native interval to create
+#' explicit blocks, then expand to the target interval and carry the block's
+#' values forward so that intra-block timestamps inherit the block's measured
+#' value (block-filling behaviour).
 #'
-#' The function detects the native input interval automatically if
-#' 'interval' is not supplied, supports grouping via 'type', and preserves
-#' timezones for POSIXt date columns.
+#' The function detects the native input interval automatically if `interval` is
+#' not supplied, supports grouping via `type`, and preserves timezones for
+#' POSIXt date columns.
 #'
-#' @param mydata Data.frame or tibble containing at least a 'date'
-#'   column (Date or POSIXt).
-#' @param type NULL or character vector of column names to group by.
-#' @param interval NULL or character string describing target interval
-#'   (e.g. "1 min", "1 hour"). If NULL, the native interval is used.
-#' @param start.date Optional start date/time. If NULL, the group's
-#'   minimum date is used.
-#' @param end.date Optional end date/time. If NULL, the group's maximum
+#' @param mydata Data.frame or tibble containing at least a 'date' column (Date
+#'   or POSIXt).
+#'
+#' @param type `NULL` or character vector of column names to group by.
+#'
+#' @param interval `NULL` or character string describing target interval (e.g.
+#'   "1 min", "1 hour"). If `NULL`, the native interval is used.
+#'
+#' @param start.date Optional start date/time. If `NULL`, the group's minimum
 #'   date is used.
-#' @param fill Logical; when TRUE performs block-based filling described
-#'   above. When FALSE just completes the sequence leaving NA values.
-#' @param print.int Logical; when TRUE prints detected/selected
-#'   interval messages.
-#' @return A dataframe expanded to the requested sequence with values
-#'   filled according to 'fill'. The returned object preserves the
-#'   'date' column type and timezone (for POSIXt).
+#'
+#' @param end.date Optional end date/time. If `NULL`, the group's maximum date
+#'   is used.
+#'
+#' @param fill Logical; when `TRUE` performs block-based filling described
+#'   above. When `FALSE` just completes the sequence leaving `NA` values.
+#'
+#' @param print.int Logical; when `TRUE` prints detected/selected interval
+#'   messages.
+#'
+#' @param ... Passed to [cutData()].
+#'
+#' @return A dataframe expanded to the requested sequence with values filled
+#'   according to 'fill'. The returned object preserves the 'date' column type
+#'   and timezone (for POSIXt).
+#'
 #' @examples
 #' df <- mydata[-c(2, 4, 7), ] # Remove some rows to create gaps
 #' datePad(df)
+#'
 #' @export
-# -------------------------------------------------------------------------
-# Main Function: Date Pad with "Block" Filling
-# -------------------------------------------------------------------------
 datePad <- function(
   mydata,
   type = NULL,
@@ -163,7 +169,8 @@ datePad <- function(
   start.date = NULL,
   end.date = NULL,
   fill = FALSE,
-  print.int = FALSE
+  print.int = FALSE,
+  ...
 ) {
   # Basic validation
   if (nrow(mydata) < 2) {
@@ -252,7 +259,7 @@ datePad <- function(
 
   # 4. Execution
 
-  mydata <- cutData(mydata, type = type)
+  mydata <- cutData(mydata, type = type, ...)
 
   out <- mapType(
     mydata,
