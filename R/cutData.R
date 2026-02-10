@@ -373,7 +373,7 @@ cutVecNumeric <- function(x, type, n.levels, is.axis) {
 # Cut a vector into a 'year' factor
 cutVecYear <- function(x, drop) {
   x <- lubridate::year(x)
-  if (drop %in% c("default", "none", "outside")) {
+  if (drop %in% c("default", "empty")) {
     x <- ordered(x)
   } else {
     x_range <- range(unique(x), na.rm = TRUE)

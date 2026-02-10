@@ -4,6 +4,12 @@
 
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe (`|>`).
 
+- `openair` now imports `ggplot2` and `scales`.
+
+## Breaking Changes
+
+- `trendLevel()` is now written in `ggplot2`. This is the beginning of a move away from `lattice` to a more modern plotting engine. For most users there will be no real change, but some arguments passed to `...` may no longer be supported.
+
 ## New Features
 
 - `timeVariation()` has been almost completely rewritten, allowing for the following updates:
@@ -62,7 +68,9 @@
 
 - `quickText()` now converts `air_temp` (a common `worldmet` variable) into `"Temperature"`.
 
-- `timeAverage` is much faster with the bulk of the calculations made using C++.
+- `timeAverage()` is much faster with the bulk of the calculations made using C++.
+
+- `trendLevel()` now supports 2 values being passed to `type`, which will create a 2D grid using `ggplot2::facet_grid()`.
 
 ## Bug Fixes
 
