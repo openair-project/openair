@@ -50,15 +50,14 @@
 #' @param cols The colour set to use to colour the [trendLevel()] surface.
 #'   `cols` is passed to [openColours()] for evaluation.
 #' @param auto.text Automatic routine text formatting. `auto.text = TRUE` passes
-#'   common `lattice` labelling terms (e.g. `xlab` for the x-axis, `ylab` for
-#'   the y-axis and `main` for the title) to the plot via [quickText()] to
+#'   axis labels, legend titles, and facet labels through [quickText()] to
 #'   provide common text formatting.  The alternative `auto.text = FALSE` turns
 #'   this option off and passes any supplied labels to the plot without
 #'   modification.
-#' @param key.header,key.footer `key.header` adds a title to the legend,
-#'   passed through [quickText()] if `quick.text = TRUE`. `key.footer` is no
-#'   longer directly supported, and is appended to the bottom of `key.header` to
-#'   form part of the legend title.
+#' @param key.header,key.footer `key.header` adds a title to the legend, passed
+#'   through [quickText()] if `quick.text = TRUE`. `key.footer` is no longer
+#'   directly supported, and is appended to the bottom of `key.header` to form
+#'   part of the legend title.
 #' @param key.position Location where the scale key should be plotted. Allowed
 #'   arguments currently include `"top"`, `"right"`, `"bottom"`, and `"left"`.
 #' @param key Fine control of the scale key via [drawOpenKey()].
@@ -102,8 +101,11 @@
 #' @param col.na Colour to be used to show missing data.
 #' @param plot Should a plot be produced? `FALSE` can be useful when analysing
 #'   data to extract plot components and plotting them in other ways.
-#' @param ... Addition options are passed on to [cutData()] for `type` handling
-#'   and [lattice::levelplot()] for finer control of the plot itself.
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `fontsize` overrides the overall font size of the plot.
 #' @export
 #' @return an [openair][openair-package] object.
 #' @author Karl Ropkins
@@ -510,7 +512,9 @@ trendLevel <- function(
           ggplot2::facet_wrap(
             drop = drop.unused.types,
             facets = ggplot2::vars(.data[[type]]),
-            labeller = labeller_openair(auto_text = auto.text)
+            labeller = labeller_openair(auto_text = auto.text),
+            ncol = extra.args$layout[1],
+            nrow = extra.args$layout[2]
           )
       }
     } else {

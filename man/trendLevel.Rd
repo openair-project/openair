@@ -63,16 +63,15 @@ supplied, only the first three are used.}
 \code{cols} is passed to \code{\link[=openColours]{openColours()}} for evaluation.}
 
 \item{auto.text}{Automatic routine text formatting. \code{auto.text = TRUE} passes
-common \code{lattice} labelling terms (e.g. \code{xlab} for the x-axis, \code{ylab} for
-the y-axis and \code{main} for the title) to the plot via \code{\link[=quickText]{quickText()}} to
+axis labels, legend titles, and facet labels through \code{\link[=quickText]{quickText()}} to
 provide common text formatting.  The alternative \code{auto.text = FALSE} turns
 this option off and passes any supplied labels to the plot without
 modification.}
 
-\item{key.header, key.footer}{\code{key.header} adds a title to the legend,
-passed through \code{\link[=quickText]{quickText()}} if \code{quick.text = TRUE}. \code{key.footer} is no
-longer directly supported, and is appended to the bottom of \code{key.header} to
-form part of the legend title.}
+\item{key.header, key.footer}{\code{key.header} adds a title to the legend, passed
+through \code{\link[=quickText]{quickText()}} if \code{quick.text = TRUE}. \code{key.footer} is no longer
+directly supported, and is appended to the bottom of \code{key.header} to form
+part of the legend title.}
 
 \item{key.position}{Location where the scale key should be plotted. Allowed
 arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"}, and \code{"left"}.}
@@ -127,8 +126,13 @@ panels.}
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}
 
-\item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling
-and \code{\link[lattice:levelplot]{lattice::levelplot()}} for finer control of the plot itself.}
+\item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
+Some additional arguments are also available:
+\itemize{
+\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
+\item \code{fontsize} overrides the overall font size of the plot.
+}}
 }
 \value{
 an \link[=openair-package]{openair} object.
