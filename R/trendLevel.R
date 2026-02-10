@@ -190,7 +190,6 @@ trendLevel <- function(
   # check length of y
   if (length(y) > 1) {
     y <- y[1]
-    ylab <- ylab[1]
     cli::cli_warn(
       c(
         "!" = "{.fun trendLevel} does not allow multiple {.field y} values.",
@@ -389,8 +388,7 @@ trendLevel <- function(
     dplyr::summarise(
       {{ pollutant }} := calc_stat(.data[[pollutant]]),
       .by = dplyr::all_of(c(x, y, type))
-    ) |>
-    as.data.frame()
+    )
 
   # key.header, footer stat.name recovery
   if (!is.null(key.header)) {
