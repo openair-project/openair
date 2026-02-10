@@ -435,30 +435,8 @@ trendLevel <- function(
       show.legend = TRUE
     ) +
     ggplot2::coord_cartesian(clip = "off", expand = FALSE) +
-    ggplot2::theme_bw() +
-    ggplot2::theme(
-      panel.grid = ggplot2::element_blank(),
-      strip.background = ggplot2::element_rect(fill = "white"),
-      panel.spacing = ggplot2::unit(0, "cm"),
-      legend.position = key.position,
-      plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
-      legend.frame = ggplot2::element_rect(
-        fill = NA,
-        color = "black",
-        linewidth = 0.25
-      ),
-      legend.key = ggplot2::element_rect(
-        fill = NA,
-        color = "black",
-        linewidth = 0.25
-      ),
-      legend.title = ggplot2::element_text(hjust = 0.5),
-      legend.ticks = ggplot2::element_line(),
-      legend.ticks.length = structure(
-        if (key.position %in% c("bottom", "right")) c(-0.2, 0) else c(0, -0.2),
-        class = "rel"
-      )
-    ) +
+    theme_openair(key.position) +
+    set_extra_fontsize(extra.args) +
     ggplot2::labs(
       x = quickText(extra.args$xlab %||% x, auto.text = auto.text),
       y = quickText(extra.args$ylab %||% y, auto.text = auto.text),
@@ -475,7 +453,8 @@ trendLevel <- function(
     ggplot2::guides(
       x = ggplot2::guide_axis(check.overlap = TRUE, angle = rotate.axis[1]),
       y = ggplot2::guide_axis(check.overlap = TRUE, angle = rotate.axis[2])
-    )
+    ) +
+    get_facet(type, extra.args, auto.text, drop = drop.unused.types)
 
   # make key full width/height
   if (key.position %in% c("left", "right")) {
@@ -491,38 +470,6 @@ trendLevel <- function(
         legend.key.width = ggplot2::unit(1, "null"),
         legend.key.spacing.x = ggplot2::unit(0, "cm")
       )
-  }
-
-  # faceting
-  if (any(type != "default")) {
-    if (length(type) == 1) {
-      if (type == "wd") {
-        thePlot <- thePlot +
-          facet_wd(
-            ggplot2::vars(.data[[type]]),
-            labeller = labeller_openair(auto_text = auto.text)
-          )
-      } else {
-        thePlot <-
-          thePlot +
-          ggplot2::facet_wrap(
-            drop = drop.unused.types,
-            facets = ggplot2::vars(.data[[type]]),
-            labeller = labeller_openair(auto_text = auto.text),
-            ncol = extra.args$layout[1],
-            nrow = extra.args$layout[2]
-          )
-      }
-    } else {
-      thePlot <-
-        thePlot +
-        ggplot2::facet_grid(
-          drop = drop.unused.types,
-          rows = ggplot2::vars(.data[[type[1]]]),
-          cols = ggplot2::vars(.data[[type[2]]]),
-          labeller = labeller_openair(auto_text = auto.text)
-        )
-    }
   }
 
   # colours
@@ -572,14 +519,6 @@ trendLevel <- function(
             legend.text.position = key.position
           )
         )
-      )
-  }
-
-  if ("fontsize" %in% names(extra.args)) {
-    thePlot <-
-      thePlot +
-      ggplot2::theme(
-        text = ggplot2::element_text(size = extra.args$fontsize)
       )
   }
 

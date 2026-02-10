@@ -98,12 +98,14 @@ properly, e.g., by subscripting the '2' in NO2.}
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}
 
-\item{...}{Other graphical parameters passed onto \code{timeProp} and \code{cutData}.
-For example, \code{timeProp} passes the option \code{hemisphere = "southern"} on to
-\code{cutData} to provide southern (rather than default northern) hemisphere
-handling of \code{type = "season"}. Similarly, common axis and title labelling
-options (such as \code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
-\code{quickText} to handle routine formatting.}
+\item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
+Some additional arguments are also available:
+\itemize{
+\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
+\item \code{fontsize} overrides the overall font size of the plot.
+\item \code{border} sets the border colour of each bar.
+}}
 }
 \value{
 an \link[=openair-package]{openair} object
@@ -146,6 +148,8 @@ Other cluster analysis functions:
 }
 \author{
 David Carslaw
+
+Jack Davison
 }
 \concept{cluster analysis functions}
 \concept{time series and trend functions}
