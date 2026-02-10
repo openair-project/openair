@@ -4,9 +4,9 @@ Expand a dataframe that contains a 'date' column to a regular sequence
 of timestamps between specified start and end dates. The function can
 operate in two modes:
 
-- fill = FALSE: simply complete the sequence at the target interval.
+- `fill = FALSE`: simply complete the sequence at the target interval.
 
-- fill = TRUE: regularise the data at the native interval to create
+- `fill = TRUE`: regularise the data at the native interval to create
   explicit blocks, then expand to the target interval and carry the
   block's values forward so that intra-block timestamps inherit the
   block's measured value (block-filling behaviour).
@@ -21,7 +21,8 @@ datePad(
   start.date = NULL,
   end.date = NULL,
   fill = FALSE,
-  print.int = FALSE
+  print.int = FALSE,
+  ...
 )
 ```
 
@@ -34,29 +35,34 @@ datePad(
 
 - type:
 
-  NULL or character vector of column names to group by.
+  `NULL` or character vector of column names to group by.
 
 - interval:
 
-  NULL or character string describing target interval (e.g. "1 min", "1
-  hour"). If NULL, the native interval is used.
+  `NULL` or character string describing target interval (e.g. "1 min",
+  "1 hour"). If `NULL`, the native interval is used.
 
 - start.date:
 
-  Optional start date/time. If NULL, the group's minimum date is used.
+  Optional start date/time. If `NULL`, the group's minimum date is used.
 
 - end.date:
 
-  Optional end date/time. If NULL, the group's maximum date is used.
+  Optional end date/time. If `NULL`, the group's maximum date is used.
 
 - fill:
 
-  Logical; when TRUE performs block-based filling described above. When
-  FALSE just completes the sequence leaving NA values.
+  Logical; when `TRUE` performs block-based filling described above.
+  When `FALSE` just completes the sequence leaving `NA` values.
 
 - print.int:
 
-  Logical; when TRUE prints detected/selected interval messages.
+  Logical; when `TRUE` prints detected/selected interval messages.
+
+- ...:
+
+  Passed to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
 
 ## Value
 
@@ -67,7 +73,7 @@ type and timezone (for POSIXt).
 ## Details
 
 The function detects the native input interval automatically if
-'interval' is not supplied, supports grouping via 'type', and preserves
+`interval` is not supplied, supports grouping via `type`, and preserves
 timezones for POSIXt date columns.
 
 ## Examples
