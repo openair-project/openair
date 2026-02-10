@@ -55,8 +55,13 @@
 <h2 class="pkg-version" data-toc-text="development version" id="openair-development-version">openair (development version)<a class="anchor" aria-label="anchor" href="#openair-development-version"></a></h2>
 <div class="section level3">
 <h3 id="dependency-changes-development-version">Dependency Changes<a class="anchor" aria-label="anchor" href="#dependency-changes-development-version"></a></h3>
+<ul><li><p><code>openair</code> now depends on R v4.1 and, internally, uses the base R pipe (<code>|&gt;</code>).</p></li>
+<li><p><code>openair</code> now imports <code>ggplot2</code> and <code>scales</code>.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="breaking-changes-development-version">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
 <ul><li>
-<code>openair</code> now depends on R v4.1 and, internally, uses the base R pipe (<code>|&gt;</code>).</li>
+<code><a href="../reference/trendLevel.html">trendLevel()</a></code> is now written in <code>ggplot2</code>. This is the beginning of a move away from <code>lattice</code> to a more modern plotting engine. For most users there will be no real change, but some arguments passed to <code>...</code> may no longer be supported.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
@@ -98,7 +103,8 @@
 </ul></li>
 <li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> have gained the <code>grid.nx</code> and <code>grid.ny</code> arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.</p></li>
 <li><p><code><a href="../reference/quickText.html">quickText()</a></code> now converts <code>air_temp</code> (a common <code>worldmet</code> variable) into <code>"Temperature"</code>.</p></li>
-<li><p><code>timeAverage</code> is much faster with the bulk of the calculations made using C++.</p></li>
+<li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> is much faster with the bulk of the calculations made using C++.</p></li>
+<li><p><code><a href="../reference/trendLevel.html">trendLevel()</a></code> now supports 2 values being passed to <code>type</code>, which will create a 2D grid using <code><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">ggplot2::facet_grid()</a></code>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>

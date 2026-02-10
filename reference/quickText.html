@@ -61,7 +61,7 @@ common expressions and data names used in openair.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">quickText</span><span class="op">(</span><span class="va">text</span>, auto.text <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">quickText</span><span class="op">(</span><span class="va">text</span>, auto.text <span class="op">=</span> <span class="cn">TRUE</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -73,10 +73,14 @@ common expressions and data names used in openair.</p>
 
 
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
-<dd><p>A logical option. The default, <code>TRUE</code>, applies
-<code>quickText</code> to <code>text</code> and returns the result. The alternative,
-<code>FALSE</code>, returns <code>text</code> unchanged. (A number of <code>openair</code>
-functions enable/disable <code>quickText</code> using this option.</p></dd>
+<dd><p>A logical option. The default, <code>TRUE</code>, applies <code>quickText()</code>
+to <code>text</code> and returns the result. The alternative, <code>FALSE</code>, returns <code>text</code>
+unchanged. (A number of <code>openair</code> functions enable/disable <code>quickText()</code>
+using this option).</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Not used.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -85,34 +89,38 @@ functions enable/disable <code>quickText</code> using this option.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><code>quickText</code> is routine formatting lookup table. It screens the
-supplied character vector <code>text</code> and automatically applies formatting
-to any recognised character sub-series. The function is used in a number of
-<code>openair</code> functions and can also be used directly by users to format
-text components of their own graphs (see below).</p>
+    <p><code>quickText()</code> is routine formatting lookup table. It screens the supplied
+character vector <code>text</code> and automatically applies formatting to any
+recognised character sub-series. The function is used in a number of
+<code>openair</code> functions and can also be used directly by users to format text
+components of their own graphs (see below).</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
-    <p>Karl Ropkins.</p>
+    <p>Karl Ropkins</p>
+<p>David Carslaw</p>
+<p>Jack Davison</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># example 1</span></span></span>
-<span class="r-in"><span><span class="co">## see axis formatting in an openair plot, e.g.:</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="scatterPlot.html">scatterPlot</a></span><span class="op">(</span><span class="va">mydata</span>, x <span class="op">=</span> <span class="st">"no2"</span>, y <span class="op">=</span> <span class="st">"pm10"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># see axis formatting in an openair plot, e.g.:</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="scatterPlot.html">scatterPlot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  x <span class="op">=</span> <span class="st">"no2"</span>,</span></span>
+<span class="r-in"><span>  y <span class="op">=</span> <span class="st">"pm10"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="quickText-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># example 2</span></span></span>
-<span class="r-in"><span><span class="co">## using quickText in other plots</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mydata</span><span class="op">$</span><span class="va">no2</span>, <span class="va">mydata</span><span class="op">$</span><span class="va">pm10</span>,</span></span>
+<span class="r-in"><span><span class="co"># using quickText in other plots</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mydata</span><span class="op">$</span><span class="va">no2</span>,</span></span>
+<span class="r-in"><span>  <span class="va">mydata</span><span class="op">$</span><span class="va">pm10</span>,</span></span>
 <span class="r-in"><span>  xlab <span class="op">=</span> <span class="fu">quickText</span><span class="op">(</span><span class="st">"my no2 label"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  ylab <span class="op">=</span> <span class="fu">quickText</span><span class="op">(</span><span class="st">"pm10 [ ug.m-3 ]"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="quickText-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

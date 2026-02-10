@@ -1,7 +1,7 @@
 # Plot heat map trends
 
-The trendLevel function provides a way of rapidly showing a large amount
-of data in a condensed form. In one plot, the variation in the
+The `trendLevel()` function provides a way of rapidly showing a large
+amount of data in a condensed form. In one plot, the variation in the
 concentration of one pollutant can to shown as a function of three other
 categorical properties. The default version of the plot uses y = hour of
 day, x = month of year and type = year to provide information on trends,
@@ -20,15 +20,15 @@ trendLevel(
   type = "year",
   rotate.axis = c(90, 0),
   n.levels = c(10, 10, 4),
-  limits = c(0, 100),
+  limits = NULL,
   cols = "default",
   auto.text = TRUE,
   key.header = "use.stat.name",
   key.footer = pollutant,
   key.position = "right",
   key = TRUE,
-  labels = NA,
-  breaks = NA,
+  labels = NULL,
+  breaks = NULL,
   statistic = c("mean", "max", "min", "median", "frequency", "sum", "sd", "percentile"),
   percentile = 95,
   stat.args = NULL,
@@ -89,9 +89,8 @@ trendLevel(
 
 - auto.text:
 
-  Automatic routine text formatting. `auto.text = TRUE` passes common
-  `lattice` labelling terms (e.g. `xlab` for the x-axis, `ylab` for the
-  y-axis and `main` for the title) to the plot via
+  Automatic routine text formatting. `auto.text = TRUE` passes axis
+  labels, legend titles, and facet labels through
   [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
   to provide common text formatting. The alternative `auto.text = FALSE`
   turns this option off and passes any supplied labels to the plot
@@ -99,18 +98,11 @@ trendLevel(
 
 - key.header, key.footer:
 
-  Adds additional text labels above and/or below the scale key,
-  respectively. For example, passing the options
-  `key.header = "", key.footer = c("mean","nox")` adds the addition text
-  as a scale footer. If enabled (`auto.text = TRUE`), these arguments
-  are passed to the scale key
-  ([`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md))
-  via
+  `key.header` adds a title to the legend, passed through
   [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
-  to handle formatting. The term `"get.stat.name"`, used as the default
-  `key.header` setting, is reserved and automatically adds statistic
-  function names or defaults to `"level"` when unnamed functions are
-  requested via `statistic`.
+  if `quick.text = TRUE`. `key.footer` is no longer directly supported,
+  and is appended to the bottom of `key.header` to form part of the
+  legend title.
 
 - key.position:
 
@@ -190,9 +182,17 @@ trendLevel(
 
   Addition options are passed on to
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-  for `type` handling and
-  [`lattice::levelplot()`](https://rdrr.io/pkg/lattice/man/levelplot.html)
-  for finer control of the plot itself.
+  for `type` handling. Some additional arguments are also available:
+
+  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
+    and plot title.
+
+  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
+    2 columns and 5 rows.
+
+  - `fontsize` overrides the overall font size of the plot.
+
+  - `border` sets the border colour of each tile.
 
 ## Value
 
