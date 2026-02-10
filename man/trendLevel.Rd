@@ -137,9 +137,9 @@ and \code{\link[lattice:levelplot]{lattice::levelplot()}} for finer control of t
 an \link[=openair-package]{openair} object.
 }
 \description{
-The trendLevel function provides a way of rapidly showing a large amount of
-data in a condensed form. In one plot, the variation in the concentration of
-one pollutant can to shown as a function of three other categorical
+The \code{\link[=trendLevel]{trendLevel()}} function provides a way of rapidly showing a large amount
+of data in a condensed form. In one plot, the variation in the concentration
+of one pollutant can to shown as a function of three other categorical
 properties. The default version of the plot uses y = hour of day, x = month
 of year and type = year to provide information on trends, seasonal effects
 and diurnal variations. However, x, y and type and summarising statistics can

@@ -1,8 +1,8 @@
 #' Plot heat map trends
 #'
-#' The trendLevel function provides a way of rapidly showing a large amount of
-#' data in a condensed form. In one plot, the variation in the concentration of
-#' one pollutant can to shown as a function of three other categorical
+#' The [trendLevel()] function provides a way of rapidly showing a large amount
+#' of data in a condensed form. In one plot, the variation in the concentration
+#' of one pollutant can to shown as a function of three other categorical
 #' properties. The default version of the plot uses y = hour of day, x = month
 #' of year and type = year to provide information on trends, seasonal effects
 #' and diurnal variations. However, x, y and type and summarising statistics can
@@ -145,15 +145,15 @@ trendLevel <- function(
   type = "year",
   rotate.axis = c(90, 0),
   n.levels = c(10, 10, 4),
-  limits = c(0, 100),
+  limits = NULL,
   cols = "default",
   auto.text = TRUE,
   key.header = "use.stat.name",
   key.footer = pollutant,
   key.position = "right",
   key = TRUE,
-  labels = NA,
-  breaks = NA,
+  labels = NULL,
+  breaks = NULL,
   statistic = c(
     "mean",
     "max",
@@ -172,24 +172,15 @@ trendLevel <- function(
   plot = TRUE,
   ...
 ) {
-  # greyscale handling
-  if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
+  if (rlang::is_logical(key) && !key) {
+    key.position <- "none"
   }
 
-  # set graphics
-  current.strip <- trellis.par.get("strip.background")
-  current.font <- trellis.par.get("fontsize")
-
-  # reset graphic parameters
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
+  extra.args <- rlang::list2(...)
 
   # check length of x
   if (length(x) > 1) {
     x <- x[1]
-    xlab <- xlab[1]
     cli::cli_warn(
       c(
         "!" = "{.fun trendLevel} does not allow multiple {.field x} values.",
@@ -211,11 +202,11 @@ trendLevel <- function(
   }
 
   # check length of type
-  if (length(type) > 1) {
-    type <- type[1]
+  if (length(type) > 2) {
+    type <- type[1:2]
     cli::cli_warn(
       c(
-        "!" = "{.fun trendLevel} does not allow multiple {.field type} values.",
+        "!" = "{.fun trendLevel} does not allow more than two {.field type} values.",
         "i" = "Setting {.field type} to '{type}'."
       )
     )
@@ -231,26 +222,6 @@ trendLevel <- function(
       )
     )
   }
-
-  # assume pollutant scale is not a categorical value
-  category <- FALSE
-  if (!anyNA(breaks)) {
-    labels <- breaksToLabels(breaks, labels)
-    category <- TRUE
-  }
-
-  # extra.args
-  extra.args <- list(...)
-
-  # font size
-  if ("fontsize" %in% names(extra.args)) {
-    trellis.par.set(fontsize = list(text = extra.args$fontsize))
-  }
-
-  # label controls
-  extra.args$xlab <- quickText(extra.args$xlab %||% x, auto.text = auto.text)
-  extra.args$ylab <- quickText(extra.args$ylab %||% y, auto.text = auto.text)
-  extra.args$main <- quickText(extra.args$main %||% "", auto.text = auto.text)
 
   # number vector handling
   ls.check.fun <- function(vector, vector.name, len) {
@@ -405,7 +376,8 @@ trendLevel <- function(
     mydata |>
     cutData(x, n.levels = n.levels[1], is.axis = TRUE, ...) |>
     cutData(y, n.levels = n.levels[2], is.axis = TRUE, ...) |>
-    cutData(type, n.levels = n.levels[3], ...)
+    cutData(type, n.levels = n.levels[3], drop = "outside", ...) |>
+    tidyr::complete(!!!rlang::syms(c(x, y, type)))
 
   # select only pollutant and axis/facet columns
   newdata <- newdata[c(pollutant, x, y, type)]
@@ -420,19 +392,7 @@ trendLevel <- function(
       {{ pollutant }} := calc_stat(.data[[pollutant]]),
       .by = dplyr::all_of(c(x, y, type))
     ) |>
-    dplyr::mutate(dplyr::across(
-      dplyr::all_of(c(x, y, type)),
-      function(x) factor(x, ordered = FALSE)
-    )) |>
     as.data.frame()
-
-  # plot setup
-  temp <- paste(type, collapse = "+")
-  myform <- formula(paste0(pollutant, " ~ ", x, " * ", y, " | ", temp))
-
-  if (type == "default") {
-    myform <- formula(paste0(pollutant, " ~ ", x, " * ", y))
-  }
 
   # key.header, footer stat.name recovery
   if (!is.null(key.header)) {
@@ -446,71 +406,16 @@ trendLevel <- function(
     }
   }
 
-  # special case handling
-  # layout for wd
-  if (
-    length(type) == 1 && type[1] == "wd" && !"layout" %in% names(extra.args)
-  ) {
-    # re-order to make sensible layout
-
-    wds <- c("NW", "N", "NE", "W", "E", "SW", "S", "SE")
-    newdata$wd <- ordered(newdata$wd, levels = wds)
-    wd.ok <- sapply(
-      wds,
-      function(x) if (x %in% unique(newdata$wd)) FALSE else TRUE
-    )
-    skip <- c(wd.ok[1:4], TRUE, wd.ok[5:8])
-    newdata$wd <- factor(newdata$wd)
-    extra.args$layout <- c(3, 3)
-    if (!"skip" %in% names(extra.args)) {
-      extra.args$skip <- skip
-    }
-  }
-
-  temp <- if (is.factor(newdata[, type[1]])) {
-    levels(newdata[, type[1]])
-  } else {
-    unique(newdata[, type[1]])
-  }
-  temp <- sapply(temp, function(x) quickText(x, auto.text))
-  if (is.factor(temp)) {
-    temp <- as.character(temp)
-  }
-  strip <- strip.custom(
-    factor.levels = temp,
-    strip.levels = c(TRUE, FALSE),
-    strip.names = FALSE
-  )
-
-  strip.left <- if (length(type) == 1) {
-    FALSE
-  } else {
-    temp <- sapply(
-      unique(newdata[, type[2]]),
-      function(x) quickText(x, auto.text)
-    )
-    if (is.factor(temp)) {
-      temp <- as.character(temp)
-    }
-    strip.custom(factor.levels = temp)
-  }
-
-  suppressWarnings(trellis.par.set(list(
-    strip.background = list(col = "white")
-  )))
-
   scales <- list(
     x = list(rot = rotate.axis[1]),
     y = list(rot = rotate.axis[2])
   )
 
   # categorical colour scale or not?
-
-  if (category) {
-    # check the breaks and labels are consistent
-    if (length(labels) + 1 != length(breaks)) {
-      stop("Need one more break than labels")
-    }
+  categorical <- FALSE
+  if (!is.null(breaks)) {
+    # get breaks
+    labels <- breaksToLabels(breaks, labels)
 
     # cut data into categories
     newdata$cuts <- cut(
@@ -521,161 +426,129 @@ trendLevel <- function(
     )
     n <- length(levels(newdata$cuts))
 
-    col.regions <- openColours(cols, n)
-    col.scale <- breaks
-    legend <- list(
-      col = col.regions,
-      space = key.position,
-      auto.text = auto.text,
-      labels = levels(newdata$cuts),
-      footer = key.footer,
-      header = key.header,
-      height = 0.8,
-      width = 1.5,
-      fit = "scale",
-      plot.style = "other"
-    )
+    categorical <- TRUE
+  }
 
-    col.scale <- breaks
-    legend <- makeOpenKeyLegend(key, legend, "windRose")
-  } else {
-    # continuous colour scale
-
-    # auto-scaling
-    nlev <- 200 # preferred number of intervals
-
-    # handle missing breaks arguments
-
-    if (missing(limits)) {
-      breaks <- seq(
-        min(newdata[, pollutant], na.rm = TRUE),
-        max(newdata[, pollutant], na.rm = TRUE),
-        length.out = nlev
+  # construct plot
+  thePlot <-
+    ggplot2::ggplot(
+      newdata,
+      ggplot2::aes(
+        x = num_convert(.data[[x]]),
+        y = num_convert(.data[[y]]),
+        fill = .data[[ifelse(categorical, "cuts", pollutant)]]
       )
-
-      labs <- pretty(breaks, 7)
-      labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-      at <- labs
-    } else {
-      # handle user limits and clipping
-      breaks <- seq(min(limits), max(limits), length.out = nlev)
-      labs <- pretty(breaks, 7)
-      labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-      at <- labs
-
-      # case where user max is < data max
-      if (max(limits) < max(newdata[, pollutant], na.rm = TRUE)) {
-        id <- which(newdata[, pollutant] > max(limits))
-        newdata[id, pollutant] <- max(limits)
-        labs[length(labs)] <- paste(">", labs[length(labs)])
-      }
-
-      # case where user min is > data min
-      if (min(limits) > min(newdata[, pollutant], na.rm = TRUE)) {
-        id <- which(newdata[, pollutant] < min(limits))
-        newdata[id, pollutant] <- min(limits)
-        labs[1] <- paste("<", labs[1])
-      }
-    }
-
-    nlev2 <- length(breaks)
-
-    col.regions <- openColours(cols, (nlev2 - 1))
-
-    col.scale <- breaks
-
-    legend <- list(
-      col = col.regions,
-      at = col.scale,
-      labels = list(labels = labs, at = at),
-      space = key.position,
-      auto.text = auto.text,
-      footer = key.footer,
-      header = key.header,
-      height = 1,
-      width = 1.5,
-      fit = "all"
+    ) +
+    ggplot2::geom_tile() +
+    ggplot2::coord_cartesian(clip = "off", expand = FALSE) +
+    ggplot2::theme_bw() +
+    ggplot2::theme(
+      panel.grid = ggplot2::element_blank(),
+      strip.background = ggplot2::element_rect(fill = "white"),
+      panel.spacing = ggplot2::unit(0, "cm"),
+      legend.position = key.position,
+      plot.title = ggplot2::element_text(hjust = 0.5, face = "bold")
+    ) +
+    ggplot2::labs(
+      x = quickText(extra.args$xlab %||% x, auto.text = auto.text),
+      y = quickText(extra.args$ylab %||% y, auto.text = auto.text),
+      title = quickText(extra.args$main %||% "", auto.text = auto.text),
+      fill = quickText(
+        paste(key.header, key.footer, sep = "\n"),
+        auto.text = auto.text
+      )
+    ) +
+    ggplot2::guides(
+      x = ggplot2::guide_axis(check.overlap = TRUE, angle = rotate.axis[1]),
+      y = ggplot2::guide_axis(check.overlap = TRUE, angle = rotate.axis[2])
     )
-    legend <- makeOpenKeyLegend(key, legend, "polarPlot")
+
+  # make key full width/height
+  if (key.position %in% c("left", "right")) {
+    thePlot <- thePlot +
+      ggplot2::theme(legend.key.height = ggplot2::unit(1, "null"))
+  }
+  if (key.position %in% c("top", "bottom")) {
+    thePlot <- thePlot +
+      ggplot2::theme(legend.key.width = ggplot2::unit(1, "null"))
   }
 
-  # turn off colorkey
-  colorkey <- FALSE
-
-  # stop overlapping labels
-  yscale.lp <- function(...) {
-    ans <- yscale.components.default(...)
-    ans$left$labels$check.overlap <- TRUE
-    ans$left$labels$labels <- levels(newdata[, y])
-    ans$left$labels$at <- seq_along(levels(newdata[, y]))
-
-    ans
-  }
-  xscale.lp <- function(...) {
-    ans <- xscale.components.default(...)
-    ans$bottom$labels$check.overlap <- TRUE
-    ans$bottom$labels$labels <- levels(newdata[, x])
-    ans$bottom$labels$at <- seq_along(levels(newdata[, x]))
-    ans
-  }
-
-  # plot
-
-  # The following listUpdate steps are used to stop this falling
-  # over with a lattice error if the user passes any of
-  # the locally defined options below as part of call.
-  # If they do reset it is obviously Caveat emptor...
-
-  # the axes are discrete factors - therefore can define exactly
-  xlim <- range(as.numeric(newdata[, x])) + c(-0.5, 0.5)
-  ylim <- range(as.numeric(newdata[, y])) + c(-0.5, 0.5)
-
-  # lattice does not display all labels - even if requested when there are many
-  # make a bit more space when there are >25
-  if (length(levels(newdata[[y]])) > 25) {
-    ylim <- ylim + c(-0.3, 0.3)
-  }
-  if (length(levels(newdata[[x]])) > 25) {
-    xlim <- xlim + c(-0.3, 0.3)
-  }
-
-  # openair defaults for plot
-  levelplot.args <- list(
-    x = myform,
-    data = newdata,
-    as.table = TRUE,
-    legend = legend,
-    colorkey = colorkey,
-    at = breaks,
-    col.regions = col.regions,
-    scales = scales,
-    yscale.components = yscale.lp,
-    xscale.components = xscale.lp,
-    par.strip.text = list(cex = 0.8),
-    strip = strip,
-    strip.left = strip.left,
-    xlim = xlim,
-    ylim = ylim,
-    panel = function(x, y, ...) {
-      panel.fill(col = col.na)
-      panel.levelplot(x, y, ...)
+  # faceting
+  if (any(type != "default")) {
+    if (length(type) == 1) {
+      if (type == "wd") {
+        thePlot <- thePlot + facet_wd(ggplot2::vars(.data[[type]]))
+      } else {
+        thePlot <-
+          thePlot +
+          ggplot2::facet_wrap(
+            drop = drop.unused.types,
+            facets = ggplot2::vars(.data[[type]])
+          )
+      }
+    } else {
+      thePlot <-
+        thePlot +
+        ggplot2::facet_grid(
+          drop = drop.unused.types,
+          rows = ggplot2::vars(.data[[type[1]]]),
+          cols = ggplot2::vars(.data[[type[2]]])
+        )
     }
-  )
-  # reset for extra.args
-  levelplot.args <- listUpdate(levelplot.args, extra.args)
-  plt <- do.call(levelplot, levelplot.args)
-
-  # update for two levels
-  if (length(type) > 1) {
-    plt <- useOuterStrips(plt, strip = strip, strip.left = strip.left)
   }
 
-  # openair output
+  # colours
+  if (categorical) {
+    thePlot <-
+      thePlot +
+      ggplot2::scale_fill_manual(
+        values = openColours(
+          scheme = cols,
+          n = dplyr::n_distinct(newdata$cuts)
+        ),
+        na.value = col.na,
+        breaks = levels(newdata$cuts)
+      ) +
+      ggplot2::guides(
+        fill = ggplot2::guide_legend(reverse = TRUE)
+      )
+  } else {
+    thePlot <-
+      thePlot +
+      ggplot2::scale_fill_gradientn(
+        colours = openColours(cols),
+        na.value = col.na,
+        oob = scales::oob_squish,
+        limit = limits
+      )
+  }
+
+  if ("fontsize" %in% names(extra.args)) {
+    thePlot <-
+      thePlot +
+      ggplot2::theme(
+        text = ggplot2::element_text(size = extra.args$fontsize)
+      )
+  }
+
   if (plot) {
-    plot(plt)
+    plot(thePlot)
   }
 
-  output <- list(plot = plt, data = dplyr::tibble(newdata), call = match.call())
+  output <- list(
+    plot = thePlot,
+    data = dplyr::tibble(newdata),
+    call = match.call()
+  )
   class(output) <- "openair"
   invisible(output)
+}
+
+num_convert <- function(x) {
+  y <- utils::type.convert(x, as.is = TRUE)
+  if (is.numeric(y) || is.integer(y)) {
+    return(y)
+  } else {
+    return(x)
+  }
 }
