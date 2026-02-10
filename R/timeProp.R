@@ -253,7 +253,7 @@ timeProp <- function(
     ) +
     ggplot2::scale_y_continuous(
       limits = ylim,
-      expand = ggplot2::expansion(ifelse(normalise, c(0, 0), c(0, 0.1)))
+      expand = ggplot2::expansion(if (normalise) c(0, 0) else c(0, 0.1))
     ) +
     ggplot2::labs(
       x = xlab,
