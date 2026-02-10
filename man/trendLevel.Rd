@@ -132,6 +132,7 @@ Some additional arguments are also available:
 \item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
 \item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
 \item \code{fontsize} overrides the overall font size of the plot.
+\item \code{border} sets the border colour of each tile.
 }}
 }
 \value{

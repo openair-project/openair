@@ -106,6 +106,7 @@
 #'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
 #'   - `fontsize` overrides the overall font size of the plot.
+#'   - `border` sets the border colour of each tile.
 #' @export
 #' @return an [openair][openair-package] object.
 #' @author Karl Ropkins
@@ -410,7 +411,7 @@ trendLevel <- function(
 
     # cut data into categories
     newdata$cuts <- cut(
-      newdata[, pollutant],
+      newdata[[pollutant]],
       breaks = breaks,
       labels = labels,
       include.lowest = TRUE
@@ -429,7 +430,10 @@ trendLevel <- function(
         fill = .data[[ifelse(categorical, "cuts", pollutant)]]
       )
     ) +
-    ggplot2::geom_tile(show.legend = TRUE) +
+    ggplot2::geom_tile(
+      colour = extra.args$border %||% "transparent",
+      show.legend = TRUE
+    ) +
     ggplot2::coord_cartesian(clip = "off", expand = FALSE) +
     ggplot2::theme_bw() +
     ggplot2::theme(

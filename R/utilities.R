@@ -965,18 +965,15 @@ mapType <- function(
 
 #' Create nice labels out of breaks, if only breaks are provided
 #' @noRd
-breaksToLabels <- function(breaks, labels = NA) {
-  if (any(is.na(labels)) || is.null(labels)) {
-    labels <- c()
-    for (i in seq_along(breaks)) {
-      lhs <- breaks[i]
-      rhs <- breaks[i + 1]
-      str <- paste(lhs, rhs, sep = " - ")
-      labels <- append(labels, str)
-    }
-    labels <- labels[-i]
+breaksToLabels <- function(breaks, labels = NULL) {
+  if (is.null(labels) || any(is.na(labels))) {
+    labels <- paste(
+      format(head(breaks, -1), scientific = FALSE, trim = TRUE),
+      format(tail(breaks, -1), scientific = FALSE, trim = TRUE),
+      sep = " - "
+    )
   }
-  return(labels)
+  labels
 }
 
 #' pad out a set of numbers with zeroes to create consistent width

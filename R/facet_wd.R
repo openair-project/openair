@@ -2,7 +2,7 @@
 #' @noRd
 facet_wd <- function(
   facets,
-  scales = "fixed",
+  scales = "free_y",
   strip.position = "top",
   labeller = "label_value",
   axes = "margins",
@@ -145,5 +145,32 @@ FacetWinddir <- ggplot2::ggproto(
     names(layout)[names(layout) == "PANEL_NAME"] <- names(panels)
 
     return(layout)
+  },
+  init_scales = function(layout, x_scale = NULL, y_scale = NULL, params) {
+    scales <- ggplot2::FacetWrap$init_scales(layout, x_scale, y_scale, params)
+
+    # Determine which panels are on the left and right edges
+    min_col <- min(layout$COL)
+    max_col <- max(layout$COL)
+
+    left_panels <- layout$PANEL[layout$COL == min_col]
+    right_panels <- layout$PANEL[layout$COL == max_col]
+
+    # Set position for y-axis scales
+    if (!is.null(scales$y)) {
+      for (i in seq_along(scales$y)) {
+        if (i %in% right_panels) {
+          scales$y[[i]]$position <- "right"
+        } else if (i %in% left_panels) {
+          scales$y[[i]]$position <- "left"
+        } else {
+          # For center panels, hide the axis labels
+          scales$y[[i]]$breaks <- NULL
+          scales$y[[i]]$labels <- NULL
+        }
+      }
+    }
+
+    scales
   }
 )
