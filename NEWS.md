@@ -68,7 +68,9 @@
 
 - `quickText()` now converts `air_temp` (a common `worldmet` variable) into `"Temperature"`.
 
-- `timeAverage` is much faster with the bulk of the calculations made using C++.
+- `timeAverage()` is much faster with the bulk of the calculations made using C++.
+
+- `trendLevel()` now supports 2 values being passed to `type`, which will create a 2D grid using `ggplot2::facet_grid()`.
 
 ## Bug Fixes
 
