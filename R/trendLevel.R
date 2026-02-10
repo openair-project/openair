@@ -435,7 +435,7 @@ trendLevel <- function(
         fill = .data[[ifelse(categorical, "cuts", pollutant)]]
       )
     ) +
-    ggplot2::geom_tile() +
+    ggplot2::geom_tile(show.legend = TRUE) +
     ggplot2::coord_cartesian(clip = "off", expand = FALSE) +
     ggplot2::theme_bw() +
     ggplot2::theme(
@@ -443,14 +443,34 @@ trendLevel <- function(
       strip.background = ggplot2::element_rect(fill = "white"),
       panel.spacing = ggplot2::unit(0, "cm"),
       legend.position = key.position,
-      plot.title = ggplot2::element_text(hjust = 0.5, face = "bold")
+      plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
+      legend.frame = ggplot2::element_rect(
+        fill = NA,
+        color = "black",
+        linewidth = 0.25
+      ),
+      legend.key = ggplot2::element_rect(
+        fill = NA,
+        color = "black",
+        linewidth = 0.25
+      ),
+      legend.title = ggplot2::element_text(hjust = 0.5),
+      legend.ticks = ggplot2::element_line(),
+      legend.ticks.length = structure(
+        if (key.position %in% c("bottom", "right")) c(-0.2, 0) else c(0, -0.2),
+        class = "rel"
+      )
     ) +
     ggplot2::labs(
       x = quickText(extra.args$xlab %||% x, auto.text = auto.text),
       y = quickText(extra.args$ylab %||% y, auto.text = auto.text),
       title = quickText(extra.args$main %||% "", auto.text = auto.text),
       fill = quickText(
-        paste(key.header, key.footer, sep = "\n"),
+        paste(
+          key.header,
+          key.footer,
+          sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
+        ),
         auto.text = auto.text
       )
     ) +
@@ -462,11 +482,17 @@ trendLevel <- function(
   # make key full width/height
   if (key.position %in% c("left", "right")) {
     thePlot <- thePlot +
-      ggplot2::theme(legend.key.height = ggplot2::unit(1, "null"))
+      ggplot2::theme(
+        legend.key.height = ggplot2::unit(1, "null"),
+        legend.key.spacing.y = ggplot2::unit(0, "cm")
+      )
   }
   if (key.position %in% c("top", "bottom")) {
     thePlot <- thePlot +
-      ggplot2::theme(legend.key.width = ggplot2::unit(1, "null"))
+      ggplot2::theme(
+        legend.key.width = ggplot2::unit(1, "null"),
+        legend.key.spacing.x = ggplot2::unit(0, "cm")
+      )
   }
 
   # faceting
@@ -506,13 +532,25 @@ trendLevel <- function(
       ggplot2::scale_fill_manual(
         values = openColours(
           scheme = cols,
-          n = dplyr::n_distinct(newdata$cuts)
+          n = dplyr::n_distinct(levels(newdata$cuts))
         ),
         na.value = col.na,
-        breaks = levels(newdata$cuts)
+        breaks = levels(newdata$cuts),
+        drop = FALSE
       ) +
       ggplot2::guides(
-        fill = ggplot2::guide_legend(reverse = TRUE)
+        fill = ggplot2::guide_legend(
+          reverse = key.position %in% c("left", "right"),
+          theme = ggplot2::theme(
+            legend.title.position = ifelse(
+              key.position %in% c("left", "right"),
+              "top",
+              key.position
+            ),
+            legend.text.position = key.position
+          ),
+          nrow = if (key.position %in% c("left", "right")) NULL else 1
+        )
       )
   } else {
     thePlot <-
@@ -522,6 +560,18 @@ trendLevel <- function(
         na.value = col.na,
         oob = scales::oob_squish,
         limit = limits
+      ) +
+      ggplot2::guides(
+        fill = ggplot2::guide_colorbar(
+          theme = ggplot2::theme(
+            legend.title.position = ifelse(
+              key.position %in% c("left", "right"),
+              "top",
+              key.position
+            ),
+            legend.text.position = key.position
+          )
+        )
       )
   }
 
