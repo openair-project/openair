@@ -55,14 +55,10 @@
 #'   provide common text formatting.  The alternative `auto.text = FALSE` turns
 #'   this option off and passes any supplied labels to the plot without
 #'   modification.
-#' @param key.header,key.footer Adds additional text labels above and/or below
-#'   the scale key, respectively. For example, passing the options `key.header =
-#'   "", key.footer = c("mean","nox")` adds the addition text as a scale footer.
-#'   If enabled (`auto.text = TRUE`), these arguments are passed to the scale
-#'   key ([drawOpenKey()]) via [quickText()] to handle formatting. The term
-#'   `"get.stat.name"`, used as the default `key.header` setting, is reserved
-#'   and automatically adds statistic function names or defaults to `"level"`
-#'   when unnamed functions are requested via `statistic`.
+#' @param key.header,key.footer `key.header` adds a title to the legend,
+#'   passed through [quickText()] if `quick.text = TRUE`. `key.footer` is no
+#'   longer directly supported, and is appended to the bottom of `key.header` to
+#'   form part of the legend title.
 #' @param key.position Location where the scale key should be plotted. Allowed
 #'   arguments currently include `"top"`, `"right"`, `"bottom"`, and `"left"`.
 #' @param key Fine control of the scale key via [drawOpenKey()].
@@ -477,13 +473,18 @@ trendLevel <- function(
   if (any(type != "default")) {
     if (length(type) == 1) {
       if (type == "wd") {
-        thePlot <- thePlot + facet_wd(ggplot2::vars(.data[[type]]))
+        thePlot <- thePlot +
+          facet_wd(
+            ggplot2::vars(.data[[type]]),
+            labeller = labeller_openair(auto_text = auto.text)
+          )
       } else {
         thePlot <-
           thePlot +
           ggplot2::facet_wrap(
             drop = drop.unused.types,
-            facets = ggplot2::vars(.data[[type]])
+            facets = ggplot2::vars(.data[[type]]),
+            labeller = labeller_openair(auto_text = auto.text)
           )
       }
     } else {
@@ -492,7 +493,8 @@ trendLevel <- function(
         ggplot2::facet_grid(
           drop = drop.unused.types,
           rows = ggplot2::vars(.data[[type[1]]]),
-          cols = ggplot2::vars(.data[[type[2]]])
+          cols = ggplot2::vars(.data[[type[2]]]),
+          labeller = labeller_openair(auto_text = auto.text)
         )
     }
   }

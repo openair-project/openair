@@ -1,37 +1,66 @@
+# Vectorised `quickText()`
+label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
+  if (!auto_text) {
+    return(x)
+  }
+
+  sapply(
+    x,
+    \(txt) quickText(txt, auto.text = auto_text, parse = parse)
+  )
+}
+
+# Return a labeller for facets
+labeller_openair <- function(auto_text = TRUE) {
+  if (auto_text) {
+    ggplot2::as_labeller(
+      \(x) label_openair(x, parse = FALSE, auto_text = TRUE),
+      default = ggplot2::label_parsed
+    )
+  } else {
+    ggplot2::label_value
+  }
+}
+
 #' Automatic text formatting for openair
 #'
 #' Workhorse function that automatically applies routine text formatting to
 #' common expressions and data names used in openair.
 #'
-#' `quickText` is routine formatting lookup table. It screens the
-#' supplied character vector `text` and automatically applies formatting
-#' to any recognised character sub-series. The function is used in a number of
-#' `openair` functions and can also be used directly by users to format
-#' text components of their own graphs (see below).
+#' [quickText()] is routine formatting lookup table. It screens the supplied
+#' character vector `text` and automatically applies formatting to any
+#' recognised character sub-series. The function is used in a number of
+#' `openair` functions and can also be used directly by users to format text
+#' components of their own graphs (see below).
 #'
 #' @param text A character vector.
-#' @param auto.text A logical option. The default, `TRUE`, applies
-#'   `quickText` to `text` and returns the result. The alternative,
-#'   `FALSE`, returns `text` unchanged. (A number of `openair`
-#'   functions enable/disable `quickText` using this option.
+#' @param auto.text A logical option. The default, `TRUE`, applies [quickText()]
+#'   to `text` and returns the result. The alternative, `FALSE`, returns `text`
+#'   unchanged. (A number of `openair` functions enable/disable [quickText()]
+#'   using this option).
+#' @param ... Not used.
 #' @export
 #' @return The function returns an expression for graphical evaluation.
-#' @author Karl Ropkins.
+#' @author Karl Ropkins
+#' @author David Carslaw
+#' @author Jack Davison
 #' @examples
 #'
+#' # see axis formatting in an openair plot, e.g.:
+#' scatterPlot(
+#'   mydata,
+#'   x = "no2",
+#'   y = "pm10"
+#' )
 #'
-#' # example 1
-#' ## see axis formatting in an openair plot, e.g.:
-#' scatterPlot(mydata, x = "no2", y = "pm10")
-#'
-#' # example 2
-#' ## using quickText in other plots
-#' plot(mydata$no2, mydata$pm10,
+#' # using quickText in other plots
+#' plot(
+#'   mydata$no2,
+#'   mydata$pm10,
 #'   xlab = quickText("my no2 label"),
 #'   ylab = quickText("pm10 [ ug.m-3 ]")
 #' )
-#'
-quickText <- function(text, auto.text = TRUE) {
+quickText <- function(text, auto.text = TRUE, ...) {
   ## the lookup table version
 
   ## #return if auto.text false
@@ -39,12 +68,21 @@ quickText <- function(text, auto.text = TRUE) {
     return(ans <- text)
   }
 
+  # are we going to actually parse this?
+  extra_args <- rlang::list2(...)
+  parse <- extra_args$parse %||% TRUE
+
   ## #return if already expression
   if (is.expression(text)) {
     return(ans <- text)
   }
 
-  ans <- paste("expression(paste('", text, " ", sep = "")
+  if (parse) {
+    ans <- paste("expression(paste('", text, " ", sep = "")
+  } else {
+    ans <- paste("paste('", text, " ", sep = "")
+  }
+
   ans <- gsub("NO2", "' 'NO' [2] * '", ans)
   ans <- gsub("no2", "' 'NO' [2] * '", ans)
   ans <- gsub("\\bno\\b", "NO", ans)
@@ -143,7 +181,11 @@ quickText <- function(text, auto.text = TRUE) {
   ans <- gsub("umol/m2/s", "' * mu * 'mol m' ^-2 * ' s' ^-1 *'", ans)
   ans <- gsub("umol/m2", "' * mu * 'mol m' ^-2 *'", ans)
 
-  ans <- paste(ans, "'))", sep = "")
+  if (parse) {
+    ans <- paste(ans, "'))", sep = "")
+  } else {
+    ans <- paste(ans, "')", sep = "")
+  }
 
   ## commands to strip unecessary * etc...
 
@@ -187,9 +229,13 @@ quickText <- function(text, auto.text = TRUE) {
 
   ## ########################
 
-  if (inherits(try(eval(parse(text = ans)), TRUE), "try-error") == FALSE) {
-    ans <- eval(parse(text = ans))
-  } else {
-    ans <- text
+  if (parse) {
+    if (inherits(try(eval(parse(text = ans)), TRUE), "try-error") == FALSE) {
+      ans <- eval(parse(text = ans))
+    } else {
+      ans <- text
+    }
   }
+
+  return(ans)
 }

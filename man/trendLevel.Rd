@@ -12,15 +12,15 @@ trendLevel(
   type = "year",
   rotate.axis = c(90, 0),
   n.levels = c(10, 10, 4),
-  limits = c(0, 100),
+  limits = NULL,
   cols = "default",
   auto.text = TRUE,
   key.header = "use.stat.name",
   key.footer = pollutant,
   key.position = "right",
   key = TRUE,
-  labels = NA,
-  breaks = NA,
+  labels = NULL,
+  breaks = NULL,
   statistic = c("mean", "max", "min", "median", "frequency", "sum", "sd", "percentile"),
   percentile = 95,
   stat.args = NULL,
@@ -69,13 +69,10 @@ provide common text formatting.  The alternative \code{auto.text = FALSE} turns
 this option off and passes any supplied labels to the plot without
 modification.}
 
-\item{key.header, key.footer}{Adds additional text labels above and/or below
-the scale key, respectively. For example, passing the options \verb{key.header = "", key.footer = c("mean","nox")} adds the addition text as a scale footer.
-If enabled (\code{auto.text = TRUE}), these arguments are passed to the scale
-key (\code{\link[=drawOpenKey]{drawOpenKey()}}) via \code{\link[=quickText]{quickText()}} to handle formatting. The term
-\code{"get.stat.name"}, used as the default \code{key.header} setting, is reserved
-and automatically adds statistic function names or defaults to \code{"level"}
-when unnamed functions are requested via \code{statistic}.}
+\item{key.header, key.footer}{\code{key.header} adds a title to the legend,
+passed through \code{\link[=quickText]{quickText()}} if \code{quick.text = TRUE}. \code{key.footer} is no
+longer directly supported, and is appended to the bottom of \code{key.header} to
+form part of the legend title.}
 
 \item{key.position}{Location where the scale key should be plotted. Allowed
 arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"}, and \code{"left"}.}
