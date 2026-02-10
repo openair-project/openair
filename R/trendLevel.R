@@ -310,7 +310,7 @@ trendLevel <- function(
       }
 
       if (statistic == "percentile") {
-        if (percentile < 0 | percentile > 100) {
+        if (percentile < 0 || percentile > 100) {
           cli::cli_abort("{.field percentile} outside {0}-{100}.")
         }
         probs <- percentile / 100
@@ -402,11 +402,6 @@ trendLevel <- function(
     }
   }
 
-  scales <- list(
-    x = list(rot = rotate.axis[1]),
-    y = list(rot = rotate.axis[2])
-  )
-
   # categorical colour scale or not?
   categorical <- FALSE
   if (!is.null(breaks)) {
@@ -420,7 +415,6 @@ trendLevel <- function(
       labels = labels,
       include.lowest = TRUE
     )
-    n <- length(levels(newdata$cuts))
 
     categorical <- TRUE
   }
