@@ -130,7 +130,7 @@ smoothTrend <- function(
   key = TRUE,
   key.columns = 1,
   key.position = "bottom",
-  name.pol = pollutant,
+  name.pol = NULL,
   date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
@@ -199,10 +199,7 @@ smoothTrend <- function(
       .default = interval
     )
 
-  # for overall data and graph plotting
-  start.year <- startYear(mydata$date)
-  end.year <- endYear(mydata$date)
-
+  # prepare data
   mydata <-
     prepare_smoothtrend_data(
       mydata,
@@ -229,6 +226,7 @@ smoothTrend <- function(
       .include_default = TRUE
     )
 
+  # fit a smooth model
   fit <-
     mapType(
       newdata,
@@ -237,8 +235,10 @@ smoothTrend <- function(
       .include_default = TRUE
     )
 
+  # set fit date to be POSIXct for plotting
   class(fit$date) <- c("POSIXct", "POSIXt")
 
+  # create a guide for both fill and colour using openair styling
   color_guide <-
     ggplot2::guide_legend(
       theme = ggplot2::theme(
@@ -264,6 +264,7 @@ smoothTrend <- function(
       }
     )
 
+  # create plot
   thePlot <-
     ggplot2::ggplot(mapping = ggplot2::aes(x = .data$date)) +
     ggplot2::geom_line(
@@ -302,7 +303,9 @@ smoothTrend <- function(
     ggplot2::scale_fill_manual(
       values = openColours(cols, dplyr::n_distinct(levels(newdata$variable))),
       breaks = levels(newdata$variable),
-      labels = lapply(name.pol, \(x) label_openair(x, auto_text = auto.text)),
+      labels = lapply(name.pol %||% levels(newdata$variable), \(x) {
+        label_openair(x, auto_text = auto.text)
+      }),
       drop = FALSE,
       aesthetics = c("colour", "fill")
     ) +
@@ -333,8 +336,6 @@ smoothTrend <- function(
       fill = color_guide,
       color = color_guide
     )
-
-  # make the plot
 
   # plot
   if (plot) {
@@ -414,7 +415,8 @@ prepare_smoothtrend_data <- function(
         names_to = "variable",
         values_to = "value"
       ) |>
-      dplyr::arrange(.data$variable)
+      dplyr::arrange(.data$variable) |>
+      dplyr::mutate(variable = factor(.data$variable, levels = vars))
   } else {
     mydata <- suppressWarnings(timeAverage(
       mydata,
