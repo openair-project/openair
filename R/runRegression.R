@@ -61,94 +61,106 @@ runRegression <- function(
   run.len = 3,
   date.pad = TRUE
 ) {
-  ## think about it in terms of y = fn(x) e.g. pm10 = a.nox + b
-
+  # 1. Preparation
   vars <- c("date", x, y)
-
   mydata <- checkPrep(mydata, vars, type = "default")
 
-  ## pad missing data
   if (date.pad) {
     mydata <- datePad(mydata)
   }
 
-  # list of rolling data frames
-  mydata <-
-    lapply(seq_len(nrow(mydata) - run.len + 1), function(i) {
-      mydata[i:(i + run.len - 1), ]
-    })
+  # Extract vectors for cleaner code
+  x_vec <- mydata[[x]]
+  y_vec <- mydata[[y]]
+  d_vec <- mydata$date
+  n <- length(x_vec)
 
-  ## select non-missing with run.len rows
+  # 2. Vectorized Rolling Sums (using stats::filter)
+  # We create a kernel of 1s to sum 'run.len' items
+  K <- rep(1, run.len)
 
-  mydata <-
-    mydata[which(
-      lapply(mydata, function(x) {
-        nrow(na.omit(x))
-      }) ==
-        run.len
-    )]
+  # sides=1 calculates a rolling window looking backwards (convolution)
+  # Result aligns with the END of the window
+  sum_x <- as.vector(stats::filter(x_vec, K, sides = 1))
+  sum_y <- as.vector(stats::filter(y_vec, K, sides = 1))
+  sum_xx <- as.vector(stats::filter(x_vec^2, K, sides = 1))
+  sum_yy <- as.vector(stats::filter(y_vec^2, K, sides = 1))
+  sum_xy <- as.vector(stats::filter(x_vec * y_vec, K, sides = 1))
 
-  model <- function(df) {
-    # lm(eval(paste(y, "~", x)), data = df)
-    # fast model fitting
-    fit <- .lm.fit(cbind(1, df[[x]]), df[[y]])
+  # 3. Calculate Regression Statistics
+  N <- run.len
 
-    r.sq <- 1 - var(fit$residuals) / var(df[[y]])
+  # Calculate scaled variances/covariances (N * Var) to avoid early division
+  # Sxx_N = N * Sum(x^2) - (Sum(x))^2
+  Sxx_N <- (N * sum_xx) - (sum_x^2)
+  Syy_N <- (N * sum_yy) - (sum_y^2)
+  Sxy_N <- (N * sum_xy) - (sum_x * sum_y)
 
-    if (all(fit$residuals < 1e-7)) {
-      r.sq <- 1
-    }
+  # Slope (beta) = Sxy / Sxx
+  slope <- Sxy_N / Sxx_N
 
-    fit$r.sq <- r.sq
-    return(fit)
-  }
+  # Intercept (alpha) = (Sum(y) - beta * Sum(x)) / N
+  intercept <- (sum_y - slope * sum_x) / N
 
-  # suppress warnings (perfect fit)
-  rsq <- function(x) {
-    tryCatch(summary(x)$r.squared, warning = function(w) {
-      return(1)
-    })
-  }
+  # R-squared = (Sxy)^2 / (Sxx * Syy)
+  r_squared <- (Sxy_N^2) / (Sxx_N * Syy_N)
 
-  # und models
-  models <- lapply(mydata, model)
+  # Handle special case: Perfect fit or Constant Y (Variance ~ 0)
+  # Matches original logic where low residuals implies R2=1
+  # If Syy is effectively 0, it means y is constant, so perfect fit.
+  r_squared[is.na(r_squared) & abs(Syy_N) < 1e-9] <- 1
 
-  # extract components
-  slope <- models |>
-    map(coefficients) |>
-    map_dbl(2)
+  # 4. Calculate Rolling Min/Max (for x1, x2) using 'embed'
+  # embed creates a matrix where each row is a window of length run.len
+  # e.g., row 10 is: x[10], x[9], x[8]
+  x_mat <- stats::embed(x_vec, run.len)
 
-  intercept <- models |>
-    map(coefficients) |>
-    map_dbl(1)
+  # Use do.call + pmin/pmax to find row-wise min/max efficiently
+  # We split the matrix columns into a list for pmin/pmax arguments
+  x_mat_cols <- split(x_mat, col(x_mat))
+  x1_vec <- do.call(pmin, x_mat_cols)
+  x2_vec <- do.call(pmax, x_mat_cols)
 
-  # r_squared <- models |> map_dbl(rsq)
-  r_squared <- models |>
-    map("r.sq") |>
-    map_dbl(1)
-  date <- mydata |> map_vec(~ median(.x$date)) # use median date
-  date_start <- mydata |> map_vec(~ min(.x$date))
-  date_end <- mydata |> map_vec(~ max(.x$date))
+  # 5. Align Dates and Subset Valid Results
+  # 'filter' (sides=1) puts results at the index of the last element.
+  # 'embed' result has (n - run.len + 1) rows, corresponding to indices run.len:n
 
-  results <- tibble(date, date_start, date_end, intercept, slope, r_squared)
+  valid_indices <- run.len:n
 
-  # info for regression lines
-  x1 <- mydata |>
-    map_dbl(~ min(.x[[x]]))
+  # Calculate start/end dates
+  d_end <- d_vec[valid_indices]
+  d_start <- d_vec[valid_indices - run.len + 1]
 
-  x2 <- mydata |>
-    map_dbl(~ max(.x[[x]]))
+  # Calculate median date strictly (midpoint between start and end)
+  # This handles even/odd run.len correctly and matches the 'center' of the window
+  d_median <- d_start + (d_end - d_start) / 2
 
-  results <- cbind(results, x1, x2)
+  # 6. Construct Final Table
+  # We subset the regression vectors using valid_indices to match the 'embed' size
+  results <- tibble::tibble(
+    date = d_median,
+    date_start = d_start,
+    date_end = d_end,
+    intercept = intercept[valid_indices],
+    slope = slope[valid_indices],
+    r_squared = r_squared[valid_indices],
+    x1 = x1_vec,
+    x2 = x2_vec
+  )
 
+  # Remove rows that had any NAs in input (calculated stats will be NA)
+  results <- results[complete.cases(results), ]
+
+  # 7. Final Coordinates (Delta/Line Points)
   results <- results |>
-    mutate(
+    dplyr::mutate(
       y1 = slope * x1 + intercept,
       y2 = slope * x2 + intercept,
       delta_x = x2 - x1,
       delta_y = y2 - y1
     )
 
+  # Dynamic renaming to match original output
   names(results)[names(results) == "x1"] <- paste0(x, "_1")
   names(results)[names(results) == "x2"] <- paste0(x, "_2")
   names(results)[names(results) == "y1"] <- paste0(y, "_1")
@@ -156,5 +168,5 @@ runRegression <- function(
   names(results)[names(results) == "delta_x"] <- paste0("delta_", x)
   names(results)[names(results) == "delta_y"] <- paste0("delta_", y)
 
-  as_tibble(results)
+  return(results)
 }
