@@ -80,8 +80,6 @@ Examine how pollutant concentrations change with time.
   : Tests for trends using Theil-Sen estimates
 - [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md)
   : Plot time series values in a conventional calendar format
-- [`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md)
-  : Rolling regression for pollutant source characterisation.
 - [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
   : Calculate nonparametric smooth trends
 - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
@@ -114,8 +112,6 @@ Additional plotting functions for visualising air quality data.
 
 - [`summaryPlot()`](https://openair-project.github.io/openair/reference/summaryPlot.md)
   : Function to rapidly provide an overview of air quality data
-- [`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md)
-  : Rolling regression for pollutant source characterisation.
 - [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
   : Flexible scatter plots
 - [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
@@ -152,10 +148,14 @@ Tools for manipulating and summarising air quality data.
   : Calculate percentile values from a time series
 - [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
   : Function to split data in different ways for conditioning
+- [`datePad()`](https://openair-project.github.io/openair/reference/datePad.md)
+  : Pad a time-series dataframe and optionally fill values by block
 - [`rollingMean()`](https://openair-project.github.io/openair/reference/rollingMean.md)
   : Calculate rolling mean pollutant values
 - [`rollingQuantile()`](https://openair-project.github.io/openair/reference/rollingQuantile.md)
   : Calculate rolling quantile pollutant values
+- [`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md)
+  : Rolling regression for pollutant source characterisation.
 - [`GaussianSmooth()`](https://openair-project.github.io/openair/reference/GaussianSmooth.md)
   : Calculate rolling Gaussian smooth of pollutant values
 - [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
@@ -164,7 +164,5 @@ Tools for manipulating and summarising air quality data.
   : Function to extract run lengths greater than a threshold
 - [`splitByDate()`](https://openair-project.github.io/openair/reference/splitByDate.md)
   : Divide up a data frame by time
-- [`datePad()`](https://openair-project.github.io/openair/reference/datePad.md)
-  : Pad a time-series dataframe and optionally fill values by block
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
   : Function to calculate time averages for data frames

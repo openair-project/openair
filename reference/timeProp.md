@@ -198,7 +198,6 @@ of `pollutant` is made up for any time interval.
 Other time series and trend functions:
 [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md),
 [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md),
-[`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md),
 [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md),
 [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md),
 [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md),

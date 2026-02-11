@@ -317,7 +317,6 @@ the use of similar tests applied to UK/European air quality data.
 
 Other time series and trend functions:
 [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md),
-[`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md),
 [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md),
 [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md),
 [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md),

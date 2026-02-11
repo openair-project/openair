@@ -312,7 +312,6 @@ setting `type` - see examples below.
 Other time series and trend functions:
 [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md),
 [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md),
-[`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md),
 [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md),
 [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md),
 [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md),

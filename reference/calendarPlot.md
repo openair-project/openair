@@ -290,7 +290,6 @@ which will plot maximum daily 8-hour mean concentrations.
 
 Other time series and trend functions:
 [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md),
-[`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md),
 [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md),
 [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md),
 [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md),

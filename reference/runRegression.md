@@ -69,17 +69,6 @@ Emission ratio determination from road vehicles using a range of remote
 emission sensing techniques. Science of The Total Environment, 875.
 https://doi.org/10.1016/j.scitotenv.2023.162621.
 
-## See also
-
-Other time series and trend functions:
-[`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md),
-[`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md),
-[`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md),
-[`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md),
-[`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md),
-[`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md),
-[`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
-
 ## Examples
 
 ``` r
