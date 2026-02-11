@@ -7,11 +7,13 @@
 timeProp(
   mydata,
   pollutant = "nox",
-  proportion = "cluster",
+  proportion = "wd",
   avg.time = "day",
   type = "default",
   cols = "Set1",
   normalise = FALSE,
+  x.relation = "same",
+  y.relation = "same",
   key = TRUE,
   key.columns = 1,
   key.position = "right",
@@ -30,18 +32,18 @@ splitting variable \code{proportion}}
 \item{pollutant}{Name of the pollutant to plot contained in \code{mydata}.}
 
 \item{proportion}{The splitting variable that makes up the bars in the bar
-chart e.g. \code{proportion = "cluster"} if the output from \code{polarCluster} is
-being analysed. If \code{proportion} is a numeric variable it is split into 4
-quantiles (by default) by \code{cutData}. If \code{proportion} is a factor or
-character variable then the categories are used directly.}
+chart, defaulting to \code{"wd"}. Could be \code{"cluster"} if the output from
+\code{\link[=polarCluster]{polarCluster()}} or \code{\link[=trajCluster]{trajCluster()}} is being analysed. If \code{proportion} is a
+numeric variable it is split into 4 quantiles (by default) by \code{\link[=cutData]{cutData()}}.
+If \code{proportion} is a factor or character variable then the categories are
+used directly.}
 
 \item{avg.time}{This defines the time period to average to. Can be \code{"sec"},
 \code{"min"}, \code{"hour"}, \code{"day"}, \code{"DSTday"}, \code{"week"}, \code{"month"}, \code{"quarter"} or
 \code{"year"}. For much increased flexibility a number can precede these options
-followed by a space. For example, an average of 2 months would be
-\code{avg.time = "2 month"}. In addition, \code{avg.time} can equal \code{"season"}, in
-which case 3-month seasonal values are calculated with spring defined as
-March, April, May and so on.
+followed by a space. For example, an average of 2 months would be \code{avg.time = "2 month"}. In addition, \code{avg.time} can equal \code{"season"}, in which case
+3-month seasonal values are calculated with spring defined as March, April,
+May and so on.
 
 Note that \code{avg.time} when used in \code{timeProp} should be greater than the
 time gap in the original data. For example, \code{avg.time = "day"} for hourly
@@ -66,6 +68,11 @@ different variables and how they depend on one another.
 \item{normalise}{If \code{normalise = TRUE} then each time interval is scaled to
 100. This is helpful to show the relative (percentage) contribution of the
 proportions.}
+
+\item{x.relation, y.relation}{This determines how the x- or y-axis scale is
+plotted. \code{"same"} ensures all panels use the same scale and \code{"free"} will
+use panel-specific scales. The latter is a useful setting when plotting
+data with very different values.}
 
 \item{key}{Should a key be drawn? The default is \code{TRUE}.}
 

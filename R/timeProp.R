@@ -24,18 +24,19 @@
 #' @param pollutant Name of the pollutant to plot contained in `mydata`.
 #'
 #' @param proportion The splitting variable that makes up the bars in the bar
-#'   chart e.g. `proportion = "cluster"` if the output from `polarCluster` is
-#'   being analysed. If `proportion` is a numeric variable it is split into 4
-#'   quantiles (by default) by `cutData`. If `proportion` is a factor or
-#'   character variable then the categories are used directly.
+#'   chart, defaulting to `"wd"`. Could be `"cluster"` if the output from
+#'   [polarCluster()] or [trajCluster()] is being analysed. If `proportion` is a
+#'   numeric variable it is split into 4 quantiles (by default) by [cutData()].
+#'   If `proportion` is a factor or character variable then the categories are
+#'   used directly.
 #'
 #' @param avg.time This defines the time period to average to. Can be `"sec"`,
 #'   `"min"`, `"hour"`, `"day"`, `"DSTday"`, `"week"`, `"month"`, `"quarter"` or
 #'   `"year"`. For much increased flexibility a number can precede these options
-#'   followed by a space. For example, an average of 2 months would be
-#'   `avg.time = "2 month"`. In addition, `avg.time` can equal `"season"`, in
-#'   which case 3-month seasonal values are calculated with spring defined as
-#'   March, April, May and so on.
+#'   followed by a space. For example, an average of 2 months would be `avg.time
+#'   = "2 month"`. In addition, `avg.time` can equal `"season"`, in which case
+#'   3-month seasonal values are calculated with spring defined as March, April,
+#'   May and so on.
 #'
 #'   Note that `avg.time` when used in `timeProp` should be greater than the
 #'   time gap in the original data. For example, `avg.time = "day"` for hourly
@@ -66,11 +67,13 @@
 timeProp <- function(
   mydata,
   pollutant = "nox",
-  proportion = "cluster",
+  proportion = "wd",
   avg.time = "day",
   type = "default",
   cols = "Set1",
   normalise = FALSE,
+  x.relation = "same",
+  y.relation = "same",
   key = TRUE,
   key.columns = 1,
   key.position = "right",
@@ -83,12 +86,6 @@ timeProp <- function(
 ) {
   # extra.args setup
   extra.args <- list(...)
-
-  # reset graphic parameters
-  current.font <- trellis.par.get("fontsize")
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
 
   # label controls
   main <- quickText(extra.args$main %||% "", auto.text)
@@ -187,14 +184,9 @@ timeProp <- function(
   # make sure we know order of data frame for adding other dates
   results <- dplyr::arrange(results, dplyr::pick(dplyr::all_of(type)), "date")
 
-  # date axis formatting
-  breaks <- dateBreaks(results$date, date.breaks)
-  dates <- breaks$major
-  formats <- date.format %||% breaks$format
-
   # set limits, if not set by user
-  xlim <- extra.args$xlim %||% range(c(results$xleft, results$xright))
-  ylim <- extra.args$ylim %||% range(c(0, results$var2, na.rm = TRUE))
+  xlim <- extra.args$xlim %||% NULL
+  ylim <- extra.args$ylim %||% NULL
 
   # set up key, if required
   if (!key) {
@@ -246,8 +238,8 @@ timeProp <- function(
       )
     ) +
     ggplot2::scale_x_datetime(
-      breaks = dates,
-      date_labels = formats,
+      breaks = scales::breaks_pretty(date.breaks),
+      date_labels = date.format %||% ggplot2::waiver(),
       limits = xlim,
       expand = ggplot2::expansion()
     ) +
@@ -264,7 +256,13 @@ timeProp <- function(
     ) +
     theme_openair(key.position) +
     set_extra_fontsize(extra.args) +
-    get_facet(type, extra.args, auto.text, drop = TRUE)
+    get_facet(
+      type,
+      extra.args,
+      scales = relation_to_facet_scales(x.relation, y.relation),
+      auto.text,
+      drop = TRUE
+    )
 
   # make key full width/height
   if (key.position %in% c("left", "right")) {

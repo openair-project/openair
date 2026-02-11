@@ -454,7 +454,13 @@ trendLevel <- function(
       x = ggplot2::guide_axis(check.overlap = TRUE, angle = rotate.axis[1]),
       y = ggplot2::guide_axis(check.overlap = TRUE, angle = rotate.axis[2])
     ) +
-    get_facet(type, extra.args, auto.text, drop = drop.unused.types)
+    get_facet(
+      type,
+      extra.args = extra.args,
+      scales = "fixed",
+      auto.text = auto.text,
+      drop = drop.unused.types
+    )
 
   # make key full width/height
   if (key.position %in% c("left", "right")) {
