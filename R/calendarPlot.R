@@ -105,10 +105,11 @@
 #'   arguments currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
 #' @param key Fine control of the scale key via [drawOpenKey()]. See
 #'   [drawOpenKey()] for further details.
-#' @param ... Other graphical parameters are passed onto the `lattice` function
-#'   [lattice::levelplot()], with common axis and title labelling options (such
-#'   as `xlab`, `ylab`, `main`) being passed to via [quickText()] to handle
-#'   routine formatting.
+#' @param ... The following additional arguments are available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `fontsize` overrides the overall font size of the plot.
+#'   - `border` sets the border colour of each tile.
 #' @export
 #' @import grid
 #' @return an [openair][openair-package] object
@@ -193,9 +194,9 @@ calendarPlot <-
     extra.args <- list(...)
 
     # label controls
-    extra.args$xlab <- quickText(extra.args$xlab %||% "", auto.text)
-    extra.args$ylab <- quickText(extra.args$ylab %||% "", auto.text)
-    main <- quickText(extra.args$main %||% NULL, auto.text)
+    extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
+    extra.args$ylab <- quickText(extra.args$ylab %||% NULL, auto.text)
+    extra.args$main <- quickText(extra.args$main %||% NULL, auto.text)
 
     # filter and check data
     mydata <- prepare_calendar_data(
@@ -426,6 +427,7 @@ calendarPlot <-
         axis.ticks = ggplot2::element_blank(),
         axis.text.y = ggplot2::element_blank()
       ) +
+      set_extra_fontsize(extra.args) +
       ggplot2::labs(
         y = extra.args$ylab,
         x = extra.args$xlab,

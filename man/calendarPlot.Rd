@@ -155,10 +155,13 @@ properly, e.g., by subscripting the '2' in NO2.}
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}
 
-\item{...}{Other graphical parameters are passed onto the \code{lattice} function
-\code{\link[lattice:levelplot]{lattice::levelplot()}}, with common axis and title labelling options (such
-as \code{xlab}, \code{ylab}, \code{main}) being passed to via \code{\link[=quickText]{quickText()}} to handle
-routine formatting.}
+\item{...}{The following additional arguments are available:
+\itemize{
+\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
+\item \code{fontsize} overrides the overall font size of the plot.
+\item \code{border} sets the border colour of each tile.
+}}
 }
 \value{
 an \link[=openair-package]{openair} object
