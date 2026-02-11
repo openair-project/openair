@@ -138,6 +138,8 @@
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
   is much faster with the bulk of the calculations made using C++.
 
+- `runRegression` is now much faster with a new algorithm.
+
 - [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
   now supports 2 values being passed to `type`, which will create a 2D
   grid using
