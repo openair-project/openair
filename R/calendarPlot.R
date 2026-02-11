@@ -331,36 +331,6 @@ calendarPlot <-
       # retain actual numerical value (retain for categorical scales)
       dplyr::mutate(value = .data$conc.mat)
 
-    # need wd dataframe if ws/wd annotation
-    if (annotate %in% c("ws", "wd")) {
-      wd <- original_data |>
-        dplyr::mutate(wd = .data$wd * 2 * pi / 360) |>
-        mapType(
-          type = type,
-          fun = \(df) prepare_calendar_grid(df, "wd", w.shift),
-          .include_default = TRUE
-        ) |>
-        # actual numerical value (retain for categorical scales)
-        dplyr::mutate(value = .data$conc.mat)
-    }
-
-    # if ws annotation, also need ws
-    if (annotate == "ws") {
-      ws <- original_data |>
-        dplyr::mutate(wd = .data$wd * 2 * pi / 360) |>
-        mapType(
-          type = type,
-          fun = \(df) prepare_calendar_grid(df, "ws", w.shift),
-          .include_default = TRUE
-        ) |>
-        dplyr::mutate(
-          # normalise wind speeds to highest daily mean
-          conc.mat = .data$conc.mat / max(.data$conc.mat, na.rm = TRUE),
-          # actual numerical value (retain for categorical scales)
-          value = .data$conc.mat
-        )
-    }
-
     # handle breaks
     categorical <- FALSE
     if (!is.null(breaks)) {
