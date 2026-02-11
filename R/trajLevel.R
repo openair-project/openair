@@ -630,81 +630,119 @@ trajLevel <- function(
 }
 
 # SQTBA functions
-# use matrices for speed; Haversine distances away from Gaussian plume
-# centreline
-pred_Q <- function(i, traj_data, r_grid, pollutant) {
-  x_origin <- traj_data$lon[i]
-  y_origin <- traj_data$lat[i]
-  Q <- numeric(nrow(r_grid))
-  Q_c <- Q
-
-  # only calculate near receptor (within 4 degrees)
-  id <- which(
-    r_grid[, "lat"] > y_origin - 4 &
-      r_grid[, "lat"] < y_origin + 4 &
-      r_grid[, "lon"] > x_origin - 4 &
-      r_grid[, "lon"] < x_origin + 4
-  )
-
-  # subtract 1E-7 from acos - numerical imprecision results in value being greater than 1
-  dist <- acos(
-    sin(y_origin * pi / 180) *
-      sin(r_grid[id, "lat"] * pi / 180) +
-      cos(y_origin * pi / 180) *
-        cos(r_grid[id, "lat"] * pi / 180) *
-        cos(r_grid[id, "lon"] * pi / 180 - x_origin * pi / 180) -
-      1e-7
-  ) *
-    6378.137
-
-  Q[id] <- (1 / traj_data$sigma[i]^2) *
-    exp(-0.5 * (dist / traj_data$sigma[i])^2)
-  Q_c[id] <- Q[id] * traj_data[[pollutant]][i]
-
-  cbind(Q, Q_c)
-}
-
-make_grid <- function(traj_data, r_grid, pollutant) {
-  # go through points on back trajectory
-  # makes probability surface
-  out_grid <- purrr::map(
-    2:max(abs(traj_data$hour.inc)),
-    pred_Q,
-    traj_data,
-    r_grid,
-    pollutant
-  )
-  out_grid <- reduce(out_grid, `+`) / length(out_grid)
-
-  return(out_grid)
-}
 
 calc_SQTBA <- function(mydata, r_grid, pollutant, min.bin) {
-  q_calc <- mydata |>
-    select(date, lat, lon, hour.inc, {{ pollutant }}, sigma) |>
-    group_by(date) |>
-    nest() |>
-    mutate(out = purrr::map(data, make_grid, r_grid, pollutant))
-
-  # combine all trajectory grids, add coordinates back in
-  output <- reduce(q_calc$out, `+`) |>
-    cbind(r_grid) |>
-    as_tibble(.) |>
+  # --- 1. PREPARE GRID ---
+  # Convert matrix to tibble, add IDs, and pre-calc radians
+  grid_df <- as_tibble(r_grid) %>%
     mutate(
-      SQTBA = Q_c / Q,
+      grid_id = row_number(),
+      g_lat_rad = lat * pi / 180,
+      g_lon_rad = lon * pi / 180,
+      # Create integer "buckets" for joining
       lat_rnd = round(lat),
       lon_rnd = round(lon)
     )
 
-  # number of trajectories in a grid square
-  grid_out <- mydata |>
-    mutate(lat_rnd = round(lat), lon_rnd = round(lon)) |>
-    group_by(lat_rnd, lon_rnd) |>
-    tally() |>
+  # --- 2. PREPARE TRAJECTORIES ---
+  # Filter valid hours, calc weights, and pre-calc radians
+  traj_df <- mydata %>%
+    # Original logic: points 2 to max(hour.inc)
+    filter(abs(hour.inc) > 1) %>%
+    group_by(date) %>%
+    mutate(
+      weight = 1 / n(),
+      t_lat_rad = lat * pi / 180,
+      t_lon_rad = lon * pi / 180,
+      # Create integer "buckets"
+      lat_base = round(lat),
+      lon_base = round(lon)
+    ) %>%
+    ungroup()
+
+  # --- 3. CREATE NEIGHBORHOOD LOOKUP (The Magic Step) ---
+  # Instead of checking the whole grid, we look at the 9x9 integer square around a point.
+  # We create offsets (-4 to +4) to bridge the gap between buckets.
+
+  offsets <- tidyr::crossing(
+    lat_off = -4:4,
+    lon_off = -4:4
+  )
+
+  # Expand trajectories: Duplicate rows for every potential neighbor bucket
+  # (This temporarily increases row count but makes the join fast)
+  traj_expanded <- traj_df %>%
+    cross_join(offsets) %>%
+    mutate(
+      search_lat = lat_base + lat_off,
+      search_lon = lon_base + lon_off
+    )
+
+  # --- 4. JOIN & FILTER ---
+  # Join trajectory buckets to grid buckets
+  pairs <- traj_expanded %>%
+    inner_join(
+      grid_df,
+      by = c("search_lat" = "lat_rnd", "search_lon" = "lon_rnd")
+    ) %>%
+    # Now strictly filter the exact window (original logic: +/- 4 degrees)
+    filter(
+      lat.y > lat.x - 4,
+      lat.y < lat.x + 4,
+      lon.y > lon.x - 4,
+      lon.y < lon.x + 4
+    )
+
+  # --- 5. VECTORIZED MATH ---
+  # Calculate distance and Q for all pairs at once
+  results <- pairs %>%
+    mutate(
+      # Vectorized Haversine/ACos distance
+      dist_km = (acos(
+        sin(t_lat_rad) *
+          sin(g_lat_rad) +
+          cos(t_lat_rad) * cos(g_lat_rad) * cos(g_lon_rad - t_lon_rad) -
+          1e-7
+      ) *
+        6378.137),
+
+      # Gaussian Plume
+      Q_val = (1 / sigma^2) * exp(-0.5 * (dist_km / sigma)^2),
+
+      # Apply trajectory weight immediately
+      Q_weighted = Q_val * weight,
+      Qc_weighted = Q_val * .data[[pollutant]] * weight
+    ) %>%
+    # Aggregate by Grid Cell
+    group_by(grid_id, lat.y, lon.y) %>% # lat.y/lon.y are grid coords
+    summarise(
+      Q = sum(Q_weighted, na.rm = TRUE),
+      Q_c = sum(Qc_weighted, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    mutate(SQTBA = Q_c / Q) %>%
+    rename(lat = lat.y, lon = lon.y)
+
+  # --- 6. MERGE BACK TO FULL GRID & FILTER ---
+  # Ensure all original grid points exist (even if 0)
+  final_output <- grid_df %>%
+    select(lat, lon) %>%
+    left_join(results, by = c("lat", "lon")) %>%
+    mutate(
+      SQTBA = coalesce(SQTBA, 0), # Replace NA with 0
+      lat_rnd = round(lat),
+      lon_rnd = round(lon)
+    )
+
+  # --- 7. MIN.BIN FILTER (Original Logic) ---
+  grid_counts <- mydata %>%
+    mutate(lat_rnd = round(lat), lon_rnd = round(lon)) %>%
+    count(lat_rnd, lon_rnd) %>%
     filter(n >= min.bin)
 
-  # add in number of trajectories in each grid square to act as a filter
-  mydata <- inner_join(output, grid_out, by = c("lat_rnd", "lon_rnd"))
-  mydata <- rename(mydata, xgrid = lon, ygrid = lat)
-  return(mydata)
+  final_data <- final_output %>%
+    inner_join(grid_counts, by = c("lat_rnd", "lon_rnd")) %>%
+    rename(xgrid = lon, ygrid = lat)
+
+  return(final_data)
 }
