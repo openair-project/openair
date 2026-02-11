@@ -35,8 +35,9 @@
 #'
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
 #'   data frame should be supplied e.g. `pollutant = "nox". `
-#' @param year Year to plot e.g. `year = 2003`. If not supplied all data
-#'   potentially spanning several years will be plotted.
+#' @param year Year to plot e.g. `year = 2003`. If not supplied and `mydata`
+#'   contains more than one year, the first year of the data will be
+#'   automatically selected.
 #' @param month If only certain month are required. By default the function will
 #'   plot an entire year even if months are missing. To only plot certain months
 #'   use the `month` option where month is a numeric 1:12 e.g. `month = c(1,
@@ -197,6 +198,20 @@ calendarPlot <-
     extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
     extra.args$ylab <- quickText(extra.args$ylab %||% NULL, auto.text)
     extra.args$main <- quickText(extra.args$main %||% NULL, auto.text)
+
+    # check a single year
+    if (is.null(year)) {
+      unique_years <- unique(lubridate::year(mydata$date))
+      if (dplyr::n_distinct(unique_years) > 1) {
+        year <- unique_years[1]
+        cli::cli_warn(
+          c(
+            "!" = "Multiple years of data detected. Setting {.arg year} to {year}.",
+            "i" = "Set {.arg year} in {.fun openair::calendarPlot} to select a different or multiple years."
+          )
+        )
+      }
+    }
 
     # filter and check data
     mydata <- prepare_calendar_data(

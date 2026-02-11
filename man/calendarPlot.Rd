@@ -45,8 +45,9 @@ least one variable to plot.}
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \verb{pollutant = "nox". }}
 
-\item{year}{Year to plot e.g. \code{year = 2003}. If not supplied all data
-potentially spanning several years will be plotted.}
+\item{year}{Year to plot e.g. \code{year = 2003}. If not supplied and \code{mydata}
+contains more than one year, the first year of the data will be
+automatically selected.}
 
 \item{month}{If only certain month are required. By default the function will
 plot an entire year even if months are missing. To only plot certain months
