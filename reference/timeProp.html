@@ -79,11 +79,13 @@ data.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">timeProp</span><span class="op">(</span></span>
 <span>  <span class="va">mydata</span>,</span>
 <span>  pollutant <span class="op">=</span> <span class="st">"nox"</span>,</span>
-<span>  proportion <span class="op">=</span> <span class="st">"cluster"</span>,</span>
+<span>  proportion <span class="op">=</span> <span class="st">"wd"</span>,</span>
 <span>  avg.time <span class="op">=</span> <span class="st">"day"</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"Set1"</span>,</span>
 <span>  normalise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  x.relation <span class="op">=</span> <span class="st">"same"</span>,</span>
+<span>  y.relation <span class="op">=</span> <span class="st">"same"</span>,</span>
 <span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  key.columns <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
@@ -111,20 +113,20 @@ splitting variable <code>proportion</code></p></dd>
 
 <dt id="arg-proportion">proportion<a class="anchor" aria-label="anchor" href="#arg-proportion"></a></dt>
 <dd><p>The splitting variable that makes up the bars in the bar
-chart e.g. <code>proportion = "cluster"</code> if the output from <code>polarCluster</code> is
-being analysed. If <code>proportion</code> is a numeric variable it is split into 4
-quantiles (by default) by <code>cutData</code>. If <code>proportion</code> is a factor or
-character variable then the categories are used directly.</p></dd>
+chart, defaulting to <code>"wd"</code>. Could be <code>"cluster"</code> if the output from
+<code><a href="polarCluster.html">polarCluster()</a></code> or <code><a href="trajCluster.html">trajCluster()</a></code> is being analysed. If <code>proportion</code> is a
+numeric variable it is split into 4 quantiles (by default) by <code><a href="cutData.html">cutData()</a></code>.
+If <code>proportion</code> is a factor or character variable then the categories are
+used directly.</p></dd>
 
 
 <dt id="arg-avg-time">avg.time<a class="anchor" aria-label="anchor" href="#arg-avg-time"></a></dt>
 <dd><p>This defines the time period to average to. Can be <code>"sec"</code>,
 <code>"min"</code>, <code>"hour"</code>, <code>"day"</code>, <code>"DSTday"</code>, <code>"week"</code>, <code>"month"</code>, <code>"quarter"</code> or
 <code>"year"</code>. For much increased flexibility a number can precede these options
-followed by a space. For example, an average of 2 months would be
-<code>avg.time = "2 month"</code>. In addition, <code>avg.time</code> can equal <code>"season"</code>, in
-which case 3-month seasonal values are calculated with spring defined as
-March, April, May and so on.</p>
+followed by a space. For example, an average of 2 months would be <code>avg.time = "2 month"</code>. In addition, <code>avg.time</code> can equal <code>"season"</code>, in which case
+3-month seasonal values are calculated with spring defined as March, April,
+May and so on.</p>
 <p>Note that <code>avg.time</code> when used in <code>timeProp</code> should be greater than the
 time gap in the original data. For example, <code>avg.time = "day"</code> for hourly
 data is OK, but <code>avg.time = "hour"</code> for daily data is not.</p></dd>
@@ -152,6 +154,13 @@ different variables and how they depend on one another.</p>
 <dd><p>If <code>normalise = TRUE</code> then each time interval is scaled to
 100. This is helpful to show the relative (percentage) contribution of the
 proportions.</p></dd>
+
+
+<dt id="arg-x-relation-y-relation">x.relation, y.relation<a class="anchor" aria-label="anchor" href="#arg-x-relation-y-relation"></a></dt>
+<dd><p>This determines how the x- or y-axis scale is
+plotted. <code>"same"</code> ensures all panels use the same scale and <code>"free"</code> will
+use panel-specific scales. The latter is a useful setting when plotting
+data with very different values.</p></dd>
 
 
 <dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
@@ -202,12 +211,12 @@ data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other graphical parameters passed onto <code>timeProp</code> and <code>cutData</code>.
-For example, <code>timeProp</code> passes the option <code>hemisphere = "southern"</code> on to
-<code>cutData</code> to provide southern (rather than default northern) hemisphere
-handling of <code>type = "season"</code>. Similarly, common axis and title labelling
-options (such as <code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed to <code>xyplot</code> via
-<code>quickText</code> to handle routine formatting.</p></dd>
+<dd><p>Addition options are passed on to <code><a href="cutData.html">cutData()</a></code> for <code>type</code> handling.
+Some additional arguments are also available:</p><ul><li><p><code>xlab</code>, <code>ylab</code> and <code>main</code> override the x-axis label, y-axis label, and plot title.</p></li>
+<li><p><code>layout</code> sets the layout of facets - e.g., <code>layout(2, 5)</code> will have 2 columns and 5 rows.</p></li>
+<li><p><code>fontsize</code> overrides the overall font size of the plot.</p></li>
+<li><p><code>border</code> sets the border colour of each bar.</p></li>
+</ul></dd>
 
 </dl></div>
     <div class="section level2">
@@ -240,6 +249,7 @@ made up for any time interval.</p>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>David Carslaw</p>
+<p>Jack Davison</p>
     </div>
 
     <div class="section level2">

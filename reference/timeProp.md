@@ -17,11 +17,13 @@ understanding time series data.
 timeProp(
   mydata,
   pollutant = "nox",
-  proportion = "cluster",
+  proportion = "wd",
   avg.time = "day",
   type = "default",
   cols = "Set1",
   normalise = FALSE,
+  x.relation = "same",
+  y.relation = "same",
   key = TRUE,
   key.columns = 1,
   key.position = "right",
@@ -47,11 +49,16 @@ timeProp(
 
 - proportion:
 
-  The splitting variable that makes up the bars in the bar chart e.g.
-  `proportion = "cluster"` if the output from `polarCluster` is being
-  analysed. If `proportion` is a numeric variable it is split into 4
-  quantiles (by default) by `cutData`. If `proportion` is a factor or
-  character variable then the categories are used directly.
+  The splitting variable that makes up the bars in the bar chart,
+  defaulting to `"wd"`. Could be `"cluster"` if the output from
+  [`polarCluster()`](https://openair-project.github.io/openair/reference/polarCluster.md)
+  or
+  [`trajCluster()`](https://openair-project.github.io/openair/reference/trajCluster.md)
+  is being analysed. If `proportion` is a numeric variable it is split
+  into 4 quantiles (by default) by
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
+  If `proportion` is a factor or character variable then the categories
+  are used directly.
 
 - avg.time:
 
@@ -97,6 +104,13 @@ timeProp(
   If `normalise = TRUE` then each time interval is scaled to 100. This
   is helpful to show the relative (percentage) contribution of the
   proportions.
+
+- x.relation, y.relation:
+
+  This determines how the x- or y-axis scale is plotted. `"same"`
+  ensures all panels use the same scale and `"free"` will use
+  panel-specific scales. The latter is a useful setting when plotting
+  data with very different values.
 
 - key:
 
@@ -149,12 +163,19 @@ timeProp(
 
 - ...:
 
-  Other graphical parameters passed onto `timeProp` and `cutData`. For
-  example, `timeProp` passes the option `hemisphere = "southern"` on to
-  `cutData` to provide southern (rather than default northern)
-  hemisphere handling of `type = "season"`. Similarly, common axis and
-  title labelling options (such as `xlab`, `ylab`, `main`) are passed to
-  `xyplot` via `quickText` to handle routine formatting.
+  Addition options are passed on to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for `type` handling. Some additional arguments are also available:
+
+  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
+    and plot title.
+
+  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
+    2 columns and 5 rows.
+
+  - `fontsize` overrides the overall font size of the plot.
+
+  - `border` sets the border colour of each bar.
 
 ## Value
 
@@ -190,6 +211,8 @@ Other cluster analysis functions:
 ## Author
 
 David Carslaw
+
+Jack Davison
 
 ## Examples
 
