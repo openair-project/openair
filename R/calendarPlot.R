@@ -37,7 +37,8 @@
 #'   data frame should be supplied e.g. `pollutant = "nox". `
 #' @param year Year to plot e.g. `year = 2003`. If not supplied and `mydata`
 #'   contains more than one year, the first year of the data will be
-#'   automatically selected.
+#'   automatically selected. Manually setting `year` to `NULL` will use all
+#'   available years.
 #' @param month If only certain month are required. By default the function will
 #'   plot an entire year even if months are missing. To only plot certain months
 #'   use the `month` option where month is a numeric 1:12 e.g. `month = c(1,
@@ -200,7 +201,7 @@ calendarPlot <-
     extra.args$main <- quickText(extra.args$main %||% NULL, auto.text)
 
     # check a single year
-    if (is.null(year)) {
+    if (missing(year)) {
       unique_years <- unique(lubridate::year(mydata$date))
       if (dplyr::n_distinct(unique_years) > 1) {
         year <- unique_years[1]
