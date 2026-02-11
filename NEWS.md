@@ -70,6 +70,8 @@
 
 - `timeAverage()` is much faster with the bulk of the calculations made using C++.
 
+- `runRegression` is now much faster with a new algorithm.
+
 - `trendLevel()` now supports 2 values being passed to `type`, which will create a 2D grid using `ggplot2::facet_grid()`.
 
 ## Bug Fixes

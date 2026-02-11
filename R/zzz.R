@@ -80,6 +80,8 @@
     "roll8",
     "roll8_val",
     "days",
-    "seconds"
+    "seconds",
+    "x1",
+    "x2"
   ))
 }
