@@ -14,22 +14,23 @@ calendarPlot(
   data.thresh = 0,
   percentile = NA,
   cols = "heat",
-  limits = c(0, 100),
+  limits = NULL,
   lim = NULL,
   col.lim = c("grey30", "black"),
   col.arrow = "black",
+  col.na = "white",
   font.lim = c(1, 2),
-  cex.lim = c(0.6, 1),
+  cex.lim = c(0.6, 0.9),
   cex.date = 0.6,
   digits = 0,
-  labels = NA,
-  breaks = NA,
+  labels = NULL,
+  breaks = NULL,
   w.shift = 0,
   w.abbr.len = 1,
   remove.empty = TRUE,
   show.year = TRUE,
-  key.header = "",
-  key.footer = "",
+  key.header = statistic,
+  key.footer = pollutant,
   key.position = "right",
   key = TRUE,
   auto.text = TRUE,
@@ -44,8 +45,10 @@ least one variable to plot.}
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \verb{pollutant = "nox". }}
 
-\item{year}{Year to plot e.g. \code{year = 2003}. If not supplied all data
-potentially spanning several years will be plotted.}
+\item{year}{Year to plot e.g. \code{year = 2003}. If not supplied and \code{mydata}
+contains more than one year, the first year of the data will be
+automatically selected. Manually setting \code{year} to \code{NULL} will use all
+available years.}
 
 \item{month}{If only certain month are required. By default the function will
 plot an entire year even if months are missing. To only plot certain months
@@ -95,6 +98,8 @@ colour of the text above \code{lim}.}
 \item{col.arrow}{The colour of the annotated wind direction / wind speed
 arrows.}
 
+\item{col.na}{Colour to be used to show missing data.}
+
 \item{font.lim}{For the annotation of concentration labels on each day. The
 first sets the font of the text below \code{lim} and the second sets the font of
 the text above \code{lim}. Note that font = 1 is normal text and font = 2 is
@@ -135,12 +140,9 @@ labels include the year label? \code{TRUE} creates labels like "January-2000",
 \code{FALSE} labels just as "January". If multiple years of data are detected,
 this option is forced to be \code{TRUE}.}
 
-\item{key.header}{Adds additional text/labels to the scale key. For example,
-passing \code{calendarPlot(mydata, key.header = "header", key.footer = "footer")} adds addition text above and below the scale key. These
-arguments are passed to \code{\link[=drawOpenKey]{drawOpenKey()}} via \code{\link[=quickText]{quickText()}}, applying the
-\code{auto.text} argument, to handle formatting.}
-
-\item{key.footer}{see \code{key.header}.}
+\item{key.header, key.footer}{Used to control the title of the plot key. By
+default, \code{key.header} is the \code{statistic} and \code{key.footer} is the
+\code{pollutant}. These are pasted together to form the key title.}
 
 \item{key.position}{Location where the scale key is to plotted. Allowed
 arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"} and \code{"left"}.}
@@ -155,10 +157,13 @@ properly, e.g., by subscripting the '2' in NO2.}
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}
 
-\item{...}{Other graphical parameters are passed onto the \code{lattice} function
-\code{\link[lattice:levelplot]{lattice::levelplot()}}, with common axis and title labelling options (such
-as \code{xlab}, \code{ylab}, \code{main}) being passed to via \code{\link[=quickText]{quickText()}} to handle
-routine formatting.}
+\item{...}{The following additional arguments are available:
+\itemize{
+\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
+\item \code{fontsize} overrides the overall font size of the plot.
+\item \code{border} sets the border colour of each tile.
+}}
 }
 \value{
 an \link[=openair-package]{openair} object
