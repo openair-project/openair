@@ -77,22 +77,23 @@ if wind speed and direction are available.</p>
 <span>  data.thresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  percentile <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"heat"</span>,</span>
-<span>  limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">100</span><span class="op">)</span>,</span>
+<span>  limits <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lim <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  col.lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey30"</span>, <span class="st">"black"</span><span class="op">)</span>,</span>
 <span>  col.arrow <span class="op">=</span> <span class="st">"black"</span>,</span>
+<span>  col.na <span class="op">=</span> <span class="st">"white"</span>,</span>
 <span>  font.lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  cex.lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  cex.lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.9</span><span class="op">)</span>,</span>
 <span>  cex.date <span class="op">=</span> <span class="fl">0.6</span>,</span>
 <span>  digits <span class="op">=</span> <span class="fl">0</span>,</span>
-<span>  labels <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  breaks <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  w.shift <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  w.abbr.len <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  remove.empty <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  show.year <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  key.header <span class="op">=</span> <span class="st">""</span>,</span>
-<span>  key.footer <span class="op">=</span> <span class="st">""</span>,</span>
+<span>  key.header <span class="op">=</span> <span class="va">statistic</span>,</span>
+<span>  key.footer <span class="op">=</span> <span class="va">pollutant</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
 <span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -116,8 +117,10 @@ data frame should be supplied e.g. <code>pollutant = "nox". </code></p></dd>
 
 
 <dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
-<dd><p>Year to plot e.g. <code>year = 2003</code>. If not supplied all data
-potentially spanning several years will be plotted.</p></dd>
+<dd><p>Year to plot e.g. <code>year = 2003</code>. If not supplied and <code>mydata</code>
+contains more than one year, the first year of the data will be
+automatically selected. Manually setting <code>year</code> to <code>NULL</code> will use all
+available years.</p></dd>
 
 
 <dt id="arg-month">month<a class="anchor" aria-label="anchor" href="#arg-month"></a></dt>
@@ -186,6 +189,10 @@ colour of the text above <code>lim</code>.</p></dd>
 arrows.</p></dd>
 
 
+<dt id="arg-col-na">col.na<a class="anchor" aria-label="anchor" href="#arg-col-na"></a></dt>
+<dd><p>Colour to be used to show missing data.</p></dd>
+
+
 <dt id="arg-font-lim">font.lim<a class="anchor" aria-label="anchor" href="#arg-font-lim"></a></dt>
 <dd><p>For the annotation of concentration labels on each day. The
 first sets the font of the text below <code>lim</code> and the second sets the font of
@@ -246,15 +253,10 @@ labels include the year label? <code>TRUE</code> creates labels like "January-20
 this option is forced to be <code>TRUE</code>.</p></dd>
 
 
-<dt id="arg-key-header">key.header<a class="anchor" aria-label="anchor" href="#arg-key-header"></a></dt>
-<dd><p>Adds additional text/labels to the scale key. For example,
-passing <code>calendarPlot(mydata, key.header = "header", key.footer = "footer")</code> adds addition text above and below the scale key. These
-arguments are passed to <code><a href="drawOpenKey.html">drawOpenKey()</a></code> via <code><a href="quickText.html">quickText()</a></code>, applying the
-<code>auto.text</code> argument, to handle formatting.</p></dd>
-
-
-<dt id="arg-key-footer">key.footer<a class="anchor" aria-label="anchor" href="#arg-key-footer"></a></dt>
-<dd><p>see <code>key.header</code>.</p></dd>
+<dt id="arg-key-header-key-footer">key.header, key.footer<a class="anchor" aria-label="anchor" href="#arg-key-header-key-footer"></a></dt>
+<dd><p>Used to control the title of the plot key. By
+default, <code>key.header</code> is the <code>statistic</code> and <code>key.footer</code> is the
+<code>pollutant</code>. These are pasted together to form the key title.</p></dd>
 
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
@@ -279,10 +281,11 @@ data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other graphical parameters are passed onto the <code>lattice</code> function
-<code><a href="https://rdrr.io/pkg/lattice/man/levelplot.html" class="external-link">lattice::levelplot()</a></code>, with common axis and title labelling options (such
-as <code>xlab</code>, <code>ylab</code>, <code>main</code>) being passed to via <code><a href="quickText.html">quickText()</a></code> to handle
-routine formatting.</p></dd>
+<dd><p>The following additional arguments are available:</p><ul><li><p><code>xlab</code>, <code>ylab</code> and <code>main</code> override the x-axis label, y-axis label, and plot title.</p></li>
+<li><p><code>layout</code> sets the layout of facets - e.g., <code>layout(2, 5)</code> will have 2 columns and 5 rows.</p></li>
+<li><p><code>fontsize</code> overrides the overall font size of the plot.</p></li>
+<li><p><code>border</code> sets the border colour of each tile.</p></li>
+</ul></dd>
 
 </dl></div>
     <div class="section level2">
@@ -337,6 +340,8 @@ maximum daily 8-hour mean concentrations.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># show wind vectors</span></span></span>
 <span class="r-in"><span><span class="fu">calendarPlot</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"o3"</span>, year <span class="op">=</span> <span class="fl">2003</span>, annotate <span class="op">=</span> <span class="st">"wd"</span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 139 rows containing non-finite outside the scale range</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`stat_windflow()`).</span>
 <span class="r-plt img"><img src="calendarPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># show wind vectors scaled by wind speed and different colours</span></span></span>

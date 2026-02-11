@@ -18,22 +18,23 @@ calendarPlot(
   data.thresh = 0,
   percentile = NA,
   cols = "heat",
-  limits = c(0, 100),
+  limits = NULL,
   lim = NULL,
   col.lim = c("grey30", "black"),
   col.arrow = "black",
+  col.na = "white",
   font.lim = c(1, 2),
-  cex.lim = c(0.6, 1),
+  cex.lim = c(0.6, 0.9),
   cex.date = 0.6,
   digits = 0,
-  labels = NA,
-  breaks = NA,
+  labels = NULL,
+  breaks = NULL,
   w.shift = 0,
   w.abbr.len = 1,
   remove.empty = TRUE,
   show.year = TRUE,
-  key.header = "",
-  key.footer = "",
+  key.header = statistic,
+  key.footer = pollutant,
   key.position = "right",
   key = TRUE,
   auto.text = TRUE,
@@ -56,8 +57,10 @@ calendarPlot(
 
 - year:
 
-  Year to plot e.g. `year = 2003`. If not supplied all data potentially
-  spanning several years will be plotted.
+  Year to plot e.g. `year = 2003`. If not supplied and `mydata` contains
+  more than one year, the first year of the data will be automatically
+  selected. Manually setting `year` to `NULL` will use all available
+  years.
 
 - month:
 
@@ -136,6 +139,10 @@ calendarPlot(
 
   The colour of the annotated wind direction / wind speed arrows.
 
+- col.na:
+
+  Colour to be used to show missing data.
+
 - font.lim:
 
   For the annotation of concentration labels on each day. The first sets
@@ -197,20 +204,11 @@ calendarPlot(
   `FALSE` labels just as "January". If multiple years of data are
   detected, this option is forced to be `TRUE`.
 
-- key.header:
+- key.header, key.footer:
 
-  Adds additional text/labels to the scale key. For example, passing
-  `calendarPlot(mydata, key.header = "header", key.footer = "footer")`
-  adds addition text above and below the scale key. These arguments are
-  passed to
-  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md)
-  via
-  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md),
-  applying the `auto.text` argument, to handle formatting.
-
-- key.footer:
-
-  see `key.header`.
+  Used to control the title of the plot key. By default, `key.header` is
+  the `statistic` and `key.footer` is the `pollutant`. These are pasted
+  together to form the key title.
 
 - key.position:
 
@@ -238,12 +236,17 @@ calendarPlot(
 
 - ...:
 
-  Other graphical parameters are passed onto the `lattice` function
-  [`lattice::levelplot()`](https://rdrr.io/pkg/lattice/man/levelplot.html),
-  with common axis and title labelling options (such as `xlab`, `ylab`,
-  `main`) being passed to via
-  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
-  to handle routine formatting.
+  The following additional arguments are available:
+
+  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
+    and plot title.
+
+  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
+    2 columns and 5 rows.
+
+  - `fontsize` overrides the overall font size of the plot.
+
+  - `border` sets the border colour of each tile.
 
 ## Value
 
@@ -307,6 +310,8 @@ calendarPlot(mydata, pollutant = "o3", year = 2003)
 
 # show wind vectors
 calendarPlot(mydata, pollutant = "o3", year = 2003, annotate = "wd")
+#> Warning: Removed 139 rows containing non-finite outside the scale range
+#> (`stat_windflow()`).
 
 if (FALSE) { # \dontrun{
 # show wind vectors scaled by wind speed and different colours
