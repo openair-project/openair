@@ -20,36 +20,45 @@
 #'
 #' @param mydata A data frame containing the fields `date`, `pollutant` and a
 #'   splitting variable `proportion`
+#'
 #' @param pollutant Name of the pollutant to plot contained in `mydata`.
+#'
 #' @param proportion The splitting variable that makes up the bars in the bar
-#'   chart e.g. `proportion = "cluster"` if the output from `polarCluster` is
-#'   being analysed. If `proportion` is a numeric variable it is split into 4
-#'   quantiles (by default) by `cutData`. If `proportion` is a factor or
-#'   character variable then the categories are used directly.
+#'   chart, defaulting to `"wd"`. Could be `"cluster"` if the output from
+#'   [polarCluster()] or [trajCluster()] is being analysed. If `proportion` is a
+#'   numeric variable it is split into 4 quantiles (by default) by [cutData()].
+#'   If `proportion` is a factor or character variable then the categories are
+#'   used directly.
+#'
 #' @param avg.time This defines the time period to average to. Can be `"sec"`,
 #'   `"min"`, `"hour"`, `"day"`, `"DSTday"`, `"week"`, `"month"`, `"quarter"` or
 #'   `"year"`. For much increased flexibility a number can precede these options
-#'   followed by a space. For example, an average of 2 months would be
-#'   `avg.time = "2 month"`. In addition, `avg.time` can equal `"season"`, in
-#'   which case 3-month seasonal values are calculated with spring defined as
-#'   March, April, May and so on.
+#'   followed by a space. For example, an average of 2 months would be `avg.time
+#'   = "2 month"`. In addition, `avg.time` can equal `"season"`, in which case
+#'   3-month seasonal values are calculated with spring defined as March, April,
+#'   May and so on.
 #'
 #'   Note that `avg.time` when used in `timeProp` should be greater than the
 #'   time gap in the original data. For example, `avg.time = "day"` for hourly
 #'   data is OK, but `avg.time = "hour"` for daily data is not.
+#'
 #' @param normalise If `normalise = TRUE` then each time interval is scaled to
 #'   100. This is helpful to show the relative (percentage) contribution of the
 #'   proportions.
+#'
 #' @param key.title The title of the key.
-#' @param ... Other graphical parameters passed onto `timeProp` and `cutData`.
-#'   For example, `timeProp` passes the option `hemisphere = "southern"` on to
-#'   `cutData` to provide southern (rather than default northern) hemisphere
-#'   handling of `type = "season"`. Similarly, common axis and title labelling
-#'   options (such as `xlab`, `ylab`, `main`) are passed to `xyplot` via
-#'   `quickText` to handle routine formatting.
+#'
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `fontsize` overrides the overall font size of the plot.
+#'   - `border` sets the border colour of each bar.
+#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
+#' @author Jack Davison
 #' @family time series and trend functions
 #' @family cluster analysis functions
 #' @examples
@@ -58,11 +67,13 @@
 timeProp <- function(
   mydata,
   pollutant = "nox",
-  proportion = "cluster",
+  proportion = "wd",
   avg.time = "day",
   type = "default",
   cols = "Set1",
   normalise = FALSE,
+  x.relation = "same",
+  y.relation = "same",
   key = TRUE,
   key.columns = 1,
   key.position = "right",
@@ -73,35 +84,18 @@ timeProp <- function(
   plot = TRUE,
   ...
 ) {
-  # can only have one type
-  if (length(type) > 1) {
-    cli::cli_abort("{.arg type} can only be of length {1L}.")
-  }
-
   # extra.args setup
   extra.args <- list(...)
-
-  # reset graphic parameters
-  current.font <- trellis.par.get("fontsize")
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
 
   # label controls
   main <- quickText(extra.args$main %||% "", auto.text)
   xlab <- quickText(extra.args$xlab %||% "date", auto.text)
-  ylab <- quickText(extra.args$ylab %||% pollutant, auto.text)
+  ylab <- quickText(
+    extra.args$ylab %||%
+      ifelse(normalise, paste("% contribution to", pollutant), pollutant),
+    auto.text
+  )
   sub <- extra.args$sub %||% "contribution weighted by mean"
-
-  # fontsize handling
-  if ("fontsize" %in% names(extra.args)) {
-    trellis.par.set(fontsize = list(text = extra.args$fontsize))
-  }
-
-  # greyscale handling
-  if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-  }
 
   # variables needed
   vars <- c("date", pollutant)
@@ -160,7 +154,7 @@ timeProp <- function(
     ) |>
     # needs specific arrangement for lattice
     dplyr::arrange(
-      .data[[type]],
+      dplyr::pick(dplyr::all_of(type)),
       .data$xleft,
       .data$xright,
       .data[[proportion]]
@@ -170,6 +164,7 @@ timeProp <- function(
       weighted_mean = .data[[pollutant]] * n / sum(n),
       Var1 = tidyr::replace_na(.data$weighted_mean, 0),
       var2 = cumsum(.data$Var1),
+      var2lag = dplyr::lag(.data$var2, default = 0),
       date = .data$xleft,
       .by = dplyr::all_of(group_1)
     )
@@ -181,132 +176,117 @@ timeProp <- function(
         results,
         Var1 = .data$Var1 * (100 / sum(.data$Var1, na.rm = TRUE)),
         var2 = cumsum(.data$Var1),
+        var2lag = dplyr::lag(.data$var2, default = 0),
         .by = dplyr::all_of(c(type, "date"))
       )
   }
 
   # make sure we know order of data frame for adding other dates
-  results <- dplyr::arrange(results, .data[[type]], "date")
-
-  # proper names of labelling #
-  strip.dat <- strip.fun(results, type, auto.text)
-  strip <- strip.dat[[1]]
-  strip.left <- strip.dat[[2]]
-
-  # labelling on plot
-  labs <- sapply(
-    rev(levels(results[[proportion]])),
-    function(x) quickText(x, auto.text)
-  )
-
-  # the few colours used for scaling
-  nProp <- length(levels(results[[proportion]]))
-  scaleCol <- openColours(cols, nProp)
-
-  # add colours to the dataframe
-  results <-
-    dplyr::mutate(
-      results,
-      cols = scaleCol[as.integer(.data[[proportion]])]
-    )
-
-  # formula for lattice
-  myform <- formula(paste("Var1 ~ date | ", type, sep = ""))
-
-  # date axis formatting
-  breaks <- dateBreaks(results$date, date.breaks)
-  dates <- breaks$major
-  formats <- date.format %||% breaks$format
-  scales <- list(x = list(at = dates, format = formats))
-
-  # change in style if normalising data
-  if (normalise) {
-    ylab <- quickText(paste("% contribution to", pollutant), auto.text)
-    pad <- 1
-  } else {
-    pad <- 1.04
-  }
+  results <- dplyr::arrange(results, dplyr::pick(dplyr::all_of(type)), "date")
 
   # set limits, if not set by user
-  xlim <- extra.args$xlim %||% range(c(results$xleft, results$xright))
-  ylim <- extra.args$ylim %||% c(0, pad * max(results$var2, na.rm = TRUE))
+  xlim <- extra.args$xlim %||% NULL
+  ylim <- extra.args$ylim %||% NULL
 
   # set up key, if required
-  if (key) {
-    key <- list(
-      rectangles = list(col = rev(scaleCol), border = NA),
-      text = list(labs),
-      space = key.position,
-      title = quickText(key.title, auto.text),
-      cex.title = 1,
-      columns = key.columns
-    )
-  } else {
-    key <- NULL
+  if (!key) {
+    key.position = "none"
   }
 
-  # construct plot
-  plt <- xyplot(
-    myform,
-    data = results,
-    as.table = TRUE,
-    strip = strip,
-    strip.left = strip.left,
-    groups = get(proportion),
-    stack = TRUE,
-    scales = scales,
-    col = scaleCol,
-    border = NA,
-    key = key,
-    par.strip.text = list(cex = 0.8),
-    ...,
-    panel = function(..., col, subscripts) {
-      panel.grid(-1, 0)
-      panel.abline(v = dates, col = "grey95", ...)
-      lapply(split(results[subscripts, ], results$date[subscripts]), panelBar)
-    }
-  )
-
-  # update extra args; usual method does not seem to work
-  plt <- modifyList(
-    plt,
-    list(
-      ylab = ylab,
-      xlab = xlab,
-      x.limits = xlim,
-      y.limits = ylim,
-      main = main,
-      sub = sub
+  # plot
+  thePlot <-
+    ggplot2::ggplot(
+      results,
+      ggplot2::aes(
+        xmin = .data[["xleft"]],
+        xmax = .data[["xright"]],
+        ymin = .data[["var2"]],
+        ymax = .data[["var2lag"]],
+        fill = .data[[proportion]]
+      )
+    ) +
+    ggplot2::geom_rect(
+      show.legend = TRUE,
+      colour = extra.args$border %||% "transparent"
+    ) +
+    ggplot2::scale_fill_manual(
+      values = openColours(cols, dplyr::n_distinct(results[[proportion]])),
+      breaks = levels(results[[proportion]]),
+      labels = \(x) label_openair(x, auto_text = auto.text),
+      drop = FALSE
+    ) +
+    ggplot2::guides(
+      fill = ggplot2::guide_legend(
+        reverse = TRUE,
+        theme = ggplot2::theme(
+          legend.title.position = ifelse(
+            key.position %in% c("left", "right"),
+            "top",
+            key.position
+          ),
+          legend.text.position = ifelse(
+            key.position %in% c("top", "bottom"),
+            "right",
+            key.position
+          )
+        ),
+        ncol = if (key.position %in% c("left", "right")) {
+          NULL
+        } else {
+          dplyr::n_distinct(results[[proportion]])
+        }
+      )
+    ) +
+    ggplot2::scale_x_datetime(
+      breaks = scales::breaks_pretty(date.breaks),
+      date_labels = date.format %||% ggplot2::waiver(),
+      limits = xlim,
+      expand = ggplot2::expansion()
+    ) +
+    ggplot2::scale_y_continuous(
+      limits = ylim,
+      expand = ggplot2::expansion(if (normalise) c(0, 0) else c(0, 0.1))
+    ) +
+    ggplot2::labs(
+      x = xlab,
+      y = ylab,
+      title = main,
+      caption = sub,
+      fill = quickText(key.title, auto.text = auto.text)
+    ) +
+    theme_openair(key.position) +
+    set_extra_fontsize(extra.args) +
+    get_facet(
+      type,
+      extra.args,
+      scales = relation_to_facet_scales(x.relation, y.relation),
+      auto.text,
+      drop = TRUE
     )
-  )
+
+  # make key full width/height
+  if (key.position %in% c("left", "right")) {
+    thePlot <- thePlot +
+      ggplot2::theme(
+        legend.key.height = ggplot2::rel(2)
+      )
+  }
+  if (key.position %in% c("top", "bottom")) {
+    thePlot <- thePlot +
+      ggplot2::theme(
+        legend.key.width = ggplot2::rel(2)
+      )
+  }
 
   if (plot) {
-    print(plt)
+    plot(thePlot)
   }
 
   output <- list(
-    plot = plt,
+    plot = thePlot,
     data = results,
     call = match.call()
   )
   class(output) <- "openair"
   invisible(output)
-}
-
-#' plot individual rectangles as lattice panel.barchar is *very* slow
-#' @noRd
-panelBar <- function(dat) {
-  xleft <- unclass(dat$xleft)
-  ybottom <- lag(dat$var2, default = 0)
-  xright <- unclass(dat$xright)
-  ytop <- dat$var2
-
-  lrect(
-    xleft = xleft,
-    ybottom = ybottom,
-    xright = xright,
-    ytop = ytop,
-    fill = dat$cols,
-    border = NA
-  )
 }
