@@ -11,11 +11,19 @@
 
 ### Breaking Changes
 
-- [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
-  is now written in `ggplot2`. This is the beginning of a move away from
-  `lattice` to a more modern plotting engine. For most users there will
-  be no real change, but some arguments passed to `...` may no longer be
-  supported.
+- The following functions are now written in `ggplot2`:
+
+  - [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
+
+  - [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md)
+
+  - [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md)
+
+  This is the beginning of a move away from `lattice` to a more modern
+  plotting engine. For most users there will be no real change, but some
+  arguments passed to `...` may no longer be supported. Any
+  `lattice`-specific annotations also will not work, but equivalent
+  `ggplot2` methods should be available.
 
 ### New Features
 
