@@ -231,9 +231,13 @@ timeProp <- function(
           )
         ),
         ncol = if (key.position %in% c("left", "right")) {
-          NULL
+          key.columns
         } else {
-          dplyr::n_distinct(results[[proportion]])
+          if (missing(key.columns)) {
+            dplyr::n_distinct(results[[proportion]])
+          } else {
+            key.columns
+          }
         }
       )
     ) +

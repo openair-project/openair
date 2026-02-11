@@ -8,7 +8,6 @@ theme_openair <- function(key.position) {
       plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
       plot.subtitle = ggplot2::element_text(hjust = 0.5),
       plot.caption = ggplot2::element_text(hjust = 0.5, face = "bold"),
-      plot.margin = ggplot2::rel(4),
       legend.frame = ggplot2::element_rect(
         fill = NA,
         color = "black",
