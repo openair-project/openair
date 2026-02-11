@@ -313,7 +313,6 @@ timeVariation(
 Other time series and trend functions: 
 \code{\link{TheilSen}()},
 \code{\link{calendarPlot}()},
-\code{\link{runRegression}()},
 \code{\link{smoothTrend}()},
 \code{\link{timePlot}()},
 \code{\link{timeProp}()},

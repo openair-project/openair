@@ -6,9 +6,11 @@ reference:
 - title: Data
   desc: In-built data to demonstrate openair functions.
   contents: mydata
+  
 - title: Import
   desc: Import tidy air quality data from the UK and Europe.
   contents: has_concept("import functions")
+  
 - title: Directional Analysis
 - subtitle: Polar Analysis
   desc: Examine the relationship between wind speed, wind direction and pollutant
@@ -17,21 +19,24 @@ reference:
 - subtitle: Trajectory Analysis
   desc: Analyse and visualise HYSPLIT trajectory files.
   contents: has_concept("trajectory analysis functions")
+  
 - title: Time Series and Trends
   desc: Examine how pollutant concentrations change with time.
   contents: has_concept("time series and trend functions")
+  
 - title: Model Evaluation
   desc: Compare models against measurements and models against other models.
   contents: has_concept("model evaluation functions")
+  
 - title: Other Plots
   desc: Additional plotting functions for visualising air quality data.
   contents:
   - summaryPlot
-  - runRegression
   - scatterPlot
   - corPlot
   - linearRelation
   - calcFno2
+  
 - title: Utilities
 - subtitle: Plot Utilities
   desc: Tools for refining openair plots.
@@ -46,12 +51,13 @@ reference:
   - binData
   - calcPercentile
   - cutData
+  - datePad
   - rollingMean
   - rollingQuantile
+  - runRegression
   - GaussianSmooth
   - selectByDate
   - selectRunning
   - splitByDate
-  - datePad
   - timeAverage
 

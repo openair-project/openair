@@ -245,7 +245,6 @@ smoothTrend(mydata,
 Other time series and trend functions: 
 \code{\link{TheilSen}()},
 \code{\link{calendarPlot}()},
-\code{\link{runRegression}()},
 \code{\link{timePlot}()},
 \code{\link{timeProp}()},
 \code{\link{timeVariation}()},
