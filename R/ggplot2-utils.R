@@ -37,7 +37,7 @@ set_extra_fontsize <- function(extra.args) {
 }
 
 # work out the faceting strategy
-get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE) {
+get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE, ...) {
   fun <- NULL
   if (any(type != "default")) {
     if (length(type) == 1) {
@@ -46,7 +46,8 @@ get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE) {
           facet_wd(
             ggplot2::vars(.data[[type]]),
             labeller = labeller_openair(auto_text = auto.text),
-            scales = scales
+            scales = scales,
+            ...
           )
       } else {
         fun <-
@@ -56,7 +57,8 @@ get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE) {
             labeller = labeller_openair(auto_text = auto.text),
             ncol = extra.args$layout[1],
             nrow = extra.args$layout[2],
-            scales = scales
+            scales = scales,
+            ...
           )
       }
     } else {
@@ -66,7 +68,8 @@ get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE) {
           rows = ggplot2::vars(.data[[type[1]]]),
           cols = ggplot2::vars(.data[[type[2]]]),
           labeller = labeller_openair(auto_text = auto.text),
-          scales = scales
+          scales = scales,
+          ...
         )
     }
   }

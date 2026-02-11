@@ -14,22 +14,23 @@ calendarPlot(
   data.thresh = 0,
   percentile = NA,
   cols = "heat",
-  limits = c(0, 100),
+  limits = NULL,
   lim = NULL,
   col.lim = c("grey30", "black"),
   col.arrow = "black",
+  col.na = "white",
   font.lim = c(1, 2),
-  cex.lim = c(0.6, 1),
+  cex.lim = c(0.6, 0.9),
   cex.date = 0.6,
   digits = 0,
-  labels = NA,
-  breaks = NA,
+  labels = NULL,
+  breaks = NULL,
   w.shift = 0,
   w.abbr.len = 1,
   remove.empty = TRUE,
   show.year = TRUE,
-  key.header = "",
-  key.footer = "",
+  key.header = statistic,
+  key.footer = pollutant,
   key.position = "right",
   key = TRUE,
   auto.text = TRUE,
@@ -95,6 +96,8 @@ colour of the text above \code{lim}.}
 \item{col.arrow}{The colour of the annotated wind direction / wind speed
 arrows.}
 
+\item{col.na}{Colour to be used to show missing data.}
+
 \item{font.lim}{For the annotation of concentration labels on each day. The
 first sets the font of the text below \code{lim} and the second sets the font of
 the text above \code{lim}. Note that font = 1 is normal text and font = 2 is
@@ -135,12 +138,9 @@ labels include the year label? \code{TRUE} creates labels like "January-2000",
 \code{FALSE} labels just as "January". If multiple years of data are detected,
 this option is forced to be \code{TRUE}.}
 
-\item{key.header}{Adds additional text/labels to the scale key. For example,
-passing \code{calendarPlot(mydata, key.header = "header", key.footer = "footer")} adds addition text above and below the scale key. These
-arguments are passed to \code{\link[=drawOpenKey]{drawOpenKey()}} via \code{\link[=quickText]{quickText()}}, applying the
-\code{auto.text} argument, to handle formatting.}
-
-\item{key.footer}{see \code{key.header}.}
+\item{key.header, key.footer}{Used to control the title of the plot key. By
+default, \code{key.header} is the \code{statistic} and \code{key.footer} is the
+\code{pollutant}. These are pasted together to form the key title.}
 
 \item{key.position}{Location where the scale key is to plotted. Allowed
 arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"} and \code{"left"}.}

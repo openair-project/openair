@@ -66,6 +66,7 @@
 #'   colour of the text above `lim`.
 #' @param col.arrow The colour of the annotated wind direction / wind speed
 #'   arrows.
+#' @param col.na Colour to be used to show missing data.
 #' @param font.lim For the annotation of concentration labels on each day. The
 #'   first sets the font of the text below `lim` and the second sets the font of
 #'   the text above `lim`. Note that font = 1 is normal text and font = 2 is
@@ -97,12 +98,9 @@
 #'   labels include the year label? `TRUE` creates labels like "January-2000",
 #'   `FALSE` labels just as "January". If multiple years of data are detected,
 #'   this option is forced to be `TRUE`.
-#' @param key.header Adds additional text/labels to the scale key. For example,
-#'   passing `calendarPlot(mydata, key.header = "header", key.footer =
-#'   "footer")` adds addition text above and below the scale key. These
-#'   arguments are passed to [drawOpenKey()] via [quickText()], applying the
-#'   `auto.text` argument, to handle formatting.
-#' @param key.footer see `key.header`.
+#' @param key.header,key.footer Used to control the title of the plot key. By
+#'   default, `key.header` is the `statistic` and `key.footer` is the
+#'   `pollutant`. These are pasted together to form the key title.
 #' @param key.position Location where the scale key is to plotted. Allowed
 #'   arguments currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
 #' @param key Fine control of the scale key via [drawOpenKey()]. See
@@ -159,29 +157,32 @@ calendarPlot <-
     data.thresh = 0,
     percentile = NA,
     cols = "heat",
-    limits = c(0, 100),
+    limits = NULL,
     lim = NULL,
     col.lim = c("grey30", "black"),
     col.arrow = "black",
+    col.na = "white",
     font.lim = c(1, 2),
-    cex.lim = c(0.6, 1),
+    cex.lim = c(0.6, 0.9),
     cex.date = 0.6,
     digits = 0,
-    labels = NA,
-    breaks = NA,
+    labels = NULL,
+    breaks = NULL,
     w.shift = 0,
     w.abbr.len = 1,
     remove.empty = TRUE,
     show.year = TRUE,
-    key.header = "",
-    key.footer = "",
+    key.header = statistic,
+    key.footer = pollutant,
     key.position = "right",
     key = TRUE,
     auto.text = TRUE,
     plot = TRUE,
     ...
   ) {
-    ## ---- Setup & Validation ----
+    if (rlang::is_logical(key) && !key) {
+      key.position <- "none"
+    }
 
     # check w.shift
     if (w.shift < 0 || w.shift > 6) {
@@ -191,45 +192,10 @@ calendarPlot <-
     # extra args
     extra.args <- list(...)
 
-    ## ---- Graphics ----
-
-    # set graphics
-    current.font <- trellis.par.get("fontsize")
-    on.exit(trellis.par.set(fontsize = current.font))
-
-    if ("fontsize" %in% names(extra.args)) {
-      trellis.par.set(fontsize = list(text = extra.args$fontsize))
-    }
-
-    # themes for calendarPlot
-    def.theme <- list(
-      strip.background = list(col = "#ffe5cc"),
-      strip.border = list(col = "black"),
-      axis.line = list(col = "black"),
-      par.strip.text = list(cex = 1)
-    )
-
-    cal.theme <- list(
-      strip.background = list(col = "grey90"),
-      strip.border = list(col = "transparent"),
-      axis.line = list(col = "transparent"),
-      par.strip.text = list(cex = 0.8)
-    )
-
-    lattice.options(default.theme = cal.theme)
-    on.exit(
-      # reset theme
-      lattice.options(default.theme = def.theme)
-    )
-
-    ## ---- Labels ----
-
     # label controls
     extra.args$xlab <- quickText(extra.args$xlab %||% "", auto.text)
     extra.args$ylab <- quickText(extra.args$ylab %||% "", auto.text)
     main <- quickText(extra.args$main %||% NULL, auto.text)
-
-    ## ---- Data Preparation ----
 
     # filter and check data
     mydata <- prepare_calendar_data(
@@ -247,8 +213,6 @@ calendarPlot <-
         1,
       by = "day"
     )
-
-    ## ---- Data Aggregation ----
 
     # if statistic is max/min we want the corresponding ws/wd for the pollutant,
     # not simply the max ws/wd
@@ -293,8 +257,6 @@ calendarPlot <-
       mydata$date <- lubridate::as_date(mydata$date)
     }
 
-    ## ---- Data Structuring ----
-
     # make sure all days are available
     mydata <-
       dplyr::left_join(data.frame(date = all_dates), mydata, by = "date")
@@ -336,6 +298,7 @@ calendarPlot <-
       mydata <- dplyr::select(mydata, -"years")
     }
 
+    # type is always "cuts"
     type <- "cuts"
 
     # drop empty months?
@@ -367,8 +330,6 @@ calendarPlot <-
       # retain actual numerical value (retain for categorical scales)
       dplyr::mutate(value = .data$conc.mat)
 
-    ## ---- Wind Speed / Direction Annotations ----
-
     # need wd dataframe if ws/wd annotation
     if (annotate %in% c("ws", "wd")) {
       wd <- original_data |>
@@ -399,95 +360,25 @@ calendarPlot <-
         )
     }
 
-    ## ---- Scales & Colours Setup ----
-
-    # get name for lattice strips
-    strip <- strip.fun(mydata, type, auto.text)[[1]]
-
     # handle breaks
-    category <- FALSE
-    if (!anyNA(breaks)) {
+    categorical <- FALSE
+    if (!is.null(breaks)) {
       # assign labels if no labels are given
       labels <- breaksToLabels(breaks, labels)
-      category <- TRUE
+      categorical <- TRUE
       mydata <- dplyr::mutate(
         mydata,
         conc.mat = cut(.data$conc.mat, breaks = breaks, labels = labels)
       )
     }
 
-    ## ---- Categorical Scales ----
-
-    # categorical scales required
-    if (category) {
-      # check the breaks and labels are consistent
-      if (length(labels) + 1 != length(breaks)) {
-        stop("Need one more break than labels")
-      }
-      n <- length(levels(mydata$conc.mat))
-
-      col <- openColours(cols, n)
-      legend <- list(
-        col = col,
-        space = key.position,
-        auto.text = auto.text,
-        labels = levels(mydata$conc.mat),
-        footer = key.footer,
-        header = key.header,
-        height = 0.8,
-        width = 1.5,
-        fit = "scale",
-        plot.style = "other"
+    # add in ws and wd if there
+    newdata <-
+      dplyr::left_join(
+        mydata,
+        dplyr::select(original_data, dplyr::any_of(c("date", "ws", "wd"))),
+        by = "date"
       )
-
-      col.scale <- breaks
-      legend <- makeOpenKeyLegend(key, legend, "windRose")
-    } else {
-      # continuous colour scale
-      nlev <- 200
-
-      # handle missing breaks arguments
-
-      if (missing(limits)) {
-        breaks <- pretty(mydata$value, n = nlev)
-        labs <- pretty(breaks, 7)
-        labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-      } else {
-        breaks <- pretty(limits, n = nlev)
-        labs <- pretty(breaks, 7)
-        labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-
-        if (max(limits) < max(mydata$value, na.rm = TRUE)) {
-          # if clipping highest, then annotate differently
-          id <- which(mydata$value > max(limits))
-          mydata$value[id] <- max(limits)
-          labs <- pretty(breaks, 7)
-          labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-          labs[length(labs)] <- paste(">", labs[length(labs)])
-        }
-      }
-
-      nlev2 <- length(breaks)
-      col <- openColours(cols, (nlev2 - 1))
-      col.scale <- breaks
-
-      legend <- list(
-        col = col,
-        at = col.scale,
-        labels = list(labels = labs),
-        space = key.position,
-        auto.text = auto.text,
-        footer = key.footer,
-        header = key.header,
-        height = 1,
-        width = 1.5,
-        fit = "all"
-      )
-
-      legend <- makeOpenKeyLegend(key, legend, "calendarPlot")
-    }
-
-    ## ---- Construct Plot ----
 
     # get weekday abbreviation for axis
     weekday.abb <-
@@ -498,139 +389,211 @@ calendarPlot <-
           1
       ]
 
-    lv.args <- list(
-      x = value ~ x * y | cuts,
-      data = mydata,
-      par.settings = cal.theme,
-      main = main,
-      strip = strip,
-      par.strip.text = list(cex = 0.9),
-      at = col.scale,
-      col.regions = col,
-      as.table = TRUE,
-      scales = list(
-        y = list(draw = FALSE),
-        x = list(
-          at = 1:7,
-          labels = weekday.abb,
-          tck = 0
+    thePlot <-
+      ggplot2::ggplot(
+        newdata,
+        ggplot2::aes(
+          x = .data$x,
+          y = .data$y,
+          fill = .data[["conc.mat"]]
+        )
+      ) +
+      ggplot2::geom_tile(
+        colour = extra.args$border %||% "grey90",
+        show.legend = TRUE
+      ) +
+      ggplot2::geom_text(
+        data = newdata[is.na(newdata$conc.mat), ],
+        colour = extra.args$border %||% "grey80",
+        ggplot2::aes(
+          label = .data[["date.mat"]]
         ),
-        par.strip.text = list(cex = 0.8),
-        alternating = 1,
-        relation = "free"
-      ),
-      aspect = 6 / 7,
-      between = list(x = 1),
-      colorkey = FALSE,
-      legend = legend,
-      panel = function(x, y, subscripts, ...) {
-        panel.levelplot(x, y, subscripts, ...)
-        panel.abline(v = c(0.5:7.5), col = "grey90")
-        panel.abline(h = c(0.5:7.5), col = "grey90")
+        size = cex.lim[1] * 11,
+        fontface = font.lim[1],
+        size.unit = "pt",
+      ) +
+      get_facet(
+        type,
+        extra.args,
+        auto.text = auto.text,
+        scales = "fixed",
+        drop = remove.empty,
+        axes = "all_x"
+      ) +
+      ggplot2::coord_cartesian(expand = FALSE, ratio = 1) +
+      theme_openair(key.position = key.position) +
+      ggplot2::theme(
+        axis.ticks = ggplot2::element_blank(),
+        axis.text.y = ggplot2::element_blank()
+      ) +
+      ggplot2::labs(
+        y = extra.args$ylab,
+        x = extra.args$xlab,
+        title = extra.args$main,
+        fill = quickText(
+          paste(
+            key.header,
+            key.footer,
+            sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
+          ),
+          auto.text = auto.text
+        )
+      ) +
+      ggplot2::scale_x_continuous(
+        labels = weekday.abb,
+        breaks = 1:7
+      )
 
-        if (annotate == "date") {
-          ltext(
-            x[subscripts],
-            y[subscripts],
-            labels = mydata$date.mat[subscripts],
-            cex = cex.date,
-            col = as.character(mydata$dateColour[subscripts])
+    # colours
+    if (categorical) {
+      thePlot <-
+        thePlot +
+        ggplot2::scale_fill_manual(
+          values = openColours(
+            scheme = cols,
+            n = dplyr::n_distinct(levels(newdata$conc.mat))
+          ),
+          na.value = col.na,
+          breaks = levels(newdata$conc.mat),
+          drop = FALSE
+        ) +
+        ggplot2::guides(
+          fill = ggplot2::guide_legend(
+            reverse = key.position %in% c("left", "right"),
+            theme = ggplot2::theme(
+              legend.title.position = ifelse(
+                key.position %in% c("left", "right"),
+                "top",
+                key.position
+              ),
+              legend.text.position = key.position
+            ),
+            nrow = if (key.position %in% c("left", "right")) NULL else 1
           )
-        }
-
-        if (annotate == "value") {
-          # add some dates for navigation
-          date.col <- as.character(mydata$dateColour[subscripts])
-          ids <- which(date.col == "black")
-          date.col[ids] <- "transparent"
-          ltext(
-            x[subscripts],
-            y[subscripts],
-            labels = mydata$date.mat[subscripts],
-            cex = cex.date,
-            col = date.col
+        )
+    } else {
+      thePlot <-
+        thePlot +
+        ggplot2::scale_fill_gradientn(
+          colours = openColours(cols),
+          na.value = col.na,
+          oob = scales::oob_squish,
+          limit = limits
+        ) +
+        ggplot2::guides(
+          fill = ggplot2::guide_colorbar(
+            theme = ggplot2::theme(
+              legend.title.position = ifelse(
+                key.position %in% c("left", "right"),
+                "top",
+                key.position
+              ),
+              legend.text.position = key.position
+            )
           )
+        )
+    }
 
-          concs <- mydata$value[subscripts]
+    # make key full width/height
+    if (key.position %in% c("left", "right")) {
+      thePlot <- thePlot +
+        ggplot2::theme(
+          legend.key.height = ggplot2::unit(1, "null"),
+          legend.key.spacing.y = ggplot2::unit(0, "cm")
+        )
+    }
+    if (key.position %in% c("top", "bottom")) {
+      thePlot <- thePlot +
+        ggplot2::theme(
+          legend.key.width = ggplot2::unit(1, "null"),
+          legend.key.spacing.x = ggplot2::unit(0, "cm")
+        )
+    }
 
-          # deal with values above/below threshold
-          ids <- seq_along(concs)
-          the.cols <- rep(col.lim[1], length(ids))
-          the.font <- rep(font.lim[1], length(ids))
-          the.cex <- rep(cex.lim[1], length(ids))
-          if (!is.null(lim)) {
-            # ids where conc is >= lim
-            ids <- which(concs >= lim)
-            the.cols[ids] <- col.lim[2]
-            the.font[ids] <- font.lim[2]
-            the.cex[ids] <- cex.lim[2]
-          }
+    if (annotate == "date") {
+      thePlot <- thePlot +
+        ggplot2::geom_text(
+          data = dplyr::filter(newdata, !is.na(.data$conc.mat)),
+          ggplot2::aes(
+            label = .data[["date.mat"]]
+          ),
+          size = cex.lim[1] * 11,
+          size.unit = "pt",
+          fontface = font.lim[1],
+          color = col.lim[2]
+        )
+    }
 
-          the.labs <- round(concs, digits = digits)
-          id <- which(is.na(the.labs))
-          if (length(id) > 0) {
-            the.labs <- as.character(the.labs)
-            the.labs[id] <- ""
-          }
-          ltext(
-            x[subscripts],
-            y[subscripts],
-            labels = the.labs,
-            cex = the.cex,
-            font = the.font,
-            col = the.cols
-          )
-        }
+    if (annotate == "value") {
+      lim <- lim %||% Inf
+      thePlot <- thePlot +
+        ggplot2::geom_text(
+          data = dplyr::filter(newdata, .data$conc.mat < lim),
+          ggplot2::aes(
+            label = round(.data[["conc.mat"]], digits = digits)
+          ),
+          size = cex.lim[1] * 11,
+          size.unit = "pt",
+          fontface = font.lim[1],
+          color = col.lim[ifelse(is.infinite(lim), 2, 1)]
+        ) +
+        ggplot2::geom_text(
+          data = dplyr::filter(newdata, .data$conc.mat >= lim),
+          ggplot2::aes(
+            label = round(.data[["conc.mat"]], digits = digits)
+          ),
+          size = cex.lim[2] * 11,
+          size.unit = "pt",
+          fontface = font.lim[2],
+          color = col.lim[2]
+        )
+    }
 
-        if (annotate == "wd") {
-          larrows(
-            x + 0.5 * sin(wd$value[subscripts]),
-            y + 0.5 * cos(wd$value[subscripts]),
-            x + -0.5 * sin(wd$value[subscripts]),
-            y + -0.5 * cos(wd$value[subscripts]),
-            angle = 20,
-            length = 0.07,
-            lwd = 0.5,
-            col = col.arrow
-          )
-        }
+    if (annotate == "ws") {
+      thePlot <- thePlot +
+        layer_windflow(
+          data = newdata,
+          ggplot2::aes(
+            ws = .data$ws,
+            wd = .data$wd
+          ),
+          range = c(0, 0.5),
+          show.legend = FALSE,
+          color = col.arrow
+        )
+    }
 
-        if (annotate == "ws") {
-          larrows(
-            x + (0.5 * sin(wd$value[subscripts]) * ws$value[subscripts]),
-            y + (0.5 * cos(wd$value[subscripts]) * ws$value[subscripts]),
-            x + (-0.5 * sin(wd$value[subscripts]) * ws$value[subscripts]),
-            y + (-0.5 * cos(wd$value[subscripts]) * ws$value[subscripts]),
-            angle = 20,
-            length = 0.07,
-            lwd = 0.5,
-            col = col.arrow
-          )
-        }
-      }
-    )
-
-    # reset for extra.args
-    lv.args <- listUpdate(lv.args, extra.args)
+    if (annotate == "wd") {
+      # not using ws here, so create a dummy
+      wsdata <- newdata
+      wsdata$ws <- 1L
+      thePlot <- thePlot +
+        layer_windflow(
+          data = wsdata,
+          ggplot2::aes(
+            ws = .data$ws,
+            wd = .data$wd
+          ),
+          arrow = ggplot2::arrow(
+            angle = 15,
+            length = ggplot2::unit(0.3, "lines"),
+            ends = "last",
+            type = "closed"
+          ),
+          range = c(0, 0.5),
+          show.legend = FALSE,
+          color = col.arrow
+        )
+    }
 
     # plot
     if (plot) {
-      print(do.call(levelplot, lv.args))
+      plot(thePlot)
     }
 
-    # output
-    plt <- do.call(levelplot, lv.args)
-
-    # add in ws and wd if there
-    newdata <-
-      dplyr::left_join(
-        mydata,
-        dplyr::select(original_data, dplyr::any_of(c("date", "ws", "wd"))),
-        by = "date"
-      )
-
+    # return
     output <- list(
-      plot = plt,
+      plot = thePlot,
       data = newdata,
       call = match.call()
     )
