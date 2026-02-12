@@ -92,7 +92,7 @@
     
     - Added arguments `key`, `key.position` and `key.header` for adding and refining a plot legend.
     
-    - Up to two `type`s are now also permitted, and `dedrogram` is now supported even when `type` is not `"default"`.
+    - Up to two `type`s are now also permitted.
 
 ## Bug Fixes
 

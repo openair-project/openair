@@ -181,8 +181,8 @@ corPlot <- function(
   triangle <- rlang::arg_match(triangle)
   annotate <- rlang::arg_match(annotate)
 
-  # if not clustering, obviously can't add a dendrogram
-  if (!cluster) {
+  # if not clustering or type isn't default, can't add dendrogram
+  if (!cluster || !all(type == "default")) {
     dendrogram <- FALSE
   }
 
@@ -219,7 +219,8 @@ corPlot <- function(
         df[, sapply(df, function(x) {
           dplyr::n_distinct(x, na.rm = TRUE) > 1L
         })]
-      }
+      },
+      .include_default = TRUE
     )
 
   # proper names of labelling
@@ -230,26 +231,22 @@ corPlot <- function(
     cli::abort("Need at least two valid numeric fields to compare.")
   }
 
-  # clustering
-  hc <- NULL
-  var_order <- pollutants
-  if (cluster) {
-    cor_matrix <-
-      mydata |>
-      dplyr::select(dplyr::all_of(pollutants)) |>
-      cor(use = use, method = method)
-
-    hc <- hclust(as.dist(1 - cor_matrix), method = "complete")
-
-    var_order <- hc$labels[hc$order]
-  }
-
   # create plot data
-  plotdata <-
+  cor_data <-
     mapType(
       mydata,
       type,
       \(df) {
+        # get types to bind to data
+        types_df <- dplyr::distinct(df[type])
+
+        # the tag - gives unique tag levels based on type
+        tag <-
+          types_df |>
+          dplyr::mutate(dplyr::across(dplyr::everything(), as.character)) |>
+          unlist() |>
+          paste(collapse = "___")
+
         # select chosen pollutants
         df <- dplyr::select(df, dplyr::all_of(pollutants))
 
@@ -260,8 +257,10 @@ corPlot <- function(
 
         # variables
         vars <- names(df)
+
         # create grid of all pollutants vs all others
-        expand.grid(x = vars, y = vars, stringsAsFactors = FALSE) |>
+        cor_matrix_df <-
+          expand.grid(x = vars, y = vars, stringsAsFactors = FALSE) |>
           # act in a row-wise way
           dplyr::rowwise() |>
           # calculate correlation test scores
@@ -289,12 +288,56 @@ corPlot <- function(
           ) |>
           # drop unnecessary test column
           dplyr::select(-"test")
-      }
-    ) |>
-    # make sure x and y are properly ordered factors
-    dplyr::mutate(
-      dplyr::across(c("x", "y"), \(x) factor(x, levels = var_order))
+
+        # clustering
+        if (cluster) {
+          # create a matrix
+          cor_matrix <-
+            df |>
+            dplyr::select(dplyr::all_of(vars)) |>
+            cor(use = use, method = method)
+
+          # cluster the matrix
+          hc <- hclust(as.dist(1 - cor_matrix), method = "complete")
+
+          # get a new variable order
+          var_order <- hc$labels[hc$order]
+
+          # turn x/y into factor - labels are the pollutant plus the type tag
+          cor_matrix_df$x <-
+            factor(
+              cor_matrix_df$x,
+              levels = var_order,
+              labels = paste(tag, var_order, sep = "___")
+            )
+          cor_matrix_df$y <-
+            factor(
+              cor_matrix_df$y,
+              levels = var_order,
+              labels = paste(tag, var_order, sep = "___")
+            )
+        } else {
+          hc <- NULL
+          cor_matrix_df$x <- factor(cor_matrix_df$x)
+          cor_matrix_df$y <- factor(cor_matrix_df$y)
+        }
+
+        return(
+          list(
+            data = cor_matrix_df |>
+              dplyr::mutate(tag = tag, types_df),
+            hc = hc
+          )
+        )
+      },
+      .include_default = TRUE,
+      .row_bind = FALSE
     )
+
+  # get plotting data out of returned object
+  plotdata <-
+    purrr::map(cor_data, "data") |>
+    dplyr::bind_rows()
 
   # remove certain cells based on triangle/diagonal args
   if (triangle == "upper") {
@@ -353,13 +396,8 @@ corPlot <- function(
     )
 
   # need different scales if we're using dendrograms
-  x_axis_scale <- function(...) {
-    ggplot2::scale_x_continuous(breaks = seq_along(var_order), ...)
-  }
-  y_axis_scale <- function(...) {
-    ggplot2::scale_y_continuous(breaks = seq_along(var_order), ...)
-  }
   if (dendrogram) {
+    hc <- purrr::map(cor_data, "hc")[[1]]
     rlang::check_installed("legendry", version = "0.2.4")
     x_axis_scale <- function(...) {
       legendry::scale_x_dendro(clust = hc, ...)
@@ -367,6 +405,27 @@ corPlot <- function(
     y_axis_scale <- function(...) {
       legendry::scale_y_dendro(clust = hc, ...)
     }
+  } else {
+    hc <- NULL
+    x_axis_scale <- function(...) {
+      ggplot2::scale_x_continuous(breaks = seq_along(levels(plotdata$x)), ...)
+    }
+    y_axis_scale <- function(...) {
+      ggplot2::scale_y_continuous(breaks = seq_along(levels(plotdata$y)), ...)
+    }
+  }
+
+  # strip tags away
+  remove_tag <- function(x) {
+    for (i in unique(paste0(plotdata$tag, "___"))) {
+      x <- gsub(
+        pattern = i,
+        replacement = "",
+        x,
+        fixed = TRUE
+      )
+    }
+    x
   }
 
   # construct plot
@@ -382,17 +441,29 @@ corPlot <- function(
       ),
       color = extra.args$border %||% "transparent"
     ) +
-    get_facet(type, extra.args, scales = "fixed", auto.text = auto.text) +
+    get_facet(
+      type,
+      extra.args,
+      scales = "free",
+      auto.text = auto.text,
+      # need to use ggh4x if clustered & multiple types
+      independent = cluster
+    ) +
     theme_openair(key.position) +
-    ggplot2::theme(panel.grid = ggplot2::element_blank()) +
+    ggplot2::theme(panel.grid = ggplot2::element_blank(), aspect.ratio = 1) +
     set_extra_fontsize(extra.args) +
-    ggplot2::coord_cartesian(ratio = 1) +
     x_axis_scale(
-      labels = label_openair(var_order, auto_text = auto.text),
+      labels = label_openair(
+        remove_tag(levels(plotdata$x)),
+        auto_text = auto.text
+      ),
       expand = ggplot2::expansion(c(0.01, 0.01))
     ) +
     y_axis_scale(
-      labels = label_openair(var_order, auto_text = auto.text),
+      labels = label_openair(
+        remove_tag(levels(plotdata$y)),
+        auto_text = auto.text
+      ),
       expand = ggplot2::expansion(c(0.01, 0.01))
     ) +
     ggplot2::scale_fill_gradientn(
@@ -511,6 +582,19 @@ corPlot <- function(
   names(newdata)[names(newdata) == "z"] <- "cor"
   names(newdata)[names(newdata) == "x"] <- "row"
   names(newdata)[names(newdata) == "y"] <- "col"
+  levels(newdata$row) <-
+    gsub(
+      pattern = unique(paste(paste0(plotdata$tag, "___"), collapse = "|")),
+      replacement = "",
+      levels(newdata$row)
+    )
+  levels(newdata$col) <-
+    gsub(
+      pattern = unique(paste(paste0(plotdata$tag, "___"), collapse = "|")),
+      replacement = "",
+      levels(newdata$col)
+    )
+  newdata <- dplyr::select(newdata, -"tag", -dplyr::any_of(type))
 
   # main handling
   output <-
