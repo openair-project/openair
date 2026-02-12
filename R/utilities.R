@@ -944,23 +944,32 @@ mapType <- function(
   type,
   fun,
   .include_default = FALSE,
+  .row_bind = TRUE,
   .progress = FALSE
 ) {
   if ((all(type == "default") || is.null(type)) && !.include_default) {
     return(fun(mydata))
   }
 
-  purrr::map(
-    .x = split(mydata, mydata[type], drop = TRUE),
-    .f = function(df) {
-      out <- fun(df)
-      out[type] <- df[1, type, drop = TRUE]
-      return(out)
-    },
-    .progress = .progress
-  ) |>
-    dplyr::bind_rows() |>
-    dplyr::relocate(dplyr::any_of(type))
+  out <-
+    purrr::map(
+      .x = split(mydata, mydata[type], drop = TRUE),
+      .f = function(df) {
+        out <- fun(df)
+        out[type] <- df[1, type, drop = TRUE]
+        return(out)
+      },
+      .progress = .progress
+    )
+
+  if (.row_bind) {
+    out <-
+      out |>
+      dplyr::bind_rows() |>
+      dplyr::relocate(dplyr::any_of(type))
+  }
+
+  return(out)
 }
 
 #' Create nice labels out of breaks, if only breaks are provided
