@@ -206,21 +206,31 @@ corPlot <- function(
     remove.calm = FALSE
   )
 
-  # remove variables where all are NA, or values are constant
-  mydata <- mydata[, sapply(mydata, function(x) {
-    dplyr::n_distinct(x, na.rm = TRUE) > 1L
-  })]
-
   # cut data depending on type
   mydata <- cutData(mydata, type, ...)
+
+  # remove variables where all are NA, or values are constant
+  # done per-type to remove, e.g., lat/lng
+  mydata <-
+    mapType(
+      mydata,
+      type = type,
+      fun = \(df) {
+        df[, sapply(df, function(x) {
+          dplyr::n_distinct(x, na.rm = TRUE) > 1L
+        })]
+      }
+    )
 
   # proper names of labelling
   pollutants <- names(mydata[, sapply(mydata, is.numeric)])
 
+  # if insufficient number of variables, stop
   if (length(pollutants) < 2) {
     cli::abort("Need at least two valid numeric fields to compare.")
   }
 
+  # clustering
   hc <- NULL
   var_order <- pollutants
   if (cluster) {
@@ -242,6 +252,8 @@ corPlot <- function(
       \(df) {
         # select chosen pollutants
         df <- dplyr::select(df, dplyr::all_of(pollutants))
+
+        # extra check for empty/constant columns
         df <- df[, sapply(df, function(x) {
           dplyr::n_distinct(x, na.rm = TRUE) > 1L
         })]
