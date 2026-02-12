@@ -37,7 +37,15 @@ set_extra_fontsize <- function(extra.args) {
 }
 
 # work out the faceting strategy
-get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE, ...) {
+get_facet <- function(
+  type,
+  extra.args,
+  scales,
+  auto.text,
+  drop = FALSE,
+  independent = FALSE,
+  ...
+) {
   fun <- NULL
   if (any(type != "default")) {
     if (length(type) == 1) {
@@ -62,15 +70,29 @@ get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE, ...) {
           )
       }
     } else {
-      fun <-
-        ggplot2::facet_grid(
-          drop = drop,
-          rows = ggplot2::vars(.data[[type[1]]]),
-          cols = ggplot2::vars(.data[[type[2]]]),
-          labeller = labeller_openair(auto_text = auto.text),
-          scales = scales,
-          ...
-        )
+      if (independent) {
+        rlang::check_installed("ggh4x")
+        fun <-
+          ggh4x::facet_grid2(
+            drop = drop,
+            rows = ggplot2::vars(.data[[type[1]]]),
+            cols = ggplot2::vars(.data[[type[2]]]),
+            labeller = labeller_openair(auto_text = auto.text),
+            scales = scales,
+            independent = TRUE,
+            ...
+          )
+      } else {
+        fun <-
+          ggplot2::facet_grid(
+            drop = drop,
+            rows = ggplot2::vars(.data[[type[1]]]),
+            cols = ggplot2::vars(.data[[type[2]]]),
+            labeller = labeller_openair(auto_text = auto.text),
+            scales = scales,
+            ...
+          )
+      }
     }
   }
   fun
