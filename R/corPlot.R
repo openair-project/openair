@@ -4,14 +4,14 @@
 #' primary purpose is as a tool for exploratory data analysis. Hierarchical
 #' clustering is used to group similar variables.
 #'
-#' The `corPlot` function plots correlation matrices. The implementation
-#' relies heavily on that shown in Sarkar (2007), with a few extensions.
+#' The [corPlot()] function plots correlation matrices. The implementation relies
+#' heavily on that shown in Sarkar (2007), with a few extensions.
 #'
 #' Correlation matrices are a very effective way of understating relationships
-#' between many variables. The `corPlot` shows the correlation coded in
-#' three ways: by shape (ellipses), colour and the numeric value. The ellipses
-#' can be thought of as visual representations of scatter plot. With a perfect
-#' positive correlation a line at 45 degrees positive slope is drawn. For zero
+#' between many variables. The [corPlot()] shows the correlation coded in three
+#' ways: by shape (ellipses), colour and the numeric value. The ellipses can be
+#' thought of as visual representations of scatter plot. With a perfect positive
+#' correlation a line at 45 degrees positive slope is drawn. For zero
 #' correlation the shape becomes a circle. See examples below.
 #'
 #' With many different variables it can be difficult to see relationships
@@ -22,86 +22,114 @@
 #'
 #' If clustering is chosen it is also possible to add a dendrogram using the
 #' option `dendrogram = TRUE`. Note that dendrogramscan only be plotted for
-#' `type = "default"` i.e. when there is only a single panel. The
-#' dendrogram can also be recovered from the plot object itself and plotted more
-#' clearly; see examples below.
+#' `type = "default"` i.e. when there is only a single panel. The dendrogram can
+#' also be recovered from the plot object itself and plotted more clearly; see
+#' examples below.
 #'
-#' It is also possible to use the `openair` type option to condition the
-#' data in many flexible ways, although this may become difficult to visualise
-#' with too many panels.
+#' It is also possible to use the `openair` type option to condition the data in
+#' many flexible ways, although this may become difficult to visualise with too
+#' many panels.
 #'
 #' @param mydata A data frame which should consist of some numeric columns.
-#' @param pollutants the names of data-series in `mydata` to be plotted by
-#'   `corPlot`. The default option `NULL` and the alternative
-#'   \dQuote{all} use all available valid (numeric) data.
-#' @param type `type` determines how the data are split i.e. conditioned,
-#'   and then plotted. The default is will produce a single plot using the
-#'   entire data. Type can be one of the built-in types as detailed in
-#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, `type = "season"` will produce four plots --- one for
-#'   each season.
 #'
-#'   It is also possible to choose `type` as another variable in the data
-#'   frame. If that variable is numeric, then the data will be split into four
-#'   quantiles (if possible) and labelled accordingly. If type is an existing
-#'   character or factor variable, then those categories/levels will be used
-#'   directly. This offers great flexibility for understanding the variation of
-#'   different variables and how they depend on one another.
+#' @param pollutants the names of data-series in `mydata` to be plotted by
+#'   `corPlot`. The default option `NULL` and the alternative `"all"` use all
+#'   available valid (numeric) data.
+#'
+#' @param type `type` determines how the data are split i.e. conditioned, and
+#'   then plotted. For example, `type = "season"` will produce four plots ---
+#'   one for each season. See [cutData()] for more information.
+#'
 #' @param cluster Should the data be ordered according to cluster analysis. If
-#'   `TRUE` hierarchical clustering is applied to the correlation matrices
-#'   using `hclust` to group similar variables together. With many
-#'   variables clustering can greatly assist interpretation.
-#' @param method The correlation method to use. Can be \dQuote{pearson},
-#'   \dQuote{spearman} or \dQuote{kendall}.
+#'   `TRUE` hierarchical clustering is applied to the correlation matrices using
+#'   [hclust()] to group similar variables together. With many variables
+#'   clustering can greatly assist interpretation.
+#'
+#' @param method The correlation method to use. Can be `"pearson"`, `"spearman"`
+#'   or `"kendall"`.
+#'
 #' @param use How to handle missing values in the `cor` function. The default is
-#'   "pairwise.complete.obs". Care should be taken with the choice of how to
+#'   `"pairwise.complete.obs"`. Care should be taken with the choice of how to
 #'   handle missing data when considering pair-wise correlations.
-#' @param dendrogram Should a dendrogram be plotted? When `TRUE` a
-#'   dendrogram is shown on the right of the plot. Note that this will only work
-#'   for `type = "default"`.
-#' @param lower Should only the lower triangle be plotted?
-#' @param cols Colours to be used for plotting. Options include
-#'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{spectral},
-#'   \dQuote{hue}, \dQuote{greyscale} and user defined (see `openColours`
-#'   for more details).
-#' @param r.thresh Values of greater than `r.thresh` will be shown in bold
-#'   type. This helps to highlight high correlations.
+#'
+#' @param annotate What to annotate each correlation tile with. One of:
+#' - `"cor"`, the correlation coefficient to 2 decimal places.
+#' - `"signif"`, an X marker if the correlation is significant.
+#' - `"stars"`, standard significance stars.
+#' - `"none"`, no annotation.
+#'
+#' @param dendrogram Should a dendrogram be plotted? When `TRUE` a dendrogram is
+#'   shown on the plot. Note that this will only work for `type = "default"`.
+#'   Defaults to `FALSE`.
+#'
+#' @param diagonal Should the 'diagonal' of the correlation plot be shown? The
+#'   diagonal of a correlation matrix is axiomatically always `1` as it
+#'   represents correlating a variable with itself. Defaults to `TRUE`.
+#'
+#' @param triangle Which 'triangles' of the correlation plot should be shown?
+#'   Can be `"both"`, `"lower"` or `"upper"`. Defaults to `"both"`.
+#'
+#' @param cols Colours to be used for plotting. See [openColours()] for more
+#'   details.
+#'
+#' @param r.thresh Values of greater than `r.thresh` will be shown in bold type.
+#'   This helps to highlight high correlations.
+#'
 #' @param text.col The colour of the text used to show the correlation values.
 #'   The first value controls the colour of negative correlations and the second
 #'   positive.
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
-#'   titles and axis labels will automatically try and format pollutant names
-#'   and units properly e.g.  by subscripting the `2' in NO2.
-#' @param plot Should a plot be produced? `FALSE` can be useful when
-#'   analysing data to extract corPlot components and plotting them in other
-#'   ways.
-#' @param ... Other graphical parameters passed onto `lattice:levelplot`,
-#'   with common axis and title labelling options (such as `xlab`,
-#'   `ylab`, `main`) being passed via `quickText` to handle
-#'   routine formatting.
-#' @export
+#'
+#' @param key.header Used to control the title of the plot key. Defaults to
+#'   `NULL`; no header.
+#'
+#' @param key.position Location where the scale key is to plotted. Allowed
+#'   arguments currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
+#'
+#' @param key Should a key be shown? In [corPlot()] this defaults to `FALSE`.
+#'
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
+#'   axis labels will automatically try and format pollutant names and units
+#'   properly, e.g., by subscripting the `2' in NO2.
+#'
+#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
+#'   data to extract corPlot components and plotting them in other ways.
+#'
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `fontsize` overrides the overall font size of the plot.
+#'   - `border` sets the border colour of each ellipse.
+#'
+#' @author David Carslaw
+#' @author Jack Davison
+#' @author Adapted from the approach taken by Sarkar (2007)
+#'
 #' @return an [openair][openair-package] object
-#' @author David Carslaw --- but mostly based on code contained in Sarkar (2007)
-#' @seealso `taylor.diagram` from the `plotrix` package from which
-#'   some of the annotation code was used.
+#' @export
+#'
 #' @references Sarkar, D. (2007). Lattice Multivariate Data Visualization with
 #'   R. New York: Springer.
 #'
 #'   Friendly, M. (2002). Corrgrams : Exploratory displays for correlation
 #'   matrices. American Statistician, 2002(4), 1-16. doi:10.1198/000313002533
+#'
 #' @examples
-#' ## basic corrgram plot
+#' # basic corrgram plot
 #' corPlot(mydata)
-#' ## plot by season ... and so on
+#'
+#' # plot by season
 #' corPlot(mydata, type = "season")
-#' ## recover dendrogram when cluster = TRUE and plot it
-#' res <- corPlot(mydata)
+#'
+#' # recover dendrogram when cluster = TRUE and plot it
+#' res <- corPlot(mydata, plot = FALSE)
 #' plot(res$clust)
 #' \dontrun{
-#' ## a more interesting are hydrocarbon measurements
+#' # a more interesting are hydrocarbon measurements
 #' hc <- importAURN(site = "my1", year = 2005, hc = TRUE)
-#' ## now it is possible to see the hydrocarbons that behave most
-#' ## similarly to one another
+#'
+#' # now it is possible to see the hydrocarbons that behave most
+#' # similarly to one another
 #' corPlot(hc)
 #' }
 #'
@@ -112,76 +140,54 @@ corPlot <- function(
   cluster = TRUE,
   method = "pearson",
   use = "pairwise.complete.obs",
+  annotate = c("cor", "signif", "stars", "none"),
   dendrogram = FALSE,
-  lower = FALSE,
+  triangle = c("both", "upper", "lower"),
+  diagonal = TRUE,
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
+  key.header = NULL,
+  key.position = "right",
+  key = FALSE,
   auto.text = TRUE,
   plot = TRUE,
   ...
 ) {
-  if (length(type) > 1) {
-    stop("Only one 'type' allowed in this function.")
+  if (rlang::is_logical(key) && !key) {
+    key.position <- "none"
   }
 
-  ## make sure date is present for types requiring it
-  if (any(type %in% dateTypes)) {
-    if (!"date" %in% names(mydata)) stop("Need a field 'date'")
-  }
-
-  ## greyscale handling
-  if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-  }
-
-  ## set graphics
-  current.strip <- trellis.par.get("strip.background")
-  current.font <- trellis.par.get("fontsize")
-
-  ## reset graphic parameters
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
-
-  ## extra.args setup
+  # extra.args setup
   extra.args <- list(...)
 
+  # deprecated lower arg
+  if ("lower" %in% names(extra.args)) {
+    cli::cli_warn(
+      c(
+        "!" = "The {.arg lower} argument has been deprecated. Setting {.arg triangle} to 'lower'.",
+        "i" = "Please use the {.arg triangle} argument directly in {.fun openair::corPlot}."
+      )
+    )
+    triangle <- "upper"
+  }
+
   # label controls
-  extra.args$xlab <- if ("xlab" %in% names(extra.args)) {
-    quickText(extra.args$xlab, auto.text)
-  } else {
-    quickText(NULL, auto.text)
-  }
-  extra.args$ylab <- if ("ylab" %in% names(extra.args)) {
-    quickText(extra.args$ylab, auto.text)
-  } else {
-    quickText(NULL, auto.text)
-  }
-  extra.args$main <- if ("main" %in% names(extra.args)) {
-    quickText(extra.args$main, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
+  extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
+  extra.args$ylab <- quickText(extra.args$ylab %||% NULL, auto.text)
+  extra.args$main <- quickText(extra.args$main %||% NULL, auto.text)
 
-  if ("fontsize" %in% names(extra.args)) {
-    trellis.par.set(fontsize = list(text = extra.args$fontsize))
-  }
+  # check triangle is set properly
+  triangle <- rlang::arg_match(triangle)
+  annotate <- rlang::arg_match(annotate)
 
-  # layout default
-  if (!"layout" %in% names(extra.args)) {
-    extra.args$layout <- NULL
+  # if not clustering, obviously can't add a dendrogram
+  if (!cluster) {
+    dendrogram <- FALSE
   }
-
-  ## pollutant(s) handling
 
   # null and all cases
-  if (is.null(pollutants)) {
-    pollutants <- names(mydata)
-  }
-  if (
-    is.character(pollutants) && length(pollutants) == 1 && pollutants == "all"
-  ) {
+  if (is.null(pollutants) || any(pollutants == "all")) {
     pollutants <- names(mydata)
   }
 
@@ -192,6 +198,7 @@ corPlot <- function(
     unique(c(pollutants))
   }
 
+  # check input data
   mydata <- checkPrep(
     mydata,
     pollutants,
@@ -199,287 +206,313 @@ corPlot <- function(
     remove.calm = FALSE
   )
 
-  ## remove variables where all are NA
-  mydata <- mydata[, sapply(mydata, function(x) !all(is.na(x)))]
+  # remove variables where all are NA, or values are constant
+  mydata <- mydata[, sapply(mydata, function(x) {
+    dplyr::n_distinct(x, na.rm = TRUE) > 1L
+  })]
 
-  ## cut data depending on type
+  # cut data depending on type
   mydata <- cutData(mydata, type, ...)
 
-  ## proper names of labelling
+  # proper names of labelling
   pollutants <- names(mydata[, sapply(mydata, is.numeric)])
-  pol.name <- sapply(
-    pollutants,
-    function(x) quickText(x, auto.text)
-  )
 
-  ## number of pollutants
-  npol <- length(pol.name)
-
-  if (npol < 2) {
-    stop("Need at least two valid (numeric) fields to compare")
+  if (length(pollutants) < 2) {
+    cli::abort("Need at least two valid numeric fields to compare.")
   }
 
-  prepare.cond <- function(mydata) {
-    ## calculate the correlations
+  hc <- NULL
+  var_order <- pollutants
+  if (cluster) {
+    cor_matrix <-
+      mydata |>
+      dplyr::select(dplyr::all_of(pollutants)) |>
+      cor(use = use, method = method)
 
-    thedata <- cor(
-      select(mydata, where(is.numeric)),
-      use = use,
-      method = method
+    hc <- hclust(as.dist(1 - cor_matrix), method = "complete")
+
+    var_order <- hc$labels[hc$order]
+  }
+
+  # create plot data
+  plotdata <-
+    mapType(
+      mydata,
+      type,
+      \(df) {
+        # select chosen pollutants
+        df <- dplyr::select(df, dplyr::all_of(pollutants))
+        df <- df[, sapply(df, function(x) {
+          dplyr::n_distinct(x, na.rm = TRUE) > 1L
+        })]
+
+        # variables
+        vars <- names(df)
+        # create grid of all pollutants vs all others
+        expand.grid(x = vars, y = vars, stringsAsFactors = FALSE) |>
+          # act in a row-wise way
+          dplyr::rowwise() |>
+          # calculate correlation test scores
+          dplyr::mutate(
+            test = list(stats::cor.test(
+              df[[.data$x]],
+              df[[.data$y]],
+              use = use,
+              method = method,
+              ...
+            )),
+            cor = .data$test$estimate,
+            pval = .data$test$p.value,
+            psig = dplyr::if_else(
+              .data$pval < 0.05,
+              "X",
+              ""
+            ),
+            pstars = dplyr::case_when(
+              .data$pval < 0.001 ~ "\U2736\U2736\U2736",
+              .data$pval < 0.01 ~ "\U2736\U2736",
+              .data$pval < 0.05 ~ "\U2736",
+              TRUE ~ ""
+            )
+          ) |>
+          # drop unnecessary test column
+          dplyr::select(-"test")
+      }
+    ) |>
+    # make sure x and y are properly ordered factors
+    dplyr::mutate(
+      dplyr::across(c("x", "y"), \(x) factor(x, levels = var_order))
     )
 
-    ## remove columns/rows where all are NA
-    therows <- apply(thedata, 1, function(x) !all(is.na(x)))
-    thecols <- apply(thedata, 2, function(x) !all(is.na(x)))
-    thedata <- thedata[therows, thecols]
-
-    ## maybe reduced number of pollutants, hence select only those present
-    thepols <- pol.name[thecols]
-
-    if (cluster) {
-      ## for plotting dendogram
-      clust <- hclust(dist(thedata))
-      ord.dat <- order.dendrogram(as.dendrogram(hclust(dist(thedata))))
-    } else {
-      clust <- NULL
-      ord.dat <- 1:ncol(thedata)
-    }
-
-    npol <- length(ord.dat)
-    grid <- expand.grid(x = 1:npol, y = 1:npol)
-
-    thepols <- thepols[ord.dat]
-
-    thedata <- thedata[ord.dat, ord.dat]
-    thedata <- as.vector(thedata)
-
-    thedata <- cbind(grid, z = thedata)
-    thedata <- list(
-      thedata = thedata,
-      pol.name = thepols,
-      pol.ord = ord.dat,
-      clust = clust
+  # remove certain cells based on triangle/diagonal args
+  if (triangle == "upper") {
+    plotdata <- dplyr::filter(
+      plotdata,
+      as.numeric(.data$x) <= as.numeric(.data$y)
     )
-    thedata
+  }
+  if (triangle == "lower") {
+    plotdata <- dplyr::filter(
+      plotdata,
+      as.numeric(.data$x) >= as.numeric(.data$y)
+    )
+  }
+  if (!diagonal) {
+    plotdata <- dplyr::filter(
+      plotdata,
+      as.numeric(.data$x) != as.numeric(.data$y)
+    )
   }
 
-  # main results in lists
-  results.grid <- mydata |>
-    group_by(across(type)) |>
-    group_nest() |>
-    mutate(results = map(data, prepare.cond))
+  # need to turn the matrix into a bigger grid of polygons for drawing angled
+  # ellipses
+  ellipse_data <-
+    plotdata |>
+    dplyr::rowwise() |>
+    dplyr::mutate(
+      # if nearly 1, set to a high value - makes the ellipse visible
+      cor_dummy = dplyr::if_else(dplyr::near(.data$cor, 1), 0.999, .data$cor),
+      # construct ellipse data
+      ellipse_data = list(
+        ellipse(.data$cor_dummy) |>
+          as.data.frame() |>
+          dplyr::rename("xe" = "x", "ye" = "y") |>
+          # ellipse returns roughly -2.5 to 2.5, needs to be -0.5 to 0.5 to fit
+          # in a square grid
+          dplyr::mutate(
+            xe = scales::rescale(
+              .data$xe,
+              from = c(-2.5, 2.5),
+              to = c(-0.5, 0.5)
+            ),
+            ye = scales::rescale(
+              .data$ye,
+              from = c(-2.5, 2.5),
+              to = c(-0.5, 0.5)
+            )
+          )
+      )
+    ) |>
+    tidyr::unnest(ellipse_data) |>
+    # adjust based on value of factor
+    dplyr::mutate(
+      xe = .data$xe + as.numeric(.data$x),
+      ye = .data$ye + as.numeric(.data$y)
+    )
 
-  # cluster model
-  clust <- results.grid |>
-    mutate(clust = map(results, 4))
-  clust <- clust$clust[[1]]
-
-  ## recover by-type order
-
-  data.order <- results.grid |>
-    mutate(out = map(results, 3))
-
-  data.order <- lapply(data.order$out, function(x) pollutants[x])
-
-  x2 <- unlist(lapply(1:length(data.order), function(x) {
-    (rep(data.order[[x]], times = length(data.order[[x]])))
-  }))
-  y2 <- unlist(lapply(1:length(data.order), function(x) {
-    (rep(data.order[[x]], each = length(data.order[[x]])))
-  }))
-
-  ## list of labels
-
-  labels <- results.grid |>
-    mutate(out = map(results, 2))
-
-  labels <- labels$out
-
-  # vars we want
-  vars <- c(type, "out")
-
-  results.grid <- results.grid |>
-    mutate(out = map(results, 1)) |>
-    select(vars) |>
-    unnest(cols = c(out))
-
-  div.col <- function(x) openColours(cols, x)
-
-  ## labelleing of strips
-  pol.name <- sapply(
-    levels(results.grid[[type]]),
-    function(x) quickText(x, auto.text)
-  )
-  strip <- strip.custom(factor.levels = pol.name)
-  if (type == "default") {
-    strip <- FALSE
+  # need different scales if we're using dendrograms
+  x_axis_scale <- function(...) {
+    ggplot2::scale_x_continuous(breaks = seq_along(var_order), ...)
   }
-
-  ## special wd layout
-
-  if (length(type) == 1 & type[1] == "wd" & is.null(extra.args$layout)) {
-    ## re-order to make sensible layout
-    ## starting point code as of ManKendall
-
-    wds <- c("NW", "N", "NE", "W", "E", "SW", "S", "SE")
-    results.grid[[type]] <- ordered(results.grid[[type]], levels = wds)
-    wd.ok <- sapply(wds, function(x) {
-      if (x %in% unique(results.grid[[type]])) FALSE else TRUE
-    })
-
-    skip <- c(wd.ok[1:4], TRUE, wd.ok[5:8])
-    results.grid[[type]] <- factor(results.grid[[type]])
-    extra.args$layout <- c(3, 3)
-    if (!"skip" %in% names(extra.args)) {
-      extra.args$skip <- skip
+  y_axis_scale <- function(...) {
+    ggplot2::scale_y_continuous(breaks = seq_along(var_order), ...)
+  }
+  if (dendrogram) {
+    rlang::check_installed("legendry", version = "0.2.4")
+    x_axis_scale <- function(...) {
+      legendry::scale_x_dendro(clust = hc, ...)
+    }
+    y_axis_scale <- function(...) {
+      legendry::scale_y_dendro(clust = hc, ...)
     }
   }
 
-  if (!"skip" %in% names(extra.args)) {
-    extra.args$skip <- FALSE
-  }
-
-  strip.dat <- strip.fun(results.grid, type, auto.text)
-  strip <- strip.dat[[1]]
-  strip.left <- strip.dat[[2]]
-  pol.name <- strip.dat[[3]]
-
-  ## plot dendrogram
-  if (dendrogram && type == "default" && cluster) {
-    legend <- list(
-      right = list(
-        fun = dendrogramGrob,
-        args = list(
-          x = as.dendrogram(clust),
-          side = "right",
-          size = 4
+  # construct plot
+  thePlot <-
+    ellipse_data |>
+    ggplot2::ggplot(ggplot2::aes(x = .data$x, y = .data$y)) +
+    ggplot2::geom_polygon(
+      ggplot2::aes(
+        x = .data$xe,
+        y = .data$ye,
+        group = interaction(.data$x, .data$y),
+        fill = .data$cor
+      ),
+      color = extra.args$border %||% "transparent"
+    ) +
+    get_facet(type, extra.args, scales = "fixed", auto.text = auto.text) +
+    theme_openair(key.position) +
+    ggplot2::theme(panel.grid = ggplot2::element_blank()) +
+    set_extra_fontsize(extra.args) +
+    ggplot2::coord_cartesian(ratio = 1) +
+    x_axis_scale(
+      labels = label_openair(var_order, auto_text = auto.text),
+      expand = ggplot2::expansion(c(0.01, 0.01))
+    ) +
+    y_axis_scale(
+      labels = label_openair(var_order, auto_text = auto.text),
+      expand = ggplot2::expansion(c(0.01, 0.01))
+    ) +
+    ggplot2::scale_fill_gradientn(
+      colours = openair::openColours(cols, n = 100),
+      limits = c(-1, 1),
+      oob = scales::oob_squish
+    ) +
+    ggplot2::guides(
+      fill = ggplot2::guide_colorbar(
+        theme = ggplot2::theme(
+          legend.title.position = ifelse(
+            key.position %in% c("left", "right"),
+            "top",
+            key.position
+          ),
+          legend.text.position = key.position
         )
       )
+    ) +
+    ggplot2::labs(
+      x = extra.args$xlab,
+      y = extra.args$ylab,
+      title = extra.args$main,
+      fill = key.header
     )
+
+  # if dendrogram, need to use legendry to switch dendro to the opposite side of
+  # the plot. else just use the base ggplot2 guides to check overlaps
+  if (dendrogram) {
+    thePlot <- thePlot +
+      ggplot2::guides(
+        y = legendry::guide_axis_base(check.overlap = TRUE),
+        y.sec = legendry::primitive_segments("dendro", vanish = TRUE),
+        x = legendry::guide_axis_base(angle = 90, check.overlap = TRUE),
+        x.sec = legendry::primitive_segments("dendro", vanish = TRUE)
+      )
   } else {
-    legend <- NULL
+    thePlot <- thePlot +
+      ggplot2::guides(
+        y = ggplot2::guide_axis(check.overlap = TRUE),
+        x = ggplot2::guide_axis(angle = 90, check.overlap = TRUE)
+      )
   }
 
-  temp <- paste(type, collapse = "+")
-  myform <- formula(paste("z ~ x * y | ", temp, sep = ""))
+  # add text annotations, if requested
+  if (annotate != "none") {
+    ellipse_data$cor_fmt <- round(ellipse_data$cor * 100)
 
-  ## plot via ... handler
-  levelplot.args <- list(
-    x = myform,
-    data = results.grid,
-    at = do.breaks(c(-1.01, 1.01), 100),
-    strip = strip,
-    as.table = TRUE,
-    aspect = 1,
-    colorkey = FALSE,
-    col.regions = div.col,
-    legend = legend,
-    par.strip.text = list(cex = 0.8),
-    scales = list(
-      x = list(rot = 90, labels = labels, at = 1:npol),
-      y = list(labels = labels, at = 1:npol),
-      relation = "free"
-    ),
-    text.col = text.col,
-    r.thresh = r.thresh,
-    label = TRUE,
-    panel = function(x, y, z, ...) {
-      panel.abline(v = 1:sqrt(length(z)), col = "grey95")
-      panel.abline(h = 1:sqrt(length(z)), col = "grey95")
-      panel.corrgram(x, y, z, lower = lower, ...)
-    }
-  )
+    annotation_column <-
+      dplyr::case_when(
+        annotate == "cor" ~ "cor_fmt",
+        annotate == "signif" ~ "psig",
+        annotate == "stars" ~ "pstars",
+        .default = NULL
+      )
 
-  # reset for extra.args
-  levelplot.args <- listUpdate(levelplot.args, extra.args)
+    thePlot <- thePlot +
+      ggplot2::geom_text(
+        data = dplyr::filter(ellipse_data, abs(.data$cor) < r.thresh),
+        ggplot2::aes(
+          x = as.numeric(.data$x),
+          y = as.numeric(.data$y),
+          label = .data[[annotation_column]],
+          color = factor(sign(.data$cor), c("-1", "0", "1"))
+        ),
+        size = 3,
+        check_overlap = TRUE,
+        show.legend = FALSE
+      ) +
+      ggplot2::geom_text(
+        data = dplyr::filter(ellipse_data, abs(.data$cor) >= r.thresh),
+        ggplot2::aes(
+          x = as.numeric(.data$x),
+          y = as.numeric(.data$y),
+          label = .data[[annotation_column]],
+          color = factor(sign(.data$cor), c("-1", "0", "1"))
+        ),
+        size = 3,
+        check_overlap = TRUE,
+        fontface = "bold",
+        show.legend = FALSE
+      ) +
+      ggplot2::scale_color_manual(
+        values = c(
+          "-1" = text.col[1],
+          "0" = text.col[2],
+          "1" = text.col[2]
+        )
+      )
+  }
+
+  # make key full width/height
+  if (key.position %in% c("left", "right")) {
+    thePlot <- thePlot +
+      ggplot2::theme(
+        legend.key.height = ggplot2::unit(1, "null"),
+        legend.key.spacing.y = ggplot2::unit(0, "cm")
+      )
+  }
+  if (key.position %in% c("top", "bottom")) {
+    thePlot <- thePlot +
+      ggplot2::theme(
+        legend.key.width = ggplot2::unit(1, "null"),
+        legend.key.spacing.x = ggplot2::unit(0, "cm")
+      )
+  }
 
   # plot
-  plt <- do.call(levelplot, levelplot.args)
-
-  #################
-  # output
-  #################
-
   if (plot) {
-    plot(plt)
+    plot(thePlot)
   }
 
-  ## openair object
-
-  newdata <- results.grid
-
   # tidy newdata for output
+  newdata <- plotdata
   rownames(newdata) <- NULL
   names(newdata)[names(newdata) == "z"] <- "cor"
   names(newdata)[names(newdata) == "x"] <- "row"
   names(newdata)[names(newdata) == "y"] <- "col"
-  newdata <- cbind(x = x2, y = y2, newdata)
 
   # main handling
   output <-
     list(
-      plot = plt,
+      plot = thePlot,
       data = dplyr::tibble(newdata),
       call = match.call(),
-      clust = clust
+      clust = hc
     )
   class(output) <- "openair"
   invisible(output)
 }
 
-panel.corrgram <- function(
-  x,
-  y,
-  z,
-  subscripts,
-  at,
-  level = 0.9,
-  text.col,
-  r.thresh = r.thresh,
-  label = FALSE,
-  lower = lower,
-  ...
-) {
-  x <- as.numeric(x)[subscripts]
-  y <- as.numeric(y)[subscripts]
-  z <- as.numeric(z)[subscripts]
-
-  zcol <- level.colors(z, at = at, ...)
-
-  # just do lower triangle
-  len <- length(z)
-  tmp <- matrix(seq_along(z), nrow = len^(1 / 2))
-
-  if (lower) {
-    id <- which(lower.tri(tmp, diag = TRUE))
-  } else {
-    id <- 1:length(tmp)
-  }
-
-  for (i in seq(along = id)) {
-    ell <- ellipse(
-      z[id[i]],
-      level = level,
-      npoints = 50,
-      scale = c(.2, .2),
-      centre = c(x[id[i]], y[id[i]])
-    )
-    panel.polygon(ell, col = zcol[id[i]], border = zcol[id[i]], ...)
-  }
-  if (label) {
-    panel.text(
-      x = x[id],
-      y = y[id],
-      lab = 100 * round(z[id], 2),
-      cex = 0.8,
-      col = ifelse(z[id] < 0, text.col[1], text.col[2]),
-      font = ifelse(z[id] < r.thresh, 1, 2)
-    )
-  }
-}
-
-
-## from ellipse package
+# from ellipse package
 ellipse <- function(
   x,
   scale = c(1, 1),

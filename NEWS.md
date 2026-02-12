@@ -15,6 +15,8 @@
   - `calendarPlot()`
   
   - `timeProp()`
+  
+  - `corPlot()`
 
   This is the beginning of a move away from `lattice` to a more modern plotting engine. For most users there will be no real change, but some arguments passed to `...` may no longer be supported. Any `lattice`-specific annotations also will not work, but equivalent `ggplot2` methods should be available.
 
@@ -81,6 +83,16 @@
 - `runRegression` is now much faster with a new algorithm.
 
 - `trendLevel()` now supports 2 values being passed to `type`, which will create a 2D grid using `ggplot2::facet_grid()`.
+
+- `corPlot()` has gained several new features:
+
+    - Added the `annotate` argument which can change the correlation annotation to a p-value marker or stars, or remove it entirely.
+
+    - Added two new arguments `triangle` and `diagonal` for controlling the plot appearance.
+    
+    - Added arguments `key`, `key.position` and `key.header` for adding and refining a plot legend.
+    
+    - Up to two `type`s are now also permitted, and `dedrogram` is now supported even when `type` is not `"default"`.
 
 ## Bug Fixes
 
