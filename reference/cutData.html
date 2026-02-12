@@ -72,6 +72,7 @@ plots. Widely used by many <code>openair</code> functions usually through the op
 <span>  hemisphere <span class="op">=</span> <span class="st">"northern"</span>,</span>
 <span>  n.levels <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  start.day <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  start.season <span class="op">=</span> <span class="st">"spring"</span>,</span>
 <span>  is.axis <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  local.tz <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  latitude <span class="op">=</span> <span class="fl">51</span>,</span>
@@ -128,6 +129,10 @@ into seasons.</p></dd>
 The user can change the start day by supplying an integer between 0 and 6.
 Sunday = 0, Monday = 1, ... For example to start the weekday plots on a
 Saturday, choose <code>start.day = 6</code>.</p></dd>
+
+
+<dt id="arg-start-season">start.season<a class="anchor" aria-label="anchor" href="#arg-start-season"></a></dt>
+<dd><p>What order should the season be. By default, the order is spring, summer, autumn, winter. <code>start.season = "winter"</code> would plot winter first.</p></dd>
 
 
 <dt id="arg-is-axis">is.axis<a class="anchor" aria-label="anchor" href="#arg-is-axis"></a></dt>

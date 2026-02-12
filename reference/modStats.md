@@ -105,6 +105,12 @@ modStats(
       and 6. Sunday = 0, Monday = 1, ... For example to start the
       weekday plots on a Saturday, choose `start.day = 6`.
 
+  `start.season`
+
+  :   What order should the season be. By default, the order is spring,
+      summer, autumn, winter. `start.season = "winter"` would plot
+      winter first.
+
   `is.axis`
 
   :   A logical (`TRUE`/`FALSE`), used to request shortened cut labels
