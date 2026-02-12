@@ -228,7 +228,7 @@ corPlot <- function(
 
   # if insufficient number of variables, stop
   if (length(pollutants) < 2) {
-    cli::abort("Need at least two valid numeric fields to compare.")
+    cli::cli_abort("Need at least two valid numeric fields to compare.")
   }
 
   # create plot data
@@ -339,6 +339,13 @@ corPlot <- function(
     purrr::map(cor_data, "data") |>
     dplyr::bind_rows()
 
+  # if clustering, grab the first
+  if (cluster) {
+    hc <- purrr::map(cor_data, "hc")[[1]]
+  } else {
+    hc <- NULL
+  }
+
   # remove certain cells based on triangle/diagonal args
   if (triangle == "upper") {
     plotdata <- dplyr::filter(
@@ -397,7 +404,6 @@ corPlot <- function(
 
   # need different scales if we're using dendrograms
   if (dendrogram) {
-    hc <- purrr::map(cor_data, "hc")[[1]]
     rlang::check_installed("legendry", version = "0.2.4")
     x_axis_scale <- function(...) {
       legendry::scale_x_dendro(clust = hc, ...)
@@ -406,7 +412,6 @@ corPlot <- function(
       legendry::scale_y_dendro(clust = hc, ...)
     }
   } else {
-    hc <- NULL
     x_axis_scale <- function(...) {
       ggplot2::scale_x_continuous(breaks = seq_along(levels(plotdata$x)), ...)
     }
