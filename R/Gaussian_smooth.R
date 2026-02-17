@@ -9,12 +9,12 @@
 #' @param mydata A data frame containing a `date` field. `mydata` must contain a
 #'   `date` field in `Date` or `POSIXct` format. The input time series must be
 #'   regular, e.g., hourly, daily.
-#' @param pollutant The name of a pollutant, e.g., `pollutant = "o3"`.
+#' @param pollutant The name of a pollutant, e.g., `pollutant = "o3"`. More than one pollutant can be supplied as a vector, e.g., `pollutant = c("o3", "nox")`.
 #' @param sigma The value of `sigma` to use in the Gaussian.
 #' @param type Used for splitting the data further. Passed to [cutData()].
 #' @param data.thresh The % data capture threshold. No values are calculated if
 #'   data capture over the period of interest is less than this value.
-#' @param new.name The name given to the new column. If not supplied it will
+#' @param new.name The name given to the new column(s). If not supplied it will
 #'   create a name based on the name of the pollutant and the averaging period
 #'   used.
 #' @param date.pad Should missing dates be padded? Default is `FALSE`.
@@ -45,15 +45,23 @@ GaussianSmooth <- function(
     )
   }
 
-  # pollutant should be numeric
-  if (!is.numeric(mydata[[pollutant]])) {
-    cli::cli_abort(
-      "mydata{.field ${pollutant}} is not numeric - it is {class(mydata[[pollutant]])}."
-    )
+  # Loop through all provided pollutants to check they are numeric
+  for (p in pollutant) {
+    if (!is.numeric(mydata[[p]])) {
+      cli::cli_abort(
+        "mydata{.field ${p}} is not numeric - it is {class(mydata[[p]])}."
+      )
+    }
   }
 
-  # create new name if not provided
-  if (is.null(new.name)) {
+  # create new names if not provided or if length mismatch
+  if (is.null(new.name) || length(new.name) != length(pollutant)) {
+    # If the user supplied a single new.name for multiple pollutants, warn and revert to default
+    if (!is.null(new.name) && length(pollutant) > 1) {
+      cli::cli_warn(
+        "Length of {.arg new.name} does not match length of {.arg pollutant}. Using generated names."
+      )
+    }
     new.name <- paste0("smooth_", pollutant)
   }
 
@@ -73,17 +81,25 @@ GaussianSmooth <- function(
       mydata <- datePad(mydata)
     }
 
-    # call C code
+    # Normalize threshold for C++ (0-1 scale)
+    dt_scaled <- data.thresh / 100
 
-    data.thresh = data.thresh / 100
-    results <- rolling_gaussian_cpp(
-      mydata[[pollutant]],
-      sigma,
-      data.thresh
-    )
+    # Loop over each pollutant
+    for (i in seq_along(pollutant)) {
+      current_poll <- pollutant[i]
+      current_name <- new.name[i]
 
-    mydata[[new.name]] <- results[[1]]
-    mydata[[paste0("n_", pollutant)]] <- results[[2]]
+      # call C code
+      results <- rolling_gaussian_cpp(
+        mydata[[current_poll]],
+        sigma,
+        dt_scaled
+      )
+
+      # Assign results to specific columns
+      mydata[[current_name]] <- results[[1]]
+      mydata[[paste0("n_", current_poll)]] <- results[[2]]
+    }
 
     # return what was put in; avoids adding missing data e.g. for factors
     if (length(dates) != nrow(mydata)) {
