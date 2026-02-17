@@ -30,7 +30,9 @@ GaussianSmooth(
 
 - pollutant:
 
-  The name of a pollutant, e.g., `pollutant = "o3"`.
+  The name of a pollutant, e.g., `pollutant = "o3"`. More than one
+  pollutant can be supplied as a vector, e.g.,
+  `pollutant = c("o3", "nox")`.
 
 - sigma:
 
@@ -48,7 +50,7 @@ GaussianSmooth(
 
 - new.name:
 
-  The name given to the new column. If not supplied it will create a
+  The name given to the new column(s). If not supplied it will create a
   name based on the name of the pollutant and the averaging period used.
 
 - date.pad:
