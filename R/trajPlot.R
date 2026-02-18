@@ -16,8 +16,8 @@
 #'
 #' The user can also show points instead of lines by `plot.type = "p"`.
 #'
-#' Note that [trajPlot()] will plot only the full length trajectories. This should
-#' be remembered when selecting only part of a year to plot.
+#' Note that [trajPlot()] will plot only the full length trajectories. This
+#' should be remembered when selecting only part of a year to plot.
 #'
 #' @inheritParams scatterPlot
 #'
@@ -26,8 +26,8 @@
 #'
 #' @param lon,lat Columns containing the decimal longitude and latitude.
 #'
-#' @param pollutant Pollutant to be plotted. By default the trajectory height is
-#'   used.
+#' @param pollutant Pollutant (or any numeric column) to be plotted, if any.
+#'   Alternatively, use `group`.
 #'
 #' @param type `type` determines how the data are split, i.e., conditioned, and
 #'   then plotted. The default is will produce a single plot using the entire
@@ -57,8 +57,9 @@
 #' @param map Should a base map be drawn? If `TRUE` the world base map provided
 #'   by [ggplot2::map_data()] will be used.
 #'
-#' @param group It is sometimes useful to group and colour trajectories
-#'   according to a grouping variable. See example below.
+#' @param group A condition to colour the plot by, passed to [cutData()]. An
+#'   alternative to `pollutant`, and used preferentially to `pollutant` if both
+#'   are set.
 #'
 #' @param map.fill Should the base map be a filled polygon? Default is to fill
 #'   countries.
@@ -159,7 +160,7 @@ trajPlot <- function(
   mydata,
   lon = "lon",
   lat = "lat",
-  pollutant = "height",
+  pollutant = NULL,
   type = "default",
   map = TRUE,
   group = NULL,
@@ -190,6 +191,10 @@ trajPlot <- function(
     key.position <- "none"
   }
 
+  # favour group over pollutant - set a flag to see if `cutData()` is needed
+  group_is_pollutant <- !is.null(pollutant) && is.null(group)
+  group <- group %||% pollutant
+
   # variables needed in trajectory plots
   vars <- c("date", "date2", "lat", "lon", "hour.inc", pollutant)
 
@@ -212,20 +217,10 @@ trajPlot <- function(
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
   mydata <- cutData(mydata, type = type, ...)
 
-  # prepare group (NB: using suffix as we don't want numeric cuts)
-  suffix <- NULL
-  if (!is.null(group)) {
-    if (group %in% names(mydata)) {
-      if (
-        is.numeric(mydata[[group]]) ||
-          lubridate::is.Date(mydata[[group]]) ||
-          lubridate::is.POSIXct(mydata[[group]])
-      ) {
-        suffix <- "__cuts"
-      }
-    }
+  # prepare group, unless `pollutant` is being used
+  if (!group_is_pollutant) {
+    mydata <- cutData(mydata, type = group, is.axis = TRUE)
   }
-  mydata <- cutData(mydata, type = group, suffix = suffix)
 
   # if no group at all, need a dummy group
   if (is.null(group)) {
@@ -296,6 +291,7 @@ trajPlot <- function(
       group
     )))) |>
     dplyr::summarise(do_union = FALSE) |>
+    dplyr::ungroup() |>
     sf::st_cast("LINESTRING")
 
   # get points every npoints hours
@@ -349,21 +345,23 @@ trajPlot <- function(
       )
   }
 
-  # add lines/points - needs to be done before setting coordinates
-  thePlot <- thePlot +
-    ggplot2::geom_sf(
-      data = sf_lines,
-      ggplot2::aes(color = .data[[group]]),
-      linetype = extra.args$lty,
-      linewidth = extra.args$lwd / 1.5,
-      alpha = extra.args$alpha
-    ) +
-    ggplot2::geom_sf(
-      data = sf_points,
-      ggplot2::aes(color = .data[[group]]),
-      size = extra.args$cex,
-      alpha = extra.args$alpha
-    )
+  for (i in unique(sf_lines$date)) {
+    # add lines/points - needs to be done before setting coordinates
+    thePlot <- thePlot +
+      ggplot2::geom_sf(
+        data = sf_lines[sf_lines$date == i, ],
+        ggplot2::aes(color = .data[[group]]),
+        linetype = extra.args$lty,
+        linewidth = extra.args$lwd / 1.5,
+        alpha = extra.args$alpha
+      ) +
+      ggplot2::geom_sf(
+        data = sf_points[sf_points$date == i, ],
+        ggplot2::aes(color = .data[[group]]),
+        size = extra.args$cex,
+        alpha = extra.args$alpha
+      )
+  }
 
   # add origin point if requested
   if (origin) {
@@ -393,7 +391,8 @@ trajPlot <- function(
           ifelse(n_cols == 1, "grey20", cols),
           n = n_cols
         ),
-        drop = FALSE
+        drop = FALSE,
+        labels = \(x) label_openair(x, auto_text = auto.text)
       ) +
       ggplot2::guides(
         colour = ggplot2::guide_legend(

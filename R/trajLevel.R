@@ -10,9 +10,9 @@
 #' set to "frequency" to show the number of back trajectory points in a grid
 #' square. Grid squares are by default at 1 degree intervals, controlled by
 #' `lat.inc` and `lon.inc`. Such plots are useful for showing the frequency of
-#' air mass locations. Note that it is also possible to set `method = "hexbin"`
-#' for plotting frequencies (not concentrations), which will produce a plot by
-#' hexagonal binning.
+#' air mass locations. Note that it is also possible to set `statistic =
+#' "hexbin"` for plotting frequencies (not concentrations), which will produce a
+#' plot by hexagonal binning.
 #'
 #' If `statistic = "difference"` the trajectories associated with a
 #' concentration greater than `percentile` are compared with the the full set of
@@ -55,6 +55,9 @@
 #' @param smooth Should the trajectory surface be smoothed?
 #' @param statistic One of:
 #'   - `"frequency"` (the default) shows trajectory frequencies.
+#'
+#'   - `"hexbin"`, which is similar to `"frequency"` but shows a hexagonal
+#'   grid of counts.
 #'
 #'   - `"difference"` - in this case trajectories where the associated
 #'   concentration is greater than `percentile` are compared with the the full
@@ -226,6 +229,16 @@ trajLevel <- function(
   extra.args$main <- extra.args$main %||% ""
   extra.args$border <- extra.args$border %||% NA
   extra.args$key.footer <- extra.args$key.footer %||% NULL
+
+  if ("method" %in% names(extra.args)) {
+    cli::cli_warn(
+      "{.arg method} is no longer supported in {.fun openair::trajLevel}, please use {.arg statistic}."
+    )
+    if (extra.args$method == "hexbin") {
+      cli::cli_warn("Setting {.arg statistic} to 'hexbin'. ")
+      statistic <- "hexbin"
+    }
+  }
 
   if (!"key.header" %in% names(extra.args)) {
     header <- switch(

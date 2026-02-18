@@ -8,7 +8,7 @@ trajPlot(
   mydata,
   lon = "lon",
   lat = "lat",
-  pollutant = "height",
+  pollutant = NULL,
   type = "default",
   map = TRUE,
   group = NULL,
@@ -40,8 +40,8 @@ trajPlot(
 
 \item{lon, lat}{Columns containing the decimal longitude and latitude.}
 
-\item{pollutant}{Pollutant to be plotted. By default the trajectory height is
-used.}
+\item{pollutant}{Pollutant (or any numeric column) to be plotted, if any.
+Alternatively, use \code{group}.}
 
 \item{type}{\code{type} determines how the data are split, i.e., conditioned, and
 then plotted. The default is will produce a single plot using the entire
@@ -63,8 +63,9 @@ types are provided the first forms the columns and the second the rows.}
 \item{map}{Should a base map be drawn? If \code{TRUE} the world base map provided
 by \code{\link[ggplot2:map_data]{ggplot2::map_data()}} will be used.}
 
-\item{group}{It is sometimes useful to group and colour trajectories
-according to a grouping variable. See example below.}
+\item{group}{A condition to colour the plot by, passed to \code{\link[=cutData]{cutData()}}. An
+alternative to \code{pollutant}, and used preferentially to \code{pollutant} if both
+are set.}
 
 \item{cols}{Colours for plotting. Passed to \code{\link[=openColours]{openColours()}}.}
 
@@ -157,8 +158,8 @@ a low value e.g. 0.1 can help.
 
 The user can also show points instead of lines by \code{plot.type = "p"}.
 
-Note that \code{\link[=trajPlot]{trajPlot()}} will plot only the full length trajectories. This should
-be remembered when selecting only part of a year to plot.
+Note that \code{\link[=trajPlot]{trajPlot()}} will plot only the full length trajectories. This
+should be remembered when selecting only part of a year to plot.
 }
 \examples{
 \dontrun{

@@ -45,8 +45,8 @@ trajLevel(
 
 \item{lon, lat}{Columns containing the decimal longitude and latitude.}
 
-\item{pollutant}{Pollutant to be plotted. By default the trajectory height is
-used.}
+\item{pollutant}{Pollutant (or any numeric column) to be plotted, if any.
+Alternatively, use \code{group}.}
 
 \item{type}{\code{type} determines how the data are split, i.e., conditioned, and
 then plotted. The default is will produce a single plot using the entire
@@ -190,9 +190,8 @@ statistics that can be plotted as gridded surfaces. First, \code{statistic} can 
 set to "frequency" to show the number of back trajectory points in a grid
 square. Grid squares are by default at 1 degree intervals, controlled by
 \code{lat.inc} and \code{lon.inc}. Such plots are useful for showing the frequency of
-air mass locations. Note that it is also possible to set \code{method = "hexbin"}
-for plotting frequencies (not concentrations), which will produce a plot by
-hexagonal binning.
+air mass locations. Note that it is also possible to set \code{statistic = "hexbin"} for plotting frequencies (not concentrations), which will produce a
+plot by hexagonal binning.
 
 If \code{statistic = "difference"} the trajectories associated with a
 concentration greater than \code{percentile} are compared with the the full set of
