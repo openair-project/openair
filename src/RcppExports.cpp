@@ -78,6 +78,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// whittaker_smooth
+List whittaker_smooth(NumericVector y_in, double lambda, int d);
+RcppExport SEXP _openair_whittaker_smooth(SEXP y_inSEXP, SEXP lambdaSEXP, SEXP dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type y_in(y_inSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< int >::type d(dSEXP);
+    rcpp_result_gen = Rcpp::wrap(whittaker_smooth(y_in, lambda, d));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_openair_rolling_gaussian_cpp", (DL_FUNC) &_openair_rolling_gaussian_cpp, 3},
@@ -85,6 +98,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_openair_distAngle", (DL_FUNC) &_openair_distAngle, 2},
     {"_openair_rolling_average_cpp", (DL_FUNC) &_openair_rolling_average_cpp, 6},
     {"_openair_dateAggregate", (DL_FUNC) &_openair_dateAggregate, 5},
+    {"_openair_whittaker_smooth", (DL_FUNC) &_openair_whittaker_smooth, 3},
     {NULL, NULL, 0}
 };
 
