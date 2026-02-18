@@ -17,6 +17,8 @@
 
   - [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md)
 
+  - [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md)
+
   - [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md)
 
   This is the beginning of a move away from `lattice` to a more modern

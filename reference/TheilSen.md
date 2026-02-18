@@ -1,6 +1,12 @@
 # Tests for trends using Theil-Sen estimates
 
-Theil-Sen slope estimates and tests for trend.
+Theil-Sen slope estimates and tests for trend. The `TheilSen` function
+is flexible in the sense that it can be applied to data in many ways
+e.g. by day of the week, hour of day and wind direction. This
+flexibility makes it much easier to draw inferences from data e.g. why
+is there a strong downward trend in concentration from one wind sector
+and not another, or why trends on one day of the week or a certain time
+of day are unexpected.
 
 ## Usage
 
@@ -16,7 +22,6 @@ TheilSen(
   data.thresh = 0,
   alpha = 0.05,
   dec.place = 2,
-  xlab = "year",
   lab.frac = 0.99,
   lab.cex = 0.8,
   x.relation = "same",
@@ -26,7 +31,6 @@ TheilSen(
   text.col = "darkgreen",
   slope.text = NULL,
   cols = NULL,
-  shade = "grey95",
   auto.text = TRUE,
   autocor = FALSE,
   slope.percent = FALSE,
@@ -115,10 +119,6 @@ TheilSen(
   The number of decimal places to display the trend estimate at. The
   default is 2.
 
-- xlab:
-
-  x-axis label, by default `"year"`.
-
 - lab.frac:
 
   Fraction along the y-axis that the trend information should be printed
@@ -162,11 +162,6 @@ TheilSen(
 - cols:
 
   Predefined colour scheme, currently only enabled for `"greyscale"`.
-
-- shade:
-
-  The colour used for marking alternate years. Use “white” or
-  “transparent” to remove shading.
 
 - auto.text:
 
@@ -250,14 +245,6 @@ on 1/1/1970.
 
 ## Details
 
-The `TheilSen` function provides a collection of functions to analyse
-trends in air pollution data. The `TheilSen` function is flexible in the
-sense that it can be applied to data in many ways e.g. by day of the
-week, hour of day and wind direction. This flexibility makes it much
-easier to draw inferences from data e.g. why is there a strong downward
-trend in concentration from one wind sector and not another, or why
-trends on one day of the week or a certain time of day are unexpected.
-
 For data that are strongly seasonal, perhaps from a background site, or
 a pollutant such as ozone, it will be important to deseasonalise the
 data (using the option `deseason = TRUE`.Similarly, for data that
@@ -332,7 +319,6 @@ David Carslaw with some trend code from Rand Wilcox
 ``` r
 # trend plot for nox
 TheilSen(mydata, pollutant = "nox")
-#> Taking bootstrap samples. Please wait.
 
 
 # trend plot for ozone with p=0.01 i.e. uncertainty in slope shown at
