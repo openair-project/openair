@@ -18,7 +18,6 @@ timePlot(
   date.pad = FALSE,
   type = "default",
   cols = "brewer1",
-  plot.type = "l",
   log = FALSE,
   windflow = NULL,
   smooth = FALSE,
@@ -28,7 +27,7 @@ timePlot(
   ref.x = NULL,
   ref.y = NULL,
   key = TRUE,
-  key.columns = 1,
+  key.columns = NULL,
   key.position = "bottom",
   name.pol = pollutant,
   date.breaks = 7,
@@ -125,26 +124,18 @@ different variables and how they depend on one another.
 
 \item{cols}{Colours to be used for plotting; see \code{\link[=openColours]{openColours()}} for details.}
 
-\item{plot.type}{The \code{lattice} plot type, which is a line (\code{plot.type = "l"})
-by default. Another useful option is \code{plot.type = "h"}, which draws
-vertical lines.}
-
 \item{log}{Should the y-axis appear on a log scale? The default is \code{FALSE}.
 If \code{TRUE} a well-formatted log10 scale is used. This can be useful for
 plotting data for several different pollutants that exist on very different
 scales. It is therefore useful to use \code{log = TRUE} together with \code{group = TRUE}.}
 
 \item{windflow}{This option allows a scatter plot to show the wind
-speed/direction as an arrow. The option is a list e.g. \code{windflow = list(col = "grey", lwd = 2, scale = 0.1)}. This option requires wind speed (\code{ws})
-and wind direction (\code{wd}) to be available.
+speed/direction as an arrow. The option is a list e.g. \code{windflow = list(col = "grey", lwd = 2)}. This option requires wind speed (\code{ws}) and wind
+direction (\code{wd}) to be available.
 
-The maximum length of the arrow plotted is a fraction of the plot dimension
-with the longest arrow being \code{scale} of the plot x-y dimension. Note, if
-the plot size is adjusted manually by the user it should be re-plotted to
-ensure the correct wind angle. The list may contain other options to
-\code{panel.arrows} in the \code{lattice} package. Other useful options include
-\code{length}, which controls the length of the arrow head and \code{angle}, which
-controls the angle of the arrow head.
+Any of the arguments in \code{\link[ggplot2:reexports]{ggplot2::arrow()}} can be passed as a list, as well
+as \code{col} which controls the arrow's colour and \code{lwd} which controls the
+line width.
 
 This option works best where there are not too many data to ensure
 over-plotting does not become a problem.}
@@ -204,14 +195,15 @@ properly, e.g., by subscripting the '2' in NO2.}
 data to extract plot components and plotting them in other ways.}
 
 \item{...}{Other graphical parameters are passed onto \code{\link[=cutData]{cutData()}} and
-\code{\link[lattice:xyplot]{lattice::xyplot()}}. For example, \code{\link[=timePlot]{timePlot()}} passes the option \code{hemisphere = "southern"} on to \code{\link[=cutData]{cutData()}} to provide southern (rather than default
-northern) hemisphere handling of \code{type = "season"}. Similarly, most common
-plotting parameters, such as \code{layout} for panel arrangement and \code{pch} and
-\code{cex} for plot symbol type and size and \code{lty} and \code{lwd} for line type and
-width, as passed to \code{\link[lattice:xyplot]{lattice::xyplot()}}, although some maybe locally
-managed by \code{openair} on route, e.g., axis and title labelling options (such
-as \code{xlab}, \code{ylab}, \code{main}) are passed via \code{\link[=quickText]{quickText()}} to handle routine
-formatting. See examples below.}
+\code{\link[lattice:xyplot]{lattice::xyplot()}}. For example, \code{\link[=timePlot]{timePlot()}} passes the option
+\code{hemisphere = "southern"} on to \code{\link[=cutData]{cutData()}} to provide southern (rather
+than default northern) hemisphere handling of \code{type = "season"}. Similarly,
+most common plotting parameters, such as \code{layout} for panel arrangement and
+\code{pch} and \code{cex} for plot symbol type and size and \code{lty} and \code{lwd} for line
+type and width, as passed to \code{\link[lattice:xyplot]{lattice::xyplot()}}, although some maybe
+locally managed by \code{openair} on route, e.g., axis and title labelling
+options (such as \code{xlab}, \code{ylab}, \code{main}) are passed via \code{\link[=quickText]{quickText()}} to
+handle routine formatting. See examples below.}
 }
 \value{
 an \link[=openair-package]{openair} object
@@ -247,7 +239,6 @@ setting \code{key} and/or \code{strip} to \code{FALSE}. One reason to do this is
 the plotting area and therefore the information shown.
 }
 \examples{
-
 # basic use, single pollutant
 timePlot(mydata, pollutant = "nox")
 
@@ -259,9 +250,14 @@ timePlot(mydata, pollutant = c("nox", "no2"))
 timePlot(mydata, pollutant = c("nox", "no2"), group = TRUE)
 
 # alternative by normalising concentrations and plotting on the same scale
-timePlot(mydata,
-  pollutant = c("nox", "co", "pm10", "so2"), group = TRUE, avg.time =
-    "year", normalise = "1/1/1998", lwd = 3, lty = 1
+timePlot(
+  mydata,
+  pollutant = c("nox", "co", "pm10", "so2"),
+  group = TRUE,
+  avg.time = "year",
+  normalise = "1/1/1998",
+  lwd = 3,
+  lty = 1
 )
 
 # examples of selecting by date
@@ -270,7 +266,8 @@ timePlot(mydata,
 timePlot(selectByDate(mydata, year = 1999), pollutant = "nox")
 
 # select specific date range for two pollutants
-timePlot(selectByDate(mydata, start = "6/8/2003", end = "13/8/2003"),
+timePlot(
+  selectByDate(mydata, start = "6/8/2003", end = "13/8/2003"),
   pollutant = c("no2", "o3")
 )
 
@@ -278,9 +275,11 @@ timePlot(selectByDate(mydata, start = "6/8/2003", end = "13/8/2003"),
 timePlot(mydata, pollutant = c("nox", "no2"), lty = 1)
 
 # choose different line styles etc
-timePlot(selectByDate(mydata, year = 2004, month = 6),
-  pollutant =
-    c("nox", "no2"), lwd = c(1, 2), col = "black"
+timePlot(
+  selectByDate(mydata, year = 2004, month = 6),
+  pollutant = c("nox", "no2"),
+  lwd = c(1, 2),
+  col = "black"
 )
 
 # different averaging times
@@ -292,7 +291,7 @@ timePlot(mydata, pollutant = "o3", avg.time = "day")
 timePlot(mydata, pollutant = "o3", avg.time = "day", data.thresh = 75)
 
 # 2-week average of O3 concentrations
-#' timePlot(mydata, pollutant = "o3", avg.time = "2 week")
+timePlot(mydata, pollutant = "o3", avg.time = "2 week")
 }
 
 }
