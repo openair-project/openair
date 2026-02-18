@@ -107,9 +107,7 @@ their data first.
 If a data frame is supplied that contains \code{nox}, \code{no2} and
 \code{o3}, the \code{y} can be chosen as \code{y = "ox"}. In function will
 therefore consider total oxidant slope (sum of NO2 + O3), which can provide
-valuable information on likely vehicle primary NO emissions. Note, however,
-that most roadside sites do not have ozone measurements and
-\code{\link[=calcFno2]{calcFno2()}} is the alternative.
+valuable information on likely vehicle primary NO emissions.
 }
 \examples{
 # monthly relationship between NOx and SO2 - note rapid fall in
@@ -133,9 +131,6 @@ linearRelation(mydata, x = "nox", y = "ox", period = "hour", condition = TRUE)
 \dontrun{
 linearRelation(mydata, x = "pm10", y = "pm25", rsq.thresh = 0.8)
 }
-}
-\seealso{
-\code{\link[=calcFno2]{calcFno2()}}
 }
 \author{
 David Carslaw

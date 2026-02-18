@@ -27,9 +27,7 @@
 #' If a data frame is supplied that contains `nox`, `no2` and
 #' `o3`, the `y` can be chosen as `y = "ox"`. In function will
 #' therefore consider total oxidant slope (sum of NO2 + O3), which can provide
-#' valuable information on likely vehicle primary NO emissions. Note, however,
-#' that most roadside sites do not have ozone measurements and
-#' [calcFno2()] is the alternative.
+#' valuable information on likely vehicle primary NO emissions.
 #'
 #' @param mydata A data frame minimally containing `date` and two
 #'   pollutants.
@@ -76,7 +74,6 @@
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
-#' @seealso [calcFno2()]
 #' @examples
 #' # monthly relationship between NOx and SO2 - note rapid fall in
 #' # ratio at the beginning of the series
