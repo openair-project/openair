@@ -158,6 +158,8 @@ Tools for manipulating and summarising air quality data.
   : Rolling regression for pollutant source characterisation.
 - [`GaussianSmooth()`](https://openair-project.github.io/openair/reference/GaussianSmooth.md)
   : Calculate rolling Gaussian smooth of pollutant values
+- [`WhittakerSmooth()`](https://openair-project.github.io/openair/reference/WhittakerSmooth.md)
+  : Calculate Whittaker-Eilers Smoothing and Interpolation
 - [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
   : Subset a data frame based on date
 - [`selectRunning()`](https://openair-project.github.io/openair/reference/selectRunning.md)

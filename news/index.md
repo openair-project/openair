@@ -155,6 +155,11 @@
   grid using
   [`ggplot2::facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html).
 
+- New function to do Whittaker-Eilers Smoothing. This is a fast and
+  general smoothing technique, well-suited to a wide range of problems.
+  The function can be used to flexibly smooth and interpolate missing
+  data.
+
 ### Bug Fixes
 
 - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)

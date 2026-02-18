@@ -100,7 +100,7 @@ dataset before the data is cut into categories using `type`.
 test <- rnorm(20, mean = 10)
 bootMeanDF(test)
 #>          mean      min      max  n
-#> Mean 9.689424 9.321958 10.11362 20
+#> Mean 9.711322 9.338343 10.12954 20
 
 # how does nox vary by intervals of wind speed?
 results <- binData(mydata, bin = "ws", uncer = "nox")
