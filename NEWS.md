@@ -8,6 +8,8 @@
 
 ## Breaking Changes
 
+- `calcFno2()` has been removed from `openair` due to using outdated methodology and assumptions.
+
 - The following functions are now written in `ggplot2`:
 
   - `trendLevel()`
