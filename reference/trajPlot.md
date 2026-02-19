@@ -1,7 +1,9 @@
 # Trajectory line plots with conditioning
 
 This function plots back trajectories. This function requires that data
-are imported using the `importTraj` function.
+are imported using the
+[`importTraj()`](https://openair-project.github.io/openair/reference/importTraj.md)
+function, or matches that structure.
 
 ## Usage
 
@@ -10,25 +12,28 @@ trajPlot(
   mydata,
   lon = "lon",
   lat = "lat",
-  pollutant = "height",
+  pollutant = NULL,
   type = "default",
   map = TRUE,
-  group = NA,
+  group = NULL,
+  cols = "default",
+  crs = 4326,
   map.fill = TRUE,
-  map.res = "default",
   map.cols = "grey40",
   map.border = "black",
   map.alpha = 0.4,
   map.lwd = 1,
   map.lty = 1,
-  projection = "lambert",
-  parameters = c(51, 51),
-  orientation = c(90, 0, 0),
   grid.col = "deepskyblue",
   grid.nx = 9,
   grid.ny = grid.nx,
   npoints = 12,
   origin = TRUE,
+  key = TRUE,
+  key.title = group,
+  key.position = "right",
+  key.columns = 1,
+  auto.text = TRUE,
   plot = TRUE,
   ...
 )
@@ -39,19 +44,16 @@ trajPlot(
 - mydata:
 
   Data frame, the result of importing a trajectory file using
-  `importTraj`.
+  [`importTraj()`](https://openair-project.github.io/openair/reference/importTraj.md).
 
-- lon:
+- lon, lat:
 
-  Column containing the longitude, as a decimal.
-
-- lat:
-
-  Column containing the latitude, as a decimal.
+  Columns containing the decimal longitude and latitude.
 
 - pollutant:
 
-  Pollutant to be plotted. By default the trajectory height is used.
+  Pollutant (or any numeric column) to be plotted, if any.
+  Alternatively, use `group`.
 
 - type:
 
@@ -76,27 +78,33 @@ trajPlot(
 
 - map:
 
-  Should a base map be drawn? If `TRUE` the world base map from the
-  `maps` package is used.
+  Should a base map be drawn? If `TRUE` the world base map provided by
+  [`ggplot2::map_data()`](https://ggplot2.tidyverse.org/reference/map_data.html)
+  will be used.
 
 - group:
 
-  It is sometimes useful to group and colour trajectories according to a
-  grouping variable. See example below.
+  A condition to colour the plot by, passed to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
+  An alternative to `pollutant`, and used preferentially to `pollutant`
+  if both are set.
+
+- cols:
+
+  Colours for plotting. Passed to
+  [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md).
+
+- crs:
+
+  The coordinate reference system to use for plotting. Defaults to
+  `4326`, which is the WGS84 geographic coordinate system, the standard,
+  unprojected latitude/longitude system used in GPS, Google Earth, and
+  GIS mapping. Other `crs` values are available - for example, `27700`
+  will use the the OSGB36/British National Grid.
 
 - map.fill:
 
   Should the base map be a filled polygon? Default is to fill countries.
-
-- map.res:
-
-  The resolution of the base map. By default the function uses the
-  ‘world’ map from the `maps` package. If `map.res = "hires"` then the
-  (much) more detailed base map ‘worldHires’ from the `mapdata` package
-  is used. Use
-  [`library(mapdata)`](https://rdrr.io/r/base/library.html). Also
-  available is a map showing the US states. In this case
-  `map.res = "state"` should be used.
 
 - map.cols:
 
@@ -128,31 +136,6 @@ trajPlot(
   or "twodash", where "blank" uses 'invisible lines' (i.e., does not
   draw them).
 
-- projection:
-
-  The map projection to be used. Different map projections are possible
-  through the `mapproj` package. See `?mapproject` for extensive details
-  and information on setting other parameters and orientation (see
-  below).
-
-- parameters:
-
-  From the `mapproj` package. Optional numeric vector of parameters for
-  use with the projection argument. This argument is optional only in
-  the sense that certain projections do not require additional
-  parameters. If a projection does not require additional parameters
-  then set to null i.e. `parameters = NULL`.
-
-- orientation:
-
-  From the `mapproj` package. An optional vector c(latitude, longitude,
-  rotation) which describes where the "North Pole" should be when
-  computing the projection. Normally this is c(90, 0), which is
-  appropriate for cylindrical and conic projections. For a planar
-  projection, you should set it to the desired point of tangency. The
-  third value is a clockwise rotation (in degrees), which defaults to
-  the midrange of the longitude coordinates in the map.
-
 - grid.col:
 
   The colour of the map grid to be used. To remove the grid set
@@ -164,8 +147,8 @@ trajPlot(
   defaults to `9`, and `grid.ny` defaults to whatever value is passed to
   `grid.nx`. Setting both values to `0` will remove the grid entirely.
   The number of ticks is approximate as this value is passed to
-  [`pretty()`](https://rdrr.io/r/base/pretty.html) to determine
-  nice-looking, round breakpoints.
+  [`scales::breaks_pretty()`](https://scales.r-lib.org/reference/breaks_pretty.html)
+  to determine nice-looking, round breakpoints.
 
 - npoints:
 
@@ -179,6 +162,29 @@ trajPlot(
 
   If true a filled circle dot is shown to mark the receptor point.
 
+- key:
+
+  Should a key be drawn? Defaults to `TRUE`.
+
+- key.title:
+
+  The title of the key.
+
+- key.position:
+
+  Location where the scale key should be plotted. Allowed arguments
+  currently include `"top"`, `"right"`, `"bottom"`, and `"left"`.
+
+- key.columns:
+
+  Number of columns to be used in the key.
+
+- auto.text:
+
+  Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
+  will automatically try and format pollutant names and units properly
+  e.g. by subscripting the ‘2’ in NO2.
+
 - plot:
 
   Should a plot be produced? `FALSE` can be useful when analysing data
@@ -186,29 +192,37 @@ trajPlot(
 
 - ...:
 
-  other arguments are passed to `cutData` and `scatterPlot`. This
-  provides access to arguments used in both these functions and
-  functions that they in turn pass arguments on to. For example,
-  `plotTraj` passes the argument `cex` on to `scatterPlot` which in turn
-  passes it on to the `lattice` function `xyplot` where it is applied to
-  set the plot symbol size.
+  Addition options are passed on to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for `type` handling. Some additional arguments are also available:
+
+  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
+    and plot title.
+
+  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
+    2 columns and 5 rows.
+
+  - `fontsize` overrides the overall font size of the plot.
+
+  - `border` sets the border colour of each bar.
 
 ## Details
 
-Several types of trajectory plot are available. `trajPlot` by default
-will plot each lat/lon location showing the origin of each trajectory,
-if no `pollutant` is supplied.
+Several types of trajectory plot are available:
 
-If a pollutant is given, by merging the trajectory data with
-concentration data (see example below), the trajectories are
-colour-coded by the concentration of `pollutant`. With a long time
-series there can be lots of overplotting making it difficult to gauge
-the overall concentration pattern. In these cases setting `alpha` to a
-low value e.g. 0.1 can help.
+- `trajPlot()` by default will plot each lat/lon location showing the
+  origin of each trajectory, if no `pollutant` is supplied.
+
+- If a pollutant is given, by merging the trajectory data with
+  concentration data, the trajectories are colour-coded by the
+  concentration of `pollutant`. With a long time series there can be
+  lots of overplotting making it difficult to gauge the overall
+  concentration pattern. In these cases setting `alpha` to a low value
+  e.g. 0.1 can help.
 
 The user can also show points instead of lines by `plot.type = "p"`.
 
-Note that `trajPlot` will plot only the full length trajectories. This
+Note that `trajPlot()` will plot only the full length trajectories. This
 should be remembered when selecting only part of a year to plot.
 
 ## See also
@@ -222,34 +236,40 @@ Other trajectory analysis functions:
 
 David Carslaw
 
+Jack Davison
+
 ## Examples
 
 ``` r
+if (FALSE) { # \dontrun{
 # show a simple case with no pollutant i.e. just the trajectories
 # let's check to see where the trajectories were coming from when
 # Heathrow Airport was closed due to the Icelandic volcanic eruption
 # 15--21 April 2010.
 # import trajectories for London and plot
-if (FALSE) { # \dontrun{
+
 lond <- importTraj("london", 2010)
+
 # well, HYSPLIT seems to think there certainly were conditions where trajectories
 # orginated from Iceland...
 trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"))
-} # }
 
 # plot by day, need a column that makes a date
-if (FALSE) { # \dontrun{
 lond$day <- as.Date(lond$date)
-trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
+trajPlot(
+  selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
   type = "day"
 )
-} # }
 
 # or show each day grouped by colour, with some other options set
-if (FALSE) { # \dontrun{
-trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
-  group = "day", col = "turbo", lwd = 2, key.pos = "right", key.col = 1
+trajPlot(
+  selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
+  group = "day",
+  cols = "turbo",
+  key.position = "right",
+  key.columns = 1,
+  lwd = 2,
+  cex = 4
 )
 } # }
-# more examples to follow linking with concentration measurements...
 ```

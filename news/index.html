@@ -57,6 +57,7 @@
 <h3 id="dependency-changes-development-version">Dependency Changes<a class="anchor" aria-label="anchor" href="#dependency-changes-development-version"></a></h3>
 <ul><li><p><code>openair</code> now depends on R v4.1 and, internally, uses the base R pipe (<code>|&gt;</code>).</p></li>
 <li><p><code>openair</code> now imports <code>ggplot2</code> and <code>scales</code>.</p></li>
+<li><p><code>openair</code> no longer suggests <code>maps</code> or <code>mapdata</code> or imports <code>mapproj</code>. Instead, it suggests <code>sf</code>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-development-version">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
@@ -66,8 +67,14 @@
 <li><p><code><a href="../reference/calendarPlot.html">calendarPlot()</a></code></p></li>
 <li><p><code><a href="../reference/TheilSen.html">TheilSen()</a></code></p></li>
 <li><p><code><a href="../reference/timeProp.html">timeProp()</a></code></p></li>
+<li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code></p></li>
+<li><p><code><a href="../reference/trajLevel.html">trajLevel()</a></code></p></li>
+<li><p><code><a href="../reference/trajCluster.html">trajCluster()</a></code></p></li>
 </ul><p>This is the beginning of a move away from <code>lattice</code> to a more modern plotting engine. For most users there will be no real change, but some arguments passed to <code>...</code> may no longer be supported. Any <code>lattice</code>-specific annotations also will not work, but equivalent <code>ggplot2</code> methods should be available.</p>
-</li>
+<p>There are some important changes to be aware of:</p>
+<ul><li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code>, <code><a href="../reference/trajLevel.html">trajLevel()</a></code> and <code><a href="../reference/trajCluster.html">trajCluster()</a></code> have had their three projection related arguments removed and replaced with a single <code>crs</code> argument, which defaults to lat/lng (<code>4326</code>).</p></li>
+<li><p>As the above three functions no longer call <code><a href="../reference/scatterPlot.html">scatterPlot()</a></code>, <code><a href="../reference/scatterPlot.html">scatterPlot()</a></code> no longer has the <code>map</code> argument.</p></li>
+</ul></li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>

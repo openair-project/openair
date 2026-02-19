@@ -9,6 +9,9 @@
 
 - `openair` now imports `ggplot2` and `scales`.
 
+- `openair` no longer suggests `maps` or `mapdata` or imports `mapproj`.
+  Instead, it suggests `sf`.
+
 ### Breaking Changes
 
 - The following functions are now written in `ggplot2`:
@@ -21,11 +24,32 @@
 
   - [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md)
 
+  - [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md)
+
+  - [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md)
+
+  - [`trajCluster()`](https://openair-project.github.io/openair/reference/trajCluster.md)
+
   This is the beginning of a move away from `lattice` to a more modern
   plotting engine. For most users there will be no real change, but some
   arguments passed to `...` may no longer be supported. Any
   `lattice`-specific annotations also will not work, but equivalent
   `ggplot2` methods should be available.
+
+  There are some important changes to be aware of:
+
+  - [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md),
+    [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md)
+    and
+    [`trajCluster()`](https://openair-project.github.io/openair/reference/trajCluster.md)
+    have had their three projection related arguments removed and
+    replaced with a single `crs` argument, which defaults to lat/lng
+    (`4326`).
+
+  - As the above three functions no longer call
+    [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md),
+    [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
+    no longer has the `map` argument.
 
 ### New Features
 

@@ -300,10 +300,6 @@ calcFno2(input, tau = 60, user.fno2, main = "", xlab = "year", ...)
       `mgcv` package. Data are first transformed to a unit square.
       Values should be between 0 and 1.
 
-  `map`
-
-  :   Should a base map be drawn? This option is under development.
-
   `auto.text`
 
   :   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis

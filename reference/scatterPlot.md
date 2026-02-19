@@ -44,7 +44,6 @@ scatterPlot(
   ref.y = NULL,
   k = NA,
   dist = 0.02,
-  map = FALSE,
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -298,10 +297,6 @@ scatterPlot(
   `dist` controls how far from the original data the predictions should
   be made. See `exclude.too.far` from the `mgcv` package. Data are first
   transformed to a unit square. Values should be between 0 and 1.
-
-- map:
-
-  Should a base map be drawn? This option is under development.
 
 - auto.text:
 

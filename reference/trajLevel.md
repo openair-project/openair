@@ -17,26 +17,28 @@ trajLevel(
   smooth = FALSE,
   statistic = "frequency",
   percentile = 90,
-  map = TRUE,
   lon.inc = 1,
-  lat.inc = 1,
+  lat.inc = lon.inc,
   min.bin = 1,
-  .combine = NA,
+  .combine = NULL,
   sigma = 1.5,
+  cols = "default",
+  crs = 4326,
+  map = TRUE,
   map.fill = TRUE,
-  map.res = "default",
   map.cols = "grey40",
   map.border = "black",
   map.alpha = 0.3,
   map.lwd = 1,
   map.lty = 1,
-  projection = "lambert",
-  parameters = c(51, 51),
-  orientation = c(90, 0, 0),
   grid.col = "deepskyblue",
   grid.nx = 9,
   grid.ny = grid.nx,
   origin = TRUE,
+  key = TRUE,
+  key.position = "right",
+  key.columns = NULL,
+  auto.text = TRUE,
   plot = TRUE,
   ...
 )
@@ -47,19 +49,16 @@ trajLevel(
 - mydata:
 
   Data frame, the result of importing a trajectory file using
-  `importTraj`.
+  [`importTraj()`](https://openair-project.github.io/openair/reference/importTraj.md).
 
-- lon:
+- lon, lat:
 
-  Column containing the longitude, as a decimal.
-
-- lat:
-
-  Column containing the latitude, as a decimal.
+  Columns containing the decimal longitude and latitude.
 
 - pollutant:
 
-  Pollutant to be plotted. By default the trajectory height is used.
+  Pollutant (or any numeric column) to be plotted, if any.
+  Alternatively, use `group`.
 
 - type:
 
@@ -88,47 +87,37 @@ trajLevel(
 
 - statistic:
 
-  Statistic to use for `trajLevel()`. By default, the function will plot
-  the trajectory frequencies (`statistic = "frequency"`). As an
-  alternative way of viewing trajectory frequencies, the argument
-  `method = "hexbin"` can be used. In this case hexagonal binning of the
-  trajectory *points* (i.e., a point every three hours along each back
-  trajectory). The plot then shows the trajectory frequencies uses
-  hexagonal binning.
+  One of:
 
-  There are also various ways of plotting concentrations.
+  - `"frequency"` (the default) shows trajectory frequencies.
 
-  It is possible to set `statistic = "difference"`. In this case
-  trajectories where the associated concentration is greater than
-  `percentile` are compared with the the full set of trajectories to
-  understand the differences in frequencies of the origin of air masses.
-  The comparison is made by comparing the percentage change in gridded
-  frequencies. For example, such a plot could show that the top 10\\
-  tend to originate from air-mass origins to the east.
+  - `"difference"` - in this case trajectories where the associated
+    concentration is greater than `percentile` are compared with the the
+    full set of trajectories to understand the differences in
+    frequencies of the origin of air masses. The comparison is made by
+    comparing the percentage change in gridded frequencies. For example,
+    such a plot could show that the top 10\\ to the east.
 
-  If `statistic = "pscf"` then a Potential Source Contribution Function
-  map is produced. This statistic method interacts with `percentile`.
+  - `"pscf"` for a Potential Source Contribution Function map. This
+    statistic method interacts with `percentile`.
 
-  If `statistic = "cwt"` then concentration weighted trajectories are
-  plotted.
+  - `"cwt"` for concentration weighted trajectories.
 
-  If `statistic = "sqtba"` then Simplified Quantitative Transport Bias
-  Analysis is undertaken. This statistic method interacts with
-  `.combine` and `sigma`.
+  - `"sqtba"` to undertake Simplified Quantitative Transport Bias
+    Analysis. This statistic method interacts with `.combine` and
+    `sigma`.
 
 - percentile:
 
   The percentile concentration of `pollutant` against which the all
   trajectories are compared.
 
-- map:
-
-  Should a base map be drawn? If `TRUE` the world base map from the
-  `maps` package is used.
-
 - lon.inc, lat.inc:
 
-  The longitude and latitude intervals to be used for binning data.
+  The longitude and latitude intervals to be used for binning data. If
+  `statistic = "hexbin"`, the minimum value out of of `lon.inc` and
+  `lat.inc` is passed to the `binwidth` argument of
+  [`ggplot2::geom_hex()`](https://ggplot2.tidyverse.org/reference/geom_hex.html).
 
 - min.bin:
 
@@ -151,19 +140,28 @@ trajLevel(
   lower values reveal source regions more effectively while not
   introducing too much noise.
 
+- cols:
+
+  Colours for plotting. Passed to
+  [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md).
+
+- crs:
+
+  The coordinate reference system to use for plotting. Defaults to
+  `4326`, which is the WGS84 geographic coordinate system, the standard,
+  unprojected latitude/longitude system used in GPS, Google Earth, and
+  GIS mapping. Other `crs` values are available - for example, `27700`
+  will use the the OSGB36/British National Grid.
+
+- map:
+
+  Should a base map be drawn? If `TRUE` the world base map provided by
+  [`ggplot2::map_data()`](https://ggplot2.tidyverse.org/reference/map_data.html)
+  will be used.
+
 - map.fill:
 
   Should the base map be a filled polygon? Default is to fill countries.
-
-- map.res:
-
-  The resolution of the base map. By default the function uses the
-  ‘world’ map from the `maps` package. If `map.res = "hires"` then the
-  (much) more detailed base map ‘worldHires’ from the `mapdata` package
-  is used. Use
-  [`library(mapdata)`](https://rdrr.io/r/base/library.html). Also
-  available is a map showing the US states. In this case
-  `map.res = "state"` should be used.
 
 - map.cols:
 
@@ -195,31 +193,6 @@ trajLevel(
   or "twodash", where "blank" uses 'invisible lines' (i.e., does not
   draw them).
 
-- projection:
-
-  The map projection to be used. Different map projections are possible
-  through the `mapproj` package. See `?mapproject` for extensive details
-  and information on setting other parameters and orientation (see
-  below).
-
-- parameters:
-
-  From the `mapproj` package. Optional numeric vector of parameters for
-  use with the projection argument. This argument is optional only in
-  the sense that certain projections do not require additional
-  parameters. If a projection does not require additional parameters
-  then set to null i.e. `parameters = NULL`.
-
-- orientation:
-
-  From the `mapproj` package. An optional vector c(latitude, longitude,
-  rotation) which describes where the "North Pole" should be when
-  computing the projection. Normally this is c(90, 0), which is
-  appropriate for cylindrical and conic projections. For a planar
-  projection, you should set it to the desired point of tangency. The
-  third value is a clockwise rotation (in degrees), which defaults to
-  the midrange of the longitude coordinates in the map.
-
 - grid.col:
 
   The colour of the map grid to be used. To remove the grid set
@@ -231,12 +204,31 @@ trajLevel(
   defaults to `9`, and `grid.ny` defaults to whatever value is passed to
   `grid.nx`. Setting both values to `0` will remove the grid entirely.
   The number of ticks is approximate as this value is passed to
-  [`pretty()`](https://rdrr.io/r/base/pretty.html) to determine
-  nice-looking, round breakpoints.
+  [`scales::breaks_pretty()`](https://scales.r-lib.org/reference/breaks_pretty.html)
+  to determine nice-looking, round breakpoints.
 
 - origin:
 
   If true a filled circle dot is shown to mark the receptor point.
+
+- key:
+
+  Should a key be drawn? Defaults to `TRUE`.
+
+- key.position:
+
+  Location where the scale key should be plotted. Allowed arguments
+  currently include `"top"`, `"right"`, `"bottom"`, and `"left"`.
+
+- key.columns:
+
+  Number of columns to be used in the key.
+
+- auto.text:
+
+  Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
+  will automatically try and format pollutant names and units properly
+  e.g. by subscripting the ‘2’ in NO2.
 
 - plot:
 
@@ -245,17 +237,19 @@ trajLevel(
 
 - ...:
 
-  other arguments are passed to
+  Addition options are passed on to
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-  and
-  [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md).
-  This provides access to arguments used in both these functions and
-  functions that they in turn pass arguments on to. For example,
-  `trajLevel()` passes the argument `cex` on to
-  [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
-  which in turn passes it on to
-  [`lattice::xyplot()`](https://rdrr.io/pkg/lattice/man/xyplot.html)
-  where it is applied to set the plot symbol size.
+  for `type` handling. Some additional arguments are also available:
+
+  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
+    and plot title.
+
+  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
+    2 columns and 5 rows.
+
+  - `fontsize` overrides the overall font size of the plot.
+
+  - `border` sets the border colour of each tile.
 
 ## Value
 
@@ -273,8 +267,8 @@ trajectory statistics that can be plotted as gridded surfaces. First,
 trajectory points in a grid square. Grid squares are by default at 1
 degree intervals, controlled by `lat.inc` and `lon.inc`. Such plots are
 useful for showing the frequency of air mass locations. Note that it is
-also possible to set `method = "hexbin"` for plotting frequencies (not
-concentrations), which will produce a plot by hexagonal binning.
+also possible to set `statistic = "hexbin"` for plotting frequencies
+(not concentrations), which will produce a plot by hexagonal binning.
 
 If `statistic = "difference"` the trajectories associated with a
 concentration greater than `percentile` are compared with the the full
@@ -341,6 +335,8 @@ Other trajectory analysis functions:
 ## Author
 
 David Carslaw
+
+Jack Davison
 
 ## Examples
 

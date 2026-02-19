@@ -70,26 +70,28 @@ data are imported using the <code><a href="importTraj.html">importTraj()</a></co
 <span>  smooth <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  statistic <span class="op">=</span> <span class="st">"frequency"</span>,</span>
 <span>  percentile <span class="op">=</span> <span class="fl">90</span>,</span>
-<span>  map <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  lon.inc <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  lat.inc <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  lat.inc <span class="op">=</span> <span class="va">lon.inc</span>,</span>
 <span>  min.bin <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  .combine <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  .combine <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sigma <span class="op">=</span> <span class="fl">1.5</span>,</span>
+<span>  cols <span class="op">=</span> <span class="st">"default"</span>,</span>
+<span>  crs <span class="op">=</span> <span class="fl">4326</span>,</span>
+<span>  map <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  map.fill <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  map.res <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  map.cols <span class="op">=</span> <span class="st">"grey40"</span>,</span>
 <span>  map.border <span class="op">=</span> <span class="st">"black"</span>,</span>
 <span>  map.alpha <span class="op">=</span> <span class="fl">0.3</span>,</span>
 <span>  map.lwd <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  map.lty <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  projection <span class="op">=</span> <span class="st">"lambert"</span>,</span>
-<span>  parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">51</span>, <span class="fl">51</span><span class="op">)</span>,</span>
-<span>  orientation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">90</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,</span>
 <span>  grid.col <span class="op">=</span> <span class="st">"deepskyblue"</span>,</span>
 <span>  grid.nx <span class="op">=</span> <span class="fl">9</span>,</span>
 <span>  grid.ny <span class="op">=</span> <span class="va">grid.nx</span>,</span>
 <span>  origin <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
+<span>  key.columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -101,20 +103,16 @@ data are imported using the <code><a href="importTraj.html">importTraj()</a></co
 
 <dl><dt id="arg-mydata">mydata<a class="anchor" aria-label="anchor" href="#arg-mydata"></a></dt>
 <dd><p>Data frame, the result of importing a trajectory file using
-<code>importTraj</code>.</p></dd>
+<code><a href="importTraj.html">importTraj()</a></code>.</p></dd>
 
 
-<dt id="arg-lon">lon<a class="anchor" aria-label="anchor" href="#arg-lon"></a></dt>
-<dd><p>Column containing the longitude, as a decimal.</p></dd>
-
-
-<dt id="arg-lat">lat<a class="anchor" aria-label="anchor" href="#arg-lat"></a></dt>
-<dd><p>Column containing the latitude, as a decimal.</p></dd>
+<dt id="arg-lon-lat">lon, lat<a class="anchor" aria-label="anchor" href="#arg-lon-lat"></a></dt>
+<dd><p>Columns containing the decimal longitude and latitude.</p></dd>
 
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
-<dd><p>Pollutant to be plotted. By default the trajectory height is
-used.</p></dd>
+<dd><p>Pollutant (or any numeric column) to be plotted, if any.
+Alternatively, use <code>group</code>.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
@@ -139,26 +137,20 @@ types are provided the first forms the columns and the second the rows.</p></dd>
 
 
 <dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
-<dd><p>Statistic to use for <code>trajLevel()</code>. By default, the function
-will plot the trajectory frequencies (<code>statistic = "frequency"</code>). As an
-alternative way of viewing trajectory frequencies, the argument <code>method = "hexbin"</code> can be used. In this case hexagonal binning of the trajectory
-<em>points</em> (i.e., a point every three hours along each back trajectory).
-The plot then shows the trajectory frequencies uses hexagonal binning.</p>
-<p>There are also various ways of plotting concentrations.</p>
-<p>It is possible to set <code>statistic = "difference"</code>. In this case trajectories
-where the associated concentration is greater than <code>percentile</code> are
-compared with the the full set of trajectories to understand the
-differences in frequencies of the origin of air masses. The comparison is
-made by comparing the percentage change in gridded frequencies. For
-example, such a plot could show that the top 10\<!-- % of concentrations of PM10 -->
-tend to originate from air-mass origins to the east.</p>
-<p>If <code>statistic = "pscf"</code> then a Potential Source Contribution Function map
-is produced. This statistic method interacts with <code>percentile</code>.</p>
-<p>If <code>statistic = "cwt"</code> then concentration weighted trajectories are
-plotted.</p>
-<p>If <code>statistic = "sqtba"</code> then Simplified Quantitative Transport Bias
-Analysis is undertaken. This statistic method interacts with <code>.combine</code> and
-<code>sigma</code>.</p></dd>
+<dd><p>One of:</p><ul><li><p><code>"frequency"</code> (the default) shows trajectory frequencies.</p></li>
+<li><p><code>"difference"</code> - in this case trajectories where the associated
+concentration is greater than <code>percentile</code> are compared with the the full
+set of trajectories to understand the differences in frequencies of the
+origin of air masses. The comparison is made by comparing the percentage
+change in gridded frequencies. For example, such a plot could show that the
+top 10\<!-- % of concentrations of PM10 tend to originate from air-mass origins -->
+to the east.</p></li>
+<li><p><code>"pscf"</code> for a Potential Source Contribution Function map. This statistic
+method interacts with <code>percentile</code>.</p></li>
+<li><p><code>"cwt"</code> for concentration weighted trajectories.</p></li>
+<li><p><code>"sqtba"</code> to undertake Simplified Quantitative Transport Bias
+Analysis. This statistic method interacts with <code>.combine</code> and <code>sigma</code>.</p></li>
+</ul></dd>
 
 
 <dt id="arg-percentile">percentile<a class="anchor" aria-label="anchor" href="#arg-percentile"></a></dt>
@@ -166,14 +158,11 @@ Analysis is undertaken. This statistic method interacts with <code>.combine</cod
 the all trajectories are compared.</p></dd>
 
 
-<dt id="arg-map">map<a class="anchor" aria-label="anchor" href="#arg-map"></a></dt>
-<dd><p>Should a base map be drawn? If <code>TRUE</code> the world base map from the
-<code>maps</code> package is used.</p></dd>
-
-
 <dt id="arg-lon-inc-lat-inc">lon.inc, lat.inc<a class="anchor" aria-label="anchor" href="#arg-lon-inc-lat-inc"></a></dt>
 <dd><p>The longitude and latitude intervals to be used for
-binning data.</p></dd>
+binning data. If <code>statistic = "hexbin"</code>, the minimum value out of of
+<code>lon.inc</code> and <code>lat.inc</code> is passed to the <code>binwidth</code> argument of
+<code><a href="https://ggplot2.tidyverse.org/reference/geom_hex.html" class="external-link">ggplot2::geom_hex()</a></code>.</p></dd>
 
 
 <dt id="arg-min-bin">min.bin<a class="anchor" aria-label="anchor" href="#arg-min-bin"></a></dt>
@@ -197,17 +186,26 @@ values reveal source regions more effectively while not introducing too
 much noise.</p></dd>
 
 
+<dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
+<dd><p>Colours for plotting. Passed to <code><a href="openColours.html">openColours()</a></code>.</p></dd>
+
+
+<dt id="arg-crs">crs<a class="anchor" aria-label="anchor" href="#arg-crs"></a></dt>
+<dd><p>The coordinate reference system to use for plotting. Defaults to
+<code>4326</code>, which is the WGS84 geographic coordinate system, the standard,
+unprojected latitude/longitude system used in GPS, Google Earth, and GIS
+mapping. Other <code>crs</code> values are available - for example, <code>27700</code> will use
+the the OSGB36/British National Grid.</p></dd>
+
+
+<dt id="arg-map">map<a class="anchor" aria-label="anchor" href="#arg-map"></a></dt>
+<dd><p>Should a base map be drawn? If <code>TRUE</code> the world base map provided
+by <code><a href="https://ggplot2.tidyverse.org/reference/map_data.html" class="external-link">ggplot2::map_data()</a></code> will be used.</p></dd>
+
+
 <dt id="arg-map-fill">map.fill<a class="anchor" aria-label="anchor" href="#arg-map-fill"></a></dt>
 <dd><p>Should the base map be a filled polygon? Default is to fill
 countries.</p></dd>
-
-
-<dt id="arg-map-res">map.res<a class="anchor" aria-label="anchor" href="#arg-map-res"></a></dt>
-<dd><p>The resolution of the base map. By default the function uses
-the ‘world’ map from the <code>maps</code> package. If <code>map.res = "hires"</code> then
-the (much) more detailed base map ‘worldHires’ from the <code>mapdata</code>
-package is used. Use <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library(mapdata)</a></code>. Also available is a map showing
-the US states. In this case <code>map.res = "state"</code> should be used.</p></dd>
 
 
 <dt id="arg-map-cols">map.cols<a class="anchor" aria-label="anchor" href="#arg-map-cols"></a></dt>
@@ -239,31 +237,6 @@ strings "blank", "solid", "dashed", "dotted", "dotdash", "longdash", or
 "twodash", where "blank" uses 'invisible lines' (i.e., does not draw them).</p></dd>
 
 
-<dt id="arg-projection">projection<a class="anchor" aria-label="anchor" href="#arg-projection"></a></dt>
-<dd><p>The map projection to be used. Different map projections
-are possible through the <code>mapproj</code> package. See <code>?mapproject</code> for extensive
-details and information on setting other parameters and orientation (see
-below).</p></dd>
-
-
-<dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
-<dd><p>From the <code>mapproj</code> package. Optional numeric vector of
-parameters for use with the projection argument. This argument is optional
-only in the sense that certain projections do not require additional
-parameters. If a projection does not require additional parameters then set
-to null i.e. <code>parameters = NULL</code>.</p></dd>
-
-
-<dt id="arg-orientation">orientation<a class="anchor" aria-label="anchor" href="#arg-orientation"></a></dt>
-<dd><p>From the <code>mapproj</code> package. An optional vector c(latitude,
-longitude, rotation) which describes where the "North Pole" should be when
-computing the projection. Normally this is c(90, 0), which is appropriate
-for cylindrical and conic projections. For a planar projection, you should
-set it to the desired point of tangency. The third value is a clockwise
-rotation (in degrees), which defaults to the midrange of the longitude
-coordinates in the map.</p></dd>
-
-
 <dt id="arg-grid-col">grid.col<a class="anchor" aria-label="anchor" href="#arg-grid-col"></a></dt>
 <dd><p>The colour of the map grid to be used. To remove the grid set
 <code>grid.col = "transparent"</code>.</p></dd>
@@ -274,12 +247,31 @@ coordinates in the map.</p></dd>
 grid. <code>grid.nx</code> defaults to <code>9</code>, and <code>grid.ny</code> defaults to whatever value
 is passed to <code>grid.nx</code>. Setting both values to <code>0</code> will remove the grid
 entirely. The number of ticks is approximate as this value is passed to
-<code><a href="https://rdrr.io/r/base/pretty.html" class="external-link">pretty()</a></code> to determine nice-looking, round breakpoints.</p></dd>
+<code><a href="https://scales.r-lib.org/reference/breaks_pretty.html" class="external-link">scales::breaks_pretty()</a></code> to determine nice-looking, round breakpoints.</p></dd>
 
 
 <dt id="arg-origin">origin<a class="anchor" aria-label="anchor" href="#arg-origin"></a></dt>
 <dd><p>If true a filled circle dot is shown to mark the receptor
 point.</p></dd>
+
+
+<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
+<dd><p>Should a key be drawn? Defaults to <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
+<dd><p>Location where the scale key should be plotted. Allowed
+arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>, and <code>"left"</code>.</p></dd>
+
+
+<dt id="arg-key-columns">key.columns<a class="anchor" aria-label="anchor" href="#arg-key-columns"></a></dt>
+<dd><p>Number of columns to be used in the key.</p></dd>
+
+
+<dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
+<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code>
+titles and axis labels will automatically try and format pollutant names
+and units properly e.g.  by subscripting the ‘2’ in NO2.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
@@ -288,12 +280,12 @@ data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>other arguments are passed to <code><a href="cutData.html">cutData()</a></code> and <code><a href="scatterPlot.html">scatterPlot()</a></code>.
-This provides access to arguments used in both these functions and
-functions that they in turn pass arguments on to. For example,
-<code>trajLevel()</code> passes the argument <code>cex</code> on to <code><a href="scatterPlot.html">scatterPlot()</a></code> which in
-turn passes it on to <code><a href="https://rdrr.io/pkg/lattice/man/xyplot.html" class="external-link">lattice::xyplot()</a></code> where it is applied to set the
-plot symbol size.</p></dd>
+<dd><p>Addition options are passed on to <code><a href="cutData.html">cutData()</a></code> for <code>type</code> handling.
+Some additional arguments are also available:</p><ul><li><p><code>xlab</code>, <code>ylab</code> and <code>main</code> override the x-axis label, y-axis label, and plot title.</p></li>
+<li><p><code>layout</code> sets the layout of facets - e.g., <code>layout(2, 5)</code> will have 2 columns and 5 rows.</p></li>
+<li><p><code>fontsize</code> overrides the overall font size of the plot.</p></li>
+<li><p><code>border</code> sets the border colour of each tile.</p></li>
+</ul></dd>
 
 </dl></div>
     <div class="section level2">
@@ -309,9 +301,8 @@ statistics that can be plotted as gridded surfaces. First, <code>statistic</code
 set to "frequency" to show the number of back trajectory points in a grid
 square. Grid squares are by default at 1 degree intervals, controlled by
 <code>lat.inc</code> and <code>lon.inc</code>. Such plots are useful for showing the frequency of
-air mass locations. Note that it is also possible to set <code>method = "hexbin"</code>
-for plotting frequencies (not concentrations), which will produce a plot by
-hexagonal binning.</p>
+air mass locations. Note that it is also possible to set <code>statistic = "hexbin"</code> for plotting frequencies (not concentrations), which will produce a
+plot by hexagonal binning.</p>
 <p>If <code>statistic = "difference"</code> the trajectories associated with a
 concentration greater than <code>percentile</code> are compared with the the full set of
 trajectories to understand the differences in frequencies of the origin of
@@ -371,6 +362,7 @@ Atmospheric Environment, 41(28), 5831-5847.</p>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>David Carslaw</p>
+<p>Jack Davison</p>
     </div>
 
     <div class="section level2">
