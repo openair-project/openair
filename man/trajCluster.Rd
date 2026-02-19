@@ -9,26 +9,17 @@ trajCluster(
   method = "Euclid",
   n.cluster = 5,
   type = "default",
-  cols = "Set1",
   split.after = FALSE,
-  map.fill = TRUE,
-  map.cols = "grey40",
-  map.border = "black",
-  map.alpha = 0.4,
-  map.lwd = 1,
-  map.lty = 1,
-  projection = "lambert",
-  parameters = c(51, 51),
-  orientation = c(90, 0, 0),
   by.type = FALSE,
-  origin = TRUE,
+  crs = 4326,
+  cols = "Set1",
   plot = TRUE,
   ...
 )
 }
 \arguments{
 \item{traj}{An openair trajectory data frame resulting from the use of
-\code{importTraj}.}
+\code{\link[=importTraj]{importTraj()}}.}
 
 \item{method}{Method used to calculate the distance matrix for the back
 trajectories. There are two methods available: \dQuote{Euclid} and
@@ -36,81 +27,34 @@ trajectories. There are two methods available: \dQuote{Euclid} and
 
 \item{n.cluster}{Number of clusters to calculate.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-\code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-on. For example, \code{type = "season"} will produce four plots --- one for
-each season. Note that the cluster calculations are separately made of each
-level of "type".}
-
-\item{cols}{Colours to be used for plotting. Options include
-\dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-\code{RColorBrewer} colours --- see the \code{openair} \code{openColours}
-function for more details. For user defined the user can supply a list of
-colour names recognised by R (type \code{colours()} to see the full list).
-An example would be \code{cols = c("yellow", "green", "blue")}}
+\item{type}{\code{type} determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
+\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+\code{type = "season"} will produce four plots --- one for each season. Note
+that the cluster calculations are separately made of each level of "type".}
 
 \item{split.after}{For \code{type} other than \dQuote{default} e.g.
 \dQuote{season}, the trajectories can either be calculated for each level
-of \code{type} independently or extracted after the cluster calculations
-have been applied to the whole data set.}
-
-\item{map.fill}{Should the base map be a filled polygon? Default is to fill
-countries.}
-
-\item{map.cols}{If \code{map.fill = TRUE} \code{map.cols} controls the fill colour.
-Examples include \code{map.fill = "grey40"} and \code{map.fill = openColours("default", 10)}. The latter colours the countries and can help
-differentiate them.}
-
-\item{map.border}{The colour to use for the map outlines/borders. Defaults to
-\code{"black"}.}
-
-\item{map.alpha}{The transparency level of the filled map which takes values
-from 0 (full transparency) to 1 (full opacity). Setting it below 1 can help
-view trajectories, trajectory surfaces etc. \emph{and} a filled base map.}
-
-\item{map.lwd}{The map line width, a positive number, defaulting to \code{1}.}
-
-\item{map.lty}{The map line type. Line types can either be specified as an
-integer (\code{0} = blank, \code{1} = solid (default), \code{2} = dashed, \code{3} = dotted,
-\code{4} = dotdash, \code{5} = longdash, \code{6} = twodash) or as one of the character
-strings "blank", "solid", "dashed", "dotted", "dotdash", "longdash", or
-"twodash", where "blank" uses 'invisible lines' (i.e., does not draw them).}
-
-\item{projection}{The map projection to be used. Different map projections
-are possible through the \code{mapproj} package. See \code{?mapproject} for extensive
-details and information on setting other parameters and orientation (see
-below).}
-
-\item{parameters}{From the \code{mapproj} package. Optional numeric vector of
-parameters for use with the projection argument. This argument is optional
-only in the sense that certain projections do not require additional
-parameters. If a projection does not require additional parameters then set
-to null i.e. \code{parameters = NULL}.}
-
-\item{orientation}{From the \code{mapproj} package. An optional vector c(latitude,
-longitude, rotation) which describes where the "North Pole" should be when
-computing the projection. Normally this is c(90, 0), which is appropriate
-for cylindrical and conic projections. For a planar projection, you should
-set it to the desired point of tangency. The third value is a clockwise
-rotation (in degrees), which defaults to the midrange of the longitude
-coordinates in the map.}
+of \code{type} independently or extracted after the cluster calculations have
+been applied to the whole data set.}
 
 \item{by.type}{The percentage of the total number of trajectories is given
-for all data by default. Setting \code{by.type = TRUE} will make each panel
-add up to 100.}
+for all data by default. Setting \code{by.type = TRUE} will make each panel add
+up to 100.}
 
-\item{origin}{If true a filled circle dot is shown to mark the receptor
-point.}
+\item{crs}{The coordinate reference system to use for plotting. Defaults to
+\code{4326}, which is the WGS84 geographic coordinate system, the standard,
+unprojected latitude/longitude system used in GPS, Google Earth, and GIS
+mapping. Other \code{crs} values are available - for example, \code{27700} will use
+the the OSGB36/British National Grid.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other ways.}
+\item{cols}{Colours for plotting. Passed to \code{\link[=openColours]{openColours()}}.}
 
-\item{...}{Other graphical parameters passed onto \code{lattice:levelplot}
-and \code{cutData}. Similarly, common axis and title labelling options
-(such as \code{xlab}, \code{ylab}, \code{main}) are passed to
-\code{levelplot} via \code{quickText} to handle routine formatting.}
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data to extract plot components and plotting them in other ways.}
+
+\item{...}{Passed to \code{\link[=trajPlot]{trajPlot()}}.}
 }
 \value{
 an \link[=openair-package]{openair} object. The \code{data} component contains
@@ -121,8 +65,8 @@ plot.)
 \description{
 This function carries out cluster analysis of HYSPLIT back trajectories. The
 function is specifically designed to work with the trajectories imported
-using the \code{openair} \code{importTraj} function, which provides
-pre-calculated back trajectories at specific receptor locations.
+using the \code{openair} \code{\link[=importTraj]{importTraj()}} function, which provides pre-calculated
+back trajectories at specific receptor locations.
 }
 \details{
 Two main methods are available to cluster the back trajectories using two
@@ -133,9 +77,8 @@ latter method is useful when the interest is the direction of the
 trajectories in clustering.
 
 The distance matrix calculations are made in C++ for speed. For data sets of
-up to 1 year both methods should be relatively fast, although the
-\code{method = "Angle"} does tend to take much longer to calculate. Further
-details of these methods are given in the openair manual.
+up to 1 year both methods should be relatively fast, although the \code{method = "Angle"} does tend to take much longer to calculate. Further details of these
+methods are given in the openair manual.
 }
 \examples{
 \dontrun{
@@ -166,6 +109,8 @@ Other cluster analysis functions:
 }
 \author{
 David Carslaw
+
+Jack Davison
 }
 \concept{cluster analysis functions}
 \concept{trajectory analysis functions}

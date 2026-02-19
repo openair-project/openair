@@ -184,7 +184,6 @@
 #'   the predictions should be made. See `exclude.too.far` from the
 #'   `mgcv` package. Data are first transformed to a unit square. Values
 #'   should be between 0 and 1.
-#' @param map Should a base map be drawn? This option is under development.
 #' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
 #'   titles and axis labels will automatically try and format pollutant names
 #'   and units properly e.g.  by subscripting the \sQuote{2} in NO2.
@@ -212,7 +211,7 @@
 #'   carry out any transformation the options `trans = NULL` and `inv
 #'   = NULL` should be used.
 #' @export
-#' @import mapproj hexbin
+#' @import hexbin
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
 #' @seealso [linearRelation()], [timePlot()] and
@@ -333,15 +332,10 @@ scatterPlot <- function(
   ref.y = NULL,
   k = NA,
   dist = 0.02,
-  map = FALSE,
   auto.text = TRUE,
   plot = TRUE,
   ...
 ) {
-  ## basic function to plot single/multiple time series in flexible waysproduce scatterPlot
-  ## Author: David Carslaw 27 Jan. 10
-  ## method = scatter/hexbin/kernel
-
   x.nam <- x ## names of pollutants for linear model equation
   y.nam <- y
   thekey <- key
@@ -351,7 +345,6 @@ scatterPlot <- function(
   group.number <- NULL
 
   ## set graphics
-  current.strip <- trellis.par.get("strip.background")
   current.font <- trellis.par.get("fontsize")
 
   ## reset graphic parameters
@@ -413,12 +406,6 @@ scatterPlot <- function(
     Args$layout <- NULL
   }
 
-  if ("trajStat" %in% names(Args)) {
-    trajStat <- Args$trajStat
-  } else {
-    trajStat <- "mean"
-  }
-
   if ("date.format" %in% names(Args)) {
     Args$date.format <- Args$date.format
   } else {
@@ -428,39 +415,6 @@ scatterPlot <- function(
   if ("fontsize" %in% names(Args)) {
     trellis.par.set(fontsize = list(text = Args$fontsize))
   }
-
-  Args$map.cols <- Args$map.cols %||% "grey20"
-
-  Args$map.border <- Args$map.border %||% "black"
-
-  Args$map.alpha <- Args$map.alpha %||% 0.2
-
-  Args$map.fill <- Args$map.fill %||% TRUE
-
-  Args$map.res <- Args$map.res %||% "default"
-
-  Args$map.lty <- Args$map.lty %||% 1
-
-  Args$map.lwd <- Args$map.lwd %||% 1
-
-  Args$traj <- Args$traj %||% FALSE
-
-  Args$projection <- Args$projection %||% "lambert"
-
-  Args$parameters <- Args$parameters %||% c(51, 51)
-
-  Args$orientation <- Args$orientation %||% c(90, 0, 0)
-
-  Args$grid.col <- Args$grid.col %||% "deepskyblue"
-
-  Args$grid.nx <- Args$grid.nx %||% 9
-  Args$grid.ny <- Args$grid.ny %||% 9
-
-  Args$npoints <- Args$npoints %||% 12
-
-  Args$origin <- Args$origin %||% TRUE
-
-  Args$clusters <- Args$clusters %||% NA
 
   ## transform hexbin by default
   Args$trans <- if ("trans" %in% names(Args)) Args$trans else function(x) log(x)
@@ -507,11 +461,11 @@ scatterPlot <- function(
 
   ## the following makes sure all variables are present, which depends on 'group'
   ## and 'type'
-  if (is.na(z) & method == "level") {
+  if (is.na(z) && method == "level") {
     stop("Need to specify 'z' when using method = 'level'")
   }
 
-  if (any(type %in% dateTypes) | !missing(avg.time)) {
+  if (any(type %in% dateTypes) || !missing(avg.time)) {
     vars <- c("date", x, y)
   } else {
     vars <- c(x, y)
@@ -520,7 +474,9 @@ scatterPlot <- function(
   ## if group is present, need to add that list of variables unless it is a
   ## pre-defined date-based one
   if (!is.na(group)) {
-    if (group %in% dateTypes | !missing(avg.time) | any(type %in% dateTypes)) {
+    if (
+      group %in% dateTypes || !missing(avg.time) || any(type %in% dateTypes)
+    ) {
       if (group %in% dateTypes) {
         vars <- unique(c(vars, "date")) ## don't need group because it is
         ## defined by date
@@ -538,12 +494,6 @@ scatterPlot <- function(
     }
   }
 
-  ## will need date so that trajectory groups can be coloured
-
-  if (Args$traj && method %in% c("scatter", "density", "hexbin")) {
-    vars <- c(vars, "date")
-  }
-
   ## data checks
   if (!is.null(windflow)) {
     vars <- unique(c(vars, "wd", "ws"))
@@ -554,22 +504,16 @@ scatterPlot <- function(
   }
   mydata <- checkPrep(mydata, unique(vars), type)
 
-  ## remove missing data except for time series where we want to show gaps
-  ## this also removes missing factors
-  if (class(mydata[[x]])[1] != "Date" & !"POSIXt" %in% class(mydata[, x])) {
-    ##   mydata <- na.omit(mydata)
-  }
-
-  ## if x is a factor/character, then rotate axis labels for clearer labels
+  # if x is a factor/character, then rotate axis labels for clearer labels
   x.rot <- 0
-  if ("factor" %in% class(mydata[[x]]) | "character" %in% class(mydata[, x])) {
+  if ("factor" %in% class(mydata[[x]]) || "character" %in% class(mydata[, x])) {
     x.rot <- 90
     mydata[, x] <- factor(mydata[[x]])
   }
 
   ## continuous colors
 
-  if (!is.na(z) & method == "scatter") {
+  if (!is.na(z) && method == "scatter") {
     if (z %in% dateTypes) {
       stop(
         "You tried to use a date type for the 'z' variable. \nColour coding requires 'z' to be continuous numeric variable'"
@@ -717,11 +661,6 @@ scatterPlot <- function(
     y = list(log = nlog.y, relation = y.relation, rot = 0)
   )
 
-  ## don't need scales for trajectories
-  if (Args$traj | method %in% c("traj", "map")) {
-    scales <- list(x = list(draw = FALSE), y = list(draw = FALSE))
-  }
-
   ## if logs are chosen, ensure data >0 for line fitting etc
   if (log.x) {
     mydata <- mydata[mydata[, x] > 0, ]
@@ -738,7 +677,7 @@ scatterPlot <- function(
   if (is.na(z)) {
     ## non-continuous key
 
-    if (key & npol > 1) {
+    if (key && npol > 1) {
       if (plot.type == "p") {
         key <- list(
           points = list(
@@ -795,7 +734,7 @@ scatterPlot <- function(
   }
 
   ## special wd layout
-  if (length(type) == 1 & type[1] == "wd" & is.null(Args$layout)) {
+  if (length(type) == 1 && type[1] == "wd" && is.null(Args$layout)) {
     ## re-order to make sensible layout
     ## starting point code as of ManKendall
     wds <- c("NW", "N", "NE", "W", "E", "SW", "S", "SE")
@@ -824,7 +763,7 @@ scatterPlot <- function(
   pol.name <- strip.dat[[3]]
 
   ## no strip needed for single panel
-  if (length(type) == 1 & type[1] == "default") {
+  if (length(type) == 1 && type[1] == "default") {
     strip <- FALSE
   }
 
@@ -832,7 +771,7 @@ scatterPlot <- function(
   id <- which(names(mydata) == group)
   names(mydata)[id] <- "MyGroupVar"
 
-  plotType <- if (!Args$traj) c("p", "g") else "n"
+  plotType <- "n"
 
   # scatter plot ------------------------------------------------------------
 
@@ -879,30 +818,6 @@ scatterPlot <- function(
         groupMax <-
           length(unique(factor(mydata$MyGroupVar[subscripts])))
 
-        ## specific treatment of trajectory lines
-        ## in order to avoid a line back to the origin, need to process
-        ## in batches
-
-        if (Args$traj) {
-          addTraj(
-            mydata,
-            subscripts,
-            Args,
-            z,
-            lty,
-            myColors,
-            group.number,
-            lwd,
-            groupMax,
-            Type
-          )
-        }
-
-        ## add base map
-        if (map && group.number == groupMax) {
-          add.map(Args, ...)
-        }
-
         ## add a windflow plot
         if (!is.null(windflow)) {
           list1 <- list(x, y, dat = mydata, subscripts)
@@ -911,7 +826,7 @@ scatterPlot <- function(
           do.call(panel.windflow, flow.args)
         }
 
-        if (!is.na(z) & !Args$traj) {
+        if (!is.na(z)) {
           panel.xyplot(
             x,
             y,
@@ -921,7 +836,7 @@ scatterPlot <- function(
           )
         }
 
-        if (is.na(z) & !Args$traj) {
+        if (is.na(z)) {
           panel.xyplot(
             x,
             y,
@@ -1030,9 +945,7 @@ scatterPlot <- function(
       },
       ...,
       panel = function(x, subscripts, ...) {
-        if (!Args$traj) {
-          panel.grid(-1, -1)
-        }
+        panel.grid(-1, -1)
         panel.hexbinplot(x, ...)
 
         if (mod.line) {
@@ -1053,11 +966,6 @@ scatterPlot <- function(
             se = ci,
             group.number = 1
           )
-        }
-
-        ## base map
-        if (map) {
-          add.map(Args, ...)
         }
 
         ## add mark for receptor location
@@ -1308,11 +1216,6 @@ scatterPlot <- function(
           panel.modline(log.x, log.y)
         }
 
-        ## add base map
-        if (map) {
-          add.map(Args, ...)
-        }
-
         ## add reference lines
         if (!is.null(ref.x)) {
           do.call(panel.abline, ref.x)
@@ -1337,349 +1240,6 @@ scatterPlot <- function(
 
     ## plot
     plt <- do.call(levelplot, levelplot.args)
-  }
-
-  # trajectory plot ---------------------------------------------------------
-
-  if (method %in% c("traj", "map")) {
-    if (missing(x.inc)) {
-      x.inc <- prettyGap(mydata[[x]])
-    }
-    if (missing(y.inc)) {
-      y.inc <- prettyGap(mydata[[y]])
-    }
-
-    ## bin data
-    mydata$ygrid <- round_any(mydata[[y]], y.inc)
-    mydata$xgrid <- round_any(mydata[[x]], x.inc)
-
-    rhs <- paste0("xgrid * ygrid |", type)
-    myform <- formula(paste(z, "~", rhs))
-
-    ## add vertices of each grid so that polygons can be drawn
-    mydata <- transform(
-      mydata,
-      x1 = xgrid - x.inc / 2,
-      x2 = xgrid - x.inc / 2,
-      x3 = xgrid + x.inc / 2,
-      x4 = xgrid + x.inc / 2,
-      y1 = ygrid - y.inc / 2,
-      y2 = ygrid + y.inc / 2,
-      y3 = ygrid + y.inc / 2,
-      y4 = ygrid - y.inc / 2
-    )
-
-    ## find coordinates in appropriate map projection
-    coord1 <- mapproject(
-      x = mydata$x1,
-      y = mydata$y1,
-      projection = Args$projection,
-      parameters = Args$parameters,
-      orientation = Args$orientation
-    )
-
-    coord2 <- mapproject(
-      x = mydata$x2,
-      y = mydata$y2,
-      projection = Args$projection,
-      parameters = Args$parameters,
-      orientation = Args$orientation
-    )
-
-    coord3 <- mapproject(
-      x = mydata$x3,
-      y = mydata$y3,
-      projection = Args$projection,
-      parameters = Args$parameters,
-      orientation = Args$orientation
-    )
-
-    coord4 <- mapproject(
-      x = mydata$x4,
-      y = mydata$y4,
-      projection = Args$projection,
-      parameters = Args$parameters,
-      orientation = Args$orientation
-    )
-
-    coordGrid <- mapproject(
-      x = mydata$xgrid,
-      y = mydata$ygrid,
-      projection = Args$projection,
-      parameters = Args$parameters,
-      orientation = Args$orientation
-    )
-
-    mydata <- transform(
-      mydata,
-      x1 = coord1$x,
-      x2 = coord2$x,
-      x3 = coord3$x,
-      x4 = coord4$x,
-      y1 = coord1$y,
-      y2 = coord2$y,
-      y3 = coord3$y,
-      y4 = coord4$y,
-      xgrid = coordGrid$x,
-      ygrid = coordGrid$y
-    )
-
-    smooth.grid <- function(mydata, z) {
-      myform <-
-        formula(paste0(z, "^0.5 ~ s(xgrid, ygrid, k = ", k, ")", sep = ""))
-
-      res <- 101
-      Mgam <- mgcv::gam(myform, data = mydata)
-
-      new.data <- expand.grid(
-        xgrid = seq(
-          min(mydata$xgrid),
-          max(mydata$xgrid),
-          length = res
-        ),
-        ygrid = seq(
-          min(mydata$ygrid),
-          max(mydata$ygrid),
-          length = res
-        )
-      )
-
-      pred <- predict.gam(Mgam, newdata = new.data)
-      pred <- as.vector(pred)^2
-
-      new.data[, z] <- pred
-
-      ## exlcude too far
-      ## exclude predictions too far from data (from mgcv)
-      x <- seq(min(mydata$xgrid), max(mydata$xgrid), length = res)
-      y <- seq(min(mydata$ygrid), max(mydata$ygrid), length = res)
-
-      wsp <- rep(x, res)
-      wdp <- rep(y, rep(res, res))
-
-      ## data with gaps caused by min.bin
-      all.data <- na.omit(data.frame(
-        xgrid = mydata$xgrid,
-        ygrid = mydata$ygrid,
-        z
-      ))
-
-      ind <- with(
-        all.data,
-        exclude.too.far(
-          wsp,
-          wdp,
-          mydata$xgrid,
-          mydata$ygrid,
-          dist = dist
-        )
-      )
-
-      new.data[ind, z] <- NA
-
-      new.data
-    }
-
-    if (smooth) {
-      mydata <-
-        mapType(
-          mydata,
-          type = type,
-          fun = \(x) smooth.grid(x, z),
-          .include_default = TRUE
-        )
-    }
-
-    ## basic function for lattice call + defaults
-    temp <- paste(type, collapse = "+")
-    if (!smooth) {
-      myform <- formula(paste(z, "~ x1 * y1 |", temp, sep = ""))
-    }
-
-    nlev <- 200
-
-    ## handling of colour scale limits
-    if (missing(limits)) {
-      breaks <- pretty(mydata[[z]], n = nlev)
-      labs <- pretty(breaks, 7)
-      labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-    } else {
-      ## handle user limits and clipping
-      breaks <- pretty(limits, n = nlev)
-      labs <- pretty(breaks, 7)
-      labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-
-      ## case where user max is < data max
-      if (max(limits) < max(mydata[[z]], na.rm = TRUE)) {
-        id <- which(mydata[[z]] > max(limits))
-        mydata[[z]][id] <- max(limits)
-        labs[length(labs)] <- paste(">", labs[length(labs)])
-      }
-
-      ## case where user min is > data min
-      if (min(limits) > min(mydata[[z]], na.rm = TRUE)) {
-        id <- which(mydata[[z]] < min(limits))
-        mydata[[z]][id] <- min(limits)
-        labs[1] <- paste("<", labs[1])
-      }
-    }
-
-    nlev2 <- length(breaks)
-
-    if (missing(cols)) {
-      cols <- "default"
-    }
-
-    thecol <- openColours(cols, length(breaks) - 1)[cut(
-      mydata[[z]],
-      breaks,
-      label = FALSE
-    )]
-    mydata$col <- thecol
-    col <- thecol
-
-    n <- length(breaks)
-    col <- openColours(cols, n)
-
-    col.scale <- breaks
-
-    ## this is the default
-    if (trajStat %in% c("cwt", "pscf", "mean", "frequency", "sqtba")) {
-      legend <- list(
-        col = col,
-        at = breaks,
-        labels = list(labels = labs),
-        space = key.position,
-        auto.text = auto.text,
-        footer = Args$key.footer,
-        header = Args$key.header,
-        height = 1,
-        width = 1.5,
-        fit = "all"
-      )
-      legend <- makeOpenKeyLegend(key, legend, "other")
-    }
-
-    if (trajStat %in% c("frequency", "difference") && !smooth) {
-      if (trajStat == "frequency") {
-        breaks <- c(0, 1, 5, 10, 25, 100)
-        labels <- c("0 to 1", "1 to 5", "5 to 10", "10 to 25", "25 to 100")
-      }
-
-      if (trajStat == "difference") {
-        breaks <- c(-15000, -10, -5, -1, 1, 5, 10, 15000)
-        labels <- c(
-          "<-10",
-          "-10 to -5",
-          "-5 to -1",
-          "-1 to 1",
-          "1 to 5",
-          "5 to 10",
-          ">10"
-        )
-      }
-
-      ## frequency plot
-      n <- 7
-      col <- openColours(cols, n)
-      legend <- list(
-        col = col,
-        space = key.position,
-        auto.text = auto.text,
-        labels = labels,
-        footer = Args$key.footer,
-        header = Args$key.header,
-        height = 0.8,
-        width = 1.5,
-        fit = "scale",
-        plot.style = "other"
-      )
-
-      col.scale <- breaks
-
-      thecol <- openColours(cols, length(breaks) - 1)[cut(
-        mydata[[z]],
-        breaks,
-        label = FALSE
-      )]
-      mydata$col <- thecol
-      col <- thecol
-
-      legend <- makeOpenKeyLegend(key, legend, "windRose")
-    }
-
-    lv.args <- list(
-      x = myform,
-      data = mydata,
-      type = plotType,
-      strip = strip,
-      as.table = TRUE,
-      region = TRUE,
-      scales = scales,
-      col.regions = col,
-      at = col.scale,
-      yscale.components = yscale.components.log10ticks,
-      xscale.components = xscale.components.log10ticks,
-      par.strip.text = list(cex = 0.8),
-      colorkey = FALSE,
-      legend = legend,
-      panel = function(x, y, z, subscripts, ...) {
-        ## plot individual polygons
-        if (!smooth) {
-          sub <- mydata[subscripts, ] ## deal with one (type) at a time
-
-          for (i in 1:nrow(sub)) {
-            lpolygon(
-              x = c(sub$x1[i], sub$x2[i], sub$x3[i], sub$x4[i]),
-              y = c(sub$y1[i], sub$y2[i], sub$y3[i], sub$y4[i]),
-              col = sub$col[i],
-              border = Args$border
-            )
-          }
-        } else {
-          panel.levelplot(x, y, z, subscripts, labels = FALSE, ...)
-        }
-
-        ## add base map
-        if (map) {
-          add.map(Args, ...)
-        }
-
-        ## add mark for receptor location
-        if (Args$origin) {
-          lpoints(
-            Args$receptor[["x"]],
-            Args$receptor[["y"]],
-            pch = 16,
-            cex = 1.5,
-            col = "black"
-          )
-        }
-
-        ## add reference lines
-        if (!is.null(ref.x)) {
-          do.call(panel.abline, ref.x)
-        }
-        if (!is.null(ref.y)) do.call(panel.abline, ref.y)
-      }
-    )
-
-    ## z must exist to get here
-    Args$main <- if ("main" %in% names(Args)) {
-      quickText(Args$main, auto.text)
-    } else {
-      quickText(paste(x, "vs.", y, "by levels of", z), auto.text)
-    }
-
-    if (!"pch" %in% names(Args)) {
-      Args$pch <- 1
-    }
-
-    ## reset for Args
-    lv.args <- listUpdate(lv.args, Args)
-
-    ## plot
-    plt <- do.call(levelplot, lv.args)
   }
 
   # kernel density ----------------------------------------------------------
@@ -1767,9 +1327,7 @@ scatterPlot <- function(
       colorkey = FALSE,
       ...,
       panel = function(x, y, z, subscripts, ...) {
-        if (!Args$traj) {
-          panel.grid(-1, -1)
-        }
+        panel.grid(-1, -1)
         panel.levelplot(
           x,
           y,
@@ -1782,11 +1340,6 @@ scatterPlot <- function(
 
         if (mod.line) {
           panel.modline(log.x, log.y)
-        }
-
-        ## base map
-        if (map) {
-          add.map(Args, ...)
         }
 
         ## add reference lines
@@ -1829,77 +1382,6 @@ scatterPlot <- function(
 
   invisible(output)
 }
-
-
-# add map function --------------------------------------------------------
-
-add.map <- function(Args, ...) {
-  if (Args$map.res == "default") {
-    # try_require("maps", "scatterPlot")
-    res <- "world"
-  } else {
-    #  try_require("mapdata", "scatterPlot")
-    res <- "worldHires"
-  }
-
-  ## USA specific maps
-  if (Args$map.res == "state") {
-    res <- "state"
-  }
-
-  if (Args$map.fill) {
-    mp <-
-      maps::map(
-        database = res,
-        plot = FALSE,
-        fill = TRUE,
-        projection = Args$projection,
-        parameters = Args$parameters,
-        orientation = Args$orientation
-      )
-
-    mp <- maps::map.wrap(mp)
-
-    panel.polygon(
-      mp$x,
-      mp$y,
-      col = Args$map.cols,
-      border = Args$map.border,
-      alpha = Args$map.alpha,
-      lty = Args$map.lty,
-      lwd = Args$map.lwd
-    )
-  } else {
-    mp <- maps::map(
-      database = res,
-      plot = FALSE,
-      projection = Args$projection,
-      parameters = Args$parameters,
-      orientation = Args$orientation
-    )
-    mp <- maps::map.wrap(mp)
-    llines(
-      mp$x,
-      mp$y,
-      col = Args$map.border,
-      lty = Args$map.lty,
-      lwd = Args$map.lwd
-    )
-  }
-
-  if (Args$grid.nx != 0 || Args$grid.ny != 0) {
-    map.grid2(
-      lim = Args$trajLims,
-      projection = Args$projection,
-      parameters = Args$parameters,
-      orientation = Args$orientation,
-      col = Args$grid.col,
-      nx = Args$grid.nx,
-      ny = Args$grid.ny
-    )
-  }
-}
-
 
 # Add FAC2 lines ----------------------------------------------------------
 
@@ -2041,130 +1523,4 @@ panel.linear <- function(
       return()
     }
   )
-}
-
-
-# trajectory handling -------------------------------------------
-
-addTraj <- function(
-  mydata,
-  subscripts,
-  Args,
-  z,
-  lty,
-  myColors,
-  group.number,
-  lwd,
-  groupMax,
-  type
-) {
-  ## data of interest
-  tmp <- split(
-    mydata[subscripts, ],
-    mydata[subscripts, "date"]
-  )
-
-  if (!is.na(z)) {
-    ## colour by
-    lapply(tmp, function(dat) {
-      llines(
-        dat$lon,
-        dat$lat,
-        col.line = dat$col,
-        lwd = lwd,
-        lty = lty
-      )
-    })
-
-    ## major npoints from trajPlot, don't plot if NA
-    if (!is.na(Args$npoints)) {
-      id <- seq(
-        min(subscripts),
-        max(subscripts),
-        by = Args$npoints
-      )
-
-      lapply(tmp, function(dat) {
-        lpoints(
-          dat[id, ][["lon"]],
-          dat[id, ][["lat"]],
-          col = dat$col,
-          pch = 16
-        )
-      })
-    }
-  } else {
-    ## colour by a z
-
-    lapply(tmp, function(dat) {
-      llines(
-        dat$lon,
-        dat$lat,
-        col.line = myColors[group.number],
-        lwd = lwd,
-        lty = lty
-      )
-    })
-
-    ## major npoints from trajPlot
-    if (!is.na(Args$npoints)) {
-      lapply(tmp, function(dat) {
-        lpoints(
-          dat[seq(1, nrow(dat), Args$npoints), ][["lon"]],
-          dat[seq(1, nrow(dat), Args$npoints), ][["lat"]],
-          col = myColors[group.number],
-          pch = 16
-        )
-      })
-    }
-
-    ## add mark for receptor location
-    if (Args$origin) {
-      lpoints(
-        Args$receptor[1],
-        Args$receptor[2],
-        pch = 16,
-        cex = 1.5,
-        col = "black"
-      )
-    }
-
-    ## add cluster proportions if available
-
-    if (
-      all(!is.na(Args$clusters)) &&
-        group.number == length(levels(mydata$MyGroupVar))
-    ) {
-      ## make sure we match clusters in case order mixed
-      vars <- c(type, "MyGroupVar")
-
-      pnts <- mydata |>
-        group_by(across(vars)) |>
-        dplyr::slice_head(n = 1)
-
-      if (length(unique(pnts$lon)) == 1 & length(unique(pnts$lat)) == 1) {
-        pnts <- mydata |>
-          group_by(across(vars)) |>
-          dplyr::slice_tail(n = 1)
-      }
-
-      pnts <- merge(
-        pnts,
-        Args$clusters,
-        by.x = c(type, "MyGroupVar"),
-        by.y = c(type, "cluster")
-      )
-
-      ## select tye correct type
-      pnts <- pnts[pnts[[type]] == mydata[[type]][subscripts[1]], ]
-
-      ## clusterProp is from trajCluster
-      ltext(
-        pnts$lon,
-        pnts$lat,
-        label = paste0(pnts$freq, "%"),
-        pos = 3
-      )
-    }
-  }
 }

@@ -1,30 +1,34 @@
 #' Trajectory line plots with conditioning
 #'
 #' This function plots back trajectories. This function requires that data are
-#' imported using the `importTraj` function.
+#' imported using the [importTraj()] function, or matches that structure.
 #'
-#' Several types of trajectory plot are available. `trajPlot` by default will
-#' plot each lat/lon location showing the origin of each trajectory, if no
-#' `pollutant` is supplied.
+#' Several types of trajectory plot are available:
 #'
-#' If a pollutant is given, by merging the trajectory data with concentration
-#' data (see example below), the trajectories are colour-coded by the
-#' concentration of `pollutant`. With a long time series there can be lots of
-#' overplotting making it difficult to gauge the overall concentration pattern.
-#' In these cases setting `alpha` to a low value e.g. 0.1 can help.
+#' - [trajPlot()] by default will plot each lat/lon location showing the origin
+#' of each trajectory, if no `pollutant` is supplied.
+#'
+#' - If a pollutant is given, by merging the trajectory data with concentration
+#' data, the trajectories are colour-coded by the concentration of `pollutant`.
+#' With a long time series there can be lots of overplotting making it difficult
+#' to gauge the overall concentration pattern. In these cases setting `alpha` to
+#' a low value e.g. 0.1 can help.
 #'
 #' The user can also show points instead of lines by `plot.type = "p"`.
 #'
-#' Note that `trajPlot` will plot only the full length trajectories. This should
-#' be remembered when selecting only part of a year to plot.
+#' Note that [trajPlot()] will plot only the full length trajectories. This
+#' should be remembered when selecting only part of a year to plot.
 #'
+#' @inheritParams scatterPlot
 #'
 #' @param mydata Data frame, the result of importing a trajectory file using
-#'   `importTraj`.
-#' @param lon Column containing the longitude, as a decimal.
-#' @param lat Column containing the latitude, as a decimal.
-#' @param pollutant Pollutant to be plotted. By default the trajectory height is
-#'   used.
+#'   [importTraj()].
+#'
+#' @param lon,lat Columns containing the decimal longitude and latitude.
+#'
+#' @param pollutant Pollutant (or any numeric column) to be plotted, if any.
+#'   Alternatively, use `group`.
+#'
 #' @param type `type` determines how the data are split, i.e., conditioned, and
 #'   then plotted. The default is will produce a single plot using the entire
 #'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
@@ -41,139 +45,163 @@
 #'   `type` can be up length two e.g. `type = c("season", "weekday")` will
 #'   produce a 2x2 plot split by season and day of the week. Note, when two
 #'   types are provided the first forms the columns and the second the rows.
-#' @param map Should a base map be drawn? If `TRUE` the world base map from the
-#'   `maps` package is used.
-#' @param group It is sometimes useful to group and colour trajectories
-#'   according to a grouping variable. See example below.
+#'
+#' @param cols Colours for plotting. Passed to [openColours()].
+#'
+#' @param crs The coordinate reference system to use for plotting. Defaults to
+#'   `4326`, which is the WGS84 geographic coordinate system, the standard,
+#'   unprojected latitude/longitude system used in GPS, Google Earth, and GIS
+#'   mapping. Other `crs` values are available - for example, `27700` will use
+#'   the the OSGB36/British National Grid.
+#'
+#' @param map Should a base map be drawn? If `TRUE` the world base map provided
+#'   by [ggplot2::map_data()] will be used.
+#'
+#' @param group A condition to colour the plot by, passed to [cutData()]. An
+#'   alternative to `pollutant`, and used preferentially to `pollutant` if both
+#'   are set.
+#'
 #' @param map.fill Should the base map be a filled polygon? Default is to fill
 #'   countries.
-#' @param map.res The resolution of the base map. By default the function uses
-#'   the \sQuote{world} map from the `maps` package. If `map.res = "hires"` then
-#'   the (much) more detailed base map \sQuote{worldHires} from the `mapdata`
-#'   package is used. Use `library(mapdata)`. Also available is a map showing
-#'   the US states. In this case `map.res = "state"` should be used.
+#'
 #' @param map.cols If `map.fill = TRUE` `map.cols` controls the fill colour.
 #'   Examples include `map.fill = "grey40"` and `map.fill =
 #'   openColours("default", 10)`. The latter colours the countries and can help
 #'   differentiate them.
 #' @param map.border The colour to use for the map outlines/borders. Defaults to
 #'   `"black"`.
+#'
 #' @param map.alpha The transparency level of the filled map which takes values
 #'   from 0 (full transparency) to 1 (full opacity). Setting it below 1 can help
 #'   view trajectories, trajectory surfaces etc. *and* a filled base map.
+#'
 #' @param map.lwd The map line width, a positive number, defaulting to `1`.
+#'
 #' @param map.lty The map line type. Line types can either be specified as an
 #'   integer (`0` = blank, `1` = solid (default), `2` = dashed, `3` = dotted,
 #'   `4` = dotdash, `5` = longdash, `6` = twodash) or as one of the character
 #'   strings "blank", "solid", "dashed", "dotted", "dotdash", "longdash", or
 #'   "twodash", where "blank" uses 'invisible lines' (i.e., does not draw them).
-#' @param projection The map projection to be used. Different map projections
-#'   are possible through the `mapproj` package. See `?mapproject` for extensive
-#'   details and information on setting other parameters and orientation (see
-#'   below).
-#' @param parameters From the `mapproj` package. Optional numeric vector of
-#'   parameters for use with the projection argument. This argument is optional
-#'   only in the sense that certain projections do not require additional
-#'   parameters. If a projection does not require additional parameters then set
-#'   to null i.e. `parameters = NULL`.
-#' @param orientation From the `mapproj` package. An optional vector c(latitude,
-#'   longitude, rotation) which describes where the "North Pole" should be when
-#'   computing the projection. Normally this is c(90, 0), which is appropriate
-#'   for cylindrical and conic projections. For a planar projection, you should
-#'   set it to the desired point of tangency. The third value is a clockwise
-#'   rotation (in degrees), which defaults to the midrange of the longitude
-#'   coordinates in the map.
+#'
 #' @param grid.col The colour of the map grid to be used. To remove the grid set
 #'   `grid.col = "transparent"`.
+#'
 #' @param grid.nx,grid.ny The approximate number of ticks to draw on the map
 #'   grid. `grid.nx` defaults to `9`, and `grid.ny` defaults to whatever value
 #'   is passed to `grid.nx`. Setting both values to `0` will remove the grid
 #'   entirely. The number of ticks is approximate as this value is passed to
-#'   [pretty()] to determine nice-looking, round breakpoints.
+#'   [scales::breaks_pretty()] to determine nice-looking, round breakpoints.
+#'
 #' @param npoints A dot is placed every `npoints` along each full trajectory.
 #'   For hourly back trajectories points are plotted every `npoint` hours. This
 #'   helps to understand where the air masses were at particular times and get a
 #'   feel for the speed of the air (points closer together correspond to slower
 #'   moving air masses). If `npoints = NA` then no points are added.
+#'
 #' @param origin If true a filled circle dot is shown to mark the receptor
 #'   point.
+#'
+#' @param key.title The title of the key.
+#'
+#' @param key.position Location where the scale key should be plotted. Allowed
+#'   arguments currently include `"top"`, `"right"`, `"bottom"`, and `"left"`.
+#'
+#' @param key Should a key be drawn? Defaults to `TRUE`.
+#'
+#' @param key.columns Number of columns to be used in the key.
+#'
 #' @param plot Should a plot be produced? `FALSE` can be useful when analysing
 #'   data to extract plot components and plotting them in other ways.
-#' @param ... other arguments are passed to `cutData` and `scatterPlot`. This
-#'   provides access to arguments used in both these functions and functions
-#'   that they in turn pass arguments on to. For example, `plotTraj` passes the
-#'   argument `cex` on to `scatterPlot` which in turn passes it on to the
-#'   `lattice` function `xyplot` where it is applied to set the plot symbol
-#'   size.
+#'
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'    - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'    - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'    - `fontsize` overrides the overall font size of the plot.
+#'    - `border` sets the border colour of each bar.
+#'
 #' @export
 #' @family trajectory analysis functions
 #' @author David Carslaw
+#' @author Jack Davison
 #' @examples
-#'
+#' \dontrun{
 #' # show a simple case with no pollutant i.e. just the trajectories
 #' # let's check to see where the trajectories were coming from when
 #' # Heathrow Airport was closed due to the Icelandic volcanic eruption
 #' # 15--21 April 2010.
 #' # import trajectories for London and plot
-#' \dontrun{
+#'
 #' lond <- importTraj("london", 2010)
+#'
 #' # well, HYSPLIT seems to think there certainly were conditions where trajectories
 #' # orginated from Iceland...
 #' trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"))
-#' }
 #'
 #' # plot by day, need a column that makes a date
-#' \dontrun{
 #' lond$day <- as.Date(lond$date)
-#' trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
+#' trajPlot(
+#'   selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
 #'   type = "day"
 #' )
-#' }
 #'
 #' # or show each day grouped by colour, with some other options set
-#' \dontrun{
-#' trajPlot(selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
-#'   group = "day", col = "turbo", lwd = 2, key.pos = "right", key.col = 1
+#' trajPlot(
+#'   selectByDate(lond, start = "15/4/2010", end = "21/4/2010"),
+#'   group = "day",
+#'   cols = "turbo",
+#'   key.position = "right",
+#'   key.columns = 1,
+#'   lwd = 2,
+#'   cex = 4
 #' )
 #' }
-#' # more examples to follow linking with concentration measurements...
-#'
 trajPlot <- function(
   mydata,
   lon = "lon",
   lat = "lat",
-  pollutant = "height",
+  pollutant = NULL,
   type = "default",
   map = TRUE,
-  group = NA,
+  group = NULL,
+  cols = "default",
+  crs = 4326,
   map.fill = TRUE,
-  map.res = "default",
   map.cols = "grey40",
   map.border = "black",
   map.alpha = 0.4,
   map.lwd = 1,
   map.lty = 1,
-  projection = "lambert",
-  parameters = c(51, 51),
-  orientation = c(90, 0, 0),
   grid.col = "deepskyblue",
   grid.nx = 9,
   grid.ny = grid.nx,
   npoints = 12,
   origin = TRUE,
+  key = TRUE,
+  key.title = group,
+  key.position = "right",
+  key.columns = 1,
+  auto.text = TRUE,
   plot = TRUE,
   ...
 ) {
-  len <- NULL
-  hour.inc <- NULL ## silence R check
+  rlang::check_installed("sf")
 
-  ## variables needed in trajectory plots
-  vars <- c("date", "lat", "lon", "hour.inc", pollutant)
+  if (rlang::is_logical(key) && !key) {
+    key.position <- "none"
+  }
 
-  ## if group is present, need to add that list of variables unless it is a
-  ## pre-defined date-based one
-  if (!is.na(group)) {
-    if (group %in% dateTypes | any(type %in% dateTypes)) {
+  # favour group over pollutant - set a flag to see if `cutData()` is needed
+  group_is_pollutant <- !is.null(pollutant) && is.null(group)
+  group <- group %||% pollutant
+
+  # variables needed in trajectory plots
+  vars <- c("date", "date2", "lat", "lon", "hour.inc", pollutant)
+
+  # if group is present, need to add that list of variables unless it is a
+  # pre-defined date-based one
+  if (!is.null(group)) {
+    if (group %in% dateTypes || any(type %in% dateTypes)) {
       if (group %in% dateTypes) {
         vars <- unique(c(vars, "date")) ## don't need group because it is
         ## defined by date
@@ -185,177 +213,263 @@ trajPlot <- function(
     }
   }
 
+  # check data and prepare for plotting
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  mydata <- cutData(mydata, type = type, ...)
 
+  # prepare group, unless `pollutant` is being used
+  if (!group_is_pollutant) {
+    mydata <- cutData(mydata, type = group, is.axis = TRUE)
+  }
+
+  # if no group at all, need a dummy group
+  if (is.null(group)) {
+    mydata$theGroup <- factor("(all)")
+    group <- "theGroup"
+  }
+
+  # remove any rows with missing lat/lon
   mydata <- filter(mydata, !is.na(lat), !is.na(lon))
 
-  ## slect only full length trajectories
+  # slect only full length trajectories
   mydata <- mydata[order(mydata$date, mydata$hour.inc), ]
 
-  ## length of back mydataectories
+  # length of back mydataectories
   mydata$len <- ave(mydata$lat, mydata$date, FUN = length)
 
-  ## find length of back trajectories, choose most frequent
-  ## so that partial trajectories are not plotted
+  # find length of back trajectories, choose most frequent
+  # so that partial trajectories are not plotted
   n <- as.numeric(names(which.max(table(abs(mydata$len)))))
+  mydata <- dplyr::filter(mydata, .data$len == n)
 
-  mydata <- subset(mydata, len == n)
+  # ensure there are no duplicate trajectories in dataframe
+  count_check <-
+    dplyr::count(
+      mydata,
+      dplyr::across(dplyr::all_of(c("date", "date2", group, type)))
+    )
+  if (any(count_check$n > 1)) {
+    cli::cli_abort(
+      c(
+        "x" = "Duplicates in {.field date2} detected. Does {.arg mydata} contain multiple trajectories from different origins?",
+        "i" = "Try setting `type` or `group` to silence this error."
+      )
+    )
+  }
 
-  ## Args
-  Args <- list(...)
-  method <- "scatter"
-
-  ## location of receptor for map projection, used to show location on maps
-  origin_xy <- head(subset(mydata, hour.inc == 0), 1) ## origin
-  tmp <- mapproject(
-    x = origin_xy[["lon"]][1],
-    y = origin_xy[["lat"]][1],
-    projection = projection,
-    parameters = parameters,
-    orientation = orientation
-  )
-  receptor <- c(tmp$x, tmp$y)
-
-  ## set graphics
-  current.strip <- trellis.par.get("strip.background")
-  current.font <- trellis.par.get("fontsize")
-
-  ## reset graphic parameters
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
+  # extra.args
+  extra.args <- list(...)
 
   # aspect, cex
-  if (!"plot.type" %in% names(Args)) {
-    Args$plot.type <- "l"
-  }
+  extra.args$plot.type <- extra.args$plot.type %||% "l"
+  extra.args$cex <- extra.args$cex %||% 1
+  extra.args$lty <- extra.args$lty %||% 1
+  extra.args$lwd <- extra.args$lwd %||% 1
+  extra.args$ylab <- extra.args$ylab %||% ""
+  extra.args$xlab <- extra.args$xlab %||% ""
+  extra.args$main <- extra.args$main %||% NULL
+  extra.args$alpha <- extra.args$alpha %||% 1
 
-  if (!"cex" %in% names(Args)) {
-    Args$cex <- 0.1
-  }
+  # convert traj data to simple features
+  sf_points <- sf::st_as_sf(mydata, coords = c("lon", "lat"), crs = 4326) |>
+    sf::st_transform(crs = crs)
 
-  if (!"ylab" %in% names(Args)) {
-    Args$ylab <- ""
-  }
+  # get origin
+  sf_origins <- dplyr::filter(sf_points, .data$hour.inc == 0) |>
+    dplyr::distinct(dplyr::across(dplyr::all_of(c("geometry", type, group))))
 
-  if (!"xlab" %in% names(Args)) {
-    Args$xlab <- ""
-  }
+  # get bbox - axis limits
+  bbox <- sf::st_bbox(sf_points)
+  extra.args$xlim <- extra.args$xlim %||% unname(bbox[c(1, 3)])
+  extra.args$ylim <- extra.args$ylim %||% unname(bbox[c(2, 4)])
 
-  if ("fontsize" %in% names(Args)) {
-    trellis.par.set(fontsize = list(text = Args$fontsize))
-  }
+  # create lines from points, grouped by date and type (and group if present)
+  sf_lines <- sf_points |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(c(
+      "date",
+      type,
+      group
+    )))) |>
+    dplyr::summarise(do_union = FALSE) |>
+    dplyr::ungroup() |>
+    sf::st_cast("LINESTRING")
 
-  ## xlim and ylim set by user
-  if (!"xlim" %in% names(Args)) {
-    Args$xlim <- range(mydata$lon)
-  }
-
-  if (!"ylim" %in% names(Args)) {
-    Args$ylim <- range(mydata$lat)
-  }
-
-  ## extent of data (or limits set by user) in degrees
-  trajLims <- c(Args$xlim, Args$ylim)
-
-  ## need *outline* of boundary for map limits
-  Args <- setTrajLims(mydata, Args, projection, parameters, orientation)
-
-  ## transform data for map projection
-  tmp <- mapproject(
-    x = mydata[["lon"]],
-    y = mydata[["lat"]],
-    projection = projection,
-    parameters = parameters,
-    orientation = orientation
+  # get points every npoints hours
+  sf_points <- dplyr::filter(
+    sf_points,
+    .data$hour.inc %% npoints == 0
   )
-  mydata[["lon"]] <- tmp$x
-  mydata[["lat"]] <- tmp$y
 
-  if (missing(pollutant)) {
-    ## don't need key
-
-    if (is.na(group)) {
-      key <- FALSE
-    } else {
-      key <- TRUE
-    }
-
-    if (!"main" %in% names(Args)) {
-      Args$main <- NULL
-    }
-
-    scatterPlot.args <- list(
-      mydata,
-      x = lon,
-      y = lat,
-      z = NA,
-      type = type,
-      method = method,
-      map = map,
-      key = key,
-      group = group,
-      map.fill = map.fill,
-      map.res = map.res,
-      map.cols = map.cols,
-      map.border = map.border,
-      map.alpha = map.alpha,
-      map.lty = map.lty,
-      map.lwd = map.lwd,
-      traj = TRUE,
-      projection = projection,
-      parameters = parameters,
-      orientation = orientation,
-      grid.col = grid.col,
-      grid.nx = grid.nx,
-      grid.ny = grid.ny,
-      trajLims = trajLims,
-      receptor = receptor,
-      npoints = npoints,
-      origin = origin
-    )
-  } else {
-    if (!"main" %in% names(Args)) {
-      Args$main <- pollutant
-    }
-
-    scatterPlot.args <- list(
-      mydata,
-      x = lon,
-      y = lat,
-      z = pollutant,
-      type = type,
-      method = method,
-      map = map,
-      group = group,
-      map.fill = map.fill,
-      map.res = map.res,
-      map.cols = map.cols,
-      map.alpha = map.alpha,
-      traj = TRUE,
-      projection = projection,
-      parameters = parameters,
-      orientation = orientation,
-      grid.col = grid.col,
-      grid.nx = grid.nx,
-      grid.ny = grid.ny,
-      trajLims = trajLims,
-      receptor = receptor,
-      npoints = npoints,
-      origin = origin
-    )
+  # if plot.type is points, remove lines
+  if (extra.args$plot.type == "p") {
+    sf_lines <- head(sf_lines, n = 0)
   }
 
-  # reset for Args
-  scatterPlot.args <- listUpdate(scatterPlot.args, Args)
-  scatterPlot.args <- listUpdate(scatterPlot.args, list(plot = plot))
+  # to allow for basemaps to be multicoloured, we need to work out the number of
+  # panels in the plot
+  n_types <- c()
+  for (i in type) {
+    n_types <- c(n_types, length(levels(sf_lines[[i]])))
+  }
+  n_types <- purrr::reduce(n_types, .f = `*`)
 
-  # plot
-  plt <- do.call(scatterPlot, scatterPlot.args)
+  # base plot & themes
+  thePlot <- ggplot2::ggplot() +
+    theme_openair_sf(key.position, grid.col = grid.col) +
+    set_extra_fontsize(extra.args) +
+    get_facet(
+      type,
+      extra.args,
+      scales = "fixed",
+      auto.text = auto.text
+    ) +
+    ggplot2::labs(
+      x = quickText(extra.args$xlab, auto.text),
+      y = quickText(extra.args$ylab, auto.text),
+      title = quickText(extra.args$main, auto.text),
+      colour = quickText(key.title, auto.text)
+    )
+
+  # add map if requested
+  if (map) {
+    thePlot <- thePlot +
+      layer_worldmap(
+        crs,
+        n_maps = n_types,
+        map.fill = map.fill,
+        map.cols = map.cols,
+        map.border = map.border,
+        map.alpha = map.alpha,
+        map.lwd = map.lwd,
+        map.lty = map.lty
+      )
+  }
+
+  for (i in unique(sf_lines$date)) {
+    # add lines/points - needs to be done before setting coordinates
+    thePlot <- thePlot +
+      ggplot2::geom_sf(
+        data = sf_lines[sf_lines$date == i, ],
+        ggplot2::aes(color = .data[[group]]),
+        linetype = extra.args$lty,
+        linewidth = extra.args$lwd / 1.5,
+        alpha = extra.args$alpha
+      ) +
+      ggplot2::geom_sf(
+        data = sf_points[sf_points$date == i, ],
+        ggplot2::aes(color = .data[[group]]),
+        size = extra.args$cex,
+        alpha = extra.args$alpha
+      )
+  }
+
+  # add origin point if requested
+  if (origin) {
+    thePlot <- thePlot +
+      ggplot2::geom_sf(data = sf_origins)
+  }
+
+  # axis scales
+  thePlot <-
+    thePlot +
+    ggplot2::coord_sf(
+      xlim = extra.args$xlim,
+      ylim = extra.args$ylim,
+      default_crs = crs,
+      crs = crs
+    ) +
+    ggplot2::scale_x_continuous(breaks = scales::breaks_pretty(grid.nx)) +
+    ggplot2::scale_y_continuous(breaks = scales::breaks_pretty(grid.ny))
+
+  # colours
+  if (is.factor(mydata[[group]])) {
+    n_cols <- dplyr::n_distinct(levels(mydata[[group]]))
+    thePlot <-
+      thePlot +
+      ggplot2::scale_color_manual(
+        values = openair::openColours(
+          ifelse(n_cols == 1, "grey20", cols),
+          n = n_cols
+        ),
+        drop = FALSE,
+        labels = \(x) label_openair(x, auto_text = auto.text)
+      ) +
+      ggplot2::guides(
+        colour = ggplot2::guide_legend(
+          reverse = key.position %in% c("left", "right"),
+          theme = ggplot2::theme(
+            legend.title.position = ifelse(
+              key.position %in% c("left", "right"),
+              "top",
+              key.position
+            ),
+            legend.text.position = key.position
+          ),
+          ncol = if (missing(key.columns)) {
+            if (key.position %in% c("left", "right")) {
+              NULL
+            } else {
+              n_cols
+            }
+          } else {
+            key.columns
+          }
+        )
+      )
+
+    if (n_cols <= 1) {
+      thePlot <- thePlot + ggplot2::guides(color = ggplot2::guide_none())
+    }
+  } else {
+    thePlot <-
+      thePlot +
+      ggplot2::scale_color_gradientn(
+        colours = openair::openColours(cols),
+        oob = scales::oob_squish,
+        label = if (lubridate::is.POSIXct(mydata[[group]])) {
+          \(x) scales::label_date()(as.POSIXct(x))
+        } else if (lubridate::is.Date(mydata[[group]])) {
+          \(x) scales::label_date()(as.Date(x))
+        } else {
+          scales::label_comma()
+        }
+      ) +
+      ggplot2::guides(
+        colour = ggplot2::guide_colorbar(
+          theme = ggplot2::theme(
+            legend.title.position = ifelse(
+              key.position %in% c("left", "right"),
+              "top",
+              key.position
+            ),
+            legend.text.position = key.position
+          )
+        )
+      )
+
+    if (key.position %in% c("left", "right")) {
+      thePlot <- thePlot +
+        ggplot2::theme(
+          legend.key.height = ggplot2::unit(1, "null"),
+          legend.key.spacing.y = ggplot2::unit(0, "cm")
+        )
+    }
+    if (key.position %in% c("top", "bottom")) {
+      thePlot <- thePlot +
+        ggplot2::theme(
+          legend.key.width = ggplot2::unit(1, "null"),
+          legend.key.spacing.x = ggplot2::unit(0, "cm")
+        )
+    }
+  }
+
+  if (plot) {
+    plot(thePlot)
+  }
 
   output <-
     list(
-      plot = plt$plot,
+      plot = thePlot,
       data = dplyr::tibble(mydata),
       call = match.call()
     )
@@ -364,179 +478,68 @@ trajPlot <- function(
   invisible(output)
 }
 
+# Function that adds a world map as an sf layer
+layer_worldmap <- function(
+  crs,
+  n_maps,
+  map.fill,
+  map.cols,
+  map.border,
+  map.alpha,
+  map.lwd,
+  map.lty
+) {
+  map_sf <- make_sf_world_map(crs)
 
-setTrajLims <- function(mydata, Args, projection, parameters, orientation) {
-  ## xlim and ylim set by user
-  if ("xlim" %in% names(Args) & !all(is.na(Args$xlim))) {
-    x1 <- Args$xlim[1]
-    x2 <- Args$xlim[2]
-  } else {
-    x1 <- min(mydata$lon, na.rm = TRUE)
-    x2 <- max(mydata$lon, na.rm = TRUE)
+  if (!map.fill) {
+    map.cols <- "transparent"
   }
 
-  if ("ylim" %in% names(Args) & !all(is.na(Args$ylim))) {
-    y1 <- Args$ylim[1]
-    y2 <- Args$ylim[2]
-  } else {
-    y1 <- min(mydata$lat, na.rm = TRUE)
-    y2 <- max(mydata$lat, na.rm = TRUE)
+  # back-compatibility - need to be able to provide a vector of colours
+  n_groups <- dplyr::n_distinct(map_sf$group) * n_maps
+  while (length(map.cols) < n_groups) {
+    map.cols <- c(map.cols, map.cols)
   }
+  map.cols <- map.cols[1:n_groups]
 
-  n <- 40 ## number of points along each vertex
-
-  X <- c(
-    seq(x1, x1, length.out = n),
-    seq(x1, x2, length.out = n),
-    seq(x2, x2, length.out = n),
-    seq(x2, x1, length.out = n)
+  ggplot2::geom_sf(
+    data = map_sf,
+    colour = map.border,
+    fill = map.cols,
+    alpha = map.alpha,
+    linewidth = map.lwd / 10,
+    linetype = map.lty
   )
-
-  Y <- c(
-    seq(y1, y2, length.out = n),
-    seq(y2, y2, length.out = n),
-    seq(y2, y1, length.out = n),
-    seq(y1, y1, length.out = n)
-  )
-
-  tmp <- mapproject(
-    x = X,
-    y = Y,
-    projection = projection,
-    parameters = parameters,
-    orientation = orientation
-  )
-
-  Args$xlim <- tmp$range[1:2]
-  Args$ylim <- tmp$range[3:4]
-  Args
 }
 
-## function from mapproj to add grid lines to a map
-map.grid2 <- function(
-  lim,
-  nx = 9,
-  ny = 9,
-  labels = TRUE,
-  pretty = TRUE,
-  cex = 1,
-  col = "deepskyblue",
-  lty = 2,
-  font = 1,
-  projection = "rectangular",
-  parameters = 52,
-  orientation = c(90, 0, 0),
-  ...
-) {
-  pretty.range <- function(lim, ...) {
-    x <- pretty(lim, ...)
-    if (abs(x[1] - lim[1]) > abs(x[2] - lim[1])) {
-      x <- x[-1]
-    }
-    n <- length(x)
-    if (abs(x[n] - lim[2]) > abs(x[n - 1] - lim[2])) {
-      x <- x[-n]
-    }
-    x[1] <- lim[1]
-    x[length(x)] <- lim[2]
-    x
-  }
-  auto.format <- function(x) {
-    for (digits in 0:6) {
-      s <- formatC(x, digits = digits, format = "f")
-      if (all(duplicated(s) == duplicated(x))) {
-        break
-      }
-    }
-    s
-  }
-  if (missing(lim)) {
-    lim <- maps::.map.range()
-  }
-  if (is.list(lim)) {
-    lim <- lim$range
-  }
-  if (lim[2] - lim[1] > 360) {
-    lim[2] <- lim[1] + 360
-  }
-  if (pretty) {
-    x <- pretty.range(lim[1:2], n = nx)
-    y <- pretty.range(lim[3:4], n = ny)
-  } else {
-    x <- seq(lim[1], lim[2], len = nx)
-    y <- seq(lim[3], lim[4], len = ny)
-  }
-  p <- mapproject(
-    expand.grid(
-      x = c(
-        seq(lim[1], lim[2], len = 100),
-        NA
+# function to create a world map from ggplot2 map_data
+make_sf_world_map <- function(crs = 4326) {
+  ggplot2::map_data("world") |>
+    sf::st_as_sf(coords = c("long", "lat"), crs = 4326) |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(c(
+      "region",
+      "subregion",
+      "group"
+    )))) |>
+    dplyr::summarise(do_union = FALSE) |>
+    sf::st_cast("POLYGON") |>
+    sf::st_transform(crs = crs)
+}
+
+# adapted theme_openair with a (by default) blue dashed gridline
+theme_openair_sf <- function(key.position, grid.col) {
+  list(
+    theme_openair(key.position),
+    ggplot2::theme(
+      panel.grid = ggplot2::element_line(
+        colour = grid.col,
+        linetype = 2,
+        linewidth = 0.25
       ),
-      y = y
-    ),
-    projection = projection,
-    parameters = parameters,
-    orientation = orientation
-  )
-  p <- maps::map.wrap(p)
-  llines(p, col = col, lty = lty, ...)
-  llines(
-    mapproject(
-      expand.grid(
-        y = c(
-          seq(lim[3], lim[4], len = 100),
-          NA
-        ),
-        x = x
-      ),
-      projection = projection,
-      parameters = parameters,
-      orientation = orientation
-    ),
-    col = col,
-    lty = lty,
-    ...
-  )
-  if (labels) {
-    tx <- x[2]
-    xinc <- median(diff(x))
-    ty <- y[length(y) - 2]
-    yinc <- median(diff(y))
-    ltext(
-      mapproject(
-        expand.grid(
-          x = x + xinc * 0.05,
-          y = ty +
-            yinc * 0.5
-        ),
-        projection = projection,
-        parameters = parameters,
-        orientation = orientation
-      ),
-      labels = auto.format(x),
-      cex = cex,
-      adj = c(0, 0),
-      col = col,
-      font = font,
-      ...
+      axis.ticks = ggplot2::element_blank(),
+      axis.text = ggplot2::element_text(colour = grid.col),
+      panel.ontop = TRUE,
+      panel.background = ggplot2::element_blank()
     )
-    ltext(
-      mapproject(
-        expand.grid(
-          x = tx + xinc * 0.5,
-          y = y +
-            yinc * 0.05
-        ),
-        projection = projection,
-        parameters = parameters,
-        orientation = orientation
-      ),
-      labels = auto.format(y),
-      cex = cex,
-      adj = c(0, 0),
-      col = col,
-      font = font,
-      ...
-    )
-  }
+  )
 }
