@@ -80,7 +80,6 @@ together in as compact a way as possible.</p>
 <span>  date.pad <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"brewer1"</span>,</span>
-<span>  plot.type <span class="op">=</span> <span class="st">"l"</span>,</span>
 <span>  log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  windflow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  smooth <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -90,8 +89,9 @@ together in as compact a way as possible.</p>
 <span>  ref.x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref.y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  key.columns <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  key.columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
+<span>  strip.position <span class="op">=</span> <span class="st">"top"</span>,</span>
 <span>  name.pol <span class="op">=</span> <span class="va">pollutant</span>,</span>
 <span>  date.breaks <span class="op">=</span> <span class="fl">7</span>,</span>
 <span>  date.format <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -212,12 +212,6 @@ different variables and how they depend on one another.</p>
 <dd><p>Colours to be used for plotting; see <code><a href="openColours.html">openColours()</a></code> for details.</p></dd>
 
 
-<dt id="arg-plot-type">plot.type<a class="anchor" aria-label="anchor" href="#arg-plot-type"></a></dt>
-<dd><p>The <code>lattice</code> plot type, which is a line (<code>plot.type = "l"</code>)
-by default. Another useful option is <code>plot.type = "h"</code>, which draws
-vertical lines.</p></dd>
-
-
 <dt id="arg-log">log<a class="anchor" aria-label="anchor" href="#arg-log"></a></dt>
 <dd><p>Should the y-axis appear on a log scale? The default is <code>FALSE</code>.
 If <code>TRUE</code> a well-formatted log10 scale is used. This can be useful for
@@ -227,15 +221,11 @@ scales. It is therefore useful to use <code>log = TRUE</code> together with <cod
 
 <dt id="arg-windflow">windflow<a class="anchor" aria-label="anchor" href="#arg-windflow"></a></dt>
 <dd><p>This option allows a scatter plot to show the wind
-speed/direction as an arrow. The option is a list e.g. <code>windflow = list(col = "grey", lwd = 2, scale = 0.1)</code>. This option requires wind speed (<code>ws</code>)
-and wind direction (<code>wd</code>) to be available.</p>
-<p>The maximum length of the arrow plotted is a fraction of the plot dimension
-with the longest arrow being <code>scale</code> of the plot x-y dimension. Note, if
-the plot size is adjusted manually by the user it should be re-plotted to
-ensure the correct wind angle. The list may contain other options to
-<code>panel.arrows</code> in the <code>lattice</code> package. Other useful options include
-<code>length</code>, which controls the length of the arrow head and <code>angle</code>, which
-controls the angle of the arrow head.</p>
+speed/direction as an arrow. The option is a list e.g. <code>windflow = list(col = "grey", lwd = 2)</code>. This option requires wind speed (<code>ws</code>) and wind
+direction (<code>wd</code>) to be available.</p>
+<p>Any of the arguments in <code><a href="https://ggplot2.tidyverse.org/reference/reexports.html" class="external-link">ggplot2::arrow()</a></code> can be passed as a list, as well
+as <code>col</code> which controls the arrow's colour and <code>lwd</code> which controls the
+line width.</p>
 <p>This option works best where there are not too many data to ensure
 over-plotting does not become a problem.</p></dd>
 
@@ -285,6 +275,15 @@ number of pollutants.</p></dd>
 <code>"top"</code>, <code>"bottom"</code>, <code>"right"</code> and <code>"left"</code>.</p></dd>
 
 
+<dt id="arg-strip-position">strip.position<a class="anchor" aria-label="anchor" href="#arg-strip-position"></a></dt>
+<dd><p>Location where the facet 'strips' are located when
+using <code>type</code>. When one <code>type</code> is provided, can be one of <code>"left"</code>,
+<code>"right"</code>, <code>"bottom"</code> or <code>"top"</code>. When two <code>type</code>s are provided, this
+argument defines whether the strips are "switched" and can take either
+<code>"x"</code>, <code>"y"</code>, or <code>"both"</code>. For example, <code>"x"</code> will switch the 'top' strip
+locations to the bottom of the plot.</p></dd>
+
+
 <dt id="arg-name-pol">name.pol<a class="anchor" aria-label="anchor" href="#arg-name-pol"></a></dt>
 <dd><p>This option can be used to give alternative names for the
 variables plotted. Instead of taking the column headings as names, the user
@@ -322,14 +321,15 @@ data to extract plot components and plotting them in other ways.</p></dd>
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Other graphical parameters are passed onto <code><a href="cutData.html">cutData()</a></code> and
-<code><a href="https://rdrr.io/pkg/lattice/man/xyplot.html" class="external-link">lattice::xyplot()</a></code>. For example, <code>timePlot()</code> passes the option <code>hemisphere = "southern"</code> on to <code><a href="cutData.html">cutData()</a></code> to provide southern (rather than default
-northern) hemisphere handling of <code>type = "season"</code>. Similarly, most common
-plotting parameters, such as <code>layout</code> for panel arrangement and <code>pch</code> and
-<code>cex</code> for plot symbol type and size and <code>lty</code> and <code>lwd</code> for line type and
-width, as passed to <code><a href="https://rdrr.io/pkg/lattice/man/xyplot.html" class="external-link">lattice::xyplot()</a></code>, although some maybe locally
-managed by <code>openair</code> on route, e.g., axis and title labelling options (such
-as <code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed via <code><a href="quickText.html">quickText()</a></code> to handle routine
-formatting. See examples below.</p></dd>
+<code><a href="https://rdrr.io/pkg/lattice/man/xyplot.html" class="external-link">lattice::xyplot()</a></code>. For example, <code>timePlot()</code> passes the option
+<code>hemisphere = "southern"</code> on to <code><a href="cutData.html">cutData()</a></code> to provide southern (rather
+than default northern) hemisphere handling of <code>type = "season"</code>. Similarly,
+most common plotting parameters, such as <code>layout</code> for panel arrangement and
+<code>pch</code> and <code>cex</code> for plot symbol type and size and <code>lty</code> and <code>lwd</code> for line
+type and width, as passed to <code><a href="https://rdrr.io/pkg/lattice/man/xyplot.html" class="external-link">lattice::xyplot()</a></code>, although some maybe
+locally managed by <code>openair</code> on route, e.g., axis and title labelling
+options (such as <code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed via <code><a href="quickText.html">quickText()</a></code> to
+handle routine formatting. See examples below.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -351,11 +351,6 @@ types used. This is useful for example, to emphasise a particular variable
 with a specific line type/colour/width.</p>
 <p><code>timePlot()</code> works very well with <code><a href="selectByDate.html">selectByDate()</a></code>, which is used for
 selecting particular date ranges quickly and easily. See examples below.</p>
-<p>By default plots are shown with a colour key at the bottom and in the case of
-multiple pollutants or sites, strips on the left of each plot. Sometimes this
-may be overkill and the user can opt to remove the key and/or the strip by
-setting <code>key</code> and/or <code>strip</code> to <code>FALSE</code>. One reason to do this is to maximise
-the plotting area and therefore the information shown.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -370,12 +365,12 @@ the plotting area and therefore the information shown.</p>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>David Carslaw</p>
+<p>Jack Davison</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># basic use, single pollutant</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># basic use, single pollutant</span></span></span>
 <span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"nox"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="timePlot-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
@@ -387,9 +382,14 @@ the plotting area and therefore the information shown.</p>
 <span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nox"</span>, <span class="st">"no2"</span><span class="op">)</span>, group <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># alternative by normalising concentrations and plotting on the same scale</span></span></span>
-<span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
-<span class="r-in"><span>  pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nox"</span>, <span class="st">"co"</span>, <span class="st">"pm10"</span>, <span class="st">"so2"</span><span class="op">)</span>, group <span class="op">=</span> <span class="cn">TRUE</span>, avg.time <span class="op">=</span></span></span>
-<span class="r-in"><span>    <span class="st">"year"</span>, normalise <span class="op">=</span> <span class="st">"1/1/1998"</span>, lwd <span class="op">=</span> <span class="fl">3</span>, lty <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nox"</span>, <span class="st">"co"</span>, <span class="st">"pm10"</span>, <span class="st">"so2"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  group <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  avg.time <span class="op">=</span> <span class="st">"year"</span>,</span></span>
+<span class="r-in"><span>  normalise <span class="op">=</span> <span class="st">"1/1/1998"</span>,</span></span>
+<span class="r-in"><span>  lwd <span class="op">=</span> <span class="fl">3</span>,</span></span>
+<span class="r-in"><span>  lty <span class="op">=</span> <span class="fl">1</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># examples of selecting by date</span></span></span>
@@ -398,7 +398,8 @@ the plotting area and therefore the information shown.</p>
 <span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span><span class="fu"><a href="selectByDate.html">selectByDate</a></span><span class="op">(</span><span class="va">mydata</span>, year <span class="op">=</span> <span class="fl">1999</span><span class="op">)</span>, pollutant <span class="op">=</span> <span class="st">"nox"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># select specific date range for two pollutants</span></span></span>
-<span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span><span class="fu"><a href="selectByDate.html">selectByDate</a></span><span class="op">(</span><span class="va">mydata</span>, start <span class="op">=</span> <span class="st">"6/8/2003"</span>, end <span class="op">=</span> <span class="st">"13/8/2003"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="selectByDate.html">selectByDate</a></span><span class="op">(</span><span class="va">mydata</span>, start <span class="op">=</span> <span class="st">"6/8/2003"</span>, end <span class="op">=</span> <span class="st">"13/8/2003"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"no2"</span>, <span class="st">"o3"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -406,9 +407,11 @@ the plotting area and therefore the information shown.</p>
 <span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nox"</span>, <span class="st">"no2"</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># choose different line styles etc</span></span></span>
-<span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span><span class="fu"><a href="selectByDate.html">selectByDate</a></span><span class="op">(</span><span class="va">mydata</span>, year <span class="op">=</span> <span class="fl">2004</span>, month <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  pollutant <span class="op">=</span></span></span>
-<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nox"</span>, <span class="st">"no2"</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"black"</span></span></span>
+<span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="selectByDate.html">selectByDate</a></span><span class="op">(</span><span class="va">mydata</span>, year <span class="op">=</span> <span class="fl">2004</span>, month <span class="op">=</span> <span class="fl">6</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nox"</span>, <span class="st">"no2"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  col <span class="op">=</span> <span class="st">"black"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># different averaging times</span></span></span>
@@ -420,7 +423,7 @@ the plotting area and therefore the information shown.</p>
 <span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"o3"</span>, avg.time <span class="op">=</span> <span class="st">"day"</span>, data.thresh <span class="op">=</span> <span class="fl">75</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 2-week average of O3 concentrations</span></span></span>
-<span class="r-in"><span><span class="co">#' timePlot(mydata, pollutant = "o3", avg.time = "2 week")</span></span></span>
+<span class="r-in"><span><span class="fu">timePlot</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"o3"</span>, avg.time <span class="op">=</span> <span class="st">"2 week"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
