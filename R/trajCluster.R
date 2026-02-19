@@ -2,8 +2,8 @@
 #'
 #' This function carries out cluster analysis of HYSPLIT back trajectories. The
 #' function is specifically designed to work with the trajectories imported
-#' using the `openair` `importTraj` function, which provides
-#' pre-calculated back trajectories at specific receptor locations.
+#' using the `openair` [importTraj()] function, which provides pre-calculated
+#' back trajectories at specific receptor locations.
 #'
 #' Two main methods are available to cluster the back trajectories using two
 #' different calculations of the distance matrix. The default is to use the
@@ -13,53 +13,47 @@
 #' trajectories in clustering.
 #'
 #' The distance matrix calculations are made in C++ for speed. For data sets of
-#' up to 1 year both methods should be relatively fast, although the
-#' `method = "Angle"` does tend to take much longer to calculate. Further
-#' details of these methods are given in the openair manual.
+#' up to 1 year both methods should be relatively fast, although the `method =
+#' "Angle"` does tend to take much longer to calculate. Further details of these
+#' methods are given in the openair manual.
 #'
 #' @inheritParams trajPlot
 #' @param traj An openair trajectory data frame resulting from the use of
-#'   `importTraj`.
+#'   [importTraj()].
 #' @param method Method used to calculate the distance matrix for the back
 #'   trajectories. There are two methods available: \dQuote{Euclid} and
 #'   \dQuote{Angle}.
 #' @param n.cluster Number of clusters to calculate.
-#' @param type `type` determines how the data are split i.e. conditioned,
-#'   and then plotted. The default is will produce a single plot using the
-#'   entire data. Type can be one of the built-in types as detailed in
-#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, `type = "season"` will produce four plots --- one for
-#'   each season. Note that the cluster calculations are separately made of each
-#'   level of "type".
-#' @param cols Colours to be used for plotting. Options include
-#'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-#'   `RColorBrewer` colours --- see the `openair` `openColours`
-#'   function for more details. For user defined the user can supply a list of
-#'   colour names recognised by R (type `colours()` to see the full list).
-#'   An example would be `cols = c("yellow", "green", "blue")`
+#' @param type `type` determines how the data are split i.e. conditioned, and
+#'   then plotted. The default is will produce a single plot using the entire
+#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
+#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+#'   `type = "season"` will produce four plots --- one for each season. Note
+#'   that the cluster calculations are separately made of each level of "type".
 #' @param split.after For `type` other than \dQuote{default} e.g.
 #'   \dQuote{season}, the trajectories can either be calculated for each level
-#'   of `type` independently or extracted after the cluster calculations
-#'   have been applied to the whole data set.
+#'   of `type` independently or extracted after the cluster calculations have
+#'   been applied to the whole data set.
 #' @param by.type The percentage of the total number of trajectories is given
-#'   for all data by default. Setting `by.type = TRUE` will make each panel
-#'   add up to 100.
-#' @param plot Should a plot be produced? `FALSE` can be useful when
-#'   analysing data to extract plot components and plotting them in other ways.
-#' @param ... Other graphical parameters passed onto `lattice:levelplot`
-#'   and `cutData`. Similarly, common axis and title labelling options
-#'   (such as `xlab`, `ylab`, `main`) are passed to
-#'   `levelplot` via `quickText` to handle routine formatting.
+#'   for all data by default. Setting `by.type = TRUE` will make each panel add
+#'   up to 100.
+#' @param ... Passed to [trajPlot()].
+#'
 #' @export
+#'
 #' @useDynLib openair, .registration = TRUE
 #' @import cluster
+#'
 #' @return an [openair][openair-package] object. The `data` component contains
 #'   both `traj` (the original data appended with its cluster) and `results`
 #'   (the average trajectory path per cluster, shown in the `trajCluster()`
 #'   plot.)
+#'
 #' @family trajectory analysis functions
 #' @family cluster analysis functions
+#'
 #' @author David Carslaw
+#' @author Jack Davison
 #' @references
 #'
 #' Sirois, A. and Bottenheim, J.W., 1995. Use of backward trajectories to
@@ -81,24 +75,14 @@ trajCluster <- function(
   method = "Euclid",
   n.cluster = 5,
   type = "default",
-  cols = "Set1",
   split.after = FALSE,
-  map.fill = TRUE,
-  map.cols = "grey40",
-  map.border = "black",
-  map.alpha = 0.4,
-  map.lwd = 1,
-  map.lty = 1,
-  projection = "lambert",
-  parameters = c(51, 51),
-  orientation = c(90, 0, 0),
   by.type = FALSE,
-  origin = TRUE,
+  crs = 4326,
+  cols = "Set1",
   plot = TRUE,
   ...
 ) {
-  # silence R check
-  freq <- hour.inc <- default <- NULL
+  rlang::check_installed("sf")
 
   if (tolower(method) == "euclid") {
     method <- "distEuclid"
@@ -107,59 +91,29 @@ trajCluster <- function(
   }
 
   # remove any missing lat/lon
-  traj <- filter(traj, !is.na(lat), !is.na(lon))
+  traj <- dplyr::filter(traj, !is.na(.data$lat), !is.na(.data$lon))
 
   # check to see if all back trajectories are the same length
-  traj <- group_by(traj, date) |>
-    mutate(traj_len = length(date))
+  traj <- dplyr::mutate(traj, traj_len = length(.data$date), .by = "date")
 
   if (length(unique(traj$traj_len)) > 1) {
     ux <- unique(traj$traj_len)
     nmax <- ux[which.max(tabulate(match(traj$traj_len, ux)))]
-    traj <- ungroup(traj) |>
-      filter(traj_len == nmax)
-  }
-
-  Args <- list(...)
-
-  ## set graphics
-  current.strip <- trellis.par.get("strip.background")
-  current.font <- trellis.par.get("fontsize")
-
-  ## reset graphic parameters
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
-
-  ## label controls
-  Args$plot.type <- if ("plot.type" %in% names(Args)) {
-    Args$plot.type
-  } else {
-    Args$plot.type <- "l"
-  }
-  Args$lwd <- if ("lwd" %in% names(Args)) {
-    Args$lwd
-  } else {
-    Args$lwd <- 4
-  }
-
-  if ("fontsize" %in% names(Args)) {
-    trellis.par.set(fontsize = list(text = Args$fontsize))
+    traj <- dplyr::filter(traj, .data$traj_len == nmax)
   }
 
   calcTraj <- function(traj) {
-    ## make sure ordered correctly
+    # make sure ordered correctly
     traj <- traj[order(traj$date, traj$hour.inc), ]
 
-    ## length of back trajectories
-    traj <- group_by(traj, date) |>
-      mutate(len = length(date))
+    # length of back trajectories
+    traj <- dplyr::mutate(traj, len = length(.data$date), .by = "date")
 
-    ## find length of back trajectories
-    ## 96-hour back trajectories with origin: length should be 97
+    # find length of back trajectories
+    # 96-hour back trajectories with origin: length should be 97
     n <- max(abs(traj$hour.inc)) + 1
 
-    traj <- subset(traj, len == n)
+    traj <- dplyr::filter(traj, .data$len == n)
     len <- nrow(traj) / n
 
     ## lat/lon input matrices
@@ -205,116 +159,104 @@ trajCluster <- function(
     )
   }
 
-  # trajectory origin
-  origin_xy <- head(subset(traj, hour.inc == 0), 1) ## origin
-  tmp <- mapproject(
-    x = origin_xy[["lon"]][1],
-    y = origin_xy[["lat"]][1],
-    projection = projection,
-    parameters = parameters,
-    orientation = orientation
-  )
-  receptor <- c(tmp$x, tmp$y)
-
-  ## calculate the mean trajectories by cluster
-
+  # calculate the mean trajectories by cluster
   vars <- c("lat", "lon", "date", "cluster", "hour.inc", type)
   vars2 <- c("cluster", "hour.inc", type)
 
-  agg <- select(traj, vars) |>
-    group_by(across(vars2)) |>
-    summarise(across(everything(), mean))
+  newdata <- traj |>
+    dplyr::select(dplyr::all_of(vars)) |>
+    summarise(across(everything(), mean), .by = dplyr::all_of(vars2))
 
-  # the data frame we want to return before it is transformed
-  resRtn <- agg
+  # count observations in each cluster/type
+  clusters <- dplyr::count(
+    traj,
+    dplyr::across(dplyr::all_of(c(type, "cluster")))
+  )
 
-  ## proportion of total clusters
-
-  vars <- c(type, "cluster")
-
-  clusters <- traj |>
-    group_by(across(vars)) |>
-    tally() |>
-    mutate(freq = round(100 * n / sum(n), 1))
-
-  ## make each panel add up to 100
+  # make each panel add up to 100
   if (by.type) {
     clusters <- clusters |>
-      group_by(across(type)) |>
-      mutate(freq = 100 * freq / sum(freq))
-
-    clusters$freq <- round(clusters$freq, 1)
+      dplyr::mutate(
+        freq = 100 * .data$n / sum(.data$n),
+        .by = dplyr::all_of(type)
+      )
+  } else {
+    clusters <- clusters |>
+      dplyr::mutate(freq = 100 * .data$n / sum(.data$n))
   }
 
-  ## make sure date is in correct format
-  class(agg$date) <- class(traj$date)
-  attr(agg$date, "tzone") <- "GMT"
+  # round to 1 decimal place
+  clusters$freq <- round(clusters$freq, digits = 1)
 
-  ## xlim and ylim set by user
-  if (!"xlim" %in% names(Args)) {
-    Args$xlim <- range(agg$lon)
+  # make sure date is in correct format
+  class(newdata$date) <- class(traj$date)
+  attr(newdata$date, "tzone") <- "GMT"
+
+  # create plot
+  thePlot <-
+    newdata |>
+    # need a dummy 'date2' variable so `trajPlot()` will plot
+    dplyr::mutate(date2 = date + dplyr::row_number(), height = 1) |>
+    trajPlot(
+      group = "cluster",
+      crs = crs,
+      cols = cols,
+      type = type,
+      ...,
+      plot = FALSE
+    ) |>
+    purrr::pluck("plot") +
+    ggplot2::guides(
+      color = ggplot2::guide_legend(reverse = F)
+    )
+
+  # get the ends of the lines
+  line_ends <-
+    newdata |>
+    dplyr::slice_head(n = 1, by = dplyr::all_of(c("cluster", type))) |>
+    sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
+    sf::st_transform(crs = crs)
+
+  # if they're all the same, its a forward trajectory, get other end
+  if (nrow(dplyr::distinct(line_ends, .data$geometry)) == 1) {
+    line_ends <-
+      newdata |>
+      dplyr::slice_tail(n = 1, by = dplyr::all_of(c("cluster", type))) |>
+      sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
+      sf::st_transform(crs = crs)
   }
 
-  if (!"ylim" %in% names(Args)) {
-    Args$ylim <- range(agg$lat)
+  # get labels per cluster/type
+  line_ends <-
+    line_ends |>
+    dplyr::left_join(
+      clusters,
+      by = dplyr::all_of(c(type, "cluster"))
+    ) |>
+    dplyr::mutate(
+      label = scales::label_percent(accuracy = 0.1, scale = 1)(.data$freq)
+    )
+
+  # add to plot
+  thePlot <-
+    thePlot +
+    ggplot2::geom_sf_text(
+      data = line_ends,
+      ggplot2::aes(label = .data$label),
+      nudge_y = 1
+    )
+
+  # plot if requested
+  if (plot) {
+    plot(thePlot)
   }
 
-  ## extent of data (or limits set by user) in degrees
-  trajLims <- c(Args$xlim, Args$ylim)
-
-  ## need *outline* of boundary for map limits
-  Args <- setTrajLims(traj, Args, projection, parameters, orientation)
-
-  ## transform data for map projection
-  tmp <- mapproject(
-    x = agg[["lon"]],
-    y = agg[["lat"]],
-    projection = projection,
-    parameters = parameters,
-    orientation = orientation
-  )
-  agg[["lon"]] <- tmp$x
-  agg[["lat"]] <- tmp$y
-
-  plot.args <- list(
-    agg,
-    x = "lon",
-    y = "lat",
-    group = "cluster",
-    col = cols,
-    type = type,
-    map = TRUE,
-    map.fill = map.fill,
-    map.cols = map.cols,
-    map.border = map.border,
-    map.alpha = map.alpha,
-    map.lwd = map.lwd,
-    map.lty = map.lty,
-    projection = projection,
-    parameters = parameters,
-    orientation = orientation,
-    traj = TRUE,
-    trajLims = trajLims,
-    clusters = clusters,
-    receptor = receptor,
-    origin = origin
-  )
-
-  ## reset for Args
-  plot.args <- listUpdate(plot.args, Args)
-
-  plot.args <- listUpdate(plot.args, list(plot = plot))
-
-  ## plot
-  plt <- do.call(scatterPlot, plot.args)
-
-  ## create output with plot
+  # create output with plot
   output <-
     list(
-      plot = plt,
       data = list(
         traj = traj,
-        results = dplyr::left_join(resRtn, clusters, by = c("cluster", type)),
+        results = dplyr::left_join(newdata, clusters, by = c("cluster", type)),
         subsets = c("traj", "results")
       ),
       call = match.call()
