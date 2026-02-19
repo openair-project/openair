@@ -2,7 +2,8 @@
 % Please edit documentation in R/Whittaker_smooth.R
 \name{WhittakerSmooth}
 \alias{WhittakerSmooth}
-\title{Calculate Whittaker-Eilers Smoothing and Interpolation}
+\title{Calculate Whittaker-Eilers Smoothing, Interpolation and Baseline
+Determination}
 \usage{
 WhittakerSmooth(
   mydata,
@@ -12,6 +13,7 @@ WhittakerSmooth(
   type = "default",
   new.name = NULL,
   date.pad = FALSE,
+  p = NULL,
   ...
 )
 }
@@ -43,6 +45,15 @@ create a name based on the name of the pollutant.}
 
 \item{date.pad}{Should missing dates be padded? Default is \code{FALSE}.}
 
+\item{p}{The asymmetry weight parameter used exclusively for baseline
+estimation (Asymmetric Least Squares). It defines how the algorithm treats
+points that fall above the fitted line versus points that fall below it. It
+takes a value between 0 and 1. When p is very small, the algorithm assigns
+a massive penalty to the curve if it rises above the data points, but
+almost no penalty if it drops below them. This forces the curve to "hug"
+the bottom of the signal, effectively ignoring the positive peaks. Typical
+Values: 0.01 to 0.05.}
+
 \item{...}{Additional parameters passed to \code{\link[=cutData]{cutData()}}. For use with \code{type}.}
 }
 \value{
@@ -57,6 +68,12 @@ function allows for flexible control over the amount of smoothing through the
 \code{lambda} parameter and can be applied to multiple pollutants simultaneously.
 }
 \details{
+In addition to smoothing, the function can also perform baseline estimation
+using Asymmetric Least Squares (ALS) when the \code{p} parameter is provided. This
+allows for the separation of the underlying baseline from the observed data,
+which can be particularly useful for identifying trends or correcting for
+background levels in pollutant concentrations.
+
 The function is designed to work with regularly spaced time series.
 }
 \examples{

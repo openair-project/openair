@@ -78,6 +78,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// whittaker_baseline
+List whittaker_baseline(NumericVector y_in, Nullable<NumericVector> x_in, double lambda, double p, int d, int n_iter);
+RcppExport SEXP _openair_whittaker_baseline(SEXP y_inSEXP, SEXP x_inSEXP, SEXP lambdaSEXP, SEXP pSEXP, SEXP dSEXP, SEXP n_iterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type y_in(y_inSEXP);
+    Rcpp::traits::input_parameter< Nullable<NumericVector> >::type x_in(x_inSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< double >::type p(pSEXP);
+    Rcpp::traits::input_parameter< int >::type d(dSEXP);
+    Rcpp::traits::input_parameter< int >::type n_iter(n_iterSEXP);
+    rcpp_result_gen = Rcpp::wrap(whittaker_baseline(y_in, x_in, lambda, p, d, n_iter));
+    return rcpp_result_gen;
+END_RCPP
+}
 // whittaker_smooth
 List whittaker_smooth(NumericVector y_in, double lambda, int d);
 RcppExport SEXP _openair_whittaker_smooth(SEXP y_inSEXP, SEXP lambdaSEXP, SEXP dSEXP) {
@@ -98,6 +114,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_openair_distAngle", (DL_FUNC) &_openair_distAngle, 2},
     {"_openair_rolling_average_cpp", (DL_FUNC) &_openair_rolling_average_cpp, 6},
     {"_openair_dateAggregate", (DL_FUNC) &_openair_dateAggregate, 5},
+    {"_openair_whittaker_baseline", (DL_FUNC) &_openair_whittaker_baseline, 6},
     {"_openair_whittaker_smooth", (DL_FUNC) &_openair_whittaker_smooth, 3},
     {NULL, NULL, 0}
 };

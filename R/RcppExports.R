@@ -33,6 +33,10 @@ dateAggregate <- function(df, date_col = "date", statistic = "mean", threshold =
     .Call(`_openair_dateAggregate`, df, date_col, statistic, threshold, probs)
 }
 
+whittaker_baseline <- function(y_in, x_in = NULL, lambda = 1000.0, p = 0.001, d = 2L, n_iter = 10L) {
+    .Call(`_openair_whittaker_baseline`, y_in, x_in, lambda, p, d, n_iter)
+}
+
 whittaker_smooth <- function(y_in, lambda = -1.0, d = 2L) {
     .Call(`_openair_whittaker_smooth`, y_in, lambda, d)
 }
