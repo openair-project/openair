@@ -46,8 +46,10 @@ Imports:
     tidyr,
     utils
 Suggests:
+    ggh4x,
     KernSmooth,
     knitr,
+    legendry (>= 0.2.4),
     quantreg,
     rmarkdown,
     sf,

@@ -20,6 +20,8 @@
   
   - `timeProp()`
   
+  - `corPlot()`
+  
   - `trajPlot()`
   
   - `trajLevel()`
@@ -98,6 +100,16 @@
 
 - `trendLevel()` now supports 2 values being passed to `type`, which will create a 2D grid using `ggplot2::facet_grid()`.
 
+- `corPlot()` has gained several new features:
+
+    - Added the `annotate` argument which can change the correlation annotation to a p-value marker or stars, or remove it entirely.
+
+    - Added two new arguments `triangle` and `diagonal` for controlling the plot appearance.
+    
+    - Added arguments `key`, `key.position` and `key.header` for adding and refining a plot legend.
+    
+    - Up to two `type`s are now also permitted.
+ 
 - New function to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data.
 
 ## Bug Fixes
