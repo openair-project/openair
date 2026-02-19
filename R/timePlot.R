@@ -388,7 +388,7 @@ timePlot <- function(
   # number of pollutants
   npol <- length(unique(mydata$variable)) # number of pollutants
 
-  extra.args$lty <- extra.args$lty %||% if (!is.null(windflow)) 1 else 1:npol
+  extra.args$lty <- extra.args$lty %||% 1
   while (length(extra.args$lty) < npol) {
     extra.args$lty <- c(extra.args$lty, extra.args$lty)
   }
