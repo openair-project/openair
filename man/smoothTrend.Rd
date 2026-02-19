@@ -25,13 +25,12 @@ smoothTrend(
   key = TRUE,
   key.columns = 1,
   key.position = "bottom",
-  name.pol = pollutant,
+  name.pol = NULL,
   date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
   ci = TRUE,
   alpha = 0.2,
-  shade = "grey95",
   plot = TRUE,
   progress = TRUE,
   ...
@@ -167,9 +166,6 @@ properly, e.g., by subscripting the '2' in NO2.}
 
 \item{alpha}{The alpha transparency of shaded confidence intervals - if
 plotted. A value of 0 is fully transparent and 1 is fully opaque.}
-
-\item{shade}{The colour used for marking alternate years. Use \code{"white"} or
-\code{"transparent"} to remove shading.}
 
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}

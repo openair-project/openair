@@ -70,6 +70,8 @@ types are provided the first forms the columns and the second the rows.}
 \item{statistic}{One of:
 \itemize{
 \item \code{"frequency"} (the default) shows trajectory frequencies.
+\item \code{"hexbin"}, which is similar to \code{"frequency"} but shows a hexagonal
+grid of counts.
 \item \code{"difference"} - in this case trajectories where the associated
 concentration is greater than \code{percentile} are compared with the the full
 set of trajectories to understand the differences in frequencies of the
