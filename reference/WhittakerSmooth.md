@@ -1,4 +1,4 @@
-# Calculate Whittaker-Eilers Smoothing and Interpolation
+# Calculate Whittaker-Eilers Smoothing, Interpolation and Baseline Determination
 
 This function applies the Whittaker-Eilers smoothing and interpolation
 method to a specified pollutant in a data frame. The method is based on
@@ -19,6 +19,7 @@ WhittakerSmooth(
   type = "default",
   new.name = NULL,
   date.pad = FALSE,
+  p = NULL,
   ...
 )
 ```
@@ -69,6 +70,17 @@ WhittakerSmooth(
 
   Should missing dates be padded? Default is `FALSE`.
 
+- p:
+
+  The asymmetry weight parameter used exclusively for baseline
+  estimation (Asymmetric Least Squares). It defines how the algorithm
+  treats points that fall above the fitted line versus points that fall
+  below it. It takes a value between 0 and 1. When p is very small, the
+  algorithm assigns a massive penalty to the curve if it rises above the
+  data points, but almost no penalty if it drops below them. This forces
+  the curve to "hug" the bottom of the signal, effectively ignoring the
+  positive peaks. Typical Values: 0.01 to 0.05.
+
 - ...:
 
   Additional parameters passed to
@@ -80,6 +92,12 @@ WhittakerSmooth(
 A tibble with new columns for the smoothed pollutant values.
 
 ## Details
+
+In addition to smoothing, the function can also perform baseline
+estimation using Asymmetric Least Squares (ALS) when the `p` parameter
+is provided. This allows for the separation of the underlying baseline
+from the observed data, which can be particularly useful for identifying
+trends or correcting for background levels in pollutant concentrations.
 
 The function is designed to work with regularly spaced time series.
 
