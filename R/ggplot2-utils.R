@@ -37,16 +37,29 @@ set_extra_fontsize <- function(extra.args) {
 }
 
 # work out the faceting strategy
-get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE, ...) {
+get_facet <- function(
+  type,
+  extra.args,
+  scales,
+  auto.text,
+  drop = FALSE,
+  strip.position = "top",
+  ...
+) {
   fun <- NULL
   if (any(type != "default")) {
     if (length(type) == 1) {
+      if (!strip.position %in% c("top", "bottom", "left", "right")) {
+        strip.position <- "top"
+      }
+
       if (type == "wd") {
         fun <-
           facet_wd(
             ggplot2::vars(.data[[type]]),
             labeller = labeller_openair(auto_text = auto.text),
             scales = scales,
+            strip.position = strip.position,
             ...
           )
       } else {
@@ -58,10 +71,15 @@ get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE, ...) {
             ncol = extra.args$layout[1],
             nrow = extra.args$layout[2],
             scales = scales,
+            strip.position = strip.position,
             ...
           )
       }
     } else {
+      if (!strip.position %in% c("x", "y", "both")) {
+        strip.position <- NULL
+      }
+
       fun <-
         ggplot2::facet_grid(
           drop = drop,
@@ -69,6 +87,7 @@ get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE, ...) {
           cols = ggplot2::vars(.data[[type[2]]]),
           labeller = labeller_openair(auto_text = auto.text),
           scales = scales,
+          switch = strip.position,
           ...
         )
     }
