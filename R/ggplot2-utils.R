@@ -37,16 +37,29 @@ set_extra_fontsize <- function(extra.args) {
 }
 
 # work out the faceting strategy
-get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE, ...) {
+get_facet <- function(
+  type,
+  extra.args,
+  scales,
+  auto.text,
+  drop = FALSE,
+  strip.position = "top",
+  ...
+) {
   fun <- NULL
   if (any(type != "default")) {
     if (length(type) == 1) {
+      if (!strip.position %in% c("top", "bottom", "left", "right")) {
+        strip.position <- "top"
+      }
+
       if (type == "wd") {
         fun <-
           facet_wd(
             ggplot2::vars(.data[[type]]),
             labeller = labeller_openair(auto_text = auto.text),
             scales = scales,
+            strip.position = strip.position,
             ...
           )
       } else {
@@ -58,10 +71,15 @@ get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE, ...) {
             ncol = extra.args$layout[1],
             nrow = extra.args$layout[2],
             scales = scales,
+            strip.position = strip.position,
             ...
           )
       }
     } else {
+      if (!strip.position %in% c("x", "y", "both")) {
+        strip.position <- NULL
+      }
+
       fun <-
         ggplot2::facet_grid(
           drop = drop,
@@ -69,6 +87,7 @@ get_facet <- function(type, extra.args, scales, auto.text, drop = FALSE, ...) {
           cols = ggplot2::vars(.data[[type[2]]]),
           labeller = labeller_openair(auto_text = auto.text),
           scales = scales,
+          switch = strip.position,
           ...
         )
     }
@@ -86,3 +105,81 @@ relation_to_facet_scales <- function(x.relation, y.relation) {
     !x.relation && !y.relation ~ "fixed"
   )
 }
+
+# Recycle helper similar to lattice behaviour
+recycle_to_length <- function(x, n) {
+  if (length(x) == n) {
+    return(x)
+  }
+  if (length(x) == 1) {
+    return(rep(x, n))
+  }
+  cli::cli_abort(
+    "Length mismatch: argument must be length 1 or same length as 'h'/'v'"
+  )
+}
+
+# Convert lattice-style ref.y list to ggplot2 geom_hline layers
+gg_ref_y <- function(ref.y) {
+  if (is.null(ref.y) || is.null(ref.y$h)) {
+    return(NULL)
+  }
+
+  h <- ref.y$h
+  n <- length(h)
+
+  # Recycle aesthetics if needed
+  lty <- recycle_to_length(ref.y$lty %||% 1, n)
+  col <- recycle_to_length(ref.y$col %||% "black", n)
+  lwd <- recycle_to_length(ref.y$lwd %||% 0.5, n)
+
+  # Build list of geoms
+  Map(
+    function(y, lty_i, col_i, lwd_i) {
+      ggplot2::geom_hline(
+        yintercept = y,
+        linetype = lty_i,
+        colour = col_i,
+        linewidth = lwd_i,
+        inherit.aes = FALSE
+      )
+    },
+    h,
+    lty,
+    col,
+    lwd
+  )
+}
+
+# Convert lattice-style ref.x list to ggplot2 geom_vline layers
+gg_ref_x <- function(ref.x) {
+  if (is.null(ref.x) || is.null(ref.x$v)) {
+    return(NULL)
+  }
+
+  v <- ref.x$v
+  n <- length(v)
+
+  lty <- recycle_to_length(ref.x$lty %||% 1, n)
+  col <- recycle_to_length(ref.x$col %||% "black", n)
+  lwd <- recycle_to_length(ref.x$lwd %||% 0.5, n)
+
+  Map(
+    function(x, lty_i, col_i, lwd_i) {
+      ggplot2::geom_vline(
+        xintercept = x,
+        linetype = lty_i,
+        colour = col_i,
+        linewidth = lwd_i,
+        inherit.aes = FALSE
+      )
+    },
+    v,
+    lty,
+    col,
+    lwd
+  )
+}
+
+# `%||%` for convenience
+`%||%` <- function(a, b) if (!is.null(a)) a else b
