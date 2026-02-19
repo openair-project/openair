@@ -25,6 +25,7 @@ smoothTrend(
   key = TRUE,
   key.columns = 1,
   key.position = "bottom",
+  strip.position = "top",
   name.pol = NULL,
   date.breaks = 7,
   date.format = NULL,
@@ -139,6 +140,13 @@ number of pollutants.}
 
 \item{key.position}{Location where the scale key is to plotted. Can include
 \code{"top"}, \code{"bottom"}, \code{"right"} and \code{"left"}.}
+
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
 \item{name.pol}{This option can be used to give alternative names for the
 variables plotted. Instead of taking the column headings as names, the user

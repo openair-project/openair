@@ -130,6 +130,7 @@ smoothTrend <- function(
   key = TRUE,
   key.columns = 1,
   key.position = "bottom",
+  strip.position = "top",
   name.pol = NULL,
   date.breaks = 7,
   date.format = NULL,
@@ -336,6 +337,7 @@ smoothTrend <- function(
       extra.args = extra.args,
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
+      strip.position = strip.position,
       drop = TRUE
     ) +
     ggplot2::labs(
