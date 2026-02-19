@@ -112,13 +112,14 @@ relation_to_facet_scales <- function(x.relation, y.relation) {
 }
 
 scale_x_compass <- function(
+  labels = c("N", "E", "S", "W"),
   expand = ggplot2::expansion(),
   oob = scales::oob_keep,
   ...
 ) {
   ggplot2::scale_x_continuous(
     limits = c(0, 360),
-    labels = c("N", "E", "S", "W"),
+    labels = labels,
     breaks = seq(0, 360 - 90, 90),
     expand = expand,
     oob = oob,

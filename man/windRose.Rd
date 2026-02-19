@@ -17,14 +17,12 @@ windRose(
   bias.corr = TRUE,
   cols = "default",
   grid.line = NULL,
-  width = 1,
-  seg = NULL,
+  seg = 0.9,
   auto.text = TRUE,
   breaks = 4,
   offset = 10,
   normalise = FALSE,
   max.freq = NULL,
-  paddle = TRUE,
   key.header = NULL,
   key.footer = "(m/s)",
   key.position = "bottom",
@@ -36,7 +34,6 @@ windRose(
   annotate = TRUE,
   angle.scale = 315,
   border = NA,
-  alpha = 1,
   plot = TRUE,
   ...
 )
@@ -102,11 +99,7 @@ forced to a specific value, e.g. \code{grid.line = 10}. \code{grid.line}
 can also be a list to control the interval, line type and colour. For
 example \code{grid.line = list(value = 10, lty = 5, col = "purple")}.}
 
-\item{width}{For \code{paddle = TRUE}, the adjustment factor for width of
-wind speed intervals. For example, \code{width = 1.5} will make the paddle
-width 1.5 times wider.}
-
-\item{seg}{When \code{paddle = TRUE}, \code{seg} determines with width of the
+\item{seg}{\code{seg} determines with width of the
 segments. For example, \code{seg = 0.5} will produce segments 0.5 *
 \code{angle}.}
 
@@ -131,10 +124,6 @@ wind directions is from a particular wind sector is also shown.}
 \item{max.freq}{Controls the scaling used by setting the maximum value for
 the radial limits. This is useful to ensure several plots use the same
 radial limits.}
-
-\item{paddle}{Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose
-using 'paddle' style spokes. If \code{FALSE} plots rose using 'wedge' style
-spokes.}
 
 \item{key.header}{Adds additional text/labels above the scale key. For
 example, passing \code{windRose(mydata, key.header = "ws")} adds the
@@ -173,8 +162,7 @@ in \code{\link[=pollutionRose]{pollutionRose()}}.}
 
 \item{annotate}{If \code{TRUE} then the percentage calm and mean values are
 printed in each panel together with a description of the statistic below
-the plot. If \code{" "} then only the statistic is below the plot. Custom
-annotations may be added by setting value to \code{c("annotation 1", "annotation 2")}.}
+the plot. If \code{FALSE} then only the statistic will be printed.}
 
 \item{angle.scale}{The scale is by default shown at a 315 degree angle.
 Sometimes the placement of the scale may interfere with an interesting
@@ -184,11 +172,6 @@ feature. The user can therefore set \code{angle.scale} to another value
 
 \item{border}{Border colour for shaded areas. Default is no border.}
 
-\item{alpha}{The alpha transparency to use for the plotting surface (a value
-between 0 and 1 with zero being fully transparent and 1 fully opaque).
-Setting a value below 1 can be useful when plotting surfaces on a map using
-the package \code{openairmaps}.}
-
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when
 analysing data to extract plot components and plotting them in other ways.}
 
@@ -196,6 +179,10 @@ analysing data to extract plot components and plotting them in other ways.}
 \code{lattice:xyplot} and \code{cutData}. Axis and title labelling options
 (\code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
 \code{quickText} to handle routine formatting.}
+
+\item{paddle}{Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose
+using 'paddle' style spokes. If \code{FALSE} plots rose using 'wedge' style
+spokes.}
 }
 \value{
 an \link[=openair-package]{openair} object. Summarised proportions can be
@@ -233,10 +220,6 @@ The option \code{statistic = "prop.mean"} provides a measure of the relative
 contribution of each bin to the panel mean, and is intended for use with
 \code{pollutionRose}.
 }
-\note{
-\code{windRose} and \code{pollutionRose} both use \code{\link[=drawOpenKey]{drawOpenKey()}} to
-produce scale keys.
-}
 \examples{
 # basic plot
 windRose(mydata)
@@ -268,6 +251,10 @@ Other polar directional analysis functions:
 \code{\link{pollutionRose}()}
 }
 \author{
-David Carslaw (with some additional contributions by Karl Ropkins)
+David Carslaw
+
+Karl Ropkins
+
+Jack Davison
 }
 \concept{polar directional analysis functions}
