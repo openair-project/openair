@@ -94,6 +94,7 @@
 #'   The user can change the start day by supplying an integer between 0 and 6.
 #'   Sunday = 0, Monday = 1, ... For example to start the weekday plots on a
 #'   Saturday, choose `start.day = 6`.
+#' @param start.season What order should the season be. By default, the order is spring, summer, autumn, winter. `start.season = "winter"` would plot winter first.
 #' @param is.axis A logical (`TRUE`/`FALSE`), used to request shortened cut
 #'   labels for axes.
 #' @param local.tz Used for identifying whether a date has daylight savings time
@@ -143,6 +144,7 @@ cutData <- function(
   hemisphere = "northern",
   n.levels = 4,
   start.day = 1,
+  start.season = "spring",
   is.axis = FALSE,
   local.tz = NULL,
   latitude = 51,
@@ -274,7 +276,8 @@ cutData <- function(
         x$date,
         hemisphere = hemisphere,
         is.axis = is.axis,
-        drop = drop
+        drop = drop,
+        start.season = start.season
       )
     }
 
@@ -789,9 +792,19 @@ cutVecDaylight <- function(
 }
 
 # Cut a vector into seasons
-cutVecSeason <- function(x, hemisphere, is.axis, drop) {
+cutVecSeason <- function(
+  x,
+  hemisphere,
+  is.axis,
+  drop,
+  start.season = "spring"
+) {
   sep <- ifelse(is.axis, "\n", " ")
   hemisphere <- rlang::arg_match(hemisphere, c("northern", "southern"))
+
+  # Validate start.season
+  valid_seasons <- c("spring", "summer", "autumn", "winter")
+  start.season <- rlang::arg_match(start.season, valid_seasons)
 
   # need to work out month names local to the user and extract first letter
   month_names_local <-
@@ -803,61 +816,67 @@ cutVecSeason <- function(x, hemisphere, is.axis, drop) {
     paste0(str, sep, "(", paste(month_names_local[id], collapse = ""), ")")
   }
 
-  # get months by number
-  month_ids <- lubridate::month(x)
-
-  # split
+  # 1. Generate a named list of all season labels for the current hemisphere
+  # This ensures the text in the data matches the levels exactly.
   if (hemisphere == "northern") {
-    x <-
-      dplyr::case_match(
-        month_ids,
-        c(12, 1, 2) ~ make_season_name("winter", c(12, 1, 2)),
-        c(3, 4, 5) ~ make_season_name("spring", c(3, 4, 5)),
-        c(6, 7, 8) ~ make_season_name("summer", c(6, 7, 8)),
-        c(9, 10, 11) ~ make_season_name("autumn", c(9, 10, 11))
-      )
-
-    levels <-
-      c(
-        make_season_name("spring", c(3, 4, 5)),
-        make_season_name("summer", c(6, 7, 8)),
-        make_season_name("autumn", c(9, 10, 11)),
-        make_season_name("winter", c(12, 1, 2))
-      )
-
-    if (drop %in% c("default", "empty")) {
-      levels <- levels[levels %in% x]
-    } else if (drop %in% c("none", "outside")) {
-      levels <- levels
-    }
-
-    x <- ordered(x, levels = levels)
+    season_map <- c(
+      spring = make_season_name("spring", c(3, 4, 5)),
+      summer = make_season_name("summer", c(6, 7, 8)),
+      autumn = make_season_name("autumn", c(9, 10, 11)),
+      winter = make_season_name("winter", c(12, 1, 2))
+    )
   } else {
-    x <-
-      dplyr::case_match(
-        month_ids,
-        c(12, 1, 2) ~ make_season_name("summer", c(12, 1, 2)),
-        c(3, 4, 5) ~ make_season_name("autumn", c(3, 4, 5)),
-        c(6, 7, 8) ~ make_season_name("winter", c(6, 7, 8)),
-        c(9, 10, 11) ~ make_season_name("spring", c(9, 10, 11))
-      )
-
-    levels <-
-      c(
-        make_season_name("spring", c(9, 10, 11)),
-        make_season_name("summer", c(12, 1, 2)),
-        make_season_name("autumn", c(3, 4, 5)),
-        make_season_name("winter", c(6, 7, 8))
-      )
-
-    if (drop %in% c("default", "empty")) {
-      levels <- levels[levels %in% x]
-    } else if (drop %in% c("none", "outside")) {
-      levels <- levels
-    }
-
-    x <- ordered(x, levels = levels)
+    season_map <- c(
+      spring = make_season_name("spring", c(9, 10, 11)),
+      summer = make_season_name("summer", c(12, 1, 2)),
+      autumn = make_season_name("autumn", c(3, 4, 5)),
+      winter = make_season_name("winter", c(6, 7, 8))
+    )
   }
 
-  return(x)
+  # 2. Assign the season label to the data vector (x)
+  month_ids <- lubridate::month(x)
+
+  if (hemisphere == "northern") {
+    x_str <- dplyr::case_match(
+      month_ids,
+      c(12, 1, 2) ~ season_map[["winter"]],
+      c(3, 4, 5) ~ season_map[["spring"]],
+      c(6, 7, 8) ~ season_map[["summer"]],
+      c(9, 10, 11) ~ season_map[["autumn"]]
+    )
+  } else {
+    x_str <- dplyr::case_match(
+      month_ids,
+      c(12, 1, 2) ~ season_map[["summer"]],
+      c(3, 4, 5) ~ season_map[["autumn"]],
+      c(6, 7, 8) ~ season_map[["winter"]],
+      c(9, 10, 11) ~ season_map[["spring"]]
+    )
+  }
+
+  # 3. Determine the order of levels based on start.season
+  # Find index of start.season in the standard list
+  start_index <- match(start.season, valid_seasons)
+
+  # Rotate the season keys (e.g. if start is winter (4): 4, 1, 2, 3)
+  rotated_indices <- c(
+    start_index:4,
+    seq_len(start_index - 1)
+  )
+
+  ordered_keys <- valid_seasons[rotated_indices]
+
+  # Extract the formatted text levels in the correct order
+  levels <- unname(season_map[ordered_keys])
+
+  # 4. Handle drop logic
+  if (drop %in% c("default", "empty")) {
+    levels <- levels[levels %in% x_str]
+  } else if (drop %in% c("none", "outside")) {
+    levels <- levels
+  }
+
+  # 5. Return ordered factor
+  ordered(x_str, levels = levels)
 }

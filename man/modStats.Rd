@@ -68,6 +68,7 @@ into seasons.}
 The user can change the start day by supplying an integer between 0 and 6.
 Sunday = 0, Monday = 1, ... For example to start the weekday plots on a
 Saturday, choose \code{start.day = 6}.}
+    \item{\code{start.season}}{What order should the season be. By default, the order is spring, summer, autumn, winter. \code{start.season = "winter"} would plot winter first.}
     \item{\code{is.axis}}{A logical (\code{TRUE}/\code{FALSE}), used to request shortened cut
 labels for axes.}
     \item{\code{local.tz}}{Used for identifying whether a date has daylight savings time

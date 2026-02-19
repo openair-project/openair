@@ -446,15 +446,6 @@ smoothTrend <- function(
       ...
     ) {
       if (group.number == 1) {
-        # otherwise this is called every time
-
-        panel.shade(
-          res,
-          start.year,
-          end.year,
-          ylim = current.panel.limits()$ylim,
-          shade
-        )
         panel.grid(-1, 0)
       }
 

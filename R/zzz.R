@@ -82,6 +82,24 @@
     "days",
     "seconds",
     "x1",
-    "x2"
+    "x2",
+    "Q_val",
+    "Q_weighted",
+    "Qc_weighted",
+    "dist_km",
+    "g_lat_rad",
+    "g_lon_rad",
+    "grid_id",
+    "lat.x",
+    "lat.y",
+    "lat_base",
+    "lat_off",
+    "lon.x",
+    "lon.y",
+    "lon_base",
+    "lon_off",
+    "t_lat_rad",
+    "t_lon_rad",
+    "weight"
   ))
 }
