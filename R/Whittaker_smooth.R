@@ -112,6 +112,10 @@ WhittakerSmooth <- function(
   # error if duplicate dates
   checkDuplicateRows(mydata, type, fn = cli::cli_abort)
 
+  # replace NaN with NA to avoid issues in C++ code
+  mydata <- mydata |>
+    mutate(across(where(is.numeric), \(x) ifelse(is.nan(x), NA, x)))
+
   # function to perform rolling / baseline
   calc.rolling <- function(mydata) {
     # original dates to allow restoring subset if padding added
