@@ -270,7 +270,7 @@ pollutionRose <- function(
 #' @param ... Other parameters that are passed on to `drawOpenKey`,
 #'   `lattice:xyplot` and `cutData`. Axis and title labelling options
 #'   (`xlab`, `ylab`, `main`) are passed to `xyplot` via
-#'   `quickText` to handle routine formatting.
+#'   `quickText` to handle routing formatting.
 #'
 #' @export
 #' @import dplyr
@@ -343,29 +343,32 @@ windRose <- function(
   plot = TRUE,
   ...
 ) {
-  if (is.null(seg)) {
-    seg <- 0.9
-  }
+  if (is.null(seg)) seg <- 0.9
 
   ## greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-    ## other local colours
     calm.col <- "black"
   } else {
     calm.col <- "forestgreen"
   }
 
-  ## set graphics
-  current.strip <- trellis.par.get("strip.background")
-  current.font <- trellis.par.get("fontsize")
+  ## extra args setup
+  extra <- list(...)
+  extra$main <- if ("main" %in% names(extra)) quickText(extra$main, auto.text) else NULL
 
-  ## reset graphic parameters
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
+  if ("fontsize" %in% names(extra)) {
+    extra$fontsize <- extra$fontsize
+  }
 
-  # make sure ws and wd and numeric
+  ## statistic settings
+  stat <- wr_statistic_settings(statistic, dig.lab)
+
+  ## variables we need
+  vars <- c(wd, ws)
+  diff <- FALSE ## i.e. not two sets of ws/wd
+  rm.neg <- TRUE ## will remove negative ws in check.prep
+
+  ## make sure ws and wd are numeric
   mydata <- checkNum(mydata, vars = c(ws, wd))
 
   if (360 / angle != round(360 / angle)) {
@@ -384,100 +387,6 @@ windRose <- function(
     angle <- 3
   }
 
-  ## extra args setup
-  extra <- list(...)
-
-  ## label controls
-  extra$xlab <- if ("xlab" %in% names(extra)) {
-    quickText(extra$xlab, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
-  extra$ylab <- if ("ylab" %in% names(extra)) {
-    quickText(extra$ylab, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
-  extra$main <- if ("main" %in% names(extra)) {
-    quickText(extra$main, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
-
-  if ("fontsize" %in% names(extra)) {
-    trellis.par.set(fontsize = list(text = extra$fontsize))
-  }
-
-  ## preset statitistics
-
-  if (is.character(statistic)) {
-    ## allowed cases
-    ok.stat <- c("prop.count", "prop.mean", "abs.count", "frequency")
-
-    if (!is.character(statistic) || !statistic[1] %in% ok.stat) {
-      warning(
-        "In windRose(...):\n  statistic unrecognised",
-        "\n  enforcing statistic = 'prop.count'",
-        call. = FALSE
-      )
-      statistic <- "prop.count"
-    }
-
-    if (statistic == "prop.count") {
-      stat.fun <- length
-      stat.unit <- "%"
-      stat.scale <- "all"
-      stat.lab <- "Frequency of counts by wind direction (%)"
-      stat.fun2 <- function(x) format(mean(x, na.rm = TRUE), digits = dig.lab)
-      stat.lab2 <- "mean"
-      stat.labcalm <- function(x) round(x, 1)
-    }
-
-    if (statistic == "prop.mean") {
-      stat.fun <- function(x) sum(x, na.rm = TRUE)
-      stat.unit <- "%"
-      stat.scale <- "panel"
-      stat.lab <- "Proportion contribution to the mean (%)"
-      stat.fun2 <- function(x) format(mean(x, na.rm = TRUE), digits = 5)
-      stat.lab2 <- "mean"
-      stat.labcalm <- function(x) round(x, 1)
-    }
-
-    if (statistic == "abs.count" | statistic == "frequency") {
-      stat.fun <- length
-      stat.unit <- ""
-      stat.scale <- "none"
-      stat.lab <- "Count by wind direction"
-      stat.fun2 <- function(x) round(length(x), 0)
-      stat.lab2 <- "count"
-      stat.labcalm <- function(x) round(x, 0)
-    }
-  }
-
-  if (is.list(statistic)) {
-    ## IN DEVELOPMENT
-
-    ## this section has no testing/protection
-    ## but allows users to supply a function
-    ## scale it by total data or panel
-    ## convert proportions to percentage
-    ## label it
-
-    stat.fun <- statistic$fun
-    stat.unit <- statistic$unit
-    stat.scale <- statistic$scale
-    stat.lab <- statistic$lab
-    stat.fun2 <- statistic$fun2
-    stat.lab2 <- statistic$lab2
-    stat.labcalm <- statistic$labcalm
-  }
-
-  ## variables we need
-  vars <- c(wd, ws)
-
-  diff <- FALSE ## i.e. not two sets of ws/wd
-  rm.neg <- TRUE ## will remove negative ws in check.prep
-
   ## case where two met data sets are to be compared
   if (!is.na(ws2) & !is.na(wd2)) {
     vars <- c(vars, ws2, wd2)
@@ -488,21 +397,16 @@ windRose <- function(
 
     ## fix negative wd
     id <- which(mydata$wd < 0)
-    if (length(id) > 0) {
-      mydata$wd[id] <- mydata$wd[id] + 360
-    }
+    if (length(id) > 0) mydata$wd[id] <- mydata$wd[id] + 360
 
     pollutant <- "ws"
     key.footer <- "ws"
     wd <- "wd"
     ws <- "ws"
     vars <- c("ws", "wd")
-    if (missing(angle)) {
-      angle <- 10
-    }
-    if (missing(offset)) {
-      offset <- 20
-    }
+    if (missing(angle)) angle <- 10
+    if (missing(offset)) offset <- 20
+
     ## set the breaks to cover all the data
     if (is.na(breaks[1])) {
       max.br <- max(ceiling(abs(c(
@@ -512,582 +416,660 @@ windRose <- function(
       breaks <- c(-1 * max.br, 0, max.br)
     }
 
-    if (missing(cols)) {
-      cols <- c("lightskyblue", "tomato")
-    }
+    if (missing(cols)) cols <- c("lightskyblue", "tomato")
     seg <- 1
   }
 
-  if (any(type %in% dateTypes)) {
-    vars <- c(vars, "date")
-  }
-
-  if (!is.null(pollutant)) {
-    vars <- c(vars, pollutant)
-  }
+  if (any(type %in% dateTypes)) vars <- c(vars, "date")
+  if (!is.null(pollutant)) vars <- c(vars, pollutant)
 
   mydata <- cutData(mydata, type, ...)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE, remove.neg = rm.neg)
 
-  mydata <- checkPrep(
-    mydata,
-    vars,
-    type,
-    remove.calm = FALSE,
-    remove.neg = rm.neg
-  )
-
-  # original data to use later
+  ## original data for bias correction later
   mydata_orig <- mydata
 
-  # remove lines where ws is missing
-  # wd can be NA and ws 0 (calm)
+  ## remove rows where ws is missing (wd can be NA when ws == 0, i.e. calm)
   id <- which(is.na(mydata[[ws]]))
+  if (length(id) > 0) mydata <- mydata[-id, ]
 
-  if (length(id) > 0) {
-    mydata <- mydata[-id, ]
-  }
+  if (is.null(pollutant)) pollutant <- ws
 
-  if (is.null(pollutant)) {
-    pollutant <- ws
-  }
-
+  ## wind direction processing
   mydata$x <- mydata[[pollutant]]
-
   mydata[[wd]] <- angle * ceiling(mydata[[wd]] / angle - 0.5)
   mydata[[wd]][mydata[[wd]] == 0] <- 360
 
-  ## flag calms as negatives
+  ## flag calms as -999 (must be done after rounding wd)
   if (calm.thresh == 0) {
-    mydata[[wd]][mydata[, ws] == 0] <- -999 ## set wd to flag where there are calms
+    mydata[[wd]][mydata[, ws] == 0] <- -999
   } else {
     mydata[[wd]][mydata[, ws] < calm.thresh] <- -999 ## Note < not <=
   }
+  mydata[[wd]][mydata[, ws] < calm.thresh] <- -999
 
-  mydata[[wd]][mydata[, ws] < calm.thresh] <- -999 ## set wd to flag where there are calms
-  ## do after rounding or -999 changes
-
-  if (length(breaks) == 1) {
-    breaks <- 0:(breaks - 1) * ws.int
-  }
-
-  if (max(breaks) < max(mydata$x, na.rm = TRUE)) {
-    breaks <- c(breaks, max(mydata$x, na.rm = TRUE))
-  }
-
-  if (min(breaks) > min(mydata$x, na.rm = TRUE)) {
-    warning("Some values are below minimum break.")
-  }
-
+  ## breaks setup
+  if (length(breaks) == 1) breaks <- 0:(breaks - 1) * ws.int
+  if (max(breaks) < max(mydata$x, na.rm = TRUE)) breaks <- c(breaks, max(mydata$x, na.rm = TRUE))
+  if (min(breaks) > min(mydata$x, na.rm = TRUE)) warning("Some values are below minimum break.")
   breaks <- unique(breaks)
-  mydata$x <- cut(
-    mydata$x,
-    breaks = breaks,
-    include.lowest = include.lowest,
-    dig.lab = dig.lab
-  )
 
-  ## clean up cut intervals
+  mydata$x <- cut(mydata$x, breaks = breaks, include.lowest = include.lowest, dig.lab = dig.lab)
+
+  ## clean up cut intervals for display
   labs <- gsub("[(]|[)]|[[]|[]]", "", levels(mydata$x))
   labs <- gsub("[,]", " to ", labs)
 
-  ## statistic handling
+  ## compute statistics per wind direction bin
+  prepare.grid <- wr_make_prepare_grid(wd, pollutant, length(labs), stat$fun, stat$fun2, stat$scale)
+  results <- mapType(mydata, fun = prepare.grid, type = type, .include_default = TRUE)
 
-  prepare.grid <- function(mydata) {
-    ## these are all calms...
-    if (all(is.na(mydata$x))) {
-      weights <- tibble(
-        Interval1 = NA,
-        wd = NA,
-        calm = 100,
-        panel.fun = NA,
-        mean.wd = NA,
-        freqs = NA
-      )
-    } else {
-      levels(mydata$x) <- c(paste("Interval", 1:length(labs), sep = ""))
-
-      all <- stat.fun(mydata[[wd]])
-      calm <- mydata[mydata[[wd]] == -999, ][[pollutant]]
-
-      calm <- stat.fun(calm)
-
-      weights <- tapply(
-        mydata[[pollutant]],
-        list(mydata[[wd]], mydata$x),
-        stat.fun
-      )
-
-      freqs <- tapply(mydata[[pollutant]], mydata[[wd]], length)
-
-      ## scaling
-      if (stat.scale == "all") {
-        calm <- calm / all
-        weights <- weights / all
-      }
-
-      if (stat.scale == "panel") {
-        temp <- stat.fun(stat.fun(weights)) + calm
-        calm <- calm / temp
-        weights <- weights / temp
-      }
-
-      weights[is.na(weights)] <- 0
-      weights <- t(apply(weights, 1, cumsum))
-
-      if (stat.scale == "all" | stat.scale == "panel") {
-        weights <- weights * 100
-        calm <- calm * 100
-      }
-
-      panel.fun <- stat.fun2(mydata[[pollutant]])
-
-      ## calculate mean wd - useful for cases comparing two met data sets
-      u <- mean(sin(2 * pi * mydata[[wd]] / 360), na.rm = TRUE)
-      v <- mean(cos(2 * pi * mydata[[wd]] / 360), na.rm = TRUE)
-      mean.wd <- atan2(u, v) * 360 / 2 / pi
-
-      if (all(is.na(mean.wd))) {
-        mean.wd <- NA
-      } else {
-        if (mean.wd < 0) {
-          mean.wd <- mean.wd + 360
-        }
-        ## show as a negative (bias)
-        if (mean.wd > 180) mean.wd <- mean.wd - 360
-      }
-
-      weights <- bind_cols(
-        as_tibble(weights),
-        tibble(
-          wd = as.numeric(row.names(weights)),
-          calm = calm,
-          panel.fun = panel.fun,
-          mean.wd = mean.wd,
-          freqs = freqs
-        )
-      )
-    }
-
-    weights
-  }
-
-  if (paddle) {
-    poly <- function(wd, len1, len2, width, colour, x.off = 0, y.off = 0) {
-      theta <- wd * pi / 180
-      len1 <- len1 + off.set
-      len2 <- len2 + off.set
-      x1 <- len1 * sin(theta) - width * cos(theta) + x.off
-      x2 <- len1 * sin(theta) + width * cos(theta) + x.off
-      x3 <- len2 * sin(theta) - width * cos(theta) + x.off
-      x4 <- len2 * sin(theta) + width * cos(theta) + x.off
-      y1 <- len1 * cos(theta) + width * sin(theta) + y.off
-      y2 <- len1 * cos(theta) - width * sin(theta) + y.off
-      y3 <- len2 * cos(theta) + width * sin(theta) + y.off
-      y4 <- len2 * cos(theta) - width * sin(theta) + y.off
-      lpolygon(
-        c(x1, x2, x4, x3),
-        c(y1, y2, y4, y3),
-        col = colour,
-        border = border
-      )
-    }
-  } else {
-    poly <- function(wd, len1, len2, width, colour, x.off = 0, y.off = 0) {
-      len1 <- len1 + off.set
-      len2 <- len2 + off.set
-
-      theta <- seq(
-        (wd - seg * angle / 2),
-        (wd + seg * angle / 2),
-        length.out = (angle - 2) * 10
-      )
-      theta <- ifelse(theta < 1, 360 - theta, theta)
-      theta <- theta * pi / 180
-      x1 <- len1 * sin(theta) + x.off
-      x2 <- rev(len2 * sin(theta) + x.off)
-      y1 <- len1 * cos(theta) + x.off
-      y2 <- rev(len2 * cos(theta) + x.off)
-      lpolygon(c(x1, x2), c(y1, y2), col = colour, border = border)
-    }
-  }
-
-  # prepare grid for each type
-  results <- mapType(
-    mydata,
-    fun = prepare.grid,
-    type = type,
-    .include_default = TRUE
-  )
-
-  ## format
-  results$calm <- stat.labcalm(results$calm)
-  results$mean.wd <- stat.labcalm(results$mean.wd)
-
-  # function to correct bias
-  corr_bias <- function(results) {
-    # check to see if data for this type combination are rounded to 10 degrees
-    # round wd so that tiny differences between integer a numeric do not arise
-    wd_select <- inner_join(mydata_orig, results[1, type], by = type)
-    if (!all(round(wd_select[[wd]]) %% 10 == 0, na.rm = TRUE)) {
-      return(results)
-    }
-
-    wds <- seq(10, 360, 10)
-    tmp <- angle * ceiling(wds / angle - 0.5)
-    id <- which(tmp == 0)
-    if (length(id > 0)) {
-      tmp[id] <- 360
-    }
-    tmp <- table(tmp) ## number of sectors spanned
-    vars <- grep("Interval[1-9]", names(results)) ## the frequencies, without any calms
-
-    # number of rows in data where wd != -999
-    n_data <- nrow(filter(results, wd != -999))
-
-    if (n_data > 0) {
-      results[results[["wd"]] != -999, vars] <-
-        results[results[["wd"]] != -999, vars] * mean(tmp) / tmp
-    }
-
-    return(results)
-  }
+  results$calm <- stat$labcalm(results$calm)
+  results$mean.wd <- stat$labcalm(results$mean.wd)
 
   ## correction for bias when angle does not divide exactly into 360
   if (bias.corr) {
     results <- mapType(
       results,
       type = type,
-      fun = corr_bias,
+      fun = function(r) wr_correct_bias(r, mydata_orig, wd, type, angle),
       .include_default = TRUE
     )
   }
 
-  ## proper names of labelling###########################################
-  strip.dat <- strip.fun(results, type, auto.text)
-  strip <- strip.dat[[1]]
-  strip.left <- strip.dat[[2]]
-  pol.name <- strip.dat[[3]]
-
-  if (length(labs) < length(cols)) {
-    col <- cols[1:length(labs)]
-  } else {
-    col <- openColours(cols, length(labs))
-  }
-
+  ## colours
+  col <- if (length(labs) < length(cols)) cols[seq_along(labs)] else openColours(cols, length(labs))
   legend_col <- col
-  col <- grDevices::adjustcolor(col, alpha.f = alpha)
 
   ## normalise by sector
-
   if (normalise) {
     vars <- grep("Interval[1-9]", names(results))
 
-    ## original frequencies, so we can plot the wind frequency line
+    ## original frequencies for the wind frequency line
     results$freq <- results[[max(vars)]]
-
-    results$freq <- ave(
-      results$freq,
-      results[type],
-      FUN = function(x) x / sum(x)
-    )
-
-    ## scale by maximum frequency
+    results$freq <- ave(results$freq, results[type], FUN = function(x) x / sum(x))
     results$norm <- results$freq / max(results$freq)
 
-    ## normalise
     results[, vars] <- results[, vars] / results[[max(vars)]]
-
-    stat.lab <- "Normalised by wind sector"
-    stat.unit <- ""
+    stat$lab <- "Normalised by wind sector"
+    stat$unit <- ""
   }
 
+  ## scale limits
   if (is.null(max.freq)) {
     max.freq <- max(
       results[results$wd != -999, grep("Interval", names(results))],
       na.rm = TRUE
     )
-  } else {
-    max.freq <- max.freq
   }
 
   off.set <- max.freq * (offset / 100)
-  box.widths <- seq(
-    0.002^0.25,
-    0.016^0.25,
-    length.out = length(labs)
-  )^4
-  box.widths <- box.widths * max.freq * angle / 5
+  box.widths <- seq(0.002^0.25, 0.016^0.25, length.out = length(labs))^4 * max.freq * angle / 5
 
-  ## key, colorkey, legend
-  legend <- list(
-    col = legend_col,
-    space = key.position,
-    auto.text = auto.text,
-    labels = labs,
-    footer = key.footer,
-    header = key.header,
-    height = 0.60,
-    width = 1.5,
-    fit = "scale",
-    plot.style = if (paddle) "paddle" else "other"
-  )
-
-  legend <- makeOpenKeyLegend(key, legend, "windRose")
-
-  temp <- paste(type, collapse = "+")
-  myform <- formula(paste("Interval1 ~ wd | ", temp, sep = ""))
-
-  # maximum annotation that covers the data
+  ## grid line settings
+  grid <- wr_parse_grid_line(grid.line)
   mymax <- max(pretty(c(0, max.freq), 4))
+  myby <- if (is.null(grid$value)) pretty(c(0, mymax), 4)[2] else grid$value
+  if (myby / mymax > 0.9) myby <- mymax * 0.9
 
-  # check to see if grid.line is a list or not and set grid line properties
-  grid.value <- NULL
+  upper <- max.freq + off.set
+  lim <- 1.03 * upper
 
-  if (is.list(grid.line)) {
-    if (is.null(grid.line[["value"]])) {
-      grid.value <- NULL
-    } else {
-      grid.value <- grid.line[["value"]]
-    }
+  ## type columns for faceting (exclude "default")
+  facet_cols <- setdiff(type, "default")
 
-    if (is.null(grid.line[["lty"]])) {
-      grid.lty <- 1
-    } else {
-      grid.lty <- grid.line[["lty"]]
-    }
+  ## --- Build ggplot data layers ---
 
-    if (is.null(grid.line[["col"]])) {
-      grid.col <- "grey85"
-    } else {
-      grid.col <- grid.line[["col"]]
-    }
-  } else {
-    grid.value <- grid.line
-    grid.lty <- 1
-    grid.col <- "grey85"
-  }
-
-  myby <- if (is.null(grid.value)) pretty(c(0, mymax), 4)[2] else grid.value
-
-  if (myby / mymax > 0.9) {
-    myby <- mymax * 0.9
-  }
-
-  is_annotated <- any(annotate == TRUE) | any(is.character(annotate))
-
-  if (is_annotated) {
-    sub <- stat.lab
-  } else {
-    sub <- NULL
-  }
-
-  xy.args <- list(
-    x = myform,
-    xlim = 1.03 * c(-max.freq - off.set, max.freq + off.set),
-    ylim = 1.03 * c(-max.freq - off.set, max.freq + off.set),
-    data = results,
-    type = "n",
-    sub = sub,
-    strip = strip,
-    strip.left = strip.left,
-    as.table = TRUE,
-    aspect = 1,
-    par.strip.text = list(cex = 0.8),
-    scales = list(draw = FALSE),
-    panel = function(x, y, subscripts, ...) {
-      panel.xyplot(x, y, ...)
-      angles <- seq(0, 2 * pi, length = 360)
-      sapply(
-        seq(off.set, mymax + off.set, by = myby),
-        function(x) {
-          llines(
-            x * sin(angles),
-            x * cos(angles),
-            col = grid.col,
-            lwd = 1,
-            lty = grid.lty
-          )
-        }
-      )
-
-      dat <- results[subscripts, ] ## subset of data
-      dat <- filter(dat, wd <= 360, wd >= 0)
-
-      upper <- max.freq + off.set
-
-      if (nrow(dat) > 0) {
-        dat$Interval0 <- 0 ## make a lower bound to refer to
-
-        for (i in 1:nrow(dat)) {
-          ## go through wind angles 30, 60, ...
-
-          for (j in seq_along(labs)) {
-            ## go through paddles x1, x2, ...
-
-            tmp <- paste(
-              "poly(dat$wd[i], dat$Interval",
-              j - 1,
-              "[i], dat$Interval",
-              j,
-              "[i], width * box.widths[",
-              j,
-              "], col[",
-              j,
-              "])",
-              sep = ""
-            )
-
-            eval(parse(text = tmp))
-          }
-        }
-      }
-
-      if (normalise) {
-        panel.wdprob(dat, seg, angle, off.set)
-      }
-
-      ltext(
-        seq((myby + off.set), (mymax + off.set), myby) *
-          sin(pi * angle.scale / 180),
-        seq((myby + off.set), (mymax + off.set), myby) *
-          cos(pi * angle.scale / 180),
-        paste(seq(myby, mymax, by = myby), stat.unit, sep = ""),
-        cex = 0.7
-      )
-
-      # annotations
-      if (annotate[1] == TRUE || length(annotate) == 2L || annotate[1] == " ") {
-        if (annotate[1] == TRUE) {
-          annotations_to_place <-
-            paste0(
-              stat.lab2,
-              " = ",
-              dat$panel.fun[1],
-              "\n",
-              "calm = ",
-              dat$calm[1],
-              stat.unit
-            )
-        }
-
-        if (annotate[1] == " ") {
-          annotations_to_place <-
-            paste0(stat.lab2, " = ", dat$panel.fun[1])
-        }
-
-        if (length(annotate) == 2L) {
-          annotations_to_place <-
-            paste0(
-              annotate[1],
-              " = ",
-              dat$panel.fun[1],
-              "\n",
-              annotate[2],
-              " = ",
-              dat$calm[1],
-              stat.unit
-            )
-        }
-
-        # comparing two wind roses
-        if (diff) {
-          annotate <- c("mean_ws", "mean_wd")
-          annotations_to_place <- paste0(
-            mean_ws = paste(
-              "mean ws = ",
-              round(as.numeric(dat$panel.fun[1]), 1)
-            ),
-            "\n",
-            mean_wd = paste("mean wd = ", round(dat$mean.wd[1], 1))
-          )
-        }
-
-        ltext(
-          max.freq + off.set,
-          -max.freq - off.set,
-          label = annotations_to_place,
-          adj = c(1, 0),
-          cex = 0.7,
-          col = calm.col
-        )
-      }
-
-      ## add axis lines
-      lsegments(-upper, 0, upper, 0)
-      lsegments(0, -upper, 0, upper)
-
-      if (!is.na(ws2) & !is.na(wd2)) {
-        axislabs <- c("0", "+90", paste0("+/-", 180), "-90")
-        s_adj <- 0.1
-      } else {
-        axislabs <- c("N", "E", "S", "W")
-        s_adj <- 0.07
-      }
-
-      ltext(upper * -1 * 0.95, 0.07 * upper, axislabs[4], cex = 0.7)
-      ltext(s_adj * upper, upper * -1 * 0.95, axislabs[3], cex = 0.7)
-      ltext(0.07 * upper, upper * 0.95, axislabs[1], cex = 0.7)
-      ltext(upper * 0.95, 0.07 * upper, axislabs[2], cex = 0.7)
-    },
-    legend = legend
+  ## polygon data for the rose segments
+  poly_data <- wr_rose_polygon_data(
+    results, labs, box.widths, width, off.set, paddle, seg, angle, facet_cols
   )
 
-  ## reset for extra
-  xy.args <- listUpdate(xy.args, extra)
+  ## concentric grid circles (no facet cols → appears in all panels)
+  circle_data <- wr_grid_circle_data(off.set, mymax, myby)
 
-  ## plot
-  plt <- do.call(xyplot, xy.args)
+  ## compass axis cross-hairs
+  axis_data <- data.frame(
+    x = c(-upper, 0), xend = c(upper, 0),
+    y = c(0, -upper), yend = c(0, upper)
+  )
 
-  ## output ################################################################################
+  ## compass direction labels
+  compass_data <- wr_compass_label_data(upper, !is.na(ws2) & !is.na(wd2))
 
-  if (plot) {
-    if (length(type) == 1) {
-      plot(plt)
-    } else {
-      plt <- useOuterStrips(plt, strip = strip, strip.left = strip.left)
-      plot(plt)
-    }
+  ## scale percentage labels along angle.scale spoke
+  scale_label_data <- wr_scale_label_data(myby, mymax, off.set, angle.scale, stat$unit)
+
+  ## per-panel annotations (calm%, mean)
+  is_annotated <- any(annotate == TRUE) | any(is.character(annotate))
+  if (is_annotated) {
+    annot_data <- wr_annotation_data(
+      results, annotate, diff, stat$lab2, stat$unit, max.freq, off.set, type, facet_cols
+    )
   }
+
+  ## normalise frequency outline
+  if (normalise) {
+    norm_data <- wr_normalise_line_data(results, seg, angle, off.set, facet_cols)
+  }
+
+  ## legend title: header (if any) above footer
+  key_label <- if (!is.null(key.header)) {
+    paste(quickText(key.header, auto.text), quickText(key.footer, auto.text), sep = "\n")
+  } else {
+    quickText(key.footer, auto.text)
+  }
+  legend_position <- if (isFALSE(key) || is.null(key)) "none" else key.position
+
+  ## --- Assemble ggplot ---
+  thePlot <-
+    ggplot2::ggplot() +
+    ## concentric grid circles
+    ggplot2::geom_path(
+      data = circle_data,
+      ggplot2::aes(x = .data$x, y = .data$y, group = .data$circle),
+      colour = grid$col, linewidth = 0.3, linetype = grid$lty,
+      inherit.aes = FALSE
+    ) +
+    ## compass axis lines
+    ggplot2::geom_segment(
+      data = axis_data,
+      ggplot2::aes(
+        x = .data$x, y = .data$y,
+        xend = .data$xend, yend = .data$yend
+      ),
+      colour = "black", linewidth = 0.4, inherit.aes = FALSE
+    ) +
+    ## rose polygons
+    ggplot2::geom_polygon(
+      data = poly_data,
+      ggplot2::aes(
+        x = .data$x, y = .data$y,
+        group = .data$poly_id, fill = .data$interval
+      ),
+      colour = border, alpha = alpha, inherit.aes = FALSE
+    )
+
+  ## normalise frequency line (outline only, no fill)
+  if (normalise) {
+    thePlot <- thePlot +
+      ggplot2::geom_polygon(
+        data = norm_data,
+        ggplot2::aes(x = .data$x, y = .data$y, group = .data$sector_id),
+        fill = NA, colour = "black", linewidth = 0.8, inherit.aes = FALSE
+      )
+  }
+
+  thePlot <- thePlot +
+    ## scale labels along angle.scale spoke
+    ggplot2::geom_text(
+      data = scale_label_data,
+      ggplot2::aes(x = .data$x, y = .data$y, label = .data$label),
+      size = 2.7, inherit.aes = FALSE
+    ) +
+    ## compass direction labels
+    ggplot2::geom_text(
+      data = compass_data,
+      ggplot2::aes(x = .data$x, y = .data$y, label = .data$label),
+      size = 3, fontface = "bold", inherit.aes = FALSE
+    )
+
+  ## panel annotations (calm%, mean value)
+  if (is_annotated) {
+    thePlot <- thePlot +
+      ggplot2::geom_label(
+        data = annot_data,
+        ggplot2::aes(x = .data$x, y = .data$y, label = .data$label),
+        hjust = 1, vjust = 0, size = 2.5,
+        colour = calm.col, fill = "white", label.size = NA,
+        inherit.aes = FALSE
+      )
+  }
+
+  thePlot <- thePlot +
+    ## fill colour scale
+    ggplot2::scale_fill_manual(
+      values = setNames(legend_col, labs),
+      name = key_label,
+      guide = ggplot2::guide_legend(
+        reverse = key.position %in% c("left", "right"),
+        theme = ggplot2::theme(
+          legend.title.position = if (key.position %in% c("left", "right")) "top" else key.position
+        )
+      )
+    ) +
+    ## faceting
+    get_facet(
+      type,
+      extra.args = extra,
+      scales = "fixed",
+      auto.text = auto.text
+    ) +
+    ## square aspect ratio with fixed limits
+    ggplot2::coord_fixed(
+      ratio = 1,
+      xlim = c(-lim, lim),
+      ylim = c(-lim, lim),
+      expand = FALSE
+    ) +
+    ## base theme
+    theme_openair(legend_position) +
+    ggplot2::theme(
+      axis.text = ggplot2::element_blank(),
+      axis.ticks = ggplot2::element_blank(),
+      axis.title = ggplot2::element_blank(),
+      panel.grid = ggplot2::element_blank(),
+      panel.border = ggplot2::element_blank()
+    ) +
+    ggplot2::labs(
+      title = extra$main,
+      caption = if (is_annotated) quickText(stat$lab, auto.text) else NULL
+    ) +
+    set_extra_fontsize(extra)
+
+  ## output
+  if (plot) plot(thePlot)
 
   newdata <- as_tibble(results)
-
-  # give informative labels
   attr(newdata, "intervals") <- labs
 
-  output <- list(plot = plt, data = newdata, call = match.call())
+  output <- list(plot = thePlot, data = newdata, call = match.call())
   class(output) <- "openair"
   invisible(output)
 }
 
-## adds a line showing probability wind direction is from a particular sector
-## used when normalise = TRUE
+## ---------------------------------------------------------------------------
+## Statistic settings
+## ---------------------------------------------------------------------------
 
-panel.wdprob <- function(dat, seg, angle, off.set) {
-  len1 <- off.set
+## Parse statistic argument into component functions and labels
+wr_statistic_settings <- function(statistic, dig.lab) {
+  if (is.list(statistic)) {
+    return(list(
+      fun = statistic$fun,
+      unit = statistic$unit,
+      scale = statistic$scale,
+      lab = statistic$lab,
+      fun2 = statistic$fun2,
+      lab2 = statistic$lab2,
+      labcalm = statistic$labcalm
+    ))
+  }
 
-  x.off <- 0
-  y.off <- 0
+  ok.stat <- c("prop.count", "prop.mean", "abs.count", "frequency")
+  if (!statistic[1] %in% ok.stat) {
+    warning(
+      "In windRose(...):\n  statistic unrecognised",
+      "\n  enforcing statistic = 'prop.count'",
+      call. = FALSE
+    )
+    statistic <- "prop.count"
+  }
 
-  makeline <- function(i, dat) {
+  switch(
+    statistic,
+    prop.count = list(
+      fun = length,
+      unit = "%",
+      scale = "all",
+      lab = "Frequency of counts by wind direction (%)",
+      fun2 = function(x) format(mean(x, na.rm = TRUE), digits = dig.lab),
+      lab2 = "mean",
+      labcalm = function(x) round(x, 1)
+    ),
+    prop.mean = list(
+      fun = function(x) sum(x, na.rm = TRUE),
+      unit = "%",
+      scale = "panel",
+      lab = "Proportion contribution to the mean (%)",
+      fun2 = function(x) format(mean(x, na.rm = TRUE), digits = 5),
+      lab2 = "mean",
+      labcalm = function(x) round(x, 1)
+    ),
+    abs.count = ,
+    frequency = list(
+      fun = length,
+      unit = "",
+      scale = "none",
+      lab = "Count by wind direction",
+      fun2 = function(x) round(length(x), 0),
+      lab2 = "count",
+      labcalm = function(x) round(x, 0)
+    )
+  )
+}
+
+## ---------------------------------------------------------------------------
+## Statistics grid computation
+## ---------------------------------------------------------------------------
+
+## Factory returning the prepare.grid function with the given statistic settings
+wr_make_prepare_grid <- function(wd, pollutant, n_labs, stat.fun, stat.fun2, stat.scale) {
+  function(mydata) {
+    ## all calms case
+    if (all(is.na(mydata$x))) {
+      return(tibble(
+        Interval1 = NA,
+        wd = NA,
+        calm = 100,
+        panel.fun = NA,
+        mean.wd = NA,
+        freqs = NA
+      ))
+    }
+
+    levels(mydata$x) <- paste0("Interval", seq_len(n_labs))
+
+    n_all <- stat.fun(mydata[[wd]])
+    calm <- stat.fun(mydata[mydata[[wd]] == -999, ][[pollutant]])
+
+    weights <- tapply(mydata[[pollutant]], list(mydata[[wd]], mydata$x), stat.fun)
+    freqs <- tapply(mydata[[pollutant]], mydata[[wd]], length)
+
+    ## scaling
+    if (stat.scale == "all") {
+      calm <- calm / n_all
+      weights <- weights / n_all
+    }
+
+    if (stat.scale == "panel") {
+      temp <- stat.fun(stat.fun(weights)) + calm
+      calm <- calm / temp
+      weights <- weights / temp
+    }
+
+    weights[is.na(weights)] <- 0
+    weights <- t(apply(weights, 1, cumsum))
+
+    if (stat.scale %in% c("all", "panel")) {
+      weights <- weights * 100
+      calm <- calm * 100
+    }
+
+    panel.fun <- stat.fun2(mydata[[pollutant]])
+
+    ## calculate mean wd - useful for comparing two met data sets
+    u <- mean(sin(2 * pi * mydata[[wd]] / 360), na.rm = TRUE)
+    v <- mean(cos(2 * pi * mydata[[wd]] / 360), na.rm = TRUE)
+    mean.wd <- atan2(u, v) * 360 / 2 / pi
+
+    if (!all(is.na(mean.wd))) {
+      if (mean.wd < 0) mean.wd <- mean.wd + 360
+      ## show as a negative (bias)
+      if (mean.wd > 180) mean.wd <- mean.wd - 360
+    }
+
+    bind_cols(
+      as_tibble(weights),
+      tibble(
+        wd = as.numeric(row.names(weights)),
+        calm = calm,
+        panel.fun = panel.fun,
+        mean.wd = mean.wd,
+        freqs = freqs
+      )
+    )
+  }
+}
+
+## ---------------------------------------------------------------------------
+## Bias correction
+## ---------------------------------------------------------------------------
+
+## Correct frequency bias introduced when angle does not divide evenly into 360
+wr_correct_bias <- function(results, mydata_orig, wd, type, angle) {
+  ## check to see if data for this type combination are rounded to 10 degrees
+  wd_select <- inner_join(mydata_orig, results[1, type], by = type)
+  if (!all(round(wd_select[[wd]]) %% 10 == 0, na.rm = TRUE)) {
+    return(results)
+  }
+
+  wds <- seq(10, 360, 10)
+  tmp <- angle * ceiling(wds / angle - 0.5)
+  id <- which(tmp == 0)
+  if (length(id) > 0) tmp[id] <- 360
+  tmp <- table(tmp) ## number of sectors spanned
+
+  vars <- grep("Interval[1-9]", names(results))
+  n_data <- nrow(filter(results, wd != -999))
+
+  if (n_data > 0) {
+    results[results[["wd"]] != -999, vars] <-
+      results[results[["wd"]] != -999, vars] * mean(tmp) / tmp
+  }
+
+  results
+}
+
+## ---------------------------------------------------------------------------
+## Grid line argument parsing
+## ---------------------------------------------------------------------------
+
+## Parse the grid.line argument (scalar or list) into consistent properties
+wr_parse_grid_line <- function(grid.line) {
+  if (is.list(grid.line)) {
+    list(
+      value = grid.line[["value"]],
+      lty = if (is.null(grid.line[["lty"]])) 1 else grid.line[["lty"]],
+      col = if (is.null(grid.line[["col"]])) "grey85" else grid.line[["col"]]
+    )
+  } else {
+    list(value = grid.line, lty = 1, col = "grey85")
+  }
+}
+
+## ---------------------------------------------------------------------------
+## ggplot2 data-building helpers
+## ---------------------------------------------------------------------------
+
+## Compute paddle polygon vertices for one wind direction / interval pair
+wr_paddle_verts <- function(wd, len1, len2, width, off.set) {
+  theta <- wd * pi / 180
+  r1 <- len1 + off.set
+  r2 <- len2 + off.set
+  data.frame(
+    x = c(
+      r1 * sin(theta) - width * cos(theta),
+      r1 * sin(theta) + width * cos(theta),
+      r2 * sin(theta) + width * cos(theta),
+      r2 * sin(theta) - width * cos(theta)
+    ),
+    y = c(
+      r1 * cos(theta) + width * sin(theta),
+      r1 * cos(theta) - width * sin(theta),
+      r2 * cos(theta) - width * sin(theta),
+      r2 * cos(theta) + width * sin(theta)
+    )
+  )
+}
+
+## Compute wedge polygon vertices for one wind direction / interval pair
+wr_wedge_verts <- function(wd, len1, len2, seg, angle, off.set) {
+  r1 <- len1 + off.set
+  r2 <- len2 + off.set
+  theta <- seq(
+    wd - seg * angle / 2,
+    wd + seg * angle / 2,
+    length.out = (angle - 2) * 10
+  )
+  theta <- ifelse(theta < 1, 360 - theta, theta)
+  theta <- theta * pi / 180
+  data.frame(
+    x = c(r1 * sin(theta), rev(r2 * sin(theta))),
+    y = c(r1 * cos(theta), rev(r2 * cos(theta)))
+  )
+}
+
+## Build polygon vertex data frame for all rose segments (all panels combined)
+wr_rose_polygon_data <- function(
+  results, labs, box.widths, width, off.set,
+  paddle, seg, angle, facet_cols
+) {
+  rose_dat <- dplyr::filter(results, .data$wd >= 0, .data$wd <= 360)
+  rose_dat$Interval0 <- 0
+
+  n_rows <- nrow(rose_dat)
+  n_labs <- length(labs)
+  poly_list <- vector("list", n_rows * n_labs)
+  group_id <- 0L
+
+  for (i in seq_len(n_rows)) {
+    for (j in seq_len(n_labs)) {
+      group_id <- group_id + 1L
+      len1 <- rose_dat[[paste0("Interval", j - 1L)]][i]
+      len2 <- rose_dat[[paste0("Interval", j)]][i]
+
+      verts <- if (paddle) {
+        wr_paddle_verts(rose_dat$wd[i], len1, len2, width * box.widths[j], off.set)
+      } else {
+        wr_wedge_verts(rose_dat$wd[i], len1, len2, seg, angle, off.set)
+      }
+
+      verts$poly_id <- group_id
+      verts$interval <- factor(labs[j], levels = labs)
+
+      ## include faceting columns so geom_polygon stays in the correct panel
+      for (col in facet_cols) {
+        verts[[col]] <- rose_dat[[col]][i]
+      }
+
+      poly_list[[group_id]] <- verts
+    }
+  }
+
+  dplyr::bind_rows(poly_list)
+}
+
+## Build concentric grid circle path data (no faceting columns → all panels)
+wr_grid_circle_data <- function(off.set, mymax, myby) {
+  radii <- seq(off.set, mymax + off.set, by = myby)
+  theta <- seq(0, 2 * pi, length.out = 361)
+
+  dplyr::bind_rows(lapply(seq_along(radii), function(i) {
+    data.frame(
+      x = radii[i] * sin(theta),
+      y = radii[i] * cos(theta),
+      circle = i
+    )
+  }))
+}
+
+## Build compass direction label positions
+wr_compass_label_data <- function(upper, is_diff) {
+  if (is_diff) {
+    labels <- c("0", "+90", paste0("+/-", 180), "-90")
+    s_adj <- 0.1
+  } else {
+    labels <- c("N", "E", "S", "W")
+    s_adj <- 0.07
+  }
+  data.frame(
+    x = c(0.07 * upper, upper * 0.95, s_adj * upper, upper * -0.95),
+    y = c(upper * 0.95, 0.07 * upper, upper * -0.95, 0.07 * upper),
+    label = labels
+  )
+}
+
+## Build scale percentage label positions along the angle.scale spoke
+wr_scale_label_data <- function(myby, mymax, off.set, angle.scale, stat_unit) {
+  r_vals <- seq(myby + off.set, mymax + off.set, by = myby)
+  angle_rad <- pi * angle.scale / 180
+  data.frame(
+    x = r_vals * sin(angle_rad),
+    y = r_vals * cos(angle_rad),
+    label = paste0(seq(myby, mymax, by = myby), stat_unit)
+  )
+}
+
+## Build per-panel annotation data (calm%, mean value)
+wr_annotation_data <- function(
+  results, annotate, diff, stat_lab2, stat_unit,
+  max.freq, off.set, type, facet_cols
+) {
+  ## one representative row per panel (all rows in a panel share the same
+  ## panel-level statistics: panel.fun, calm, mean.wd)
+  panel_dat <- results %>%
+    dplyr::filter(.data$wd >= 0, .data$wd <= 360) %>%
+    dplyr::group_by(dplyr::across(dplyr::all_of(type))) %>%
+    dplyr::slice(1) %>%
+    dplyr::ungroup()
+
+  panel_dat$label <- mapply(
+    function(pf, cl, mwd) {
+      wr_build_annotation(annotate, pf, cl, mwd, diff, stat_lab2, stat_unit)
+    },
+    panel_dat$panel.fun,
+    panel_dat$calm,
+    panel_dat$mean.wd,
+    SIMPLIFY = TRUE
+  )
+
+  ## position: lower-right corner of the polar plot
+  panel_dat$x <- max.freq + off.set
+  panel_dat$y <- -(max.freq + off.set)
+
+  ## keep only facet columns and the derived label/position columns
+  keep <- unique(c(facet_cols, "x", "y", "label"))
+  panel_dat[, keep, drop = FALSE]
+}
+
+## Build polygon outlines for the normalise frequency line (one per wd sector)
+wr_normalise_line_data <- function(results, seg, angle, off.set, facet_cols) {
+  dat <- dplyr::filter(results, .data$wd >= 0, .data$wd <= 360)
+
+  sector_list <- lapply(seq_len(nrow(dat)), function(i) {
     theta <- seq(
-      (dat$wd[i] - seg * angle / 2),
-      (dat$wd[i] + seg * angle / 2),
+      dat$wd[i] - seg * angle / 2,
+      dat$wd[i] + seg * angle / 2,
       length.out = (angle - 2) * 10
     )
     theta <- ifelse(theta < 1, 360 - theta, theta)
     theta <- theta * pi / 180
-    x1 <- len1 * sin(theta) + x.off
-    x2 <- rev((dat$norm[i] + off.set) * sin(theta) + x.off)
-    y1 <- len1 * cos(theta) + x.off
-    y2 <- rev((dat$norm[i] + off.set) * cos(theta) + x.off)
-    lpolygon(
-      c(x1, x2),
-      c(y1, y2),
-      col = "transparent",
-      border = "black",
-      lwd = 2
-    )
+
+    x1 <- off.set * sin(theta)
+    x2 <- rev((dat$norm[i] + off.set) * sin(theta))
+    y1 <- off.set * cos(theta)
+    y2 <- rev((dat$norm[i] + off.set) * cos(theta))
+
+    df <- data.frame(x = c(x1, x2), y = c(y1, y2), sector_id = i)
+
+    for (col in facet_cols) {
+      df[[col]] <- dat[[col]][i]
+    }
+
+    df
+  })
+
+  dplyr::bind_rows(sector_list)
+}
+
+## Build the annotation string displayed in each wind rose panel
+wr_build_annotation <- function(annotate, panel.fun, calm, mean.wd, diff, stat.lab2, stat.unit) {
+  ## comparing two wind roses always shows mean ws and mean wd bias
+  if (diff) {
+    return(paste0(
+      "mean ws = ", round(as.numeric(panel.fun), 1),
+      "\n",
+      "mean wd = ", round(mean.wd, 1)
+    ))
   }
 
-  lapply(1:nrow(dat), makeline, dat)
+  if (annotate[1] == TRUE) {
+    return(paste0(
+      stat.lab2, " = ", panel.fun,
+      "\n",
+      "calm = ", calm, stat.unit
+    ))
+  }
+
+  if (annotate[1] == " ") {
+    return(paste0(stat.lab2, " = ", panel.fun))
+  }
+
+  ## length(annotate) == 2: custom label pair supplied
+  paste0(
+    annotate[1], " = ", panel.fun,
+    "\n",
+    annotate[2], " = ", calm, stat.unit
+  )
 }
