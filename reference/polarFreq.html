@@ -75,6 +75,7 @@ using a range of commonly used statistics.</p>
 <span>  wd.nint <span class="op">=</span> <span class="fl">36</span>,</span>
 <span>  grid.line <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  trans <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
@@ -87,7 +88,6 @@ using a range of commonly used statistics.</p>
 <span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
 <span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  alpha <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -98,35 +98,31 @@ using a range of commonly used statistics.</p>
 
 
 <dl><dt id="arg-mydata">mydata<a class="anchor" aria-label="anchor" href="#arg-mydata"></a></dt>
-<dd><p>A data frame minimally containing <code>ws</code>, <code>wd</code> and
-<code>date</code>.</p></dd>
+<dd><p>A data frame minimally containing <code>ws</code>, <code>wd</code> and <code>date</code>.</p></dd>
 
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
-<dd><p>Mandatory. A pollutant name corresponding to a variable in
-a data frame should be supplied e.g. <code>pollutant = "nox"</code></p></dd>
+<dd><p>Mandatory. A pollutant name corresponding to a variable in a
+data frame should be supplied e.g. <code>pollutant = "nox"</code></p></dd>
 
 
 <dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
 <dd><p>The statistic that should be applied to each wind
-speed/direction bin. Can be “frequency”, “mean”,
-“median”, “max” (maximum), “stdev” (standard
-deviation) or “weighted.mean”. The option “frequency” (the
-default) is the simplest and plots the frequency of wind speed/direction
-in different bins. The scale therefore shows the counts in each bin. The
-option “mean” will plot the mean concentration of a pollutant (see
-next point) in wind speed/direction bins, and so on.  Finally,
-“weighted.mean” will plot the concentration of a pollutant weighted
-by wind speed/direction. Each segment therefore provides the percentage
-overall contribution to the total concentration. More information is given
-in the examples. Note that for options other than “frequency”, it
-is necessary to also provide the name of a pollutant. See function
-<code>cutData</code> for further details.</p></dd>
+speed/direction bin. Can be one of:</p><ul><li><p><code>"frequency"</code>: the simplest and plots the frequency of wind speed/direction in
+different bins. The scale therefore shows the counts in each bin.</p></li>
+<li><p><code>"mean"</code>, <code>"median"</code>, <code>"max"</code> (maximum), <code>"stdev"</code> (standard deviation):
+Plots the relevant summary statistic of a pollutant in wind speed/direction
+bins.</p></li>
+<li><p><code>"weighted.mean"</code> will plot the concentration of a pollutant
+weighted by wind speed/direction. Each segment therefore provides the
+percentage overall contribution to the total concentration.</p></li>
+</ul><p>Note that for options other than <code>"frequency"</code>, it is necessary to also
+provide the name of a <code>pollutant</code>.</p></dd>
 
 
 <dt id="arg-ws-int">ws.int<a class="anchor" aria-label="anchor" href="#arg-ws-int"></a></dt>
-<dd><p>Wind speed interval assumed. In some cases e.g. a low met
-mast, an interval of 0.5 may be more appropriate.</p></dd>
+<dd><p>Wind speed interval assumed. In some cases e.g. a low met mast,
+an interval of 0.5 may be more appropriate.</p></dd>
 
 
 <dt id="arg-wd-nint">wd.nint<a class="anchor" aria-label="anchor" href="#arg-wd-nint"></a></dt>
@@ -137,13 +133,16 @@ mast, an interval of 0.5 may be more appropriate.</p></dd>
 <dd><p>Radial spacing of grid lines.</p></dd>
 
 
-<dt id="arg-breaks">breaks<a class="anchor" aria-label="anchor" href="#arg-breaks"></a></dt>
-<dd><p>The user can provide their own scale. <code>breaks</code> expects a
-sequence of numbers that define the range of the scale. The sequence could
-represent one with equal spacing e.g. <code>breaks = seq(0, 100, 10)</code> - a
-scale from 0-10 in intervals of 10, or a more flexible sequence e.g.
-<code>breaks = c(0, 1, 5, 7, 10)</code>, which may be useful for some
-situations.</p></dd>
+<dt id="arg-breaks-labels">breaks, labels<a class="anchor" aria-label="anchor" href="#arg-breaks-labels"></a></dt>
+<dd><p>If a categorical colour scale is required then <code>breaks</code>
+should be specified. These should be provided as a numeric vector, e.g.,
+<code>breaks = c(0, 50, 100, 1000)</code>. Users should set the maximum value of
+<code>breaks</code> to exceed the maximum data value to ensure it is within the
+maximum final range, e.g., 100–1000 in this case. Labels will
+automatically be generated, but can be customised by passing a character
+vector to <code>labels</code>, e.g., <code>labels = c("good", "bad", "very bad")</code>. In this
+example, <code>0 - 50</code> will be <code>"good"</code> and so on. Note there is one less label
+than break.</p></dd>
 
 
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
@@ -160,8 +159,8 @@ colour maps ported from Python's Matplotlib library.</p></dd>
 <dt id="arg-trans">trans<a class="anchor" aria-label="anchor" href="#arg-trans"></a></dt>
 <dd><p>Should a transformation be applied? Sometimes when producing
 plots of this kind they can be dominated by a few high points. The default
-therefore is <code>TRUE</code> and a square-root transform is applied. This
-results in a non-linear scale and (usually) a better representation of the
+therefore is <code>TRUE</code> and a square-root transform is applied. This results in
+a non-linear scale and (usually) a better representation of the
 distribution. If set to <code>FALSE</code> a linear scale is used.</p></dd>
 
 
@@ -193,16 +192,14 @@ care. Also, the <code>polarFreq</code> function can be of use in such circumstan
 
 <dt id="arg-ws-upper">ws.upper<a class="anchor" aria-label="anchor" href="#arg-ws-upper"></a></dt>
 <dd><p>A user-defined upper wind speed to use. This is useful for
-ensuring a consistent scale between different plots. For example, to
-always ensure that wind speeds are displayed between 1-10, set
-<code>ws.int = 10</code>.</p></dd>
+ensuring a consistent scale between different plots. For example, to always
+ensure that wind speeds are displayed between 1-10, set <code>ws.int = 10</code>.</p></dd>
 
 
 <dt id="arg-offset">offset<a class="anchor" aria-label="anchor" href="#arg-offset"></a></dt>
-<dd><p><code>offset</code> controls the size of the ‘hole’ in the
-middle and is expressed as a percentage of the maximum wind speed. Setting
-a higher <code>offset</code> e.g. 50 is useful for <code>statistic = "weighted.mean"</code> when <code>ws.int</code> is greater than the maximum wind
-speed. See example below.</p></dd>
+<dd><p><code>offset</code> controls the size of the 'hole' in the middle and is
+expressed on a scale of <code>0</code> to <code>100</code>, where <code>0</code> is no hole and <code>100</code> is a
+hole that takes up the entire plotting area.</p></dd>
 
 
 <dt id="arg-border-col">border.col<a class="anchor" aria-label="anchor" href="#arg-border-col"></a></dt>
@@ -239,25 +236,18 @@ axis labels will automatically try and format pollutant names and units
 properly e.g.  by subscripting the `2' in NO2.</p></dd>
 
 
-<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
-<dd><p>The alpha transparency to use for the plotting surface (a value
-between 0 and 1 with zero being fully transparent and 1 fully opaque).
-Setting a value below 1 can be useful when plotting surfaces on a map using
-the package <code>openairmaps</code>.</p></dd>
-
-
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
 <dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
 data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other graphical parameters passed onto <code>lattice:xyplot</code>
-and <code>cutData</code>. For example, <code>polarFreq</code> passes the option
-<code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern
-(rather than default northern) hemisphere handling of <code>type = "season"</code>. Similarly, common axis and title labelling options (such as
-<code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed to <code>xyplot</code> via
-<code>quickText</code> to handle routine formatting.</p></dd>
+<dd><p>Passed to <code><a href="cutData.html">cutData()</a></code>. The following additional arguments are also
+available:</p><ul><li><p><code>xlab</code>, <code>ylab</code> and <code>main</code> override the x-axis label, y-axis label, and plot title.</p></li>
+<li><p><code>layout</code> sets the layout of facets - e.g., <code>layout(2, 5)</code> will have 2 columns and 5 rows.</p></li>
+<li><p><code>fontsize</code> overrides the overall font size of the plot.</p></li>
+<li><p><code>limits</code> sets the colour bar limits, if <code>breaks</code> is not being used.</p></li>
+</ul></dd>
 
 </dl></div>
     <div class="section level2">
@@ -266,27 +256,24 @@ and <code>cutData</code>. For example, <code>polarFreq</code> passes the option
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><code>polarFreq</code> is its default use provides details of wind speed and
-direction frequencies. In this respect it is similar to
-<code><a href="windRose.html">windRose()</a></code>, but considers wind direction intervals of 10 degrees
-and a user-specified wind speed interval. The frequency of wind
-speeds/directions formed by these ‘bins’ is represented on a colour
-scale.</p>
-<p>The <code>polarFreq</code> function is more flexible than either
-<code><a href="windRose.html">windRose()</a></code> or <code><a href="polarPlot.html">polarPlot()</a></code>. It can, for example, also
-consider pollutant concentrations (see examples below). Instead of the
-number of data points in each bin, the concentration can be shown. Further,
-a range of statistics can be used to describe each bin - see
-<code>statistic</code> above. Plotting mean concentrations is useful for source
-identification and is the same as <code><a href="polarPlot.html">polarPlot()</a></code> but without
-smoothing, which may be preferable for some data. Plotting with
-<code>statistic = "weighted.mean"</code> is particularly useful for understanding
-the relative importance of different source contributions. For example, high
-mean concentrations may be observed for high wind speed conditions, but the
+    <p><code>polarFreq</code> is its default use provides details of wind speed and direction
+frequencies. In this respect it is similar to <code><a href="windRose.html">windRose()</a></code>, but considers
+wind direction intervals of 10 degrees and a user-specified wind speed
+interval. The frequency of wind speeds/directions formed by these
+‘bins’ is represented on a colour scale.</p>
+<p>The <code>polarFreq</code> function is more flexible than either <code><a href="windRose.html">windRose()</a></code> or
+<code><a href="polarPlot.html">polarPlot()</a></code>. It can, for example, also consider pollutant concentrations
+(see examples below). Instead of the number of data points in each bin, the
+concentration can be shown. Further, a range of statistics can be used to
+describe each bin - see <code>statistic</code> above. Plotting mean concentrations is
+useful for source identification and is the same as <code><a href="polarPlot.html">polarPlot()</a></code> but without
+smoothing, which may be preferable for some data. Plotting with <code>statistic = "weighted.mean"</code> is particularly useful for understanding the relative
+importance of different source contributions. For example, high mean
+concentrations may be observed for high wind speed conditions, but the
 weighted mean concentration may well show that the contribution to overall
 concentrations is very low.</p>
-<p><code>polarFreq</code> also offers great flexibility with the scale used and the
-user has fine control over both the range, interval and colour.</p>
+<p><code>polarFreq</code> also offers great flexibility with the scale used and the user
+has fine control over both the range, interval and colour.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

@@ -16,6 +16,7 @@ polarFreq(
   wd.nint = 36,
   grid.line = 5,
   breaks = NULL,
+  labels = NULL,
   cols = "default",
   trans = TRUE,
   type = "default",
@@ -28,7 +29,6 @@ polarFreq(
   key.position = "right",
   key = TRUE,
   auto.text = TRUE,
-  alpha = 1,
   plot = TRUE,
   ...
 )
@@ -48,18 +48,22 @@ polarFreq(
 - statistic:
 
   The statistic that should be applied to each wind speed/direction bin.
-  Can be “frequency”, “mean”, “median”, “max” (maximum), “stdev”
-  (standard deviation) or “weighted.mean”. The option “frequency” (the
-  default) is the simplest and plots the frequency of wind
-  speed/direction in different bins. The scale therefore shows the
-  counts in each bin. The option “mean” will plot the mean concentration
-  of a pollutant (see next point) in wind speed/direction bins, and so
-  on. Finally, “weighted.mean” will plot the concentration of a
-  pollutant weighted by wind speed/direction. Each segment therefore
-  provides the percentage overall contribution to the total
-  concentration. More information is given in the examples. Note that
-  for options other than “frequency”, it is necessary to also provide
-  the name of a pollutant. See function `cutData` for further details.
+  Can be one of:
+
+  - `"frequency"`: the simplest and plots the frequency of wind
+    speed/direction in different bins. The scale therefore shows the
+    counts in each bin.
+
+  - `"mean"`, `"median"`, `"max"` (maximum), `"stdev"` (standard
+    deviation): Plots the relevant summary statistic of a pollutant in
+    wind speed/direction bins.
+
+  - `"weighted.mean"` will plot the concentration of a pollutant
+    weighted by wind speed/direction. Each segment therefore provides
+    the percentage overall contribution to the total concentration.
+
+  Note that for options other than `"frequency"`, it is necessary to
+  also provide the name of a `pollutant`.
 
 - ws.int:
 
@@ -74,13 +78,17 @@ polarFreq(
 
   Radial spacing of grid lines.
 
-- breaks:
+- breaks, labels:
 
-  The user can provide their own scale. `breaks` expects a sequence of
-  numbers that define the range of the scale. The sequence could
-  represent one with equal spacing e.g. `breaks = seq(0, 100, 10)` - a
-  scale from 0-10 in intervals of 10, or a more flexible sequence e.g.
-  `breaks = c(0, 1, 5, 7, 10)`, which may be useful for some situations.
+  If a categorical colour scale is required then `breaks` should be
+  specified. These should be provided as a numeric vector, e.g.,
+  `breaks = c(0, 50, 100, 1000)`. Users should set the maximum value of
+  `breaks` to exceed the maximum data value to ensure it is within the
+  maximum final range, e.g., 100–1000 in this case. Labels will
+  automatically be generated, but can be customised by passing a
+  character vector to `labels`, e.g.,
+  `labels = c("good", "bad", "very bad")`. In this example, `0 - 50`
+  will be `"good"` and so on. Note there is one less label than break.
 
 - cols:
 
@@ -141,10 +149,9 @@ polarFreq(
 
 - offset:
 
-  `offset` controls the size of the ‘hole’ in the middle and is
-  expressed as a percentage of the maximum wind speed. Setting a higher
-  `offset` e.g. 50 is useful for `statistic = "weighted.mean"` when
-  `ws.int` is greater than the maximum wind speed. See example below.
+  `offset` controls the size of the 'hole' in the middle and is
+  expressed on a scale of `0` to `100`, where `0` is no hole and `100`
+  is a hole that takes up the entire plotting area.
 
 - border.col:
 
@@ -179,13 +186,6 @@ polarFreq(
   will automatically try and format pollutant names and units properly
   e.g. by subscripting the \`2' in NO2.
 
-- alpha:
-
-  The alpha transparency to use for the plotting surface (a value
-  between 0 and 1 with zero being fully transparent and 1 fully opaque).
-  Setting a value below 1 can be useful when plotting surfaces on a map
-  using the package `openairmaps`.
-
 - plot:
 
   Should a plot be produced? `FALSE` can be useful when analysing data
@@ -193,12 +193,19 @@ polarFreq(
 
 - ...:
 
-  Other graphical parameters passed onto `lattice:xyplot` and `cutData`.
-  For example, `polarFreq` passes the option `hemisphere = "southern"`
-  on to `cutData` to provide southern (rather than default northern)
-  hemisphere handling of `type = "season"`. Similarly, common axis and
-  title labelling options (such as `xlab`, `ylab`, `main`) are passed to
-  `xyplot` via `quickText` to handle routine formatting.
+  Passed to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
+  The following additional arguments are also available:
+
+  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
+    and plot title.
+
+  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
+    2 columns and 5 rows.
+
+  - `fontsize` overrides the overall font size of the plot.
+
+  - `limits` sets the colour bar limits, if `breaks` is not being used.
 
 ## Value
 
