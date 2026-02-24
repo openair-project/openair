@@ -16,3 +16,4 @@ docs
 inst/doc
 /.quarto/
 CRAN-SUBMISSION
+^.*\.claude$
