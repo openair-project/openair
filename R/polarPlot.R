@@ -482,17 +482,11 @@ polarPlot <-
       "quantile_intercept",
       "Pearson",
       "Spearman",
-      "york_slope",
-      "trend"
+      "york_slope"
     )
 
     if (statistic %in% correlation_stats && length(pollutant) != 2) {
       stop("Correlation statistic requires two pollutants.")
-    }
-
-    # if statistic is trend, then don't force to be positive
-    if (statistic == "trend") {
-      force.positive <- FALSE
     }
 
     # names of variables for use later
@@ -520,7 +514,6 @@ polarPlot <-
           "frequency",
           "max",
           "stdev",
-          "trend",
           "weighted_mean",
           "percentile",
           "cpf",
@@ -1245,7 +1238,7 @@ polar_prepare_grid <- function(
     include.lowest = TRUE
   )
 
-  if (!statistic %in% c(correlation_stats, "nwr", "trend")) {
+  if (!statistic %in% c(correlation_stats, "nwr")) {
     ## Simple binned statistics computed via tapply
     binned <- switch(
       statistic,
@@ -1286,57 +1279,38 @@ polar_prepare_grid <- function(
 
     binned <- as.vector(t(binned))
   } else if (toupper(statistic) == "NWR") {
-    ## Non-parametric Wind Regression via kernel smoothing
-    binned <- rowwise(ws.wd) |>
-      summarise(simple_kernel(
-        across(.cols = everything()),
-        mydata,
-        x = x_col,
-        y = wd_col,
-        pollutant = pollutant,
-        ws_spread = ws_spread,
-        wd_spread = wd_spread,
-        kernel
-      ))
+    ## Non-parametric Wind Regression: fully vectorised over all grid points.
+    ##
+    ## For each grid point g and each observation d, compute the Gaussian kernel
+    ## weight w[g,d] in one shot via outer(), then recover the weighted mean as
+    ## a matrix–vector product.  Avoids the per-row dplyr rowwise() overhead.
+    ws_diff <- outer(ws.wd$x,  mydata[[x_col]],  `-`)   # n_grid × n_data
+    wd_diff <- outer(ws.wd$wd, mydata[[wd_col]], `-`)   # n_grid × n_data
+    wd_diff[wd_diff < -180] <- wd_diff[wd_diff < -180] + 360
+    W      <- gauss_dens(ws_diff, wd_diff, 0, 0, ws_spread, wd_spread)
+    binned <- drop(W %*% mydata[[pollutant]]) / rowSums(W)
 
-    binned <- binned$conc
-  } else if (toupper(statistic) == "TREND") {
-    ## Kernel-weighted quantile regression trend
-    binned <- rowwise(ws.wd) |>
-      summarise(simple_kernel_trend(
-        across(.cols = everything()),
-        mydata,
-        x = x_col,
-        y = wd_col,
-        pollutant = pollutant,
-        "date",
-        ws_spread = ws_spread,
-        wd_spread = wd_spread,
-        kernel,
-        tau = tau
-      ))
-
-    binned <- binned$conc
   } else {
     ## Kernel-weighted pair-wise statistics (correlation, regression, etc.)
-    binned <- rowwise(ws.wd) |>
-      summarise(calculate_weighted_statistics(
-        across(.cols = everything()),
-        mydata,
+    binned <- mapply(
+      calculate_weighted_statistics,
+      ws1 = ws.wd$x,
+      wd1 = ws.wd$wd,
+      MoreArgs = list(
+        mydata    = mydata,
         statistic = statistic,
-        x = x_col,
-        y = wd_col,
-        pol_1 = pollutant[1],
-        pol_2 = pollutant[2],
+        x         = x_col,
+        y         = wd_col,
+        pol_1     = pollutant[1],
+        pol_2     = pollutant[2],
         ws_spread = ws_spread,
         wd_spread = wd_spread,
-        kernel,
-        tau = tau,
-        x_error = x_error,
-        y_error = y_error
-      ))
-
-    binned <- binned$stat_weighted
+        kernel    = kernel,
+        tau       = tau,
+        x_error   = x_error,
+        y_error   = y_error
+      )
+    )
     binned <- ifelse(binned == Inf, NA, binned)
   }
 
@@ -1438,103 +1412,15 @@ gauss_dens <- function(x, y, mx, my, sx, sy) {
 }
 
 
-# NWR kernel calculations
-simple_kernel <- function(
-  data,
-  mydata,
-  x = "ws",
-  y = "wd",
-  pollutant,
-  ws_spread,
-  wd_spread,
-  kernel
-) {
-  # Centres
-  ws1 <- data[[1]]
-  wd1 <- data[[2]]
-
-  # centred ws, wd
-  ws_cent <- mydata[[x]] - ws1
-  wd_cent <- mydata[[y]] - wd1
-  wd_cent <- ifelse(wd_cent < -180, wd_cent + 360, wd_cent)
-
-  weight <- gauss_dens(ws_cent, wd_cent, 0, 0, ws_spread, wd_spread)
-
-  conc <- sum(mydata[[pollutant]] * weight) /
-    sum(weight)
-
-  return(data.frame(conc = conc))
-}
-
-
-# Kernel-weighted quantile regression trend
-simple_kernel_trend <- function(
-  data,
-  mydata,
-  x = "ws",
-  y = "wd",
-  pollutant,
-  date,
-  ws_spread,
-  wd_spread,
-  kernel,
-  tau
-) {
-  # Centres
-  ws1 <- data[[1]]
-  wd1 <- data[[2]]
-
-  # centred ws, wd
-  ws_cent <- mydata[[x]] - ws1
-  wd_cent <- mydata[[y]] - wd1
-  wd_cent <- ifelse(wd_cent < -180, wd_cent + 360, wd_cent)
-
-  weight <- gauss_dens(ws_cent, wd_cent, 0, 0, ws_spread, wd_spread)
-  weight <- weight / max(weight)
-
-  mydata$weight <- weight
-
-  # quantreg is a Suggests package, so make sure it is there
-  try_require("quantreg", "polarPlot")
-
-  # don't fit all data - takes too long with no gain
-  mydata <- filter(mydata, weight > 0.00001)
-
-  # Drop dplyr's data frame for formula
-  mydata <- data.frame(mydata)
-
-  # Build model
-  suppressWarnings(
-    fit <- try(
-      quantreg::rq(
-        mydata[[pollutant[1]]] ~ mydata[[date]],
-        tau = tau,
-        weights = mydata[["weight"]],
-        method = "fn"
-      ),
-      TRUE
-    )
-  )
-
-  # Extract statistics
-  if (!inherits(fit, "try-error")) {
-    slope <- 365.25 * 24 * 3600 * fit$coefficients[2]
-  } else {
-    slope <- NA
-  }
-
-  return(data.frame(conc = slope))
-}
-
-
 ## Kernel-weighted pair-wise statistics dispatcher.
 ##
-## Computes Gaussian kernel weights centred on (ws1, wd1), filters out
-## low-weight rows, then delegates to the appropriate sub-function based on
-## `statistic`.  Returns a one-row data frame with columns (ws1, wd1,
-## stat_weighted).
+## Takes the grid centre (ws1, wd1) directly — no more data[[1]] / across()
+## indirection.  Computes Gaussian kernel weights, filters low-weight rows, then
+## delegates to the appropriate sub-function.  Returns a scalar suitable for
+## direct use with mapply().
 calculate_weighted_statistics <- function(
-  data,
+  ws1,
+  wd1,
   mydata,
   statistic,
   x = "ws",
@@ -1549,10 +1435,6 @@ calculate_weighted_statistics <- function(
   y_error
 ) {
   weight <- NULL
-
-  # Centres
-  ws1 <- data[[1]]
-  wd1 <- data[[2]]
 
   # Gaussian kernel weights centred on this ws/wd point
   ws_cent <- mydata[[x]] - ws1
@@ -1574,7 +1456,7 @@ calculate_weighted_statistics <- function(
 
   # Insufficient data — return NA
   if (nrow(thedata) < 100) {
-    return(data.frame(ws1, wd1, stat_weighted = NA))
+    return(NA)
   }
 
   # Dispatch to the appropriate statistical sub-function
@@ -1592,7 +1474,7 @@ calculate_weighted_statistics <- function(
     stat_weighted <- NA
   }
 
-  data.frame(ws1, wd1, stat_weighted)
+  stat_weighted
 }
 
 
