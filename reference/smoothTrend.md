@@ -26,13 +26,13 @@ smoothTrend(
   key = TRUE,
   key.columns = 1,
   key.position = "bottom",
-  name.pol = pollutant,
+  strip.position = "top",
+  name.pol = NULL,
   date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
   ci = TRUE,
   alpha = 0.2,
-  shade = "grey95",
   plot = TRUE,
   progress = TRUE,
   ...
@@ -195,6 +195,15 @@ smoothTrend(
   Location where the scale key is to plotted. Can include `"top"`,
   `"bottom"`, `"right"` and `"left"`.
 
+- strip.position:
+
+  Location where the facet 'strips' are located when using `type`. When
+  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
+  or `"top"`. When two `type`s are provided, this argument defines
+  whether the strips are "switched" and can take either `"x"`, `"y"`, or
+  `"both"`. For example, `"x"` will switch the 'top' strip locations to
+  the bottom of the plot.
+
 - name.pol:
 
   This option can be used to give alternative names for the variables
@@ -237,11 +246,6 @@ smoothTrend(
 
   The alpha transparency of shaded confidence intervals - if plotted. A
   value of 0 is fully transparent and 1 is fully opaque.
-
-- shade:
-
-  The colour used for marking alternate years. Use `"white"` or
-  `"transparent"` to remove shading.
 
 - plot:
 
