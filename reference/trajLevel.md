@@ -91,6 +91,9 @@ trajLevel(
 
   - `"frequency"` (the default) shows trajectory frequencies.
 
+  - `"hexbin"`, which is similar to `"frequency"` but shows a hexagonal
+    grid of counts.
+
   - `"difference"` - in this case trajectories where the associated
     concentration is greater than `percentile` are compared with the the
     full set of trajectories to understand the differences in
