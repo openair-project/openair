@@ -59,8 +59,6 @@
 #'   estimates? The default is `FALSE`. Generally, accounting for
 #'   autocorrelation increases the uncertainty of the trend estimate sometimes
 #'   by a large amount.
-#' @param shade The colour used for marking alternate years. Use `"white"` or
-#'   `"transparent"` to remove shading.
 #' @param x.relation,y.relation This determines how the x- and y-axis scales are
 #'   plotted. `"same"` ensures all panels use the same scale and `"free"` will
 #'   use panel-specific scales. The latter is a useful setting when plotting
@@ -132,21 +130,23 @@ smoothTrend <- function(
   key = TRUE,
   key.columns = 1,
   key.position = "bottom",
-  name.pol = pollutant,
+  strip.position = "top",
+  name.pol = NULL,
   date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
   ci = TRUE,
   alpha = 0.2,
-  shade = "grey95",
   plot = TRUE,
   progress = TRUE,
   ...
 ) {
-  ## ---- Setup -----
+  if (rlang::is_logical(key) && !key) {
+    key.position <- "none"
+  }
 
-  # Args setup
-  Args <- list(...)
+  # extra.args setup
+  extra.args <- list(...)
 
   # validation checks
   if (length(pollutant) > 1 && length(percentile) > 1) {
@@ -168,43 +168,20 @@ smoothTrend <- function(
     statistic <- "percentile"
   }
 
-  ## ---- Graphics and Styling ----
-
-  # greyscale handling
-  if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-  }
-
-  # set & preserve graphics
-  current.font <- trellis.par.get("fontsize")
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
-  if ("fontsize" %in% names(Args)) {
-    trellis.par.set(fontsize = list(text = Args$fontsize))
-  }
-
   # Style controls w/ defaults
-  Args$lty <- Args$lty %||% 1L
-  Args$lwd <- Args$lwd %||% 1L
-  Args$pch <- Args$pch %||% 1L
-  Args$cex <- Args$cex %||% 1L
-  Args$layout <- Args$layout %||% NULL
-
-  # Global var
-  xlim <- Args$xlim %||% NULL
-
-  ## ---- Label Config ----
+  extra.args$lty <- extra.args$lty %||% 1L
+  extra.args$lwd <- extra.args$lwd %||% 1L
+  extra.args$pch <- extra.args$pch %||% 1L
+  extra.args$cex <- extra.args$cex %||% 1L
+  extra.args$layout <- extra.args$layout %||% NULL
 
   # label controls
-  Args$main <- quickText(Args$main %||% "", auto.text)
-  Args$ylab <- quickText(
-    Args$ylab %||% paste(pollutant, collapse = ", "),
+  extra.args$main <- quickText(extra.args$main %||% "", auto.text)
+  extra.args$ylab <- quickText(
+    extra.args$ylab %||% paste(pollutant, collapse = ", "),
     auto.text
   )
-  Args$xlab <- quickText(Args$xlab %||% NULL, auto.text)
-
-  ## ---- Time intervals & date set-up ----
+  extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
 
   # find time interval
   # need this because if user has a data capture threshold, need to know
@@ -223,12 +200,7 @@ smoothTrend <- function(
       .default = interval
     )
 
-  # for overall data and graph plotting
-  start.year <- startYear(mydata$date)
-  end.year <- endYear(mydata$date)
-
-  ## ---- data processing ----
-
+  # prepare data
   mydata <-
     prepare_smoothtrend_data(
       mydata,
@@ -247,7 +219,7 @@ smoothTrend <- function(
   vars <- c(type, "variable")
 
   # prep data for modelling
-  res <-
+  newdata <-
     mapType(
       mydata,
       type = vars,
@@ -255,258 +227,143 @@ smoothTrend <- function(
       .include_default = TRUE
     )
 
+  # fit a smooth model
   fit <-
     mapType(
-      res,
+      newdata,
       type = vars,
-      fun = \(df) fit_smoothtrend_gam(df, x = "date", y = "conc", k = k, ...),
+      fun = \(df) {
+        fit_smoothtrend_gam(
+          df,
+          x = "date",
+          y = "conc",
+          k = k,
+          ...,
+          simulate = simulate,
+          n.sim = n,
+          autocor = autocor
+        )
+      },
       .include_default = TRUE
     )
 
+  # set fit date to be POSIXct for plotting
   class(fit$date) <- c("POSIXct", "POSIXt")
 
-  ## ---- special layout config ----
-
-  # special wd layout
-  # (type field in results.grid called type not wd)
-  if (length(type) == 1 && type[1] == "wd" && is.null(Args$layout)) {
-    # re-order to make sensible layout
-    wds <- c("NW", "N", "NE", "W", "E", "SW", "S", "SE")
-    res$wd <- ordered(res$wd, levels = wds)
-    # see if wd is actually there or not
-    wd.ok <-
-      sapply(wds, function(x) {
-        if (x %in% unique(res$wd)) {
-          FALSE
-        } else {
-          TRUE
-        }
-      })
-    skip <- c(wd.ok[1:4], TRUE, wd.ok[5:8])
-    res$wd <- factor(res$wd) # remove empty factor levels
-    Args$layout <- if (type == "wd") {
-      c(3, 3)
-    } else {
-      NULL
-    }
-    if (!"skip" %in% names(Args)) {
-      Args$skip <- skip
-    }
-  }
-  if (!"skip" %in% names(Args)) {
-    Args$skip <- FALSE
-  }
-
-  ## ---- strip & labels ----
-
-  # proper names of labelling #
-  strip.dat <- strip.fun(res, type, auto.text)
-  strip <- strip.dat[[1]]
-  strip.left <- strip.dat[[2]]
-
-  ## ---- colours & keys ----
-
-  # colours according to number of percentiles
-  npol <- max(length(percentile), length(pollutant)) # number of pollutants
-
-  # set up colours
-  myColors <- if (length(cols) == 1 && cols == "greyscale") {
-    openColours(cols, npol + 1)[-1]
-  } else {
-    openColours(cols, npol)
-  }
-
-  # information for key
-  npol <- na.omit(unique(res$variable))
-
-  # use pollutant names or user-supplied names
-  if (!missing(name.pol)) {
-    key.lab <- sapply(seq_along(name.pol), function(x) {
-      quickText(name.pol[x], auto.text)
-    })
-  } else {
-    key.lab <- sapply(
-      seq_along(npol),
-      function(x) quickText(npol[x], auto.text)
-    )
-  }
-
-  if (length(npol) > 1L) {
-    if (key) {
-      if (missing(key.columns) && key.position %in% c("top", "bottom")) {
-        key.columns <- length(npol)
-      }
-
-      key <- list(
-        lines = list(
-          col = myColors[seq_along(npol)],
-          lty = Args$lty,
-          lwd = Args$lwd,
-          pch = Args$pch,
-          type = "b",
-          cex = Args$cex
+  # create a guide for both fill and colour using openair styling
+  color_guide <-
+    ggplot2::guide_legend(
+      theme = ggplot2::theme(
+        legend.title.position = ifelse(
+          key.position %in% c("left", "right"),
+          "top",
+          key.position
         ),
-        text = list(lab = key.lab),
-        space = key.position,
-        columns = key.columns
-      )
-    } else {
-      key <- NULL
-    }
-
-    # use pollutant names or user-supplied names
-    if (!"ylab" %in% names(Args)) {
-      if (!missing(name.pol)) {
-        Args$ylab <- quickText(paste(name.pol, collapse = ", "), auto.text)
-      } else {
-        Args$ylab <- quickText(paste(pollutant, collapse = ", "), auto.text)
-      }
-    }
-  } else {
-    key <- NULL # either there is a key or there is not
-  }
-
-  ## ---- plot structure & formula ----
-
-  temp <- paste(type, collapse = "+")
-  myform <- formula(paste("conc ~ date| ", temp, sep = ""))
-
-  if (is.null(xlim)) {
-    if (x.relation == "free") {
-      xlim <-
-        purrr::map(
-          split(mydata, mydata[type], drop = TRUE),
-          function(x) {
-            gap <- difftime(max(x$date), min(x$date), units = "secs") / 80
-            xlim <- range(x$date) + c(-1 * gap, gap)
-            xlim
-          }
+        legend.text.position = ifelse(
+          key.position %in% c("top", "bottom"),
+          "right",
+          key.position
         )
-    } else {
-      gap <- difftime(max(mydata$date), min(mydata$date), units = "secs") / 80
-      xlim <- range(mydata$date) + c(-1 * gap, gap)
-    }
-  }
-
-  # date formatting for plot
-  if (x.relation == "free") {
-    date.at <-
-      purrr::map(
-        split(mydata, mydata[type], drop = TRUE),
-        function(x) dateBreaks(x$date, date.breaks)$major
-      )
-    if (type == "default") {
-      date.at <- date.at[[1]]
-    }
-  } else {
-    date.at <- dateBreaks(mydata$date, date.breaks)$major
-  }
-
-  if (is.null(date.format)) {
-    if (x.relation == "free") {
-      date.format <-
-        dateBreaks(
-          split(mydata, mydata[type], drop = TRUE)[[1]]$date,
-          date.breaks
-        )$format
-    } else {
-      date.format <- dateBreaks(mydata$date, date.breaks)$format
-    }
-  }
-
-  ## ---- create plot ----
-
-  xyplot.args <- list(
-    x = myform,
-    data = res,
-    groups = res$variable,
-    as.table = TRUE,
-    strip = strip,
-    strip.left = strip.left,
-    key = key,
-    xlim = xlim,
-    par.strip.text = list(cex = 0.8),
-    scales = list(
-      x = list(relation = x.relation, at = date.at, format = date.format),
-      y = list(relation = y.relation, rot = 0)
-    ),
-    panel = panel.superpose,
-    panel.groups = function(
-      x,
-      y,
-      group.number,
-      lwd,
-      lty,
-      pch,
-      col,
-      col.line,
-      col.symbol,
-      subscripts,
-      type = "b",
-      ...
-    ) {
-      if (group.number == 1) {
-        panel.grid(-1, 0)
+      ),
+      ncol = if (key.position %in% c("left", "right")) {
+        key.columns
+      } else {
+        if (missing(key.columns)) {
+          dplyr::n_distinct(newdata$variable)
+        } else {
+          key.columns
+        }
       }
+    )
 
-      panel.xyplot(
-        x,
-        y,
-        type = "b",
-        lwd = lwd,
-        lty = lty,
-        pch = pch,
-        col.line = myColors[group.number],
-        col.symbol = myColors[group.number],
-        ...
-      )
-
-      panel.gam(
-        x,
-        y,
-        col = myColors[group.number],
-        k = k,
-        myColors[group.number],
-        simulate = simulate,
-        n.sim = n,
-        autocor = autocor,
-        lty = 1,
-        lwd = 1,
-        se = ci,
-        ...
-      )
-
-      # add reference lines
-      if (!is.null(ref.x)) {
-        do.call(panel.abline, ref.x)
-      }
-      if (!is.null(ref.y)) do.call(panel.abline, ref.y)
-    }
-  )
-
-  # reset for Args
-  xyplot.args <- listUpdate(xyplot.args, Args)
+  # create plot
+  thePlot <-
+    ggplot2::ggplot(mapping = ggplot2::aes(x = .data$date)) +
+    ggplot2::geom_line(
+      data = newdata,
+      ggplot2::aes(color = .data$variable, y = .data$conc),
+      linewidth = extra.args$lwd / 2,
+      linetype = extra.args$lty,
+      show.legend = FALSE
+    ) +
+    ggplot2::geom_point(
+      data = newdata,
+      ggplot2::aes(color = .data$variable, y = .data$conc),
+      size = extra.args$cex * 3,
+      shape = extra.args$pch,
+      show.legend = dplyr::n_distinct(levels(newdata$variable)) > 1
+    ) +
+    ggplot2::geom_ribbon(
+      data = fit,
+      ggplot2::aes(
+        fill = .data$variable,
+        ymax = .data$upper,
+        ymin = .data$lower
+      ),
+      linewidth = extra.args$lwd,
+      alpha = ifelse(ci, alpha, 0),
+      show.legend = FALSE
+    ) +
+    ggplot2::geom_line(
+      data = fit,
+      ggplot2::aes(color = .data$variable, y = .data$pred),
+      linewidth = extra.args$lwd,
+      show.legend = FALSE
+    ) +
+    gg_ref_x(ref.x = ref.x) +
+    gg_ref_y(ref.y = ref.y) +
+    theme_openair(key.position) +
+    set_extra_fontsize(extra.args) +
+    ggplot2::scale_fill_manual(
+      values = openColours(cols, dplyr::n_distinct(levels(newdata$variable))),
+      breaks = levels(newdata$variable),
+      labels = lapply(name.pol %||% levels(newdata$variable), \(x) {
+        label_openair(x, auto_text = auto.text)
+      }),
+      drop = FALSE,
+      aesthetics = c("colour", "fill")
+    ) +
+    ggplot2::scale_x_datetime(
+      breaks = scales::breaks_pretty(date.breaks),
+      date_labels = date.format %||% ggplot2::waiver(),
+      limits = extra.args$xlim,
+      expand = ggplot2::expansion(c(0.02, 0.02))
+    ) +
+    ggplot2::scale_y_continuous(
+      limits = extra.args$ylim
+    ) +
+    get_facet(
+      type = type,
+      extra.args = extra.args,
+      scales = relation_to_facet_scales(x.relation, y.relation),
+      auto.text = auto.text,
+      strip.position = strip.position,
+      drop = TRUE
+    ) +
+    ggplot2::labs(
+      y = extra.args$ylab,
+      x = extra.args$xlab,
+      title = extra.args$main,
+      color = NULL,
+      fill = NULL
+    ) +
+    ggplot2::guides(
+      fill = color_guide,
+      color = color_guide
+    )
 
   # plot
-  plt <- do.call(xyplot, xyplot.args)
+  if (plot) {
+    plot(thePlot)
+  }
 
-  newdata <- res
+  # return
   output <- list(
-    plot = plt,
+    plot = thePlot,
     data = list(data = newdata, fit = fit),
     call = match.call()
   )
   class(output) <- "openair"
-
-  # output #
-  if (plot) {
-    if (length(type) == 1) {
-      plot(plt)
-    } else {
-      plot(useOuterStrips(plt, strip = strip, strip.left = strip.left))
-    }
-  }
-
   invisible(output)
 }
 
@@ -573,7 +430,8 @@ prepare_smoothtrend_data <- function(
         names_to = "variable",
         values_to = "value"
       ) |>
-      dplyr::arrange(.data$variable)
+      dplyr::arrange(.data$variable) |>
+      dplyr::mutate(variable = factor(.data$variable, levels = vars))
   } else {
     mydata <- suppressWarnings(timeAverage(
       mydata,
@@ -666,9 +524,7 @@ fit_smoothtrend_gam <- function(
   thedata,
   x = "date",
   y = "conc",
-  form = y ~ x,
   k = k,
-  Args,
   ...,
   simulate = FALSE,
   n.sim = 200,
@@ -741,9 +597,7 @@ fit_smoothtrend_gam <- function(
           length = n
         )
 
-        boot.pred <- matrix(nrow = sam.size, ncol = n.sim)
-
-        message("Taking bootstrap samples. Please wait...")
+        boot.pred <- matrix(nrow = n, ncol = n.sim) # fix: n rows, not sam.size
 
         ## set up bootstrap
         block.length <- 1
@@ -765,15 +619,14 @@ fit_smoothtrend_gam <- function(
         pred.input <- predict(mod, thedata)
 
         for (i in 1:n.sim) {
-          ## make new data
           new.data <- data.frame(
-            x = xseq,
+            x = thedata$x,
             y = pred.input + residuals[index[, i]]
           )
 
           mod <- mgcv::gam(y ~ s(x), data = new.data, ...)
 
-          pred <- predict(mod, new.data)
+          pred <- predict(mod, data.frame(x = xseq))
 
           boot.pred[, i] <- as.vector(pred)
         }
@@ -786,6 +639,7 @@ fit_smoothtrend_gam <- function(
         )
 
         results <- as.data.frame(cbind(
+          date = xseq,
           pred = rowMeans(boot.pred),
           lower = percentiles[1, ],
           upper = percentiles[2, ]
