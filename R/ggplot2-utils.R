@@ -23,6 +23,30 @@ theme_openair <- function(key.position) {
     )
 }
 
+# theme for radial plots
+theme_openair_radial <- function(key.position) {
+  list(
+    theme_openair(key.position),
+    ggplot2::theme(
+      panel.border = ggplot2::element_blank(),
+      axis.line.x = ggplot2::element_line(
+        colour = "grey75"
+      ),
+      panel.grid.major.x = ggplot2::element_line(
+        colour = "black",
+        arrow = ggplot2::arrow(length = ggplot2::unit(0.25, "cm"))
+      ),
+      panel.grid.minor = ggplot2::element_blank(),
+      panel.grid.major.y = ggplot2::element_line(
+        colour = "grey75",
+        linetype = 2,
+        linewidth = 0.25
+      ),
+      panel.spacing = ggplot2::rel(1),
+    )
+  )
+}
+
 # take the extra.args and set a different global fontsize, if present
 set_extra_fontsize <- function(extra.args) {
   if ("fontsize" %in% names(extra.args)) {
@@ -103,6 +127,22 @@ relation_to_facet_scales <- function(x.relation, y.relation) {
     !x.relation && y.relation ~ "free_y",
     x.relation && y.relation ~ "free",
     !x.relation && !y.relation ~ "fixed"
+  )
+}
+
+# ggplot2 scale for radial plots
+scale_x_compass <- function(
+  expand = ggplot2::expansion(),
+  oob = scales::oob_keep,
+  ...
+) {
+  ggplot2::scale_x_continuous(
+    limits = c(0, 360),
+    labels = c("N", "E", "S", "W"),
+    breaks = seq(0, 360 - 90, 90),
+    expand = expand,
+    oob = oob,
+    ...
   )
 }
 
