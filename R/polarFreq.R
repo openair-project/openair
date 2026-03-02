@@ -86,6 +86,13 @@
 #'   bin. The default is transparent. Another useful choice sometimes is
 #'   "white".
 #'
+#' @param strip.position Location where the facet 'strips' are located when
+#'   using `type`. When one `type` is provided, can be one of `"left"`,
+#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
+#'   argument defines whether the strips are "switched" and can take either
+#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
+#'   locations to the bottom of the plot.
+#'
 #' @param ... Passed to [cutData()]. The following additional arguments are also
 #'   available:
 #'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
