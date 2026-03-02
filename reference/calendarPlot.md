@@ -33,10 +33,11 @@ calendarPlot(
   w.abbr.len = 1,
   remove.empty = TRUE,
   show.year = TRUE,
+  key = TRUE,
   key.header = statistic,
   key.footer = pollutant,
   key.position = "right",
-  key = TRUE,
+  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -204,6 +205,14 @@ calendarPlot(
   `FALSE` labels just as "January". If multiple years of data are
   detected, this option is forced to be `TRUE`.
 
+- key:
+
+  Fine control of the scale key via
+  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md).
+  See
+  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md)
+  for further details.
+
 - key.header, key.footer:
 
   Used to control the title of the plot key. By default, `key.header` is
@@ -215,13 +224,10 @@ calendarPlot(
   Location where the scale key is to plotted. Allowed arguments
   currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
 
-- key:
+- strip.position:
 
-  Fine control of the scale key via
-  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md).
-  See
-  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md)
-  for further details.
+  Location where the facet 'strips' are located when using `type`. Can
+  be one of `"left"`, `"right"`, `"bottom"` or `"top"`.
 
 - auto.text:
 

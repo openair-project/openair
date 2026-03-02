@@ -24,10 +24,11 @@ polarFreq(
   ws.upper = NA,
   offset = 10,
   border.col = "transparent",
+  key = TRUE,
   key.header = statistic,
   key.footer = pollutant,
   key.position = "right",
-  key = TRUE,
+  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -158,6 +159,11 @@ polarFreq(
   The colour of the boundary of each wind speed/direction bin. The
   default is transparent. Another useful choice sometimes is "white".
 
+- key:
+
+  Fine control of the scale key via `drawOpenKey`. See `drawOpenKey` for
+  further details.
+
 - key.header:
 
   Adds additional text/labels to the scale key. For example, passing the
@@ -174,11 +180,6 @@ polarFreq(
 
   Location where the scale key is to plotted. Allowed arguments
   currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
-
-- key:
-
-  Fine control of the scale key via `drawOpenKey`. See `drawOpenKey` for
-  further details.
 
 - auto.text:
 

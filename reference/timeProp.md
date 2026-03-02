@@ -28,6 +28,7 @@ timeProp(
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
+  strip.position = "top",
   date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
@@ -131,6 +132,15 @@ timeProp(
 - key.title:
 
   The title of the key.
+
+- strip.position:
+
+  Location where the facet 'strips' are located when using `type`. When
+  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
+  or `"top"`. When two `type`s are provided, this argument defines
+  whether the strips are "switched" and can take either `"x"`, `"y"`, or
+  `"both"`. For example, `"x"` will switch the 'top' strip locations to
+  the bottom of the plot.
 
 - date.breaks:
 

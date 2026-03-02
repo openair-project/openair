@@ -36,6 +36,7 @@ TheilSen(
   slope.percent = FALSE,
   date.breaks = 7,
   date.format = NULL,
+  strip.position = "top",
   plot = TRUE,
   silent = FALSE,
   ...
@@ -213,6 +214,15 @@ TheilSen(
   where the user wishes to have more control. For format types see
   `strptime`. For example, to format the date like “Jan-2012” set
   `date.format = "\%b-\%Y"`.
+
+- strip.position:
+
+  Location where the facet 'strips' are located when using `type`. When
+  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
+  or `"top"`. When two `type`s are provided, this argument defines
+  whether the strips are "switched" and can take either `"x"`, `"y"`, or
+  `"both"`. For example, `"x"` will switch the 'top' strip locations to
+  the bottom of the plot.
 
 - plot:
 

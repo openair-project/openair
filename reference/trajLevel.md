@@ -38,6 +38,7 @@ trajLevel(
   key = TRUE,
   key.position = "right",
   key.columns = NULL,
+  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -226,6 +227,15 @@ trajLevel(
 - key.columns:
 
   Number of columns to be used in the key.
+
+- strip.position:
+
+  Location where the facet 'strips' are located when using `type`. When
+  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
+  or `"top"`. When two `type`s are provided, this argument defines
+  whether the strips are "switched" and can take either `"x"`, `"y"`, or
+  `"both"`. For example, `"x"` will switch the 'top' strip locations to
+  the bottom of the plot.
 
 - auto.text:
 

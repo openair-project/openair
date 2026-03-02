@@ -23,10 +23,11 @@ trendLevel(
   limits = NULL,
   cols = "default",
   auto.text = TRUE,
+  key = TRUE,
   key.header = "use.stat.name",
   key.footer = pollutant,
   key.position = "right",
-  key = TRUE,
+  strip.position = "top",
   labels = NULL,
   breaks = NULL,
   statistic = c("mean", "max", "min", "median", "frequency", "sum", "sd", "percentile"),
@@ -96,6 +97,11 @@ trendLevel(
   turns this option off and passes any supplied labels to the plot
   without modification.
 
+- key:
+
+  Fine control of the scale key via
+  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md).
+
 - key.header, key.footer:
 
   `key.header` adds a title to the legend, passed through
@@ -109,10 +115,14 @@ trendLevel(
   Location where the scale key should be plotted. Allowed arguments
   currently include `"top"`, `"right"`, `"bottom"`, and `"left"`.
 
-- key:
+- strip.position:
 
-  Fine control of the scale key via
-  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md).
+  Location where the facet 'strips' are located when using `type`. When
+  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
+  or `"top"`. When two `type`s are provided, this argument defines
+  whether the strips are "switched" and can take either `"x"`, `"y"`, or
+  `"both"`. For example, `"x"` will switch the 'top' strip locations to
+  the bottom of the plot.
 
 - breaks, labels:
 

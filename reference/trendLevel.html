@@ -87,10 +87,11 @@ all be modified to provide a range of other similar plots.</p>
 <span>  limits <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  key.header <span class="op">=</span> <span class="st">"use.stat.name"</span>,</span>
 <span>  key.footer <span class="op">=</span> <span class="va">pollutant</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
-<span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  strip.position <span class="op">=</span> <span class="st">"top"</span>,</span>
 <span>  labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  statistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mean"</span>, <span class="st">"max"</span>, <span class="st">"min"</span>, <span class="st">"median"</span>, <span class="st">"frequency"</span>, <span class="st">"sum"</span>, <span class="st">"sd"</span>, <span class="st">"percentile"</span><span class="op">)</span>,</span>
@@ -160,6 +161,10 @@ this option off and passes any supplied labels to the plot without
 modification.</p></dd>
 
 
+<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
+<dd><p>Fine control of the scale key via <code><a href="drawOpenKey.html">drawOpenKey()</a></code>.</p></dd>
+
+
 <dt id="arg-key-header-key-footer">key.header, key.footer<a class="anchor" aria-label="anchor" href="#arg-key-header-key-footer"></a></dt>
 <dd><p><code>key.header</code> adds a title to the legend, passed
 through <code><a href="quickText.html">quickText()</a></code> if <code>quick.text = TRUE</code>. <code>key.footer</code> is no longer
@@ -172,8 +177,13 @@ part of the legend title.</p></dd>
 arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>, and <code>"left"</code>.</p></dd>
 
 
-<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>Fine control of the scale key via <code><a href="drawOpenKey.html">drawOpenKey()</a></code>.</p></dd>
+<dt id="arg-strip-position">strip.position<a class="anchor" aria-label="anchor" href="#arg-strip-position"></a></dt>
+<dd><p>Location where the facet 'strips' are located when
+using <code>type</code>. When one <code>type</code> is provided, can be one of <code>"left"</code>,
+<code>"right"</code>, <code>"bottom"</code> or <code>"top"</code>. When two <code>type</code>s are provided, this
+argument defines whether the strips are "switched" and can take either
+<code>"x"</code>, <code>"y"</code>, or <code>"both"</code>. For example, <code>"x"</code> will switch the 'top' strip
+locations to the bottom of the plot.</p></dd>
 
 
 <dt id="arg-breaks-labels">breaks, labels<a class="anchor" aria-label="anchor" href="#arg-breaks-labels"></a></dt>
