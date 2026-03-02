@@ -15,10 +15,11 @@ trendLevel(
   limits = NULL,
   cols = "default",
   auto.text = TRUE,
+  key = TRUE,
   key.header = "use.stat.name",
   key.footer = pollutant,
   key.position = "right",
-  key = TRUE,
+  strip.position = "top",
   labels = NULL,
   breaks = NULL,
   statistic = c("mean", "max", "min", "median", "frequency", "sum", "sd", "percentile"),
@@ -68,6 +69,8 @@ provide common text formatting.  The alternative \code{auto.text = FALSE} turns
 this option off and passes any supplied labels to the plot without
 modification.}
 
+\item{key}{Fine control of the scale key via \code{\link[=drawOpenKey]{drawOpenKey()}}.}
+
 \item{key.header, key.footer}{\code{key.header} adds a title to the legend, passed
 through \code{\link[=quickText]{quickText()}} if \code{quick.text = TRUE}. \code{key.footer} is no longer
 directly supported, and is appended to the bottom of \code{key.header} to form
@@ -76,7 +79,12 @@ part of the legend title.}
 \item{key.position}{Location where the scale key should be plotted. Allowed
 arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"}, and \code{"left"}.}
 
-\item{key}{Fine control of the scale key via \code{\link[=drawOpenKey]{drawOpenKey()}}.}
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
 \item{breaks, labels}{If a categorical colour scale is required then \code{breaks}
 should be specified. These should be provided as a numeric vector, e.g.,

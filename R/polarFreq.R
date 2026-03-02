@@ -161,10 +161,11 @@ polarFreq <- function(
   ws.upper = NA,
   offset = 10,
   border.col = "transparent",
+  key = TRUE,
   key.header = statistic,
   key.footer = pollutant,
   key.position = "right",
-  key = TRUE,
+  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -378,7 +379,8 @@ polarFreq <- function(
       type,
       extra.args,
       scales = "fixed",
-      auto.text = auto.text
+      auto.text = auto.text,
+      strip.position = strip.position
     )
 
   if (categorical) {

@@ -78,6 +78,7 @@ timeProp <- function(
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
+  strip.position = "top",
   date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
@@ -268,7 +269,8 @@ timeProp <- function(
       extra.args,
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text,
-      drop = TRUE
+      drop = TRUE,
+      strip.position = strip.position
     )
 
   # make key full width/height

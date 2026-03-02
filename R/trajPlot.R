@@ -110,6 +110,13 @@
 #'
 #' @param key.columns Number of columns to be used in the key.
 #'
+#' @param strip.position Location where the facet 'strips' are located when
+#'   using `type`. When one `type` is provided, can be one of `"left"`,
+#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
+#'   argument defines whether the strips are "switched" and can take either
+#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
+#'   locations to the bottom of the plot.
+#'
 #' @param plot Should a plot be produced? `FALSE` can be useful when analysing
 #'   data to extract plot components and plotting them in other ways.
 #'
@@ -181,6 +188,7 @@ trajPlot <- function(
   key.title = group,
   key.position = "right",
   key.columns = 1,
+  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -321,7 +329,8 @@ trajPlot <- function(
       type,
       extra.args,
       scales = "fixed",
-      auto.text = auto.text
+      auto.text = auto.text,
+      strip.position = strip.position
     ) +
     ggplot2::labs(
       x = quickText(extra.args$xlab, auto.text),

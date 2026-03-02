@@ -34,6 +34,7 @@ trajLevel(
   key = TRUE,
   key.position = "right",
   key.columns = NULL,
+  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -160,6 +161,13 @@ point.}
 arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"}, and \code{"left"}.}
 
 \item{key.columns}{Number of columns to be used in the key.}
+
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
 titles and axis labels will automatically try and format pollutant names
