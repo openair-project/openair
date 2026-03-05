@@ -179,10 +179,6 @@ analysing data to extract plot components and plotting them in other ways.}
 \code{lattice:xyplot} and \code{cutData}. Axis and title labelling options
 (\code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
 \code{quickText} to handle routine formatting.}
-
-\item{paddle}{Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose
-using 'paddle' style spokes. If \code{FALSE} plots rose using 'wedge' style
-spokes.}
 }
 \value{
 an \link[=openair-package]{openair} object. Summarised proportions can be

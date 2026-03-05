@@ -94,9 +94,6 @@
 #' @param max.freq Controls the scaling used by setting the maximum value for
 #'   the radial limits. This is useful to ensure several plots use the same
 #'   radial limits.
-#' @param paddle Either `TRUE` or `FALSE`. If `TRUE` plots rose
-#'   using 'paddle' style spokes. If `FALSE` plots rose using 'wedge' style
-#'   spokes.
 #' @param key.header Adds additional text/labels above the scale key. For
 #'   example, passing `windRose(mydata, key.header = "ws")` adds the
 #'   addition text as a scale header. Note: This argument is passed to
@@ -805,7 +802,7 @@ windRose <- function(
 #'   c(0, 1, 10, 100)` breaks the data into segments <1, 1-10, 10-100, >100.
 #'
 #' @inheritDotParams windRose -pollutant -key.footer -key.position -key -breaks
-#'   -paddle -seg -normalise -plot
+#'   -seg -normalise -plot
 #' @export
 #' @return an [openair][openair-package] object. Summarised proportions can be
 #'   extracted directly using the `$data` operator, e.g.
