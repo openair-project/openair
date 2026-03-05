@@ -625,7 +625,8 @@ windRose <- function(
         scales::pretty_breaks()
       } else {
         seq(0, max.freq, grid.value)
-      }
+      },
+      labels = \(x) paste0(x, stat.unit)
     ) +
     scale_x_compass(
       labels = if (!diff) {
@@ -743,6 +744,14 @@ windRose <- function(
           color = calm.col
         )
     }
+  }
+
+  # make key full width/height
+  if (key.position %in% c("top", "bottom")) {
+    thePlot <- thePlot +
+      ggplot2::theme(
+        legend.key.width = ggplot2::rel(2)
+      )
   }
 
   # output

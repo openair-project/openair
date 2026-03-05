@@ -968,8 +968,18 @@ mapType <- function(
 breaksToLabels <- function(breaks, labels = NULL, sep = " - ") {
   if (is.null(labels) || any(is.na(labels))) {
     labels <- paste(
-      format(head(breaks, -1), scientific = FALSE, trim = TRUE),
-      format(tail(breaks, -1), scientific = FALSE, trim = TRUE),
+      format(
+        head(breaks, -1),
+        scientific = FALSE,
+        trim = TRUE,
+        drop0trailing = TRUE
+      ),
+      format(
+        tail(breaks, -1),
+        scientific = FALSE,
+        trim = TRUE,
+        drop0trailing = TRUE
+      ),
       sep = sep
     )
   }
