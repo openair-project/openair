@@ -8,7 +8,7 @@
 
 ## Breaking Changes
 
-- `calcFno2()` has been removed from `openair` due to using outdated methodology and assumptions.
+- `linearRelation()` and `calcFno2()` have been removed from `openair` due to using outdated methodology and assumptions.
 
 - The following functions are now written in `ggplot2`:
 

@@ -50,15 +50,14 @@ scatterPlot(
 \item{mydata}{A data frame containing at least two numeric variables to plot.}
 
 \item{x}{Name of the x-variable to plot. Note that x can be a date field or a
-factor. For example, \code{x} can be one of the \code{openair} built in
-types such as \code{"year"} or \code{"season"}.}
+factor. For example, \code{x} can be one of the \code{openair} built in types such as
+\code{"year"} or \code{"season"}.}
 
 \item{y}{Name of the numeric y-variable to plot.}
 
-\item{z}{Name of the numeric z-variable to plot for \code{method = "scatter"}
-or \code{method = "level"}. Note that for \code{method = "scatter"} points
-will be coloured according to a continuous colour scale, whereas for
-\code{method = "level"} the surface is coloured.}
+\item{z}{Name of the numeric z-variable to plot for \code{method = "scatter"} or
+\code{method = "level"}. Note that for \code{method = "scatter"} points will be
+coloured according to a continuous colour scale, whereas for \code{method = "level"} the surface is coloured.}
 
 \item{method}{Methods include \dQuote{scatter} (conventional scatter plot),
 \dQuote{hexbin} (hexagonal binning using the \code{hexbin} package).
@@ -81,11 +80,11 @@ option se useful as one method by which the number of points plotted is
 reduced i.e. by choosing a longer averaging time.}
 
 \item{data.thresh}{The data capture threshold to use (\\%) when aggregating
-the data using \code{avg.time}. A value of zero means that all available
-data will be used in a particular period regardless if of the number of
-values available. Conversely, a value of 100 will mean that all data will
-need to be present for the average to be calculated, else it is recorded as
-\code{NA}. Not used if \code{avg.time = "default"}.}
+the data using \code{avg.time}. A value of zero means that all available data
+will be used in a particular period regardless if of the number of values
+available. Conversely, a value of 100 will mean that all data will need to
+be present for the average to be calculated, else it is recorded as \code{NA}.
+Not used if \code{avg.time = "default"}.}
 
 \item{statistic}{The statistic to apply when aggregating the data; default is
 the mean. Can be one of "mean", "max", "min", "median", "frequency", "sd",
@@ -94,57 +93,56 @@ the number (frequency) of valid records in the period. "percentile" is the
 percentile level (\\%) between 0-100, which can be set using the
 "percentile" option - see below. Not used if \code{avg.time = "default"}.}
 
-\item{percentile}{The percentile level in percent used when \code{statistic = "percentile"} and when aggregating the data with \code{avg.time}. The
-default is 95. Not used if \code{avg.time = "default"}.}
+\item{percentile}{The percentile level in percent used when \code{statistic = "percentile"} and when aggregating the data with \code{avg.time}. The default is
+95. Not used if \code{avg.time = "default"}.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-\code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-on. For example, \code{type = "season"} will produce four plots --- one for
-each season.
+\item{type}{\code{type} determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
+\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+\code{type = "season"} will produce four plots --- one for each season.
 
-It is also possible to choose \code{type} as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+It is also possible to choose \code{type} as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-Type can be up length two e.g. \code{type = c("season", "weekday")} will
-produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.}
+Type can be up length two e.g. \code{type = c("season", "weekday")} will produce
+a 2x2 plot split by season and day of the week. Note, when two types are
+provided the first forms the columns and the second the rows.}
 
-\item{smooth}{A smooth line is fitted to the data if \code{TRUE}; optionally
-with 95 percent confidence intervals shown. For \code{method = "level"} a
-smooth surface will be fitted to binned data.}
+\item{smooth}{A smooth line is fitted to the data if \code{TRUE}; optionally with
+95 percent confidence intervals shown. For \code{method = "level"} a smooth
+surface will be fitted to binned data.}
 
 \item{spline}{A smooth spline is fitted to the data if \code{TRUE}. This is
 particularly useful when there are fewer data points or when a connection
 line between a sequence of points is required.}
 
-\item{linear}{A linear model is fitted to the data if \code{TRUE}; optionally
-with 95 percent confidence intervals shown. The equation of the line and R2
+\item{linear}{A linear model is fitted to the data if \code{TRUE}; optionally with
+95 percent confidence intervals shown. The equation of the line and R2
 value is also shown.}
 
 \item{ci}{Should the confidence intervals for the smooth/linear fit be shown?}
 
-\item{mod.line}{If \code{TRUE} three lines are added to the scatter plot to
-help inform model evaluation. The 1:1 line is solid and the 1:0.5 and 1:2
-lines are dashed. Together these lines help show how close a group of
-points are to a 1:1 relationship and also show the points that are within a
-factor of two (FAC2). \code{mod.line} is appropriately transformed when x
-or y axes are on a log scale.}
+\item{mod.line}{If \code{TRUE} three lines are added to the scatter plot to help
+inform model evaluation. The 1:1 line is solid and the 1:0.5 and 1:2 lines
+are dashed. Together these lines help show how close a group of points are
+to a 1:1 relationship and also show the points that are within a factor of
+two (FAC2). \code{mod.line} is appropriately transformed when x or y axes are on
+a log scale.}
 
 \item{cols}{Colours to be used for plotting. Options include
 \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-\code{RColorBrewer} colours --- see the \code{openair} \code{openColours}
-function for more details. For user defined the user can supply a list of
-colour names recognised by R (type \code{colours()} to see the full list).
-An example would be \code{cols = c("yellow", "green", "blue")}}
+\code{RColorBrewer} colours --- see the \code{openair} \code{openColours} function for
+more details. For user defined the user can supply a list of colour names
+recognised by R (type \code{colours()} to see the full list). An example would
+be \code{cols = c("yellow", "green", "blue")}}
 
-\item{plot.type}{\code{lattice} plot type. Can be \dQuote{p} (points ---
-default), \dQuote{l} (lines) or \dQuote{b} (lines and points).}
+\item{plot.type}{\code{lattice} plot type. Can be \dQuote{p} (points --- default),
+\dQuote{l} (lines) or \dQuote{b} (lines and points).}
 
 \item{key}{Should a key be drawn? The default is \code{TRUE}.}
 
@@ -161,35 +159,35 @@ and \dQuote{left}.}
 
 \item{strip}{Should a strip be drawn? The default is \code{TRUE}.}
 
-\item{log.x}{Should the x-axis appear on a log scale? The default is
-\code{FALSE}. If \code{TRUE} a well-formatted log10 scale is used. This can
-be useful for checking linearity once logged.}
+\item{log.x}{Should the x-axis appear on a log scale? The default is \code{FALSE}.
+If \code{TRUE} a well-formatted log10 scale is used. This can be useful for
+checking linearity once logged.}
 
-\item{log.y}{Should the y-axis appear on a log scale? The default is
-\code{FALSE}. If \code{TRUE} a well-formatted log10 scale is used. This can
-be useful for checking linearity once logged.}
+\item{log.y}{Should the y-axis appear on a log scale? The default is \code{FALSE}.
+If \code{TRUE} a well-formatted log10 scale is used. This can be useful for
+checking linearity once logged.}
 
 \item{x.inc}{The x-interval to be used for binning data when \code{method = "level"}.}
 
 \item{y.inc}{The y-interval to be used for binning data when \code{method = "level"}.}
 
-\item{limits}{For \code{method = "level"} the function does its best to
-choose sensible limits automatically. However, there are circumstances when
-the user will wish to set different ones. The limits are set in the form
-\code{c(lower, upper)}, so \code{limits = c(0, 100)} would force the plot
-limits to span 0-100.}
+\item{limits}{For \code{method = "level"} the function does its best to choose
+sensible limits automatically. However, there are circumstances when the
+user will wish to set different ones. The limits are set in the form
+\code{c(lower, upper)}, so \code{limits = c(0, 100)} would force the plot limits to
+span 0-100.}
 
 \item{windflow}{This option allows a scatter plot to show the wind
-speed/direction shows as an arrow. The option is a list e.g. \code{windflow = list(col = "grey", lwd = 2, scale = 0.1)}. This option requires wind
-speed (\code{ws}) and wind direction (\code{wd}) to be available.
+speed/direction shows as an arrow. The option is a list e.g. \code{windflow = list(col = "grey", lwd = 2, scale = 0.1)}. This option requires wind speed
+(\code{ws}) and wind direction (\code{wd}) to be available.
 
 The maximum length of the arrow plotted is a fraction of the plot dimension
-with the longest arrow being \code{scale} of the plot x-y dimension. Note,
-if the plot size is adjusted manually by the user it should be re-plotted
-to ensure the correct wind angle. The list may contain other options to
-\code{panel.arrows} in the \code{lattice} package. Other useful options
-include \code{length}, which controls the length of the arrow head and
-\code{angle}, which controls the angle of the arrow head.
+with the longest arrow being \code{scale} of the plot x-y dimension. Note, if
+the plot size is adjusted manually by the user it should be re-plotted to
+ensure the correct wind angle. The list may contain other options to
+\code{panel.arrows} in the \code{lattice} package. Other useful options include
+\code{length}, which controls the length of the arrow head and \code{angle}, which
+controls the angle of the arrow head.
 
 This option works best where there are not too many data to ensure
 over-plotting does not become a problem.}
@@ -208,46 +206,44 @@ data with very different values.}
 
 \item{ref.y}{A list with details of the horizontal lines to be added
 representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
-details on adding/controlling lines.}
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more details on
+adding/controlling lines.}
 
-\item{k}{Smoothing parameter supplied to \code{gam} for fitting a smooth
-surface when \code{method = "level"}.}
+\item{k}{Smoothing parameter supplied to \code{gam} for fitting a smooth surface
+when \code{method = "level"}.}
 
-\item{dist}{When plotting smooth surfaces (\code{method = "level"} and
-\code{smooth = TRUE}, \code{dist} controls how far from the original data
-the predictions should be made. See \code{exclude.too.far} from the
-\code{mgcv} package. Data are first transformed to a unit square. Values
-should be between 0 and 1.}
+\item{dist}{When plotting smooth surfaces (\code{method = "level"} and \code{smooth = TRUE}, \code{dist} controls how far from the original data the predictions
+should be made. See \code{exclude.too.far} from the \code{mgcv} package. Data are
+first transformed to a unit square. Values should be between 0 and 1.}
 
 \item{map}{Should a base map be drawn? This option is under development.}
 
-\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
-titles and axis labels will automatically try and format pollutant names
-and units properly e.g.  by subscripting the \sQuote{2} in NO2.}
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly e.g.  by subscripting the \sQuote{2} in NO2.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other ways.}
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data to extract plot components and plotting them in other ways.}
 
 \item{...}{Other graphical parameters are passed onto \code{cutData} and an
-appropriate \code{lattice} plot function (\code{xyplot}, \code{levelplot}
-or \code{hexbinplot} depending on \code{method}). For example,
-\code{scatterPlot} passes the option \code{hemisphere = "southern"} on to
-\code{cutData} to provide southern (rather than default northern)
-hemisphere handling of \code{type = "season"}. Similarly, for the default
-case \code{method = "scatter"} common axis and title labelling options
-(such as \code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot}
-via \code{quickText} to handle routine formatting. Other common graphical
-parameters, e.g. \code{layout} for panel arrangement, \code{pch} for plot
-symbol and \code{lwd} and \code{lty} for line width and type, as also
-available (see examples below).
+appropriate \code{lattice} plot function (\code{xyplot}, \code{levelplot} or \code{hexbinplot}
+depending on \code{method}). For example, \code{scatterPlot} passes the option
+\code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than
+default northern) hemisphere handling of \code{type = "season"}. Similarly, for
+the default case \code{method = "scatter"} common axis and title labelling
+options (such as \code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
+\code{quickText} to handle routine formatting. Other common graphical
+parameters, e.g. \code{layout} for panel arrangement, \code{pch} for plot symbol and
+\code{lwd} and \code{lty} for line width and type, as also available (see examples
+below).
 
-For \code{method = "hexbin"} it can be useful to transform the scale if it
-is dominated by a few very high values. This is possible by supplying two
+For \code{method = "hexbin"} it can be useful to transform the scale if it is
+dominated by a few very high values. This is possible by supplying two
 functions: one that that applies the transformation and the other that
 inverses it. For log scaling (the default) for example, \code{trans = function(x) log(x)} and \code{inv = function(x) exp(x)}. For a square root
-transform use \code{trans = sqrt} and \code{inv = function(x) x^2}. To not
-carry out any transformation the options \code{trans = NULL} and \code{inv = NULL} should be used.}
+transform use \code{trans = sqrt} and \code{inv = function(x) x^2}. To not carry out
+any transformation the options \code{trans = NULL} and \code{inv = NULL} should be
+used.}
 }
 \value{
 an \link[=openair-package]{openair} object
@@ -260,27 +256,25 @@ shown.
 }
 \details{
 \code{\link[=scatterPlot]{scatterPlot()}} is the basic function for plotting scatter plots in flexible
-ways in \code{openair}. It is flexible enough to consider lots of
-conditioning variables and takes care of fitting smooth or linear
-relationships to the data.
+ways in \code{openair}. It is flexible enough to consider lots of conditioning
+variables and takes care of fitting smooth or linear relationships to the
+data.
 
 There are four main ways of plotting the relationship between two variables,
-which are set using the \code{method} option. The default \code{"scatter"}
-will plot a conventional scatterPlot. In cases where there are lots of data
-and over-plotting becomes a problem, then \code{method = "hexbin"} or
-\code{method = "density"} can be useful. The former requires the
-\code{hexbin} package to be installed.
+which are set using the \code{method} option. The default \code{"scatter"} will plot a
+conventional scatterPlot. In cases where there are lots of data and
+over-plotting becomes a problem, then \code{method = "hexbin"} or \code{method = "density"} can be useful. The former requires the \code{hexbin} package to be
+installed.
 
-There is also a \code{method = "level"} which will bin the \code{x} and
-\code{y} data according to the intervals set for \code{x.inc} and
-\code{y.inc} and colour the bins according to levels of a third variable,
-\code{z}. Sometimes however, a far better understanding of the relationship
-between three variables (\code{x}, \code{y} and \code{z}) is gained by
-fitting a smooth surface through the data. See examples below.
+There is also a \code{method = "level"} which will bin the \code{x} and \code{y} data
+according to the intervals set for \code{x.inc} and \code{y.inc} and colour the bins
+according to levels of a third variable, \code{z}. Sometimes however, a far better
+understanding of the relationship between three variables (\code{x}, \code{y} and \code{z})
+is gained by fitting a smooth surface through the data. See examples below.
 
-A smooth fit is shown if \code{smooth = TRUE} which can help show the overall
-form of the data e.g. whether the relationship appears to be linear or not.
-Also, a linear fit can be shown using \code{linear = TRUE} as an option.
+A smooth fit is shown if \code{smooth = TRUE} which can help show the overall form
+of the data e.g. whether the relationship appears to be linear or not. Also,
+a linear fit can be shown using \code{linear = TRUE} as an option.
 
 The user has fine control over the choice of colours and symbol type used.
 
@@ -291,8 +285,8 @@ aggregated to daily data. See \code{\link[=timePlot]{timePlot()}} for examples h
 By default plots are shown with a colour key at the bottom and in the case of
 conditioning, strips on the top of each plot. Sometimes this may be overkill
 and the user can opt to remove the key and/or the strip by setting \code{key}
-and/or \code{strip} to \code{FALSE}. One reason to do this is to maximise the
-plotting area and therefore the information shown.
+and/or \code{strip} to \code{FALSE}. One reason to do this is to maximise the plotting
+area and therefore the information shown.
 }
 \examples{
 # load openair data if not loaded already
@@ -375,9 +369,8 @@ scatterPlot(mydata,
 }
 }
 \seealso{
-\code{\link[=linearRelation]{linearRelation()}}, \code{\link[=timePlot]{timePlot()}} and
-\code{\link[=timeAverage]{timeAverage()}} for details on selecting averaging times and other
-statistics in a flexible way
+\code{\link[=timePlot]{timePlot()}} and \code{\link[=timeAverage]{timeAverage()}} for details on selecting averaging
+times and other statistics in a flexible way
 }
 \author{
 David Carslaw

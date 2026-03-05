@@ -34,7 +34,6 @@ reference:
   - summaryPlot
   - scatterPlot
   - corPlot
-  - linearRelation
 
 - title: Utilities
 - subtitle: Plot Utilities
