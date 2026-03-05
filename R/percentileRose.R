@@ -457,21 +457,21 @@ percentileRose <- function(
     plot_data <-
       results.grid |>
       dplyr::ungroup() |>
-      dplyr::filter(percentile != 0) |>
-      dplyr::arrange(desc(percentile)) |>
+      dplyr::filter(.data$percentile != 0) |>
+      dplyr::arrange(dplyr::desc(.data$percentile)) |>
       dplyr::mutate(
-        percentile = factor(percentile, labels = fct_labels)
+        percentile = factor(.data$percentile, labels = fct_labels)
       )
   } else {
     plot_data <-
       results.grid |>
       dplyr::ungroup() |>
-      dplyr::filter(percentile != 0) |>
-      dplyr::arrange(desc(percentile)) |>
+      dplyr::filter(.data$percentile != 0) |>
+      dplyr::arrange(dplyr::desc(.data$percentile)) |>
       dplyr::mutate(
         percentile = factor(
-          percentile,
-          rev(sort(unique(percentile))),
+          .data$percentile,
+          rev(sort(unique(.data$percentile))),
           labels = c("Mean", rev(fct_labels))
         )
       )
