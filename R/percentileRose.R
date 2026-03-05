@@ -244,7 +244,7 @@ percentileRose <- function(
     mydata <- mydata[-id, ]
   }
 
-  prepare.grid <- function(mydata, stat, overall.lower, overall.upper) {
+  prepare.grid <- function(mydata, overall.lower, overall.upper) {
     overall.lower <- mydata$lower[1]
     overall.upper <- mydata$upper[1]
 
@@ -278,15 +278,8 @@ percentileRose <- function(
         ## don't let interpolated percentile be lower than data
         pred$pollutant[pred$pollutant < min.dat] <- min.dat
 
-        ## only plot where there are valid wd
-        wds <- unique(percentiles[[wd]])
-        ids <- lapply(
-          wds,
-          function(x) seq(from = x - angle / 2, to = x + angle / 2)
-        )
-        ids <- unique(do.call(c, ids))
-        ids[ids < 0] <- ids[ids < 0] + 360
-        pred$pollutant[-ids] <- min(c(
+        ## only plot where there are valid wd (smooth_ids pre-computed once per group)
+        pred$pollutant[-smooth_ids] <- min(c(
           0,
           min(percentiles[[pollutant]], na.rm = TRUE)
         ))
@@ -345,6 +338,15 @@ percentileRose <- function(
       }
     }
 
+    ## pre-compute valid wd index set once — wind directions are constant across
+    ## all percentile levels so there is no need to recompute inside the loop
+    if (smooth) {
+      smooth_wds <- unique(percentiles[[wd]])
+      smooth_ids <- lapply(smooth_wds, function(x) seq(from = x - angle / 2, to = x + angle / 2))
+      smooth_ids <- unique(do.call(c, smooth_ids))
+      smooth_ids[smooth_ids < 0] <- smooth_ids[smooth_ids < 0] + 360
+    }
+
     results <-
       purrr::map(
         .x = percentile,
@@ -362,12 +364,11 @@ percentileRose <- function(
     Mean <- purrr::map(999, mod.percentiles) |>
       purrr::list_rbind()
 
-    if (stat == "percentile") {
-      results <- results
-    } else {
-      results <- Mean
-    }
-    results
+    ## return both percentile and mean results together to avoid a second
+    ## mapType pass (which would recompute everything from scratch)
+    results$stat_type <- "percentile"
+    Mean$stat_type <- "mean"
+    dplyr::bind_rows(results, Mean)
   }
 
   mydata <- cutData(mydata, type, ...)
@@ -406,13 +407,16 @@ percentileRose <- function(
     )
   }
 
-  results.grid <-
+  all_grid_results <-
     mapType(
       mydata,
       type = type,
-      fun = \(x) prepare.grid(x, stat = "percentile"),
+      fun = prepare.grid,
       .include_default = TRUE
     )
+
+  results.grid <- dplyr::filter(all_grid_results, .data$stat_type == "percentile") |>
+    dplyr::select(-"stat_type")
 
   sub <- NULL
   if (method == "cpf") {
@@ -434,12 +438,8 @@ percentileRose <- function(
   }
 
   if (mean) {
-    Mean <- mapType(
-      mydata,
-      type = type,
-      fun = \(x) prepare.grid(x, stat = "mean"),
-      .include_default = TRUE
-    )
+    Mean <- dplyr::filter(all_grid_results, .data$stat_type == "mean") |>
+      dplyr::select(-"stat_type")
 
     results.grid <- bind_rows(results.grid, Mean)
   }
@@ -472,7 +472,7 @@ percentileRose <- function(
         percentile = factor(
           .data$percentile,
           rev(sort(unique(.data$percentile))),
-          labels = c("Mean", rev(fct_labels))
+          labels = if (mean) c("Mean", rev(fct_labels)) else rev(fct_labels)
         )
       )
   }
