@@ -54,6 +54,7 @@ reference:
   - rollingQuantile
   - runRegression
   - GaussianSmooth
+  - WhittakerSmooth
   - selectByDate
   - selectRunning
   - splitByDate

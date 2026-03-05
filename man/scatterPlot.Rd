@@ -40,7 +40,6 @@ scatterPlot(
   ref.y = NULL,
   k = NA,
   dist = 0.02,
-  map = FALSE,
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -206,24 +205,24 @@ data with very different values.}
 
 \item{ref.y}{A list with details of the horizontal lines to be added
 representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more details on
-adding/controlling lines.}
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
+details on adding/controlling lines.}
 
-\item{k}{Smoothing parameter supplied to \code{gam} for fitting a smooth surface
-when \code{method = "level"}.}
+\item{k}{Smoothing parameter supplied to \code{gam} for fitting a smooth
+surface when \code{method = "level"}.}
 
-\item{dist}{When plotting smooth surfaces (\code{method = "level"} and \code{smooth = TRUE}, \code{dist} controls how far from the original data the predictions
-should be made. See \code{exclude.too.far} from the \code{mgcv} package. Data are
-first transformed to a unit square. Values should be between 0 and 1.}
+\item{dist}{When plotting smooth surfaces (\code{method = "level"} and
+\code{smooth = TRUE}, \code{dist} controls how far from the original data
+the predictions should be made. See \code{exclude.too.far} from the
+\code{mgcv} package. Data are first transformed to a unit square. Values
+should be between 0 and 1.}
 
-\item{map}{Should a base map be drawn? This option is under development.}
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
+titles and axis labels will automatically try and format pollutant names
+and units properly e.g.  by subscripting the \sQuote{2} in NO2.}
 
-\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
-axis labels will automatically try and format pollutant names and units
-properly e.g.  by subscripting the \sQuote{2} in NO2.}
-
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
-data to extract plot components and plotting them in other ways.}
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
+analysing data to extract plot components and plotting them in other ways.}
 
 \item{...}{Other graphical parameters are passed onto \code{cutData} and an
 appropriate \code{lattice} plot function (\code{xyplot}, \code{levelplot} or \code{hexbinplot}

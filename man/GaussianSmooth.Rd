@@ -20,7 +20,7 @@ GaussianSmooth(
 \code{date} field in \code{Date} or \code{POSIXct} format. The input time series must be
 regular, e.g., hourly, daily.}
 
-\item{pollutant}{The name of a pollutant, e.g., \code{pollutant = "o3"}.}
+\item{pollutant}{The name of a pollutant, e.g., \code{pollutant = "o3"}. More than one pollutant can be supplied as a vector, e.g., \code{pollutant = c("o3", "nox")}.}
 
 \item{sigma}{The value of \code{sigma} to use in the Gaussian.}
 
@@ -29,7 +29,7 @@ regular, e.g., hourly, daily.}
 \item{data.thresh}{The \% data capture threshold. No values are calculated if
 data capture over the period of interest is less than this value.}
 
-\item{new.name}{The name given to the new column. If not supplied it will
+\item{new.name}{The name given to the new column(s). If not supplied it will
 create a name based on the name of the pollutant and the averaging period
 used.}
 

@@ -95,7 +95,7 @@ selectByDate <- function(
 
     # If input is just a date (e.g. "2023-01-01"), include the full day (until 23:59:59)
     if (is.character(end) && !grepl(":", end)) {
-      end_date <- end_date + days(1) - seconds(1)
+      end_date <- end_date + lubridate::days(1) - lubridate::seconds(1)
     }
     mydata <- dplyr::filter(mydata, date <= end_date)
   }

@@ -29,10 +29,11 @@ calendarPlot(
   w.abbr.len = 1,
   remove.empty = TRUE,
   show.year = TRUE,
+  key = TRUE,
   key.header = statistic,
   key.footer = pollutant,
   key.position = "right",
-  key = TRUE,
+  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -140,6 +141,9 @@ labels include the year label? \code{TRUE} creates labels like "January-2000",
 \code{FALSE} labels just as "January". If multiple years of data are detected,
 this option is forced to be \code{TRUE}.}
 
+\item{key}{Fine control of the scale key via \code{\link[=drawOpenKey]{drawOpenKey()}}. See
+\code{\link[=drawOpenKey]{drawOpenKey()}} for further details.}
+
 \item{key.header, key.footer}{Used to control the title of the plot key. By
 default, \code{key.header} is the \code{statistic} and \code{key.footer} is the
 \code{pollutant}. These are pasted together to form the key title.}
@@ -147,8 +151,8 @@ default, \code{key.header} is the \code{statistic} and \code{key.footer} is the
 \item{key.position}{Location where the scale key is to plotted. Allowed
 arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"} and \code{"left"}.}
 
-\item{key}{Fine control of the scale key via \code{\link[=drawOpenKey]{drawOpenKey()}}. See
-\code{\link[=drawOpenKey]{drawOpenKey()}} for further details.}
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. Can be one of \code{"left"}, \code{"right"}, \code{"bottom"} or \code{"top"}.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units

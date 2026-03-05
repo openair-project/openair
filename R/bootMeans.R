@@ -145,37 +145,54 @@ bootMeanDF <- function(x, conf.int = 0.95, B = 1000) {
   return(res)
 }
 
-#' bootsrap confidence intervals in the mean from Hmisc
+#' bootstrap confidence intervals in the mean of a vector
+#' uses a fast CLT-based method for large samples and a bootstrap method for small samples
 #' @noRd
-bootMean <- function(x, conf.int = 0.95, B = 1000, ...) {
-  x <- x[!is.na(x)] # remove missings
+bootMean <- function(
+  x,
+  conf.int = 0.95,
+  B = 500, # number of bootstrap samples
+  switch_point = 1000, # threshold for switching between CLT and bootstrap methods
+  ...
+) {
+  # Remove NAs
+  x <- x[!is.na(x)]
   n <- length(x)
-  xbar <- mean(x)
-  if (n < 2) {
-    return(c(
-      Mean = xbar,
-      Lower = NA,
-      Upper = NA
-    ))
-  }
-  z <- unlist(lapply(
-    1:B,
-    function(i, x, N) {
-      sum(x[(sample.int(N, N, TRUE, NULL))])
-    },
-    x = x,
-    N = n
-  )) /
-    n
-  quant <- quantile(z, c((1 - conf.int) / 2, (1 + conf.int) / 2))
-  names(quant) <- NULL
-  res <- c(
-    Mean = xbar,
-    Lower = quant[1],
-    Upper = quant[2]
-  )
 
-  res
+  # Failsafe for empty or extremely small vectors
+  if (n < 2) {
+    return(c(mean = mean(x), lower_ci = NA, upper_ci = NA))
+  }
+
+  # Routing logic based on sample size
+  if (n >= switch_point) {
+    # Fast CLT path for large samples
+    sample_mean <- mean(x)
+    sem <- sd(x) / sqrt(n)
+    t_score <- qt(1 - ((1 - conf.int) / 2), df = n - 1)
+    margin <- t_score * sem
+
+    return(c(
+      Mean = sample_mean,
+      Lower = sample_mean - margin,
+      Upper = sample_mean + margin
+    ))
+  } else {
+    # Bootstrap path for small samples
+    boot_matrix <- matrix(
+      sample(x, size = n * B, replace = TRUE),
+      nrow = n,
+      ncol = B
+    )
+    boot_means <- colMeans(boot_matrix)
+    ci <- quantile(
+      boot_means,
+      probs = c((1 - conf.int) / 2, 1 - ((1 - conf.int) / 2)),
+      names = FALSE
+    )
+
+    return(c(Mean = mean(x), Lower = ci[1], Upper = ci[2]))
+  }
 }
 
 #' difference between bootmeans

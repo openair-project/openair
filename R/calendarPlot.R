@@ -107,6 +107,8 @@
 #'   arguments currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
 #' @param key Fine control of the scale key via [drawOpenKey()]. See
 #'   [drawOpenKey()] for further details.
+#' @param strip.position Location where the facet 'strips' are located when
+#'   using `type`. Can be one of `"left"`, `"right"`, `"bottom"` or `"top"`.
 #' @param ... The following additional arguments are available:
 #'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
@@ -175,10 +177,11 @@ calendarPlot <-
     w.abbr.len = 1,
     remove.empty = TRUE,
     show.year = TRUE,
+    key = TRUE,
     key.header = statistic,
     key.footer = pollutant,
     key.position = "right",
-    key = TRUE,
+    strip.position = "top",
     auto.text = TRUE,
     plot = TRUE,
     ...
@@ -405,6 +408,7 @@ calendarPlot <-
         auto.text = auto.text,
         scales = "fixed",
         drop = remove.empty,
+        strip.position = strip.position,
         axes = "all_x"
       ) +
       ggplot2::coord_cartesian(expand = FALSE, ratio = 1) +

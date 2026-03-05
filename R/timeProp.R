@@ -78,6 +78,7 @@ timeProp <- function(
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
+  strip.position = "top",
   date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
@@ -193,6 +194,13 @@ timeProp <- function(
     key.position = "none"
   }
 
+  # x-axis scale function
+  if (lubridate::is.Date(results$xleft)) {
+    x_scale_fun <- ggplot2::scale_x_date
+  } else {
+    x_scale_fun <- ggplot2::scale_x_datetime
+  }
+
   # plot
   thePlot <-
     ggplot2::ggplot(
@@ -237,7 +245,7 @@ timeProp <- function(
         }
       )
     ) +
-    ggplot2::scale_x_datetime(
+    x_scale_fun(
       breaks = scales::breaks_pretty(date.breaks),
       date_labels = date.format %||% ggplot2::waiver(),
       limits = xlim,
@@ -261,7 +269,8 @@ timeProp <- function(
       extra.args,
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text,
-      drop = TRUE
+      drop = TRUE,
+      strip.position = strip.position
     )
 
   # make key full width/height
