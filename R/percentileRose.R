@@ -1,76 +1,100 @@
 #' Function to plot percentiles by wind direction
 #'
-#' `percentileRose` plots percentiles by wind direction with flexible
+#' [percentileRose()] plots percentiles by wind direction with flexible
 #' conditioning. The plot can display multiple percentile lines or filled areas.
 #'
-#' `percentileRose` calculates percentile levels of a pollutant and plots
-#' them by wind direction. One or more percentile levels can be calculated and
-#' these are displayed as either filled areas or as lines.
+#' [percentileRose()] calculates percentile levels of a pollutant and plots them
+#' by wind direction. One or more percentile levels can be calculated and these
+#' are displayed as either filled areas or as lines.
 #'
 #' The wind directions are rounded to the nearest 10 degrees, consistent with
 #' surface data from the UK Met Office before a smooth is fitted. The levels by
 #' wind direction are optionally calculated using a cyclic smooth cubic spline
-#' using the option `smooth`. If `smooth = FALSE` then the data are
-#' shown in 10 degree sectors.
+#' using the option `smooth`. If `smooth = FALSE` then the data are shown in 10
+#' degree sectors.
 #'
-#' The `percentileRose` function compliments other similar functions
-#' including [windRose()], [pollutionRose()],
-#' [polarFreq()] or [polarPlot()]. It is most useful for
-#' showing the distribution of concentrations by wind direction and often can
-#' reveal different sources e.g. those that only affect high percentile
-#' concentrations such as a chimney stack.
+#' The `percentileRose` function compliments other similar functions including
+#' [windRose()], [pollutionRose()], [polarFreq()] or [polarPlot()]. It is most
+#' useful for showing the distribution of concentrations by wind direction and
+#' often can reveal different sources e.g. those that only affect high
+#' percentile concentrations such as a chimney stack.
 #'
 #' Similar to other functions, flexible conditioning is available through the
-#' `type` option. It is easy for example to consider multiple percentile
-#' values for a pollutant by season, year and so on. See examples below.
+#' `type` option. It is easy for example to consider multiple percentile values
+#' for a pollutant by season, year and so on. See examples below.
 #'
-#' `percentileRose` also offers great flexibility with the scale used and
-#' the user has fine control over both the range, interval and colour.
+#' `percentileRose` also offers great flexibility with the scale used and the
+#' user has fine control over both the range, interval and colour.
 #'
 #' @inheritParams polarPlot
-#' @param mydata A data frame minimally containing `wd` and a numeric field
-#'   to plot --- `pollutant`.
+#'
+#' @param mydata A data frame minimally containing `wd` and a numeric field to
+#'   plot --- `pollutant`.
+#'
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
 #'   data frame should be supplied e.g. `pollutant = "nox"`. More than one
-#'   pollutant can be supplied e.g. `pollutant = c("no2", "o3")` provided
-#'   there is only one `type`.
+#'   pollutant can be supplied e.g. `pollutant = c("no2", "o3")` provided there
+#'   is only one `type`.
+#'
 #' @param percentile The percentile value(s) to plot. Must be between 0--100. If
 #'   `percentile = NA` then only a mean line will be shown.
+#'
 #' @param smooth Should the wind direction data be smoothed using a cyclic
 #'   spline?
+#'
 #' @param method When `method = "default"` the supplied percentiles by wind
-#'   direction are calculated. When `method = "cpf"` the conditional
-#'   probability function (CPF) is plotted and a single (usually high)
-#'   percentile level is supplied. The CPF is defined as CPF = my/ny, where my
-#'   is the number of samples in the wind sector y with mixing ratios greater
-#'   than the *overall* percentile concentration, and ny is the total
-#'   number of samples in the same wind sector (see Ashbaugh et al., 1985).
+#'   direction are calculated. When `method = "cpf"` the conditional probability
+#'   function (CPF) is plotted and a single (usually high) percentile level is
+#'   supplied. The CPF is defined as CPF = my/ny, where my is the number of
+#'   samples in the wind sector y with mixing ratios greater than the *overall*
+#'   percentile concentration, and ny is the total number of samples in the same
+#'   wind sector (see Ashbaugh et al., 1985).
+#'
 #' @param angle Default angle of \dQuote{spokes} is when `smooth = FALSE`.
+#'
 #' @param mean Show the mean by wind direction as a line?
+#'
 #' @param mean.lty Line type for mean line.
+#'
 #' @param mean.lwd Line width for mean line.
+#'
 #' @param mean.col Line colour for mean line.
+#'
 #' @param fill Should the percentile intervals be filled (default) or should
 #'   lines be drawn (`fill = FALSE`).
-#' @param intervals User-supplied intervals for the scale e.g. `intervals =
-#'   c(0, 10, 30, 50)`
+#'
+#' @param intervals User-supplied intervals for the scale e.g. `intervals = c(0,
+#'   10, 30, 50)`.
+#'
+#' @param strip.position Location where the facet 'strips' are located when
+#'   using `type`. When one `type` is provided, can be one of `"left"`,
+#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
+#'   argument defines whether the strips are "switched" and can take either
+#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
+#'   locations to the bottom of the plot.
+#'
 #' @param ... Other graphical parameters are passed onto `cutData` and
 #'   `lattice:xyplot`. For example, `percentileRose` passes the option
-#'   `hemisphere = "southern"` on to `cutData` to provide southern
-#'   (rather than default northern) hemisphere handling of `type =
-#'   "season"`. Similarly, common graphical arguments, such as `xlim` and
-#'   `ylim` for plotting ranges and `lwd` for line thickness when
-#'   using `fill = FALSE`, are passed on `xyplot`, although some local
-#'   modifications may be applied by openair. For example, axis and title
-#'   labelling options (such as `xlab`, `ylab` and `main`) are
-#'   passed to `xyplot` via `quickText` to handle routine formatting.
+#'   `hemisphere = "southern"` on to `cutData` to provide southern (rather than
+#'   default northern) hemisphere handling of `type = "season"`. Similarly,
+#'   common graphical arguments, such as `xlim` and `ylim` for plotting ranges
+#'   and `lwd` for line thickness when using `fill = FALSE`, are passed on
+#'   `xyplot`, although some local modifications may be applied by openair. For
+#'   example, axis and title labelling options (such as `xlab`, `ylab` and
+#'   `main`) are passed to `xyplot` via `quickText` to handle routine
+#'   formatting.
+#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @family polar directional analysis functions
+#'
 #' @author David Carslaw
+#' @author Jack Davison
+#'
 #' @references Ashbaugh, L.L., Malm, W.C., Sadeh, W.Z., 1985. A residence time
 #'   probability analysis of sulfur concentrations at ground canyon national
 #'   park. Atmospheric Environment 19 (8), 1263-1270.
+#'
 #' @examples
 #' # basic percentile plot
 #' percentileRose(mydata, pollutant = "o3")
@@ -80,10 +104,21 @@
 #'
 #' \dontrun{
 #' # percentiles of ozone by year, with different colours
-#' percentileRose(mydata, type = "year", pollutant = "o3", col = "brewer1")
+#' percentileRose(
+#'   mydata,
+#'   type = "year",
+#'   pollutant = "o3",
+#'   col = "brewer1",
+#'   layout = c(4, 2)
+#' )
 #'
 #' # percentile concentrations by season and day/nighttime..
-#' percentileRose(mydata, type = c("season", "daylight"), pollutant = "o3", col = "brewer1")
+#' percentileRose(
+#'   mydata,
+#'   type = c("daylight", "season"),
+#'   pollutant = "o3",
+#'   col = "brewer1"
+#' )
 #' }
 percentileRose <- function(
   mydata,
@@ -103,18 +138,19 @@ percentileRose <- function(
   intervals = NULL,
   angle.scale = 45,
   auto.text = TRUE,
+  key = TRUE,
   key.header = NULL,
   key.footer = "percentile",
   key.position = "bottom",
-  key = TRUE,
-  alpha = 1,
+  strip.position = "top",
   plot = TRUE,
   ...
 ) {
-  ## get rid of R check annoyances
-  sub <- NULL
+  if (rlang::is_logical(key) && !key) {
+    key.position <- "none"
+  }
 
-  ## calculate percetiles or just show mean?
+  # calculate percentiles or just show mean?
   if (is.na(percentile[1])) {
     mean.only <- TRUE
     percentile <- 0
@@ -125,7 +161,9 @@ percentileRose <- function(
   if (tolower(method) == "cpf") {
     mean <- FALSE
     if (length(percentile) > 1) {
-      stop("Only one percentile should be supplied when method = 'CPF'.")
+      cli::cli_abort(
+        "Only one percentile should be supplied when {.arg method} = 'CPF'."
+      )
     }
   }
 
@@ -155,7 +193,7 @@ percentileRose <- function(
 
   ## make sure all wds are present
   ids <- which(!seq(angle, 360, by = angle) %in% unique(mydata[[wd]]))
-  if (length(ids) > 0 & smooth != TRUE) {
+  if (length(ids) > 0 && !smooth) {
     extra <- mydata[rep(1, length(ids)), ]
     extra[[wd]] <- seq(angle, 360, by = angle)[ids]
     extra[[pollutant]] <- NA
@@ -170,13 +208,13 @@ percentileRose <- function(
   # number of pollutants
   npol <- length(pollutant)
 
-  ## if more than one pollutant, need to stack the data and set type = "variable"
-  ## this case is most relevent for model-measurement compasrions where data are in columns
-  ## Can also do more than one pollutant and a single type that is not "default", in which
-  ## case pollutant becomes a conditioning variable
+  # if more than one pollutant, need to stack the data and set type = "variable"
+  # this case is most relevent for model-measurement compasrions where data are in columns
+  # Can also do more than one pollutant and a single type that is not "default", in which
+  # case pollutant becomes a conditioning variable
   if (length(pollutant) > 1) {
     if (length(type) > 1) {
-      warning(paste("Only type = '", type[1], "' will be used", sep = ""))
+      cli::cli_warn("Only type = '{type[1]}' will be used.")
       type <- type[1]
     }
     ## use pollutants as conditioning variables
@@ -191,76 +229,26 @@ percentileRose <- function(
     }
   }
 
-  ## extra.args setup
+  # extra.args setup
   extra.args <- list(...)
 
-  ## set graphics
-  current.strip <- trellis.par.get("strip.background")
-  current.font <- trellis.par.get("fontsize")
-
-  ## reset graphic parameters
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
-
   # label controls
-  extra.args$xlab <- if ("xlab" %in% names(extra.args)) {
-    quickText(extra.args$xlab, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
+  extra.args$xlab <- quickText(extra.args$xlab, auto.text)
+  extra.args$ylab <- quickText(extra.args$ylab, auto.text)
+  extra.args$main <- quickText(extra.args$main, auto.text)
 
-  extra.args$ylab <- if ("ylab" %in% names(extra.args)) {
-    quickText(extra.args$ylab, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
+  extra.args$lwd <- extra.args$lwd %||% 2
 
-  extra.args$main <- if ("main" %in% names(extra.args)) {
-    quickText(extra.args$main, auto.text)
-  } else {
-    quickText("", auto.text)
-  }
-
-  if ("fontsize" %in% names(extra.args)) {
-    trellis.par.set(fontsize = list(text = extra.args$fontsize))
-  }
-
-  ## layout default
-  if (!"layout" %in% names(extra.args)) {
-    extra.args$layout <- NULL
-  }
-
-  ## lwd handling
-  if (!"lwd" %in% names(extra.args)) {
-    extra.args$lwd <- 2
-  }
-
-  ## mydata <- na.omit(mydata)
   id <- which(is.na(mydata[, wd]))
   if (length(id) > 0) {
     mydata <- mydata[-id, ]
-  }
-
-  ## greyscale handling
-  if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-  }
-
-  if (!fill) {
-    ## labels depend on whether line or area are used
-    theLabels <- percentile
-  } else {
-    values <- cbind(percentile[-length(percentile)], percentile[-1])
-    theLabels <- paste(values[, 1], "-", values[, 2], sep = "")
   }
 
   prepare.grid <- function(mydata, stat, overall.lower, overall.upper) {
     overall.lower <- mydata$lower[1]
     overall.upper <- mydata$upper[1]
 
-    # wd = NULL
-    ## add zero wind angle = same as 360 for cyclic spline
+    # add zero wind angle = same as 360 for cyclic spline
     ids <- which(mydata[, wd] == 360)
 
     if (length(ids) > 0) {
@@ -308,8 +296,8 @@ percentileRose <- function(
         dat2 <- thedata
         dat1[[wd]] <- thedata[[wd]] - angle / 2
         dat2[[wd]] <- thedata[[wd]] + angle / 2
-        dat1$id <- 2 * 1:nrow(dat1) - 1
-        dat2$id <- 2 * 1:nrow(dat2)
+        dat1$id <- 2 * seq_len(nrow(dat1)) - 1
+        dat2$id <- 2 * seq_len(nrow(dat2))
         thedata <- rbind(dat1, dat2)
 
         thedata <- thedata[order(thedata$id), ]
@@ -384,11 +372,8 @@ percentileRose <- function(
 
   mydata <- cutData(mydata, type, ...)
 
-  ## overall.lower and overall.upper are the OVERALL upper/lower percentiles
-  #  overall.lower <- quantile(mydata[[pollutant]], probs = min(percentile) / 100, na.rm = TRUE)
-  #  overall.upper <- quantile(mydata[[pollutant]], probs = max(percentile) / 100, na.rm = TRUE)
-
-  ## overall.lower and overall.upper are the OVERALL upper/lower percentiles, but pollutant specific
+  # overall.lower and overall.upper are the OVERALL upper/lower percentiles, but
+  # pollutant specific
   if (npol > 1) {
     mydata <- mydata |>
       group_by(variable) |>
@@ -429,9 +414,10 @@ percentileRose <- function(
       .include_default = TRUE
     )
 
+  sub <- NULL
   if (method == "cpf") {
     ## useful labelling
-    sub <- paste(
+    sub <- paste0(
       "CPF at the ",
       max(percentile),
       "th percentile (=",
@@ -443,8 +429,7 @@ percentileRose <- function(
         )),
         1
       ),
-      ")",
-      sep = ""
+      ")"
     )
   }
 
@@ -459,211 +444,159 @@ percentileRose <- function(
     results.grid <- bind_rows(results.grid, Mean)
   }
 
-  ## proper names of labelling ###################################################
-  strip.dat <- strip.fun(results.grid, type, auto.text)
-  strip <- strip.dat[[1]]
-  strip.left <- strip.dat[[2]]
-  pol.name <- strip.dat[[3]]
-
-  col <- openColours(cols, length(theLabels))
-
-  legend <- list(
-    col = col,
-    space = key.position,
-    auto.text = auto.text,
-    labels = theLabels,
-    footer = key.footer,
-    header = key.header,
-    height = 0.60,
-    width = 1.5,
-    fit = "scale",
-    plot.style = "other"
-  )
-
-  col <- grDevices::adjustcolor(col, alpha.f = alpha)
-
-  legend <- makeOpenKeyLegend(key, legend, "percentileRose")
-
-  if (mean.only || tolower(method) == "cpf") {
-    legend <- NULL
+  # labels for factor levels
+  if (fill) {
+    fct_labels <- breaksToLabels(percentile)
+  } else {
+    fct_labels <- as.character(percentile)
   }
 
-  temp <- paste(type, collapse = "+")
-  myform <- formula(paste("y ~ x | ", temp, sep = ""))
-
-  ## keep unstransformed copy in case data are negative
-  results <- results.grid
-
-  results.grid$x <- results.grid$pollutant * sin(results.grid[[wd]] * pi / 180)
-  results.grid$y <- results.grid$pollutant * cos(results.grid[[wd]] * pi / 180)
-
-  min.res <- min(results.grid$pollutant, na.rm = TRUE)
-
-  newdata <- results.grid ## data to return
-
-  ## nice intervals for pollutant concentrations
-  tmp <- (results.grid$x^2 + results.grid$y^2)^0.5
-  if (is.null(intervals)) {
-    intervals <- pretty(c(min(tmp, na.rm = TRUE), max(tmp, na.rm = TRUE)))
+  # arrange data for plotting and make percentile a factor with appropriate
+  # labels
+  if (method == "cpf") {
+    plot_data <-
+      results.grid |>
+      dplyr::ungroup() |>
+      dplyr::filter(percentile != 0) |>
+      dplyr::arrange(desc(percentile)) |>
+      dplyr::mutate(
+        percentile = factor(percentile, labels = fct_labels)
+      )
+  } else {
+    plot_data <-
+      results.grid |>
+      dplyr::ungroup() |>
+      dplyr::filter(percentile != 0) |>
+      dplyr::arrange(desc(percentile)) |>
+      dplyr::mutate(
+        percentile = factor(
+          percentile,
+          rev(sort(unique(percentile))),
+          labels = c("Mean", rev(fct_labels))
+        )
+      )
   }
 
-  labs <- intervals ## the labels
-
-  ## if negative data, add to make all postive to plot properly
-  min.int <- min(intervals, na.rm = TRUE)
-  zero <- NA
-
-  if (min.int < 0) {
-    zero <- which(intervals == 0) ## the zero line
-    intervals <- intervals + -1 * min.int
-    results$pollutant <- results$pollutant + -1 * min.int
-    results.grid <- transform(
-      results,
-      x = pollutant * sin(eval(wd) * pi / 180),
-      y = pollutant * cos(eval(wd) * pi / 180)
+  legend_guide <-
+    ggplot2::guide_legend(
+      reverse = key.position %in% c("left", "right"),
+      theme = ggplot2::theme(
+        legend.title.position = ifelse(
+          key.position %in% c("left", "right"),
+          "top",
+          key.position
+        ),
+        legend.text.position = key.position
+      ),
+      nrow = if (key.position %in% c("left", "right")) NULL else 1
     )
-  }
 
-  ## re-label if CPF plot
-  if (tolower(method) == "cpf") {
-    pollutant <- "probability"
-  }
+  thePlot <-
+    plot_data |>
+    dplyr::filter(percentile != "Mean") |>
+    ggplot2::ggplot(
+      ggplot2::aes(x = .data[["wd"]], y = .data[["pollutant"]])
+    ) +
+    ggplot2::coord_radial(r.axis.inside = angle.scale) +
+    scale_x_compass() +
+    ggplot2::scale_y_continuous(
+      expand = ggplot2::expansion(c(0, 0.1)),
+      limits = c(0, ifelse(is.null(intervals), NA, max(intervals))),
+      breaks = intervals %||% scales::breaks_pretty()
+    ) +
+    theme_openair_radial(key.position = key.position, panel.ontop = TRUE) +
+    set_extra_fontsize(extra.args) +
+    ggplot2::labs(
+      x = extra.args$xlab,
+      y = extra.args$ylab,
+      title = extra.args$main,
+    ) +
+    ggplot2::scale_colour_manual(
+      values = c(
+        openair::openColours(cols, n = length(percentile[percentile != 0])),
+        mean.col
+      ),
+      breaks = fct_labels,
+      name = quickText(
+        paste(
+          key.header,
+          key.footer,
+          sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
+        ),
+        auto.text = auto.text
+      ),
+      aesthetics = c("colour", "fill")
+    ) +
+    ggplot2::guides(
+      fill = legend_guide,
+      color = legend_guide
+    ) +
+    get_facet(
+      type = type,
+      extra.args = extra.args,
+      scales = "fixed",
+      auto.text = auto.text,
+      drop = FALSE,
+      strip.position = strip.position
+    )
 
-  xyplot.args <- list(
-    x = myform,
-    xlim = c(max(intervals) * -1, max(intervals) * 1),
-    ylim = c(max(intervals) * -1, max(intervals) * 1),
-    data = results.grid,
-    type = "n",
-    sub = sub,
-    strip = strip,
-    strip.left = strip.left,
-    as.table = TRUE,
-    aspect = 1,
-    par.strip.text = list(cex = 0.8),
-    scales = list(draw = FALSE),
-    ...,
-    panel = function(x, y, subscripts, ...) {
-      if (fill) {
-        ## filled polygons
-
-        for (i in rev(seq_along(percentile))) {
-          value <- percentile[i]
-
-          if (i == 1) {
-            subdata <- subset(results.grid[subscripts, ], percentile == value)
-
-            if (length(percentile) > 1) {
-              lpolygon(subdata$x, subdata$y, col = col[1], border = NA)
-            } else {
-              lpolygon(subdata$x, subdata$y, col = "white", border = NA)
-            }
-          } else {
-            subdata1 <- results.grid[subscripts, ] |>
-              filter(percentile == {{ value }})
-
-            value2 <- percentile[i - 1]
-            subdata2 <- results.grid[subscripts, ] |>
-              filter(percentile == {{ value2 }})
-
-            poly.na(
-              x1 = subdata1$x,
-              x2 = subdata2$x,
-              y1 = subdata1$y,
-              y2 = subdata2$y,
-              myColors = col[i - 1],
-              alpha = 1,
-              border = col[i - 1]
-            )
-          }
-        }
-      }
-
-      angles <- seq(0, 2 * pi, length = 360)
-      sapply(intervals, function(x) {
-        llines(
-          x * sin(angles),
-          x * cos(angles),
-          col = "grey85",
-          lty = 5
+  if (!mean.only) {
+    if (fill) {
+      thePlot <-
+        thePlot +
+        ggplot2::geom_area(
+          ggplot2::aes(fill = .data[["percentile"]]),
+          show.legend = method != "cpf",
+          key_glyph = ggplot2::draw_key_rect,
+          position = ggplot2::position_identity()
         )
-      })
-
-      ## zero line if needed
-      if (!is.na(zero)) {
-        llines(
-          intervals[zero] * sin(angles),
-          intervals[zero] * cos(angles),
-          col = "grey85"
-        )
-      }
-
-      ## add axis lines
-      larrows(max(intervals) * -1, 0, max(intervals), 0, code = 3, length = 0.1)
-      larrows(0, max(intervals) * -1, 0, max(intervals), code = 3, length = 0.1)
-
-      ltext(
-        0.7 * sin(pi * (angle.scale + 5) / 180) * max(intervals),
-        0.7 * cos(pi * (angle.scale + 5) / 180) * max(intervals),
-        quickText(pollutant, auto.text),
-        srt = 0,
-        cex = 0.8,
-        pos = 4
-      )
-
-      ltext(max(intervals) * -1 * 0.95, 0.07 * max(intervals), "W", cex = 0.7)
-      ltext(0.07 * max(intervals), max(intervals) * -1 * 0.95, "S", cex = 0.7)
-      ltext(0.07 * max(intervals), max(intervals) * 0.95, "N", cex = 0.7)
-      ltext(max(intervals) * 0.95, 0.07 * max(intervals), "E", cex = 0.7)
-
-      ## draw lines if fill = FALSE
-      if (!fill) {
-        for (i in seq_along(percentile)) {
-          value <- percentile[i]
-          subdata <- subset(results.grid[subscripts, ], percentile == value)
-          llines(subdata$x, subdata$y, col = col[i], lwd = extra.args$lwd)
-        }
-      }
-
-      ## add mean line
-      if (mean) {
-        subdata <- subset(results.grid[subscripts, ], percentile == 999)
-        llines(
-          subdata$x,
-          subdata$y,
-          col = mean.col,
-          lwd = mean.lwd,
-          lty = mean.lty
-        )
-      }
-
-      ltext(
-        intervals * sin(pi * angle.scale / 180),
-        intervals * cos(pi * angle.scale / 180),
-        paste(labs, c("", "", rep("", 7))),
-        cex = 0.7
-      )
-    },
-    legend = legend
-  )
-
-  # reset for extra.args
-  xyplot.args <- listUpdate(xyplot.args, extra.args)
-
-  # plot
-  plt <- do.call(xyplot, xyplot.args)
-
-  ## output ####################################################################################
-
-  if (plot) {
-    if (length(type) == 1) {
-      plot(plt)
     } else {
-      plot(useOuterStrips(plt, strip = strip, strip.left = strip.left))
+      thePlot <-
+        thePlot +
+        ggplot2::geom_line(
+          ggplot2::aes(colour = .data[["percentile"]]),
+          linewidth = extra.args$lwd / 3,
+          show.legend = method != "cpf",
+          key_glyph = ggplot2::draw_key_rect,
+          position = ggplot2::position_identity()
+        )
     }
   }
 
-  output <- list(plot = plt, data = newdata, call = match.call())
+  if (mean) {
+    thePlot <-
+      thePlot +
+      ggplot2::geom_line(
+        data = plot_data |> dplyr::filter(.data$percentile == "Mean"),
+        colour = mean.col,
+        linewidth = mean.lwd / 3,
+        linetype = mean.lty
+      )
+  }
+
+  if (method == "cpf") {
+    thePlot <- thePlot + ggplot2::labs(caption = sub)
+  }
+
+  # make key full width/height
+  if (key.position %in% c("left", "right")) {
+    thePlot <- thePlot +
+      ggplot2::theme(
+        legend.key.height = ggplot2::rel(2)
+      )
+  }
+  if (key.position %in% c("top", "bottom")) {
+    thePlot <- thePlot +
+      ggplot2::theme(
+        legend.key.width = ggplot2::rel(2)
+      )
+  }
+
+  if (plot) {
+    plot(thePlot)
+  }
+
+  output <- list(plot = thePlot, data = results.grid, call = match.call())
   class(output) <- "openair"
 
   invisible(output)

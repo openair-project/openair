@@ -367,7 +367,7 @@ polarFreq <- function(
       breaks = seq(0, max.ws, by = grid.line),
       expand = ggplot2::expansion(c(0, .1))
     ) +
-    theme_openair_radial(key.position) +
+    theme_openair_radial(key.position = key.position, panel.ontop = TRUE) +
     set_extra_fontsize(extra.args) +
     ggplot2::labs(
       y = extra.args$ylab,
