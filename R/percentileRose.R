@@ -342,7 +342,9 @@ percentileRose <- function(
     ## all percentile levels so there is no need to recompute inside the loop
     if (smooth) {
       smooth_wds <- unique(percentiles[[wd]])
-      smooth_ids <- lapply(smooth_wds, function(x) seq(from = x - angle / 2, to = x + angle / 2))
+      smooth_ids <- lapply(smooth_wds, function(x) {
+        seq(from = x - angle / 2, to = x + angle / 2)
+      })
       smooth_ids <- unique(do.call(c, smooth_ids))
       smooth_ids[smooth_ids < 0] <- smooth_ids[smooth_ids < 0] + 360
     }
@@ -415,7 +417,10 @@ percentileRose <- function(
       .include_default = TRUE
     )
 
-  results.grid <- dplyr::filter(all_grid_results, .data$stat_type == "percentile") |>
+  results.grid <- dplyr::filter(
+    all_grid_results,
+    .data$stat_type == "percentile"
+  ) |>
     dplyr::select(-"stat_type")
 
   sub <- NULL
@@ -497,7 +502,11 @@ percentileRose <- function(
     ggplot2::ggplot(
       ggplot2::aes(x = .data[["wd"]], y = .data[["pollutant"]])
     ) +
-    ggplot2::coord_radial(r.axis.inside = angle.scale) +
+    ggplot2::ggproto(
+      NULL,
+      ggplot2::coord_radial(r.axis.inside = angle.scale),
+      inner_radius = c(0, 0.475)
+    ) +
     scale_x_compass() +
     ggplot2::scale_y_continuous(
       expand = ggplot2::expansion(c(0, 0.1)),
@@ -591,6 +600,12 @@ percentileRose <- function(
         legend.key.width = ggplot2::rel(2)
       )
   }
+
+  # add compass points
+  thePlot <- thePlot +
+    annotate_compass_points(
+      size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
+    )
 
   if (plot) {
     plot(thePlot)

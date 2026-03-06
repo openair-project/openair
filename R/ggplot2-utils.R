@@ -143,13 +143,52 @@ scale_x_compass <- function(
   oob = scales::oob_keep,
   ...
 ) {
-  ggplot2::scale_x_continuous(
-    limits = c(0, 360),
-    labels = c("N", "E", "S", "W"),
-    breaks = seq(0, 360 - 90, 90),
-    expand = expand,
-    oob = oob,
-    ...
+  list(
+    ggplot2::scale_x_continuous(
+      limits = c(0, 360),
+      labels = NULL,
+      breaks = seq(0, 360 - 90, 90),
+      expand = expand,
+      oob = oob,
+      ...
+    )
+  )
+}
+
+annotate_compass_points <- function(size) {
+  list(
+    ggplot2::annotate(
+      y = I(0.935),
+      x = I(0.52),
+      geom = "text",
+      label = "N",
+      hjust = 0,
+      size = size
+    ),
+    ggplot2::annotate(
+      y = I(1 - 0.935),
+      x = I(0.52),
+      geom = "text",
+      label = "S",
+      hjust = 0,
+      size = size
+    ),
+    ggplot2::annotate(
+      y = I(0.52),
+      x = I(1 - 0.935),
+      geom = "text",
+      label = "W",
+      vjust = 0,
+      size = size
+    ),
+    ggplot2::annotate(
+      y = I(0.52),
+      x = I(0.935),
+      geom = "text",
+      label = "E",
+      vjust = 0,
+      size = size
+    )
   )
 }
 
