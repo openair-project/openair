@@ -116,10 +116,6 @@ Additional plotting functions for visualising air quality data.
   : Flexible scatter plots
 - [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
   : Correlation matrices with conditioning
-- [`linearRelation()`](https://openair-project.github.io/openair/reference/linearRelation.md)
-  : Linear relations between pollutants
-- [`calcFno2()`](https://openair-project.github.io/openair/reference/calcFno2.md)
-  : Estimate NO2/NOX emission ratios from monitoring data
 
 ## Utilities
 

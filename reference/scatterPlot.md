@@ -380,7 +380,6 @@ maximise the plotting area and therefore the information shown.
 
 ## See also
 
-[`linearRelation()`](https://openair-project.github.io/openair/reference/linearRelation.md),
 [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
 and
 [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
