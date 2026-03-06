@@ -11,6 +11,7 @@ pollutionRose(
   key.position = "right",
   key = TRUE,
   breaks = 6,
+  paddle = FALSE,
   seg = 0.9,
   normalise = FALSE,
   plot = TRUE,
@@ -37,18 +38,16 @@ concentrations. The default, 6, attempts to breaks the supplied data at
 approximately 6 sensible break points. However, \code{breaks} can also be
 used to set specific break points. For example, the argument \code{breaks = c(0, 1, 10, 100)} breaks the data into segments <1, 1-10, 10-100, >100.}
 
-\item{seg}{\code{seg} determines with width of the
-segments. For example, \code{seg = 0.5} will produce segments 0.5 *
-\code{angle}.}
+\item{seg}{\code{seg} determines with width of the segments. For example, \code{seg = 0.5} will produce segments 0.5 * \code{angle}.}
 
-\item{normalise}{If \code{TRUE} each wind direction segment is normalised to
-equal one. This is useful for showing how the concentrations (or other
+\item{normalise}{If \code{TRUE} each wind direction segment is normalised to equal
+one. This is useful for showing how the concentrations (or other
 parameters) contribute to each wind sector when the proportion of time the
 wind is from that direction is low. A line showing the probability that the
 wind directions is from a particular wind sector is also shown.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other ways.}
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data to extract plot components and plotting them in other ways.}
 
 \item{...}{
   Arguments passed on to \code{\link[=windRose]{windRose}}
@@ -63,65 +62,62 @@ with low mean wind speeds a value of 1 or 0.5 m/s may be better.}
     \item{\code{angle}}{Default angle of \dQuote{spokes} is 30. Other potentially useful
 angles are 45 and 10. Note that the width of the wind speed interval may
 need adjusting using \code{width}.}
-    \item{\code{type}}{\code{type} determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-\code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-on. For example, \code{type = "season"} will produce four plots --- one for
-each season.
+    \item{\code{type}}{\code{type} determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
+\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+\code{type = "season"} will produce four plots --- one for each season.
 
-It is also possible to choose \code{type} as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+It is also possible to choose \code{type} as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-Type can be up length two e.g. \code{type = c("season", "weekday")} will
-produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.}
+Type can be up length two e.g. \code{type = c("season", "weekday")} will produce
+a 2x2 plot split by season and day of the week. Note, when two types are
+provided the first forms the columns and the second the rows.}
     \item{\code{calm.thresh}}{By default, conditions are considered to be calm when the
 wind speed is zero. The user can set a different threshold for calms be
-setting \code{calm.thresh} to a higher value. For example,
-\code{calm.thresh = 0.5} will identify wind speeds \strong{below} 0.5 as calm.}
+setting \code{calm.thresh} to a higher value. For example, \code{calm.thresh = 0.5}
+will identify wind speeds \strong{below} 0.5 as calm.}
     \item{\code{bias.corr}}{When \code{angle} does not divide exactly into 360 a bias is
 introduced in the frequencies when the wind direction is already supplied
 rounded to the nearest 10 degrees, as is often the case. For example, if
-\code{angle = 22.5}, N, E, S, W will include 3 wind sectors and all other
-angles will be two. A bias correction can made to correct for this problem.
-A simple method according to Applequist (2012) is used to adjust the
+\code{angle = 22.5}, N, E, S, W will include 3 wind sectors and all other angles
+will be two. A bias correction can made to correct for this problem. A
+simple method according to Applequist (2012) is used to adjust the
 frequencies.}
     \item{\code{cols}}{Colours to be used for plotting. Options include
 \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet},
 \dQuote{hue} and user defined. For user defined the user can supply a list
-of colour names recognised by R (type \code{colours()} to see the full
-list). An example would be \code{cols = c("yellow", "green", "blue", "black")}.}
-    \item{\code{grid.line}}{Grid line interval to use. If \code{NULL}, as in default,
-this is assigned based on the available data range. However, it can also be
-forced to a specific value, e.g. \code{grid.line = 10}. \code{grid.line}
-can also be a list to control the interval, line type and colour. For
-example \code{grid.line = list(value = 10, lty = 5, col = "purple")}.}
-    \item{\code{auto.text}}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
-titles and axis labels will automatically try and format pollutant names
-and units properly, e.g., by subscripting the \sQuote{2} in NO2.}
+of colour names recognised by R (type \code{colours()} to see the full list). An
+example would be \code{cols = c("yellow", "green", "blue", "black")}.}
+    \item{\code{grid.line}}{Grid line interval to use. If \code{NULL}, as in default, this is
+assigned based on the available data range. However, it can also be forced
+to a specific value, e.g. \code{grid.line = 10}. \code{grid.line} can also be a list
+to control the interval, line type and colour. For example \code{grid.line = list(value = 10, lty = 5, col = "purple")}.}
+    \item{\code{auto.text}}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly, e.g., by subscripting the \sQuote{2} in NO2.}
     \item{\code{offset}}{The size of the 'hole' in the middle of the plot, expressed as
 a percentage of the polar axis scale, default 10.}
     \item{\code{max.freq}}{Controls the scaling used by setting the maximum value for
 the radial limits. This is useful to ensure several plots use the same
 radial limits.}
     \item{\code{key.header}}{Adds additional text/labels above the scale key. For
-example, passing \code{windRose(mydata, key.header = "ws")} adds the
-addition text as a scale header. Note: This argument is passed to
-\code{\link[=drawOpenKey]{drawOpenKey()}} via \code{\link[=quickText]{quickText()}}, applying the auto.text argument, to
-handle formatting.}
+example, passing \code{windRose(mydata, key.header = "ws")} adds the addition
+text as a scale header. Note: This argument is passed to \code{\link[=drawOpenKey]{drawOpenKey()}}
+via \code{\link[=quickText]{quickText()}}, applying the auto.text argument, to handle formatting.}
     \item{\code{dig.lab}}{The number of significant figures at which scientific number
 formatting is used in break point and key labelling. Default 5.}
-    \item{\code{include.lowest}}{Logical. If \code{FALSE} (the default), the first
-interval will be left exclusive and right inclusive. If \code{TRUE}, the
-first interval will be left and right inclusive. Passed to the
-\code{include.lowest} argument of \code{\link[=cut]{cut()}}.}
-    \item{\code{statistic}}{The \code{statistic} to be applied to each data bin in the
-plot. Options currently include \dQuote{prop.count}, \dQuote{prop.mean} and
+    \item{\code{include.lowest}}{Logical. If \code{FALSE} (the default), the first interval
+will be left exclusive and right inclusive. If \code{TRUE}, the first interval
+will be left and right inclusive. Passed to the \code{include.lowest} argument
+of \code{\link[=cut]{cut()}}.}
+    \item{\code{statistic}}{The \code{statistic} to be applied to each data bin in the plot.
+Options currently include \dQuote{prop.count}, \dQuote{prop.mean} and
 \dQuote{abs.count}. The default \dQuote{prop.count} sizes bins according to
 the proportion of the frequency of measurements.  Similarly,
 \dQuote{prop.mean} sizes bins according to their relative contribution to
@@ -132,9 +128,8 @@ printed in each panel together with a description of the statistic below
 the plot. If \code{FALSE} then only the statistic will be printed.}
     \item{\code{angle.scale}}{The scale is by default shown at a 315 degree angle.
 Sometimes the placement of the scale may interfere with an interesting
-feature. The user can therefore set \code{angle.scale} to another value
-(between 0 and 360 degrees) to mitigate such problems. For example
-\code{angle.scale = 45} will draw the scale heading in a NE direction.}
+feature. The user can therefore set \code{angle.scale} to another value (between
+0 and 360 degrees) to mitigate such problems. For example \code{angle.scale = 45} will draw the scale heading in a NE direction.}
     \item{\code{border}}{Border colour for shaded areas. Default is no border.}
   }}
 }

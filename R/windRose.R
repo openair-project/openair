@@ -5,19 +5,18 @@
 #' substitutes other measurements, most commonly a pollutant time series, for
 #' wind speed.
 #'
-#' For `windRose` data are summarised by direction, typically by 45 or 30
-#' (or 10) degrees and by different wind speed categories. Typically, wind
-#' speeds are represented by different width "paddles". The plots show the
-#' proportion (here represented as a percentage) of time that the wind is from a
-#' certain angle and wind speed range.
+#' For `windRose` data are summarised by direction, typically by 45 or 30 (or
+#' 10) degrees and by different wind speed categories. Typically, wind speeds
+#' are represented by different width "paddles". The plots show the proportion
+#' (here represented as a percentage) of time that the wind is from a certain
+#' angle and wind speed range.
 #'
-#' By default `windRose` will plot a windRose in using "paddle" style
-#' segments and placing the scale key below the plot.
+#' By default `windRose` will plot a windRose in using "paddle" style segments
+#' and placing the scale key below the plot.
 #'
-#' The argument `pollutant` uses the same plotting structure but
-#' substitutes another data series, defined by `pollutant`, for wind speed.
-#' It is recommended to use [pollutionRose()] for plotting pollutant
-#' concentrations.
+#' The argument `pollutant` uses the same plotting structure but substitutes
+#' another data series, defined by `pollutant`, for wind speed. It is
+#' recommended to use [pollutionRose()] for plotting pollutant concentrations.
 #'
 #' The option `statistic = "prop.mean"` provides a measure of the relative
 #' contribution of each bin to the panel mean, and is intended for use with
@@ -34,60 +33,62 @@
 #' @param angle Default angle of \dQuote{spokes} is 30. Other potentially useful
 #'   angles are 45 and 10. Note that the width of the wind speed interval may
 #'   need adjusting using `width`.
-#' @param type `type` determines how the data are split i.e. conditioned,
-#'   and then plotted. The default is will produce a single plot using the
-#'   entire data. Type can be one of the built-in types as detailed in
-#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, `type = "season"` will produce four plots --- one for
-#'   each season.
+#' @param type `type` determines how the data are split i.e. conditioned, and
+#'   then plotted. The default is will produce a single plot using the entire
+#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
+#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+#'   `type = "season"` will produce four plots --- one for each season.
 #'
-#'   It is also possible to choose `type` as another variable in the data
-#'   frame. If that variable is numeric, then the data will be split into four
+#'   It is also possible to choose `type` as another variable in the data frame.
+#'   If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   Type can be up length two e.g. `type = c("season", "weekday")` will
-#'   produce a 2x2 plot split by season and day of the week. Note, when two
-#'   types are provided the first forms the columns and the second the rows.
+#'   Type can be up length two e.g. `type = c("season", "weekday")` will produce
+#'   a 2x2 plot split by season and day of the week. Note, when two types are
+#'   provided the first forms the columns and the second the rows.
 #' @param calm.thresh By default, conditions are considered to be calm when the
 #'   wind speed is zero. The user can set a different threshold for calms be
-#'   setting `calm.thresh` to a higher value. For example,
-#'   `calm.thresh = 0.5` will identify wind speeds **below** 0.5 as calm.
+#'   setting `calm.thresh` to a higher value. For example, `calm.thresh = 0.5`
+#'   will identify wind speeds **below** 0.5 as calm.
 #' @param bias.corr When `angle` does not divide exactly into 360 a bias is
 #'   introduced in the frequencies when the wind direction is already supplied
 #'   rounded to the nearest 10 degrees, as is often the case. For example, if
-#'   `angle = 22.5`, N, E, S, W will include 3 wind sectors and all other
-#'   angles will be two. A bias correction can made to correct for this problem.
-#'   A simple method according to Applequist (2012) is used to adjust the
+#'   `angle = 22.5`, N, E, S, W will include 3 wind sectors and all other angles
+#'   will be two. A bias correction can made to correct for this problem. A
+#'   simple method according to Applequist (2012) is used to adjust the
 #'   frequencies.
 #' @param cols Colours to be used for plotting. Options include
 #'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet},
 #'   \dQuote{hue} and user defined. For user defined the user can supply a list
-#'   of colour names recognised by R (type `colours()` to see the full
-#'   list). An example would be `cols = c("yellow", "green", "blue",
-#'   "black")`.
-#' @param grid.line Grid line interval to use. If `NULL`, as in default,
-#'   this is assigned based on the available data range. However, it can also be
-#'   forced to a specific value, e.g. `grid.line = 10`. `grid.line`
-#'   can also be a list to control the interval, line type and colour. For
-#'   example `grid.line = list(value = 10, lty = 5, col = "purple")`.
-#' @param seg `seg` determines with width of the
-#'   segments. For example, `seg = 0.5` will produce segments 0.5 *
-#'   `angle`.
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
-#'   titles and axis labels will automatically try and format pollutant names
-#'   and units properly, e.g., by subscripting the \sQuote{2} in NO2.
+#'   of colour names recognised by R (type `colours()` to see the full list). An
+#'   example would be `cols = c("yellow", "green", "blue", "black")`.
+#' @param grid.line Grid line interval to use. If `NULL`, as in default, this is
+#'   assigned based on the available data range. However, it can also be forced
+#'   to a specific value, e.g. `grid.line = 10`. `grid.line` can also be a list
+#'   to control the interval, line type and colour. For example `grid.line =
+#'   list(value = 10, lty = 5, col = "purple")`.
+#' @param For paddle = TRUE, the adjustment factor for width of wind speed
+#'   intervals. For example, width = 1.5 will make the paddle width 1.5 times
+#'   wider.
+#' @param seg `seg` determines with width of the segments. For example, `seg =
+#'   0.5` will produce segments 0.5 * `angle`.
+#' @param Either `TRUE` or `FALSE`. If `TRUE` plots rose using 'paddle' style
+#'   spokes. If `FALSE` plots rose using 'wedge' style spokes.
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
+#'   axis labels will automatically try and format pollutant names and units
+#'   properly, e.g., by subscripting the \sQuote{2} in NO2.
 #' @param breaks Most commonly, the number of break points for wind speed. With
-#'   the `ws.int` default of 2 m/s, the `breaks` default, 4, generates
-#'   the break points 2, 4, 6, 8 m/s. However, `breaks` can also be used to
-#'   set specific break points. For example, the argument `breaks = c(0, 1,
-#'   10, 100)` breaks the data into segments <1, 1-10, 10-100, >100.
+#'   the `ws.int` default of 2 m/s, the `breaks` default, 4, generates the break
+#'   points 2, 4, 6, 8 m/s. However, `breaks` can also be used to set specific
+#'   break points. For example, the argument `breaks = c(0, 1, 10, 100)` breaks
+#'   the data into segments <1, 1-10, 10-100, >100.
 #' @param offset The size of the 'hole' in the middle of the plot, expressed as
 #'   a percentage of the polar axis scale, default 10.
-#' @param normalise If `TRUE` each wind direction segment is normalised to
-#'   equal one. This is useful for showing how the concentrations (or other
+#' @param normalise If `TRUE` each wind direction segment is normalised to equal
+#'   one. This is useful for showing how the concentrations (or other
 #'   parameters) contribute to each wind sector when the proportion of time the
 #'   wind is from that direction is low. A line showing the probability that the
 #'   wind directions is from a particular wind sector is also shown.
@@ -95,10 +96,9 @@
 #'   the radial limits. This is useful to ensure several plots use the same
 #'   radial limits.
 #' @param key.header Adds additional text/labels above the scale key. For
-#'   example, passing `windRose(mydata, key.header = "ws")` adds the
-#'   addition text as a scale header. Note: This argument is passed to
-#'   [drawOpenKey()] via [quickText()], applying the auto.text argument, to
-#'   handle formatting.
+#'   example, passing `windRose(mydata, key.header = "ws")` adds the addition
+#'   text as a scale header. Note: This argument is passed to [drawOpenKey()]
+#'   via [quickText()], applying the auto.text argument, to handle formatting.
 #' @param key.footer Adds additional text/labels below the scale key. See
 #'   `key.header` for further information.
 #' @param key.position Location where the scale key is to plotted. Allowed
@@ -107,59 +107,58 @@
 #' @param key Fine control of the scale key via [drawOpenKey()].
 #' @param dig.lab The number of significant figures at which scientific number
 #'   formatting is used in break point and key labelling. Default 5.
-#' @param include.lowest Logical. If `FALSE` (the default), the first
-#'   interval will be left exclusive and right inclusive. If `TRUE`, the
-#'   first interval will be left and right inclusive. Passed to the
-#'   `include.lowest` argument of [cut()].
-#' @param statistic The `statistic` to be applied to each data bin in the
-#'   plot. Options currently include \dQuote{prop.count}, \dQuote{prop.mean} and
+#' @param include.lowest Logical. If `FALSE` (the default), the first interval
+#'   will be left exclusive and right inclusive. If `TRUE`, the first interval
+#'   will be left and right inclusive. Passed to the `include.lowest` argument
+#'   of [cut()].
+#' @param statistic The `statistic` to be applied to each data bin in the plot.
+#'   Options currently include \dQuote{prop.count}, \dQuote{prop.mean} and
 #'   \dQuote{abs.count}. The default \dQuote{prop.count} sizes bins according to
 #'   the proportion of the frequency of measurements.  Similarly,
 #'   \dQuote{prop.mean} sizes bins according to their relative contribution to
 #'   the mean. \dQuote{abs.count} provides the absolute count of measurements in
 #'   each bin.
 #' @param pollutant Alternative data series to be sampled instead of wind speed.
-#'   The [windRose()] default NULL is equivalent to `pollutant = "ws"`. Use
-#'   in [pollutionRose()].
+#'   The [windRose()] default NULL is equivalent to `pollutant = "ws"`. Use in
+#'   [pollutionRose()].
 #' @param annotate If `TRUE` then the percentage calm and mean values are
 #'   printed in each panel together with a description of the statistic below
 #'   the plot. If `FALSE` then only the statistic will be printed.
 #' @param angle.scale The scale is by default shown at a 315 degree angle.
 #'   Sometimes the placement of the scale may interfere with an interesting
-#'   feature. The user can therefore set `angle.scale` to another value
-#'   (between 0 and 360 degrees) to mitigate such problems. For example
-#'   `angle.scale = 45` will draw the scale heading in a NE direction.
+#'   feature. The user can therefore set `angle.scale` to another value (between
+#'   0 and 360 degrees) to mitigate such problems. For example `angle.scale =
+#'   45` will draw the scale heading in a NE direction.
 #' @param border Border colour for shaded areas. Default is no border.
-#' @param plot Should a plot be produced? `FALSE` can be useful when
-#'   analysing data to extract plot components and plotting them in other ways.
+#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
+#'   data to extract plot components and plotting them in other ways.
 #' @param ... Other parameters that are passed on to `drawOpenKey`,
-#'   `lattice:xyplot` and `cutData`. Axis and title labelling options
-#'   (`xlab`, `ylab`, `main`) are passed to `xyplot` via
-#'   `quickText` to handle routine formatting.
+#'   `lattice:xyplot` and `cutData`. Axis and title labelling options (`xlab`,
+#'   `ylab`, `main`) are passed to `xyplot` via `quickText` to handle routine
+#'   formatting.
 #'
 #' @export
 #' @import dplyr
 #' @return an [openair][openair-package] object. Summarised proportions can be
-#'   extracted directly using the `$data` operator, e.g. `object$data`
-#'   for `output <- windRose(mydata)`. This returns a data frame with three
-#'   set columns: `cond`, conditioning based on `type`; `wd`, the
-#'   wind direction; and `calm`, the `statistic` for the proportion of
-#'   data unattributed to any specific wind direction because it was collected
-#'   under calm conditions; and then several (one for each range binned for the
-#'   plot) columns giving proportions of measurements associated with each
-#'   `ws` or `pollutant` range plotted as a discrete panel.
+#'   extracted directly using the `$data` operator, e.g. `object$data` for
+#'   `output <- windRose(mydata)`. This returns a data frame with three set
+#'   columns: `cond`, conditioning based on `type`; `wd`, the wind direction;
+#'   and `calm`, the `statistic` for the proportion of data unattributed to any
+#'   specific wind direction because it was collected under calm conditions; and
+#'   then several (one for each range binned for the plot) columns giving
+#'   proportions of measurements associated with each `ws` or `pollutant` range
+#'   plotted as a discrete panel.
 #' @author David Carslaw
 #' @author Karl Ropkins
 #' @author Jack Davison
 #' @family polar directional analysis functions
 #'
-#' @references
-#' Applequist, S, 2012: Wind Rose Bias Correction. J. Appl. Meteor. Climatol.,
-#' 51, 1305-1309.
+#' @references Applequist, S, 2012: Wind Rose Bias Correction. J. Appl. Meteor.
+#'   Climatol., 51, 1305-1309.
 #'
-#' Droppo,  J.G. and B.A. Napier (2008) Wind Direction Bias in Generating Wind
-#' Roses and Conducting Sector-Based Air Dispersion Modeling, Journal of the Air
-#' & Waste Management Association, 58:7, 913-918.
+#'   Droppo,  J.G. and B.A. Napier (2008) Wind Direction Bias in Generating Wind
+#'   Roses and Conducting Sector-Based Air Dispersion Modeling, Journal of the
+#'   Air & Waste Management Association, 58:7, 913-918.
 #'
 #' @examples
 #' # basic plot
@@ -185,12 +184,14 @@ windRose <- function(
   bias.corr = TRUE,
   cols = "default",
   grid.line = NULL,
+  width = 0.9,
   seg = 0.9,
   auto.text = TRUE,
   breaks = 4,
   offset = 10,
   normalise = FALSE,
   max.freq = NULL,
+  paddle = TRUE,
   key.header = NULL,
   key.footer = "(m/s)",
   key.position = "bottom",
@@ -510,7 +511,7 @@ windRose <- function(
     wds <- seq(10, 360, 10)
     tmp <- angle * ceiling(wds / angle - 0.5)
     id <- which(tmp == 0)
-    if (length(id > 0)) {
+    if (length(id) > 0) {
       tmp[id] <- 360
     }
     tmp <- table(tmp) # number of sectors spanned
@@ -586,8 +587,10 @@ windRose <- function(
       dplyr::starts_with("Interval")
     ) |>
     dplyr::mutate(
-      value2 = .data$value - dplyr::lag(.data$value, default = 0),
-      norm2 = .data$norm - dplyr::lag(.data$norm, default = 0),
+      lag_value = dplyr::lag(.data$value, default = 0),
+      value2 = .data$value - .data$lag_value,
+      lag_norm = dplyr::lag(.data$norm, default = 0),
+      norm2 = .data$norm - .data$lag_norm,
       .by = dplyr::all_of(c("wd", type))
     ) |>
     dplyr::mutate(
@@ -622,13 +625,14 @@ windRose <- function(
       inner_radius = c(offset / 100, 1) * 0.475
     ) +
     ggplot2::scale_y_continuous(
-      expand = ggplot2::expansion(if (normalise) c(0, 0) else c(0, .1)),
+      expand = ggplot2::expansion(if (normalise) c(0, 0) else c(0, 0.1)),
       breaks = if (is.null(grid.value)) {
         scales::pretty_breaks()
       } else {
         seq(0, max.freq, grid.value)
       },
-      labels = \(x) paste0(x, stat.unit)
+      labels = \(x) paste0(x, stat.unit),
+      limits = c(0, max.freq)
     ) +
     scale_x_compass() +
     ggplot2::scale_fill_manual(
@@ -683,14 +687,102 @@ windRose <- function(
         width = seg * angle
       )
   } else {
-    thePlot <-
-      thePlot +
-      ggplot2::geom_col(
-        ggplot2::aes(fill = .data$name),
-        position = ggplot2::position_stack(reverse = TRUE),
-        width = seg * angle,
-        color = border
-      )
+    if (paddle) {
+      paddle_widths <-
+        seq(
+          0.2,
+          width,
+          length.out = dplyr::n_distinct(levels(plot_data$name))
+        ) *
+        angle
+
+      straighten_radial_rectangles <- function(
+        plot_data,
+        paddle_widths,
+        n_points = 50
+      ) {
+        interpolated_data <- plot_data |>
+          dplyr::mutate(rect_id = dplyr::row_number()) |>
+          dplyr::rowwise() |>
+          dplyr::reframe(
+            # Calculate the four corners in radial coordinates (degrees)
+            corner_angle_deg = c(
+              wd - paddle_widths[as.numeric(name)] / 2,
+              wd - paddle_widths[as.numeric(name)] / 2,
+              wd + paddle_widths[as.numeric(name)] / 2,
+              wd + paddle_widths[as.numeric(name)] / 2
+            ),
+            corner_radius = c(value, lag_value, lag_value, value),
+
+            # Convert degrees to radians for trigonometry
+            corner_angle_rad = corner_angle_deg * pi / 180,
+
+            # Convert to Cartesian
+            corner_x = corner_radius * cos(corner_angle_rad),
+            corner_y = corner_radius * sin(corner_angle_rad),
+            corner_order = 1:4,
+            rect_id = rect_id,
+            name = name,
+            original_angle = wd # Keep original for unwrapping
+          ) |>
+          dplyr::reframe(
+            # Interpolate straight lines between corners in Cartesian space
+            x = c(
+              seq(corner_x[1], corner_x[2], length.out = n_points),
+              seq(corner_x[2], corner_x[3], length.out = n_points),
+              seq(corner_x[3], corner_x[4], length.out = n_points),
+              seq(corner_x[4], corner_x[1], length.out = n_points)
+            ),
+            y = c(
+              seq(corner_y[1], corner_y[2], length.out = n_points),
+              seq(corner_y[2], corner_y[3], length.out = n_points),
+              seq(corner_y[3], corner_y[4], length.out = n_points),
+              seq(corner_y[4], corner_y[1], length.out = n_points)
+            ),
+            name = name[1],
+            original_angle = original_angle[1],
+            .by = "rect_id"
+          ) |>
+          dplyr::mutate(
+            # Convert back to polar (in degrees)
+            wd_raw = atan2(y, x) * 180 / pi,
+            # Unwrap angles - adjust to be close to original angle
+            wd = wd_raw + 360 * round((original_angle - wd_raw) / 360),
+            value = sqrt(x^2 + y^2)
+          )
+
+        return(interpolated_data)
+      }
+
+      poly_data <-
+        mapType(
+          plot_data,
+          type,
+          \(x) straighten_radial_rectangles(x, paddle_widths = paddle_widths),
+          .include_default = TRUE
+        )
+
+      thePlot <-
+        thePlot +
+        ggplot2::geom_polygon(
+          data = poly_data,
+          ggplot2::aes(
+            x = .data$wd,
+            y = .data$value,
+            fill = .data$name,
+            group = .data$rect_id
+          )
+        )
+    } else {
+      thePlot <-
+        thePlot +
+        ggplot2::geom_col(
+          ggplot2::aes(fill = .data$name),
+          position = ggplot2::position_stack(reverse = TRUE),
+          width = seg * angle,
+          color = border
+        )
+    }
   }
 
   if (annotate) {
@@ -812,7 +904,7 @@ windRose <- function(
 #'   c(0, 1, 10, 100)` breaks the data into segments <1, 1-10, 10-100, >100.
 #'
 #' @inheritDotParams windRose -pollutant -key.footer -key.position -key -breaks
-#'   -seg -normalise -plot
+#'   -seg -normalise -plot -paddle
 #' @export
 #' @return an [openair][openair-package] object. Summarised proportions can be
 #'   extracted directly using the `$data` operator, e.g.
@@ -869,6 +961,7 @@ pollutionRose <- function(
   key.position = "right",
   key = TRUE,
   breaks = 6,
+  paddle = FALSE,
   seg = 0.9,
   normalise = FALSE,
   plot = TRUE,
