@@ -1,6 +1,6 @@
 # Function to plot percentiles by wind direction
 
-`percentileRose` plots percentiles by wind direction with flexible
+`percentileRose()` plots percentiles by wind direction with flexible
 conditioning. The plot can display multiple percentile lines or filled
 areas.
 
@@ -25,11 +25,11 @@ percentileRose(
   intervals = NULL,
   angle.scale = 45,
   auto.text = TRUE,
+  key = TRUE,
   key.header = NULL,
   key.footer = "percentile",
   key.position = "bottom",
-  key = TRUE,
-  alpha = 1,
+  strip.position = "top",
   plot = TRUE,
   ...
 )
@@ -133,7 +133,7 @@ percentileRose(
 - intervals:
 
   User-supplied intervals for the scale e.g.
-  `intervals = c(0, 10, 30, 50)`
+  `intervals = c(0, 10, 30, 50)`.
 
 - angle.scale:
 
@@ -147,6 +147,11 @@ percentileRose(
   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
   will automatically try and format pollutant names and units properly
   e.g. by subscripting the \`2' in NO2.
+
+- key:
+
+  Fine control of the scale key via `drawOpenKey`. See `drawOpenKey` for
+  further details.
 
 - key.header:
 
@@ -165,17 +170,14 @@ percentileRose(
   Location where the scale key is to plotted. Allowed arguments
   currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
 
-- key:
+- strip.position:
 
-  Fine control of the scale key via `drawOpenKey`. See `drawOpenKey` for
-  further details.
-
-- alpha:
-
-  The alpha transparency to use for the plotting surface (a value
-  between 0 and 1 with zero being fully transparent and 1 fully opaque).
-  Setting a value below 1 can be useful when plotting surfaces on a map
-  using the package `openairmaps`.
+  Location where the facet 'strips' are located when using `type`. When
+  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
+  or `"top"`. When two `type`s are provided, this argument defines
+  whether the strips are "switched" and can take either `"x"`, `"y"`, or
+  `"both"`. For example, `"x"` will switch the 'top' strip locations to
+  the bottom of the plot.
 
 - plot:
 
@@ -203,7 +205,7 @@ object
 
 ## Details
 
-`percentileRose` calculates percentile levels of a pollutant and plots
+`percentileRose()` calculates percentile levels of a pollutant and plots
 them by wind direction. One or more percentile levels can be calculated
 and these are displayed as either filled areas or as lines.
 
@@ -253,6 +255,8 @@ Other polar directional analysis functions:
 
 David Carslaw
 
+Jack Davison
+
 ## Examples
 
 ``` r
@@ -266,9 +270,20 @@ percentileRose(mydata, pollutant = "o3", percentile = c(50, 95), col = "brewer1"
 
 if (FALSE) { # \dontrun{
 # percentiles of ozone by year, with different colours
-percentileRose(mydata, type = "year", pollutant = "o3", col = "brewer1")
+percentileRose(
+  mydata,
+  type = "year",
+  pollutant = "o3",
+  col = "brewer1",
+  layout = c(4, 2)
+)
 
 # percentile concentrations by season and day/nighttime..
-percentileRose(mydata, type = c("season", "daylight"), pollutant = "o3", col = "brewer1")
+percentileRose(
+  mydata,
+  type = c("daylight", "season"),
+  pollutant = "o3",
+  col = "brewer1"
+)
 } # }
 ```
