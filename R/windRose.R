@@ -603,6 +603,7 @@ windRose <- function(
       )
     ) +
     theme_openair_radial(key.position) +
+    set_extra_fontsize(extra.args) +
     ggplot2::theme(
       panel.grid.major.y = ggplot2::element_line(
         colour = grid.col,
@@ -610,11 +611,15 @@ windRose <- function(
         linewidth = 0.25
       )
     ) +
-    ggplot2::coord_radial(
-      inner.radius = offset / 100,
-      r.axis.inside = angle.scale,
-      rlim = c(0, max.freq),
-      clip = "off"
+    ggplot2::ggproto(
+      NULL,
+      ggplot2::coord_radial(
+        inner.radius = offset / 100,
+        r.axis.inside = angle.scale,
+        rlim = c(0, max.freq),
+        clip = "off"
+      ),
+      inner_radius = c(offset / 100, 1) * 0.475
     ) +
     ggplot2::scale_y_continuous(
       expand = ggplot2::expansion(if (normalise) c(0, 0) else c(0, .1)),
@@ -625,13 +630,7 @@ windRose <- function(
       },
       labels = \(x) paste0(x, stat.unit)
     ) +
-    scale_x_compass(
-      labels = if (!diff) {
-        c("N", "E", "S", "W")
-      } else {
-        c("0", "+90", "+/-180", "-90")
-      }
-    ) +
+    scale_x_compass() +
     ggplot2::scale_fill_manual(
       values = openColours(
         scheme = cols,
@@ -709,8 +708,8 @@ windRose <- function(
               mean_wd = paste("mean wd = ", round(.data$mean.wd, 1))
             )
           ),
-          x = I(0.95),
-          y = I(0.05),
+          x = I(1),
+          y = I(0),
           check_overlap = TRUE,
           size = 3,
           hjust = 1,
@@ -732,8 +731,8 @@ windRose <- function(
               stat.unit
             )
           ),
-          x = I(0.95),
-          y = I(0.05),
+          x = I(1),
+          y = I(0),
           check_overlap = TRUE,
           size = 3,
           hjust = 1,
@@ -750,6 +749,17 @@ windRose <- function(
         legend.key.width = ggplot2::rel(2)
       )
   }
+
+  # add compass points
+  thePlot <- thePlot +
+    annotate_compass_points(
+      size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
+      labels = if (!diff) {
+        c("N", "E", "S", "W")
+      } else {
+        c("0", "+90", "+/-180", "-90")
+      }
+    )
 
   # output
   if (plot) {
