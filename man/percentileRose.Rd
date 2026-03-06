@@ -22,23 +22,23 @@ percentileRose(
   intervals = NULL,
   angle.scale = 45,
   auto.text = TRUE,
+  key = TRUE,
   key.header = NULL,
   key.footer = "percentile",
   key.position = "bottom",
-  key = TRUE,
-  alpha = 1,
+  strip.position = "top",
   plot = TRUE,
   ...
 )
 }
 \arguments{
-\item{mydata}{A data frame minimally containing \code{wd} and a numeric field
-to plot --- \code{pollutant}.}
+\item{mydata}{A data frame minimally containing \code{wd} and a numeric field to
+plot --- \code{pollutant}.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \code{pollutant = "nox"}. More than one
-pollutant can be supplied e.g. \code{pollutant = c("no2", "o3")} provided
-there is only one \code{type}.}
+pollutant can be supplied e.g. \code{pollutant = c("no2", "o3")} provided there
+is only one \code{type}.}
 
 \item{wd}{Name of wind direction field.}
 
@@ -66,12 +66,12 @@ provided the first forms the columns and the second the rows.}
 spline?}
 
 \item{method}{When \code{method = "default"} the supplied percentiles by wind
-direction are calculated. When \code{method = "cpf"} the conditional
-probability function (CPF) is plotted and a single (usually high)
-percentile level is supplied. The CPF is defined as CPF = my/ny, where my
-is the number of samples in the wind sector y with mixing ratios greater
-than the \emph{overall} percentile concentration, and ny is the total
-number of samples in the same wind sector (see Ashbaugh et al., 1985).}
+direction are calculated. When \code{method = "cpf"} the conditional probability
+function (CPF) is plotted and a single (usually high) percentile level is
+supplied. The CPF is defined as CPF = my/ny, where my is the number of
+samples in the wind sector y with mixing ratios greater than the \emph{overall}
+percentile concentration, and ny is the total number of samples in the same
+wind sector (see Ashbaugh et al., 1985).}
 
 \item{cols}{Colours to be used for plotting. Options include
 \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
@@ -95,7 +95,7 @@ colour maps ported from Python's Matplotlib library.}
 \item{fill}{Should the percentile intervals be filled (default) or should
 lines be drawn (\code{fill = FALSE}).}
 
-\item{intervals}{User-supplied intervals for the scale e.g. \code{intervals = c(0, 10, 30, 50)}}
+\item{intervals}{User-supplied intervals for the scale e.g. \code{intervals = c(0, 10, 30, 50)}.}
 
 \item{angle.scale}{Sometimes the placement of the scale may interfere with an
 interesting feature. The user can therefore set \code{angle.scale} to any value
@@ -105,6 +105,9 @@ between 0 and 360 degrees to mitigate such problems. For example
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
 properly e.g.  by subscripting the `2' in NO2.}
+
+\item{key}{Fine control of the scale key via \code{drawOpenKey}. See \code{drawOpenKey}
+for further details.}
 
 \item{key.header}{Adds additional text/labels to the scale key. For example,
 passing the options \verb{key.header = "header", key.footer = "footer1"} adds
@@ -117,58 +120,57 @@ formatting.}
 \item{key.position}{Location where the scale key is to plotted. Allowed
 arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"} and \code{"left"}.}
 
-\item{key}{Fine control of the scale key via \code{drawOpenKey}. See \code{drawOpenKey}
-for further details.}
-
-\item{alpha}{The alpha transparency to use for the plotting surface (a value
-between 0 and 1 with zero being fully transparent and 1 fully opaque).
-Setting a value below 1 can be useful when plotting surfaces on a map using
-the package \code{openairmaps}.}
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}
 
 \item{...}{Other graphical parameters are passed onto \code{cutData} and
 \code{lattice:xyplot}. For example, \code{percentileRose} passes the option
-\code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common graphical arguments, such as \code{xlim} and
-\code{ylim} for plotting ranges and \code{lwd} for line thickness when
-using \code{fill = FALSE}, are passed on \code{xyplot}, although some local
-modifications may be applied by openair. For example, axis and title
-labelling options (such as \code{xlab}, \code{ylab} and \code{main}) are
-passed to \code{xyplot} via \code{quickText} to handle routine formatting.}
+\code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than
+default northern) hemisphere handling of \code{type = "season"}. Similarly,
+common graphical arguments, such as \code{xlim} and \code{ylim} for plotting ranges
+and \code{lwd} for line thickness when using \code{fill = FALSE}, are passed on
+\code{xyplot}, although some local modifications may be applied by openair. For
+example, axis and title labelling options (such as \code{xlab}, \code{ylab} and
+\code{main}) are passed to \code{xyplot} via \code{quickText} to handle routine
+formatting.}
 }
 \value{
 an \link[=openair-package]{openair} object
 }
 \description{
-\code{percentileRose} plots percentiles by wind direction with flexible
+\code{\link[=percentileRose]{percentileRose()}} plots percentiles by wind direction with flexible
 conditioning. The plot can display multiple percentile lines or filled areas.
 }
 \details{
-\code{percentileRose} calculates percentile levels of a pollutant and plots
-them by wind direction. One or more percentile levels can be calculated and
-these are displayed as either filled areas or as lines.
+\code{\link[=percentileRose]{percentileRose()}} calculates percentile levels of a pollutant and plots them
+by wind direction. One or more percentile levels can be calculated and these
+are displayed as either filled areas or as lines.
 
 The wind directions are rounded to the nearest 10 degrees, consistent with
 surface data from the UK Met Office before a smooth is fitted. The levels by
 wind direction are optionally calculated using a cyclic smooth cubic spline
-using the option \code{smooth}. If \code{smooth = FALSE} then the data are
-shown in 10 degree sectors.
+using the option \code{smooth}. If \code{smooth = FALSE} then the data are shown in 10
+degree sectors.
 
-The \code{percentileRose} function compliments other similar functions
-including \code{\link[=windRose]{windRose()}}, \code{\link[=pollutionRose]{pollutionRose()}},
-\code{\link[=polarFreq]{polarFreq()}} or \code{\link[=polarPlot]{polarPlot()}}. It is most useful for
-showing the distribution of concentrations by wind direction and often can
-reveal different sources e.g. those that only affect high percentile
-concentrations such as a chimney stack.
+The \code{percentileRose} function compliments other similar functions including
+\code{\link[=windRose]{windRose()}}, \code{\link[=pollutionRose]{pollutionRose()}}, \code{\link[=polarFreq]{polarFreq()}} or \code{\link[=polarPlot]{polarPlot()}}. It is most
+useful for showing the distribution of concentrations by wind direction and
+often can reveal different sources e.g. those that only affect high
+percentile concentrations such as a chimney stack.
 
 Similar to other functions, flexible conditioning is available through the
-\code{type} option. It is easy for example to consider multiple percentile
-values for a pollutant by season, year and so on. See examples below.
+\code{type} option. It is easy for example to consider multiple percentile values
+for a pollutant by season, year and so on. See examples below.
 
-\code{percentileRose} also offers great flexibility with the scale used and
-the user has fine control over both the range, interval and colour.
+\code{percentileRose} also offers great flexibility with the scale used and the
+user has fine control over both the range, interval and colour.
 }
 \examples{
 # basic percentile plot
@@ -179,10 +181,21 @@ percentileRose(mydata, pollutant = "o3", percentile = c(50, 95), col = "brewer1"
 
 \dontrun{
 # percentiles of ozone by year, with different colours
-percentileRose(mydata, type = "year", pollutant = "o3", col = "brewer1")
+percentileRose(
+  mydata,
+  type = "year",
+  pollutant = "o3",
+  col = "brewer1",
+  layout = c(4, 2)
+)
 
 # percentile concentrations by season and day/nighttime..
-percentileRose(mydata, type = c("season", "daylight"), pollutant = "o3", col = "brewer1")
+percentileRose(
+  mydata,
+  type = c("daylight", "season"),
+  pollutant = "o3",
+  col = "brewer1"
+)
 }
 }
 \references{
@@ -202,5 +215,7 @@ Other polar directional analysis functions:
 }
 \author{
 David Carslaw
+
+Jack Davison
 }
 \concept{polar directional analysis functions}

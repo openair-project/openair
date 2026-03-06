@@ -231,7 +231,7 @@ polarFreq <- function(
     ))
   }
 
-  if (!(any(is.null(breaks)) || any(is.na(breaks)))) {
+  if (!(any(is.null(breaks)) || anyNA(breaks))) {
     trans <- FALSE
   } # over-ride transform if breaks supplied
 
@@ -355,19 +355,23 @@ polarFreq <- function(
       colour = border.col,
       show.legend = TRUE
     ) +
-    ggplot2::coord_radial(
-      clip = "on",
-      r.axis.inside = 45,
-      rlim = c(NA, max.ws),
-      inner.radius = offset / 100
+    ggplot2::ggproto(
+      NULL,
+      ggplot2::coord_radial(
+        clip = "on",
+        r.axis.inside = 45,
+        rlim = c(NA, max.ws),
+        inner.radius = offset / 100
+      ),
+      inner_radius = c(0, 0.475)
     ) +
     scale_x_compass() +
     ggplot2::scale_y_continuous(
       oob = scales::oob_keep,
       breaks = seq(0, max.ws, by = grid.line),
-      expand = ggplot2::expansion(c(0, .1))
+      expand = ggplot2::expansion(c(0, 0.1))
     ) +
-    theme_openair_radial(key.position) +
+    theme_openair_radial(key.position = key.position, panel.ontop = TRUE) +
     set_extra_fontsize(extra.args) +
     ggplot2::labs(
       y = extra.args$ylab,
@@ -454,6 +458,12 @@ polarFreq <- function(
         legend.key.spacing.x = ggplot2::unit(0, "cm")
       )
   }
+
+  # add compass points
+  thePlot <- thePlot +
+    annotate_compass_points(
+      size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
+    )
 
   if (plot) {
     plot(thePlot)
