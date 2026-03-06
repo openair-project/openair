@@ -37,8 +37,7 @@ theme_openair_radial <- function(key.position, panel.ontop = FALSE) {
       ),
       panel.grid.major.x = ggplot2::element_line(
         colour = "grey10",
-        linewidth = 0.4,
-        arrow = ggplot2::arrow(length = ggplot2::unit(0.25, "cm"))
+        linewidth = 0.4
       ),
       panel.grid.minor = ggplot2::element_blank(),
       panel.grid.major.y = ggplot2::element_line(
