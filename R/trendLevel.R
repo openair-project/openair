@@ -61,6 +61,12 @@
 #' @param key.position Location where the scale key should be plotted. Allowed
 #'   arguments currently include `"top"`, `"right"`, `"bottom"`, and `"left"`.
 #' @param key Fine control of the scale key via [drawOpenKey()].
+#' @param strip.position Location where the facet 'strips' are located when
+#'   using `type`. When one `type` is provided, can be one of `"left"`,
+#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
+#'   argument defines whether the strips are "switched" and can take either
+#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
+#'   locations to the bottom of the plot.
 #' @param breaks,labels If a categorical colour scale is required then `breaks`
 #'   should be specified. These should be provided as a numeric vector, e.g.,
 #'   `breaks = c(0, 50, 100, 1000)`. Users should set the maximum value of
@@ -147,10 +153,11 @@ trendLevel <- function(
   limits = NULL,
   cols = "default",
   auto.text = TRUE,
+  key = TRUE,
   key.header = "use.stat.name",
   key.footer = pollutant,
   key.position = "right",
-  key = TRUE,
+  strip.position = "top",
   labels = NULL,
   breaks = NULL,
   statistic = c(
@@ -459,7 +466,8 @@ trendLevel <- function(
       extra.args = extra.args,
       scales = "fixed",
       auto.text = auto.text,
-      drop = drop.unused.types
+      drop = drop.unused.types,
+      strip.position = strip.position
     )
 
   # make key full width/height

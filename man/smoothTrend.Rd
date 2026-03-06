@@ -25,13 +25,13 @@ smoothTrend(
   key = TRUE,
   key.columns = 1,
   key.position = "bottom",
-  name.pol = pollutant,
+  strip.position = "top",
+  name.pol = NULL,
   date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
   ci = TRUE,
   alpha = 0.2,
-  shade = "grey95",
   plot = TRUE,
   progress = TRUE,
   ...
@@ -141,6 +141,13 @@ number of pollutants.}
 \item{key.position}{Location where the scale key is to plotted. Can include
 \code{"top"}, \code{"bottom"}, \code{"right"} and \code{"left"}.}
 
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
+
 \item{name.pol}{This option can be used to give alternative names for the
 variables plotted. Instead of taking the column headings as names, the user
 can supply replacements. For example, if a column had the name "nox" and
@@ -167,9 +174,6 @@ properly, e.g., by subscripting the '2' in NO2.}
 
 \item{alpha}{The alpha transparency of shaded confidence intervals - if
 plotted. A value of 0 is fully transparent and 1 is fully opaque.}
-
-\item{shade}{The colour used for marking alternate years. Use \code{"white"} or
-\code{"transparent"} to remove shading.}
 
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}

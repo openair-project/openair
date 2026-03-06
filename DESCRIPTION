@@ -33,7 +33,6 @@ Imports:
     lattice,
     latticeExtra,
     lubridate,
-    mapproj,
     MASS,
     methods,
     mgcv,
@@ -49,10 +48,9 @@ Imports:
 Suggests:
     KernSmooth,
     knitr,
-    mapdata,
-    maps,
     quantreg,
     rmarkdown,
+    sf,
     spelling,
     testthat (>= 3.0.0)
 LinkingTo: 

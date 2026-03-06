@@ -86,6 +86,13 @@
 #'   bin. The default is transparent. Another useful choice sometimes is
 #'   "white".
 #'
+#' @param strip.position Location where the facet 'strips' are located when
+#'   using `type`. When one `type` is provided, can be one of `"left"`,
+#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
+#'   argument defines whether the strips are "switched" and can take either
+#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
+#'   locations to the bottom of the plot.
+#'
 #' @param ... Passed to [cutData()]. The following additional arguments are also
 #'   available:
 #'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
@@ -161,10 +168,11 @@ polarFreq <- function(
   ws.upper = NA,
   offset = 10,
   border.col = "transparent",
+  key = TRUE,
   key.header = statistic,
   key.footer = pollutant,
   key.position = "right",
-  key = TRUE,
+  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -223,7 +231,7 @@ polarFreq <- function(
     ))
   }
 
-  if (!(any(is.null(breaks)) || any(is.na(breaks)))) {
+  if (!(any(is.null(breaks)) || anyNA(breaks))) {
     trans <- FALSE
   } # over-ride transform if breaks supplied
 
@@ -347,19 +355,23 @@ polarFreq <- function(
       colour = border.col,
       show.legend = TRUE
     ) +
-    ggplot2::coord_radial(
-      clip = "on",
-      r.axis.inside = 45,
-      rlim = c(NA, max.ws),
-      inner.radius = offset / 100
+    ggplot2::ggproto(
+      NULL,
+      ggplot2::coord_radial(
+        clip = "on",
+        r.axis.inside = 45,
+        rlim = c(NA, max.ws),
+        inner.radius = offset / 100
+      ),
+      inner_radius = c(0, 0.475)
     ) +
     scale_x_compass() +
     ggplot2::scale_y_continuous(
       oob = scales::oob_keep,
       breaks = seq(0, max.ws, by = grid.line),
-      expand = ggplot2::expansion(c(0, .1))
+      expand = ggplot2::expansion(c(0, 0.1))
     ) +
-    theme_openair_radial(key.position) +
+    theme_openair_radial(key.position = key.position, panel.ontop = TRUE) +
     set_extra_fontsize(extra.args) +
     ggplot2::labs(
       y = extra.args$ylab,
@@ -378,7 +390,8 @@ polarFreq <- function(
       type,
       extra.args,
       scales = "fixed",
-      auto.text = auto.text
+      auto.text = auto.text,
+      strip.position = strip.position
     )
 
   if (categorical) {
@@ -445,6 +458,12 @@ polarFreq <- function(
         legend.key.spacing.x = ggplot2::unit(0, "cm")
       )
   }
+
+  # add compass points
+  thePlot <- thePlot +
+    annotate_compass_points(
+      size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
+    )
 
   if (plot) {
     plot(thePlot)

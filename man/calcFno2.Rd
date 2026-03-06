@@ -166,7 +166,6 @@ surface when \code{method = "level"}.}
 the predictions should be made. See \code{exclude.too.far} from the
 \code{mgcv} package. Data are first transformed to a unit square. Values
 should be between 0 and 1.}
-    \item{\code{map}}{Should a base map be drawn? This option is under development.}
     \item{\code{auto.text}}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
 titles and axis labels will automatically try and format pollutant names
 and units properly e.g.  by subscripting the \sQuote{2} in NO2.}

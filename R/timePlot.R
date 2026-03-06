@@ -24,26 +24,24 @@
 #' [timePlot()] works very well with [selectByDate()], which is used for
 #' selecting particular date ranges quickly and easily. See examples below.
 #'
-#' By default plots are shown with a colour key at the bottom and in the case of
-#' multiple pollutants or sites, strips on the left of each plot. Sometimes this
-#' may be overkill and the user can opt to remove the key and/or the strip by
-#' setting `key` and/or `strip` to `FALSE`. One reason to do this is to maximise
-#' the plotting area and therefore the information shown.
-#'
 #' @inheritParams timeAverage
 #'
 #' @param mydata A data frame of time series. Must include a `date` field and at
 #'   least one variable to plot.
+#'
 #' @param pollutant Name of variable to plot. Two or more pollutants can be
 #'   plotted, in which case a form like `pollutant = c("nox", "co")` should be
 #'   used.
+#'
 #' @param group If more than one pollutant is chosen, should they all be plotted
 #'   on the same graph together? The default is `FALSE`, which means they are
 #'   plotted in separate panels with their own scaled. If `TRUE` then they are
 #'   plotted on the same plot with the same scale.
+#'
 #' @param stack If `TRUE` the time series will be stacked by year. This option
 #'   can be useful if there are several years worth of data making it difficult
 #'   to see much detail when plotted on a single plot.
+#'
 #' @param normalise Should variables be normalised? The default is is not to
 #'   normalise the data. `normalise` can take two values, either `"mean"` or a
 #'   string representing a date in UK format e.g. "1/1/1998" (in the format
@@ -53,16 +51,19 @@
 #'   the beginning of a time series) is very useful for showing how trends
 #'   diverge over time. Setting `group = TRUE` is often useful too to show all
 #'   time series together in one panel.
+#'
 #' @param percentile The percentile level in percent used when `statistic =
 #'   "percentile"` and when aggregating the data with `avg.time`. More than one
 #'   percentile level is allowed for `type = "default"` e.g. `percentile = c(50,
 #'   95)`. Not used if `avg.time = "default"`.
+#'
 #' @param date.pad Should missing data be padded-out? This is useful where a
 #'   data frame consists of two or more "chunks" of data with time gaps between
 #'   them. By setting `date.pad = TRUE` the time gaps between the chunks are
 #'   shown properly, rather than with a line connecting each chunk. For
 #'   irregular data, set to `FALSE`. Note, this should not be set for `type`
 #'   other than `default`.
+#'
 #' @param type `type` determines how the data are split i.e. conditioned, and
 #'   then plotted. The default is will produce a single plot using the entire
 #'   data. Type can be one of the built-in types as detailed in [cutData()],
@@ -77,91 +78,108 @@
 #'   different variables and how they depend on one another.
 #'
 #'   `type` must be of length one.
+#'
 #' @param cols Colours to be used for plotting; see [openColours()] for details.
-#' @param plot.type The `lattice` plot type, which is a line (`plot.type = "l"`)
-#'   by default. Another useful option is `plot.type = "h"`, which draws
-#'   vertical lines.
+#'
 #' @param key Should a key be drawn? The default is `TRUE`.
+#'
 #' @param log Should the y-axis appear on a log scale? The default is `FALSE`.
 #'   If `TRUE` a well-formatted log10 scale is used. This can be useful for
 #'   plotting data for several different pollutants that exist on very different
 #'   scales. It is therefore useful to use `log = TRUE` together with `group =
 #'   TRUE`.
+#'
 #' @param windflow This option allows a scatter plot to show the wind
 #'   speed/direction as an arrow. The option is a list e.g. `windflow = list(col
-#'   = "grey", lwd = 2, scale = 0.1)`. This option requires wind speed (`ws`)
-#'   and wind direction (`wd`) to be available.
+#'   = "grey", lwd = 2)`. This option requires wind speed (`ws`) and wind
+#'   direction (`wd`) to be available.
 #'
-#'   The maximum length of the arrow plotted is a fraction of the plot dimension
-#'   with the longest arrow being `scale` of the plot x-y dimension. Note, if
-#'   the plot size is adjusted manually by the user it should be re-plotted to
-#'   ensure the correct wind angle. The list may contain other options to
-#'   `panel.arrows` in the `lattice` package. Other useful options include
-#'   `length`, which controls the length of the arrow head and `angle`, which
-#'   controls the angle of the arrow head.
+#'   Any of the arguments in [ggplot2::arrow()] can be passed as a list, as well
+#'   as `col` which controls the arrow's colour and `lwd` which controls the
+#'   line width.
 #'
 #'   This option works best where there are not too many data to ensure
 #'   over-plotting does not become a problem.
+#'
 #' @param smooth Should a smooth line be applied to the data? The default is
 #'   `FALSE`.
+#'
 #' @param ci If a smooth fit line is applied, then `ci` determines whether the
 #'   95 percent confidence intervals are shown.
+#'
 #' @param x.relation,y.relation This determines how the x- or y-axis scale is
 #'   plotted. `"same"` ensures all panels use the same scale and `"free"` will
 #'   use panel-specific scales. The latter is a useful setting when plotting
 #'   data with very different values.
+#'
 #' @param ref.x See `ref.y` for details. In this case the correct date format
 #'   should be used for a vertical line e.g. `ref.x = list(v =
 #'   as.POSIXct("2000-06-15"), lty = 5)`.
+#'
 #' @param ref.y A list with details of the horizontal lines to be added
 #'   representing reference line(s). For example, `ref.y = list(h = 50, lty =
 #'   5)` will add a dashed horizontal line at 50. Several lines can be plotted
 #'   e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
 #'   "blue"))`. See `panel.abline` in the `lattice` package for more details on
 #'   adding/controlling lines.
+#'
 #' @param key.columns Number of columns to be used in the key. With many
 #'   pollutants a single column can make to key too wide. The user can thus
 #'   choose to use several columns by setting `columns` to be less than the
 #'   number of pollutants.
+#'
 #' @param key.position Location where the scale key is to plotted. Can include
 #'   `"top"`, `"bottom"`, `"right"` and `"left"`.
+#'
+#' @param strip.position Location where the facet 'strips' are located when
+#'   using `type`. When one `type` is provided, can be one of `"left"`,
+#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
+#'   argument defines whether the strips are "switched" and can take either
+#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
+#'   locations to the bottom of the plot.
+#'
 #' @param name.pol This option can be used to give alternative names for the
 #'   variables plotted. Instead of taking the column headings as names, the user
 #'   can supply replacements. For example, if a column had the name "nox" and
 #'   the user wanted a different description, then setting `name.pol = "nox
 #'   before change"` can be used. If more than one pollutant is plotted then use
 #'   `c` e.g. `name.pol = c("nox here", "o3 there")`.
+#'
 #' @param date.breaks Number of major x-axis intervals to use. The function will
 #'   try and choose a sensible number of dates/times as well as formatting the
 #'   date/time appropriately to the range being considered. This does not always
 #'   work as desired automatically. The user can therefore increase or decrease
 #'   the number of intervals by adjusting the value of `date.breaks` up or down.
+#'
 #' @param date.format This option controls the date format on the x-axis. While
 #'   [timePlot()] generally sets the date format sensibly there can be some
 #'   situations where the user wishes to have more control. For format types see
 #'   [strptime()]. For example, to format the date like "Jan-2012" set
 #'   `date.format = "\%b-\%Y"`.
+#'
 #' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
 #'   axis labels will automatically try and format pollutant names and units
 #'   properly, e.g., by subscripting the '2' in NO2.
+#'
 #' @param plot Should a plot be produced? `FALSE` can be useful when analysing
 #'   data to extract plot components and plotting them in other ways.
+#'
 #' @param ... Other graphical parameters are passed onto [cutData()] and
-#'   [lattice::xyplot()]. For example, [timePlot()] passes the option `hemisphere
-#'   = "southern"` on to [cutData()] to provide southern (rather than default
-#'   northern) hemisphere handling of `type = "season"`. Similarly, most common
-#'   plotting parameters, such as `layout` for panel arrangement and `pch` and
-#'   `cex` for plot symbol type and size and `lty` and `lwd` for line type and
-#'   width, as passed to [lattice::xyplot()], although some maybe locally
-#'   managed by `openair` on route, e.g., axis and title labelling options (such
-#'   as `xlab`, `ylab`, `main`) are passed via [quickText()] to handle routine
-#'   formatting. See examples below.
+#'   [lattice::xyplot()]. For example, [timePlot()] passes the option
+#'   `hemisphere = "southern"` on to [cutData()] to provide southern (rather
+#'   than default northern) hemisphere handling of `type = "season"`. Similarly,
+#'   most common plotting parameters, such as `layout` for panel arrangement and
+#'   `pch` and `cex` for plot symbol type and size and `lty` and `lwd` for line
+#'   type and width, as passed to [lattice::xyplot()], although some maybe
+#'   locally managed by `openair` on route, e.g., axis and title labelling
+#'   options (such as `xlab`, `ylab`, `main`) are passed via [quickText()] to
+#'   handle routine formatting. See examples below.
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
+#' @author Jack Davison
 #' @family time series and trend functions
 #' @examples
-#'
 #' # basic use, single pollutant
 #' timePlot(mydata, pollutant = "nox")
 #'
@@ -173,9 +191,14 @@
 #' timePlot(mydata, pollutant = c("nox", "no2"), group = TRUE)
 #'
 #' # alternative by normalising concentrations and plotting on the same scale
-#' timePlot(mydata,
-#'   pollutant = c("nox", "co", "pm10", "so2"), group = TRUE, avg.time =
-#'     "year", normalise = "1/1/1998", lwd = 3, lty = 1
+#' timePlot(
+#'   mydata,
+#'   pollutant = c("nox", "co", "pm10", "so2"),
+#'   group = TRUE,
+#'   avg.time = "year",
+#'   normalise = "1/1/1998",
+#'   lwd = 3,
+#'   lty = 1
 #' )
 #'
 #' # examples of selecting by date
@@ -184,7 +207,8 @@
 #' timePlot(selectByDate(mydata, year = 1999), pollutant = "nox")
 #'
 #' # select specific date range for two pollutants
-#' timePlot(selectByDate(mydata, start = "6/8/2003", end = "13/8/2003"),
+#' timePlot(
+#'   selectByDate(mydata, start = "6/8/2003", end = "13/8/2003"),
 #'   pollutant = c("no2", "o3")
 #' )
 #'
@@ -192,9 +216,11 @@
 #' timePlot(mydata, pollutant = c("nox", "no2"), lty = 1)
 #'
 #' # choose different line styles etc
-#' timePlot(selectByDate(mydata, year = 2004, month = 6),
-#'   pollutant =
-#'     c("nox", "no2"), lwd = c(1, 2), col = "black"
+#' timePlot(
+#'   selectByDate(mydata, year = 2004, month = 6),
+#'   pollutant = c("nox", "no2"),
+#'   lwd = c(1, 2),
+#'   col = "black"
 #' )
 #'
 #' # different averaging times
@@ -206,7 +232,7 @@
 #' timePlot(mydata, pollutant = "o3", avg.time = "day", data.thresh = 75)
 #'
 #' # 2-week average of O3 concentrations
-#' #' timePlot(mydata, pollutant = "o3", avg.time = "2 week")
+#' timePlot(mydata, pollutant = "o3", avg.time = "2 week")
 #' }
 #'
 timePlot <- function(
@@ -222,7 +248,6 @@ timePlot <- function(
   date.pad = FALSE,
   type = "default",
   cols = "brewer1",
-  plot.type = "l",
   log = FALSE,
   windflow = NULL,
   smooth = FALSE,
@@ -232,8 +257,9 @@ timePlot <- function(
   ref.x = NULL,
   ref.y = NULL,
   key = TRUE,
-  key.columns = 1,
+  key.columns = NULL,
   key.position = "bottom",
+  strip.position = "top",
   name.pol = pollutant,
   date.breaks = 7,
   date.format = NULL,
@@ -241,15 +267,39 @@ timePlot <- function(
   plot = TRUE,
   ...
 ) {
-  ## ---- Setup & Validation ----
+  if (rlang::is_logical(key) && !key) {
+    key.position <- "none"
+  }
 
   # Args setup
-  Args <- list(...)
+  extra.args <- rlang::list2(...)
 
   # warning messages and other checks
   if (length(percentile) > 1 && length(pollutant) > 1) {
     cli::cli_abort(
-      "Only one {.field pollutant} allowed when considering more than one {.field percentile}."
+      "Only one {.arg pollutant} allowed when considering more than one {.arg percentile}."
+    )
+  }
+
+  if (stack && length(type) > 1) {
+    cli::cli_abort(
+      "Cannot {.arg stack} and have more than one {.arg type}."
+    )
+  }
+
+  if (
+    !group &&
+      length(type) > 1 &&
+      (length(pollutant) > 1 || length(percentile) > 1)
+  ) {
+    cli::cli_abort(
+      "{.arg group} cannot be {FALSE} and have more than one {.arg type}."
+    )
+  }
+
+  if (length(type) > 2) {
+    cli::cli_abort(
+      "Cannot have more than 2 {.arg type}s."
     )
   }
 
@@ -261,33 +311,9 @@ timePlot <- function(
   rlang::arg_match(x.relation, c("same", "free"))
   rlang::arg_match(y.relation, c("same", "free"))
 
-  ## ---- Graphics & Styling ----
-
-  # greyscale handling
-  if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-  }
-
-  # set & reset graphics
-  current.font <- trellis.par.get("fontsize")
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
-  if ("fontsize" %in% names(Args)) {
-    trellis.par.set(fontsize = list(text = Args$fontsize))
-  }
-
   # style controls
-  Args$pch <- Args$pch %||% NA
-  Args$lwd <- Args$lwd %||% 1
-  Args$lty <- Args$lty %||% NULL
-  Args$layout <- Args$layout %||% NULL
-
-  # global variables
-  xlim <- Args$xlim %||% NULL
-  strip <- Args$strip %||% TRUE
-
-  ## ---- Data processing ----
+  extra.args$pch <- extra.args$pch %||% NA
+  extra.args$layout <- extra.args$layout %||% NULL
 
   # check & cut data
   mydata <- prepare_timeplot_data(
@@ -317,35 +343,16 @@ timePlot <- function(
   # normalise data (if required)
   mydata <- normalise_timeplot_data(mydata, normalise = normalise)
 
-  ## ---- Groups & Layout Logic ----
-
   # need to group pollutants if conditioning
   if (avg.time != "default" && length(percentile) > 1L && missing(group)) {
     group <- TRUE
   }
-  if (type != "default") {
-    group <- TRUE
-  }
-
-  # number of pollutants (or sites for type = "site")
-  npol <- length(unique(mydata$variable)) # number of pollutants
-
-  # layout - stack vertically
-  if (is.null(Args$layout) && !group && !stack) {
-    Args$layout <- c(1, npol)
-  }
-
-  if (missing(key.columns)) {
-    key.columns <- npol
-  }
-
-  ## ---- Layout & Colours ----
 
   # label controls
-  Args$xlab <- quickText(Args$xlab %||% "", auto.text)
-  Args$main <- quickText(Args$main %||% NULL, auto.text)
-  Args$ylab <- quickText(
-    Args$ylab %||%
+  extra.args$xlab <- quickText(extra.args$xlab %||% "", auto.text)
+  extra.args$main <- quickText(extra.args$main, auto.text)
+  extra.args$ylab <- quickText(
+    extra.args$ylab %||%
       dplyr::case_when(
         !is.null(normalise) ~
           paste("normalised", paste(pollutant, collapse = ", ")),
@@ -354,354 +361,202 @@ timePlot <- function(
     auto.text
   )
 
-  # get pollutant labels
-  if (!missing(name.pol)) {
-    mylab <- sapply(
-      seq_along(name.pol),
-      function(x) quickText(name.pol[x], auto.text)
-    )
-  } else {
-    mylab <- sapply(
-      seq_along(pollutant),
-      function(x) quickText(pollutant[x], auto.text)
-    )
-  }
-
-  # set up colours
-  myColors <- if (length(cols) == 1 && cols == "greyscale") {
-    openColours(cols, npol + 1)[-1]
-  } else {
-    openColours(cols, npol)
-  }
-
-  ## ---- Date & Scale Config ----
-
-  # For date scale
-  if (x.relation == "free") {
-    dates <-
-      purrr::map(
-        split(mydata, mydata[type]),
-        function(x) dateBreaks(x$date, date.breaks)$major
-      ) |>
-      purrr::list_c() |>
-      unique()
-  } else {
-    dates <- dateBreaks(mydata$date, date.breaks)$major
-  }
-
-  # Date Axis Formatting
-  if (is.null(date.format)) {
-    if (x.relation == "free") {
-      formats <- dateBreaks(
-        split(mydata, mydata[type])[[1]]$date,
-        date.breaks
-      )$format
-    } else {
-      formats <- dateBreaks(mydata$date, date.breaks)$format
-    }
-  } else {
-    formats <- date.format
-  }
-
-  # Handle log scaling
-  nlog <- FALSE
-  if (log) {
-    nlog <- 10
-  }
-
-  # Default scales
-  scales <- list(
-    x = list(relation = x.relation, at = dates, format = formats),
-    y = list(relation = y.relation, log = nlog, rot = 0)
-  )
-
-  ## ---- Plot Structure & Formula ----
-
-  # basic function for lattice call + defaults
-  myform <- formula(paste("value ~ date |", type))
-  theStrip <- strip
-
-  if (is.null(Args$strip)) {
-    strip <- TRUE
-  }
-
-  strip.left <- FALSE
-
-  # layout changes depending on plot type
-  if (!group) {
-    # separate panels per pollutant
-    if (is.null(Args$strip)) {
-      strip <- FALSE
-    }
-
-    myform <- formula("value ~ date | variable")
-
-    if (npol == 1) {
-      strip.left <- FALSE
-    } else {
-      strip.left <- strip.custom(
-        par.strip.text = list(cex = 0.9),
-        horizontal = FALSE,
-        factor.levels = mylab
-      )
-    }
-
-    scales <- list(
-      x = list(
-        relation = x.relation,
-        at = dates,
-        format = formats
-      ),
-      y = list(
-        relation = y.relation,
-        rot = 0,
-        log = nlog
-      )
-    )
-
-    if (is.null(Args$lty)) Args$lty <- 1 # don't need different line types here
-  }
-
-  # set lty if not set by this point
-  if (is.null(Args$lty)) {
-    Args$lty <- seq_along(pollutant)
-  }
-
-  if (type == "default") {
-    strip <- FALSE
-  }
-
-  ## ---- Special Layouts ----
-
   # if stacking of plots by year is needed
-  if (stack) {
-    mydata$year <- as.character(year(mydata$date))
-    if (is.null(Args$layout)) {
-      Args$layout <- c(1, length(unique(mydata$year)))
+  if (stack || all(type == "year")) {
+    mydata$year <- as.character(lubridate::year(mydata$date))
+    if (is.null(extra.args$layout)) {
+      extra.args$layout <- c(1, length(unique(mydata$year)))
     }
-    strip <- FALSE
-    myform <- formula("value ~ date | year")
-    strip.left <- strip.custom(
-      par.strip.text = list(cex = 0.9),
-      horizontal = FALSE
-    )
-    #  dates <- unique(dateTrunc(mydata$date, "months")) - this does not work?
-    dates <- as.POSIXct(
-      unique(paste(format(mydata$date, "%Y-%m"), "-01", sep = "")),
-      "GMT"
-    )
-
-    scales <- list(
-      x = list(
-        format = "%d-%b",
-        relation = "sliced"
-      ),
-      y = list(log = nlog)
-    )
-
-    xlim <- lapply(split(mydata, mydata["year"]), function(x) range(x$date))
-  }
-
-  # special layout if type = "wd"
-  if (length(type) == 1 && type[1] == "wd" && is.null(Args$layout)) {
-    # re-order to make sensible layout
-    wds <- c("NW", "N", "NE", "W", "E", "SW", "S", "SE")
-    mydata$wd <- ordered(mydata$wd, levels = wds)
-
-    # see if wd is actually there or not
-    wd.ok <- sapply(wds, function(x) {
-      if (x %in% unique(mydata$wd)) FALSE else TRUE
-    })
-    skip <- c(wd.ok[1:4], TRUE, wd.ok[5:8])
-
-    mydata$wd <- factor(mydata$wd) # remove empty factor levels
-
-    Args$layout <- c(3, 3)
-    if (!"skip" %in% names(Args)) {
-      Args$skip <- skip
-    }
-  }
-  if (!"skip" %in% names(Args)) {
-    Args$skip <- FALSE
-  }
-
-  ## ---- Key & Strip Config ----
-
-  if (key) {
-    # type of key depends on whether points are plotted or not
-    if (any(!is.na(Args$pch))) {
-      key <- list(
-        lines = list(
-          col = myColors[1:npol],
-          lty = Args$lty,
-          lwd = Args$lwd
-        ),
-        points = list(
-          pch = Args$pch,
-          col = myColors[1:npol]
-        ),
-        text = list(lab = mylab),
-        space = key.position,
-        columns = key.columns
-      )
-    } else {
-      key <- list(
-        lines = list(
-          col = myColors[1:npol],
-          lty = Args$lty,
-          lwd = Args$lwd
-        ),
-        text = list(lab = mylab),
-        space = key.position,
-        columns = key.columns
-      )
-    }
-  } else {
-    key <- NULL # either there is a key or there is not
-  }
-
-  if (theStrip) {
-    strip <- strip
-    strip.left <- strip.left
-  } else {
-    strip <- FALSE
-    strip.left <- FALSE
-  }
-
-  ## ---- Final Data Prep ----
-
-  # allow reasonable gaps at ends, default has too much padding
-  if (is.null(xlim)) {
-    get_xrange <- function(x) {
-      gap <- difftime(max(x$date), min(x$date), units = "secs") / 80
-      range(x$date[!is.na(x$value)]) + c(-1 * gap, gap)
-    }
-
-    if (x.relation == "same") {
-      xlim <- get_xrange(mydata)
-    } else {
-      splitvar <- type
-      if (type == "default" && length(pollutant) > 1L && !group) {
-        splitvar <- "variable"
-      }
-      xlim <- lapply(split(mydata, mydata[splitvar]), get_xrange)
-      if (type == "default") {
-        xlim <- xlim[[1]]
-      }
-    }
+    lubridate::year(mydata$date) <- lubridate::year(mydata$date)[1]
+    date.format <- date.format %||% "%b"
   }
 
   # make sure order is correct
-  mydata$variable <- factor(mydata$variable, levels = pollutant)
-
-  ## ---- Create Plot ----
-
-  # the plot
-  xyplot.args <- list(
-    x = myform,
-    data = mydata,
-    groups = mydata$variable,
-    as.table = TRUE,
-    par.strip.text = list(cex = 0.8),
-    scales = scales,
-    key = key,
-    xlim = xlim,
-    strip = strip,
-    strip.left = strip.left,
-    windflow = windflow,
-    yscale.components = yscale.components.log10ticks,
-    panel = panel.superpose,
-    panel.groups = function(
-      x,
-      y,
-      col.line,
-      col.symbol,
-      col,
-      col.se,
-      type,
-      group.number,
-      lty,
-      lwd,
-      pch,
-      subscripts,
-      windflow,
-      ...
-    ) {
-      if (group.number == 1) {
-        panel.grid(-1, 0)
-        panel.abline(v = dates, col = "grey90")
-      }
-      if (!group & !stack) {
-        panel.abline(v = dates, col = "grey90")
-        panel.grid(-1, 0)
-      }
-
-      panel.xyplot(
-        x,
-        y,
-        type = plot.type,
-        lty = lty,
-        lwd = lwd,
-        pch = pch,
-        col.line = myColors[group.number],
-        col.symbol = myColors[group.number],
-        ...
-      )
-      # deal with points separately - useful if missing data where line
-      # does not join consequtive points
-      if (any(!is.na(Args$pch))) {
-        lpoints(
-          x,
-          y,
-          type = "p",
-          pch = Args$pch[group.number],
-          col.symbol = myColors[group.number],
-          ...
-        )
-      }
-
-      if (!is.null(windflow)) {
-        list1 <- list(x, y, dat = mydata, subscripts)
-        list2 <- windflow
-        flow.args <- listUpdate(list1, list2)
-        do.call(panel.windflow, flow.args)
-      }
-
-      if (smooth) {
-        panel.gam(
-          x,
-          y,
-          col = myColors[group.number],
-          col.se = myColors[group.number],
-          lty = 1,
-          lwd = 1,
-          se = ci,
-          k = NULL,
-          ...
-        )
-      }
-
-      # add reference lines
-
-      if (!is.null(ref.x)) {
-        do.call(panel.abline, ref.x)
-      }
-      if (!is.null(ref.y)) do.call(panel.abline, ref.y)
-    }
+  mydata$variable <- factor(
+    mydata$variable,
+    levels = pollutant,
+    labels = name.pol
   )
 
-  # reset for Args
-  xyplot.args <- listUpdate(xyplot.args, Args)
+  # x-axis scale function
+  if (lubridate::is.Date(mydata$date)) {
+    x_scale_fun <- ggplot2::scale_x_date
+  } else {
+    x_scale_fun <- ggplot2::scale_x_datetime
+  }
 
-  # plot
-  plt <- do.call(xyplot, xyplot.args)
+  # number of pollutants
+  npol <- length(unique(mydata$variable)) # number of pollutants
+
+  extra.args$lty <- extra.args$lty %||% 1
+  while (length(extra.args$lty) < npol) {
+    extra.args$lty <- c(extra.args$lty, extra.args$lty)
+  }
+  extra.args$lty <- extra.args$lty[1:npol]
+
+  extra.args$lwd <- extra.args$lwd %||% 1
+  while (length(extra.args$lwd) < npol) {
+    extra.args$lwd <- c(extra.args$lwd, extra.args$lwd)
+  }
+  extra.args$lwd <- extra.args$lwd[1:npol]
+
+  # layout - stack vertically
+  if (
+    is.null(extra.args$layout) && !group && !stack && all(type == "default")
+  ) {
+    extra.args$layout <- c(1, npol)
+  }
+
+  # deal with type
+  if (!group && npol > 1) {
+    type <- c(type, "variable")
+  }
+
+  if (stack) {
+    type <- c(type, "year")
+  }
+
+  if (length(type) > 1) {
+    type <- type[type != "default"]
+  }
+
+  theGuide <-
+    ggplot2::guide_legend(
+      reverse = key.position %in% c("left", "right"),
+      theme = ggplot2::theme(
+        legend.title.position = ifelse(
+          key.position %in% c("left", "right"),
+          "top",
+          key.position
+        )
+      ),
+      ncol = if (missing(key.columns)) {
+        if (key.position %in% c("left", "right")) {
+          1
+        } else {
+          npol
+        }
+      } else {
+        key.columns
+      }
+    )
+
+  # built plot
+  thePlot <-
+    ggplot2::ggplot(
+      mydata,
+      ggplot2::aes(
+        x = .data$date,
+        y = .data$value,
+        color = .data$variable,
+        fill = .data$variable,
+        linetype = .data$variable
+      )
+    ) +
+    ggplot2::geom_line(
+      ggplot2::aes(linewidth = .data$variable),
+      show.legend = TRUE
+    ) +
+    gg_ref_x(ref.x) +
+    gg_ref_y(ref.y) +
+    theme_openair(key.position = ifelse(npol == 1, "none", key.position)) +
+    ggplot2::labs(
+      x = extra.args$xlab,
+      y = extra.args$ylab,
+      title = extra.args$main,
+      fill = NULL,
+      colour = NULL,
+      linetype = NULL,
+      linewidth = NULL
+    ) +
+    get_facet(
+      type,
+      extra.args,
+      scales = relation_to_facet_scales(x.relation, y.relation),
+      auto.text = auto.text,
+      drop = FALSE,
+      strip.position = strip.position
+    ) +
+    ggplot2::coord_cartesian(
+      xlim = extra.args$xlim,
+      ylim = extra.args$ylim
+    ) +
+    x_scale_fun(
+      breaks = scales::breaks_pretty(date.breaks),
+      date_labels = date.format %||% ggplot2::waiver(),
+      expand = ggplot2::expansion(c(0.025, 0.025))
+    ) +
+    ggplot2::scale_y_continuous(
+      expand = if (is.null(extra.args$ylim)) {
+        ggplot2::expansion(mult = c(0.1, 0.1))
+      } else {
+        ggplot2::expansion()
+      },
+      transform = ifelse(log, "log10", "identity")
+    ) +
+    ggplot2::scale_color_manual(
+      values = openColours(scheme = cols, n = npol),
+      drop = FALSE,
+      label = \(x) label_openair(x, auto_text = auto.text),
+      aesthetics = c("fill", "colour")
+    ) +
+    ggplot2::scale_linetype_manual(
+      values = extra.args$lty,
+      drop = FALSE,
+      label = \(x) label_openair(x, auto_text = auto.text)
+    ) +
+    ggplot2::scale_linewidth_manual(
+      values = extra.args$lwd / 2,
+      drop = FALSE,
+      label = \(x) label_openair(x, auto_text = auto.text)
+    ) +
+    ggplot2::guides(
+      fill = theGuide,
+      color = theGuide,
+      linetype = theGuide,
+      linewidth = theGuide
+    )
+
+  if (stack) {
+    thePlot <-
+      thePlot +
+      ggplot2::theme(
+        panel.spacing.y = ggplot2::unit(0, "cm")
+      )
+  }
+
+  if (smooth) {
+    thePlot <-
+      thePlot +
+      ggplot2::stat_smooth(se = ci)
+  }
+
+  if (!is.null(windflow)) {
+    thePlot <-
+      thePlot +
+      layer_windflow(
+        ggplot2::aes(
+          ws = .data$ws,
+          wd = .data$wd,
+          group = .data$variable
+        ),
+        arrow = grid::arrow(
+          angle = windflow$angle %||% 15,
+          length = windflow$length %||% grid::unit(0.5, "lines"),
+          ends = windflow$ends %||% "last",
+          type = windflow$type %||% "closed"
+        ),
+        colour = windflow$col %||% "black",
+        linewidth = windflow$lwd %||% 1 / 2
+      )
+  }
 
   # output
   if (plot) {
-    plot(plt)
+    plot(thePlot)
   }
-  newdata <- mydata
-  output <- list(plot = plt, data = newdata, call = match.call())
+
+  output <- list(plot = thePlot, data = mydata, call = match.call())
   class(output) <- "openair"
 
   invisible(output)
@@ -789,7 +644,7 @@ time_average_timeplot_data <- function(
   }
 
   # timeAverage drops type if default
-  if (type == "default") {
+  if (any(type == "default")) {
     mydata$default <- "default"
   }
 

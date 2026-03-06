@@ -20,10 +20,11 @@ polarFreq(
   ws.upper = NA,
   offset = 10,
   border.col = "transparent",
+  key = TRUE,
   key.header = statistic,
   key.footer = pollutant,
   key.position = "right",
-  key = TRUE,
+  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -119,6 +120,9 @@ hole that takes up the entire plotting area.}
 bin. The default is transparent. Another useful choice sometimes is
 "white".}
 
+\item{key}{Fine control of the scale key via \code{drawOpenKey}. See \code{drawOpenKey}
+for further details.}
+
 \item{key.header}{Adds additional text/labels to the scale key. For example,
 passing the options \verb{key.header = "header", key.footer = "footer1"} adds
 addition text above and below the scale key. These arguments are passed to
@@ -130,8 +134,12 @@ formatting.}
 \item{key.position}{Location where the scale key is to plotted. Allowed
 arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"} and \code{"left"}.}
 
-\item{key}{Fine control of the scale key via \code{drawOpenKey}. See \code{drawOpenKey}
-for further details.}
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units

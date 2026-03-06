@@ -18,6 +18,7 @@ timeProp(
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
+  strip.position = "top",
   date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
@@ -85,6 +86,13 @@ number of pollutants.}
 \code{"top"}, \code{"bottom"}, \code{"right"} and \code{"left"}.}
 
 \item{key.title}{The title of the key.}
+
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
 \item{date.breaks}{Number of major x-axis intervals to use. The function will
 try and choose a sensible number of dates/times as well as formatting the

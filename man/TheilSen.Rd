@@ -29,6 +29,7 @@ TheilSen(
   slope.percent = FALSE,
   date.breaks = 7,
   date.format = NULL,
+  strip.position = "top",
   plot = TRUE,
   silent = FALSE,
   ...
@@ -154,6 +155,13 @@ the number of intervals by adjusting the value of \code{date.breaks} up or down.
 situations where the user wishes to have more control. For format types see
 \code{strptime}. For example, to format the date like \dQuote{Jan-2012} set
 \code{date.format = "\\\%b-\\\%Y"}.}
+
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract trend components and plotting them in other ways.}
