@@ -771,7 +771,8 @@ windRose <- function(
             y = .data$value,
             fill = .data$name,
             group = .data$rect_id
-          )
+          ),
+          color = border
         )
     } else {
       thePlot <-
