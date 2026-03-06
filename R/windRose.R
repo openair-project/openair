@@ -70,12 +70,12 @@
 #'   to a specific value, e.g. `grid.line = 10`. `grid.line` can also be a list
 #'   to control the interval, line type and colour. For example `grid.line =
 #'   list(value = 10, lty = 5, col = "purple")`.
-#' @param For paddle = TRUE, the adjustment factor for width of wind speed
+#' @param width For paddle = TRUE, the adjustment factor for width of wind speed
 #'   intervals. For example, width = 1.5 will make the paddle width 1.5 times
 #'   wider.
 #' @param seg `seg` determines with width of the segments. For example, `seg =
 #'   0.5` will produce segments 0.5 * `angle`.
-#' @param Either `TRUE` or `FALSE`. If `TRUE` plots rose using 'paddle' style
+#' @param paddle Either `TRUE` or `FALSE`. If `TRUE` plots rose using 'paddle' style
 #'   spokes. If `FALSE` plots rose using 'wedge' style spokes.
 #' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
 #'   axis labels will automatically try and format pollutant names and units

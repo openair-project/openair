@@ -99,6 +99,10 @@ assigned based on the available data range. However, it can also be forced
 to a specific value, e.g. \code{grid.line = 10}. \code{grid.line} can also be a list
 to control the interval, line type and colour. For example \code{grid.line = list(value = 10, lty = 5, col = "purple")}.}
 
+\item{width}{For paddle = TRUE, the adjustment factor for width of wind speed
+intervals. For example, width = 1.5 will make the paddle width 1.5 times
+wider.}
+
 \item{seg}{\code{seg} determines with width of the segments. For example, \code{seg = 0.5} will produce segments 0.5 * \code{angle}.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
@@ -123,6 +127,9 @@ wind directions is from a particular wind sector is also shown.}
 \item{max.freq}{Controls the scaling used by setting the maximum value for
 the radial limits. This is useful to ensure several plots use the same
 radial limits.}
+
+\item{paddle}{Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose using 'paddle' style
+spokes. If \code{FALSE} plots rose using 'wedge' style spokes.}
 
 \item{key.header}{Adds additional text/labels above the scale key. For
 example, passing \code{windRose(mydata, key.header = "ws")} adds the addition
@@ -176,13 +183,6 @@ data to extract plot components and plotting them in other ways.}
 \code{lattice:xyplot} and \code{cutData}. Axis and title labelling options (\code{xlab},
 \code{ylab}, \code{main}) are passed to \code{xyplot} via \code{quickText} to handle routine
 formatting.}
-
-\item{For}{paddle = TRUE, the adjustment factor for width of wind speed
-intervals. For example, width = 1.5 will make the paddle width 1.5 times
-wider.}
-
-\item{Either}{\code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose using 'paddle' style
-spokes. If \code{FALSE} plots rose using 'wedge' style spokes.}
 }
 \value{
 an \link[=openair-package]{openair} object. Summarised proportions can be

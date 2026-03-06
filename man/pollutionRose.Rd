@@ -38,6 +38,9 @@ concentrations. The default, 6, attempts to breaks the supplied data at
 approximately 6 sensible break points. However, \code{breaks} can also be
 used to set specific break points. For example, the argument \code{breaks = c(0, 1, 10, 100)} breaks the data into segments <1, 1-10, 10-100, >100.}
 
+\item{paddle}{Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose using 'paddle' style
+spokes. If \code{FALSE} plots rose using 'wedge' style spokes.}
+
 \item{seg}{\code{seg} determines with width of the segments. For example, \code{seg = 0.5} will produce segments 0.5 * \code{angle}.}
 
 \item{normalise}{If \code{TRUE} each wind direction segment is normalised to equal
@@ -98,6 +101,9 @@ example would be \code{cols = c("yellow", "green", "blue", "black")}.}
 assigned based on the available data range. However, it can also be forced
 to a specific value, e.g. \code{grid.line = 10}. \code{grid.line} can also be a list
 to control the interval, line type and colour. For example \code{grid.line = list(value = 10, lty = 5, col = "purple")}.}
+    \item{\code{width}}{For paddle = TRUE, the adjustment factor for width of wind speed
+intervals. For example, width = 1.5 will make the paddle width 1.5 times
+wider.}
     \item{\code{auto.text}}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
 properly, e.g., by subscripting the \sQuote{2} in NO2.}
