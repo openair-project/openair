@@ -661,7 +661,7 @@ windRose <- function(
       x = extra.args$xlab,
       y = extra.args$ylab,
       title = extra.args$main,
-      caption = stat.lab
+      caption = if (annotate) stat.lab
     ) +
     ggplot2::guides(
       fill = key_guide,
