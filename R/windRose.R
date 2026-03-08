@@ -220,6 +220,11 @@ windRose <- function(
   # make sure ws and wd and numeric
   mydata <- checkNum(mydata, vars = c(ws, wd))
 
+  if (!is.na(ws2) && !is.na(wd2) && missing(angle)) {
+    angle <- 10
+  }
+
+  # check angle is sensible and warn about potential bias
   if (360 / angle != round(360 / angle)) {
     cli::cli_warn(
       c(
@@ -317,9 +322,6 @@ windRose <- function(
     wd <- "wd"
     ws <- "ws"
     vars <- c("ws", "wd")
-    if (missing(angle)) {
-      angle <- 10
-    }
     # set the breaks to cover all the data
     if (is.na(breaks[1])) {
       max.br <- max(ceiling(abs(c(
@@ -416,10 +418,9 @@ windRose <- function(
         freqs = NA
       )
     } else {
-      levels(mydata$x) <- c(paste(
+      levels(mydata$x) <- c(paste0(
         "Interval",
-        seq_along(levels(mydata$x)),
-        sep = ""
+        seq_along(levels(mydata$x))
       ))
 
       all <- stat.fun(mydata[[wd]])
@@ -597,6 +598,20 @@ windRose <- function(
       name = factor(.data$name, labels = breaksToLabels(breaks, sep = " to "))
     )
 
+  key_label <- quickText(paste(key.header, key.footer), auto.text = auto.text)
+  key_guide <- ggplot2::guide_legend(
+    reverse = key.position %in% c("left", "right"),
+    theme = ggplot2::theme(
+      legend.title.position = ifelse(
+        key.position %in% c("left", "right"),
+        "top",
+        key.position
+      ),
+      legend.text.position = key.position
+    ),
+    nrow = if (key.position %in% c("left", "right")) NULL else 1
+  )
+
   thePlot <-
     plot_data |>
     ggplot2::ggplot(
@@ -605,7 +620,7 @@ windRose <- function(
         y = .data$value2
       )
     ) +
-    theme_openair_radial(key.position) +
+    theme_openair_radial(key.position, panel.ontop = normalise) +
     set_extra_fontsize(extra.args) +
     ggplot2::theme(
       panel.grid.major.y = ggplot2::element_line(
@@ -639,28 +654,19 @@ windRose <- function(
       values = openColours(
         scheme = cols,
         n = dplyr::n_distinct(levels(mydata$x))
-      )
+      ),
+      aesthetics = c("colour", "fill")
     ) +
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
       title = extra.args$main,
-      fill = quickText(paste(key.header, key.footer), auto.text = auto.text),
       caption = stat.lab
     ) +
     ggplot2::guides(
-      fill = ggplot2::guide_legend(
-        reverse = key.position %in% c("left", "right"),
-        theme = ggplot2::theme(
-          legend.title.position = ifelse(
-            key.position %in% c("left", "right"),
-            "top",
-            key.position
-          ),
-          legend.text.position = key.position
-        ),
-        nrow = if (key.position %in% c("left", "right")) NULL else 1
-      )
+      fill = key_guide,
+      color = key_guide,
+      linewidth = key_guide
     ) +
     get_facet(
       type,
@@ -685,94 +691,40 @@ windRose <- function(
         fill = NA,
         position = ggplot2::position_stack(reverse = TRUE),
         width = seg * angle
+      ) +
+      ggplot2::labs(
+        fill = key_label
       )
   } else {
     if (paddle) {
-      paddle_widths <-
-        seq(
-          0.2,
-          width,
-          length.out = dplyr::n_distinct(levels(plot_data$name))
-        ) *
-        angle
-
-      straighten_radial_rectangles <- function(
-        plot_data,
-        paddle_widths,
-        n_points = 50
-      ) {
-        interpolated_data <- plot_data |>
-          dplyr::mutate(rect_id = dplyr::row_number()) |>
-          dplyr::rowwise() |>
-          dplyr::reframe(
-            # Calculate the four corners in radial coordinates (degrees)
-            corner_angle_deg = c(
-              wd - paddle_widths[as.numeric(name)] / 2,
-              wd - paddle_widths[as.numeric(name)] / 2,
-              wd + paddle_widths[as.numeric(name)] / 2,
-              wd + paddle_widths[as.numeric(name)] / 2
-            ),
-            corner_radius = c(value, lag_value, lag_value, value),
-
-            # Convert degrees to radians for trigonometry
-            corner_angle_rad = corner_angle_deg * pi / 180,
-
-            # Convert to Cartesian
-            corner_x = corner_radius * cos(corner_angle_rad),
-            corner_y = corner_radius * sin(corner_angle_rad),
-            corner_order = 1:4,
-            rect_id = rect_id,
-            name = name,
-            original_angle = wd # Keep original for unwrapping
-          ) |>
-          dplyr::reframe(
-            # Interpolate straight lines between corners in Cartesian space
-            x = c(
-              seq(corner_x[1], corner_x[2], length.out = n_points),
-              seq(corner_x[2], corner_x[3], length.out = n_points),
-              seq(corner_x[3], corner_x[4], length.out = n_points),
-              seq(corner_x[4], corner_x[1], length.out = n_points)
-            ),
-            y = c(
-              seq(corner_y[1], corner_y[2], length.out = n_points),
-              seq(corner_y[2], corner_y[3], length.out = n_points),
-              seq(corner_y[3], corner_y[4], length.out = n_points),
-              seq(corner_y[4], corner_y[1], length.out = n_points)
-            ),
-            name = name[1],
-            original_angle = original_angle[1],
-            .by = "rect_id"
-          ) |>
-          dplyr::mutate(
-            # Convert back to polar (in degrees)
-            wd_raw = atan2(y, x) * 180 / pi,
-            # Unwrap angles - adjust to be close to original angle
-            wd = wd_raw + 360 * round((original_angle - wd_raw) / 360),
-            value = sqrt(x^2 + y^2)
-          )
-
-        return(interpolated_data)
-      }
-
-      poly_data <-
-        mapType(
-          plot_data,
-          type,
-          \(x) straighten_radial_rectangles(x, paddle_widths = paddle_widths),
-          .include_default = TRUE
-        )
-
       thePlot <-
         thePlot +
-        ggplot2::geom_polygon(
-          data = poly_data,
+        geom_stroked_path(
+          data = plot_data |>
+            dplyr::mutate(id = dplyr::row_number()) |>
+            tidyr::pivot_longer(
+              cols = c("value", "lag_value"),
+              names_to = "__name__"
+            ),
           ggplot2::aes(
             x = .data$wd,
             y = .data$value,
-            fill = .data$name,
-            group = .data$rect_id
+            group = .data$id,
+            color = .data$name,
+            linewidth = .data$name
           ),
-          color = border
+          stroke_colour = border
+        ) +
+        ggplot2::scale_linewidth_manual(
+          values = seq(
+            angle / 15,
+            angle / 360 * width * 125,
+            length.out = dplyr::n_distinct(levels(plot_data$name))
+          )
+        ) +
+        ggplot2::labs(
+          linewidth = key_label,
+          color = key_label
         )
     } else {
       thePlot <-
@@ -782,6 +734,9 @@ windRose <- function(
           position = ggplot2::position_stack(reverse = TRUE),
           width = seg * angle,
           color = border
+        ) +
+        ggplot2::labs(
+          fill = key_label
         )
     }
   }
@@ -1003,6 +958,7 @@ pollutionRose <- function(
     key = key,
     breaks = breaks,
     normalise = normalise,
+    paddle = paddle,
     plot = plot,
     ...
   )
