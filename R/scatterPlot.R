@@ -869,7 +869,8 @@ scatter_scatter <- function(
   ## axis scales
   plt <- plt +
     .scatter_x_scale(log.x, x, mydata, extra.args) +
-    .scatter_y_scale(log.y, y, mydata, extra.args)
+    .scatter_y_scale(log.y, y, mydata, extra.args) +
+    gg_coord_limits(extra.args)
 
   ## faceting
   plt <- plt +
@@ -995,6 +996,7 @@ scatter_hexbin <- function(
     gg_ref_y(ref.y) +
     .scatter_x_scale(log.x, x, mydata, extra.args) +
     .scatter_y_scale(log.y, y, mydata, extra.args) +
+    gg_coord_limits(extra.args) +
     get_facet(
       type,
       extra.args,
@@ -1136,6 +1138,7 @@ scatter_level <- function(
     gg_ref_y(ref.y) +
     .scatter_x_scale(log.x, "xgrid", mydata, extra.args) +
     .scatter_y_scale(log.y, "ygrid", mydata, extra.args) +
+    gg_coord_limits(extra.args) +
     get_facet(
       type,
       extra.args,
@@ -1245,6 +1248,7 @@ scatter_density <- function(
     gg_ref_y(ref.y) +
     .scatter_x_scale(log.x, x, mydata, extra.args) +
     .scatter_y_scale(log.y, y, mydata, extra.args) +
+    gg_coord_limits(extra.args) +
     get_facet(
       type,
       extra.args,
@@ -1312,8 +1316,7 @@ scatter_density <- function(
   if (log.x) {
     ggplot2::scale_x_continuous(
       transform = "log10",
-      expand = ggplot2::expansion(mult = c(0.05, 0.05)),
-      limits = extra.args$xlim
+      expand = ggplot2::expansion(mult = c(0.05, 0.05))
     )
   } else {
     x_vals <- mydata[[x_col]]
@@ -1332,8 +1335,7 @@ scatter_density <- function(
       }
     } else {
       ggplot2::scale_x_continuous(
-        expand = ggplot2::expansion(mult = c(0.05, 0.05)),
-        limits = extra.args$xlim
+        expand = ggplot2::expansion(mult = c(0.05, 0.05))
       )
     }
   }
@@ -1345,14 +1347,24 @@ scatter_density <- function(
   if (log.y) {
     ggplot2::scale_y_continuous(
       transform = "log10",
-      expand = ggplot2::expansion(mult = c(0.05, 0.05)),
-      limits = extra.args$ylim
+      expand = ggplot2::expansion(mult = c(0.05, 0.05))
     )
   } else {
     ggplot2::scale_y_continuous(
-      expand = ggplot2::expansion(mult = c(0.05, 0.05)),
-      limits = extra.args$ylim
+      expand = ggplot2::expansion(mult = c(0.05, 0.05))
     )
+  }
+}
+
+#' Apply xlim/ylim via coord_cartesian so data outside limits is not dropped
+#' @noRd
+gg_coord_limits <- function(extra.args) {
+  xlim <- extra.args$xlim
+  ylim <- extra.args$ylim
+  if (!is.null(xlim) || !is.null(ylim)) {
+    ggplot2::coord_cartesian(xlim = xlim, ylim = ylim)
+  } else {
+    list()
   }
 }
 
