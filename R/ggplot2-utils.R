@@ -171,7 +171,8 @@ annotate_compass_points <- function(size, labels = c("N", "E", "S", "W")) {
       geom = "text",
       label = labels[1],
       hjust = 0,
-      size = size
+      size = size,
+      fontface = "bold"
     ),
     ggplot2::annotate(
       y = I(1 - 0.935),
@@ -179,7 +180,8 @@ annotate_compass_points <- function(size, labels = c("N", "E", "S", "W")) {
       geom = "text",
       label = labels[3],
       hjust = 0,
-      size = size
+      size = size,
+      fontface = "bold"
     ),
     ggplot2::annotate(
       y = I(0.52),
@@ -187,7 +189,8 @@ annotate_compass_points <- function(size, labels = c("N", "E", "S", "W")) {
       geom = "text",
       label = labels[4],
       vjust = 0,
-      size = size
+      size = size,
+      fontface = "bold"
     ),
     ggplot2::annotate(
       y = I(0.52),
@@ -195,7 +198,8 @@ annotate_compass_points <- function(size, labels = c("N", "E", "S", "W")) {
       geom = "text",
       label = labels[2],
       vjust = 0,
-      size = size
+      size = size,
+      fontface = "bold"
     )
   )
 }

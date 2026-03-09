@@ -15,19 +15,21 @@ polarAnnulus(
   percentile = NA,
   limits = NULL,
   cols = "default",
-  width = "normal",
+  col.na = "white",
+  offset = 50,
+  angle.scale = 0,
   min.bin = 1,
   exclude.missing = TRUE,
   date.pad = FALSE,
   force.positive = TRUE,
   k = c(20, 10),
   normalise = FALSE,
+  strip.position = "top",
   key.header = statistic,
   key.footer = pollutant,
   key.position = "right",
   key = TRUE,
   auto.text = TRUE,
-  alpha = 1,
   plot = TRUE,
   ...
 )
@@ -37,12 +39,14 @@ polarAnnulus(
 pollutant.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
-data frame should be supplied e.g. \code{pollutant = "nox"}. There can also
-be more than one pollutant specified e.g. \code{pollutant = c("nox", "no2")}. The main use of using two or more pollutants is for model
-evaluation where two species would be expected to have similar
-concentrations. This saves the user stacking the data and it is possible to
-work with columns of data directly. A typical use would be \code{pollutant = c("obs", "mod")} to compare two columns \dQuote{obs} (the observations)
-and \dQuote{mod} (modelled values).}
+data frame should be supplied e.g. \code{pollutant = "nox"}. There can also be
+more than one pollutant specified e.g. \code{pollutant = c("nox", "no2")}. The
+main use of using two or more pollutants is for model evaluation where two
+species would be expected to have similar concentrations. This saves the
+user stacking the data and it is possible to work with columns of data
+directly. A typical use would be \code{pollutant = c("obs", "mod")} to compare
+two columns \dQuote{obs} (the observations) and \dQuote{mod} (modelled
+values).}
 
 \item{resolution}{Two plot resolutions can be set: \dQuote{normal} and
 \dQuote{fine} (the default).}
@@ -58,37 +62,35 @@ of \dQuote{smearing-out} the concentrations. Sometimes, a useful approach
 is to express time as local time. This correction tends to produce
 better-defined diurnal profiles of concentration (or other variables) and
 allows a better comparison to be made with emissions/activity data. If set
-to \code{FALSE} then GMT is used. Examples of usage include \code{local.tz = "Europe/London"}, \code{local.tz = "America/New_York"}. See
-\code{cutData} and \code{import} for more details.}
+to \code{FALSE} then GMT is used. Examples of usage include \code{local.tz = "Europe/London"}, \code{local.tz = "America/New_York"}. See \code{cutData} and
+\code{import} for more details.}
 
 \item{period}{This determines the temporal period to consider. Options are
 \dQuote{hour} (the default, to plot diurnal variations), \dQuote{season} to
 plot variation throughout the year, \dQuote{weekday} to plot day of the
 week variation and \dQuote{trend} to plot the trend by wind direction.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-\code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-on. For example, \code{type = "season"} will produce four plots --- one for
-each season.
+\item{type}{\code{type} determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
+\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+\code{type = "season"} will produce four plots --- one for each season.
 
-It is also possible to choose \code{type} as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+It is also possible to choose \code{type} as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-Type can be up length two e.g. \code{type = c("season", "site")} will
-produce a 2x2 plot split by season and site. The use of two types is mostly
-meant for situations where there are several sites. Note, when two types
-are provided the first forms the columns and the second the rows.
+Type can be up length two e.g. \code{type = c("season", "site")} will produce a
+2x2 plot split by season and site. The use of two types is mostly meant for
+situations where there are several sites. Note, when two types are provided
+the first forms the columns and the second the rows.
 
 Also note that for the \code{polarAnnulus} function some type/period
-combinations are forbidden or make little sense. For example, \code{type = "season"} and \code{period = "trend"} (which would result in a plot with
-too many gaps in it for sensible smoothing), or \code{type = "weekday"} and
-\code{period = "weekday"}.}
+combinations are forbidden or make little sense. For example, \code{type = "season"} and \code{period = "trend"} (which would result in a plot with too
+many gaps in it for sensible smoothing), or \code{type = "weekday"} and \code{period = "weekday"}.}
 
 \item{statistic}{The statistic that should be applied to each wind
 speed/direction bin. Can be \dQuote{mean} (default), \dQuote{median},
@@ -97,18 +99,18 @@ deviation), \dQuote{weighted.mean} or \dQuote{cpf} (Conditional Probability
 Function). Because of the smoothing involved, the colour scale for some of
 these statistics is only to provide an indication of overall pattern and
 should not be interpreted in concentration units e.g. for \code{statistic = "weighted.mean"} where the bin mean is multiplied by the bin frequency and
-divided by the total frequency. In many cases using \code{polarFreq} will
-be better. Setting \code{statistic = "weighted.mean"} can be useful because
-it provides an indication of the concentration * frequency of occurrence
-and will highlight the wind speed/direction conditions that dominate the
+divided by the total frequency. In many cases using \code{polarFreq} will be
+better. Setting \code{statistic = "weighted.mean"} can be useful because it
+provides an indication of the concentration * frequency of occurrence and
+will highlight the wind speed/direction conditions that dominate the
 overall mean.}
 
-\item{percentile}{If \code{statistic = "percentile"} or \code{statistic = "cpf"} then \code{percentile} is used, expressed from 0 to 100. Note that
-the percentile value is calculated in the wind speed, wind direction
-\sQuote{bins}. For this reason it can also be useful to set \code{min.bin}
-to ensure there are a sufficient number of points available to estimate a
-percentile. See \code{quantile} for more details of how percentiles are
-calculated.}
+\item{percentile}{If \code{statistic = "percentile"} or \code{statistic = "cpf"} then
+\code{percentile} is used, expressed from 0 to 100. Note that the percentile
+value is calculated in the wind speed, wind direction \sQuote{bins}. For
+this reason it can also be useful to set \code{min.bin} to ensure there are a
+sufficient number of points available to estimate a percentile. See
+\code{quantile} for more details of how percentiles are calculated.}
 
 \item{limits}{The function does its best to choose sensible limits
 automatically. However, there are circumstances when the user will wish to
@@ -125,8 +127,16 @@ be \code{cols = c("yellow", "green", "blue")}. \code{cols} can also take the val
 \code{"viridis"}, \code{"magma"}, \code{"inferno"}, or \code{"plasma"} which are the viridis
 colour maps ported from Python's Matplotlib library.}
 
-\item{width}{The width of the annulus; can be \dQuote{normal} (the default),
-\dQuote{thin} or \dQuote{fat}.}
+\item{col.na}{Colour to be used to show missing data.}
+
+\item{offset}{\code{offset} controls the size of the 'hole' in the middle and is
+expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a
+hole that takes up the entire plotting area.}
+
+\item{angle.scale}{The scale is by default shown at a 315 degree angle.
+Sometimes the placement of the scale may interfere with an interesting
+feature. The user can therefore set \code{angle.scale} to another value (between
+0 and 360 degrees) to mitigate such problems. For example \code{angle.scale = 45} will draw the scale heading in a NE direction.}
 
 \item{min.bin}{The minimum number of points allowed in a wind speed/wind
 direction bin.  The default is 1. A value of two requires at least 2 valid
@@ -142,10 +152,10 @@ predict. By removing the points too far from the original data produces a
 plot where it is clear where the original data lie. If set to \code{FALSE}
 missing data will be interpolated.}
 
-\item{date.pad}{For \code{type = "trend"} (default), \code{date.pad = TRUE}
-will pad-out missing data to the beginning of the first year and the end of
-the last year. The purpose is to ensure that the trend plot begins and ends
-at the beginning or end of year.}
+\item{date.pad}{For \code{type = "trend"} (default), \code{date.pad = TRUE} will
+pad-out missing data to the beginning of the first year and the end of the
+last year. The purpose is to ensure that the trend plot begins and ends at
+the beginning or end of year.}
 
 \item{force.positive}{The default is \code{TRUE}. Sometimes if smoothing data with
 steep gradients it is possible for predicted values to be negative.
@@ -163,14 +173,21 @@ the default option.}
 \item{k}{The smoothing value supplied to \code{gam} for the temporal and wind
 direction components, respectively. In some cases e.g. a trend plot with
 less than 1-year of data the smoothing with the default values may become
-too noisy and affected more by outliers. Choosing a lower value of \code{k}
-(say 10) may help produce a better plot.}
+too noisy and affected more by outliers. Choosing a lower value of \code{k} (say
+10) may help produce a better plot.}
 
 \item{normalise}{If \code{TRUE} concentrations are normalised by dividing by their
 mean value. This is done \emph{after} fitting the smooth surface. This option is
 particularly useful if one is interested in the patterns of concentrations
 for several pollutants on different scales e.g. NOx and CO. Often useful if
 more than one \code{pollutant} is chosen.}
+
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
 \item{key.header}{Adds additional text/labels to the scale key. For example,
 passing the options \verb{key.header = "header", key.footer = "footer1"} adds
@@ -190,20 +207,14 @@ for further details.}
 axis labels will automatically try and format pollutant names and units
 properly e.g.  by subscripting the `2' in NO2.}
 
-\item{alpha}{The alpha transparency to use for the plotting surface (a value
-between 0 and 1 with zero being fully transparent and 1 fully opaque).
-Setting a value below 1 can be useful when plotting surfaces on a map using
-the package \code{openairmaps}.}
-
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}
 
-\item{...}{Other graphical parameters passed onto \code{lattice:levelplot}
-and \code{cutData}. For example, \code{polarAnnulus} passes the option
-\code{hemisphere = "southern"} on to \code{cutData} to provide southern
-(rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common axis and title labelling options (such as
-\code{xlab}, \code{ylab}, \code{main}) are passed to \code{levelplot} via
-\code{quickText} to handle routine formatting.}
+\item{...}{Other graphical parameters passed onto \code{lattice:levelplot} and
+\code{cutData}. For example, \code{polarAnnulus} passes the option \code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than default
+northern) hemisphere handling of \code{type = "season"}. Similarly, common axis
+and title labelling options (such as \code{xlab}, \code{ylab}, \code{main}) are passed to
+\code{levelplot} via \code{quickText} to handle routine formatting.}
 }
 \value{
 an \link[=openair-package]{openair} object
@@ -275,5 +286,7 @@ Other polar directional analysis functions:
 }
 \author{
 David Carslaw
+
+Jack Davison
 }
 \concept{polar directional analysis functions}
