@@ -19,19 +19,21 @@ polarAnnulus(
   percentile = NA,
   limits = NULL,
   cols = "default",
-  width = "normal",
+  col.na = "white",
+  offset = 50,
+  angle.scale = 0,
   min.bin = 1,
   exclude.missing = TRUE,
   date.pad = FALSE,
   force.positive = TRUE,
   k = c(20, 10),
   normalise = FALSE,
+  strip.position = "top",
   key.header = statistic,
   key.footer = pollutant,
   key.position = "right",
   key = TRUE,
   auto.text = TRUE,
-  alpha = 1,
   plot = TRUE,
   ...
 )
@@ -158,10 +160,23 @@ polarAnnulus(
   or `"plasma"` which are the viridis colour maps ported from Python's
   Matplotlib library.
 
-- width:
+- col.na:
 
-  The width of the annulus; can be “normal” (the default), “thin” or
-  “fat”.
+  Colour to be used to show missing data.
+
+- offset:
+
+  `offset` controls the size of the 'hole' in the middle and is
+  expressed on a scale of `0` to `100`, where `0` is no hole and `100`
+  is a hole that takes up the entire plotting area.
+
+- angle.scale:
+
+  The scale is by default shown at a 315 degree angle. Sometimes the
+  placement of the scale may interfere with an interesting feature. The
+  user can therefore set `angle.scale` to another value (between 0 and
+  360 degrees) to mitigate such problems. For example `angle.scale = 45`
+  will draw the scale heading in a NE direction.
 
 - min.bin:
 
@@ -220,6 +235,15 @@ polarAnnulus(
   concentrations for several pollutants on different scales e.g. NOx and
   CO. Often useful if more than one `pollutant` is chosen.
 
+- strip.position:
+
+  Location where the facet 'strips' are located when using `type`. When
+  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
+  or `"top"`. When two `type`s are provided, this argument defines
+  whether the strips are "switched" and can take either `"x"`, `"y"`, or
+  `"both"`. For example, `"x"` will switch the 'top' strip locations to
+  the bottom of the plot.
+
 - key.header:
 
   Adds additional text/labels to the scale key. For example, passing the
@@ -247,13 +271,6 @@ polarAnnulus(
   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
   will automatically try and format pollutant names and units properly
   e.g. by subscripting the \`2' in NO2.
-
-- alpha:
-
-  The alpha transparency to use for the plotting surface (a value
-  between 0 and 1 with zero being fully transparent and 1 fully opaque).
-  Setting a value below 1 can be useful when plotting surfaces on a map
-  using the package `openairmaps`.
 
 - plot:
 
@@ -316,6 +333,8 @@ Other polar directional analysis functions:
 ## Author
 
 David Carslaw
+
+Jack Davison
 
 ## Examples
 
