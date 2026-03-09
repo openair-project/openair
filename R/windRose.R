@@ -308,31 +308,16 @@ windRose <- function(
     vars <- c(vars, ws2, wd2)
     diff <- TRUE
     rm.neg <- FALSE
-    mydata$ws <- mydata[[ws2]] - mydata[[ws]]
-    mydata$wd <- mydata[[wd2]] - mydata[[wd]]
 
-    # fix negative wd
-    id <- which(mydata$wd < 0)
-    if (length(id) > 0) {
-      mydata$wd[id] <- mydata$wd[id] + 360
-    }
+    # Speed bias (test - reference) and direction bias normalised to [-180, 180]
+    mydata$.ws_bias <- mydata[[ws2]] - mydata[[ws]]
+    mydata$.wd_bias <- ((mydata[[wd2]] - mydata[[wd]]) + 180) %% 360 - 180
 
-    pollutant <- "ws"
-    key.footer <- "ws"
-    wd <- "wd"
-    ws <- "ws"
-    vars <- c("ws", "wd")
-    # set the breaks to cover all the data
-    if (is.na(breaks[1])) {
-      max.br <- max(ceiling(abs(c(
-        min(mydata$ws, na.rm = TRUE),
-        max(mydata$ws, na.rm = TRUE)
-      ))))
-      breaks <- c(-1 * max.br, 0, max.br)
-    }
+    # Reference wd/ws retained for binning — do not overwrite them
+    vars <- c(wd, ws, ".ws_bias", ".wd_bias")
 
     if (missing(cols)) {
-      cols <- c("lightskyblue", "tomato")
+      cols <- c("steelblue3", "white", "tomato2")
     }
     seg <- 1
   }
@@ -384,6 +369,189 @@ windRose <- function(
 
   mydata[[wd]][mydata[, ws] < calm.thresh] <- -999 # set wd to flag where there are calms
   # do after rounding or -999 changes
+
+  # === COMPARISON PLOT BRANCH (early return — must be before break setup) ===
+  if (diff) {
+    group_vars <- if (all(type == "default")) character(0) else type
+
+    # Per-direction mean ws bias (calms excluded)
+    diff_results <- mydata |>
+      dplyr::filter(.data[[wd]] != -999, !is.na(.data$.ws_bias)) |>
+      dplyr::summarise(
+        mean_ws_bias = mean(.data$.ws_bias, na.rm = TRUE),
+        n = dplyr::n(),
+        .by = c(wd, dplyr::any_of(group_vars))
+      )
+
+    # Panel-level circular mean of wd bias and overall ws bias (for arrow/annotation)
+    wd_bias_panel <- mydata |>
+      dplyr::filter(!is.na(.data$.wd_bias)) |>
+      dplyr::summarise(
+        u = mean(sin(.data$.wd_bias * pi / 180), na.rm = TRUE),
+        v = mean(cos(.data$.wd_bias * pi / 180), na.rm = TRUE),
+        mean_ws_bias = mean(.data$.ws_bias, na.rm = TRUE),
+        .by = dplyr::any_of(group_vars)
+      ) |>
+      dplyr::mutate(
+        panel_wd_bias = (atan2(.data$u, .data$v) * 180 / pi) %% 360
+      )
+
+    # Radial scale: zero ring at r0, bars extend +/- max_abs_bias from it
+    max_abs_bias <- max(abs(diff_results$mean_ws_bias), na.rm = TRUE)
+    if (!is.finite(max_abs_bias) || max_abs_bias == 0) max_abs_bias <- 1
+    if (!is.null(max.freq)) max_abs_bias <- max.freq / 2
+
+    r0 <- max_abs_bias * 1.5
+    total_r <- r0 + max_abs_bias * 1.2
+
+    # Grid breaks centred on the zero ring
+    bias_pretty <- pretty(c(-max_abs_bias * 1.1, max_abs_bias * 1.1))
+    valid_breaks <- (r0 + bias_pretty) >= 0 & (r0 + bias_pretty) <= total_r
+    grid_breaks_r <- r0 + bias_pretty[valid_breaks]
+    grid_labels_v <- bias_pretty[valid_breaks]
+
+    # Grid line appearance
+    if (is.list(grid.line)) {
+      grid.lty <- grid.line[["lty"]] %||% 1
+      grid.col <- grid.line[["col"]] %||% "grey85"
+    } else {
+      grid.lty <- 1
+      grid.col <- "grey85"
+    }
+
+    # Diverging colour scale (expect cols to be length-3 low/mid/high)
+    diff_colors <- if (length(cols) >= 3) {
+      cols[c(1, ceiling(length(cols) / 2), length(cols))]
+    } else {
+      c("steelblue3", "white", "tomato2")
+    }
+
+    fill_guide <- if (key.position == "none") {
+      "none"
+    } else {
+      ggplot2::guide_colorbar(
+        theme = ggplot2::theme(
+          legend.title.position = ifelse(
+            key.position %in% c("left", "right"), "top", key.position
+          ),
+          legend.text.position = key.position
+        )
+      )
+    }
+
+    thePlot <-
+      ggplot2::ggplot(diff_results) +
+      theme_openair_radial(key.position) +
+      set_extra_fontsize(extra.args) +
+      ggplot2::theme(
+        panel.grid.major.y = ggplot2::element_line(
+          colour = grid.col,
+          linetype = grid.lty,
+          linewidth = 0.25
+        )
+      ) +
+      # Diverging bars from zero ring
+      ggplot2::geom_rect(
+        ggplot2::aes(
+          xmin = .data[[wd]] - angle / 2 * seg,
+          xmax = .data[[wd]] + angle / 2 * seg,
+          ymin = pmin(r0, r0 + .data$mean_ws_bias),
+          ymax = pmax(r0, r0 + .data$mean_ws_bias),
+          fill = .data$mean_ws_bias
+        )
+      ) +
+      # Zero-bias reference ring
+      ggplot2::geom_hline(yintercept = r0, colour = "grey30", linewidth = 0.4) +
+      # Overall wd bias arrow (centre to zero ring)
+      ggplot2::geom_segment(
+        data = wd_bias_panel,
+        ggplot2::aes(
+          x = .data$panel_wd_bias,
+          xend = .data$panel_wd_bias,
+          y = 0,
+          yend = r0
+        ),
+        arrow = ggplot2::arrow(type = "closed", length = ggplot2::unit(0.12, "inches")),
+        colour = "grey20",
+        linewidth = 0.8,
+        inherit.aes = FALSE
+      ) +
+      ggplot2::ggproto(
+        NULL,
+        ggplot2::coord_radial(
+          inner.radius = offset / 100,
+          r.axis.inside = angle.scale,
+          rlim = c(0, total_r),
+          clip = "off"
+        ),
+        inner_radius = c(offset / 100, 1) * 0.475
+      ) +
+      ggplot2::scale_y_continuous(
+        limits = c(0, total_r),
+        breaks = grid_breaks_r,
+        labels = paste0(grid_labels_v, " m/s"),
+        expand = ggplot2::expansion(0, 0)
+      ) +
+      scale_x_compass() +
+      ggplot2::scale_fill_gradient2(
+        low = diff_colors[1],
+        mid = diff_colors[2],
+        high = diff_colors[3],
+        midpoint = 0,
+        name = quickText(
+          paste(key.header, "ws bias\n(m/s)"),
+          auto.text = auto.text
+        )
+      ) +
+      ggplot2::labs(
+        x = extra.args$xlab,
+        y = extra.args$ylab,
+        title = extra.args$main,
+        caption = if (annotate) {
+          "Mean wind speed bias (test \u2212 reference) by reference direction"
+        }
+      ) +
+      ggplot2::guides(fill = fill_guide) +
+      get_facet(type, extra.args, scales = "fixed", auto.text = auto.text, drop = FALSE)
+
+    if (annotate) {
+      thePlot <- thePlot +
+        ggplot2::geom_text(
+          data = wd_bias_panel,
+          ggplot2::aes(
+            label = paste0(
+              "ws bias = ", round(.data$mean_ws_bias, 2), " m/s\n",
+              "wd bias = ", round(.data$panel_wd_bias, 1), "\u00b0"
+            )
+          ),
+          x = I(1),
+          y = I(0),
+          check_overlap = TRUE,
+          size = 3,
+          hjust = 1,
+          vjust = 0,
+          colour = calm.col,
+          inherit.aes = FALSE
+        )
+    }
+
+    if (key.position %in% c("top", "bottom")) {
+      thePlot <- thePlot +
+        ggplot2::theme(legend.key.height = ggplot2::rel(0.5))
+    }
+
+    thePlot <- thePlot +
+      annotate_compass_points(
+        size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
+      )
+
+    if (plot) plot(thePlot)
+
+    output <- list(plot = thePlot, data = diff_results, call = match.call())
+    class(output) <- "openair"
+    return(invisible(output))
+  }
+  # === END COMPARISON PLOT BRANCH ===
 
   if (length(breaks) == 1) {
     breaks <- 0:(breaks - 1) * ws.int
