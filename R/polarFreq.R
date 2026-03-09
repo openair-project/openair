@@ -363,7 +363,7 @@ polarFreq <- function(
         rlim = c(NA, max.ws),
         inner.radius = offset / 100
       ),
-      inner_radius = c(0, 0.475)
+      inner_radius = c(offset / 100, 1) * 0.475
     ) +
     scale_x_compass() +
     ggplot2::scale_y_continuous(

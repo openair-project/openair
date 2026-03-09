@@ -35,6 +35,12 @@ theme_openair_radial <- function(key.position, panel.ontop = FALSE) {
       axis.line.x = ggplot2::element_line(
         colour = "grey75"
       ),
+      axis.line.x.top = ggplot2::element_line(
+        colour = "grey75"
+      ),
+      axis.line.x.bottom = ggplot2::element_line(
+        colour = "grey75"
+      ),
       panel.grid.major.x = ggplot2::element_line(
         colour = "grey10",
         linewidth = 0.4
@@ -149,7 +155,10 @@ scale_x_compass <- function(
       breaks = seq(0, 360 - 90, 90),
       expand = expand,
       oob = oob,
-      ...
+      ...,
+      sec.axis = ggplot2::dup_axis(
+        guide = ggplot2::guide_axis_theta()
+      )
     )
   )
 }

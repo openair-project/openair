@@ -21,6 +21,7 @@ percentileRose(
   fill = TRUE,
   intervals = NULL,
   angle.scale = 45,
+  offset = 0,
   auto.text = TRUE,
   key = TRUE,
   key.header = NULL,
@@ -101,6 +102,10 @@ lines be drawn (\code{fill = FALSE}).}
 interesting feature. The user can therefore set \code{angle.scale} to any value
 between 0 and 360 degrees to mitigate such problems. For example
 \code{angle.scale = 45} will draw the scale heading in a NE direction.}
+
+\item{offset}{\code{offset} controls the size of the 'hole' in the middle and is
+expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a
+hole that takes up the entire plotting area.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
