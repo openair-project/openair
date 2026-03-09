@@ -24,6 +24,7 @@ percentileRose(
   fill = TRUE,
   intervals = NULL,
   angle.scale = 45,
+  offset = 0,
   auto.text = TRUE,
   key = TRUE,
   key.header = NULL,
@@ -141,6 +142,12 @@ percentileRose(
   feature. The user can therefore set `angle.scale` to any value between
   0 and 360 degrees to mitigate such problems. For example
   `angle.scale = 45` will draw the scale heading in a NE direction.
+
+- offset:
+
+  `offset` controls the size of the 'hole' in the middle and is
+  expressed on a scale of `0` to `100`, where `0` is no hole and `100`
+  is a hole that takes up the entire plotting area.
 
 - auto.text:
 

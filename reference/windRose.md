@@ -21,8 +21,8 @@ windRose(
   bias.corr = TRUE,
   cols = "default",
   grid.line = NULL,
-  width = 1,
-  seg = NULL,
+  width = 0.9,
+  seg = 0.9,
   auto.text = TRUE,
   breaks = 4,
   offset = 10,
@@ -40,7 +40,6 @@ windRose(
   annotate = TRUE,
   angle.scale = 315,
   border = NA,
-  alpha = 1,
   plot = TRUE,
   ...
 )
@@ -135,14 +134,14 @@ windRose(
 
 - width:
 
-  For `paddle = TRUE`, the adjustment factor for width of wind speed
-  intervals. For example, `width = 1.5` will make the paddle width 1.5
+  For paddle = TRUE, the adjustment factor for width of wind speed
+  intervals. For example, width = 1.5 will make the paddle width 1.5
   times wider.
 
 - seg:
 
-  When `paddle = TRUE`, `seg` determines with width of the segments. For
-  example, `seg = 0.5` will produce segments 0.5 \* `angle`.
+  `seg` determines with width of the segments. For example, `seg = 0.5`
+  will produce segments 0.5 \* `angle`.
 
 - auto.text:
 
@@ -239,8 +238,7 @@ windRose(
 
   If `TRUE` then the percentage calm and mean values are printed in each
   panel together with a description of the statistic below the plot. If
-  `" "` then only the statistic is below the plot. Custom annotations
-  may be added by setting value to `c("annotation 1", "annotation 2")`.
+  `FALSE` then only the statistic will be printed.
 
 - angle.scale:
 
@@ -253,13 +251,6 @@ windRose(
 - border:
 
   Border colour for shaded areas. Default is no border.
-
-- alpha:
-
-  The alpha transparency to use for the plotting surface (a value
-  between 0 and 1 with zero being fully transparent and 1 fully opaque).
-  Setting a value below 1 can be useful when plotting surfaces on a map
-  using the package `openairmaps`.
 
 - plot:
 
@@ -308,12 +299,6 @@ The option `statistic = "prop.mean"` provides a measure of the relative
 contribution of each bin to the panel mean, and is intended for use with
 `pollutionRose`.
 
-## Note
-
-`windRose` and `pollutionRose` both use
-[`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md)
-to produce scale keys.
-
 ## References
 
 Applequist, S, 2012: Wind Rose Bias Correction. J. Appl. Meteor.
@@ -336,7 +321,11 @@ Other polar directional analysis functions:
 
 ## Author
 
-David Carslaw (with some additional contributions by Karl Ropkins)
+David Carslaw
+
+Karl Ropkins
+
+Jack Davison
 
 ## Examples
 

@@ -78,6 +78,7 @@ conditioning. The plot can display multiple percentile lines or filled areas.</p
 <span>  fill <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  intervals <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  angle.scale <span class="op">=</span> <span class="fl">45</span>,</span>
+<span>  offset <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  key.header <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -191,6 +192,12 @@ lines be drawn (<code>fill = FALSE</code>).</p></dd>
 interesting feature. The user can therefore set <code>angle.scale</code> to any value
 between 0 and 360 degrees to mitigate such problems. For example
 <code>angle.scale = 45</code> will draw the scale heading in a NE direction.</p></dd>
+
+
+<dt id="arg-offset">offset<a class="anchor" aria-label="anchor" href="#arg-offset"></a></dt>
+<dd><p><code>offset</code> controls the size of the 'hole' in the middle and is
+expressed on a scale of <code>0</code> to <code>100</code>, where <code>0</code> is no hole and <code>100</code> is a
+hole that takes up the entire plotting area.</p></dd>
 
 
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>

@@ -80,8 +80,8 @@ wind speed.</p>
 <span>  bias.corr <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  grid.line <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  width <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  seg <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  width <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>  seg <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  breaks <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  offset <span class="op">=</span> <span class="fl">10</span>,</span>
@@ -99,7 +99,6 @@ wind speed.</p>
 <span>  annotate <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  angle.scale <span class="op">=</span> <span class="fl">315</span>,</span>
 <span>  border <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  alpha <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -139,37 +138,36 @@ need adjusting using <code>width</code>.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p><code>type</code> determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-<code>cutData</code> e.g. “season”, “year”, “weekday” and so
-on. For example, <code>type = "season"</code> will produce four plots — one for
-each season.</p>
-<p>It is also possible to choose <code>type</code> as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+<dd><p><code>type</code> determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in <code>cutData</code> e.g.
+“season”, “year”, “weekday” and so on. For example,
+<code>type = "season"</code> will produce four plots — one for each season.</p>
+<p>It is also possible to choose <code>type</code> as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.</p>
-<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will
-produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.</p></dd>
+<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will produce
+a 2x2 plot split by season and day of the week. Note, when two types are
+provided the first forms the columns and the second the rows.</p></dd>
 
 
 <dt id="arg-calm-thresh">calm.thresh<a class="anchor" aria-label="anchor" href="#arg-calm-thresh"></a></dt>
 <dd><p>By default, conditions are considered to be calm when the
 wind speed is zero. The user can set a different threshold for calms be
-setting <code>calm.thresh</code> to a higher value. For example,
-<code>calm.thresh = 0.5</code> will identify wind speeds <strong>below</strong> 0.5 as calm.</p></dd>
+setting <code>calm.thresh</code> to a higher value. For example, <code>calm.thresh = 0.5</code>
+will identify wind speeds <strong>below</strong> 0.5 as calm.</p></dd>
 
 
 <dt id="arg-bias-corr">bias.corr<a class="anchor" aria-label="anchor" href="#arg-bias-corr"></a></dt>
 <dd><p>When <code>angle</code> does not divide exactly into 360 a bias is
 introduced in the frequencies when the wind direction is already supplied
 rounded to the nearest 10 degrees, as is often the case. For example, if
-<code>angle = 22.5</code>, N, E, S, W will include 3 wind sectors and all other
-angles will be two. A bias correction can made to correct for this problem.
-A simple method according to Applequist (2012) is used to adjust the
+<code>angle = 22.5</code>, N, E, S, W will include 3 wind sectors and all other angles
+will be two. A bias correction can made to correct for this problem. A
+simple method according to Applequist (2012) is used to adjust the
 frequencies.</p></dd>
 
 
@@ -177,41 +175,39 @@ frequencies.</p></dd>
 <dd><p>Colours to be used for plotting. Options include
 “default”, “increment”, “heat”, “jet”,
 “hue” and user defined. For user defined the user can supply a list
-of colour names recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full
-list). An example would be <code>cols = c("yellow", "green", "blue", "black")</code>.</p></dd>
+of colour names recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list). An
+example would be <code>cols = c("yellow", "green", "blue", "black")</code>.</p></dd>
 
 
 <dt id="arg-grid-line">grid.line<a class="anchor" aria-label="anchor" href="#arg-grid-line"></a></dt>
-<dd><p>Grid line interval to use. If <code>NULL</code>, as in default,
-this is assigned based on the available data range. However, it can also be
-forced to a specific value, e.g. <code>grid.line = 10</code>. <code>grid.line</code>
-can also be a list to control the interval, line type and colour. For
-example <code>grid.line = list(value = 10, lty = 5, col = "purple")</code>.</p></dd>
+<dd><p>Grid line interval to use. If <code>NULL</code>, as in default, this is
+assigned based on the available data range. However, it can also be forced
+to a specific value, e.g. <code>grid.line = 10</code>. <code>grid.line</code> can also be a list
+to control the interval, line type and colour. For example <code>grid.line = list(value = 10, lty = 5, col = "purple")</code>.</p></dd>
 
 
 <dt id="arg-width">width<a class="anchor" aria-label="anchor" href="#arg-width"></a></dt>
-<dd><p>For <code>paddle = TRUE</code>, the adjustment factor for width of
-wind speed intervals. For example, <code>width = 1.5</code> will make the paddle
-width 1.5 times wider.</p></dd>
+<dd><p>For paddle = TRUE, the adjustment factor for width of wind speed
+intervals. For example, width = 1.5 will make the paddle width 1.5 times
+wider.</p></dd>
 
 
 <dt id="arg-seg">seg<a class="anchor" aria-label="anchor" href="#arg-seg"></a></dt>
-<dd><p>When <code>paddle = TRUE</code>, <code>seg</code> determines with width of the
-segments. For example, <code>seg = 0.5</code> will produce segments 0.5 *
-<code>angle</code>.</p></dd>
+<dd><p><code>seg</code> determines with width of the segments. For example, <code>seg = 0.5</code> will produce segments 0.5 * <code>angle</code>.</p></dd>
 
 
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
-<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code>
-titles and axis labels will automatically try and format pollutant names
-and units properly, e.g., by subscripting the ‘2’ in NO2.</p></dd>
+<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
+axis labels will automatically try and format pollutant names and units
+properly, e.g., by subscripting the ‘2’ in NO2.</p></dd>
 
 
 <dt id="arg-breaks">breaks<a class="anchor" aria-label="anchor" href="#arg-breaks"></a></dt>
 <dd><p>Most commonly, the number of break points for wind speed. With
-the <code>ws.int</code> default of 2 m/s, the <code>breaks</code> default, 4, generates
-the break points 2, 4, 6, 8 m/s. However, <code>breaks</code> can also be used to
-set specific break points. For example, the argument <code>breaks = c(0, 1, 10, 100)</code> breaks the data into segments &lt;1, 1-10, 10-100, &gt;100.</p></dd>
+the <code>ws.int</code> default of 2 m/s, the <code>breaks</code> default, 4, generates the break
+points 2, 4, 6, 8 m/s. However, <code>breaks</code> can also be used to set specific
+break points. For example, the argument <code>breaks = c(0, 1, 10, 100)</code> breaks
+the data into segments &lt;1, 1-10, 10-100, &gt;100.</p></dd>
 
 
 <dt id="arg-offset">offset<a class="anchor" aria-label="anchor" href="#arg-offset"></a></dt>
@@ -220,8 +216,8 @@ a percentage of the polar axis scale, default 10.</p></dd>
 
 
 <dt id="arg-normalise">normalise<a class="anchor" aria-label="anchor" href="#arg-normalise"></a></dt>
-<dd><p>If <code>TRUE</code> each wind direction segment is normalised to
-equal one. This is useful for showing how the concentrations (or other
+<dd><p>If <code>TRUE</code> each wind direction segment is normalised to equal
+one. This is useful for showing how the concentrations (or other
 parameters) contribute to each wind sector when the proportion of time the
 wind is from that direction is low. A line showing the probability that the
 wind directions is from a particular wind sector is also shown.</p></dd>
@@ -234,17 +230,15 @@ radial limits.</p></dd>
 
 
 <dt id="arg-paddle">paddle<a class="anchor" aria-label="anchor" href="#arg-paddle"></a></dt>
-<dd><p>Either <code>TRUE</code> or <code>FALSE</code>. If <code>TRUE</code> plots rose
-using 'paddle' style spokes. If <code>FALSE</code> plots rose using 'wedge' style
-spokes.</p></dd>
+<dd><p>Either <code>TRUE</code> or <code>FALSE</code>. If <code>TRUE</code> plots rose using 'paddle' style
+spokes. If <code>FALSE</code> plots rose using 'wedge' style spokes.</p></dd>
 
 
 <dt id="arg-key-header">key.header<a class="anchor" aria-label="anchor" href="#arg-key-header"></a></dt>
 <dd><p>Adds additional text/labels above the scale key. For
-example, passing <code>windRose(mydata, key.header = "ws")</code> adds the
-addition text as a scale header. Note: This argument is passed to
-<code><a href="drawOpenKey.html">drawOpenKey()</a></code> via <code><a href="quickText.html">quickText()</a></code>, applying the auto.text argument, to
-handle formatting.</p></dd>
+example, passing <code>windRose(mydata, key.header = "ws")</code> adds the addition
+text as a scale header. Note: This argument is passed to <code><a href="drawOpenKey.html">drawOpenKey()</a></code>
+via <code><a href="quickText.html">quickText()</a></code>, applying the auto.text argument, to handle formatting.</p></dd>
 
 
 <dt id="arg-key-footer">key.footer<a class="anchor" aria-label="anchor" href="#arg-key-footer"></a></dt>
@@ -268,15 +262,15 @@ formatting is used in break point and key labelling. Default 5.</p></dd>
 
 
 <dt id="arg-include-lowest">include.lowest<a class="anchor" aria-label="anchor" href="#arg-include-lowest"></a></dt>
-<dd><p>Logical. If <code>FALSE</code> (the default), the first
-interval will be left exclusive and right inclusive. If <code>TRUE</code>, the
-first interval will be left and right inclusive. Passed to the
-<code>include.lowest</code> argument of <code><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut()</a></code>.</p></dd>
+<dd><p>Logical. If <code>FALSE</code> (the default), the first interval
+will be left exclusive and right inclusive. If <code>TRUE</code>, the first interval
+will be left and right inclusive. Passed to the <code>include.lowest</code> argument
+of <code><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut()</a></code>.</p></dd>
 
 
 <dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
-<dd><p>The <code>statistic</code> to be applied to each data bin in the
-plot. Options currently include “prop.count”, “prop.mean” and
+<dd><p>The <code>statistic</code> to be applied to each data bin in the plot.
+Options currently include “prop.count”, “prop.mean” and
 “abs.count”. The default “prop.count” sizes bins according to
 the proportion of the frequency of measurements.  Similarly,
 “prop.mean” sizes bins according to their relative contribution to
@@ -286,89 +280,74 @@ each bin.</p></dd>
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
 <dd><p>Alternative data series to be sampled instead of wind speed.
-The <code>windRose()</code> default NULL is equivalent to <code>pollutant = "ws"</code>. Use
-in <code><a href="pollutionRose.html">pollutionRose()</a></code>.</p></dd>
+The <code>windRose()</code> default NULL is equivalent to <code>pollutant = "ws"</code>. Use in
+<code><a href="pollutionRose.html">pollutionRose()</a></code>.</p></dd>
 
 
 <dt id="arg-annotate">annotate<a class="anchor" aria-label="anchor" href="#arg-annotate"></a></dt>
 <dd><p>If <code>TRUE</code> then the percentage calm and mean values are
 printed in each panel together with a description of the statistic below
-the plot. If <code>" "</code> then only the statistic is below the plot. Custom
-annotations may be added by setting value to <code>c("annotation 1", "annotation 2")</code>.</p></dd>
+the plot. If <code>FALSE</code> then only the statistic will be printed.</p></dd>
 
 
 <dt id="arg-angle-scale">angle.scale<a class="anchor" aria-label="anchor" href="#arg-angle-scale"></a></dt>
 <dd><p>The scale is by default shown at a 315 degree angle.
 Sometimes the placement of the scale may interfere with an interesting
-feature. The user can therefore set <code>angle.scale</code> to another value
-(between 0 and 360 degrees) to mitigate such problems. For example
-<code>angle.scale = 45</code> will draw the scale heading in a NE direction.</p></dd>
+feature. The user can therefore set <code>angle.scale</code> to another value (between
+0 and 360 degrees) to mitigate such problems. For example <code>angle.scale = 45</code> will draw the scale heading in a NE direction.</p></dd>
 
 
 <dt id="arg-border">border<a class="anchor" aria-label="anchor" href="#arg-border"></a></dt>
 <dd><p>Border colour for shaded areas. Default is no border.</p></dd>
 
 
-<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
-<dd><p>The alpha transparency to use for the plotting surface (a value
-between 0 and 1 with zero being fully transparent and 1 fully opaque).
-Setting a value below 1 can be useful when plotting surfaces on a map using
-the package <code>openairmaps</code>.</p></dd>
-
-
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
-<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when
-analysing data to extract plot components and plotting them in other ways.</p></dd>
+<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
+data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Other parameters that are passed on to <code>drawOpenKey</code>,
-<code>lattice:xyplot</code> and <code>cutData</code>. Axis and title labelling options
-(<code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed to <code>xyplot</code> via
-<code>quickText</code> to handle routine formatting.</p></dd>
+<code>lattice:xyplot</code> and <code>cutData</code>. Axis and title labelling options (<code>xlab</code>,
+<code>ylab</code>, <code>main</code>) are passed to <code>xyplot</code> via <code>quickText</code> to handle routine
+formatting.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>an <a href="openair-package.html">openair</a> object. Summarised proportions can be
-extracted directly using the <code>$data</code> operator, e.g. <code>object$data</code>
-for <code>output &lt;- windRose(mydata)</code>. This returns a data frame with three
-set columns: <code>cond</code>, conditioning based on <code>type</code>; <code>wd</code>, the
-wind direction; and <code>calm</code>, the <code>statistic</code> for the proportion of
-data unattributed to any specific wind direction because it was collected
-under calm conditions; and then several (one for each range binned for the
-plot) columns giving proportions of measurements associated with each
-<code>ws</code> or <code>pollutant</code> range plotted as a discrete panel.</p>
+extracted directly using the <code>$data</code> operator, e.g. <code>object$data</code> for
+<code>output &lt;- windRose(mydata)</code>. This returns a data frame with three set
+columns: <code>cond</code>, conditioning based on <code>type</code>; <code>wd</code>, the wind direction;
+and <code>calm</code>, the <code>statistic</code> for the proportion of data unattributed to any
+specific wind direction because it was collected under calm conditions; and
+then several (one for each range binned for the plot) columns giving
+proportions of measurements associated with each <code>ws</code> or <code>pollutant</code> range
+plotted as a discrete panel.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>For <code>windRose</code> data are summarised by direction, typically by 45 or 30
-(or 10) degrees and by different wind speed categories. Typically, wind
-speeds are represented by different width "paddles". The plots show the
-proportion (here represented as a percentage) of time that the wind is from a
-certain angle and wind speed range.</p>
-<p>By default <code>windRose</code> will plot a windRose in using "paddle" style
-segments and placing the scale key below the plot.</p>
-<p>The argument <code>pollutant</code> uses the same plotting structure but
-substitutes another data series, defined by <code>pollutant</code>, for wind speed.
-It is recommended to use <code><a href="pollutionRose.html">pollutionRose()</a></code> for plotting pollutant
-concentrations.</p>
+    <p>For <code>windRose</code> data are summarised by direction, typically by 45 or 30 (or
+10) degrees and by different wind speed categories. Typically, wind speeds
+are represented by different width "paddles". The plots show the proportion
+(here represented as a percentage) of time that the wind is from a certain
+angle and wind speed range.</p>
+<p>By default <code>windRose</code> will plot a windRose in using "paddle" style segments
+and placing the scale key below the plot.</p>
+<p>The argument <code>pollutant</code> uses the same plotting structure but substitutes
+another data series, defined by <code>pollutant</code>, for wind speed. It is
+recommended to use <code><a href="pollutionRose.html">pollutionRose()</a></code> for plotting pollutant concentrations.</p>
 <p>The option <code>statistic = "prop.mean"</code> provides a measure of the relative
 contribution of each bin to the panel mean, and is intended for use with
 <code>pollutionRose</code>.</p>
     </div>
     <div class="section level2">
-    <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
-    <p><code>windRose</code> and <code>pollutionRose</code> both use <code><a href="drawOpenKey.html">drawOpenKey()</a></code> to
-produce scale keys.</p>
-    </div>
-    <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
-    <p>Applequist, S, 2012: Wind Rose Bias Correction. J. Appl. Meteor. Climatol.,
-51, 1305-1309.</p>
+    <p>Applequist, S, 2012: Wind Rose Bias Correction. J. Appl. Meteor.
+Climatol., 51, 1305-1309.</p>
 <p>Droppo,  J.G. and B.A. Napier (2008) Wind Direction Bias in Generating Wind
-Roses and Conducting Sector-Based Air Dispersion Modeling, Journal of the Air
-&amp; Waste Management Association, 58:7, 913-918.</p>
+Roses and Conducting Sector-Based Air Dispersion Modeling, Journal of the
+Air &amp; Waste Management Association, 58:7, 913-918.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -383,7 +362,9 @@ Roses and Conducting Sector-Based Air Dispersion Modeling, Journal of the Air
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
-    <p>David Carslaw (with some additional contributions by Karl Ropkins)</p>
+    <p>David Carslaw</p>
+<p>Karl Ropkins</p>
+<p>Jack Davison</p>
     </div>
 
     <div class="section level2">

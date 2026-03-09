@@ -77,7 +77,6 @@ wind speed.</p>
 <span>  paddle <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  seg <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>  normalise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  alpha <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -119,35 +118,25 @@ used to set specific break points. For example, the argument <code>breaks = c(0,
 
 
 <dt id="arg-paddle">paddle<a class="anchor" aria-label="anchor" href="#arg-paddle"></a></dt>
-<dd><p>Either <code>TRUE</code> or <code>FALSE</code>. If <code>TRUE</code> plots rose
-using 'paddle' style spokes. If <code>FALSE</code> plots rose using 'wedge' style
-spokes.</p></dd>
+<dd><p>Either <code>TRUE</code> or <code>FALSE</code>. If <code>TRUE</code> plots rose using 'paddle' style
+spokes. If <code>FALSE</code> plots rose using 'wedge' style spokes.</p></dd>
 
 
 <dt id="arg-seg">seg<a class="anchor" aria-label="anchor" href="#arg-seg"></a></dt>
-<dd><p>When <code>paddle = TRUE</code>, <code>seg</code> determines with width of the
-segments. For example, <code>seg = 0.5</code> will produce segments 0.5 *
-<code>angle</code>.</p></dd>
+<dd><p><code>seg</code> determines with width of the segments. For example, <code>seg = 0.5</code> will produce segments 0.5 * <code>angle</code>.</p></dd>
 
 
 <dt id="arg-normalise">normalise<a class="anchor" aria-label="anchor" href="#arg-normalise"></a></dt>
-<dd><p>If <code>TRUE</code> each wind direction segment is normalised to
-equal one. This is useful for showing how the concentrations (or other
+<dd><p>If <code>TRUE</code> each wind direction segment is normalised to equal
+one. This is useful for showing how the concentrations (or other
 parameters) contribute to each wind sector when the proportion of time the
 wind is from that direction is low. A line showing the probability that the
 wind directions is from a particular wind sector is also shown.</p></dd>
 
 
-<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
-<dd><p>The alpha transparency to use for the plotting surface (a value
-between 0 and 1 with zero being fully transparent and 1 fully opaque).
-Setting a value below 1 can be useful when plotting surfaces on a map using
-the package <code>openairmaps</code>.</p></dd>
-
-
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
-<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when
-analysing data to extract plot components and plotting them in other ways.</p></dd>
+<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
+data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -172,60 +161,58 @@ angles are 45 and 10. Note that the width of the wind speed interval may
 need adjusting using <code>width</code>.</p></dd>
 
     <dt><code>type</code></dt>
-<dd><p><code>type</code> determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-<code>cutData</code> e.g. “season”, “year”, “weekday” and so
-on. For example, <code>type = "season"</code> will produce four plots — one for
-each season.</p>
-<p>It is also possible to choose <code>type</code> as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+<dd><p><code>type</code> determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in <code>cutData</code> e.g.
+“season”, “year”, “weekday” and so on. For example,
+<code>type = "season"</code> will produce four plots — one for each season.</p>
+<p>It is also possible to choose <code>type</code> as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.</p>
-<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will
-produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.</p></dd>
+<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will produce
+a 2x2 plot split by season and day of the week. Note, when two types are
+provided the first forms the columns and the second the rows.</p></dd>
 
     <dt><code>calm.thresh</code></dt>
 <dd><p>By default, conditions are considered to be calm when the
 wind speed is zero. The user can set a different threshold for calms be
-setting <code>calm.thresh</code> to a higher value. For example,
-<code>calm.thresh = 0.5</code> will identify wind speeds <strong>below</strong> 0.5 as calm.</p></dd>
+setting <code>calm.thresh</code> to a higher value. For example, <code>calm.thresh = 0.5</code>
+will identify wind speeds <strong>below</strong> 0.5 as calm.</p></dd>
 
     <dt><code>bias.corr</code></dt>
 <dd><p>When <code>angle</code> does not divide exactly into 360 a bias is
 introduced in the frequencies when the wind direction is already supplied
 rounded to the nearest 10 degrees, as is often the case. For example, if
-<code>angle = 22.5</code>, N, E, S, W will include 3 wind sectors and all other
-angles will be two. A bias correction can made to correct for this problem.
-A simple method according to Applequist (2012) is used to adjust the
+<code>angle = 22.5</code>, N, E, S, W will include 3 wind sectors and all other angles
+will be two. A bias correction can made to correct for this problem. A
+simple method according to Applequist (2012) is used to adjust the
 frequencies.</p></dd>
 
     <dt><code>cols</code></dt>
 <dd><p>Colours to be used for plotting. Options include
 “default”, “increment”, “heat”, “jet”,
 “hue” and user defined. For user defined the user can supply a list
-of colour names recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full
-list). An example would be <code>cols = c("yellow", "green", "blue", "black")</code>.</p></dd>
+of colour names recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list). An
+example would be <code>cols = c("yellow", "green", "blue", "black")</code>.</p></dd>
 
     <dt><code>grid.line</code></dt>
-<dd><p>Grid line interval to use. If <code>NULL</code>, as in default,
-this is assigned based on the available data range. However, it can also be
-forced to a specific value, e.g. <code>grid.line = 10</code>. <code>grid.line</code>
-can also be a list to control the interval, line type and colour. For
-example <code>grid.line = list(value = 10, lty = 5, col = "purple")</code>.</p></dd>
+<dd><p>Grid line interval to use. If <code>NULL</code>, as in default, this is
+assigned based on the available data range. However, it can also be forced
+to a specific value, e.g. <code>grid.line = 10</code>. <code>grid.line</code> can also be a list
+to control the interval, line type and colour. For example <code>grid.line = list(value = 10, lty = 5, col = "purple")</code>.</p></dd>
 
     <dt><code>width</code></dt>
-<dd><p>For <code>paddle = TRUE</code>, the adjustment factor for width of
-wind speed intervals. For example, <code>width = 1.5</code> will make the paddle
-width 1.5 times wider.</p></dd>
+<dd><p>For paddle = TRUE, the adjustment factor for width of wind speed
+intervals. For example, width = 1.5 will make the paddle width 1.5 times
+wider.</p></dd>
 
     <dt><code>auto.text</code></dt>
-<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code>
-titles and axis labels will automatically try and format pollutant names
-and units properly, e.g., by subscripting the ‘2’ in NO2.</p></dd>
+<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
+axis labels will automatically try and format pollutant names and units
+properly, e.g., by subscripting the ‘2’ in NO2.</p></dd>
 
     <dt><code>offset</code></dt>
 <dd><p>The size of the 'hole' in the middle of the plot, expressed as
@@ -238,24 +225,23 @@ radial limits.</p></dd>
 
     <dt><code>key.header</code></dt>
 <dd><p>Adds additional text/labels above the scale key. For
-example, passing <code>windRose(mydata, key.header = "ws")</code> adds the
-addition text as a scale header. Note: This argument is passed to
-<code><a href="drawOpenKey.html">drawOpenKey()</a></code> via <code><a href="quickText.html">quickText()</a></code>, applying the auto.text argument, to
-handle formatting.</p></dd>
+example, passing <code>windRose(mydata, key.header = "ws")</code> adds the addition
+text as a scale header. Note: This argument is passed to <code><a href="drawOpenKey.html">drawOpenKey()</a></code>
+via <code><a href="quickText.html">quickText()</a></code>, applying the auto.text argument, to handle formatting.</p></dd>
 
     <dt><code>dig.lab</code></dt>
 <dd><p>The number of significant figures at which scientific number
 formatting is used in break point and key labelling. Default 5.</p></dd>
 
     <dt><code>include.lowest</code></dt>
-<dd><p>Logical. If <code>FALSE</code> (the default), the first
-interval will be left exclusive and right inclusive. If <code>TRUE</code>, the
-first interval will be left and right inclusive. Passed to the
-<code>include.lowest</code> argument of <code><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut()</a></code>.</p></dd>
+<dd><p>Logical. If <code>FALSE</code> (the default), the first interval
+will be left exclusive and right inclusive. If <code>TRUE</code>, the first interval
+will be left and right inclusive. Passed to the <code>include.lowest</code> argument
+of <code><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut()</a></code>.</p></dd>
 
     <dt><code>statistic</code></dt>
-<dd><p>The <code>statistic</code> to be applied to each data bin in the
-plot. Options currently include “prop.count”, “prop.mean” and
+<dd><p>The <code>statistic</code> to be applied to each data bin in the plot.
+Options currently include “prop.count”, “prop.mean” and
 “abs.count”. The default “prop.count” sizes bins according to
 the proportion of the frequency of measurements.  Similarly,
 “prop.mean” sizes bins according to their relative contribution to
@@ -265,15 +251,13 @@ each bin.</p></dd>
     <dt><code>annotate</code></dt>
 <dd><p>If <code>TRUE</code> then the percentage calm and mean values are
 printed in each panel together with a description of the statistic below
-the plot. If <code>" "</code> then only the statistic is below the plot. Custom
-annotations may be added by setting value to <code>c("annotation 1", "annotation 2")</code>.</p></dd>
+the plot. If <code>FALSE</code> then only the statistic will be printed.</p></dd>
 
     <dt><code>angle.scale</code></dt>
 <dd><p>The scale is by default shown at a 315 degree angle.
 Sometimes the placement of the scale may interfere with an interesting
-feature. The user can therefore set <code>angle.scale</code> to another value
-(between 0 and 360 degrees) to mitigate such problems. For example
-<code>angle.scale = 45</code> will draw the scale heading in a NE direction.</p></dd>
+feature. The user can therefore set <code>angle.scale</code> to another value (between
+0 and 360 degrees) to mitigate such problems. For example <code>angle.scale = 45</code> will draw the scale heading in a NE direction.</p></dd>
 
     <dt><code>border</code></dt>
 <dd><p>Border colour for shaded areas. Default is no border.</p></dd>
@@ -331,23 +315,39 @@ to show negative bias in one colour and positive bias in another.</p>
 <span class="r-in"><span><span class="fu">pollutionRose</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"nox"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="pollutionRose-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## source apportionment plot - contribution to mean</span></span></span>
+<span class="r-in"><span><span class="co"># source apportionment plot - contribution to mean</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="fu">pollutionRose</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"pm10"</span>, type <span class="op">=</span> <span class="st">"year"</span>, statistic <span class="op">=</span> <span class="st">"prop.mean"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## example of comparing 2 met sites</span></span></span>
-<span class="r-in"><span><span class="co">## first we will make some new ws/wd data with a postive bias</span></span></span>
+<span class="r-in"><span><span class="co"># example of comparing 2 met sites</span></span></span>
+<span class="r-in"><span><span class="co"># first we will make some new ws/wd data with a postive bias</span></span></span>
 <span class="r-in"><span><span class="va">mydata</span><span class="op">$</span><span class="va">ws2</span> <span class="op">&lt;-</span> <span class="va">mydata</span><span class="op">$</span><span class="va">ws</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">mydata</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span></span></span>
 <span class="r-in"><span><span class="va">mydata</span><span class="op">$</span><span class="va">wd2</span> <span class="op">&lt;-</span> <span class="va">mydata</span><span class="op">$</span><span class="va">wd</span> <span class="op">+</span> <span class="fl">30</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">mydata</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">30</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## need to correct negative wd</span></span></span>
+<span class="r-in"><span><span class="co"># need to correct negative wd</span></span></span>
 <span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">mydata</span><span class="op">$</span><span class="va">wd2</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">mydata</span><span class="op">$</span><span class="va">wd2</span><span class="op">[</span><span class="va">id</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">mydata</span><span class="op">$</span><span class="va">wd2</span><span class="op">[</span><span class="va">id</span><span class="op">]</span> <span class="op">+</span> <span class="fl">360</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## results show postive bias in wd and ws</span></span></span>
+<span class="r-in"><span><span class="co"># results show postive bias in wd and ws</span></span></span>
 <span class="r-in"><span><span class="fu">pollutionRose</span><span class="op">(</span><span class="va">mydata</span>, ws <span class="op">=</span> <span class="st">"ws"</span>, wd <span class="op">=</span> <span class="st">"wd"</span>, ws2 <span class="op">=</span> <span class="st">"ws2"</span>, wd2 <span class="op">=</span> <span class="st">"wd2"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="pollutionRose-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## add some wd bias to some nighttime hours</span></span></span>
+<span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">mydata</span><span class="op">$</span><span class="va">date</span>, <span class="st">"%H"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">23</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mydata</span><span class="op">$</span><span class="va">wd2</span><span class="op">[</span><span class="va">id</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">mydata</span><span class="op">$</span><span class="va">wd</span><span class="op">[</span><span class="va">id</span><span class="op">]</span> <span class="op">+</span> <span class="fl">30</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">id</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">120</span></span></span>
+<span class="r-in"><span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">mydata</span><span class="op">$</span><span class="va">wd2</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mydata</span><span class="op">$</span><span class="va">wd2</span><span class="op">[</span><span class="va">id</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">mydata</span><span class="op">$</span><span class="va">wd2</span><span class="op">[</span><span class="va">id</span><span class="op">]</span> <span class="op">+</span> <span class="fl">360</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">pollutionRose</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  ws <span class="op">=</span> <span class="st">"ws"</span>,</span></span>
+<span class="r-in"><span>  wd <span class="op">=</span> <span class="st">"wd"</span>,</span></span>
+<span class="r-in"><span>  ws2 <span class="op">=</span> <span class="st">"ws2"</span>,</span></span>
+<span class="r-in"><span>  wd2 <span class="op">=</span> <span class="st">"wd2"</span>,</span></span>
+<span class="r-in"><span>  breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">11</span>, <span class="op">-</span><span class="fl">2</span>, <span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">11</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"dodgerblue4"</span>, <span class="st">"white"</span>, <span class="st">"firebrick"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  type <span class="op">=</span> <span class="st">"daylight"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
