@@ -60,6 +60,10 @@
 #'
 #' @param mean.col Line colour for mean line.
 #'
+#' @param offset `offset` controls the size of the 'hole' in the middle and is
+#'   expressed on a scale of `0` to `100`, where `0` is no hole and `100` is a
+#'   hole that takes up the entire plotting area.
+#'
 #' @param fill Should the percentile intervals be filled (default) or should
 #'   lines be drawn (`fill = FALSE`).
 #'
@@ -137,6 +141,7 @@ percentileRose <- function(
   fill = TRUE,
   intervals = NULL,
   angle.scale = 45,
+  offset = 0,
   auto.text = TRUE,
   key = TRUE,
   key.header = NULL,
@@ -505,7 +510,7 @@ percentileRose <- function(
     ggplot2::ggproto(
       NULL,
       ggplot2::coord_radial(r.axis.inside = angle.scale),
-      inner_radius = c(0, 0.475)
+      inner_radius = c(offset / 100, 1) * 0.475
     ) +
     scale_x_compass() +
     ggplot2::scale_y_continuous(

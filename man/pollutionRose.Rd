@@ -14,7 +14,6 @@ pollutionRose(
   paddle = FALSE,
   seg = 0.9,
   normalise = FALSE,
-  alpha = 1,
   plot = TRUE,
   ...
 )
@@ -39,27 +38,19 @@ concentrations. The default, 6, attempts to breaks the supplied data at
 approximately 6 sensible break points. However, \code{breaks} can also be
 used to set specific break points. For example, the argument \code{breaks = c(0, 1, 10, 100)} breaks the data into segments <1, 1-10, 10-100, >100.}
 
-\item{paddle}{Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose
-using 'paddle' style spokes. If \code{FALSE} plots rose using 'wedge' style
-spokes.}
+\item{paddle}{Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose using 'paddle' style
+spokes. If \code{FALSE} plots rose using 'wedge' style spokes.}
 
-\item{seg}{When \code{paddle = TRUE}, \code{seg} determines with width of the
-segments. For example, \code{seg = 0.5} will produce segments 0.5 *
-\code{angle}.}
+\item{seg}{\code{seg} determines with width of the segments. For example, \code{seg = 0.5} will produce segments 0.5 * \code{angle}.}
 
-\item{normalise}{If \code{TRUE} each wind direction segment is normalised to
-equal one. This is useful for showing how the concentrations (or other
+\item{normalise}{If \code{TRUE} each wind direction segment is normalised to equal
+one. This is useful for showing how the concentrations (or other
 parameters) contribute to each wind sector when the proportion of time the
 wind is from that direction is low. A line showing the probability that the
 wind directions is from a particular wind sector is also shown.}
 
-\item{alpha}{The alpha transparency to use for the plotting surface (a value
-between 0 and 1 with zero being fully transparent and 1 fully opaque).
-Setting a value below 1 can be useful when plotting surfaces on a map using
-the package \code{openairmaps}.}
-
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other ways.}
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data to extract plot components and plotting them in other ways.}
 
 \item{...}{
   Arguments passed on to \code{\link[=windRose]{windRose}}
@@ -74,68 +65,65 @@ with low mean wind speeds a value of 1 or 0.5 m/s may be better.}
     \item{\code{angle}}{Default angle of \dQuote{spokes} is 30. Other potentially useful
 angles are 45 and 10. Note that the width of the wind speed interval may
 need adjusting using \code{width}.}
-    \item{\code{type}}{\code{type} determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-\code{cutData} e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-on. For example, \code{type = "season"} will produce four plots --- one for
-each season.
+    \item{\code{type}}{\code{type} determines how the data are split i.e. conditioned, and
+then plotted. The default is will produce a single plot using the entire
+data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
+\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+\code{type = "season"} will produce four plots --- one for each season.
 
-It is also possible to choose \code{type} as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
+It is also possible to choose \code{type} as another variable in the data frame.
+If that variable is numeric, then the data will be split into four
 quantiles (if possible) and labelled accordingly. If type is an existing
 character or factor variable, then those categories/levels will be used
 directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.
 
-Type can be up length two e.g. \code{type = c("season", "weekday")} will
-produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.}
+Type can be up length two e.g. \code{type = c("season", "weekday")} will produce
+a 2x2 plot split by season and day of the week. Note, when two types are
+provided the first forms the columns and the second the rows.}
     \item{\code{calm.thresh}}{By default, conditions are considered to be calm when the
 wind speed is zero. The user can set a different threshold for calms be
-setting \code{calm.thresh} to a higher value. For example,
-\code{calm.thresh = 0.5} will identify wind speeds \strong{below} 0.5 as calm.}
+setting \code{calm.thresh} to a higher value. For example, \code{calm.thresh = 0.5}
+will identify wind speeds \strong{below} 0.5 as calm.}
     \item{\code{bias.corr}}{When \code{angle} does not divide exactly into 360 a bias is
 introduced in the frequencies when the wind direction is already supplied
 rounded to the nearest 10 degrees, as is often the case. For example, if
-\code{angle = 22.5}, N, E, S, W will include 3 wind sectors and all other
-angles will be two. A bias correction can made to correct for this problem.
-A simple method according to Applequist (2012) is used to adjust the
+\code{angle = 22.5}, N, E, S, W will include 3 wind sectors and all other angles
+will be two. A bias correction can made to correct for this problem. A
+simple method according to Applequist (2012) is used to adjust the
 frequencies.}
     \item{\code{cols}}{Colours to be used for plotting. Options include
 \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet},
 \dQuote{hue} and user defined. For user defined the user can supply a list
-of colour names recognised by R (type \code{colours()} to see the full
-list). An example would be \code{cols = c("yellow", "green", "blue", "black")}.}
-    \item{\code{grid.line}}{Grid line interval to use. If \code{NULL}, as in default,
-this is assigned based on the available data range. However, it can also be
-forced to a specific value, e.g. \code{grid.line = 10}. \code{grid.line}
-can also be a list to control the interval, line type and colour. For
-example \code{grid.line = list(value = 10, lty = 5, col = "purple")}.}
-    \item{\code{width}}{For \code{paddle = TRUE}, the adjustment factor for width of
-wind speed intervals. For example, \code{width = 1.5} will make the paddle
-width 1.5 times wider.}
-    \item{\code{auto.text}}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
-titles and axis labels will automatically try and format pollutant names
-and units properly, e.g., by subscripting the \sQuote{2} in NO2.}
+of colour names recognised by R (type \code{colours()} to see the full list). An
+example would be \code{cols = c("yellow", "green", "blue", "black")}.}
+    \item{\code{grid.line}}{Grid line interval to use. If \code{NULL}, as in default, this is
+assigned based on the available data range. However, it can also be forced
+to a specific value, e.g. \code{grid.line = 10}. \code{grid.line} can also be a list
+to control the interval, line type and colour. For example \code{grid.line = list(value = 10, lty = 5, col = "purple")}.}
+    \item{\code{width}}{For paddle = TRUE, the adjustment factor for width of wind speed
+intervals. For example, width = 1.5 will make the paddle width 1.5 times
+wider.}
+    \item{\code{auto.text}}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly, e.g., by subscripting the \sQuote{2} in NO2.}
     \item{\code{offset}}{The size of the 'hole' in the middle of the plot, expressed as
 a percentage of the polar axis scale, default 10.}
     \item{\code{max.freq}}{Controls the scaling used by setting the maximum value for
 the radial limits. This is useful to ensure several plots use the same
 radial limits.}
     \item{\code{key.header}}{Adds additional text/labels above the scale key. For
-example, passing \code{windRose(mydata, key.header = "ws")} adds the
-addition text as a scale header. Note: This argument is passed to
-\code{\link[=drawOpenKey]{drawOpenKey()}} via \code{\link[=quickText]{quickText()}}, applying the auto.text argument, to
-handle formatting.}
+example, passing \code{windRose(mydata, key.header = "ws")} adds the addition
+text as a scale header. Note: This argument is passed to \code{\link[=drawOpenKey]{drawOpenKey()}}
+via \code{\link[=quickText]{quickText()}}, applying the auto.text argument, to handle formatting.}
     \item{\code{dig.lab}}{The number of significant figures at which scientific number
 formatting is used in break point and key labelling. Default 5.}
-    \item{\code{include.lowest}}{Logical. If \code{FALSE} (the default), the first
-interval will be left exclusive and right inclusive. If \code{TRUE}, the
-first interval will be left and right inclusive. Passed to the
-\code{include.lowest} argument of \code{\link[=cut]{cut()}}.}
-    \item{\code{statistic}}{The \code{statistic} to be applied to each data bin in the
-plot. Options currently include \dQuote{prop.count}, \dQuote{prop.mean} and
+    \item{\code{include.lowest}}{Logical. If \code{FALSE} (the default), the first interval
+will be left exclusive and right inclusive. If \code{TRUE}, the first interval
+will be left and right inclusive. Passed to the \code{include.lowest} argument
+of \code{\link[=cut]{cut()}}.}
+    \item{\code{statistic}}{The \code{statistic} to be applied to each data bin in the plot.
+Options currently include \dQuote{prop.count}, \dQuote{prop.mean} and
 \dQuote{abs.count}. The default \dQuote{prop.count} sizes bins according to
 the proportion of the frequency of measurements.  Similarly,
 \dQuote{prop.mean} sizes bins according to their relative contribution to
@@ -143,13 +131,11 @@ the mean. \dQuote{abs.count} provides the absolute count of measurements in
 each bin.}
     \item{\code{annotate}}{If \code{TRUE} then the percentage calm and mean values are
 printed in each panel together with a description of the statistic below
-the plot. If \code{" "} then only the statistic is below the plot. Custom
-annotations may be added by setting value to \code{c("annotation 1", "annotation 2")}.}
+the plot. If \code{FALSE} then only the statistic will be printed.}
     \item{\code{angle.scale}}{The scale is by default shown at a 315 degree angle.
 Sometimes the placement of the scale may interfere with an interesting
-feature. The user can therefore set \code{angle.scale} to another value
-(between 0 and 360 degrees) to mitigate such problems. For example
-\code{angle.scale = 45} will draw the scale heading in a NE direction.}
+feature. The user can therefore set \code{angle.scale} to another value (between
+0 and 360 degrees) to mitigate such problems. For example \code{angle.scale = 45} will draw the scale heading in a NE direction.}
     \item{\code{border}}{Border colour for shaded areas. Default is no border.}
   }}
 }
@@ -194,22 +180,39 @@ to show negative bias in one colour and positive bias in another.
 # pollutionRose of nox
 pollutionRose(mydata, pollutant = "nox")
 
-## source apportionment plot - contribution to mean
+# source apportionment plot - contribution to mean
 \dontrun{
 pollutionRose(mydata, pollutant = "pm10", type = "year", statistic = "prop.mean")
-}
 
-## example of comparing 2 met sites
-## first we will make some new ws/wd data with a postive bias
+# example of comparing 2 met sites
+# first we will make some new ws/wd data with a postive bias
 mydata$ws2 <- mydata$ws + 2 * rnorm(nrow(mydata)) + 1
 mydata$wd2 <- mydata$wd + 30 * rnorm(nrow(mydata)) + 30
 
-## need to correct negative wd
+# need to correct negative wd
 id <- which(mydata$wd2 < 0)
 mydata$wd2[id] <- mydata$wd2[id] + 360
 
-## results show postive bias in wd and ws
+# results show postive bias in wd and ws
 pollutionRose(mydata, ws = "ws", wd = "wd", ws2 = "ws2", wd2 = "wd2")
+
+## add some wd bias to some nighttime hours
+id <- which(as.numeric(format(mydata$date, "\%H")) \%in\% c(23, 1, 2, 3, 4, 5))
+mydata$wd2[id] <- mydata$wd[id] + 30 * rnorm(length(id)) + 120
+id <- which(mydata$wd2 < 0)
+mydata$wd2[id] <- mydata$wd2[id] + 360
+
+pollutionRose(
+  mydata,
+  ws = "ws",
+  wd = "wd",
+  ws2 = "ws2",
+  wd2 = "wd2",
+  breaks = c(-11, -2, -1, -0.5, 0.5, 1, 2, 11),
+  cols = c("dodgerblue4", "white", "firebrick"),
+  type = "daylight"
+)
+}
 }
 \seealso{
 Other polar directional analysis functions: 
