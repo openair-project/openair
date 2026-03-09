@@ -29,7 +29,6 @@ Imports:
     graphics,
     grDevices,
     grid,
-    hexbin,
     lattice,
     latticeExtra,
     lubridate,
@@ -46,6 +45,7 @@ Imports:
     tidyr,
     utils
 Suggests:
+    hexbin,
     KernSmooth,
     knitr,
     quantreg,
