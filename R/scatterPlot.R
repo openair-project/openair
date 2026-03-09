@@ -299,19 +299,23 @@ scatterPlot <- function(
   ...
 ) {
   ## handle key
-  if (isFALSE(key)) key.position <- "none"
+  if (isFALSE(key)) {
+    key.position <- "none"
+  }
 
   ## extra args
   extra.args <- rlang::list2(...)
-  extra.args$layout  <- extra.args$layout  %||% NULL
-  extra.args$cex     <- extra.args$cex     %||% 1
-  extra.args$lwd     <- extra.args$lwd     %||% 1
-  extra.args$lty     <- extra.args$lty     %||% 1
-  extra.args$alpha   <- extra.args$alpha   %||% NA
+  extra.args$layout <- extra.args$layout %||% NULL
+  extra.args$cex <- extra.args$cex %||% 1
+  extra.args$lwd <- extra.args$lwd %||% 1
+  extra.args$lty <- extra.args$lty %||% 1
+  extra.args$alpha <- extra.args$alpha %||% NA
 
   ## validate
   if (is.na(z) && method == "level") {
-    cli::cli_abort("Need to specify {.arg z} when using {.code method = 'level'}.")
+    cli::cli_abort(
+      "Need to specify {.arg z} when using {.code method = 'level'}."
+    )
   }
   if (!is.na(group) && any(group %in% type)) {
     cli::cli_abort("Can't have {.arg group} also in {.arg type}.")
@@ -323,23 +327,25 @@ scatterPlot <- function(
   xlab <- quickText(extra.args$xlab %||% x, auto.text)
   ylab <- quickText(extra.args$ylab %||% y, auto.text)
   main <- quickText(
-    extra.args$main %||% {
-      if (!is.na(z) && method %in% c("scatter", "level")) {
-        paste(x, "vs.", y, "by levels of", z)
-      } else {
-        ""
-      }
-    },
+    extra.args$main,
     auto.text
   )
 
   ## prepare data
   mydata <- prepare_scatter_data(
-    mydata = mydata, x = x, y = y, z = z,
-    group = group, type = type,
-    avg.time = avg.time, data.thresh = data.thresh,
-    statistic = statistic, percentile = percentile,
-    windflow = windflow, log.x = log.x, log.y = log.y,
+    mydata = mydata,
+    x = x,
+    y = y,
+    z = z,
+    group = group,
+    type = type,
+    avg.time = avg.time,
+    data.thresh = data.thresh,
+    statistic = statistic,
+    percentile = percentile,
+    windflow = windflow,
+    log.x = log.x,
+    log.y = log.y,
     ...
   )
 
@@ -347,58 +353,119 @@ scatterPlot <- function(
   plt <- switch(
     method,
     scatter = scatter_scatter(
-      mydata = mydata, x = x, y = y, z = z, group = group,
-      type = type, cols = cols, plot.type = plot.type,
-      smooth = smooth, spline = spline, linear = linear, ci = ci,
-      mod.line = mod.line, windflow = windflow,
-      log.x = log.x, log.y = log.y,
-      x.relation = x.relation, y.relation = y.relation,
-      ref.x = ref.x, ref.y = ref.y,
-      key.position = key.position, key.title = key.title,
-      key.columns = key.columns, strip = strip,
-      limits = limits, k = k, auto.text = auto.text,
-      xlab = xlab, ylab = ylab, main = main,
+      mydata = mydata,
+      x = x,
+      y = y,
+      z = z,
+      group = group,
+      type = type,
+      cols = cols,
+      plot.type = plot.type,
+      smooth = smooth,
+      spline = spline,
+      linear = linear,
+      ci = ci,
+      mod.line = mod.line,
+      windflow = windflow,
+      log.x = log.x,
+      log.y = log.y,
+      x.relation = x.relation,
+      y.relation = y.relation,
+      ref.x = ref.x,
+      ref.y = ref.y,
+      key.position = key.position,
+      key.title = key.title,
+      key.columns = key.columns,
+      strip = strip,
+      limits = limits,
+      k = k,
+      auto.text = auto.text,
+      xlab = xlab,
+      ylab = ylab,
+      main = main,
       extra.args = extra.args
     ),
     hexbin = scatter_hexbin(
-      mydata = mydata, x = x, y = y, group = group,
-      type = type, cols = cols,
-      linear = linear, ci = ci, mod.line = mod.line,
-      log.x = log.x, log.y = log.y,
-      x.relation = x.relation, y.relation = y.relation,
-      ref.x = ref.x, ref.y = ref.y,
-      key.position = key.position, strip = strip,
-      auto.text = auto.text, xlab = xlab, ylab = ylab, main = main,
+      mydata = mydata,
+      x = x,
+      y = y,
+      group = group,
+      type = type,
+      cols = cols,
+      linear = linear,
+      ci = ci,
+      mod.line = mod.line,
+      log.x = log.x,
+      log.y = log.y,
+      x.relation = x.relation,
+      y.relation = y.relation,
+      ref.x = ref.x,
+      ref.y = ref.y,
+      key.position = key.position,
+      strip = strip,
+      auto.text = auto.text,
+      xlab = xlab,
+      ylab = ylab,
+      main = main,
       extra.args = extra.args
     ),
     level = scatter_level(
-      mydata = mydata, x = x, y = y, z = z,
-      type = type, cols = cols, statistic = statistic,
-      smooth = smooth, mod.line = mod.line,
-      x.inc = x.inc, y.inc = y.inc, limits = limits,
-      log.x = log.x, log.y = log.y,
-      x.relation = x.relation, y.relation = y.relation,
-      ref.x = ref.x, ref.y = ref.y,
-      key.position = key.position, strip = strip,
-      k = k, dist = dist, auto.text = auto.text,
-      xlab = xlab, ylab = ylab, main = main,
+      mydata = mydata,
+      x = x,
+      y = y,
+      z = z,
+      type = type,
+      cols = cols,
+      statistic = statistic,
+      smooth = smooth,
+      mod.line = mod.line,
+      x.inc = x.inc,
+      y.inc = y.inc,
+      limits = limits,
+      log.x = log.x,
+      log.y = log.y,
+      x.relation = x.relation,
+      y.relation = y.relation,
+      ref.x = ref.x,
+      ref.y = ref.y,
+      key.position = key.position,
+      strip = strip,
+      k = k,
+      dist = dist,
+      auto.text = auto.text,
+      xlab = xlab,
+      ylab = ylab,
+      main = main,
       extra.args = extra.args
     ),
     density = scatter_density(
-      mydata = mydata, x = x, y = y,
-      type = type, cols = cols, mod.line = mod.line,
-      log.x = log.x, log.y = log.y,
-      x.relation = x.relation, y.relation = y.relation,
-      ref.x = ref.x, ref.y = ref.y,
-      key.position = key.position, strip = strip,
-      auto.text = auto.text, xlab = xlab, ylab = ylab, main = main,
+      mydata = mydata,
+      x = x,
+      y = y,
+      type = type,
+      cols = cols,
+      mod.line = mod.line,
+      log.x = log.x,
+      log.y = log.y,
+      x.relation = x.relation,
+      y.relation = y.relation,
+      ref.x = ref.x,
+      ref.y = ref.y,
+      key.position = key.position,
+      strip = strip,
+      auto.text = auto.text,
+      xlab = xlab,
+      ylab = ylab,
+      main = main,
       extra.args = extra.args
     )
   )
 
   plt <- plt + set_extra_fontsize(extra.args)
 
-  if (plot) print(plt)
+  if (plot) {
+    print(plt)
+  }
 
   output <- list(plot = plt, data = mydata, call = match.call())
   class(output) <- "openair"
@@ -411,9 +478,20 @@ scatterPlot <- function(
 #' Prepare data for scatterPlot
 #' @noRd
 prepare_scatter_data <- function(
-  mydata, x, y, z, group, type,
-  avg.time, data.thresh, statistic, percentile,
-  windflow, log.x, log.y, ...
+  mydata,
+  x,
+  y,
+  z,
+  group,
+  type,
+  avg.time,
+  data.thresh,
+  statistic,
+  percentile,
+  windflow,
+  log.x,
+  log.y,
+  ...
 ) {
   ## types needed for time averaging
   types <- if (!is.na(group)) c(type, group) else type
@@ -421,12 +499,14 @@ prepare_scatter_data <- function(
   ## time average if needed
   if (avg.time != "default") {
     mydata <- cutData(mydata, types, ...)
-    if ("default" %in% types) mydata$default <- 0L
+    if ("default" %in% types) {
+      mydata$default <- 0L
+    }
     mydata <- timeAverage(
       mydata,
-      type       = types,
-      avg.time   = avg.time,
-      statistic  = statistic,
+      type = types,
+      avg.time = avg.time,
+      statistic = statistic,
       percentile = percentile,
       data.thresh = data.thresh
     )
@@ -440,7 +520,9 @@ prepare_scatter_data <- function(
   }
 
   if (!is.na(group)) {
-    if (group %in% dateTypes || avg.time != "default" || any(type %in% dateTypes)) {
+    if (
+      group %in% dateTypes || avg.time != "default" || any(type %in% dateTypes)
+    ) {
       vars <- if (group %in% dateTypes) {
         unique(c(vars, "date"))
       } else {
@@ -451,14 +533,22 @@ prepare_scatter_data <- function(
     }
   }
 
-  if (!is.null(windflow)) vars <- unique(c(vars, "wd", "ws"))
-  if (!is.na(z))         vars <- c(vars, z)
+  if (!is.null(windflow)) {
+    vars <- unique(c(vars, "wd", "ws"))
+  }
+  if (!is.na(z)) {
+    vars <- c(vars, z)
+  }
 
   mydata <- checkPrep(mydata, unique(vars), type)
 
   ## filter for log scales (require strictly positive)
-  if (log.x) mydata <- mydata[!is.na(mydata[[x]]) & mydata[[x]] > 0, ]
-  if (log.y) mydata <- mydata[!is.na(mydata[[y]]) & mydata[[y]] > 0, ]
+  if (log.x) {
+    mydata <- mydata[!is.na(mydata[[x]]) & mydata[[x]] > 0, ]
+  }
+  if (log.y) {
+    mydata <- mydata[!is.na(mydata[[y]]) & mydata[[y]] > 0, ]
+  }
 
   mydata
 }
@@ -469,33 +559,61 @@ prepare_scatter_data <- function(
 #' Build ggplot for method = "scatter"
 #' @noRd
 scatter_scatter <- function(
-  mydata, x, y, z, group, type, cols, plot.type,
-  smooth, spline, linear, ci, mod.line, windflow,
-  log.x, log.y, x.relation, y.relation,
-  ref.x, ref.y, key.position, key.title, key.columns, strip,
-  limits, k, auto.text, xlab, ylab, main, extra.args
+  mydata,
+  x,
+  y,
+  z,
+  group,
+  type,
+  cols,
+  plot.type,
+  smooth,
+  spline,
+  linear,
+  ci,
+  mod.line,
+  windflow,
+  log.x,
+  log.y,
+  x.relation,
+  y.relation,
+  ref.x,
+  ref.y,
+  key.position,
+  key.title,
+  key.columns,
+  strip,
+  limits,
+  k,
+  auto.text,
+  xlab,
+  ylab,
+  main,
+  extra.args
 ) {
-  has_z     <- !is.na(z)
+  has_z <- !is.na(z)
   has_group <- !is.na(group)
 
   ## cut data for conditioning and group
   mydata <- cutData(mydata, type)
-  if (has_group) mydata <- cutData(mydata, group)
+  if (has_group) {
+    mydata <- cutData(mydata, group)
+  }
 
   ## colour palette info
   if (has_z) {
     ## continuous z overrides group
-    n_groups    <- 1L
-    group_var   <- NULL
+    n_groups <- 1L
+    group_var <- NULL
     group_levels <- "all"
     if (missing(cols) || identical(cols, "hue")) cols <- "default"
   } else if (has_group) {
     group_levels <- levels(as.factor(mydata[[group]]))
-    n_groups     <- length(group_levels)
-    group_var    <- group
+    n_groups <- length(group_levels)
+    group_var <- group
   } else {
-    n_groups     <- 1L
-    group_var    <- NULL
+    n_groups <- 1L
+    group_var <- NULL
     group_levels <- "all"
   }
 
@@ -508,11 +626,18 @@ scatter_scatter <- function(
   facet_scales <- relation_to_facet_scales(x.relation, y.relation)
 
   ## point size / alpha
-  pt_size  <- extra.args$cex   %||% 1
+  pt_size <- extra.args$cex %||% 1
   pt_alpha <- extra.args$alpha %||% NA
-  pt_shape <- extra.args$pch   %||% (if (has_z) 16L else if (has_group) NULL else 16L)
-  ln_width <- (extra.args$lwd  %||% 1) / 2
-  ln_type  <- extra.args$lty   %||% 1
+  pt_shape <- extra.args$pch %||%
+    (if (has_z) {
+      16L
+    } else if (has_group) {
+      NULL
+    } else {
+      16L
+    })
+  ln_width <- (extra.args$lwd %||% 1) / 2
+  ln_type <- extra.args$lty %||% 1
 
   ## base plot
   plt <- ggplot2::ggplot(mydata, ggplot2::aes(x = .data[[x]], y = .data[[y]]))
@@ -520,34 +645,51 @@ scatter_scatter <- function(
   ## add points / lines based on plot.type and colour mode
   if (has_z) {
     z_aes <- ggplot2::aes(color = .data[[z]])
-    plt <- plt + .scatter_geoms(plot.type, z_aes, pt_size, pt_alpha, pt_shape, ln_width, ln_type)
+    plt <- plt +
+      .scatter_geoms(
+        plot.type,
+        z_aes,
+        pt_size,
+        pt_alpha,
+        pt_shape,
+        ln_width,
+        ln_type
+      )
 
     ## continuous colour scale for z
     if (is.null(limits)) {
       z_limits <- NULL
-      z_labs   <- ggplot2::waiver()
+      z_labs <- ggplot2::waiver()
     } else {
       z_limits <- limits
-      z_labs   <- .scatter_limit_labels(mydata[[z]], limits)
+      z_labs <- .scatter_limit_labels(mydata[[z]], limits)
     }
     plt <- plt +
       ggplot2::scale_color_gradientn(
         colors = openColours(cols, 200),
         limits = z_limits,
-        oob    = scales::oob_squish,
+        oob = scales::oob_squish,
         labels = z_labs,
-        guide  = ggplot2::guide_colorbar(
-          title    = quickText(z, auto.text),
+        guide = ggplot2::guide_colorbar(
+          title = quickText(z, auto.text),
           position = key.position
         )
       )
-
   } else if (has_group) {
     grp_aes <- ggplot2::aes(
       color = .data[[group]],
       shape = .data[[group]]
     )
-    plt <- plt + .scatter_geoms(plot.type, grp_aes, pt_size, pt_alpha, NULL, ln_width, ln_type)
+    plt <- plt +
+      .scatter_geoms(
+        plot.type,
+        grp_aes,
+        pt_size,
+        pt_alpha,
+        NULL,
+        ln_width,
+        ln_type
+      )
 
     pch_vals <- if (!is.null(pt_shape)) {
       rep_len(pt_shape, n_groups)
@@ -558,10 +700,14 @@ scatter_scatter <- function(
     pol_name <- sapply(group_levels, function(x) quickText(x, auto.text))
 
     theGuide <- ggplot2::guide_legend(
-      title  = quickText(key.title, auto.text),
-      ncol   = key.columns,
-      theme  = ggplot2::theme(
-        legend.title.position = if (key.position %in% c("left", "right")) "top" else key.position
+      title = quickText(key.title, auto.text),
+      ncol = key.columns,
+      theme = ggplot2::theme(
+        legend.title.position = if (key.position %in% c("left", "right")) {
+          "top"
+        } else {
+          key.position
+        }
       )
     )
 
@@ -569,12 +715,12 @@ scatter_scatter <- function(
       ggplot2::scale_color_manual(
         values = myColors,
         labels = pol_name,
-        guide  = theGuide
+        guide = theGuide
       ) +
       ggplot2::scale_shape_manual(
         values = pch_vals,
         labels = pol_name,
-        guide  = theGuide
+        guide = theGuide
       )
   } else {
     ## single series — fixed colour, no legend
@@ -582,7 +728,11 @@ scatter_scatter <- function(
       .scatter_geoms(
         plot.type,
         ggplot2::aes(),
-        pt_size, pt_alpha, pt_shape %||% 16L, ln_width, ln_type,
+        pt_size,
+        pt_alpha,
+        pt_shape %||% 16L,
+        ln_width,
+        ln_type,
         fixed_color = myColors[1L]
       )
   }
@@ -594,12 +744,24 @@ scatter_scatter <- function(
     } else {
       stats::as.formula(paste0("y ~ s(x, k=", k, ", bs='cs')"))
     }
-    plt <- plt + ggplot2::geom_smooth(method = "gam", formula = gam_formula, se = ci, color = "grey20")
+    plt <- plt +
+      ggplot2::geom_smooth(
+        method = "gam",
+        formula = gam_formula,
+        se = ci,
+        color = "grey20"
+      )
   }
 
   ## spline fit
   if (spline || plot.type %in% c("s", "S", "spline")) {
-    plt <- plt + ggplot2::geom_smooth(method = "loess", se = FALSE, color = "grey20", linewidth = ln_width)
+    plt <- plt +
+      ggplot2::geom_smooth(
+        method = "loess",
+        se = FALSE,
+        color = "grey20",
+        linewidth = ln_width
+      )
   }
 
   ## linear fit
@@ -607,68 +769,95 @@ scatter_scatter <- function(
     if (has_group) {
       ## per-group lines: explicitly map colour/fill so geom_smooth produces one
       ## line per group (the base ggplot() call has no group aesthetic)
-      plt <- plt + ggplot2::geom_smooth(
-        mapping  = ggplot2::aes(color = .data[[group_var]], fill = .data[[group_var]]),
-        method   = "lm", formula = y ~ x,
-        se       = ci, linewidth = 1, linetype = 5
-      )
+      plt <- plt +
+        ggplot2::geom_smooth(
+          mapping = ggplot2::aes(
+            color = .data[[group_var]],
+            fill = .data[[group_var]]
+          ),
+          method = "lm",
+          formula = y ~ x,
+          se = ci,
+          linewidth = 1,
+          linetype = 5
+        )
     } else {
-      plt <- plt + ggplot2::geom_smooth(method = "lm", formula = y ~ x, se = ci, color = "black", fill = "grey80", linewidth = 1, linetype = 5)
+      plt <- plt +
+        ggplot2::geom_smooth(
+          method = "lm",
+          formula = y ~ x,
+          se = ci,
+          color = "black",
+          fill = "grey80",
+          linewidth = 1,
+          linetype = 5
+        )
     }
     lm_labs <- compute_lm_labels(
-      mydata     = mydata,
-      x          = x, y = y,
-      group_var  = group_var,
+      mydata = mydata,
+      x = x,
+      y = y,
+      group_var = group_var,
       panel_cols = panel_cols,
-      x_nam      = x, y_nam = y,
-      auto.text  = auto.text
+      x_nam = x,
+      y_nam = y,
+      auto.text = auto.text
     )
     if (!is.null(lm_labs) && nrow(lm_labs) > 0L) {
       if (has_group) {
         plt <- plt +
           ggplot2::geom_text(
-            data        = lm_labs,
-            mapping     = ggplot2::aes(
-              x = .data$x_pos, y = .data$y_pos,
-              label = .data$label, vjust = .data$g_idx * 1.5,
+            data = lm_labs,
+            mapping = ggplot2::aes(
+              x = .data$x_pos,
+              y = .data$y_pos,
+              label = .data$label,
+              vjust = .data$g_idx * 1.5,
               color = .data[[group_var]]
             ),
-            hjust       = 0,
+            hjust = 0,
             inherit.aes = FALSE,
-            parse       = TRUE,
-            size        = 2.5,
+            parse = TRUE,
+            size = 2.5,
             show.legend = FALSE
           )
       } else {
         plt <- plt +
           ggplot2::geom_text(
-            data        = lm_labs,
-            mapping     = ggplot2::aes(x = .data$x_pos, y = .data$y_pos, label = .data$label, vjust = .data$g_idx * 1.5),
-            hjust       = 0,
+            data = lm_labs,
+            mapping = ggplot2::aes(
+              x = .data$x_pos,
+              y = .data$y_pos,
+              label = .data$label,
+              vjust = .data$g_idx * 1.5
+            ),
+            hjust = 0,
             inherit.aes = FALSE,
-            parse       = TRUE,
-            size        = 2.5,
-            color       = "black"
+            parse = TRUE,
+            size = 2.5,
+            color = "black"
           )
       }
     }
   }
 
   ## model evaluation lines (FAC2)
-  if (mod.line) plt <- plt + gg_mod_lines()
+  if (mod.line) {
+    plt <- plt + gg_mod_lines()
+  }
 
   ## windflow arrows
   if (!is.null(windflow)) {
     plt <- plt +
       layer_windflow(
         ggplot2::aes(ws = .data$ws, wd = .data$wd),
-        arrow     = grid::arrow(
-          angle  = windflow$angle  %||% 15,
+        arrow = grid::arrow(
+          angle = windflow$angle %||% 15,
           length = windflow$length %||% grid::unit(0.5, "lines"),
-          ends   = windflow$ends   %||% "last",
-          type   = windflow$type   %||% "closed"
+          ends = windflow$ends %||% "last",
+          type = windflow$type %||% "closed"
         ),
-        colour    = windflow$col %||% "grey",
+        colour = windflow$col %||% "grey",
         linewidth = (windflow$lwd %||% 1) / 2
       )
   }
@@ -682,17 +871,20 @@ scatter_scatter <- function(
     .scatter_y_scale(log.y, y, mydata, extra.args)
 
   ## faceting
-  plt <- plt + get_facet(
-    type,
-    extra.args,
-    scales     = facet_scales,
-    auto.text  = auto.text,
-    drop       = FALSE
-  )
+  plt <- plt +
+    get_facet(
+      type,
+      extra.args,
+      scales = facet_scales,
+      auto.text = auto.text,
+      drop = FALSE
+    )
 
   ## theme + labels + strip control
   plt <- plt +
-    theme_openair(key.position = if (n_groups == 1L && !has_z) "none" else key.position) +
+    theme_openair(
+      key.position = if (n_groups == 1L && !has_z) "none" else key.position
+    ) +
     ggplot2::labs(x = xlab, y = ylab, title = main) +
     .strip_theme(strip)
 
@@ -705,17 +897,37 @@ scatter_scatter <- function(
 #' Build ggplot for method = "hexbin"
 #' @noRd
 scatter_hexbin <- function(
-  mydata, x, y, group, type, cols,
-  linear, ci, mod.line, log.x, log.y,
-  x.relation, y.relation, ref.x, ref.y,
-  key.position, strip, auto.text, xlab, ylab, main, extra.args
+  mydata,
+  x,
+  y,
+  group,
+  type,
+  cols,
+  linear,
+  ci,
+  mod.line,
+  log.x,
+  log.y,
+  x.relation,
+  y.relation,
+  ref.x,
+  ref.y,
+  key.position,
+  strip,
+  auto.text,
+  xlab,
+  ylab,
+  main,
+  extra.args
 ) {
   mydata <- cutData(mydata, type)
 
   myColors <- openColours(cols, 200)
 
   ## hexbin fill transform (default: log; trans = NULL → none)
-  hex_transform <- if ("trans" %in% names(extra.args) && is.null(extra.args$trans)) {
+  hex_transform <- if (
+    "trans" %in% names(extra.args) && is.null(extra.args$trans)
+  ) {
     "identity"
   } else if ("trans" %in% names(extra.args) && is.function(extra.args$trans)) {
     inv_fn <- extra.args$inv %||% function(x) x
@@ -727,38 +939,68 @@ scatter_hexbin <- function(
   plt <- ggplot2::ggplot(mydata, ggplot2::aes(x = .data[[x]], y = .data[[y]])) +
     ggplot2::geom_hex() +
     ggplot2::scale_fill_gradientn(
-      colors    = myColors,
+      colors = myColors,
       transform = hex_transform,
-      guide     = ggplot2::guide_colorbar(
-        title    = "count",
+      guide = ggplot2::guide_colorbar(
+        title = "count",
         position = key.position
       )
     )
 
-  if (mod.line) plt <- plt + gg_mod_lines()
+  if (mod.line) {
+    plt <- plt + gg_mod_lines()
+  }
 
   if (linear) {
-    plt <- plt + ggplot2::geom_smooth(method = "lm", se = ci, color = "black", fill = "grey80", linewidth = 1, linetype = 5)
+    plt <- plt +
+      ggplot2::geom_smooth(
+        method = "lm",
+        se = ci,
+        color = "black",
+        fill = "grey80",
+        linewidth = 1,
+        linetype = 5
+      )
     lm_labs <- compute_lm_labels(
-      mydata = mydata, x = x, y = y,
-      group_var = NA, panel_cols = setdiff(type, "default"),
-      x_nam = x, y_nam = y, auto.text = auto.text
+      mydata = mydata,
+      x = x,
+      y = y,
+      group_var = NA,
+      panel_cols = setdiff(type, "default"),
+      x_nam = x,
+      y_nam = y,
+      auto.text = auto.text
     )
     if (!is.null(lm_labs) && nrow(lm_labs) > 0L) {
       plt <- plt +
         ggplot2::geom_text(
-          data    = lm_labs,
-          mapping = ggplot2::aes(x = .data$x_pos, y = .data$y_pos, label = .data$label, vjust = .data$g_idx * 1.5),
-          hjust = 0, inherit.aes = FALSE, parse = TRUE, size = 2.5
+          data = lm_labs,
+          mapping = ggplot2::aes(
+            x = .data$x_pos,
+            y = .data$y_pos,
+            label = .data$label,
+            vjust = .data$g_idx * 1.5
+          ),
+          hjust = 0,
+          inherit.aes = FALSE,
+          parse = TRUE,
+          size = 2.5
         )
     }
   }
 
   plt <- plt +
-    gg_ref_x(ref.x) + gg_ref_y(ref.y) +
+    gg_ref_x(ref.x) +
+    gg_ref_y(ref.y) +
     .scatter_x_scale(log.x, x, mydata, extra.args) +
     .scatter_y_scale(log.y, y, mydata, extra.args) +
-    get_facet(type, extra.args, scales = relation_to_facet_scales(x.relation, y.relation), auto.text = auto.text, drop = FALSE) +
+    get_facet(
+      type,
+      extra.args,
+      scales = relation_to_facet_scales(x.relation, y.relation),
+      auto.text = auto.text,
+      drop = FALSE
+    ) +
     theme_openair(key.position = key.position) +
     ggplot2::labs(x = xlab, y = ylab, title = main) +
     .strip_theme(strip)
@@ -772,30 +1014,56 @@ scatter_hexbin <- function(
 #' Build ggplot for method = "level"
 #' @noRd
 scatter_level <- function(
-  mydata, x, y, z, type, cols, statistic,
-  smooth, mod.line, x.inc, y.inc, limits,
-  log.x, log.y, x.relation, y.relation,
-  ref.x, ref.y, key.position, strip,
-  k, dist, auto.text, xlab, ylab, main, extra.args
+  mydata,
+  x,
+  y,
+  z,
+  type,
+  cols,
+  statistic,
+  smooth,
+  mod.line,
+  x.inc,
+  y.inc,
+  limits,
+  log.x,
+  log.y,
+  x.relation,
+  y.relation,
+  ref.x,
+  ref.y,
+  key.position,
+  strip,
+  k,
+  dist,
+  auto.text,
+  xlab,
+  ylab,
+  main,
+  extra.args
 ) {
   mydata <- cutData(mydata, type)
 
   ## bin intervals
-  if (is.null(x.inc)) x.inc <- prettyGap(mydata[[x]])
-  if (is.null(y.inc)) y.inc <- prettyGap(mydata[[y]])
+  if (is.null(x.inc)) {
+    x.inc <- prettyGap(mydata[[x]])
+  }
+  if (is.null(y.inc)) {
+    y.inc <- prettyGap(mydata[[y]])
+  }
 
   mydata$xgrid <- round_any(mydata[[x]], x.inc)
   mydata$ygrid <- round_any(mydata[[y]], y.inc)
 
   ## type columns (cutData creates a "default" column for type = "default")
-  type_cols <- type  # keep all, including "default"
+  type_cols <- type # keep all, including "default"
   vars <- c("xgrid", "ygrid", type_cols)
 
   ## aggregate only if needed (data not already gridded)
   if (nrow(unique(mydata[c("xgrid", "ygrid")])) != nrow(mydata)) {
     vars_select <- c(vars, z)
     ## retain only needed columns but preserve all type cols
-    avail_cols  <- intersect(vars_select, names(mydata))
+    avail_cols <- intersect(vars_select, names(mydata))
     agg_by_cols <- intersect(vars, names(mydata))
     mydata <- mydata |>
       dplyr::select(dplyr::all_of(avail_cols)) |>
@@ -804,8 +1072,8 @@ scatter_level <- function(
         !!z := switch(
           statistic,
           frequency = length(.data[[z]]),
-          median    = stats::median(.data[[z]], na.rm = TRUE),
-          mean(.data[[z]], na.rm = TRUE)  # default: mean
+          median = stats::median(.data[[z]], na.rm = TRUE),
+          mean(.data[[z]], na.rm = TRUE) # default: mean
         ),
         .groups = "drop"
       )
@@ -815,7 +1083,8 @@ scatter_level <- function(
   if (smooth) {
     k_val <- if (is.na(k)) 10L else k
     mydata <- mapType(
-      mydata, type = type,
+      mydata,
+      type = type,
       fun = function(df) smooth_level_grid(df, z, k_val, dist),
       .include_default = TRUE
     )
@@ -833,32 +1102,46 @@ scatter_level <- function(
     mydata[[z]] <- pmin(pmax(mydata[[z]], limits[1L]), limits[2L])
   }
 
-  if (missing(cols) || identical(cols, "hue")) cols <- "default"
+  if (missing(cols) || identical(cols, "hue")) {
+    cols <- "default"
+  }
   myColors <- openColours(cols, 200)
 
   geom_fn <- if (smooth) ggplot2::geom_raster else ggplot2::geom_tile
 
-  plt <- ggplot2::ggplot(mydata, ggplot2::aes(x = .data$xgrid, y = .data$ygrid, fill = .data[[z]])) +
+  plt <- ggplot2::ggplot(
+    mydata,
+    ggplot2::aes(x = .data$xgrid, y = .data$ygrid, fill = .data[[z]])
+  ) +
     geom_fn() +
     ggplot2::scale_fill_gradientn(
-      colors   = myColors,
-      limits   = z_limits,
-      oob      = scales::oob_squish,
-      labels   = scale_labs,
+      colors = myColors,
+      limits = z_limits,
+      oob = scales::oob_squish,
+      labels = scale_labs,
       na.value = "transparent",
-      guide    = ggplot2::guide_colorbar(
-        title    = quickText(z, auto.text),
+      guide = ggplot2::guide_colorbar(
+        title = quickText(z, auto.text),
         position = key.position
       )
     )
 
-  if (mod.line) plt <- plt + gg_mod_lines()
+  if (mod.line) {
+    plt <- plt + gg_mod_lines()
+  }
 
   plt <- plt +
-    gg_ref_x(ref.x) + gg_ref_y(ref.y) +
+    gg_ref_x(ref.x) +
+    gg_ref_y(ref.y) +
     .scatter_x_scale(log.x, "xgrid", mydata, extra.args) +
     .scatter_y_scale(log.y, "ygrid", mydata, extra.args) +
-    get_facet(type, extra.args, scales = relation_to_facet_scales(x.relation, y.relation), auto.text = auto.text, drop = FALSE) +
+    get_facet(
+      type,
+      extra.args,
+      scales = relation_to_facet_scales(x.relation, y.relation),
+      auto.text = auto.text,
+      drop = FALSE
+    ) +
     theme_openair(key.position = key.position) +
     ggplot2::labs(x = xlab, y = ylab, title = main) +
     .strip_theme(strip)
@@ -873,21 +1156,29 @@ smooth_level_grid <- function(mydata, z, k, dist) {
   mydata <- stats::na.omit(mydata)
 
   myform <- stats::as.formula(paste0(
-    z, " ~ ti(xgrid, k=", k, ") + ti(ygrid, k=", k,
-    ") + ti(xgrid, ygrid, k=", k, ")"
+    z,
+    " ~ ti(xgrid, k=",
+    k,
+    ") + ti(ygrid, k=",
+    k,
+    ") + ti(xgrid, ygrid, k=",
+    k,
+    ")"
   ))
 
-  Mgam    <- mgcv::gam(myform, data = mydata)
-  xseq    <- seq(min(mydata$xgrid), max(mydata$xgrid), length.out = res)
-  yseq    <- seq(min(mydata$ygrid), max(mydata$ygrid), length.out = res)
+  Mgam <- mgcv::gam(myform, data = mydata)
+  xseq <- seq(min(mydata$xgrid), max(mydata$xgrid), length.out = res)
+  yseq <- seq(min(mydata$ygrid), max(mydata$ygrid), length.out = res)
   new.dat <- expand.grid(xgrid = xseq, ygrid = yseq)
 
   new.dat[[z]] <- as.vector(mgcv::predict.gam(Mgam, newdata = new.dat))
 
   ## exclude predictions too far from original data
   too_far <- mgcv::exclude.too.far(
-    rep(xseq, res), rep(yseq, each = res),
-    mydata$xgrid, mydata$ygrid,
+    rep(xseq, res),
+    rep(yseq, each = res),
+    mydata$xgrid,
+    mydata$ygrid,
     dist = dist
   )
   new.dat[[z]][too_far] <- NA_real_
@@ -901,14 +1192,31 @@ smooth_level_grid <- function(mydata, z, k, dist) {
 #' Build ggplot for method = "density"
 #' @noRd
 scatter_density <- function(
-  mydata, x, y, type, cols, mod.line,
-  log.x, log.y, x.relation, y.relation,
-  ref.x, ref.y, key.position, strip,
-  auto.text, xlab, ylab, main, extra.args
+  mydata,
+  x,
+  y,
+  type,
+  cols,
+  mod.line,
+  log.x,
+  log.y,
+  x.relation,
+  y.relation,
+  ref.x,
+  ref.y,
+  key.position,
+  strip,
+  auto.text,
+  xlab,
+  ylab,
+  main,
+  extra.args
 ) {
   mydata <- cutData(mydata, type)
 
-  if (missing(cols) || identical(cols, "hue")) cols <- "default"
+  if (missing(cols) || identical(cols, "hue")) {
+    cols <- "default"
+  }
 
   ## number of fill levels for density — use 9 discrete bands
   n_bands <- 9L
@@ -917,23 +1225,32 @@ scatter_density <- function(
   plt <- ggplot2::ggplot(mydata, ggplot2::aes(x = .data[[x]], y = .data[[y]])) +
     ggplot2::stat_density_2d_filled(
       contour_var = "ndensity",
-      bins        = n_bands
+      bins = n_bands
     ) +
     ggplot2::scale_fill_manual(
       values = fill_vals,
-      guide  = ggplot2::guide_colorsteps(
-        title    = "intensity",
+      guide = ggplot2::guide_colorsteps(
+        title = "intensity",
         position = key.position
       )
     )
 
-  if (mod.line) plt <- plt + gg_mod_lines()
+  if (mod.line) {
+    plt <- plt + gg_mod_lines()
+  }
 
   plt <- plt +
-    gg_ref_x(ref.x) + gg_ref_y(ref.y) +
+    gg_ref_x(ref.x) +
+    gg_ref_y(ref.y) +
     .scatter_x_scale(log.x, x, mydata, extra.args) +
     .scatter_y_scale(log.y, y, mydata, extra.args) +
-    get_facet(type, extra.args, scales = relation_to_facet_scales(x.relation, y.relation), auto.text = auto.text, drop = FALSE) +
+    get_facet(
+      type,
+      extra.args,
+      scales = relation_to_facet_scales(x.relation, y.relation),
+      auto.text = auto.text,
+      drop = FALSE
+    ) +
     theme_openair(key.position = key.position) +
     ggplot2::labs(x = xlab, y = ylab, title = main) +
     .strip_theme(strip)
@@ -946,20 +1263,43 @@ scatter_density <- function(
 
 #' Add geom layers based on plot.type
 #' @noRd
-.scatter_geoms <- function(plot.type, mapping, size, alpha, shape, lwd, lty, fixed_color = NULL) {
+.scatter_geoms <- function(
+  plot.type,
+  mapping,
+  size,
+  alpha,
+  shape,
+  lwd,
+  lty,
+  fixed_color = NULL
+) {
   alpha_val <- if (is.na(alpha)) 1 else alpha
   pt_args <- list(mapping = mapping, size = size, alpha = alpha_val)
-  if (!is.null(shape)) pt_args$shape <- shape
-  if (!is.null(fixed_color)) pt_args$color <- fixed_color
+  if (!is.null(shape)) {
+    pt_args$shape <- shape
+  }
+  if (!is.null(fixed_color)) {
+    pt_args$color <- fixed_color
+  }
 
-  ln_args <- list(mapping = mapping, linewidth = lwd, linetype = lty, alpha = alpha_val)
-  if (!is.null(fixed_color)) ln_args$color <- fixed_color
+  ln_args <- list(
+    mapping = mapping,
+    linewidth = lwd,
+    linetype = lty,
+    alpha = alpha_val
+  )
+  if (!is.null(fixed_color)) {
+    ln_args$color <- fixed_color
+  }
 
   switch(
     plot.type,
     "p" = list(do.call(ggplot2::geom_point, pt_args)),
-    "l" = list(do.call(ggplot2::geom_line,  ln_args)),
-    "b" = list(do.call(ggplot2::geom_line,  ln_args), do.call(ggplot2::geom_point, pt_args)),
+    "l" = list(do.call(ggplot2::geom_line, ln_args)),
+    "b" = list(
+      do.call(ggplot2::geom_line, ln_args),
+      do.call(ggplot2::geom_point, pt_args)
+    ),
     ## spline/S/s handled via smooth
     list(do.call(ggplot2::geom_point, pt_args))
   )
@@ -971,8 +1311,8 @@ scatter_density <- function(
   if (log.x) {
     ggplot2::scale_x_continuous(
       transform = "log10",
-      expand    = ggplot2::expansion(mult = c(0.05, 0.05)),
-      limits    = extra.args$xlim
+      expand = ggplot2::expansion(mult = c(0.05, 0.05)),
+      limits = extra.args$xlim
     )
   } else {
     x_vals <- mydata[[x_col]]
@@ -986,7 +1326,7 @@ scatter_density <- function(
       } else {
         ggplot2::scale_x_datetime(
           date_labels = extra.args$date.format %||% ggplot2::waiver(),
-          expand      = ggplot2::expansion(mult = c(0.025, 0.025))
+          expand = ggplot2::expansion(mult = c(0.025, 0.025))
         )
       }
     } else {
@@ -1004,8 +1344,8 @@ scatter_density <- function(
   if (log.y) {
     ggplot2::scale_y_continuous(
       transform = "log10",
-      expand    = ggplot2::expansion(mult = c(0.05, 0.05)),
-      limits    = extra.args$ylim
+      expand = ggplot2::expansion(mult = c(0.05, 0.05)),
+      limits = extra.args$ylim
     )
   } else {
     ggplot2::scale_y_continuous(
@@ -1035,7 +1375,7 @@ scatter_density <- function(
 .strip_theme <- function(strip) {
   if (!strip) {
     ggplot2::theme(
-      strip.text       = ggplot2::element_blank(),
+      strip.text = ggplot2::element_blank(),
       strip.background = ggplot2::element_blank()
     )
   } else {
@@ -1050,9 +1390,17 @@ scatter_density <- function(
 #' @noRd
 gg_mod_lines <- function() {
   list(
-    ggplot2::geom_function(fun = identity,              linetype = 1L, color = "black"),
-    ggplot2::geom_function(fun = function(x) 2 * x,    linetype = 5L, color = "black"),
-    ggplot2::geom_function(fun = function(x) x / 2,    linetype = 5L, color = "black")
+    ggplot2::geom_function(fun = identity, linetype = 1L, color = "black"),
+    ggplot2::geom_function(
+      fun = function(x) 2 * x,
+      linetype = 5L,
+      color = "black"
+    ),
+    ggplot2::geom_function(
+      fun = function(x) x / 2,
+      linetype = 5L,
+      color = "black"
+    )
   )
 }
 
@@ -1061,7 +1409,9 @@ gg_mod_lines <- function() {
 ## inner call back to a string that can be embedded in a paste(...) plotmath
 ## expression rendered by geom_text(parse = TRUE).
 .fmt_varname <- function(name, auto.text) {
-  if (!auto.text) return(paste0("'", name, "'"))
+  if (!auto.text) {
+    return(paste0("'", name, "'"))
+  }
   qt <- quickText(name, auto.text = TRUE)
   if (is.expression(qt)) {
     deparse(qt[[1]])
@@ -1074,38 +1424,61 @@ gg_mod_lines <- function() {
 ## containing the fitted equation, R² and positioning info for geom_text.
 ## @noRd
 compute_lm_labels <- function(
-  mydata, x, y, group_var, panel_cols, x_nam, y_nam, auto.text
+  mydata,
+  x,
+  y,
+  group_var,
+  panel_cols,
+  x_nam,
+  y_nam,
+  auto.text
 ) {
-  by_cols <- c(panel_cols, if (!is.null(group_var) && !is.na(group_var)) group_var else character(0L))
+  by_cols <- c(
+    panel_cols,
+    if (!is.null(group_var) && !is.na(group_var)) group_var else character(0L)
+  )
   by_cols <- by_cols[by_cols != "default"]
 
   ## fit lm for a single subset; returns NULL on failure or < 3 obs
   fit_one <- function(df, g_idx = 1L) {
     lm_dat <- stats::na.omit(data.frame(xv = df[[x]], yv = df[[y]]))
-    if (nrow(lm_dat) < 3L) return(NULL)
-    tryCatch({
-      mod  <- stats::lm(yv ~ xv, data = lm_dat)
-      b    <- stats::coef(mod)
-      r2   <- summary(mod)$r.squared
-      symb <- if (b[1L] >= 0) "+" else ""
-      ## Build a plotmath string: variable names are deparsed quickText
-      ## expressions embedded in paste(...); geom_text uses parse = TRUE.
-      x_pm <- .fmt_varname(x_nam, auto.text)
-      y_pm <- .fmt_varname(y_nam, auto.text)
-      lbl  <- paste0(
-        "paste(", y_pm,
-        ", '=", sprintf("%.2f", b[2L]), "[', ",
-        x_pm,
-        ", ']", symb, sprintf("%.2f", b[1L]),
-        " ', R^2, '=", sprintf("%.2f", r2), "')"
-      )
-      data.frame(
-        x_pos = -Inf, y_pos = Inf,
-        g_idx = g_idx,
-        label = lbl,
-        stringsAsFactors = FALSE
-      )
-    }, error = function(e) NULL)
+    if (nrow(lm_dat) < 3L) {
+      return(NULL)
+    }
+    tryCatch(
+      {
+        mod <- stats::lm(yv ~ xv, data = lm_dat)
+        b <- stats::coef(mod)
+        r2 <- summary(mod)$r.squared
+        symb <- if (b[1L] >= 0) "+" else ""
+        ## Build a plotmath string: variable names are deparsed quickText
+        ## expressions embedded in paste(...); geom_text uses parse = TRUE.
+        x_pm <- .fmt_varname(x_nam, auto.text)
+        y_pm <- .fmt_varname(y_nam, auto.text)
+        lbl <- paste0(
+          "paste(",
+          y_pm,
+          ", '=",
+          sprintf("%.2f", b[2L]),
+          "[', ",
+          x_pm,
+          ", ']",
+          symb,
+          sprintf("%.2f", b[1L]),
+          " ', R^2, '=",
+          sprintf("%.2f", r2),
+          "')"
+        )
+        data.frame(
+          x_pos = -Inf,
+          y_pos = Inf,
+          g_idx = g_idx,
+          label = lbl,
+          stringsAsFactors = FALSE
+        )
+      },
+      error = function(e) NULL
+    )
   }
 
   ## add group index within each panel for y-offset
@@ -1115,7 +1488,9 @@ compute_lm_labels <- function(
     if (length(panel_only) > 0L) {
       mydata <- mydata |>
         dplyr::group_by(dplyr::across(dplyr::all_of(panel_only))) |>
-        dplyr::mutate(.g_idx = match(.data[[group_var]], unique(.data[[group_var]]))) |>
+        dplyr::mutate(
+          .g_idx = match(.data[[group_var]], unique(.data[[group_var]]))
+        ) |>
         dplyr::ungroup()
     } else {
       mydata <- dplyr::mutate(
@@ -1133,16 +1508,18 @@ compute_lm_labels <- function(
 
   ## split by panel + group, fit lm for each subset
   split_cols <- c(by_cols, ".g_idx")
-  grouped    <- dplyr::group_by(mydata, dplyr::across(dplyr::all_of(split_cols)))
-  keys       <- dplyr::group_keys(grouped)
-  groups     <- dplyr::group_split(grouped)
+  grouped <- dplyr::group_by(mydata, dplyr::across(dplyr::all_of(split_cols)))
+  keys <- dplyr::group_keys(grouped)
+  groups <- dplyr::group_split(grouped)
 
   results <- lapply(seq_along(groups), function(i) {
     r <- fit_one(groups[[i]], g_idx = keys$.g_idx[[i]])
-    if (is.null(r)) return(NULL)
+    if (is.null(r)) {
+      return(NULL)
+    }
     key_row <- keys[i, setdiff(names(keys), ".g_idx"), drop = FALSE]
     rownames(key_row) <- NULL
-    rownames(r)       <- NULL
+    rownames(r) <- NULL
     cbind(key_row, r)
   })
 
