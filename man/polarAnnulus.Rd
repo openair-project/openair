@@ -129,6 +129,10 @@ colour maps ported from Python's Matplotlib library.}
 
 \item{col.na}{Colour to be used to show missing data.}
 
+\item{offset}{\code{offset} controls the size of the 'hole' in the middle and is
+expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a
+hole that takes up the entire plotting area.}
+
 \item{angle.scale}{The scale is by default shown at a 315 degree angle.
 Sometimes the placement of the scale may interfere with an interesting
 feature. The user can therefore set \code{angle.scale} to another value (between
@@ -177,6 +181,13 @@ mean value. This is done \emph{after} fitting the smooth surface. This option is
 particularly useful if one is interested in the patterns of concentrations
 for several pollutants on different scales e.g. NOx and CO. Often useful if
 more than one \code{pollutant} is chosen.}
+
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
 \item{key.header}{Adds additional text/labels to the scale key. For example,
 passing the options \verb{key.header = "header", key.footer = "footer1"} adds

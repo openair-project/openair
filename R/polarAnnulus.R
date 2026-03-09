@@ -44,6 +44,17 @@
 #'   two columns \dQuote{obs} (the observations) and \dQuote{mod} (modelled
 #'   values).
 #'
+#' @param offset `offset` controls the size of the 'hole' in the middle and is
+#'   expressed on a scale of `0` to `100`, where `0` is no hole and `100` is a
+#'   hole that takes up the entire plotting area.
+#'
+#' @param strip.position Location where the facet 'strips' are located when
+#'   using `type`. When one `type` is provided, can be one of `"left"`,
+#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
+#'   argument defines whether the strips are "switched" and can take either
+#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
+#'   locations to the bottom of the plot.
+#'
 #' @param resolution Two plot resolutions can be set: \dQuote{normal} and
 #'   \dQuote{fine} (the default).
 #'
