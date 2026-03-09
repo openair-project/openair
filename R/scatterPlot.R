@@ -779,7 +779,8 @@ scatter_scatter <- function(
           formula = y ~ x,
           se = ci,
           linewidth = 1,
-          linetype = 5
+          linetype = 5,
+          show.legend = FALSE
         )
     } else {
       plt <- plt +
