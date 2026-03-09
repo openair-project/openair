@@ -943,6 +943,7 @@ scatter_hexbin <- function(
     ggplot2::scale_fill_gradientn(
       colors = myColors,
       transform = hex_transform,
+      labels = scales::label_number(accuracy = 1),
       guide = ggplot2::guide_colorbar(
         title = "count",
         position = key.position
