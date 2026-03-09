@@ -625,6 +625,9 @@ polarAnnulus <-
         auto.text = auto.text,
         drop = FALSE,
         strip.position = strip.position
+      ) +
+      ggplot2::guides(
+        r = ggplot2::guide_axis(check.overlap = TRUE)
       )
 
     # set y axis breaks and labels
@@ -654,7 +657,8 @@ polarAnnulus <-
         weekdays[middle_days] <- substr(weekdays[middle_days], 1, 1)
 
         y_breaks <- seq(0, 7, length.out = 8)
-        y_labels = c(weekdays, "")
+        y_breaks <- y_breaks[-length(y_breaks)]
+        y_labels = weekdays
       }
 
       if (period == "season") {
@@ -663,7 +667,8 @@ polarAnnulus <-
         months[middle_months] <- substr(months[middle_months], 1, 1)
 
         y_breaks <- seq(0, 53, length.out = 13)
-        y_labels = c(months, "")
+        y_breaks <- y_breaks[-length(y_breaks)]
+        y_labels = months
       }
 
       thePlot <-
