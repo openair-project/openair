@@ -238,11 +238,6 @@
 #'   `mis.col`. To not highlight missing data when `min.bin` > 1 choose `mis.col
 #'   = "transparent"`.
 #'
-#' @param alpha The alpha transparency to use for the plotting surface (a value
-#'   between 0 and 1 with zero being fully transparent and 1 fully opaque).
-#'   Setting a value below 1 can be useful when plotting surfaces on a map using
-#'   the package `openairmaps`.
-#'
 #' @param upper This sets the upper limit wind speed to be used. Often there are
 #'   only a relatively few data points at very high wind speeds and plotting all
 #'   of them can reduce the useful information in the plot.
@@ -451,19 +446,20 @@ polarPlot <-
     kernel = "gaussian",
     formula.label = TRUE,
     tau = 0.5,
-    alpha = 1,
     plot = TRUE,
     ...
   ) {
     ## get rid of R check annoyances
     z <- . <- r_id <- label <- y <- NULL
 
-    if (statistic == "percentile" & is.na(percentile[1] & statistic != "cpf")) {
+    if (
+      statistic == "percentile" && is.na(percentile[1] && statistic != "cpf")
+    ) {
       warning("percentile value missing, using 50")
       percentile <- 50
     }
 
-    if (statistic == "cpf" & is.na(percentile[1])) {
+    if (statistic == "cpf" && is.na(percentile[1])) {
       warning("percentile value missing, using 75")
       percentile <- 75
     }
@@ -502,7 +498,7 @@ polarPlot <-
       type <- "default"
     }
 
-    if (uncertainty & length(pollutant) > 1) {
+    if (uncertainty && length(pollutant) > 1) {
       stop("Can only have one pollutant when uncertainty = TRUE")
     }
 
@@ -521,7 +517,7 @@ polarPlot <-
           correlation_stats
         )
     ) {
-      stop(paste0("statistic '", statistic, "' not recognised."), call. = FALSE)
+      stop("statistic '", statistic, "' not recognised.")
     }
 
     if (length(weights) != 3) {
@@ -535,7 +531,7 @@ polarPlot <-
       key.header <- "weighted\nmean"
     }
     if (key.header == "percentile") {
-      key.header <- c(paste(percentile, "th", sep = ""), "percentile")
+      key.header <- c(paste0(percentile, "th"), "percentile")
     }
 
     if ("cpf" %in% key.header) {
@@ -625,7 +621,7 @@ polarPlot <-
     # if statistic is 'r' we need the data for two pollutants in columns
     if (length(pollutant) > 1 && !statistic %in% correlation_stats) {
       if (length(type) > 1) {
-        warning(paste("Only type = '", type[1], "' will be used", sep = ""))
+        cli::cli_warn("Only {.arg type} = '{type[1]}' will be used.")
         type <- type[1]
       }
 
@@ -731,13 +727,12 @@ polarPlot <-
           )
         }
 
-        sub <- paste(
+        sub <- paste0(
           "CPF (",
           format(Pval[1], digits = 2),
           " to ",
           format(Pval[2], digits = 2),
-          ")",
-          sep = ""
+          ")"
         )
       } else {
         Pval <- quantile(
@@ -746,13 +741,12 @@ polarPlot <-
           na.rm = TRUE
         )
 
-        sub <- paste(
+        sub <- paste0(
           "CPF at the ",
           percentile,
           "th percentile (=",
           format(Pval, digits = 2),
-          ")",
-          sep = ""
+          ")"
         )
         if (!formula.label) sub <- NULL # no label
       }
@@ -821,7 +815,7 @@ polarPlot <-
     }
 
     ## with CPF make sure not >1 due to surface fitting
-    if (any(res$z > 1, na.rm = TRUE) & statistic %in% c("cpf", "cpfi")) {
+    if (any(res$z > 1, na.rm = TRUE) && statistic %in% c("cpf", "cpfi")) {
       id <- which(res$z > 1)
       res$z[id] <- 1
     }
@@ -856,7 +850,7 @@ polarPlot <-
     }
 
     # if regression, set key.footer to 'm' (slope)
-    if (grepl("slope|intercept", statistic) & length(pollutant == 2)) {
+    if (grepl("slope|intercept", statistic) && length(pollutant) == 2) {
       key.footer <- "m"
     }
 
@@ -894,7 +888,7 @@ polarPlot <-
 
     ## handle missing breaks arguments
 
-    if (any(is.null(limits)) | any(is.na(limits))) {
+    if (any(is.null(limits)) || anyNA(limits)) {
       # breaks <- pretty(res$z, n = nlev)
       breaks <- seq(
         min(res$z, na.rm = TRUE),
@@ -929,7 +923,7 @@ polarPlot <-
     col.scale <- breaks
 
     ## special handling of layout for uncertainty
-    if (uncertainty & is.null(extra.args$layout)) {
+    if (uncertainty && is.null(extra.args$layout)) {
       extra.args$layout <- c(3, 1)
     }
 
@@ -989,122 +983,83 @@ polarPlot <-
       auto.text
     )
 
-    ## Build ggplot2 plot
-    thePlot <-
-      ggplot2::ggplot(res, ggplot2::aes(x = u, y = v)) +
+    # restore to polar coordinates
+    plot_data <-
+      res |>
+      dplyr::mutate(
+        x = sqrt(.data$u^2 + .data$v^2),
+        wd = 270 - atan2(.data$v, .data$u) * (180 / pi),
+        wd = (wd + 180) %% 360
+      )
 
-      ## Missing data indicator layer: shown when min.bin > 1
-      {
-        if ("miss" %in% names(res) && min.bin > 1) {
-          ggplot2::geom_raster(
-            data = res[!is.na(res$miss), ],
-            mapping = ggplot2::aes(x = u, y = v),
-            fill = mis.col,
-            inherit.aes = FALSE
-          )
-        }
-      } +
+    # if using the min.bin arg, just drop missing z that's also missing "miss".
+    # otherwise drop all of missing z
+    if ("miss" %in% names(plot_data)) {
+      plot_data <- dplyr::filter(
+        plot_data,
+        !(is.na(.data$z) & is.na(.data$miss))
+      ) |>
+        dplyr::select(!"miss")
+    } else {
+      plot_data <- tidyr::drop_na(plot_data, "z")
+    }
 
-      ## Main smoothed surface
-      ggplot2::geom_raster(ggplot2::aes(fill = z), alpha = alpha) +
-
-      ## Circular grid rings
-      ggplot2::geom_path(
-        data = circle_df,
-        mapping = ggplot2::aes(x = x, y = y, group = r_id),
-        colour = "grey75",
-        linetype = "dashed",
-        linewidth = 0.4,
-        inherit.aes = FALSE
-      ) +
-
-      ## N–S and E–W axis lines
-      ggplot2::annotate(
-        "segment",
-        x = -upper,
-        xend = upper,
-        y = 0,
-        yend = 0,
-        linewidth = 0.5
-      ) +
-      ggplot2::annotate(
-        "segment",
-        x = 0,
-        xend = 0,
-        y = -upper,
-        yend = upper,
-        linewidth = 0.5
-      ) +
-
-      ## Compass direction labels
-      ggplot2::annotate(
-        "text",
-        x = 0.07 * upper,
-        y = upper * 0.95,
-        label = "N",
-        size = 3
-      ) +
-      ggplot2::annotate(
-        "text",
-        x = 0.07 * upper,
-        y = -upper * 0.95,
-        label = "S",
-        size = 3
-      ) +
-      ggplot2::annotate(
-        "text",
-        x = upper * 0.95,
-        y = 0.07 * upper,
-        label = "E",
-        size = 3
-      ) +
-      ggplot2::annotate(
-        "text",
-        x = -upper * 0.95,
-        y = 0.07 * upper,
-        label = "W",
-        size = 3
-      ) +
-
-      ## Radial scale text labels — use geom_text (not annotate) so that
-      ## multi-value data replicates correctly across facet panels
-      ggplot2::geom_text(
-        data = data.frame(
-          x = 1.07 * intervals * sin(pi * angle.scale / 180),
-          y = 1.07 * intervals * cos(pi * angle.scale / 180),
-          label = scale_labels
-        ),
-        mapping = ggplot2::aes(x = x, y = y, label = label),
-        size = 3,
-        hjust = 0,
-        inherit.aes = FALSE
-      ) +
-
-      ## Continuous colour scale
-      ggplot2::scale_fill_gradientn(
-        colours = col,
-        limits = range(col.scale),
-        oob = scales::oob_squish,
-        na.value = NA,
-        breaks = at,
-        labels = labs,
-        name = legend_title
-      ) +
-      ggplot2::guides(
-        fill = ggplot2::guide_colorbar(
-          theme = ggplot2::theme(
-            legend.title.position = ifelse(
-              key.position %in% c("left", "right"),
-              "top",
-              key.position
-            ),
-            legend.text.position = key.position,
-            legend.key.height = unit(10, "lines")
-          )
+    # restore scale pre-normalisation
+    plot_data <-
+      dplyr::mutate(
+        plot_data,
+        x = scales::rescale(
+          .data$x,
+          to = radial_scale,
+          from = c(0, diff(radial_scale))
         )
-      ) +
+      )
 
-      ## Key size: full height (left/right) or full width (top/bottom)
+    thePlot <-
+      plot_data |>
+      dplyr::arrange(!is.na(.data$z), .data$z) |>
+      ggplot2::ggplot(ggplot2::aes(x = .data$wd, y = .data$x)) +
+      ggplot2::geom_point(ggplot2::aes(colour = .data$z)) +
+      ggplot2::ggproto(
+        NULL,
+        ggplot2::coord_radial(r.axis.inside = angle.scale),
+        inner_radius = c(0, 1) * 0.475
+      ) +
+      scale_x_compass() +
+      ggplot2::scale_y_continuous(
+        limits = range(pretty(plot_data$x, 6)),
+        expand = ggplot2::expansion()
+      ) +
+      ggplot2::scale_color_gradientn(
+        colours = openColours(cols),
+        oob = scales::oob_squish,
+        na.value = mis.col,
+        limits = limits
+      ) +
+      theme_openair_radial(key.position, panel.ontop = TRUE) +
+      set_extra_fontsize(extra.args) +
+      annotate_compass_points(
+        size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
+      ) +
+      ggplot2::labs(
+        color = legend_title,
+        x = extra.args$xlab,
+        y = extra.args$ylab,
+        title = extra.args$main,
+        subtitle = sub,
+        caption = if (
+          formula.label &&
+            grepl("slope|intercept", statistic) &&
+            length(pollutant) == 2
+        ) {
+          quickText(
+            paste0("Formula: ", pollutant[1], " = m.", pollutant[2], " + c"),
+            auto.text
+          )
+        } else {
+          NULL
+        }
+      ) +
       {
         if (key.position %in% c("left", "right")) {
           ggplot2::theme(
@@ -1121,57 +1076,30 @@ polarPlot <-
           )
         }
       } +
-
-      ## Faceting
       get_facet(
         type,
         extra.args = extra.args,
         scales = "fixed",
         auto.text = auto.text
       ) +
-
-      ## Fixed aspect ratio, allow annotations outside the plot area
-      ggplot2::coord_fixed(
-        xlim = c(-upper * .9, upper * .9),
-        ylim = c(-upper * .9, upper * .9),
-        clip = "on"
-      ) +
-
-      ## Plot labels
-      ggplot2::labs(
-        title = extra.args$main,
-        subtitle = sub,
-        caption = if (
-          formula.label &
-            grepl("slope|intercept", statistic) &
-            length(pollutant == 2)
-        ) {
-          quickText(
-            paste0("Formula: ", pollutant[1], " = m.", pollutant[2], " + c"),
-            auto.text
+      ggplot2::guides(
+        fill = ggplot2::guide_colorbar(
+          theme = ggplot2::theme(
+            legend.title.position = ifelse(
+              key.position %in% c("left", "right"),
+              "top",
+              key.position
+            ),
+            legend.text.position = key.position
           )
-        } else {
-          NULL
-        }
-      ) +
-
-      ## Theme
-      theme_openair(key.position = key.position) +
-      ggplot2::theme(
-        panel.grid.major = ggplot2::element_blank(),
-        panel.grid.minor = ggplot2::element_blank(),
-        panel.border = ggplot2::element_blank(),
-        axis.text = ggplot2::element_blank(),
-        axis.ticks = ggplot2::element_blank(),
-        axis.title = ggplot2::element_blank()
-      ) +
-      set_extra_fontsize(extra.args)
+        )
+      )
 
     if (plot) {
       plot(thePlot)
     }
 
-    newdata <- res
+    newdata <- plot_data
 
     # return attribute of scale used - useful for data with negative scales such as air_temp
     attr(newdata, "radial_scale") <- range(radial_scale)
@@ -1284,12 +1212,11 @@ polar_prepare_grid <- function(
     ## For each grid point g and each observation d, compute the Gaussian kernel
     ## weight w[g,d] in one shot via outer(), then recover the weighted mean as
     ## a matrix–vector product.  Avoids the per-row dplyr rowwise() overhead.
-    ws_diff <- outer(ws.wd$x,  mydata[[x_col]],  `-`)   # n_grid × n_data
-    wd_diff <- outer(ws.wd$wd, mydata[[wd_col]], `-`)   # n_grid × n_data
+    ws_diff <- outer(ws.wd$x, mydata[[x_col]], `-`) # n_grid × n_data
+    wd_diff <- outer(ws.wd$wd, mydata[[wd_col]], `-`) # n_grid × n_data
     wd_diff[wd_diff < -180] <- wd_diff[wd_diff < -180] + 360
-    W      <- gauss_dens(ws_diff, wd_diff, 0, 0, ws_spread, wd_spread)
+    W <- gauss_dens(ws_diff, wd_diff, 0, 0, ws_spread, wd_spread)
     binned <- drop(W %*% mydata[[pollutant]]) / rowSums(W)
-
   } else {
     ## Kernel-weighted pair-wise statistics (correlation, regression, etc.)
     binned <- mapply(
@@ -1297,18 +1224,18 @@ polar_prepare_grid <- function(
       ws1 = ws.wd$x,
       wd1 = ws.wd$wd,
       MoreArgs = list(
-        mydata    = mydata,
+        mydata = mydata,
         statistic = statistic,
-        x         = x_col,
-        y         = wd_col,
-        pol_1     = pollutant[1],
-        pol_2     = pollutant[2],
+        x = x_col,
+        y = wd_col,
+        pol_1 = pollutant[1],
+        pol_2 = pollutant[2],
         ws_spread = ws_spread,
         wd_spread = wd_spread,
-        kernel    = kernel,
-        tau       = tau,
-        x_error   = x_error,
-        y_error   = y_error
+        kernel = kernel,
+        tau = tau,
+        x_error = x_error,
+        y_error = y_error
       )
     )
     binned <- ifelse(binned == Inf, NA, binned)
@@ -1352,13 +1279,11 @@ polar_prepare_grid <- function(
     } else {
       results <- data.frame(u = u, v = v, z = binned)
       exclude.missing <- FALSE
-      warning(
-        call. = FALSE,
-        paste(
-          "Not enough data to fit surface.\nTry reducing the value of the smoothing parameter, k to less than ",
-          k,
-          ". \nOr use statistic = 'nwr'.",
-          sep = ""
+      cli::cli_warn(
+        c(
+          "Not enough data to fit surface. Try:",
+          "i" = "Reducing the value of the smoothing parameter, k to less than {k}, or",
+          "i" = "Using {.arg statistic} = 'nwr'"
         )
       )
     }
@@ -1483,7 +1408,7 @@ calc_corr_stat <- function(thedata, pol_1, pol_2, statistic) {
   if (statistic == "r") {
     statistic <- "Pearson"
   }
-  contCorr(
+  cont_corr(
     thedata[[pol_1]],
     thedata[[pol_2]],
     w = thedata$weight,
@@ -1567,45 +1492,8 @@ calc_quantile_stat <- function(thedata, pol_1, pol_2, statistic, tau) {
 }
 
 
-# From enlightenr package
-kernel_smoother <- function(x, kernel = "gaussian") {
-  kernel <- tolower(kernel)
-  if (kernel %in% c("gaussian", "normal")) {
-    x <- (2 * pi)^-0.5 * exp(-0.5 * x^2)
-  }
-  if (kernel == "epanechnikov") {
-    x <- 3 / 4 * (1 - x^2) * indicator_function(x)
-  }
-  if (kernel == "logistic") {
-    x <- 1 / (exp(x) + 2 + exp(-x))
-  }
-  if (kernel == "cosine") {
-    x <- pi / 4 * cos((pi / 2) * x) * indicator_function(x)
-  }
-  if (kernel == "triangular") {
-    x <- (1 - abs(x)) * indicator_function(x)
-  }
-  if (kernel %in% c("box", "uniform")) {
-    x <- 1 / 2 * indicator_function(x)
-  }
-  if (kernel == "tricube") {
-    x <- 70 / 81 * (1 - abs(x)^3)^3 * indicator_function(x)
-  }
-  if (kernel == "triweight") {
-    x <- 35 / 32 * (1 - x^2)^3 * indicator_function(x)
-  }
-  if (kernel %in% c("biweight", "quartic")) {
-    x <- 15 / 16 * (1 - x^2)^2 * indicator_function(x)
-  }
-  x
-}
-
-
-indicator_function <- function(x) ifelse(abs(x) <= 1, 1, 0)
-
-
 # Weighted Pearson and Spearman correlations, based on wCorr package
-contCorr <- function(x, y, w, method = c("Pearson", "Spearman")) {
+cont_corr <- function(x, y, w, method = c("Pearson", "Spearman")) {
   if (!is.numeric(x)) {
     x <- as.numeric(x)
   }
@@ -1631,7 +1519,7 @@ contCorr <- function(x, y, w, method = c("Pearson", "Spearman")) {
 wrank <- function(x, w = rep(1, length(x))) {
   # sort by x so we can just traverse once
   ord <- order(x)
-  rord <- (1:length(x))[order(ord)] # reverse order
+  rord <- (seq_along(x))[order(ord)] # reverse order
   xp <- x[ord] # x, permuted
   wp <- w[ord] # weights, permuted
   rnk <- rep(NA, length(x)) # blank ranks vector
@@ -1791,7 +1679,7 @@ YorkFit <- function(
 # Bi-linear interpolation on a regular grid.
 # Allows surface predictions at a low resolution to be interpolated rather than
 # using a high-k GAM directly.
-interp.surface <- function(obj, loc) {
+interp_surface <- function(obj, loc) {
   # obj is a surface or image object like the list for contour, persp or image.
   # loc a matrix of 2-d locations -- new points to evaluate the surface.
   x <- obj$x
@@ -1843,7 +1731,7 @@ interp_grid <- function(input.data, x = "u", y = "v", z, n = 201) {
     y = seq(min(input.data[[y]]), max(input.data[[y]]), length.out = n)
   )
 
-  res.interp <- interp.surface(obj, loc)
+  res.interp <- interp_surface(obj, loc)
 
   out <- expand.grid(
     u = seq(min(input.data[[x]]), max(input.data[[x]]), length.out = n),

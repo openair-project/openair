@@ -37,7 +37,6 @@ polarPlot(
   kernel = "gaussian",
   formula.label = TRUE,
   tau = 0.5,
-  alpha = 1,
   plot = TRUE,
   ...
 )
@@ -300,11 +299,6 @@ printed when \code{statistic = "cpf"}.}
 \item{tau}{The quantile to be estimated when \code{statistic} is set to
 \code{"quantile.slope"}. Default is \code{0.5} which is equal to the median and will
 be ignored if \code{"quantile.slope"} is not used.}
-
-\item{alpha}{The alpha transparency to use for the plotting surface (a value
-between 0 and 1 with zero being fully transparent and 1 fully opaque).
-Setting a value below 1 can be useful when plotting surfaces on a map using
-the package \code{openairmaps}.}
 
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}
