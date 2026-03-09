@@ -192,6 +192,7 @@ trajLevel <- function(
   key = TRUE,
   key.position = "right",
   key.columns = NULL,
+  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -642,7 +643,8 @@ trajLevel <- function(
       extra.args,
       scales = "fixed",
       drop = FALSE,
-      auto.text = auto.text
+      auto.text = auto.text,
+      strip.position = strip.position
     ) +
     ggplot2::labs(
       x = quickText(extra.args$xlab, auto.text),

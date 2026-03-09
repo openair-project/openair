@@ -19,8 +19,44 @@ theme_openair <- function(key.position) {
       legend.ticks.length = structure(
         if (key.position %in% c("bottom", "right")) c(-0.2, 0) else c(0, -0.2),
         class = "rel"
-      )
+      ),
+      plot.background = ggplot2::element_rect(fill = "transparent", color = NA)
     )
+}
+
+# theme for radial plots
+theme_openair_radial <- function(key.position, panel.ontop = FALSE) {
+  list(
+    theme_openair(key.position),
+    ggplot2::theme(
+      axis.text = ggplot2::element_text(color = "black"),
+      axis.ticks.theta = ggplot2::element_blank(),
+      panel.border = ggplot2::element_blank(),
+      axis.line.x = ggplot2::element_line(
+        colour = "grey75"
+      ),
+      axis.line.x.top = ggplot2::element_line(
+        colour = "grey75"
+      ),
+      axis.line.x.bottom = ggplot2::element_line(
+        colour = "grey75"
+      ),
+      panel.grid.major.x = ggplot2::element_line(
+        colour = "grey10",
+        linewidth = 0.4
+      ),
+      panel.grid.minor = ggplot2::element_blank(),
+      panel.grid.major.y = ggplot2::element_line(
+        colour = "grey75",
+        linetype = 2,
+        linewidth = 0.25
+      ),
+      panel.spacing = ggplot2::rel(1),
+      panel.ontop = panel.ontop,
+      panel.background = ggplot2::element_rect(fill = "transparent"),
+      strip.text = ggplot2::element_text(margin = ggplot2::margin_auto(0.5))
+    )
+  )
 }
 
 # take the extra.args and set a different global fontsize, if present
@@ -103,6 +139,64 @@ relation_to_facet_scales <- function(x.relation, y.relation) {
     !x.relation && y.relation ~ "free_y",
     x.relation && y.relation ~ "free",
     !x.relation && !y.relation ~ "fixed"
+  )
+}
+
+# ggplot2 scale for radial plots
+scale_x_compass <- function(
+  expand = ggplot2::expansion(),
+  oob = scales::oob_keep,
+  ...
+) {
+  list(
+    ggplot2::scale_x_continuous(
+      limits = c(0, 360),
+      labels = NULL,
+      breaks = seq(0, 360 - 90, 90),
+      expand = expand,
+      oob = oob,
+      ...,
+      sec.axis = ggplot2::dup_axis(
+        guide = ggplot2::guide_axis_theta()
+      )
+    )
+  )
+}
+
+annotate_compass_points <- function(size, labels = c("N", "E", "S", "W")) {
+  list(
+    ggplot2::annotate(
+      y = I(0.935),
+      x = I(0.52),
+      geom = "text",
+      label = labels[1],
+      hjust = 0,
+      size = size
+    ),
+    ggplot2::annotate(
+      y = I(1 - 0.935),
+      x = I(0.52),
+      geom = "text",
+      label = labels[3],
+      hjust = 0,
+      size = size
+    ),
+    ggplot2::annotate(
+      y = I(0.52),
+      x = I(1 - 0.935),
+      geom = "text",
+      label = labels[4],
+      vjust = 0,
+      size = size
+    ),
+    ggplot2::annotate(
+      y = I(0.52),
+      x = I(0.935),
+      geom = "text",
+      label = labels[2],
+      vjust = 0,
+      size = size
+    )
   )
 }
 
