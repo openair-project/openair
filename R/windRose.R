@@ -539,7 +539,7 @@ windRose <- function(
               round(.data$mean_ws_bias, 2),
               " m/s\n",
               "wd bias = ",
-              round(.data$panel_wd_bias, 1),
+              wrap_wd_label(.data$panel_wd_bias),
               "\u00b0"
             )
           ),
@@ -1151,4 +1151,15 @@ pollutionRose <- function(
     plot = plot,
     ...
   )
+}
+
+# function to ensure that > 180
+wrap_wd_label <- function(x) {
+  x <- ifelse(x > 180, x - 360, x)
+  x <- round(x, 1)
+  if (sign(x) != -1) {
+    paste0("+", x)
+  } else {
+    as.character(x)
+  }
 }
