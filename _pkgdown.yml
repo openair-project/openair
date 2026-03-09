@@ -34,9 +34,7 @@ reference:
   - summaryPlot
   - scatterPlot
   - corPlot
-  - linearRelation
-  - calcFno2
-  
+
 - title: Utilities
 - subtitle: Plot Utilities
   desc: Tools for refining openair plots.
