@@ -398,8 +398,12 @@ windRose <- function(
 
     # Radial scale: zero ring at r0, bars extend +/- max_abs_bias from it
     max_abs_bias <- max(abs(diff_results$mean_ws_bias), na.rm = TRUE)
-    if (!is.finite(max_abs_bias) || max_abs_bias == 0) max_abs_bias <- 1
-    if (!is.null(max.freq)) max_abs_bias <- max.freq / 2
+    if (!is.finite(max_abs_bias) || max_abs_bias == 0) {
+      max_abs_bias <- 1
+    }
+    if (!is.null(max.freq)) {
+      max_abs_bias <- max.freq / 2
+    }
 
     r0 <- max_abs_bias * 1.5
     total_r <- r0 + max_abs_bias * 1.2
@@ -432,7 +436,9 @@ windRose <- function(
       ggplot2::guide_colorbar(
         theme = ggplot2::theme(
           legend.title.position = ifelse(
-            key.position %in% c("left", "right"), "top", key.position
+            key.position %in% c("left", "right"),
+            "top",
+            key.position
           ),
           legend.text.position = key.position
         )
@@ -471,7 +477,10 @@ windRose <- function(
           y = 0,
           yend = r0
         ),
-        arrow = ggplot2::arrow(type = "closed", length = ggplot2::unit(0.12, "inches")),
+        arrow = ggplot2::arrow(
+          type = "closed",
+          length = ggplot2::unit(0.12, "inches")
+        ),
         colour = "grey20",
         linewidth = 0.8,
         inherit.aes = FALSE
@@ -512,7 +521,13 @@ windRose <- function(
         }
       ) +
       ggplot2::guides(fill = fill_guide) +
-      get_facet(type, extra.args, scales = "fixed", auto.text = auto.text, drop = FALSE)
+      get_facet(
+        type,
+        extra.args,
+        scales = "fixed",
+        auto.text = auto.text,
+        drop = FALSE
+      )
 
     if (annotate) {
       thePlot <- thePlot +
@@ -520,8 +535,12 @@ windRose <- function(
           data = wd_bias_panel,
           ggplot2::aes(
             label = paste0(
-              "ws bias = ", round(.data$mean_ws_bias, 2), " m/s\n",
-              "wd bias = ", round(.data$panel_wd_bias, 1), "\u00b0"
+              "ws bias = ",
+              round(.data$mean_ws_bias, 2),
+              " m/s\n",
+              "wd bias = ",
+              round(.data$panel_wd_bias, 1),
+              "\u00b0"
             )
           ),
           x = I(1),
@@ -545,7 +564,9 @@ windRose <- function(
         size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
       )
 
-    if (plot) plot(thePlot)
+    if (plot) {
+      plot(thePlot)
+    }
 
     output <- list(plot = thePlot, data = diff_results, call = match.call())
     class(output) <- "openair"
@@ -885,7 +906,7 @@ windRose <- function(
         ) +
         ggplot2::scale_linewidth_manual(
           values = seq(
-            angle / 15,
+            angle / 360 * width * 30,
             angle / 360 * width * 125,
             length.out = dplyr::n_distinct(levels(plot_data$name))
           )
