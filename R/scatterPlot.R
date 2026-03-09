@@ -939,7 +939,7 @@ scatter_hexbin <- function(
   }
 
   plt <- ggplot2::ggplot(mydata, ggplot2::aes(x = .data[[x]], y = .data[[y]])) +
-    ggplot2::geom_hex() +
+    ggplot2::geom_hex(bins = extra.args$bins %||% 30) +
     ggplot2::scale_fill_gradientn(
       colors = myColors,
       transform = hex_transform,
