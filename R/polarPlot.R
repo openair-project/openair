@@ -449,9 +449,6 @@ polarPlot <-
     plot = TRUE,
     ...
   ) {
-    ## get rid of R check annoyances
-    z <- . <- r_id <- label <- y <- NULL
-
     if (
       statistic == "percentile" && is.na(percentile[1] && statistic != "cpf")
     ) {
@@ -484,10 +481,6 @@ polarPlot <-
     if (statistic %in% correlation_stats && length(pollutant) != 2) {
       stop("Correlation statistic requires two pollutants.")
     }
-
-    # names of variables for use later
-    nam.x <- x
-    nam.wd <- wd
 
     if (length(type) > 2) {
       stop("Maximum number of types is 2.")
@@ -591,9 +584,6 @@ polarPlot <-
     mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
 
     mydata <- na.omit(mydata)
-
-    ## this is used later for the 'x' scale
-    min.scale <- min(mydata[[x]], na.rm = TRUE)
 
     # check to see if a high proportion of the data is negative
     if (
@@ -797,21 +787,32 @@ polarPlot <-
     if (!missing(min.bin)) {
       tmp <- min.bin
       min.bin <- 0
-      res1 <- mydata |>
-        group_by(across(type)) |>
-        group_modify(~ prepare.grid(.))
+      res1 <-
+        mapType(
+          mydata,
+          type,
+          prepare.grid,
+          .include_default = TRUE
+        )
 
       min.bin <- tmp
 
-      res <- mydata |>
-        group_by(across(type)) |>
-        group_modify(~ prepare.grid(.))
+      res <-
+        mapType(
+          mydata,
+          type,
+          prepare.grid,
+          .include_default = TRUE
+        )
 
       res$miss <- res1$z
     } else {
-      res <- mydata |>
-        group_by(across(type)) |>
-        group_modify(~ prepare.grid(.))
+      res <- mapType(
+        mydata,
+        type,
+        prepare.grid,
+        .include_default = TRUE
+      )
     }
 
     ## with CPF make sure not >1 due to surface fitting
@@ -883,87 +884,15 @@ polarPlot <-
       key.header <- paste0("quantile intercept\n(tau: ", tau, ")")
     }
 
-    ## auto-scaling
-    nlev <- 200 ## preferred number of intervals
-
-    ## handle missing breaks arguments
-
-    if (any(is.null(limits)) || anyNA(limits)) {
-      # breaks <- pretty(res$z, n = nlev)
-      breaks <- seq(
-        min(res$z, na.rm = TRUE),
-        max(res$z, na.rm = TRUE),
-        length.out = nlev
-      )
-      labs <- pretty(breaks, 7)
-      labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-      at <- labs
-    } else {
-      ## handle user limits and clipping
-      breaks <- seq(min(limits), max(limits), length.out = nlev)
-      labs <- pretty(breaks, 7)
-      labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-      at <- labs
-
-      ## case where user max is < data max — label only, oob_squish handles display
-      if (max(limits) < max(res[["z"]], na.rm = TRUE)) {
-        labs[length(labs)] <- paste(">", labs[length(labs)])
-      }
-
-      ## case where user min is > data min — label only, oob_squish handles display
-      if (min(limits) > min(res[["z"]], na.rm = TRUE)) {
-        labs[1] <- paste("<", labs[1])
-      }
-    }
-
-    nlev2 <- length(breaks)
-
-    col <- openColours(cols, (nlev2 - 1))
-
-    col.scale <- breaks
-
     ## special handling of layout for uncertainty
     if (uncertainty && is.null(extra.args$layout)) {
       extra.args$layout <- c(3, 1)
-    }
-
-    ## scaling of 'zeroed' data
-    ## note - add upper because user can set this to be different to data
-    intervals <- pretty(c(mydata[[x]], upper))
-
-    ## labels for scaling
-    labels <- pretty(c(mydata[[x]], upper) + min.scale)
-    ## offset the lines/labels if necessary
-    intervals <- intervals + (min(labels) - min.scale)
-
-    ## add zero in the middle if it exists
-    if (min.scale != 0) {
-      labels <- labels[-1]
-      intervals <- intervals[-1]
     }
 
     # if uncertainty = TRUE, change type for plotting (3 panels)
     if (uncertainty) {
       type <- "uncertainty"
     }
-
-    ## Pre-compute circular ring overlay data
-    angles_circle <- seq(0, 2 * pi, length = 361)
-    circle_df <- do.call(
-      rbind,
-      lapply(seq_along(intervals), function(i) {
-        data.frame(
-          x = intervals[i] * sin(angles_circle),
-          y = intervals[i] * cos(angles_circle),
-          r_id = i
-        )
-      })
-    )
-
-    ## Radial scale labels: attach units to the 3rd label only
-    n_lbl <- length(labels)
-    lbl_suffix <- c("", "", units, rep("", max(0L, n_lbl - 3L)))
-    scale_labels <- trimws(paste(labels, lbl_suffix[seq_len(n_lbl)]))
 
     ## Format legend title (key.header may be an expression)
     if (is.expression(key.header)) {
