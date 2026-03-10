@@ -317,7 +317,7 @@ trajPlot <- function(
   # panels in the plot
   n_types <- c()
   for (i in type) {
-    n_types <- c(n_types, length(levels(sf_lines[[i]])))
+    n_types <- c(n_types, nlevels(sf_lines[[i]]))
   }
   n_types <- purrr::reduce(n_types, .f = `*`)
 

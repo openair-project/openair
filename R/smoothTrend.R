@@ -489,7 +489,7 @@ deseason_smoothtrend_data <- function(mydata, deseason) {
 
     # fill any missing data using a Kalman filter
 
-    if (any(is.na(myts))) {
+    if (anyNA(myts)) {
       # use forecast package to get best arima
       fit <- ts(rowSums(tsSmooth(StructTS(myts))[, -2]))
       id <- which(is.na(myts))

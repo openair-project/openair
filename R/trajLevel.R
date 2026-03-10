@@ -602,7 +602,7 @@ trajLevel <- function(
   # panels in the plot
   n_types <- c()
   for (i in type) {
-    n_types <- c(n_types, length(levels(mydata[[i]])))
+    n_types <- c(n_types, nlevels(mydata[[i]]))
   }
   n_types <- purrr::reduce(n_types, .f = `*`)
 
@@ -778,7 +778,7 @@ trajLevel <- function(
         ggplot2::aes(
           x = .data$xgrid,
           y = .data$ygrid,
-          alpha = ifelse(ggplot2::after_stat(.data$count) < min.bin, 0, 1)
+          alpha = as.integer(!(ggplot2::after_stat(.data$count) < min.bin))
         ),
         binwidth = min(c(lat.inc * 1.5, lon.inc * 1.5))
       )

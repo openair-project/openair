@@ -340,7 +340,7 @@ TheilSen <- function(
 
         # fill any missing data using a Kalman filter
 
-        if (any(is.na(myts))) {
+        if (anyNA(myts)) {
           fit <- ts(rowSums(tsSmooth(StructTS(myts))[, -2]))
           id <- which(is.na(myts))
 

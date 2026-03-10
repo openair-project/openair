@@ -130,7 +130,7 @@ importMeta <-
     ## ensure lower case
     source <- tolower(source)
 
-    if (any(!source %in% meta.source)) {
+    if (!all(source %in% meta.source)) {
       cli::cli_abort(
         c(
           "!" = '"{source}" not a recognised {.field source}.',

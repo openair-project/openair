@@ -669,7 +669,7 @@ polarAnnulus <-
 
         y_breaks <- seq(0, 7, length.out = 8)
         y_breaks <- y_breaks[-length(y_breaks)]
-        y_labels = weekdays
+        y_labels <- weekdays
       }
 
       if (period == "season") {
@@ -679,7 +679,7 @@ polarAnnulus <-
 
         y_breaks <- seq(0, 53, length.out = 13)
         y_breaks <- y_breaks[-length(y_breaks)]
-        y_labels = months
+        y_labels <- months
       }
 
       thePlot <-

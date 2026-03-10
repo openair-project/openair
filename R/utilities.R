@@ -18,16 +18,16 @@ dateTypes <- c(
 
 # get date components
 startYear <- function(dat) {
-  as.numeric(format(min(dat[order(dat)]), "%Y"))
+  as.numeric(format(min(sort(dat, na.last = TRUE)), "%Y"))
 }
 endYear <- function(dat) {
-  as.numeric(format(max(dat[order(dat)]), "%Y"))
+  as.numeric(format(max(sort(dat, na.last = TRUE)), "%Y"))
 }
 startMonth <- function(dat) {
-  as.numeric(format(min(dat[order(dat)]), "%m"))
+  as.numeric(format(min(sort(dat, na.last = TRUE)), "%m"))
 }
 endMonth <- function(dat) {
-  as.numeric(format(max(dat[order(dat)]), "%m"))
+  as.numeric(format(max(sort(dat, na.last = TRUE)), "%m"))
 }
 
 # function to test of a suggested package is available and warn if not
@@ -706,7 +706,7 @@ listUpdate <- function(
   if (!is.null(subset.b)) {
     b <- b[names(b) %in% subset.b]
   }
-  if (length(names(b) > 0)) {
+  if (length(names(b)) > 0) {
     a <- modifyList(a, b)
   }
   a
@@ -765,7 +765,7 @@ poly.na <- function(
   border = NA
 ) {
   for (i in seq(2, length(x1))) {
-    if (!any(is.na(y2[c(i - 1, i)]))) {
+    if (!anyNA(y2[c(i - 1, i)])) {
       lpolygon(
         c(x1[i - 1], x1[i], x2[i], x2[i - 1]),
         c(y1[i - 1], y1[i], y2[i], y2[i - 1]),
@@ -966,7 +966,7 @@ mapType <- function(
 #' Create nice labels out of breaks, if only breaks are provided
 #' @noRd
 breaksToLabels <- function(breaks, labels = NULL, sep = " - ") {
-  if (is.null(labels) || any(is.na(labels))) {
+  if (is.null(labels) || anyNA(labels)) {
     labels <- paste(
       format(
         head(breaks, -1),

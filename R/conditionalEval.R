@@ -316,7 +316,7 @@ conditionalEval <- function(
 
     statFun <- function(x, ...) {
       tmpFun <- function(i, x, ...) {
-        x <- x[sample(1:nrow(x), nrow(x), replace = TRUE), ]
+        x <- x[sample.int(nrow(x), nrow(x), replace = TRUE), ]
         get(statistic)(x, obs = var.obs, mod = var.mod)
       }
 
@@ -533,7 +533,7 @@ conditionalEval <- function(
 
     key <- list(
       lines = list(
-        col = myColors[1:length(var.obs)],
+        col = myColors[seq_along(var.obs)],
         lty = extra.args$lty,
         lwd = 2
       ),

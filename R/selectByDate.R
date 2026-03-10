@@ -118,7 +118,7 @@ selectByDate <- function(
       clean_input <- substr(tolower(month), 1, 3)
       target_months <- lookup[clean_input]
 
-      if (any(is.na(target_months))) stop("Invalid month name provided.")
+      if (anyNA(target_months)) stop("Invalid month name provided.")
     }
 
     # Perform integer dplyr::filter (fast)
@@ -169,7 +169,7 @@ selectByDate <- function(
         clean_specific <- substr(specific, 1, 3)
         mapped <- wday_lookup[clean_specific]
 
-        if (any(is.na(mapped))) {
+        if (anyNA(mapped)) {
           stop("Invalid day name provided.")
         }
         target_wdays <- c(target_wdays, mapped)

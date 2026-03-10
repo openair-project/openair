@@ -47,7 +47,7 @@ rollingQuantile <- function(
   align <- rlang::arg_match(align, multiple = FALSE)
 
   if (align == "center") {
-    align = "centre"
+    align <- "centre"
   }
 
   # data.thresh must be between 0 & 100
@@ -98,7 +98,7 @@ rollingQuantile <- function(
 
     # call C code
 
-    data.thresh = data.thresh / 100
+    data.thresh <- data.thresh / 100
     results <- rolling_average_cpp(
       mydata[[pollutant]],
       width,
@@ -109,7 +109,7 @@ rollingQuantile <- function(
     )
 
     results <- as.data.frame(results)
-    names(results)[1:length(probs)] <- paste0("q_", pollutant, "_", probs)
+    names(results)[seq_along(probs)] <- paste0("q_", pollutant, "_", probs)
 
     mydata <- bind_cols(mydata, results)
 
