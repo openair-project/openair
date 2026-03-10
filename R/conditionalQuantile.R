@@ -41,7 +41,7 @@
 #' with the 25/75th and 10/90th quantile values are plotted together with a line
 #' showing a \dQuote{perfect} model. Also shown is a histogram of predicted
 #' values (shaded grey) and a histogram of observed values (shown as a blue
-#' line).
+#' outline).
 #'
 #' Far more insight can be gained into model performance through conditioning
 #' using `type`. For example, `type = "season"` will plot conditional
@@ -70,7 +70,7 @@
 #'
 #'   Type can be up length two e.g. `type = c("season", "weekday")` will
 #'   produce a 2x2 plot split by season and day of the week. Note, when two
-#'   types are provided the first forms the columns and the second the rows.
+#'   types are provided the first forms the rows and the second the columns.
 #' @param bins Number of bins to be used in calculating the different quantile
 #'   levels.
 #' @param min.bin The minimum number of points required for the estimates of the
@@ -81,19 +81,14 @@
 #'   line. Must be of length 5 or more.
 #' @param key.columns Number of columns to be used in the key.
 #' @param key.position Location of the key e.g. \dQuote{top}, \dQuote{bottom},
-#'   \dQuote{right}, \dQuote{left}. See `lattice` `xyplot` for more
-#'   details.
+#'   \dQuote{right}, \dQuote{left}.
 #' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
 #'   titles and axis labels etc. will automatically try and format pollutant
 #'   names and units properly e.g.  by subscripting the `2' in NO2.
 #' @param \dots Other graphical parameters passed onto `cutData` and
-#'   `lattice:xyplot`. For example, `conditionalQuantile` passes the
-#'   option `hemisphere = "southern"` on to `cutData` to provide
-#'   southern (rather than default northern) hemisphere handling of `type =
-#'   "season"`. Similarly, common axis and title labelling options (such as
-#'   `xlab`, `ylab`, `main`) are passed to `xyplot` via
-#'   `quickText` to handle routine formatting.
-#' @import latticeExtra purrr tidyr
+#'   `ggplot2`. For example, `conditionalQuantile` passes the option
+#'   `hemisphere = "southern"` on to `cutData` to provide southern
+#'   (rather than default northern) hemisphere handling of `type = "season"`.
 #' @export
 #' @author David Carslaw
 #' @family model evaluation functions
@@ -139,47 +134,34 @@ conditionalQuantile <- function(
   min.bin = c(10, 20),
   xlab = "predicted value",
   ylab = "observed value",
-  col = brewer.pal(5, "YlOrRd"),
+  col = RColorBrewer::brewer.pal(5, "YlOrRd"),
   key.columns = 2,
   key.position = "bottom",
   auto.text = TRUE,
   ...
 ) {
-  ## partly based on from Wilks (2005) and package verification, with many modifications
-  # keep R check quite
-  data <- second <- third <- NULL
-
   if (length(type) > 2) {
-    stop("Only two types can be used with this function")
+    cli::cli_abort("Only two types can be used with this function")
   }
 
-  ## extra.args setup
-  extra.args <- list(...)
+  extra.args <- rlang::list2(...)
 
-  ## set graphics
-  current.strip <- trellis.par.get("strip.background")
-  current.font <- trellis.par.get("fontsize")
-
-  ## reset graphic parameters
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
-
-  # label controls
-  # (xlab and ylab handled in formals because unique action)
-  extra.args$main <- if ("main" %in% names(extra.args)) {
-    quickText(extra.args$main, auto.text)
-  } else {
-    quickText("", auto.text)
+  vars <- c(mod, obs)
+  if (any(type %in% dateTypes)) {
+    vars <- c("date", vars)
   }
 
-  if ("fontsize" %in% names(extra.args)) {
-    trellis.par.set(fontsize = list(text = extra.args$fontsize))
-  }
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  mydata <- na.omit(mydata)
+  mydata <- cutData(mydata, type)
+
+  lo <- min(mydata[c(mod, obs)])
+  hi <- max(mydata[c(mod, obs)])
+  bins_breaks <- seq(floor(lo), ceiling(hi), length = bins)
+  bin_width <- diff(bins_breaks)[1]
+  labs <- bins_breaks[-length(bins_breaks)] + 0.5 * bin_width
 
   if (length(col) == 1 && col == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-    # other local colours
     ideal.col <- "black"
     col.1 <- grDevices::grey(0.75)
     col.2 <- grDevices::grey(0.5)
@@ -191,270 +173,194 @@ conditionalQuantile <- function(
     col.5 <- col[5]
   }
 
-  vars <- c(mod, obs)
-
-  if (any(type %in% dateTypes)) {
-    vars <- c("date", vars)
-  }
-
-  ## check the data
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-  mydata <- na.omit(mydata)
-  mydata <- cutData(mydata, type)
-
-  procData <- function(mydata) {
-    mydata <- select_if(mydata, is.numeric)
-    obs <- mydata[[obs]]
-    pred <- mydata[[mod]]
-    min.d <- min(mydata)
-    max.d <- max(mydata)
-    bins <- seq(floor(min.d), ceiling(max.d), length = bins)
-
-    lo <- min(bins)
-    hi <- max(bins)
-    b <- bins[-length(bins)]
-    labs <- b + 0.5 * diff(bins)
-    obs.cut <- cut(
-      obs,
-      breaks = bins,
+  ## per-group statistics -------------------------------------------------
+  compute_cq <- function(df) {
+    obs_vec <- df[[obs]]
+    pred_vec <- df[[mod]]
+    pred_cut <- cut(
+      pred_vec,
+      breaks = bins_breaks,
       include.lowest = TRUE,
       labels = labs
     )
-    obs.cut[is.na(obs.cut)] <- labs[1]
-    obs.cut <- as.numeric(as.character(obs.cut))
-    pred.cut <- cut(
-      pred,
-      breaks = bins,
-      include.lowest = TRUE,
-      labels = labs
-    )
-    pred.cut[is.na(pred.cut)] <- labs[1]
+    n <- as.integer(tapply(obs_vec, pred_cut, length))
+    n[is.na(n)] <- 0L
 
-    n <- length(labs)
-    lng <- tapply(obs, pred.cut, length)
-    med <- tapply(obs, pred.cut, median)
-    q1 <- tapply(obs, pred.cut, quantile, probs = 0.25)
-    q2 <- tapply(obs, pred.cut, quantile, probs = 0.75)
-    q1[lng <= min.bin[1]] <- NA
-    q2[lng <= min.bin[1]] <- NA
-    q3 <- tapply(obs, pred.cut, quantile, probs = 0.1)
-    q4 <- tapply(obs, pred.cut, quantile, probs = 0.9)
-    q3[lng <= min.bin[2]] <- NA
-    q4[lng <= min.bin[2]] <- NA
+    safe_stat <- function(FUN, probs = NULL, min_n = 0L) {
+      q <- tapply(obs_vec, pred_cut, function(x) {
+        if (!length(x)) {
+          return(NA_real_)
+        }
+        if (is.null(probs)) {
+          FUN(x, na.rm = TRUE)
+        } else {
+          FUN(x, probs = probs, na.rm = TRUE)
+        }
+      })
+      q <- as.vector(q)
+      if (min_n > 0L) {
+        q[n <= min_n] <- NA_real_
+      }
+      q
+    }
 
-    results <- data.frame(
-      x = as.numeric(levels(pred.cut)),
-      lng,
-      med,
-      q1,
-      q2,
-      q3,
-      q4
-    )
-
-    results.cut <- data.frame(
-      pred.cut = as.numeric(as.character(pred.cut)),
-      obs.cut = obs
-    )
-
-    ## range taken by observations
-    results.obs <- data.frame(min = min(obs), max = max(obs))
-    results <- list(results, results.cut, results.obs)
-    results
-  }
-
-  lo <- min(mydata[c(mod, obs)])
-  hi <- max(mydata[c(mod, obs)])
-
-  all.results <- mydata |>
-    group_by(across(type)) |>
-    group_nest() |>
-    mutate(
-      results = map(data, procData),
-      .keep = "unused"
-    )
-
-  results <- all.results |>
-    mutate(first = map(results, 1)) |>
-    unnest(first) |>
-    dplyr::select(-"results")
-
-  hist.results <- all.results |>
-    mutate(second = map(results, 2)) |>
-    unnest(second) |>
-    dplyr::select(-"results")
-
-  obs.results <- all.results |>
-    mutate(third = map(results, 3)) |>
-    unnest(third) |>
-    dplyr::select(-"results")
-
-  ## proper names of labelling #################################################
-  pol.name <- sapply(
-    levels(results[[type[1]]]),
-    function(x) quickText(x, auto.text)
-  )
-  strip <- strip.custom(factor.levels = pol.name)
-
-  if (length(type) == 1) {
-    strip.left <- FALSE
-    if (type == "default") strip <- FALSE
-  } else {
-    ## two conditioning variables
-
-    pol.name <- sapply(
-      levels(results[[type[2]]]),
-      function(x) quickText(x, auto.text)
-    )
-    strip.left <- strip.custom(factor.levels = pol.name)
-  }
-  ## ###########################################################################
-
-  temp <- paste(type, collapse = "+")
-  myform <- formula(paste("x ~ med | ", temp, sep = ""))
-
-  xyplot.args <- list(
-    x = myform,
-    data = results,
-    xlim = c(lo, hi * 1.05),
-    ylim = c(lo, hi * 1.05),
-    ylab = quickText(ylab, auto.text),
-    xlab = quickText(xlab, auto.text),
-    as.table = TRUE,
-    aspect = 1,
-    strip = strip,
-    strip.left = strip.left,
-    key = list(
-      lines = list(
-        col = c(col.1, col.2, col.5, ideal.col),
-        lwd = c(15, 15, 2, 1)
+    list(
+      quant = data.frame(
+        x = labs,
+        med = safe_stat(median),
+        q1 = safe_stat(quantile, probs = 0.25, min_n = min.bin[1]),
+        q2 = safe_stat(quantile, probs = 0.75, min_n = min.bin[1]),
+        q3 = safe_stat(quantile, probs = 0.10, min_n = min.bin[2]),
+        q4 = safe_stat(quantile, probs = 0.90, min_n = min.bin[2])
       ),
-      lines.title = 1,
-      title = "",
-      text = list(
-        lab = c(
-          "25/75th percentile",
-          "10/90th percentile",
-          "median",
-          "perfect model"
-        )
-      ),
-      space = key.position,
-      columns = key.columns
-    ),
-    par.strip.text = list(cex = 0.8),
-    panel = function(x, subscripts, ...) {
-      panel.grid(-1, -1, col = "grey95")
-
-      poly.na(
-        results$x[subscripts],
-        results$q3[subscripts],
-        results$x[subscripts],
-        results$q4[subscripts],
-        myColors = col.2,
-        alpha = 1
-      )
-      poly.na(
-        results$x[subscripts],
-        results$q1[subscripts],
-        results$x[subscripts],
-        results$q2[subscripts],
-        myColors = col.1,
-        alpha = 1
-      )
-
-      # draw line of where observations lie
-      theSubset <- inner_join(obs.results, results[subscripts[1], ], by = type)
-
-      panel.lines(
-        c(theSubset$min, theSubset$max),
-        c(
-          theSubset$min,
-          theSubset$max
+      hist = data.frame(
+        x = rep(labs, 2),
+        count = c(
+          as.integer(table(cut(
+            pred_vec,
+            bins_breaks,
+            include.lowest = TRUE,
+            labels = labs
+          ))),
+          as.integer(table(cut(
+            obs_vec,
+            bins_breaks,
+            include.lowest = TRUE,
+            labels = labs
+          )))
         ),
-        col = ideal.col,
-        lwd = 1.5
-      )
-      panel.lines(
-        results$x[subscripts],
-        results$med[subscripts],
-        col = col.5,
-        lwd = 2
-      )
-    }
-  )
-
-  # reset for extra.args
-
-  xyplot.args <- listUpdate(xyplot.args, extra.args)
-
-  # plot
-  scatter <- do.call(xyplot, xyplot.args)
-
-  temp <- paste(type, collapse = "+")
-  myform <- formula(paste(" ~ pred.cut | ", temp, sep = ""))
-  bins <- seq(floor(lo), ceiling(hi), length = bins)
-
-  pred.cut <- NULL ## avoid R NOTES
-
-  histo <- histogram(
-    myform,
-    data = hist.results,
-    breaks = bins,
-    type = "count",
-    as.table = TRUE,
-    strip = strip,
-    strip.left = strip.left,
-    col = "black",
-    alpha = 0.1,
-    border = NA,
-    par.strip.text = list(cex = 0.8),
-    ylab = "sample size for histograms",
-    panel = function(
-      x = pred.cut,
-      col = "black",
-      border = NA,
-      alpha = 0.2,
-      subscripts,
-      ...
-    ) {
-      ## histogram of observations
-      panel.histogram(
-        x = hist.results[["obs.cut"]][subscripts],
-        col = NA,
-        alpha = 0.5,
-        lwd = 0.5,
-        border = ideal.col,
-        ...
-      )
-      ## histogram of modelled values
-      panel.histogram(x = x, col = "black", border, alpha = 0.15, ...)
-    }
-  )
-
-  ## supress scaling warnings
-  thePlot <- latticeExtra::doubleYScale(scatter, histo, add.ylab2 = TRUE)
-  thePlot <- update(
-    thePlot,
-    par.settings = simpleTheme(col = c("black", "black"))
-  )
-
-  if (length(type) <= 1) {
-    plot(thePlot)
-  } else {
-    plot(latticeExtra::useOuterStrips(
-      thePlot,
-      strip = strip,
-      strip.left = strip.left
-    ))
+        hist_type = rep(c("predicted", "observed"), each = length(labs))
+      ),
+      obs_range = data.frame(obs_min = min(obs_vec), obs_max = max(obs_vec))
+    )
   }
 
-  invisible(trellis.last.object())
-  output <- list(
-    plot = thePlot,
-    data = results,
-    call = match.call()
-  )
+  all_res <- mydata |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(type))) |>
+    dplyr::group_nest() |>
+    dplyr::mutate(cq = purrr::map(data, compute_cq), .keep = "unused")
+
+  results <- all_res |>
+    dplyr::mutate(d = purrr::map(cq, "quant")) |>
+    tidyr::unnest(d) |>
+    dplyr::select(-cq)
+
+  hist_data <- all_res |>
+    dplyr::mutate(d = purrr::map(cq, "hist")) |>
+    tidyr::unnest(d) |>
+    dplyr::select(-cq)
+
+  obs_range_data <- all_res |>
+    dplyr::mutate(d = purrr::map(cq, "obs_range")) |>
+    tidyr::unnest(d) |>
+    dplyr::select(-cq)
+
+  ## histogram scaling for secondary y-axis --------------------------------
+  y_lo <- lo
+  y_hi <- hi * 1.05
+  max_count <- max(hist_data$count)
+  scale_factor <- (y_hi - y_lo) * 0.35 / max_count
+
+  hist_pred <- hist_data[hist_data$hist_type == "predicted", ]
+  hist_obs <- hist_data[hist_data$hist_type == "observed", ]
+
+  ## legend mappings -------------------------------------------------------
+  fill_vals <- c("25/75th percentile" = col.1, "10/90th percentile" = col.2)
+  color_vals <- c("median" = col.5, "perfect model" = ideal.col)
+
+  ## build plot ------------------------------------------------------------
+  plt <- ggplot2::ggplot(results, ggplot2::aes(x = x)) +
+    # histograms (drawn first, behind ribbons)
+    ggplot2::geom_rect(
+      data = hist_pred,
+      ggplot2::aes(
+        xmin = x - bin_width / 2,
+        xmax = x + bin_width / 2,
+        ymin = y_lo,
+        ymax = y_lo + count * scale_factor
+      ),
+      fill = "black",
+      alpha = 0.15,
+      color = NA,
+      inherit.aes = FALSE
+    ) +
+    ggplot2::geom_rect(
+      data = hist_obs,
+      ggplot2::aes(
+        xmin = x - bin_width / 2,
+        xmax = x + bin_width / 2,
+        ymin = y_lo,
+        ymax = y_lo + count * scale_factor
+      ),
+      fill = NA,
+      color = ideal.col,
+      linewidth = 0.3,
+      inherit.aes = FALSE
+    ) +
+    # quantile ribbons
+    ggplot2::geom_ribbon(
+      ggplot2::aes(ymin = q3, ymax = q4, fill = "10/90th percentile"),
+      na.rm = TRUE
+    ) +
+    ggplot2::geom_ribbon(
+      ggplot2::aes(ymin = q1, ymax = q2, fill = "25/75th percentile"),
+      na.rm = TRUE
+    ) +
+    # median and perfect-model lines
+    ggplot2::geom_line(
+      ggplot2::aes(y = med, color = "median"),
+      linewidth = 1,
+      na.rm = TRUE
+    ) +
+    ggplot2::geom_segment(
+      data = obs_range_data,
+      ggplot2::aes(
+        x = obs_min,
+        xend = obs_max,
+        y = obs_min,
+        yend = obs_max,
+        color = "perfect model"
+      ),
+      linewidth = 1,
+      inherit.aes = FALSE
+    ) +
+    # scales
+    ggplot2::scale_fill_manual(
+      name = NULL,
+      values = fill_vals,
+      guide = ggplot2::guide_legend(
+        ncol = key.columns,
+        override.aes = list(linetype = 0, linewidth = 5)
+      )
+    ) +
+    ggplot2::scale_color_manual(
+      name = NULL,
+      values = color_vals,
+      guide = ggplot2::guide_legend(ncol = key.columns)
+    ) +
+    ggplot2::scale_x_continuous(
+      name = quickText(xlab, auto.text),
+      limits = c(y_lo, y_hi)
+    ) +
+    ggplot2::scale_y_continuous(
+      name = quickText(ylab, auto.text),
+      limits = c(y_lo, y_hi),
+      sec.axis = ggplot2::sec_axis(
+        transform = ~ (. - y_lo) / scale_factor,
+        name = "sample size"
+      )
+    ) +
+    ggplot2::coord_fixed() +
+    get_facet(type, extra.args, "fixed", auto.text) +
+    theme_openair(key.position) +
+    set_extra_fontsize(extra.args)
+
+  if ("main" %in% names(extra.args)) {
+    plt <- plt + ggplot2::labs(title = quickText(extra.args$main, auto.text))
+  }
+
+  output <- list(plot = plt, data = results, call = match.call())
   class(output) <- "openair"
+  print(plt)
   invisible(output)
 }
