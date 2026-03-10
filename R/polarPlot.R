@@ -956,7 +956,7 @@ polarPlot <-
       ) +
       scale_x_compass() +
       ggplot2::scale_y_continuous(
-        limits = range(pretty(plot_data$x, 6)),
+        limits = range(pretty(plot_data$x, 20)),
         expand = ggplot2::expansion()
       ) +
       ggplot2::scale_color_gradientn(
