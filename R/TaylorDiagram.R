@@ -473,7 +473,7 @@ TaylorDiagram <- function(
   } else {
     cli::cli_inform(
       c(
-        "i" = "Install the {.pkg geomtextpath} package for direct labelling of centred RMSE contours in {.fun openair::plot_taylor_diagram}."
+        "i" = "Install the {.pkg geomtextpath} package for direct labelling of centred RMSE contours in {.fun openair::TaylorDiagram}."
       ),
       .frequency = "regularly",
       .frequency_id = "geomtextpath"
