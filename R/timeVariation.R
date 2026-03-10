@@ -158,12 +158,9 @@
 #' @param alpha The alpha transparency used for plotting confidence intervals.
 #'   `0` is fully transparent and 1 is opaque. The default is `0.4`.
 #'
-#' @param ... Other graphical parameters passed onto [lattice::xyplot()] and
-#'   [cutData()]. For example, in the case of [cutData()] the option `hemisphere
-#'   = "southern"`. Note that [cutData()] is used in `type`, `group` and
-#'   `panels`, and `...` will be passed to all three.
+#' @param ... Other graphical parameters passed onto [cutData()]. For example,
+#'   in the case of [cutData()] the option `hemisphere = "southern"`.
 #'
-#' @import lattice
 #' @export
 #' @return an [openair][openair-package] object. The components of
 #'   [timeVariation()] are named after `panels`. Associated data.frames can be
@@ -285,33 +282,11 @@ timeVariation <- function(
   plot = TRUE,
   ...
 ) {
-  # if median, use alternative default
   if (statistic == "median" && missing(conf.int)) {
     conf.int <- c(0.75, 0.95)
   }
 
-  # validate inputs
-  validate_tv_inputs(
-    mydata = mydata,
-    group = group,
-    pollutant = pollutant,
-    type = type,
-    difference = difference,
-    statistic = statistic,
-    conf.int = conf.int,
-    panels = panels,
-    xlab = xlab
-  )
-
-  # graphical parameter handling
-
-  # greyscale handling
-  if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-  }
-
-  # extra.args setup
-  extra.args <- list(...)
+  extra.args <- rlang::list2(...)
 
   # month.last deprecation
   if ("month.last" %in% names(extra.args)) {
@@ -325,101 +300,72 @@ timeVariation <- function(
     extra.args$month.last <- NULL
   }
 
-  # set graphics
-  current.font <- trellis.par.get("fontsize")
-  on.exit(trellis.par.set(
-    fontsize = current.font
-  ))
-  if ("fontsize" %in% names(extra.args)) {
-    trellis.par.set(fontsize = list(text = extra.args$fontsize))
-  }
-
-  # label controls
-  # xlab handled in formals and code because unique
-  extra.args$ylab <- quickText(
-    extra.args$ylab %||%
-      ifelse(normalise, "normalised level", paste(pollutant, collapse = ", ")),
-    auto.text
-  )
-  extra.args$main <- quickText(extra.args$main %||% "", auto.text)
-
-  extra.args$sub <- quickText(
-    extra.args$sub %||% create_tv_sub_text(statistic, conf.int),
-    auto.text
+  validate_tv_inputs(
+    mydata = mydata,
+    group = group,
+    pollutant = pollutant,
+    type = type,
+    difference = difference,
+    statistic = statistic,
+    conf.int = conf.int,
+    panels = panels,
+    xlab = xlab
   )
 
-  extra.args$lwd <- extra.args$lwd %||% 2
+  ylab  <- quickText(
+    extra.args$ylab %||% ifelse(normalise, "normalised level", paste(pollutant, collapse = ", ")),
+    auto.text
+  )
+  main  <- quickText(extra.args$main %||% "", auto.text)
+  sub   <- quickText(extra.args$sub  %||% create_tv_sub_text(statistic, conf.int), auto.text)
+  lwd   <- extra.args$lwd %||% 2
 
-  # if user supplies separate ylims for each plot
-  ylimList <- FALSE
-  if ("ylim" %in% names(extra.args)) {
-    if (is.list(extra.args$ylim)) {
-      if (length(extra.args$ylim) != length(panels)) {
-        cli::cli_abort(
-          "{.arg ylim} should be equal in length to {.arg panels} ({length(panels)})."
-        )
-      }
-      ylim.list <- extra.args$ylim
-      ylimList <- TRUE
-    }
+  # ylim: list (one per panel) or single vector
+  ylim_input <- extra.args$ylim
+  ylimList   <- is.list(ylim_input)
+  if (ylimList && length(ylim_input) != length(panels)) {
+    cli::cli_abort(
+      "{.arg ylim} should be equal in length to {.arg panels} ({length(panels)})."
+    )
   }
 
   # check & cut data
   vars <- c("date", pollutant)
-
-  # if group is present and not a date-type (e.g., year), add to vars
-  if (!is.null(group)) {
-    if (!group %in% dateTypes) {
-      vars <- unique(c(vars, group))
-    }
+  if (!is.null(group) && !group %in% dateTypes) {
+    vars <- unique(c(vars, group))
   }
-
-  # if any panels aren't datetypes (e.g., sites), add to vars
   panel_vars <- unique(purrr::list_c(strsplit(panels, "\\.")))
   if (any(!panel_vars %in% dateTypes)) {
     vars <- unique(c(vars, panel_vars[!panel_vars %in% dateTypes]))
   }
 
-  # data checks
   mydata <- mydata |>
     checkPrep(vars, type, remove.calm = FALSE) |>
     cutData(type = c(type, group), local.tz = local.tz, ...)
 
-  # need to isolate "type" as timeVar will try to turn it numeric, which will
-  # break the strip labels
+  # rename type/group columns to avoid naming conflicts
+  orig_type <- orig_group <- NULL
   if (type != "default") {
     orig_type <- type
     mydata$openair_type <- mydata[[type]]
     type <- "openair_type"
   }
-
-  # need to isolate "group" as if the grouping var is also a panel it'll be
-  # stripped away
   if (!is.null(group)) {
     orig_group <- group
     mydata$openair_group <- mydata[[group]]
     group <- "openair_group"
   }
 
-  # put in local time if needed
   if (!is.null(local.tz)) {
     attr(mydata$date, "tzone") <- local.tz
   }
 
-  # title for overall and individual plots
-  overall.main <- extra.args$main
-  extra.args$main <- ""
-  overall.sub <- extra.args$sub
-  extra.args$sub <- ""
-
-  # labels for pollutants, can be user-defined, special handling when difference = TRUE
+  # pivot to long format and set factor levels
   poll.orig <- pollutant
   if (difference && is.null(group)) {
     pollutant <- c(pollutant, paste(pollutant[2], "-", pollutant[1]))
   }
-  mylab <- sapply(seq_along(name.pol), function(x) {
-    quickText(name.pol[x], auto.text)
-  })
+  mylab <- sapply(seq_along(name.pol), function(x) quickText(name.pol[x], auto.text))
 
   if (is.null(group)) {
     mydata <- tidyr::pivot_longer(
@@ -430,377 +376,296 @@ timeVariation <- function(
     )
     mydata$variable <- factor(mydata$variable, levels = pollutant)
   } else {
-    # group needs to be 'variable' and pollutant 'value'
-    id <- which(names(mydata) == poll.orig)
-    names(mydata)[id] <- "value"
-    id <- which(names(mydata) == group)
-    names(mydata)[id] <- "variable"
-
-    mydata$variable <- factor(mydata$variable) # drop unused factor levels
+    names(mydata)[names(mydata) == poll.orig] <- "value"
+    names(mydata)[names(mydata) == group]     <- "variable"
+    mydata$variable <- factor(mydata$variable)
     the.names <- levels(mydata[["variable"]])
     if (difference) {
-      the.names <- c(
-        the.names,
-        paste(
-          levels(mydata$variable)[2],
-          "-",
-          levels(mydata$variable)[1]
-        )
-      )
+      the.names <- c(the.names, paste(the.names[2], "-", the.names[1]))
     }
     mylab <- sapply(the.names, function(x) quickText(x, auto.text))
   }
 
-  npol <- length(levels(mydata$variable)) # number of pollutants
+  npol        <- length(levels(mydata$variable))
+  if (difference) npol <- 3
+  key.columns <- key.columns %||% npol
+  myColors    <- openColours(cols, npol)
+  names(myColors) <- levels(mydata$variable)[seq_len(npol)]
+  names(mylab)    <- names(myColors)
 
+  # poles for difference calculation (lazily evaluated if difference=FALSE)
+  poll1 <- poll2 <- NULL
   if (difference) {
-    npol <- 3 # 3 pollutants if difference considered
-    if (is.null(group)) {
-      poll1 <- pollutant[1]
-    }
-    poll2 <- pollutant[2]
-    if (!is.null(group)) {
-      poll1 <- levels(mydata$variable)[1]
-    }
+    poll1 <- if (is.null(group)) pollutant[1] else levels(mydata$variable)[1]
     poll2 <- levels(mydata$variable)[2]
   }
 
-  # number of columns for key
-  key.columns <- key.columns %||% npol
-
-  myColors <- openColours(cols, npol)
-
-  # for individual plot keys - useful if only one of the plots is extracted after printing
-  key_input <- key
-  if (isTRUE(key_input)) {
-    key <- list(
-      rectangles = list(col = myColors[1:npol], border = NA),
-      title = "",
-      text = list(lab = mylab),
-      space = "bottom",
-      columns = key.columns,
-      lines.title = 1
-    )
-
-    extra.args$main <- overall.main
-  } else if (isFALSE(key_input)) {
-    key <- NULL
-  }
-
-  # get the xvars and facets for each panel
-  panels_x <- list()
-  panels_facet <- list()
-  for (i in panels) {
-    if (grepl("\\.", i)) {
-      x <- strsplit(i, "\\.")[[1]]
-      panels_x <- append(panels_x, x[1])
-      panels_facet <- append(panels_facet, x[2])
-    } else {
-      panels_x <- append(panels_x, i)
-      panels_facet <- append(panels_facet, list(NULL))
-    }
-  }
-
-  # if xlab not given, use xvar
+  # parse panel specs: "hour.weekday" → xvar="hour", facet_var="weekday"
+  panel_specs  <- lapply(strsplit(panels, "\\."), function(parts) {
+    list(xvar = parts[1], facet = if (length(parts) > 1) parts[2] else NULL)
+  })
+  panels_x     <- lapply(panel_specs, `[[`, "xvar")
+  panels_facet <- lapply(panel_specs, `[[`, "facet")
   xlab <- xlab %||% panels_x
 
-  # need to retain a list of data, a list of plots, and a list of strips
-  data_out <- list()
-  plot_out <- list()
-  strips_out <- list()
-
-  # create panels iteratively
+  # build each panel
+  data_out <- plot_out <- vector("list", length(panels))
   for (i in seq_along(panels_x)) {
-    # prepare data
-    panel.data <-
-      prep_panel_data(
-        mydata,
-        vars = panels_x[[i]],
-        facet_vars = panels_facet[[i]],
-        conf.int,
-        difference,
-        normalise,
-        type,
-        pollutant,
-        poll1,
-        poll2,
-        B,
-        statistic,
-        start.day = start.day,
-        ...
-      )
-    data_out <- append(data_out, list(panel.data))
-
-    # get ylim for plot
-    extra.args <- update_extra_args_ylim(
-      data = panel.data$data,
-      extra.args,
-      ci,
-      ylim.list,
-      index = i,
-      ylimList
+    panel.data <- prep_panel_data(
+      mydata,
+      vars        = panels_x[[i]],
+      facet_vars  = panels_facet[[i]],
+      conf.int, difference, normalise, type,
+      pollutant, poll1, poll2, B, statistic,
+      start.day = start.day, ...
     )
+    data_out[[i]] <- panel.data
+    ylim_i        <- if (ylimList) ylim_input[[i]] else get_tv_ylim(panel.data$data, ci)
 
-    # strip for plot - needed if type used
-    strip <- create_tv_strip(
-      panel.data$data,
-      type = type,
-      auto.text = auto.text,
-      facet_var = panels_facet[[i]]
+    plot_out[[i]] <- create_tv_ggplot(
+      data      = panel.data$data,
+      xvar      = panels_x[[i]],
+      facet_var = panels_facet[[i]],
+      type      = type,
+      x_breaks  = panel.data$x_breaks,
+      x_labels  = panel.data$x_labels,
+      xlab      = quickText(xlab[[i]], auto.text),
+      ylab      = ylab,
+      myColors  = myColors,
+      mylab     = mylab,
+      panel.gap = panel.gap,
+      alpha     = alpha,
+      ci        = ci,
+      difference = difference,
+      ref.y     = ref.y,
+      ylim      = ylim_i,
+      group     = orig_group,
+      plot_type = if (panel.data$ordered) "l" else "p",
+      lwd       = lwd,
+      key.columns = key.columns,
+      fontsize  = extra.args$fontsize,
+      auto.text = auto.text
     )
-    strips_out <- append(strips_out, list(strip))
-
-    # create xyplot
-    # (for whatever reason, errors occur when this isn't a function)
-    quick_create_tv_xyplot <- function(
-      data,
-      xvar,
-      xlab,
-      strip
-    ) {
-      create_tv_xyplot(
-        data = data$data,
-        xvar = xvar,
-        type = type,
-        v_gridlines = data$x_breaks,
-        v_labels = data$x_labels,
-        xlab = quickText(xlab, auto.text = auto.text),
-        key = key,
-        strip = strip,
-        myColors = myColors,
-        panel.gap = panel.gap,
-        fun_panel_groups = create_tv_panel_groups(
-          data$data,
-          xvar[1],
-          difference,
-          myColors,
-          alpha,
-          ci,
-          ref.y,
-          group = group,
-          plot_type = ifelse(data$ordered, "l", "p")
-        ),
-        extra.args = extra.args
-      )
-    }
-
-    # create plot
-    thePlot <- quick_create_tv_xyplot(
-      data = panel.data,
-      xvar = c(panels_x[[i]], panels_facet[[i]]),
-      xlab = xlab[i],
-      strip
-    )
-    plot_out <- append(plot_out, list(thePlot))
   }
-
-  # name the outputs
   names(data_out) <- panels
   names(plot_out) <- panels
 
   # format output data for return
   format_tv_data_for_output <- function(data) {
     out_data <- data$data
-
-    # give the "type" column a nicer name
-    if (type != "default") {
-      names(out_data)[names(out_data) == "openair_type"] <- paste(
-        orig_type,
-        "type",
-        sep = "_"
-      )
+    if (!is.null(orig_type)) {
+      names(out_data)[names(out_data) == "openair_type"] <- paste(orig_type, "type", sep = "_")
     }
-
-    # reformat the variable column in a nicer way - as long as there's x_labels
-    # (i.e., ignore hour/week). Use full labels as sometimes you end up with
-    # repeated factor levels (e.g., for month)
     if (!is.null(data$x_labels)) {
-      out_data[data$var] <- factor(
+      out_data[[data$var]] <- factor(
         out_data[[data$var]],
         levels = data$x_breaks,
         labels = data$x_labels_full
       )
     }
-
     out_data
   }
 
-  # if only one panel, just let it fill the whole area
-  if (length(plot_out) == 1L) {
-    if (is.null(key_input) || isTRUE(key_input)) {
-      plot_out[[1]] <-
-        update(
-          plot_out[[1]],
-          key = list(
-            rectangles = list(col = myColors[1:npol], border = NA),
-            text = list(lab = mylab),
-            space = "bottom",
-            columns = key.columns,
-            title = "",
-            lines.title = 1
-          )
-        )
-    }
+  show_legend <- !isFALSE(key)
 
-    if (plot) {
-      if (!is.null(panels_facet[[1]]) && type != "default") {
-        plot(
-          useOuterStrips(
-            plot_out[[1]],
-            strip = strips_out[[1]]$strip,
-            strip.left = strips_out[[1]]$strip.left
-          )
-        )
-      } else {
-        plot(plot_out[[1]])
-      }
-    }
-
-    output <- list(
-      plot = append(plot_out, list(subsets = panels)),
-      data = append(
-        purrr::map(data_out, format_tv_data_for_output),
-        list(subsets = panels)
-      ),
-      call = match.call(),
-      main.plot = function(...) {
-        plot(plot_out[[1]], ...)
-      },
-      ind.plot = function(x, ...) {
-        plot(x, ...)
-      }
-    )
-    class(output) <- "openair"
-
-    invisible(output)
-  } else {
-    # this adjusts the space for the title to 2 lines (approx) if \n in title
-    if (length(grep("atop", overall.main) == 1)) {
-      y.upp <- 0.95
-      y.dwn <- 0.05
+  # assemble with patchwork
+  assemble_plots <- function() {
+    if (length(plot_out) == 1L) {
+      plt <- plot_out[[1]]
+      if (!show_legend) plt <- plt + ggplot2::theme(legend.position = "none")
     } else {
-      y.upp <- 0.975
-      y.dwn <- 0.025
-    }
-
-    main.plot <- function(...) {
-      if (is.null(key_input) || isTRUE(key_input)) {
-        if (type == "default") {
-          print(
-            update(
-              plot_out[[1]],
-              key = list(
-                rectangles = list(col = myColors[1:npol], border = NA),
-                text = list(lab = mylab),
-                space = "bottom",
-                columns = key.columns,
-                title = "",
-                lines.title = 1
-              )
-            ),
-            position = c(0, 0.5, 1, y.upp),
-            more = TRUE
-          )
-        } else {
-          print(
-            update(
-              useOuterStrips(
-                plot_out[[1]],
-                strip = strips_out[[1]]$strip,
-                strip.left = strips_out[[1]]$strip.left
-              ),
-              key = list(
-                rectangles = list(col = myColors[1:npol], border = NA),
-                text = list(lab = mylab),
-                space = "bottom",
-                columns = key.columns,
-                title = "",
-                lines.title = 1
-              )
-            ),
-            position = c(0, 0.5, 1, y.upp),
-            more = TRUE
-          )
-        }
+      bottom <- patchwork::wrap_plots(plot_out[-1], nrow = 1)
+      plt    <- (plot_out[[1]] / bottom) +
+        patchwork::plot_layout(guides = if (show_legend) "collect" else "keep")
+      if (show_legend) {
+        plt <- plt & ggplot2::theme(legend.position = "bottom")
       } else {
-        if (type == "default") {
-          print(
-            plot_out[[1]],
-            position = c(0, 0.5, 1, y.upp),
-            more = TRUE
-          )
-        } else {
-          print(
-            useOuterStrips(
-              plot_out[[1]],
-              strip = strips_out[[1]]$strip,
-              strip.left = strips_out[[1]]$strip.left
-            ),
-            position = c(0, 0.5, 1, y.upp),
-            more = TRUE
-          )
-        }
+        plt <- plt & ggplot2::theme(legend.position = "none")
       }
-
-      # iteratively plot lower panels
-      bounds <- seq(0, 1, length.out = length(panels))
-      for (i in seq_along(plot_out[-1])) {
-        if (!is.null(panels_facet[-1][[i]]) && type != "default") {
-          print(
-            useOuterStrips(
-              plot_out[-1][[i]],
-              strip = strips_out[-1][[i]]$strip,
-              strip.left = strips_out[-1][[i]]$strip.left
-            ),
-            position = c(bounds[i], y.dwn, bounds[i + 1], 0.53),
-            more = i != max(seq_along(plot_out[-1]))
-          )
-        } else {
-          print(
-            plot_out[-1][[i]],
-            position = c(bounds[i], y.dwn, bounds[i + 1], 0.53),
-            more = i != max(seq_along(plot_out[-1]))
-          )
-        }
-      }
-
-      # use grid to add an overall title
-      grid.text(overall.main, 0.5, y.upp, gp = gpar(fontsize = 14))
-      grid.text(overall.sub, 0.5, y.dwn, gp = gpar(fontsize = 12))
     }
+    if (nchar(main) > 0 || nchar(sub) > 0) {
+      plt <- plt + patchwork::plot_annotation(title = main, caption = sub)
+    }
+    plt
+  }
 
-    ind.plot <- function(x, ...) {
-      plot(
-        update(
-          x,
-          key = list(
-            rectangles = list(col = myColors[1:npol], border = NA),
-            text = list(lab = mylab),
-            space = "top",
-            columns = key.columns
-          )
-        ),
-        ...
+  main.plot <- function(...) print(assemble_plots())
+  ind.plot  <- function(x, ...) {
+    print(x + ggplot2::theme(legend.position = "bottom"))
+  }
+
+  if (plot) main.plot()
+
+  output <- list(
+    plot = append(plot_out, list(subsets = panels)),
+    data = append(
+      purrr::map(data_out, format_tv_data_for_output),
+      list(subsets = panels)
+    ),
+    call      = match.call(),
+    main.plot = main.plot,
+    ind.plot  = ind.plot
+  )
+  class(output) <- "openair"
+  invisible(output)
+}
+
+# build a single timeVariation panel as a ggplot2 object
+create_tv_ggplot <- function(
+  data,
+  xvar,
+  facet_var,
+  type,
+  x_breaks,
+  x_labels,
+  xlab,
+  ylab,
+  myColors,
+  mylab,
+  panel.gap,
+  alpha,
+  ci,
+  difference,
+  ref.y,
+  ylim,
+  group,
+  plot_type,
+  lwd,
+  key.columns,
+  fontsize,
+  auto.text
+) {
+  # override plot_type for special group/xvar combos where lines don't make sense
+  if (!is.null(group)) {
+    if (
+      (xvar == "month"   && group == "season")  ||
+      (xvar == "weekday" && group == "weekend") ||
+      (xvar == "hour"    && group == "daylight")
+    ) {
+      plot_type <- "p"
+    }
+  }
+
+  ci_levels <- sort(unique(data$ci))
+  data_main <- dplyr::filter(data, .data$ci == ci_levels[1])
+
+  plt <- ggplot2::ggplot(
+    data_main,
+    ggplot2::aes(
+      x     = .data[[xvar]],
+      y     = Mean,
+      color = variable,
+      fill  = variable,
+      group = variable
+    )
+  )
+
+  # horizontal reference line for difference plots
+  if (difference) {
+    plt <- plt + ggplot2::geom_hline(
+      yintercept = 0, linetype = "dashed", linewidth = 0.5,
+      color = "grey40"
+    )
+  }
+
+  # CI ribbons: outer (wider) first, then inner on top
+  if (ci) {
+    if (length(ci_levels) == 2L) {
+      plt <- plt + ggplot2::geom_ribbon(
+        data = dplyr::filter(data, .data$ci == ci_levels[2]),
+        ggplot2::aes(ymin = Lower, ymax = Upper),
+        alpha = alpha / 2, color = NA, show.legend = FALSE
       )
     }
-
-    if (plot) {
-      main.plot()
-    }
-    output <- list(
-      plot = append(plot_out, list(subsets = panels)),
-      data = append(
-        purrr::map(data_out, format_tv_data_for_output),
-        list(subsets = panels)
-      ),
-      call = match.call(),
-      main.plot = main.plot,
-      ind.plot = ind.plot
+    plt <- plt + ggplot2::geom_ribbon(
+      ggplot2::aes(ymin = Lower, ymax = Upper),
+      alpha = alpha, color = NA, show.legend = FALSE
     )
-    class(output) <- "openair"
-
-    invisible(output)
   }
+
+  # main line or points
+  if (plot_type == "l") {
+    plt <- plt + ggplot2::geom_line(linewidth = lwd / 4, na.rm = TRUE)
+  } else {
+    plt <- plt + ggplot2::geom_point(size = lwd, na.rm = TRUE)
+  }
+
+  # user-defined reference lines
+  plt <- plt + gg_ref_y(ref.y)
+
+  # x-axis: add a small expansion for categorical variables, none for continuous
+  xlim_add <- if (xvar %in% c("hour", "week")) 0 else 0.5
+  plt <- plt + ggplot2::scale_x_continuous(
+    breaks = x_breaks,
+    labels = x_labels %||% x_breaks,
+    limits = c(min(x_breaks) - xlim_add, max(x_breaks) + xlim_add),
+    expand = ggplot2::expansion(0)
+  )
+
+  if (!is.null(ylim)) {
+    plt <- plt + ggplot2::coord_cartesian(ylim = ylim)
+  }
+
+  plt <- plt +
+    ggplot2::scale_color_manual(values = myColors, labels = mylab, name = NULL) +
+    ggplot2::scale_fill_manual(values  = myColors, labels = mylab, name = NULL) +
+    ggplot2::guides(
+      color = ggplot2::guide_legend(
+        ncol = key.columns,
+        override.aes = list(fill = NA, linewidth = lwd / 4 * 2)
+      ),
+      fill = "none"
+    )
+
+  # faceting: inner split (e.g. weekday) and/or outer type conditioning
+  if (!is.null(facet_var) && type != "default") {
+    plt <- plt + ggplot2::facet_grid(
+      rows      = ggplot2::vars(.data[[type]]),
+      cols      = ggplot2::vars(.data[[facet_var]]),
+      labeller  = labeller_openair(auto_text = auto.text)
+    )
+  } else if (!is.null(facet_var)) {
+    plt <- plt + ggplot2::facet_wrap(
+      ggplot2::vars(.data[[facet_var]]),
+      nrow     = 1,
+      labeller = labeller_openair(auto_text = auto.text)
+    )
+  } else if (type != "default") {
+    plt <- plt + ggplot2::facet_wrap(
+      ggplot2::vars(.data[[type]]),
+      labeller = labeller_openair(auto_text = auto.text)
+    )
+  }
+
+  plt <- plt +
+    theme_openair("bottom") +
+    ggplot2::labs(x = xlab, y = ylab) +
+    ggplot2::theme(
+      panel.spacing     = ggplot2::unit(panel.gap, "lines"),
+      panel.grid.minor  = ggplot2::element_blank()
+    )
+
+  if (!is.null(fontsize)) {
+    plt <- plt + ggplot2::theme(text = ggplot2::element_text(size = fontsize))
+  }
+
+  plt
+}
+
+# calculate y limits from CI data
+get_tv_ylim <- function(data, ci) {
+  if (all(is.na(data[, c("Lower", "Upper")]))) {
+    return(NULL)
+  }
+  lims <- if (ci) {
+    range(c(data$Lower, data$Upper), na.rm = TRUE)
+  } else {
+    r <- range(data$Mean, na.rm = TRUE)
+    if (diff(r) == 0) return(NULL)
+    r
+  }
+  inc  <- 0.04 * abs(lims[2] - lims[1])
+  c(lims[1] - inc, lims[2] + inc)
 }
 
 # validate timevar inputs
@@ -824,7 +689,6 @@ validate_tv_inputs <- function(
     )
   }
 
-  # validate inputs
   if (!is.null(group) && length(pollutant) > 1) {
     cli::cli_abort(
       "Can only have one {.arg pollutant} and one {.arg group}, or several {.arg pollutant}s and no {.arg group}."
@@ -837,24 +701,18 @@ validate_tv_inputs <- function(
     )
   }
 
-  if (!is.null(group)) {
-    if (group %in% pollutant) {
-      cli::cli_abort(
-        "{.arg group} cannot be in {.arg pollutant}. Problem variable: {group[group %in% pollutant]}."
-      )
-    }
+  if (!is.null(group) && group %in% pollutant) {
+    cli::cli_abort(
+      "{.arg group} cannot be in {.arg pollutant}. Problem variable: {group[group %in% pollutant]}."
+    )
   }
 
-  # if differences between two pollutants are calculated
   if (difference) {
-    if (is.null(group)) {
-      if (length(pollutant) != 2) {
-        cli::cli_abort(
-          "Need to specify two {.arg pollutant}s to calculate their difference."
-        )
-      }
+    if (is.null(group) && length(pollutant) != 2) {
+      cli::cli_abort(
+        "Need to specify two {.arg pollutant}s to calculate their difference."
+      )
     }
-
     if (!is.null(group)) {
       test <- cutData(mydata, type = group)
       if (length(unique(na.omit(test[[group]]))) != 2) {
@@ -865,23 +723,41 @@ validate_tv_inputs <- function(
     }
   }
 
-  # statistic check
   rlang::arg_match(statistic, c("mean", "median"))
 
   if (!length(unique(conf.int)) %in% c(1L, 2L)) {
     cli::cli_abort("{.arg conf.int} can only be of length 1 or 2.")
   }
 
-  # check length of xlab
-  if (!is.null(xlab)) {
-    if (length(xlab) != length(panels)) {
-      cli::cli_abort(
-        "Length of {.arg xlab} must be equal to length of {.arg panels}."
-      )
-    }
+  if (!is.null(xlab) && length(xlab) != length(panels)) {
+    cli::cli_abort(
+      "Length of {.arg xlab} must be equal to length of {.arg panels}."
+    )
   }
 }
 
+# sub heading stat info
+create_tv_sub_text <- function(statistic, conf.int) {
+  if (statistic == "mean") {
+    return(paste0("mean and ", 100 * conf.int[1], "% confidence interval in mean"))
+  }
+
+  if (length(conf.int) == 1L) {
+    paste0(
+      "median and ",
+      100 * (1 - conf.int[1]), "/", 100 * conf.int[1],
+      "th quantiles"
+    )
+  } else {
+    paste0(
+      "median, ",
+      100 * (1 - conf.int[1]), "/", 100 * conf.int[1],
+      " and ",
+      100 * (1 - conf.int[2]), "/", 100 * conf.int[2],
+      "th quantiles"
+    )
+  }
+}
 
 # calculate difference and normalise
 prep_panel_data <- function(
@@ -900,431 +776,91 @@ prep_panel_data <- function(
   start.day,
   ...
 ) {
-  # mainly use "outside", but for vars treated as numeric (e.g., hour) we need
-  # "none" to retain correct factor labels
-  drop <- "outside"
-  if (vars %in% c("hour", "week")) {
-    drop <- "none"
-  }
+  # "outside" drops values outside the factor range; "none" retains all
+  drop <- if (vars %in% c("hour", "week")) "none" else "outside"
 
-  # cut data for the variables
-  mydata <-
-    cutData(
-      mydata,
-      type = c(vars, facet_vars),
-      start.day = start.day,
-      is.axis = TRUE,
-      drop = drop,
-      ...
-    ) |>
+  mydata <- cutData(
+    mydata,
+    type      = c(vars, facet_vars),
+    start.day = start.day,
+    is.axis   = TRUE,
+    drop      = drop,
+    ...
+  ) |>
     dplyr::arrange(.data[[vars]])
 
-  # retain the labels for the plot; some need a bit of customisation
-  label.len <- 100L
-  if (vars == "weekday") {
-    label.len <- 3L
-  }
-  if (vars == "month") {
-    label.len <- 1L
-  }
+  # abbreviated labels for axis display
+  label.len <- switch(vars, weekday = 3L, month = 1L, 100L)
   x_labels_full <- levels(mydata[[vars]])
-  x_labels <- substr(x_labels_full, 1, label.len)
+  x_labels      <- substr(x_labels_full, 1, label.len)
+  x_breaks      <- seq_along(x_labels)
+  ordered       <- is.ordered(mydata[[vars]])
 
-  # breaks - mostly just an ID for the labels, but can be overwritten
-  x_breaks <- seq_along(x_labels)
+  # convert factor to numeric index for plotting
+  mydata <- dplyr::mutate(
+    mydata,
+    dplyr::across(dplyr::all_of(vars), \(x) as.numeric(as.factor(x)))
+  )
 
-  # retain whether variable is ordered - used for line vs point
-  ordered <- is.ordered(mydata[[vars]])
-
-  # set the x variable to be numeric for plotting
-  mydata <-
-    dplyr::mutate(
-      mydata,
-      # set all as numeric
-      dplyr::across(dplyr::all_of(vars), \(x) {
-        as.numeric(as.factor(x))
-      })
-    )
-
-  # special case for hour - starts at 00 so needs to bump down one
+  # hour and week: 0-based; custom breaks
   if (vars == "hour") {
     mydata$hour <- mydata$hour - 1L
-    x_labels <- NULL
-    if (dplyr::n_distinct(mydata$hour) == 24) {
-      x_breaks <- c(0, 6, 12, 18, 23)
+    x_labels    <- NULL
+    x_breaks <- if (dplyr::n_distinct(mydata$hour) == 24) {
+      c(0, 6, 12, 18, 23)
     } else {
-      x_breaks <- unique(as.integer(pretty(as.numeric(mydata$hour))))
-      x_breaks <- x_breaks[
-        x_breaks > min(mydata$hour) & x_breaks < max(mydata$hour)
-      ]
-      x_breaks <- sort(unique(c(range(mydata$hour, na.rm = TRUE), x_breaks)))
+      hrs <- sort(unique(c(range(mydata$hour, na.rm = TRUE),
+                           as.integer(pretty(mydata$hour)))))
+      hrs[hrs >= min(mydata$hour) & hrs <= max(mydata$hour)]
     }
   }
-
-  # same situation for week
   if (vars == "week") {
     mydata$week <- mydata$week - 1L
-    x_labels <- NULL
-    x_breaks <- unique(as.integer(pretty(as.numeric(mydata$week))))
-    x_breaks <- x_breaks[
-      x_breaks > min(mydata$week) & x_breaks < max(mydata$week)
-    ]
-    x_breaks <- sort(unique(c(range(mydata$week, na.rm = TRUE), x_breaks)))
+    x_labels    <- NULL
+    x_breaks <- sort(unique(c(range(mydata$week, na.rm = TRUE),
+                              as.integer(pretty(mydata$week)))))
+    x_breaks <- x_breaks[x_breaks >= min(mydata$week) & x_breaks <= max(mydata$week)]
   }
 
-  # combine plotting & facet variables now
   vars <- c(vars, facet_vars)
 
-  # calculate diffs
-  if (difference) {
-    data <- errorDiff(
-      mydata,
-      vars = vars,
-      type = type,
-      poll1 = poll1,
-      poll2 = poll2,
-      B = B,
-      conf.int = conf.int
-    )
+  data <- if (difference) {
+    errorDiff(mydata, vars = vars, type = type, poll1 = poll1, poll2 = poll2,
+              B = B, conf.int = conf.int)
   } else {
-    data <- purrr::map(
-      .x = conf.int,
-      .f = function(x) {
-        calculate_tv_summary_values(
-          x,
-          mydata,
-          vars = vars,
-          pollutant,
-          type,
-          B = B,
-          statistic = statistic
-        )
-      }
-    ) |>
+    purrr::map(conf.int, \(x) {
+      calculate_tv_summary_values(x, mydata, vars = vars, pollutant, type,
+                                  B = B, statistic = statistic)
+    }) |>
       dplyr::bind_rows() |>
       dplyr::tibble()
   }
 
-  # if normalise selected, normalise the data
   if (normalise) {
     data <- mapType(data, type = "variable", fun = function(x) {
-      Mean <- mean(x$Mean, na.rm = TRUE)
-      x$Mean <- x$Mean / Mean
+      Mean    <- mean(x$Mean, na.rm = TRUE)
+      x$Mean  <- x$Mean  / Mean
       x$Lower <- x$Lower / Mean
       x$Upper <- x$Upper / Mean
       x
     })
   }
 
-  # missing Lower ci, set to mean
-  ids <- which(is.na(data$Lower))
-  data$Lower[ids] <- data$Mean[ids]
+  # replace missing CI bounds with the mean
+  data$Lower[is.na(data$Lower)] <- data$Mean[is.na(data$Lower)]
+  data$Upper[is.na(data$Upper)] <- data$Mean[is.na(data$Upper)]
 
-  # missing Upper ci, set to mean
-  ids <- which(is.na(data$Upper))
-  data$Upper[ids] <- data$Mean[ids]
-
-  # return data
   list(
-    data = data,
-    x_labels = x_labels,
+    data          = data,
+    x_labels      = x_labels,
     x_labels_full = x_labels_full,
-    x_breaks = x_breaks,
-    ordered = ordered,
-    var = vars[1]
+    x_breaks      = x_breaks,
+    ordered       = ordered,
+    var           = vars[1]
   )
 }
 
-# sub heading stat info
-create_tv_sub_text <- function(statistic, conf.int) {
-  if (statistic == "mean") {
-    sub.text <- paste(
-      "mean and ",
-      100 * conf.int[1],
-      "% confidence interval in mean",
-      sep = ""
-    )
-  }
-
-  if (statistic == "median") {
-    if (length(conf.int) == 1L) {
-      sub.text <- paste(
-        "median and ",
-        100 * (1 - conf.int[1]),
-        "/",
-        100 * conf.int[1],
-        "th quantiles",
-        sep = ""
-      )
-    } else {
-      sub.text <- paste(
-        "median, ",
-        100 * (1 - conf.int[1]),
-        "/",
-        100 * conf.int[1],
-        " and ",
-        100 * (1 - conf.int[2]),
-        "/",
-        100 * conf.int[2],
-        "th quantiles",
-        sep = ""
-      )
-    }
-  }
-
-  sub.text
-}
-
-# create strip for a tv panel
-create_tv_strip <- function(data, type, auto.text, facet_var = NULL) {
-  # Base strip for faceted plots
-  strip <- if (!is.null(facet_var)) {
-    strip.custom(par.strip.text = list(cex = 0.8))
-  } else {
-    FALSE
-  }
-
-  # Handle default type
-  if (type == "default") {
-    return(list(
-      strip = strip,
-      strip.left = FALSE,
-      layout = if (!is.null(facet_var)) {
-        c(dplyr::n_distinct(data[[facet_var]]), 1)
-      } else {
-        NULL
-      }
-    ))
-  }
-
-  # Create custom strip with quickText labels
-  type_strip <- strip.custom(
-    factor.levels = sapply(
-      levels(factor(data[[type]])),
-      function(x) quickText(x, auto.text)
-    )
-  )
-
-  # Position strip based on faceting
-  if (!is.null(facet_var)) {
-    list(
-      strip = strip,
-      strip.left = type_strip,
-      layout = NULL
-    )
-  } else {
-    list(
-      strip = type_strip,
-      strip.left = FALSE,
-      layout = NULL
-    )
-  }
-}
-
-# create formula for a tv panel
-create_tv_formula <- function(xvar, type) {
-  if (length(xvar) == 1L) {
-    temp <- paste(type, collapse = "+")
-    myform <- formula(paste("Mean ~", xvar, "|", temp))
-  }
-
-  if (length(xvar) == 2L) {
-    xvar <- paste(xvar, collapse = "|")
-    temp <- paste(type, collapse = "+")
-    if (type == "default") {
-      myform <- formula(paste("Mean ~", xvar))
-    } else {
-      myform <- formula(paste("Mean ~", xvar, "*", temp, sep = ""))
-    }
-    myform
-  }
-
-  myform
-}
-
-# create the panel.groups function for panel.superpose
-create_tv_panel_groups <- function(
-  data,
-  xvar,
-  difference,
-  myColors,
-  alpha,
-  ci,
-  ref.y,
-  group = NULL,
-  plot_type = "l"
-) {
-  function(
-    x,
-    y,
-    col.line,
-    type,
-    group.number,
-    subscripts,
-    ...
-  ) {
-    if (difference) {
-      panel.abline(h = 0, lty = 5)
-    }
-
-    # if lots of data, use polygons
-    if (length(unique(x)) < 15) {
-      ci_fun <- make_rectangles
-    } else {
-      ci_fun <- make_polygons
-    }
-
-    pltType <- plot_type
-
-    # a line won't work for a single point
-    if (length(subscripts) == 1) {
-      pltType <- "p"
-      ci_fun <- make_rectangles
-    }
-
-    # special cases - don't want to split a line within a plot
-    if (!is.null(group)) {
-      if (xvar == "month" && group == "season") {
-        pltType <- "p"
-      }
-      if (xvar == "weekday" && group == "weekend") {
-        pltType <- "p"
-      }
-      if (xvar == "hour" && group == "daylight") {
-        pltType <- "p"
-        ci_fun <- make_rectangles
-      }
-    }
-
-    # plot once
-    id <- which(data$ci[subscripts] == data$ci[1])
-    panel.xyplot(
-      x[id],
-      y[id],
-      type = pltType,
-      col.line = myColors[group.number],
-      ...
-    )
-
-    if (ci) {
-      ci_fun(
-        data[subscripts, ],
-        x = xvar,
-        y = "Mean",
-        group.number,
-        myColors,
-        alpha
-      )
-    }
-
-    # reference line(s)
-    if (!is.null(ref.y)) {
-      do.call(panel.abline, ref.y)
-    }
-  }
-}
-
-# xy.args
-create_tv_xyplot <- function(
-  data,
-  xvar,
-  type,
-  v_gridlines,
-  v_labels = NULL,
-  xlab,
-  key,
-  strip,
-  myColors,
-  panel.gap,
-  fun_panel_groups,
-  extra.args
-) {
-  # don't want to add space for hourly plots
-  xlim_adj <- 0.5
-  if (xvar[1] %in% c("week", "hour")) {
-    xlim_adj <- 0
-  }
-
-  # xy args
-  xy.args <- list(
-    x = create_tv_formula(xvar, type),
-    data = data,
-    groups = data$variable,
-    as.table = TRUE,
-    xlab = xlab,
-    xlim = c(
-      min(v_gridlines, na.rm = TRUE) - xlim_adj,
-      max(v_gridlines, na.rm = TRUE) + xlim_adj
-    ),
-    strip = strip$strip,
-    strip.left = strip$strip.left,
-    between = list(x = panel.gap),
-    layout = strip$layout,
-    par.strip.text = list(cex = 0.8),
-    key = key,
-    scales = list(
-      x = list(at = v_gridlines, labels = v_labels %||% v_gridlines)
-    ),
-    par.settings = simpleTheme(col = myColors, pch = 16),
-    panel = function(x, y, ...) {
-      panel.grid(-1, 0)
-      panel.abline(v = v_gridlines, col = "grey85")
-      panel.superpose(
-        x,
-        y,
-        ...,
-        panel.groups = fun_panel_groups
-      )
-    }
-  )
-
-  # reset for extra.args
-  xy.args <- listUpdate(xy.args, extra.args)
-
-  # plot
-  do.call(xyplot, xy.args)
-}
-
-# set the ylim
-update_extra_args_ylim <- function(
-  data,
-  extra.args,
-  ci,
-  ylim.list,
-  index,
-  ylimList
-) {
-  # y range taking account of expanded uncertainties
-  get_tv_ylim <- function(x, ci) {
-    # if no CI information, just return
-    if (all(is.na(x[, c("Lower", "Upper")]))) {
-      return(NULL)
-    }
-
-    if (ci) {
-      lims <- range(c(x$Lower, x$Upper), na.rm = TRUE)
-    } else {
-      lims <- range(c(x$Mean, x$Mean), na.rm = TRUE)
-      if (diff(lims) == 0) {
-        return(NULL)
-      }
-    }
-
-    inc <- 0.04 * abs(lims[2] - lims[1])
-    lims <- c(lims[1] - inc, lims[2] + inc)
-  }
-
-  # user supplied separate ylim
-  if (ylimList) {
-    extra.args$ylim <- ylim.list[[index]]
-  } else {
-    extra.args$ylim <- get_tv_ylim(data, ci)
-  }
-
-  extra.args
-}
-
-# process
+# process summary values
 calculate_tv_summary_values <- function(
   conf.int = conf.int,
   mydata,
@@ -1334,64 +870,28 @@ calculate_tv_summary_values <- function(
   B = B,
   statistic = statistic
 ) {
-  stat <- if (statistic == "mean") {
-    bootMean
-  } else {
-    calculate_median_quants
-  }
+  stat <- if (statistic == "mean") bootMean else calculate_median_quants
 
-  calc_summary_values <- function(
-    conf.int = conf.int,
-    mydata,
-    vars = vars,
-    FUN,
-    type = type,
-    B = B,
-    statistic = statistic
-  ) {
+  calc_summary_values <- function(conf.int, mydata, vars, FUN, type, B, statistic) {
     mydata |>
       dplyr::reframe(
-        value = list(FUN(
-          value,
-          B = B,
-          statistic = statistic,
-          conf.int = conf.int
-        )),
-        .by = dplyr::all_of(c("variable", vars, type))
+        value = list(FUN(value, B = B, statistic = statistic, conf.int = conf.int)),
+        .by   = dplyr::all_of(c("variable", vars, type))
       ) |>
       tidyr::unnest_wider(value)
   }
 
   results <- list()
-
-  # process non-wind direction components
   if (any(pollutant != "wd")) {
     results$data1 <- mydata |>
       dplyr::filter(.data$variable != "wd") |>
-      calc_summary_values(
-        vars,
-        stat,
-        type,
-        B = B,
-        statistic = statistic,
-        conf.int = conf.int
-      )
+      calc_summary_values(vars, stat, type, B = B, statistic = statistic, conf.int = conf.int)
   }
-
   if ("wd" %in% pollutant) {
-    if (length(pollutant) > 1) {
-      mydata <- subset(mydata, variable == "wd")
-    }
+    if (length(pollutant) > 1) mydata <- subset(mydata, variable == "wd")
     results$data2 <- mydata |>
       dplyr::filter(.data$variable == "wd") |>
-      calc_summary_values(
-        vars,
-        wd_smean_normal,
-        type,
-        B = B,
-        statistic = statistic,
-        conf.int = conf.int
-      )
+      calc_summary_values(vars, wd_smean_normal, type, B = B, statistic = statistic, conf.int = conf.int)
   }
 
   dplyr::bind_rows(results) |>
@@ -1399,34 +899,21 @@ calculate_tv_summary_values <- function(
 }
 
 wd_smean_normal <- function(wd, B = B, statistic, conf.int) {
-  # function to calculate mean and 95% CI of the mean for wd
-  u <- mean(sin(pi * wd / 180), na.rm = TRUE)
-  v <- mean(cos(pi * wd / 180), na.rm = TRUE)
+  u    <- mean(sin(pi * wd / 180), na.rm = TRUE)
+  v    <- mean(cos(pi * wd / 180), na.rm = TRUE)
   Mean <- as.vector(atan2(u, v) * 360 / 2 / pi)
-  ids <- which(Mean < 0) # ids where wd < 0
-  Mean[ids] <- Mean[ids] + 360
+  Mean[Mean < 0] <- Mean[Mean < 0] + 360
 
-  # to calculate SD and conf int, need to know how much the angle changes from one point
-  # to the next. Also cannot be more than 180 degrees. Example change from 350 to 10 is not
-  # 340 but 20.
-  wd.diff <- diff(wd)
-  ids <- which(wd.diff < 0)
-  wd.diff[ids] <- wd.diff[ids] + 360
-  ids <- which(wd.diff > 180)
-  wd.diff[ids] <- abs(wd.diff[ids] - 360)
+  wd.diff         <- diff(wd)
+  wd.diff[wd.diff < 0]   <- wd.diff[wd.diff < 0] + 360
+  wd.diff[wd.diff > 180] <- abs(wd.diff[wd.diff > 180] - 360)
 
-  if (statistic == "mean") {
-    intervals <- bootMean(wd.diff, B = B, conf.int)
+  intervals <- if (statistic == "mean") {
+    bootMean(wd.diff, B = B, conf.int)
   } else {
-    intervals <- calculate_median_quants(wd.diff, conf.int)
+    calculate_median_quants(wd.diff, conf.int)
   }
-  Lower <- intervals[2]
-  names(Lower) <- NULL
-
-  Upper <- intervals[3]
-  names(Upper) <- NULL
-  diff.wd <- (Upper - Lower) / 2
-
+  diff.wd <- (unname(intervals[3]) - unname(intervals[2])) / 2
   c(Mean = Mean, Lower = Mean - diff.wd, Upper = Mean + diff.wd)
 }
 
@@ -1441,137 +928,27 @@ errorDiff <- function(
   B = B,
   conf.int = conf.int
 ) {
-  # it could be dates duplicate e.g. run function over several sites
   if (anyDuplicated(mydata$date) > 0) {
     mydata$rowid <- seq_len(nrow(mydata))
   }
 
-  mydata <- tidyr::pivot_wider(
-    mydata,
-    names_from = "variable",
-    values_from = "value"
-  )
-
+  mydata <- tidyr::pivot_wider(mydata, names_from = "variable", values_from = "value")
   splits <- c(vars, type)
 
-  # warnings from dplyr seem harmless FIXME
-  res <-
-    mapType(
-      mydata,
-      type = splits,
-      fun = \(df) bootMeanDiff(df, x = poll1, y = poll2, B = B, na.rm = TRUE)
-    )
+  res <- mapType(
+    mydata,
+    type = splits,
+    fun  = \(df) bootMeanDiff(df, x = poll1, y = poll2, B = B, na.rm = TRUE)
+  )
 
-  # make sure we keep the order correct
   res$variable <- ordered(res$variable, levels = res$variable[1:3])
-  res$ci <- conf.int[1]
+  res$ci       <- conf.int[1]
   res
 }
 
-
 # function to calculate median and lower/upper quantiles
 calculate_median_quants <- function(x, conf.int = 0.95, na.rm = TRUE, ...) {
-  quant <- quantile(x, probs = c(0.5, (1 - conf.int), conf.int), na.rm = na.rm)
+  quant        <- quantile(x, probs = c(0.5, (1 - conf.int), conf.int), na.rm = na.rm)
   names(quant) <- c("Mean", "Lower", "Upper")
   quant
-}
-
-# Helper function for shared CI band logic
-make_ci_bands <- function(dat, x, y, group.number, myColors, alpha, draw_func) {
-  ci <- sort(unique(dat$ci))
-  len <- length(ci)
-
-  if (len == 1L) {
-    id1 <- which(dat$ci == ci[1])
-    fac <- 2
-  } else if (len == 2L) {
-    id1 <- which(dat$ci == ci[2])
-    id2 <- which(dat$ci == ci[1])
-    fac <- 1
-  }
-
-  # Draw first band
-  draw_func(
-    dat = dat,
-    x = x,
-    ids = id1,
-    group.number = group.number,
-    myColors = myColors,
-    alpha = fac * alpha / 2,
-    is_outer = (len == 2L)
-  )
-
-  # Draw second band if needed
-  if (len == 2L) {
-    draw_func(
-      dat = dat,
-      x = x,
-      ids = id2,
-      group.number = group.number,
-      myColors = myColors,
-      alpha = alpha,
-      is_outer = FALSE
-    )
-  }
-}
-
-# Make poly function
-make_polygons <- function(
-  dat,
-  x = "hour",
-  y = "Mean",
-  group.number,
-  myColors,
-  alpha
-) {
-  make_ci_bands(
-    dat,
-    x,
-    y,
-    group.number,
-    myColors,
-    alpha,
-    function(dat, x, ids, group.number, myColors, alpha, is_outer) {
-      poly.na(
-        dat[[x]][ids],
-        dat$Lower[ids],
-        dat[[x]][ids],
-        dat$Upper[ids],
-        group.number,
-        myColors,
-        alpha = alpha
-      )
-    }
-  )
-}
-
-# Make rect function
-make_rectangles <- function(
-  dat,
-  x = "weekday",
-  y = "Mean",
-  group.number,
-  myColors,
-  alpha
-) {
-  make_ci_bands(
-    dat,
-    x,
-    y,
-    group.number,
-    myColors,
-    alpha,
-    function(dat, x, ids, group.number, myColors, alpha, is_outer) {
-      width <- ifelse(is_outer, 0.15, 0.3)
-      panel.rect(
-        dat[[x]][ids] - width,
-        dat$Lower[ids],
-        dat[[x]][ids] + width,
-        dat$Upper[ids],
-        fill = myColors[group.number],
-        border = NA,
-        alpha = alpha
-      )
-    }
-  )
 }
