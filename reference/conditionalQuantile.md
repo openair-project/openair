@@ -15,12 +15,13 @@ conditionalQuantile(
   type = "default",
   bins = 31,
   min.bin = c(10, 20),
-  xlab = "predicted value",
-  ylab = "observed value",
-  col = brewer.pal(5, "YlOrRd"),
+  cols = "YlOrRd",
+  key = TRUE,
   key.columns = 2,
   key.position = "bottom",
+  strip.position = "top",
   auto.text = TRUE,
+  plot = TRUE,
   ...
 )
 ```
@@ -58,8 +59,8 @@ conditionalQuantile(
 
   Type can be up length two e.g. `type = c("season", "weekday")` will
   produce a 2x2 plot split by season and day of the week. Note, when two
-  types are provided the first forms the columns and the second the
-  rows.
+  types are provided the first forms the rows and the second the
+  columns.
 
 - bins:
 
@@ -71,18 +72,15 @@ conditionalQuantile(
   The minimum number of points required for the estimates of the 25/75th
   and 10/90th percentiles.
 
-- xlab:
+- cols:
 
-  label for the x-axis, by default “predicted value”.
+  Passed to
+  [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+  with `n = 3`.
 
-- ylab:
+- key:
 
-  label for the y-axis, by default “observed value”.
-
-- col:
-
-  Colours to be used for plotting the uncertainty bands and median line.
-  Must be of length 5 or more.
+  Should a key be shown? Defaults to `TRUE`.
 
 - key.columns:
 
@@ -90,8 +88,16 @@ conditionalQuantile(
 
 - key.position:
 
-  Location of the key e.g. “top”, “bottom”, “right”, “left”. See
-  `lattice` `xyplot` for more details.
+  Location of the key e.g. “top”, “bottom”, “right”, “left”.
+
+- strip.position:
+
+  Location where the facet 'strips' are located when using `type`. When
+  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
+  or `"top"`. When two `type`s are provided, this argument defines
+  whether the strips are "switched" and can take either `"x"`, `"y"`, or
+  `"both"`. For example, `"x"` will switch the 'top' strip locations to
+  the bottom of the plot.
 
 - auto.text:
 
@@ -99,15 +105,17 @@ conditionalQuantile(
   etc. will automatically try and format pollutant names and units
   properly e.g. by subscripting the \`2' in NO2.
 
+- plot:
+
+  Should a plot be produced? `FALSE` can be useful when analysing data
+  in other ways.
+
 - ...:
 
-  Other graphical parameters passed onto `cutData` and `lattice:xyplot`.
-  For example, `conditionalQuantile` passes the option
+  Other graphical parameters passed onto `cutData` and `ggplot2`. For
+  example, `conditionalQuantile` passes the option
   `hemisphere = "southern"` on to `cutData` to provide southern (rather
   than default northern) hemisphere handling of `type = "season"`.
-  Similarly, common axis and title labelling options (such as `xlab`,
-  `ylab`, `main`) are passed to `xyplot` via `quickText` to handle
-  routine formatting.
 
 ## Details
 
@@ -149,7 +157,7 @@ into `bins` according to values of the predictions. The median
 prediction line together with the 25/75th and 10/90th quantile values
 are plotted together with a line showing a “perfect” model. Also shown
 is a histogram of predicted values (shaded grey) and a histogram of
-observed values (shown as a blue line).
+observed values (shown as a blue outline).
 
 Far more insight can be gained into model performance through
 conditioning using `type`. For example, `type = "season"` will plot
@@ -182,28 +190,30 @@ Other model evaluation functions:
 
 David Carslaw
 
+Jack Davison
+
 ## Examples
 
 ``` r
-## make some dummy prediction data based on 'nox'
+# make some dummy prediction data based on 'nox'
 mydata$mod <- mydata$nox * 1.1 + mydata$nox * runif(1:nrow(mydata))
 
 # basic conditional quantile plot
-## A "perfect" model is shown by the blue line
-## predictions tend to be increasingly positively biased at high nox,
-## shown by departure of median line from the blue one.
-## The widening uncertainty bands with increasing NOx shows that
-## hourly predictions are worse for higher NOx concentrations.
-## Also, the red (median) line extends beyond the data (blue line),
-## which shows in this case some predictions are much higher than
-## the corresponding measurements. Note that the uncertainty bands
-## do not extend as far as the median line because there is insufficient
+# A "perfect" model is shown by the blue line
+# predictions tend to be increasingly positively biased at high nox,
+# shown by departure of median line from the blue one.
+# The widening uncertainty bands with increasing NOx shows that
+# hourly predictions are worse for higher NOx concentrations.
+# Also, the red (median) line extends beyond the data (blue line),
+# which shows in this case some predictions are much higher than
+# the corresponding measurements. Note that the uncertainty bands
+# do not extend as far as the median line because there is insufficient
 # to calculate them
 conditionalQuantile(mydata, obs = "nox", mod = "mod")
 
 
-## can split by season to show seasonal performance (not very
-## enlightening in this case - try some real data and it will be!)
+# can split by season to show seasonal performance (not very
+# enlightening in this case - try some real data and it will be!)
 
 if (FALSE) { # \dontrun{
 conditionalQuantile(mydata, obs = "nox", mod = "mod", type = "season")

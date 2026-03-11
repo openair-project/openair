@@ -100,19 +100,6 @@ conditionalEval(
   `statistic = "cluster"` if clusters have been calculated using
   `trajCluster`.
 
-- xlab:
-
-  label for the x-axis, by default “predicted value”.
-
-- ylab:
-
-  label for the y-axis, by default “observed value”.
-
-- col:
-
-  Colours to be used for plotting the uncertainty bands and median line.
-  Must be of length 5 or more.
-
 - col.var:
 
   Colours for the additional variables to be compared. See `openColours`

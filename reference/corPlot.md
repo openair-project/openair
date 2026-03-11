@@ -172,15 +172,21 @@ David Carslaw — but mostly based on code contained in Sarkar (2007)
 ``` r
 ## basic corrgram plot
 corPlot(mydata)
-
+#> Error in mutate(group_nest(group_by(mydata, across(type))), results = map(data,     prepare.cond)): ℹ In argument: `results = map(data, prepare.cond)`.
+#> Caused by error in `map()`:
+#> ! could not find function "map"
 ## plot by season ... and so on
 corPlot(mydata, type = "season")
-
+#> Error in mutate(group_nest(group_by(mydata, across(type))), results = map(data,     prepare.cond)): ℹ In argument: `results = map(data, prepare.cond)`.
+#> Caused by error in `map()`:
+#> ! could not find function "map"
 ## recover dendrogram when cluster = TRUE and plot it
 res <- corPlot(mydata)
-
+#> Error in mutate(group_nest(group_by(mydata, across(type))), results = map(data,     prepare.cond)): ℹ In argument: `results = map(data, prepare.cond)`.
+#> Caused by error in `map()`:
+#> ! could not find function "map"
 plot(res$clust)
-
+#> Error: object 'res' not found
 if (FALSE) { # \dontrun{
 ## a more interesting are hydrocarbon measurements
 hc <- importAURN(site = "my1", year = 2005, hc = TRUE)

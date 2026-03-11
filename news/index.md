@@ -14,45 +14,32 @@
 
 ### Breaking Changes
 
+- All plotting functions are now written in `ggplot2`. `lattice`
+  specific options and annotations will no longer work, but many can now
+  be achieved using
+  [`ggplot2::theme()`](https://ggplot2.tidyverse.org/reference/theme.html)
+  and
+  [`ggplot2::annotate()`](https://ggplot2.tidyverse.org/reference/annotate.html).
+
+- [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md),
+  [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md)
+  and
+  [`trajCluster()`](https://openair-project.github.io/openair/reference/trajCluster.md)
+  have had their three projection related arguments removed and replaced
+  with a single `crs` argument, which defaults to lat/lng (`4326`).
+
+- As the above three functions no longer call
+  [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md),
+  [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
+  no longer has the `map` argument.
+
 - `linearRelation()` and `calcFno2()` have been removed from `openair`
   due to using outdated methodology and assumptions.
 
-- The following functions are now written in `ggplot2`:
-
-  - [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
-
-  - [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md)
-
-  - [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md)
-
-  - [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md)
-
-  - [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md)
-
-  - [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md)
-
-  - [`trajCluster()`](https://openair-project.github.io/openair/reference/trajCluster.md)
-
-  This is the beginning of a move away from `lattice` to a more modern
-  plotting engine. For most users there will be no real change, but some
-  arguments passed to `...` may no longer be supported. Any
-  `lattice`-specific annotations also will not work, but equivalent
-  `ggplot2` methods should be available.
-
-  There are some important changes to be aware of:
-
-  - [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md),
-    [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md)
-    and
-    [`trajCluster()`](https://openair-project.github.io/openair/reference/trajCluster.md)
-    have had their three projection related arguments removed and
-    replaced with a single `crs` argument, which defaults to lat/lng
-    (`4326`).
-
-  - As the above three functions no longer call
-    [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md),
-    [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
-    no longer has the `map` argument.
+- Argument names have been standardised throughout `openair`. For
+  example, instances of `col` have been replaced with `cols`. This may
+  cause some existing code to break, but will ensure each function
+  behaves more similarly going into the future.
 
 ### New Features
 

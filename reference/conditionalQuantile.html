@@ -71,12 +71,13 @@ understand forecast predictions and how well they agree with observations.</p>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  bins <span class="op">=</span> <span class="fl">31</span>,</span>
 <span>  min.bin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">20</span><span class="op">)</span>,</span>
-<span>  xlab <span class="op">=</span> <span class="st">"predicted value"</span>,</span>
-<span>  ylab <span class="op">=</span> <span class="st">"observed value"</span>,</span>
-<span>  col <span class="op">=</span> <span class="fu">brewer.pal</span><span class="op">(</span><span class="fl">5</span>, <span class="st">"YlOrRd"</span><span class="op">)</span>,</span>
+<span>  cols <span class="op">=</span> <span class="st">"YlOrRd"</span>,</span>
+<span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  key.columns <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
+<span>  strip.position <span class="op">=</span> <span class="st">"top"</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -113,7 +114,7 @@ directly. This offers great flexibility for understanding the variation of
 different variables and how they depend on one another.</p>
 <p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will
 produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.</p></dd>
+types are provided the first forms the rows and the second the columns.</p></dd>
 
 
 <dt id="arg-bins">bins<a class="anchor" aria-label="anchor" href="#arg-bins"></a></dt>
@@ -126,17 +127,12 @@ levels.</p></dd>
 25/75th and 10/90th percentiles.</p></dd>
 
 
-<dt id="arg-xlab">xlab<a class="anchor" aria-label="anchor" href="#arg-xlab"></a></dt>
-<dd><p>label for the x-axis, by default “predicted value”.</p></dd>
+<dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
+<dd><p>Passed to <code><a href="openColours.html">openColours()</a></code> with <code>n = 3</code>.</p></dd>
 
 
-<dt id="arg-ylab">ylab<a class="anchor" aria-label="anchor" href="#arg-ylab"></a></dt>
-<dd><p>label for the y-axis, by default “observed value”.</p></dd>
-
-
-<dt id="arg-col">col<a class="anchor" aria-label="anchor" href="#arg-col"></a></dt>
-<dd><p>Colours to be used for plotting the uncertainty bands and median
-line. Must be of length 5 or more.</p></dd>
+<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
+<dd><p>Should a key be shown? Defaults to <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-key-columns">key.columns<a class="anchor" aria-label="anchor" href="#arg-key-columns"></a></dt>
@@ -145,8 +141,16 @@ line. Must be of length 5 or more.</p></dd>
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
 <dd><p>Location of the key e.g. “top”, “bottom”,
-“right”, “left”. See <code>lattice</code> <code>xyplot</code> for more
-details.</p></dd>
+“right”, “left”.</p></dd>
+
+
+<dt id="arg-strip-position">strip.position<a class="anchor" aria-label="anchor" href="#arg-strip-position"></a></dt>
+<dd><p>Location where the facet 'strips' are located when
+using <code>type</code>. When one <code>type</code> is provided, can be one of <code>"left"</code>,
+<code>"right"</code>, <code>"bottom"</code> or <code>"top"</code>. When two <code>type</code>s are provided, this
+argument defines whether the strips are "switched" and can take either
+<code>"x"</code>, <code>"y"</code>, or <code>"both"</code>. For example, <code>"x"</code> will switch the 'top' strip
+locations to the bottom of the plot.</p></dd>
 
 
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
@@ -155,13 +159,16 @@ titles and axis labels etc. will automatically try and format pollutant
 names and units properly e.g.  by subscripting the `2' in NO2.</p></dd>
 
 
+<dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
+<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
+data in other ways.</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Other graphical parameters passed onto <code>cutData</code> and
-<code>lattice:xyplot</code>. For example, <code>conditionalQuantile</code> passes the
-option <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide
-southern (rather than default northern) hemisphere handling of <code>type = "season"</code>. Similarly, common axis and title labelling options (such as
-<code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed to <code>xyplot</code> via
-<code>quickText</code> to handle routine formatting.</p></dd>
+<code>ggplot2</code>. For example, <code>conditionalQuantile</code> passes the option
+<code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern
+(rather than default northern) hemisphere handling of <code>type = "season"</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -200,7 +207,7 @@ according to values of the predictions. The median prediction line together
 with the 25/75th and 10/90th quantile values are plotted together with a line
 showing a “perfect” model. Also shown is a histogram of predicted
 values (shaded grey) and a histogram of observed values (shown as a blue
-line).</p>
+outline).</p>
 <p>Far more insight can be gained into model performance through conditioning
 using <code>type</code>. For example, <code>type = "season"</code> will plot conditional
 quantiles by each season. <code>type</code> can also be a factor or character field
@@ -227,29 +234,30 @@ forecast verification.</p>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>David Carslaw</p>
+<p>Jack Davison</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## make some dummy prediction data based on 'nox'</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># make some dummy prediction data based on 'nox'</span></span></span>
 <span class="r-in"><span><span class="va">mydata</span><span class="op">$</span><span class="va">mod</span> <span class="op">&lt;-</span> <span class="va">mydata</span><span class="op">$</span><span class="va">nox</span> <span class="op">*</span> <span class="fl">1.1</span> <span class="op">+</span> <span class="va">mydata</span><span class="op">$</span><span class="va">nox</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">mydata</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># basic conditional quantile plot</span></span></span>
-<span class="r-in"><span><span class="co">## A "perfect" model is shown by the blue line</span></span></span>
-<span class="r-in"><span><span class="co">## predictions tend to be increasingly positively biased at high nox,</span></span></span>
-<span class="r-in"><span><span class="co">## shown by departure of median line from the blue one.</span></span></span>
-<span class="r-in"><span><span class="co">## The widening uncertainty bands with increasing NOx shows that</span></span></span>
-<span class="r-in"><span><span class="co">## hourly predictions are worse for higher NOx concentrations.</span></span></span>
-<span class="r-in"><span><span class="co">## Also, the red (median) line extends beyond the data (blue line),</span></span></span>
-<span class="r-in"><span><span class="co">## which shows in this case some predictions are much higher than</span></span></span>
-<span class="r-in"><span><span class="co">## the corresponding measurements. Note that the uncertainty bands</span></span></span>
-<span class="r-in"><span><span class="co">## do not extend as far as the median line because there is insufficient</span></span></span>
+<span class="r-in"><span><span class="co"># A "perfect" model is shown by the blue line</span></span></span>
+<span class="r-in"><span><span class="co"># predictions tend to be increasingly positively biased at high nox,</span></span></span>
+<span class="r-in"><span><span class="co"># shown by departure of median line from the blue one.</span></span></span>
+<span class="r-in"><span><span class="co"># The widening uncertainty bands with increasing NOx shows that</span></span></span>
+<span class="r-in"><span><span class="co"># hourly predictions are worse for higher NOx concentrations.</span></span></span>
+<span class="r-in"><span><span class="co"># Also, the red (median) line extends beyond the data (blue line),</span></span></span>
+<span class="r-in"><span><span class="co"># which shows in this case some predictions are much higher than</span></span></span>
+<span class="r-in"><span><span class="co"># the corresponding measurements. Note that the uncertainty bands</span></span></span>
+<span class="r-in"><span><span class="co"># do not extend as far as the median line because there is insufficient</span></span></span>
 <span class="r-in"><span><span class="co"># to calculate them</span></span></span>
 <span class="r-in"><span><span class="fu">conditionalQuantile</span><span class="op">(</span><span class="va">mydata</span>, obs <span class="op">=</span> <span class="st">"nox"</span>, mod <span class="op">=</span> <span class="st">"mod"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="conditionalQuantile-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co">## can split by season to show seasonal performance (not very</span></span></span>
-<span class="r-in"><span><span class="co">## enlightening in this case - try some real data and it will be!)</span></span></span>
+<span class="r-in"><span><span class="co"># can split by season to show seasonal performance (not very</span></span></span>
+<span class="r-in"><span><span class="co"># enlightening in this case - try some real data and it will be!)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="fu">conditionalQuantile</span><span class="op">(</span><span class="va">mydata</span>, obs <span class="op">=</span> <span class="st">"nox"</span>, mod <span class="op">=</span> <span class="st">"mod"</span>, type <span class="op">=</span> <span class="st">"season"</span><span class="op">)</span></span></span>

@@ -61,21 +61,11 @@
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-development-version">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
-<ul><li><p><code>linearRelation()</code> and <code>calcFno2()</code> have been removed from <code>openair</code> due to using outdated methodology and assumptions.</p></li>
-<li>
-<p>The following functions are now written in <code>ggplot2</code>:</p>
-<ul><li><p><code><a href="../reference/trendLevel.html">trendLevel()</a></code></p></li>
-<li><p><code><a href="../reference/calendarPlot.html">calendarPlot()</a></code></p></li>
-<li><p><code><a href="../reference/TheilSen.html">TheilSen()</a></code></p></li>
-<li><p><code><a href="../reference/timeProp.html">timeProp()</a></code></p></li>
-<li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code></p></li>
-<li><p><code><a href="../reference/trajLevel.html">trajLevel()</a></code></p></li>
-<li><p><code><a href="../reference/trajCluster.html">trajCluster()</a></code></p></li>
-</ul><p>This is the beginning of a move away from <code>lattice</code> to a more modern plotting engine. For most users there will be no real change, but some arguments passed to <code>...</code> may no longer be supported. Any <code>lattice</code>-specific annotations also will not work, but equivalent <code>ggplot2</code> methods should be available.</p>
-<p>There are some important changes to be aware of:</p>
-<ul><li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code>, <code><a href="../reference/trajLevel.html">trajLevel()</a></code> and <code><a href="../reference/trajCluster.html">trajCluster()</a></code> have had their three projection related arguments removed and replaced with a single <code>crs</code> argument, which defaults to lat/lng (<code>4326</code>).</p></li>
+<ul><li><p>All plotting functions are now written in <code>ggplot2</code>. <code>lattice</code> specific options and annotations will no longer work, but many can now be achieved using <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/annotate.html" class="external-link">ggplot2::annotate()</a></code>.</p></li>
+<li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code>, <code><a href="../reference/trajLevel.html">trajLevel()</a></code> and <code><a href="../reference/trajCluster.html">trajCluster()</a></code> have had their three projection related arguments removed and replaced with a single <code>crs</code> argument, which defaults to lat/lng (<code>4326</code>).</p></li>
 <li><p>As the above three functions no longer call <code><a href="../reference/scatterPlot.html">scatterPlot()</a></code>, <code><a href="../reference/scatterPlot.html">scatterPlot()</a></code> no longer has the <code>map</code> argument.</p></li>
-</ul></li>
+<li><p><code>linearRelation()</code> and <code>calcFno2()</code> have been removed from <code>openair</code> due to using outdated methodology and assumptions.</p></li>
+<li><p>Argument names have been standardised throughout <code>openair</code>. For example, instances of <code>col</code> have been replaced with <code>cols</code>. This may cause some existing code to break, but will ensure each function behaves more similarly going into the future.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
