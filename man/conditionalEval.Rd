@@ -68,13 +68,6 @@ underestimate concentrations and that these periods mostly occur in winter.
 \code{statistic} can also be another variable in the data frame --- see
 \code{cutData} for more information. A special case is \code{statistic = "cluster"} if clusters have been calculated using \code{trajCluster}.}
 
-\item{xlab}{label for the x-axis, by default \dQuote{predicted value}.}
-
-\item{ylab}{label for the y-axis, by default \dQuote{observed value}.}
-
-\item{col}{Colours to be used for plotting the uncertainty bands and median
-line. Must be of length 5 or more.}
-
 \item{col.var}{Colours for the additional variables to be compared. See
 \code{openColours} for more details.}
 

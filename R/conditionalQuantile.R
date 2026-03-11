@@ -52,8 +52,11 @@
 #'
 #' @param mydata A data frame containing the field `obs` and `mod`
 #'   representing observed and modelled values.
+#'
 #' @param obs The name of the observations in `mydata`.
+#'
 #' @param mod The name of the predictions (modelled values) in `mydata`.
+#'
 #' @param type `type` determines how the data are split i.e. conditioned,
 #'   and then plotted. The default is will produce a single plot using the
 #'   entire data. Type can be one of the built-in types as detailed in
@@ -71,29 +74,50 @@
 #'   Type can be up length two e.g. `type = c("season", "weekday")` will
 #'   produce a 2x2 plot split by season and day of the week. Note, when two
 #'   types are provided the first forms the rows and the second the columns.
+#'
 #' @param bins Number of bins to be used in calculating the different quantile
 #'   levels.
+#'
 #' @param min.bin The minimum number of points required for the estimates of the
 #'   25/75th and 10/90th percentiles.
-#' @param xlab label for the x-axis, by default \dQuote{predicted value}.
-#' @param ylab label for the y-axis, by default \dQuote{observed value}.
-#' @param col Colours to be used for plotting the uncertainty bands and median
-#'   line. Must be of length 5 or more.
+#'
+#' @param cols Passed to `openColours()` with `n = 3`.
+#'
 #' @param key.columns Number of columns to be used in the key.
+#'
 #' @param key.position Location of the key e.g. \dQuote{top}, \dQuote{bottom},
 #'   \dQuote{right}, \dQuote{left}.
+#'
+#' @param key Should a key be shown? Defaults to `TRUE`.
+#'
 #' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
 #'   titles and axis labels etc. will automatically try and format pollutant
 #'   names and units properly e.g.  by subscripting the `2' in NO2.
+#'
+#' @param strip.position Location where the facet 'strips' are located when
+#'   using `type`. When one `type` is provided, can be one of `"left"`,
+#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
+#'   argument defines whether the strips are "switched" and can take either
+#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
+#'   locations to the bottom of the plot.
+#'
+#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
+#'   data in other ways.
+#'
 #' @param \dots Other graphical parameters passed onto `cutData` and
 #'   `ggplot2`. For example, `conditionalQuantile` passes the option
 #'   `hemisphere = "southern"` on to `cutData` to provide southern
 #'   (rather than default northern) hemisphere handling of `type = "season"`.
+#'
 #' @export
+#'
 #' @author David Carslaw
+#' @author Jack Davison
+#'
 #' @family model evaluation functions
 #' @seealso The `verification` package for comprehensive functions for
 #'   forecast verification.
+#'
 #' @references
 #'
 #' Murphy, A. H., B.G. Brown and Y. Chen. (1989) Diagnostic Verification of
@@ -103,24 +127,24 @@
 #' Wilks, D. S., 2005. Statistical Methods in the Atmospheric Sciences, Volume
 #' 91, Second Edition (International Geophysics), 2nd Edition. Academic Press.
 #' @examples
-#' ## make some dummy prediction data based on 'nox'
+#' # make some dummy prediction data based on 'nox'
 #' mydata$mod <- mydata$nox * 1.1 + mydata$nox * runif(1:nrow(mydata))
 #'
 #' # basic conditional quantile plot
-#' ## A "perfect" model is shown by the blue line
-#' ## predictions tend to be increasingly positively biased at high nox,
-#' ## shown by departure of median line from the blue one.
-#' ## The widening uncertainty bands with increasing NOx shows that
-#' ## hourly predictions are worse for higher NOx concentrations.
-#' ## Also, the red (median) line extends beyond the data (blue line),
-#' ## which shows in this case some predictions are much higher than
-#' ## the corresponding measurements. Note that the uncertainty bands
-#' ## do not extend as far as the median line because there is insufficient
+#' # A "perfect" model is shown by the blue line
+#' # predictions tend to be increasingly positively biased at high nox,
+#' # shown by departure of median line from the blue one.
+#' # The widening uncertainty bands with increasing NOx shows that
+#' # hourly predictions are worse for higher NOx concentrations.
+#' # Also, the red (median) line extends beyond the data (blue line),
+#' # which shows in this case some predictions are much higher than
+#' # the corresponding measurements. Note that the uncertainty bands
+#' # do not extend as far as the median line because there is insufficient
 #' # to calculate them
 #' conditionalQuantile(mydata, obs = "nox", mod = "mod")
 #'
-#' ## can split by season to show seasonal performance (not very
-#' ## enlightening in this case - try some real data and it will be!)
+#' # can split by season to show seasonal performance (not very
+#' # enlightening in this case - try some real data and it will be!)
 #'
 #' \dontrun{
 #' conditionalQuantile(mydata, obs = "nox", mod = "mod", type = "season")
@@ -132,14 +156,19 @@ conditionalQuantile <- function(
   type = "default",
   bins = 31,
   min.bin = c(10, 20),
-  xlab = "predicted value",
-  ylab = "observed value",
-  col = RColorBrewer::brewer.pal(5, "YlOrRd"),
+  cols = "YlOrRd",
+  key = TRUE,
   key.columns = 2,
   key.position = "bottom",
+  strip.position = "top",
   auto.text = TRUE,
+  plot = TRUE,
   ...
 ) {
+  if (rlang::is_logical(key) && !key) {
+    key.position <- "none"
+  }
+
   if (length(type) > 2) {
     cli::cli_abort("Only two types can be used with this function")
   }
@@ -161,19 +190,20 @@ conditionalQuantile <- function(
   bin_width <- diff(bins_breaks)[1]
   labs <- bins_breaks[-length(bins_breaks)] + 0.5 * bin_width
 
-  if (length(col) == 1 && col == "greyscale") {
+  if (length(cols) == 1 && cols == "greyscale") {
     ideal.col <- "black"
     col.1 <- grDevices::grey(0.75)
     col.2 <- grDevices::grey(0.5)
     col.5 <- grDevices::grey(0.25)
   } else {
+    cols <- openair::openColours(cols, n = 3L)
     ideal.col <- "#0080ff"
-    col.1 <- col[1]
-    col.2 <- col[2]
-    col.5 <- col[5]
+    col.1 <- cols[1]
+    col.2 <- cols[2]
+    col.5 <- cols[3]
   }
 
-  ## per-group statistics -------------------------------------------------
+  # per-group statistics
   compute_cq <- function(df) {
     obs_vec <- df[[obs]]
     pred_vec <- df[[mod]]
@@ -255,20 +285,30 @@ conditionalQuantile <- function(
     tidyr::unnest(d) |>
     dplyr::select(-cq)
 
-  ## histogram scaling for secondary y-axis --------------------------------
-  y_lo <- lo
-  y_hi <- hi * 1.05
-  max_count <- max(hist_data$count)
-  scale_factor <- (y_hi - y_lo) * 0.35 / max_count
+  # histogram scaling for secondary y-axis
+  hist_range <-
+    hist_data |>
+    dplyr::filter(hist_type == "predicted") |>
+    dplyr::pull("count") |>
+    (\(x) c(0, x))() |>
+    range()
+
+  # scale factor to convert histogram counts to the same scale as the
+  # observed/predicted values
+  hist_data$count_normalised <- scales::rescale(
+    hist_data$count,
+    from = hist_range,
+    to = c(min(obs_range_data$obs_min), max(obs_range_data$obs_max))
+  )
 
   hist_pred <- hist_data[hist_data$hist_type == "predicted", ]
   hist_obs <- hist_data[hist_data$hist_type == "observed", ]
 
-  ## legend mappings -------------------------------------------------------
-  fill_vals <- c("25/75th percentile" = col.1, "10/90th percentile" = col.2)
-  color_vals <- c("median" = col.5, "perfect model" = ideal.col)
+  key_guide <- ggplot2::guide_legend(
+    ncol = key.columns
+  )
 
-  ## build plot ------------------------------------------------------------
+  # build plot
   plt <- ggplot2::ggplot(results, ggplot2::aes(x = x)) +
     # histograms (drawn first, behind ribbons)
     ggplot2::geom_rect(
@@ -276,8 +316,8 @@ conditionalQuantile <- function(
       ggplot2::aes(
         xmin = x - bin_width / 2,
         xmax = x + bin_width / 2,
-        ymin = y_lo,
-        ymax = y_lo + count * scale_factor
+        ymin = 0,
+        ymax = .data$count_normalised
       ),
       fill = "black",
       alpha = 0.15,
@@ -289,8 +329,8 @@ conditionalQuantile <- function(
       ggplot2::aes(
         xmin = x - bin_width / 2,
         xmax = x + bin_width / 2,
-        ymin = y_lo,
-        ymax = y_lo + count * scale_factor
+        ymin = 0,
+        ymax = .data$count_normalised
       ),
       fill = NA,
       color = ideal.col,
@@ -299,12 +339,19 @@ conditionalQuantile <- function(
     ) +
     # quantile ribbons
     ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = q3, ymax = q4, fill = "10/90th percentile"),
-      na.rm = TRUE
+      ggplot2::aes(ymin = q3, ymax = q1, fill = "10/90th percentile"),
+      na.rm = TRUE,
+      alpha = 2 / 3
+    ) +
+    ggplot2::geom_ribbon(
+      ggplot2::aes(ymin = q2, ymax = q4, fill = "10/90th percentile"),
+      na.rm = TRUE,
+      alpha = 2 / 3
     ) +
     ggplot2::geom_ribbon(
       ggplot2::aes(ymin = q1, ymax = q2, fill = "25/75th percentile"),
-      na.rm = TRUE
+      na.rm = TRUE,
+      alpha = 2 / 3
     ) +
     # median and perfect-model lines
     ggplot2::geom_line(
@@ -326,41 +373,66 @@ conditionalQuantile <- function(
     ) +
     # scales
     ggplot2::scale_fill_manual(
-      name = NULL,
-      values = fill_vals,
-      guide = ggplot2::guide_legend(
-        ncol = key.columns,
-        override.aes = list(linetype = 0, linewidth = 5)
-      )
+      values = c(
+        "25/75th percentile" = col.1,
+        "10/90th percentile" = col.2,
+        "median" = col.5,
+        "perfect model" = ideal.col
+      ),
+      breaks = c(
+        "25/75th percentile",
+        "10/90th percentile",
+        "median",
+        "perfect model"
+      ),
+      aesthetics = c("colour", "fill")
     ) +
-    ggplot2::scale_color_manual(
-      name = NULL,
-      values = color_vals,
-      guide = ggplot2::guide_legend(ncol = key.columns)
-    ) +
-    ggplot2::scale_x_continuous(
-      name = quickText(xlab, auto.text),
-      limits = c(y_lo, y_hi)
+    ggplot2::guides(
+      color = key_guide,
+      fill = key_guide
     ) +
     ggplot2::scale_y_continuous(
-      name = quickText(ylab, auto.text),
-      limits = c(y_lo, y_hi),
       sec.axis = ggplot2::sec_axis(
-        transform = ~ (. - y_lo) / scale_factor,
-        name = "sample size"
+        transform = \(x) {
+          scales::rescale(
+            x,
+            from = c(min(obs_range_data$obs_min), max(obs_range_data$obs_max)),
+            to = hist_range
+          )
+        },
+        name = "sample size for histograms"
       )
     ) +
-    ggplot2::coord_fixed() +
-    get_facet(type, extra.args, "fixed", auto.text) +
+    ggplot2::coord_cartesian(
+      ratio = 1,
+      xlim = c(min(obs_range_data$obs_min), max(obs_range_data$obs_max)),
+      ylim = c(min(obs_range_data$obs_min), max(obs_range_data$obs_max))
+    ) +
+    get_facet(
+      type,
+      extra.args,
+      "fixed",
+      auto.text,
+      strip.position = strip.position
+    ) +
     theme_openair(key.position) +
-    set_extra_fontsize(extra.args)
+    set_extra_fontsize(extra.args) +
+    ggplot2::labs(
+      color = NULL,
+      fill = NULL,
+      x = quickText(extra.args$xlab %||% "predicted value", auto.text),
+      y = quickText(extra.args$ylab %||% "observed value", auto.text)
+    )
 
   if ("main" %in% names(extra.args)) {
     plt <- plt + ggplot2::labs(title = quickText(extra.args$main, auto.text))
   }
 
-  output <- list(plot = plt, data = results, call = match.call())
+  if (plot) {
+    plot(plt)
+  }
+
+  output <- list(plot = plt, data = all_res, call = match.call())
   class(output) <- "openair"
-  print(plt)
   invisible(output)
 }
