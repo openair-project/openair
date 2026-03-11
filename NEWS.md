@@ -10,31 +10,15 @@
 
 ## Breaking Changes
 
+- All plotting functions are now written in `ggplot2`. `lattice` specific options and annotations will no longer work, but many can now be achieved using `ggplot2::theme()` and `ggplot2::annotate()`.
+  
+- `trajPlot()`, `trajLevel()` and `trajCluster()` have had their three projection related arguments removed and replaced with a single `crs` argument, which defaults to lat/lng (`4326`).
+
+- As the above three functions no longer call `scatterPlot()`, `scatterPlot()` no longer has the `map` argument.
+
 - `linearRelation()` and `calcFno2()` have been removed from `openair` due to using outdated methodology and assumptions.
 
-- The following functions are now written in `ggplot2`:
-
-  - `trendLevel()`
-  
-  - `calendarPlot()`
-  
-  - `TheilSen()`
-  
-  - `timeProp()`
-  
-  - `trajPlot()`
-  
-  - `trajLevel()`
-  
-  - `trajCluster()`
-
-  This is the beginning of a move away from `lattice` to a more modern plotting engine. For most users there will be no real change, but some arguments passed to `...` may no longer be supported. Any `lattice`-specific annotations also will not work, but equivalent `ggplot2` methods should be available.
-  
-  There are some important changes to be aware of:
-  
-  - `trajPlot()`, `trajLevel()` and `trajCluster()` have had their three projection related arguments removed and replaced with a single `crs` argument, which defaults to lat/lng (`4326`).
-
-  - As the above three functions no longer call `scatterPlot()`, `scatterPlot()` no longer has the `map` argument.
+- Argument names have been standardised throughout `openair`. For example, instances of `col` have been replaced with `cols`. This may cause some existing code to break, but will ensure each function behaves more similarly going into the future.
 
 ## New Features
 
