@@ -190,10 +190,6 @@ care. Also, the \code{polarFreq} function can be of use in such circumstances.}
     \item{\code{mis.col}}{When \code{min.bin} is > 1 it can be useful to show where data are
 removed on the plots. This is done by shading the missing data in
 \code{mis.col}. To not highlight missing data when \code{min.bin} > 1 choose \code{mis.col = "transparent"}.}
-    \item{\code{alpha}}{The alpha transparency to use for the plotting surface (a value
-between 0 and 1 with zero being fully transparent and 1 fully opaque).
-Setting a value below 1 can be useful when plotting surfaces on a map using
-the package \code{openairmaps}.}
     \item{\code{upper}}{This sets the upper limit wind speed to be used. Often there are
 only a relatively few data points at very high wind speeds and plotting all
 of them can reduce the useful information in the plot.}
@@ -286,7 +282,13 @@ after_data <- selectByDate(mydata, year = 2003)
 polarDiff(before_data, after_data, pollutant = "no2")
 
 # with some options
-polarDiff(before_data, after_data, pollutant = "no2", cols = "RdYlBu", limits = c(-20, 20))
+polarDiff(
+  before_data,
+  after_data,
+  pollutant = "no2",
+  cols = "RdYlBu",
+  limits = c(-20, 20)
+)
 }
 }
 \seealso{

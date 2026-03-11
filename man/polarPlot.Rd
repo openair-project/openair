@@ -37,7 +37,6 @@ polarPlot(
   kernel = "gaussian",
   formula.label = TRUE,
   tau = 0.5,
-  alpha = 1,
   plot = TRUE,
   ...
 )
@@ -301,19 +300,14 @@ printed when \code{statistic = "cpf"}.}
 \code{"quantile.slope"}. Default is \code{0.5} which is equal to the median and will
 be ignored if \code{"quantile.slope"} is not used.}
 
-\item{alpha}{The alpha transparency to use for the plotting surface (a value
-between 0 and 1 with zero being fully transparent and 1 fully opaque).
-Setting a value below 1 can be useful when plotting surfaces on a map using
-the package \code{openairmaps}.}
-
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}
 
-\item{...}{Other graphical parameters passed onto \code{lattice:levelplot} and
-\code{cutData}. For example, \code{polarPlot} passes the option \code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than default
-northern) hemisphere handling of \code{type = "season"}. Similarly, common axis
-and title labelling options (such as \code{xlab}, \code{ylab}, \code{main}) are passed to
-\code{levelplot} via \code{quickText} to handle routine formatting.}
+\item{...}{Other graphical parameters passed onto \code{cutData}. For example,
+\code{polarPlot} passes the option \code{hemisphere = "southern"} on to \code{cutData} to
+provide southern (rather than default northern) hemisphere handling of
+\code{type = "season"}. The \code{main} argument is passed to \code{ggplot2::labs()} for
+the plot title.}
 }
 \value{
 an \link[=openair-package]{openair} object. \code{data} contains four set
