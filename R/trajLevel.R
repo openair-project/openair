@@ -449,11 +449,11 @@ trajLevel <- function(
     # calculate sigma
     mydata <- mydata |>
       mutate(sigma = sigma * abs(hour.inc)) |>
-      drop_na({{ pollutant }})
+      tidyr::drop_na({{ pollutant }})
 
     # receptor grid
     # use trajectory data to determine grid size - don't go to extremes
-    r_grid <- expand_grid(
+    r_grid <- tidyr::expand_grid(
       lat = seq(
         round(quantile(mydata$lat, probs = 0.002)),
         round(quantile(mydata$lat, probs = 0.998)),

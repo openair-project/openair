@@ -616,7 +616,7 @@ polarPlot <-
       }
 
       ## use pollutants as conditioning variables
-      mydata <- gather(
+      mydata <- tidyr::gather(
         mydata,
         key = variable,
         value = value,

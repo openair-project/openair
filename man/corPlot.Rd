@@ -121,6 +121,7 @@ data in many flexible ways, although this may become difficult to visualise
 with too many panels.
 }
 \examples{
+\dontrun{
 ## basic corrgram plot
 corPlot(mydata)
 ## plot by season ... and so on
@@ -128,8 +129,7 @@ corPlot(mydata, type = "season")
 ## recover dendrogram when cluster = TRUE and plot it
 res <- corPlot(mydata)
 plot(res$clust)
-\dontrun{
-## a more interesting are hydrocarbon measurements
+#' ## a more interesting are hydrocarbon measurements
 hc <- importAURN(site = "my1", year = 2005, hc = TRUE)
 ## now it is possible to see the hydrocarbons that behave most
 ## similarly to one another

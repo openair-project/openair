@@ -320,7 +320,7 @@ summaryPlot <- function(
   ## means for trend line
 
   meanLine <- timeAverage(mydata, avg.time)
-  meanLine <- gather(meanLine, key = variable, value = value, -date)
+  meanLine <- tidyr::gather(meanLine, key = variable, value = value, -date)
 
   # ensure order of pollutants is correct
   meanLine <- mutate(
@@ -330,7 +330,7 @@ summaryPlot <- function(
 
   meanLine <- split(meanLine, meanLine$variable)
 
-  mydata <- gather(mydata, key = variable, value = value, -date)
+  mydata <- tidyr::gather(mydata, key = variable, value = value, -date)
 
   # ensure order of pollutants is correct
   mydata <- mutate(

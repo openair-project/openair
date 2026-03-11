@@ -210,9 +210,9 @@ conditionalEval <- function(
       df$pred.cut <- as.numeric(as.character(pred_cut))
 
       df |>
-        dplyr::group_by(pred.cut, .data[[statistic]]) |>
+        dplyr::group_by(.data[["pred.cut"]], .data[[statistic]]) |>
         dplyr::summarise(n = dplyr::n(), .groups = "drop") |>
-        dplyr::group_by(pred.cut) |>
+        dplyr::group_by(.data[["pred.cut"]]) |>
         dplyr::mutate(Freq = n / sum(n)) |>
         dplyr::ungroup() |>
         dplyr::select(-n)
@@ -229,7 +229,11 @@ conditionalEval <- function(
 
     right_plt <- ggplot2::ggplot(
       other_results,
-      ggplot2::aes(x = pred.cut, y = Freq, fill = .data[[statistic]])
+      ggplot2::aes(
+        x = .data[["pred.cut"]],
+        y = .data[["Freq"]],
+        fill = .data[[statistic]]
+      )
     ) +
       ggplot2::geom_col(width = bin_width, position = "stack", color = NA) +
       ggplot2::scale_fill_manual(
@@ -272,7 +276,7 @@ conditionalEval <- function(
       df$pred.cut <- as.numeric(as.character(pred_cut))
 
       df |>
-        dplyr::group_by(pred.cut) |>
+        dplyr::group_by(.data[["pred.cut"]]) |>
         dplyr::group_modify(\(x, ...) {
           if (nrow(x) <= 4) {
             return(data.frame(
@@ -321,7 +325,7 @@ conditionalEval <- function(
     # Replace infinite values with NA
     results <- dplyr::mutate(
       results,
-      dplyr::across(c(mean, lower, upper), \(x) {
+      dplyr::across(c("mean", "lower", "upper"), \(x) {
         replace(x, is.infinite(x), NA_real_)
       })
     )
@@ -375,22 +379,26 @@ conditionalEval <- function(
 
     right_plt <- ggplot2::ggplot(
       results,
-      ggplot2::aes(x = pred.cut, group = group)
+      ggplot2::aes(x = .data[["pred.cut"]], group = .data[["group"]])
     ) +
       ggplot2::geom_hline(
         data = ref_df,
-        ggplot2::aes(yintercept = h),
+        ggplot2::aes(yintercept = .data[["h"]]),
         linetype = 5,
         color = "grey50",
         inherit.aes = FALSE
       ) +
       ggplot2::geom_ribbon(
-        ggplot2::aes(ymin = lower, ymax = upper, fill = group),
+        ggplot2::aes(
+          ymin = .data[["lower"]],
+          ymax = .data[["upper"]],
+          fill = .data[["group"]]
+        ),
         alpha = 0.3,
         na.rm = TRUE
       ) +
       ggplot2::geom_line(
-        ggplot2::aes(y = mean, color = group),
+        ggplot2::aes(y = mean, color = .data[["group"]]),
         linewidth = 1,
         na.rm = TRUE
       ) +

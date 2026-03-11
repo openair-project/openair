@@ -278,7 +278,7 @@ polarAnnulus <-
     # if more than one pollutant, need to stack the data and set type = "variable"
     # this case is most relevent for model-measurement compasrions where data are in columns
     if (length(pollutant) > 1) {
-      mydata <- gather(
+      mydata <- tidyr::gather(
         mydata,
         key = variable,
         value = value,

@@ -90,6 +90,7 @@
 #'   Friendly, M. (2002). Corrgrams : Exploratory displays for correlation
 #'   matrices. American Statistician, 2002(4), 1-16. doi:10.1198/000313002533
 #' @examples
+#' \dontrun{
 #' ## basic corrgram plot
 #' corPlot(mydata)
 #' ## plot by season ... and so on
@@ -97,8 +98,7 @@
 #' ## recover dendrogram when cluster = TRUE and plot it
 #' res <- corPlot(mydata)
 #' plot(res$clust)
-#' \dontrun{
-#' ## a more interesting are hydrocarbon measurements
+#' #' ## a more interesting are hydrocarbon measurements
 #' hc <- importAURN(site = "my1", year = 2005, hc = TRUE)
 #' ## now it is possible to see the hydrocarbons that behave most
 #' ## similarly to one another
@@ -267,17 +267,17 @@ corPlot <- function(
   results.grid <- mydata |>
     group_by(across(type)) |>
     group_nest() |>
-    mutate(results = map(data, prepare.cond))
+    mutate(results = purrr::map(data, prepare.cond))
 
   # cluster model
   clust <- results.grid |>
-    mutate(clust = map(results, 4))
+    mutate(clust = purrr::map(results, 4))
   clust <- clust$clust[[1]]
 
   ## recover by-type order
 
   data.order <- results.grid |>
-    mutate(out = map(results, 3))
+    mutate(out = purrr::map(results, 3))
 
   data.order <- lapply(data.order$out, function(x) pollutants[x])
 
@@ -291,7 +291,7 @@ corPlot <- function(
   ## list of labels
 
   labels <- results.grid |>
-    mutate(out = map(results, 2))
+    mutate(out = purrr::map(results, 2))
 
   labels <- labels$out
 
@@ -299,9 +299,9 @@ corPlot <- function(
   vars <- c(type, "out")
 
   results.grid <- results.grid |>
-    mutate(out = map(results, 1)) |>
+    mutate(out = purrr::map(results, 1)) |>
     select(vars) |>
-    unnest(cols = c(out))
+    tidyr::unnest(cols = c(out))
 
   div.col <- function(x) openColours(cols, x)
 
@@ -348,7 +348,7 @@ corPlot <- function(
   if (dendrogram && type == "default" && cluster) {
     legend <- list(
       right = list(
-        fun = dendrogramGrob,
+        fun = latticeExtra::dendrogramGrob,
         args = list(
           x = as.dendrogram(clust),
           side = "right",

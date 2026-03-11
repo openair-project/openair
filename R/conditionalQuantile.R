@@ -268,27 +268,27 @@ conditionalQuantile <- function(
   all_res <- mydata |>
     dplyr::group_by(dplyr::across(dplyr::all_of(type))) |>
     dplyr::group_nest() |>
-    dplyr::mutate(cq = purrr::map(data, compute_cq), .keep = "unused")
+    dplyr::mutate(cq = purrr::map(.data$data, compute_cq), .keep = "unused")
 
   results <- all_res |>
-    dplyr::mutate(d = purrr::map(cq, "quant")) |>
-    tidyr::unnest(d) |>
-    dplyr::select(-cq)
+    dplyr::mutate(d = purrr::map(.data$cq, "quant")) |>
+    tidyr::unnest(cols = "d") |>
+    dplyr::select(-"cq")
 
   hist_data <- all_res |>
-    dplyr::mutate(d = purrr::map(cq, "hist")) |>
-    tidyr::unnest(d) |>
-    dplyr::select(-cq)
+    dplyr::mutate(d = purrr::map(.data$cq, "hist")) |>
+    tidyr::unnest(cols = "d") |>
+    dplyr::select(-"cq")
 
   obs_range_data <- all_res |>
-    dplyr::mutate(d = purrr::map(cq, "obs_range")) |>
-    tidyr::unnest(d) |>
-    dplyr::select(-cq)
+    dplyr::mutate(d = purrr::map(.data$cq, "obs_range")) |>
+    tidyr::unnest(cols = "d") |>
+    dplyr::select(-"cq")
 
   # histogram scaling for secondary y-axis
   hist_range <-
     hist_data |>
-    dplyr::filter(hist_type == "predicted") |>
+    dplyr::filter(.data$hist_type == "predicted") |>
     dplyr::pull("count") |>
     (\(x) c(0, x))() |>
     range()
@@ -309,13 +309,13 @@ conditionalQuantile <- function(
   )
 
   # build plot
-  plt <- ggplot2::ggplot(results, ggplot2::aes(x = x)) +
+  plt <- ggplot2::ggplot(results, ggplot2::aes(x = .data$x)) +
     # histograms (drawn first, behind ribbons)
     ggplot2::geom_rect(
       data = hist_pred,
       ggplot2::aes(
-        xmin = x - bin_width / 2,
-        xmax = x + bin_width / 2,
+        xmin = .data$x - bin_width / 2,
+        xmax = .data$x + bin_width / 2,
         ymin = 0,
         ymax = .data$count_normalised
       ),
@@ -327,8 +327,8 @@ conditionalQuantile <- function(
     ggplot2::geom_rect(
       data = hist_obs,
       ggplot2::aes(
-        xmin = x - bin_width / 2,
-        xmax = x + bin_width / 2,
+        xmin = .data$x - bin_width / 2,
+        xmax = .data$x + bin_width / 2,
         ymin = 0,
         ymax = .data$count_normalised
       ),
@@ -339,33 +339,45 @@ conditionalQuantile <- function(
     ) +
     # quantile ribbons
     ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = q3, ymax = q1, fill = "10/90th percentile"),
+      ggplot2::aes(
+        ymin = .data$q3,
+        ymax = .data$q1,
+        fill = "10/90th percentile"
+      ),
       na.rm = TRUE,
       alpha = 2 / 3
     ) +
     ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = q2, ymax = q4, fill = "10/90th percentile"),
+      ggplot2::aes(
+        ymin = .data$q2,
+        ymax = .data$q4,
+        fill = "10/90th percentile"
+      ),
       na.rm = TRUE,
       alpha = 2 / 3
     ) +
     ggplot2::geom_ribbon(
-      ggplot2::aes(ymin = q1, ymax = q2, fill = "25/75th percentile"),
+      ggplot2::aes(
+        ymin = .data$q1,
+        ymax = .data$q2,
+        fill = "25/75th percentile"
+      ),
       na.rm = TRUE,
       alpha = 2 / 3
     ) +
     # median and perfect-model lines
     ggplot2::geom_line(
-      ggplot2::aes(y = med, color = "median"),
+      ggplot2::aes(y = .data$med, color = "median"),
       linewidth = 1,
       na.rm = TRUE
     ) +
     ggplot2::geom_segment(
       data = obs_range_data,
       ggplot2::aes(
-        x = obs_min,
-        xend = obs_max,
-        y = obs_min,
-        yend = obs_max,
+        x = .data$obs_min,
+        xend = .data$obs_max,
+        y = .data$obs_min,
+        yend = .data$obs_max,
         color = "perfect model"
       ),
       linewidth = 1,

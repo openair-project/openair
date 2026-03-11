@@ -286,7 +286,7 @@ readSummaryData <-
 
     if (data_type == "annual") {
       thedata <- rename(thedata, date = year) |>
-        drop_na(date) |>
+        tidyr::drop_na(date) |>
         mutate(date = lubridate::ymd(paste0(date, "-01-01"), tz = "UTC"))
     }
 
@@ -299,14 +299,14 @@ readSummaryData <-
         select(thedata, contains("capture") | c(code, date, site)) |>
         select(!matches("uka_code"))
 
-      values <- pivot_longer(
+      values <- tidyr::pivot_longer(
         values,
         -c(date, code, site),
         values_to = "value",
         names_to = "species"
       )
 
-      capture <- pivot_longer(
+      capture <- tidyr::pivot_longer(
         capture,
         -c(date, code, site),
         values_to = "data_capture",

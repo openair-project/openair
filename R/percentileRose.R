@@ -224,7 +224,7 @@ percentileRose <- function(
     }
     ## use pollutants as conditioning variables
 
-    mydata <- gather(mydata, key = variable, value = value, pollutant)
+    mydata <- tidyr::gather(mydata, key = variable, value = value, pollutant)
     ## now set pollutant to "value"
     pollutant <- "value"
     if (type == "default") {
