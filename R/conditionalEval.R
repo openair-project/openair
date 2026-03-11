@@ -62,27 +62,35 @@
 #' `mod` by cluster number.
 #'
 #' @inheritParams conditionalQuantile
+#'
 #' @param var.obs Other variable observations for which statistics should be
 #'   calculated. Can be more than length one e.g. `var.obs = c("nox.obs",
 #'   "ws.obs")`.
+#'
 #' @param var.mod Other variable predictions for which statistics should be
 #'   calculated. Can be more than length one e.g. `var.mod = c("nox.mod",
 #'   "ws.mod")`.
+#'
 #' @param type `type` determines how the data are split i.e. conditioned,
 #'   and then plotted. Only one type can be used with this function. The
 #'   default produces a single plot using the entire data.
+#'
 #' @param statistic Statistic(s) to be plotted. Can be \dQuote{MB},
 #'   \dQuote{NMB}, \dQuote{r}, \dQuote{COE}, \dQuote{MGE}, \dQuote{NMGE},
 #'   \dQuote{RMSE} and \dQuote{FAC2}. `statistic` can also be a variable
 #'   name in the data frame or a date-based type (e.g. \dQuote{season}), in
 #'   which case the plot shows the proportions of that variable across the
 #'   prediction intervals. A special case is \dQuote{cluster}.
+#'
 #' @param col.var Colours for the additional variables. See `openColours`
 #'   for more details.
+#'
 #' @param var.names Variable names to be shown in the legend for `var.obs`
 #'   and `var.mod`.
-#' @param ... Other graphical parameters passed onto `conditionalQuantile`
-#'   and `cutData`.
+#'
+#' @param ... Other graphical parameters passed onto [conditionalQuantile()]
+#'   and [cutData()].
+#'
 #' @export
 #' @author David Carslaw
 #' @family model evaluation functions
@@ -100,12 +108,11 @@ conditionalEval <- function(
   type = "default",
   bins = 31,
   statistic = "MB",
-  xlab = "predicted value",
-  ylab = "statistic",
-  col = RColorBrewer::brewer.pal(5, "YlOrRd"),
+  cols = "YlOrRd",
   col.var = "Set1",
   var.names = NULL,
   auto.text = TRUE,
+  plot = TRUE,
   ...
 ) {
   the_stats <- c("MB", "NMB", "r", "COE", "MGE", "NMGE", "RMSE", "FAC2")
@@ -116,7 +123,7 @@ conditionalEval <- function(
 
   extra.args <- rlang::list2(...)
 
-  ## Determine mode: "other" (variable/date) or model-eval statistic ----------
+  # Determine mode: "other" (variable/date) or model-eval statistic
   other <- FALSE
 
   if (any(statistic %in% dateTypes)) {
@@ -165,7 +172,7 @@ conditionalEval <- function(
   lo <- min(mydata[, c(mod, obs)])
   hi <- max(mydata[, c(mod, obs)])
 
-  ## Left panel: conditional quantile plot (suppress auto-print) -------------
+  # Left panel: conditional quantile plot (suppress auto-print)
   cq_args <- c(
     list(
       mydata = mydata,
@@ -173,14 +180,12 @@ conditionalEval <- function(
       mod = mod,
       type = type,
       bins = bins,
-      col = col,
+      cols = cols,
       key.position = "bottom",
       key.columns = 1,
       auto.text = auto.text,
-      layout = c(1, NA),
       plot = FALSE
-    ),
-    extra.args[!names(extra.args) %in% "layout"]
+    )
   )
   cq_plt <- do.call(conditionalQuantile, cq_args)$plot
 
@@ -192,7 +197,7 @@ conditionalEval <- function(
   bin_width <- diff(bins_breaks)[1]
   labs <- bins_breaks[-length(bins_breaks)] + 0.5 * bin_width
 
-  ## ---- "other" mode: stacked bar chart of proportions --------------------
+  # "other" mode: stacked bar chart of proportions
   if (other) {
     compute_other <- function(df) {
       pred_cut <- cut(
@@ -229,21 +234,31 @@ conditionalEval <- function(
       ggplot2::geom_col(width = bin_width, position = "stack", color = NA) +
       ggplot2::scale_fill_manual(
         values = setNames(cols, stat_levels),
-        labels = lapply(stat_levels, quickText, auto.text),
-        name = quickText(statistic, auto.text)
+        labels = \(x) label_openair(x, auto_text = auto.text)
       ) +
+      ggplot2::coord_cartesian(expand = FALSE) +
       ggplot2::scale_x_continuous(
-        name = quickText(xlab, auto.text),
         limits = c(y_lo, y_hi)
       ) +
-      ggplot2::scale_y_continuous(name = "proportion", limits = c(0, 1)) +
+      ggplot2::scale_y_continuous(
+        limits = c(0, 1),
+        transform = scales::transform_reverse()
+      ) +
       get_facet(type, extra.args, "fixed", auto.text) +
-      theme_openair("bottom") +
-      set_extra_fontsize(extra.args)
+      theme_openair(key.position = "bottom") +
+      set_extra_fontsize(extra.args) +
+      ggplot2::guides(
+        fill = ggplot2::guide_legend(direction = "vertical")
+      ) +
+      ggplot2::labs(
+        fill = quickText(statistic, auto.text),
+        x = quickText(extra.args$xlab, auto.text),
+        y = quickText("proportion", auto.text)
+      )
 
     return_data <- other_results
   } else {
-    ## ---- stat mode: bootstrap CI lines ------------------------------------
+    # stat mode: bootstrap CI lines
     stat_list <- statistic[statistic %in% the_stats]
 
     compute_stat <- function(df, stat, v_obs, v_mod) {
@@ -351,7 +366,11 @@ conditionalEval <- function(
     } else if (multi_type) {
       get_facet(type, extra.args, "fixed", auto.text)
     } else {
-      NULL
+      ggplot2::facet_wrap(
+        ggplot2::vars(statistic),
+        scales = "free_y",
+        labeller = labeller_openair(auto_text = auto.text)
+      )
     }
 
     right_plt <- ggplot2::ggplot(
@@ -378,21 +397,24 @@ conditionalEval <- function(
       ggplot2::scale_color_manual(
         values = setNames(myColors, var.obs),
         labels = display_names,
-        name = quickText("variable", auto.text)
-      ) +
-      ggplot2::scale_fill_manual(
-        values = setNames(myColors, var.obs),
-        labels = display_names,
-        name = quickText("variable", auto.text)
+        aesthetics = c("colour", "fill")
       ) +
       ggplot2::scale_x_continuous(
-        name = quickText(xlab, auto.text),
         limits = c(y_lo, y_hi)
       ) +
-      ggplot2::scale_y_continuous(name = quickText(ylab, auto.text)) +
       right_facet +
       theme_openair("bottom") +
-      set_extra_fontsize(extra.args)
+      set_extra_fontsize(extra.args) +
+      ggplot2::labs(
+        x = quickText(extra.args$xlab, auto.text),
+        y = quickText(extra.args$ylab, auto.text),
+        color = quickText("variable", auto.text),
+        fill = quickText("variable", auto.text)
+      ) +
+      ggplot2::guides(
+        fill = ggplot2::guide_legend(direction = "vertical"),
+        color = ggplot2::guide_legend(direction = "vertical")
+      )
 
     return_data <- results
   }
@@ -403,31 +425,17 @@ conditionalEval <- function(
     right_plt <- right_plt + ggplot2::labs(title = title)
   }
 
-  ## Combine plots side by side using grid viewports ------------------------
-  grid::grid.newpage()
-  print(
+  thePlot <- patchwork::wrap_plots(
     cq_plt,
-    vp = grid::viewport(
-      x = 0,
-      y = 0.5,
-      width = 0.45,
-      height = 1,
-      just = c("left", "center")
-    )
-  )
-  print(
-    right_plt,
-    vp = grid::viewport(
-      x = 0.45,
-      y = 0.5,
-      width = 0.55,
-      height = 1,
-      just = c("left", "center")
-    )
+    right_plt
   )
 
+  if (plot) {
+    plot(thePlot)
+  }
+
   output <- list(
-    plot = list(cq_plt, right_plt),
+    plot = thePlot,
     data = return_data,
     call = match.call()
   )
