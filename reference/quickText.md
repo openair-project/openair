@@ -55,7 +55,7 @@ scatterPlot(
   x = "no2",
   y = "pm10"
 )
-#> Error in scatterPlot(mydata, x = "no2", y = "pm10"): object 'yscale.components.log10ticks' not found
+
 
 # using quickText in other plots
 plot(
