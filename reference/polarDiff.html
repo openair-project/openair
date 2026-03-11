@@ -277,12 +277,6 @@ care. Also, the <code>polarFreq</code> function can be of use in such circumstan
 removed on the plots. This is done by shading the missing data in
 <code>mis.col</code>. To not highlight missing data when <code>min.bin</code> &gt; 1 choose <code>mis.col = "transparent"</code>.</p></dd>
 
-    <dt><code>alpha</code></dt>
-<dd><p>The alpha transparency to use for the plotting surface (a value
-between 0 and 1 with zero being fully transparent and 1 fully opaque).
-Setting a value below 1 can be useful when plotting surfaces on a map using
-the package <code>openairmaps</code>.</p></dd>
-
     <dt><code>upper</code></dt>
 <dd><p>This sets the upper limit wind speed to be used. Often there are
 only a relatively few data points at very high wind speeds and plotting all
@@ -419,7 +413,13 @@ surface.</p>
 <span class="r-in"><span><span class="fu">polarDiff</span><span class="op">(</span><span class="va">before_data</span>, <span class="va">after_data</span>, pollutant <span class="op">=</span> <span class="st">"no2"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># with some options</span></span></span>
-<span class="r-in"><span><span class="fu">polarDiff</span><span class="op">(</span><span class="va">before_data</span>, <span class="va">after_data</span>, pollutant <span class="op">=</span> <span class="st">"no2"</span>, cols <span class="op">=</span> <span class="st">"RdYlBu"</span>, limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">polarDiff</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">before_data</span>,</span></span>
+<span class="r-in"><span>  <span class="va">after_data</span>,</span></span>
+<span class="r-in"><span>  pollutant <span class="op">=</span> <span class="st">"no2"</span>,</span></span>
+<span class="r-in"><span>  cols <span class="op">=</span> <span class="st">"RdYlBu"</span>,</span></span>
+<span class="r-in"><span>  limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

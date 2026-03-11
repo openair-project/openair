@@ -255,13 +255,6 @@ polarDiff(
       `mis.col`. To not highlight missing data when `min.bin` \> 1
       choose `mis.col = "transparent"`.
 
-  `alpha`
-
-  :   The alpha transparency to use for the plotting surface (a value
-      between 0 and 1 with zero being fully transparent and 1 fully
-      opaque). Setting a value below 1 can be useful when plotting
-      surfaces on a map using the package `openairmaps`.
-
   `upper`
 
   :   This sets the upper limit wind speed to be used. Often there are
@@ -418,6 +411,12 @@ after_data <- selectByDate(mydata, year = 2003)
 polarDiff(before_data, after_data, pollutant = "no2")
 
 # with some options
-polarDiff(before_data, after_data, pollutant = "no2", cols = "RdYlBu", limits = c(-20, 20))
+polarDiff(
+  before_data,
+  after_data,
+  pollutant = "no2",
+  cols = "RdYlBu",
+  limits = c(-20, 20)
+)
 } # }
 ```

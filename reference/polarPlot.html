@@ -103,7 +103,6 @@ concentrations are calculated for wind speed-direction ‘bins’ (e.g.
 <span>  kernel <span class="op">=</span> <span class="st">"gaussian"</span>,</span>
 <span>  formula.label <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  tau <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>  alpha <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -425,24 +424,17 @@ printed when <code>statistic = "cpf"</code>.</p></dd>
 be ignored if <code>"quantile.slope"</code> is not used.</p></dd>
 
 
-<dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
-<dd><p>The alpha transparency to use for the plotting surface (a value
-between 0 and 1 with zero being fully transparent and 1 fully opaque).
-Setting a value below 1 can be useful when plotting surfaces on a map using
-the package <code>openairmaps</code>.</p></dd>
-
-
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
 <dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
 data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other graphical parameters passed onto <code>lattice:levelplot</code> and
-<code>cutData</code>. For example, <code>polarPlot</code> passes the option <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern (rather than default
-northern) hemisphere handling of <code>type = "season"</code>. Similarly, common axis
-and title labelling options (such as <code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed to
-<code>levelplot</code> via <code>quickText</code> to handle routine formatting.</p></dd>
+<dd><p>Other graphical parameters passed onto <code>cutData</code>. For example,
+<code>polarPlot</code> passes the option <code>hemisphere = "southern"</code> on to <code>cutData</code> to
+provide southern (rather than default northern) hemisphere handling of
+<code>type = "season"</code>. The <code>main</code> argument is passed to <code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs()</a></code> for
+the plot title.</p></dd>
 
 </dl></div>
     <div class="section level2">

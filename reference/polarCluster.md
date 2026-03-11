@@ -287,13 +287,6 @@ polarCluster(
       `mis.col`. To not highlight missing data when `min.bin` \> 1
       choose `mis.col = "transparent"`.
 
-  `alpha`
-
-  :   The alpha transparency to use for the plotting surface (a value
-      between 0 and 1 with zero being fully transparent and 1 fully
-      opaque). Setting a value below 1 can be useful when plotting
-      surfaces on a map using the package `openairmaps`.
-
   `upper`
 
   :   This sets the upper limit wind speed to be used. Often there are
@@ -508,21 +501,21 @@ David Carslaw
 
 ``` r
 if (FALSE) { # \dontrun{
-## plot 2-8 clusters. Warning! This can take several minutes...
+# plot 2-8 clusters. Warning! This can take several minutes...
 polarCluster(mydata, pollutant = "nox", n.clusters = 2:8)
 
 # basic plot with 6 clusters
 results <- polarCluster(mydata, pollutant = "nox", n.clusters = 6)
 
-## get results, could read into a new data frame to make it easier to refer to
-## e.g. results <- results$data...
+# get results, could read into a new data frame to make it easier to refer to
+# e.g. results <- results$data...
 head(results$data)
 
-## how many points are there in each cluster?
+# how many points are there in each cluster?
 table(results$data$cluster)
 
-## plot clusters 3 and 4 as a timeVariation plot using SAME colours as in
-## cluster plot
+# plot clusters 3 and 4 as a timeVariation plot using SAME colours as in
+# cluster plot
 timeVariation(subset(results$data, cluster %in% c("3", "4")),
   pollutant = "nox",
   group = "cluster", col = openColours("Paired", 6)[c(3, 4)]

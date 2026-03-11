@@ -42,7 +42,6 @@ polarPlot(
   kernel = "gaussian",
   formula.label = TRUE,
   tau = 0.5,
-  alpha = 1,
   plot = TRUE,
   ...
 )
@@ -381,13 +380,6 @@ polarPlot(
   `"quantile.slope"`. Default is `0.5` which is equal to the median and
   will be ignored if `"quantile.slope"` is not used.
 
-- alpha:
-
-  The alpha transparency to use for the plotting surface (a value
-  between 0 and 1 with zero being fully transparent and 1 fully opaque).
-  Setting a value below 1 can be useful when plotting surfaces on a map
-  using the package `openairmaps`.
-
 - plot:
 
   Should a plot be produced? `FALSE` can be useful when analysing data
@@ -395,13 +387,13 @@ polarPlot(
 
 - ...:
 
-  Other graphical parameters passed onto `lattice:levelplot` and
-  `cutData`. For example, `polarPlot` passes the option
-  `hemisphere = "southern"` on to `cutData` to provide southern (rather
-  than default northern) hemisphere handling of `type = "season"`.
-  Similarly, common axis and title labelling options (such as `xlab`,
-  `ylab`, `main`) are passed to `levelplot` via `quickText` to handle
-  routine formatting.
+  Other graphical parameters passed onto `cutData`. For example,
+  `polarPlot` passes the option `hemisphere = "southern"` on to
+  `cutData` to provide southern (rather than default northern)
+  hemisphere handling of `type = "season"`. The `main` argument is
+  passed to
+  [`ggplot2::labs()`](https://ggplot2.tidyverse.org/reference/labs.html)
+  for the plot title.
 
 ## Value
 
