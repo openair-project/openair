@@ -99,13 +99,14 @@ get_facet <- function(
             ...
           )
       } else {
+        lay <- extra.args$layout
         fun <-
           ggplot2::facet_wrap(
             drop = drop,
             facets = ggplot2::vars(.data[[type]]),
             labeller = labeller_openair(auto_text = auto.text),
-            ncol = extra.args$layout[1],
-            nrow = extra.args$layout[2],
+            ncol = if (!is.null(lay) && !is.na(lay[1])) lay[1] else NULL,
+            nrow = if (!is.null(lay) && length(lay) > 1 && !is.na(lay[2])) lay[2] else NULL,
             scales = scales,
             strip.position = strip.position,
             ...
