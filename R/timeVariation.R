@@ -547,6 +547,21 @@ create_tv_ggplot <- function(
   }
 
   ci_levels <- sort(unique(data$ci))
+
+  # For line plots, add a segment ID that increments at each gap in x
+  # (i.e., when consecutive x values differ by more than 1 integer step).
+  # Using group = interaction(variable, .seg) in aes then causes geom_line
+  # and geom_ribbon to draw separate segments, creating visual breaks where
+  # data is missing rather than spanning across the gap.
+  if (plot_type == "l") {
+    seg_cols <- setdiff(names(data), c(xvar, "Mean", "Lower", "Upper"))
+    data <- data |>
+      dplyr::group_by(dplyr::across(dplyr::all_of(seg_cols))) |>
+      dplyr::arrange(.data[[xvar]], .by_group = TRUE) |>
+      dplyr::mutate(.seg = cumsum(c(FALSE, diff(.data[[xvar]]) > 1))) |>
+      dplyr::ungroup()
+  }
+
   data_main <- dplyr::filter(data, .data$ci == ci_levels[1])
 
   plt <- ggplot2::ggplot(
@@ -556,7 +571,9 @@ create_tv_ggplot <- function(
       y     = Mean,
       color = variable,
       fill  = variable,
-      group = variable
+      # use segment grouping for lines so gaps in x produce visual breaks;
+      # for point plots .seg is absent, so fall back to variable alone
+      group = if (plot_type == "l") interaction(variable, .data$.seg) else variable
     )
   )
 
@@ -585,7 +602,7 @@ create_tv_ggplot <- function(
 
   # main line or points
   if (plot_type == "l") {
-    plt <- plt + ggplot2::geom_line(linewidth = lwd / 4, na.rm = TRUE)
+    plt <- plt + ggplot2::geom_line(linewidth = lwd / 4)
   } else {
     plt <- plt + ggplot2::geom_point(size = lwd, na.rm = TRUE)
   }
