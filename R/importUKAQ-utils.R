@@ -391,7 +391,7 @@ add_meta <- function(source, columns, aq_data) {
 #' @noRd
 add_ratified <- function(aq_data, source, to_narrow) {
   meta <-
-    importMeta(unique(source), all = T) |>
+    importMeta(unique(source), all = TRUE) |>
     dplyr::filter(
       code %in% aq_data$code,
       !variable %in%
@@ -501,7 +501,7 @@ guess_source <- function(site) {
     data.frame(code = toupper(site)) |>
     dplyr::left_join(ukaq_meta, by = "code")
 
-  if (any(is.na(source_tbl$source))) {
+  if (anyNA(source_tbl$source)) {
     ambiguous_codes <-
       source_tbl |>
       dplyr::filter(is.na(.data$source)) |>

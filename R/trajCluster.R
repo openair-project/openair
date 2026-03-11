@@ -207,7 +207,7 @@ trajCluster <- function(
     ) |>
     purrr::pluck("plot") +
     ggplot2::guides(
-      color = ggplot2::guide_legend(reverse = F)
+      color = ggplot2::guide_legend(reverse = FALSE)
     )
 
   # get the ends of the lines

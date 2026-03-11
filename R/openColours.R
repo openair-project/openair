@@ -222,7 +222,7 @@ openColours <- function(scheme = "default", n = 100) {
   # if scheme isn't a scheme name, assume user has given own colours
   if (!any(scheme %in% schemes)) {
     check <- areColors(scheme)
-    if (any(!check)) {
+    if (!all(check)) {
       bad_cols <- unique(names(check[!check]))
       cli::cli_abort(
         c(

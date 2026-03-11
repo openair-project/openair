@@ -239,7 +239,7 @@ summaryPlot <- function(
   }
 
   ## check to see if there are any missing dates, stop if there are
-  if (any(is.na(mydata$date))) {
+  if (anyNA(mydata$date)) {
     stop(
       cat("There are some missing dates on line(s)", which(is.na(mydata$date))),
       "\n"
@@ -339,7 +339,7 @@ summaryPlot <- function(
   )
 
   plot.missing <- function(mydata, na.len, col = "red") {
-    dat <- ifelse(is.na(mydata[["value"]]), 1, 0)
+    dat <- as.integer(is.na(mydata[["value"]]))
     rle.seq <- rle(dat)
     cumsum.seq <- cumsum(rle.seq$lengths)
     myruns <- which(rle.seq$values == 1 & rle.seq$lengths >= na.len)
@@ -542,7 +542,7 @@ summaryPlot <- function(
   if (!is.null(main)) {
     main <- quickText(main, auto.text)
   }
-  if (length(grep("atop", main) == 1)) {
+  if (length(grep("atop", main)) == 1) {
     y.upp <- 0.95
   } else {
     y.upp <- 0.975

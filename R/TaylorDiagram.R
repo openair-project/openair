@@ -699,7 +699,7 @@ panel.taylor.setup <- function(
   labelpos <- seq(45, 70, length.out = length(gamma))
 
   ## some from plotrix
-  for (gindex in 1:length(gamma)) {
+  for (gindex in seq_along(gamma)) {
     xcurve <- cos(seq(0, pi, by = 0.03)) *
       gamma[gindex] +
       results$sd.obs[subscripts[1]]

@@ -445,13 +445,13 @@ importADMSMet <- function(
       call. = FALSE
     )
     variables <- variables[1:min(c(length(variables), ncol(met)), na.rm = TRUE)]
-    met <- met[, 1:length(variables)]
+    met <- met[, seq_along(variables)]
   }
   names(met) <- make.names(variables, unique = TRUE)
 
   # multiple year day hour name options
   fun.temp <- function(x, y, z) {
-    if (all(!y %in% names(x))) {
+    if (!any(y %in% names(x))) {
       stop(
         paste(
           z,

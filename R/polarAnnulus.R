@@ -30,19 +30,34 @@
 #' smoothing parameter `k`.
 #'
 #' @inheritParams polarPlot
+
 #' @param mydata A data frame minimally containing `date`, `wd` and a
 #'   pollutant.
+
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
-#'   data frame should be supplied e.g. `pollutant = "nox"`. There can also
-#'   be more than one pollutant specified e.g. `pollutant = c("nox",
-#'   "no2")`. The main use of using two or more pollutants is for model
-#'   evaluation where two species would be expected to have similar
-#'   concentrations. This saves the user stacking the data and it is possible to
-#'   work with columns of data directly. A typical use would be `pollutant
-#'   = c("obs", "mod")` to compare two columns \dQuote{obs} (the observations)
-#'   and \dQuote{mod} (modelled values).
+#'   data frame should be supplied e.g. `pollutant = "nox"`. There can also be
+#'   more than one pollutant specified e.g. `pollutant = c("nox", "no2")`. The
+#'   main use of using two or more pollutants is for model evaluation where two
+#'   species would be expected to have similar concentrations. This saves the
+#'   user stacking the data and it is possible to work with columns of data
+#'   directly. A typical use would be `pollutant = c("obs", "mod")` to compare
+#'   two columns \dQuote{obs} (the observations) and \dQuote{mod} (modelled
+#'   values).
+#'
+#' @param offset `offset` controls the size of the 'hole' in the middle and is
+#'   expressed on a scale of `0` to `100`, where `0` is no hole and `100` is a
+#'   hole that takes up the entire plotting area.
+#'
+#' @param strip.position Location where the facet 'strips' are located when
+#'   using `type`. When one `type` is provided, can be one of `"left"`,
+#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
+#'   argument defines whether the strips are "switched" and can take either
+#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
+#'   locations to the bottom of the plot.
+#'
 #' @param resolution Two plot resolutions can be set: \dQuote{normal} and
 #'   \dQuote{fine} (the default).
+#'
 #' @param local.tz Should the results be calculated in local time that includes
 #'   a treatment of daylight savings time (DST)? The default is not to consider
 #'   DST issues, provided the data were imported without a DST offset. Emissions
@@ -54,37 +69,40 @@
 #'   is to express time as local time. This correction tends to produce
 #'   better-defined diurnal profiles of concentration (or other variables) and
 #'   allows a better comparison to be made with emissions/activity data. If set
-#'   to `FALSE` then GMT is used. Examples of usage include `local.tz
-#'   = "Europe/London"`, `local.tz = "America/New_York"`. See
-#'   `cutData` and `import` for more details.
+#'   to `FALSE` then GMT is used. Examples of usage include `local.tz =
+#'   "Europe/London"`, `local.tz = "America/New_York"`. See `cutData` and
+#'   `import` for more details.
+#'
 #' @param period This determines the temporal period to consider. Options are
 #'   \dQuote{hour} (the default, to plot diurnal variations), \dQuote{season} to
 #'   plot variation throughout the year, \dQuote{weekday} to plot day of the
 #'   week variation and \dQuote{trend} to plot the trend by wind direction.
-#' @param type `type` determines how the data are split i.e. conditioned,
-#'   and then plotted. The default is will produce a single plot using the
-#'   entire data. Type can be one of the built-in types as detailed in
-#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, `type = "season"` will produce four plots --- one for
-#'   each season.
 #'
-#'   It is also possible to choose `type` as another variable in the data
-#'   frame. If that variable is numeric, then the data will be split into four
+#' @param col.na Colour to be used to show missing data.
+#'
+#' @param type `type` determines how the data are split i.e. conditioned, and
+#'   then plotted. The default is will produce a single plot using the entire
+#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
+#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
+#'   `type = "season"` will produce four plots --- one for each season.
+#'
+#'   It is also possible to choose `type` as another variable in the data frame.
+#'   If that variable is numeric, then the data will be split into four
 #'   quantiles (if possible) and labelled accordingly. If type is an existing
 #'   character or factor variable, then those categories/levels will be used
 #'   directly. This offers great flexibility for understanding the variation of
 #'   different variables and how they depend on one another.
 #'
-#'   Type can be up length two e.g. `type = c("season", "site")` will
-#'   produce a 2x2 plot split by season and site. The use of two types is mostly
-#'   meant for situations where there are several sites. Note, when two types
-#'   are provided the first forms the columns and the second the rows.
+#'   Type can be up length two e.g. `type = c("season", "site")` will produce a
+#'   2x2 plot split by season and site. The use of two types is mostly meant for
+#'   situations where there are several sites. Note, when two types are provided
+#'   the first forms the columns and the second the rows.
 #'
 #'   Also note that for the `polarAnnulus` function some type/period
 #'   combinations are forbidden or make little sense. For example, `type =
-#'   "season"` and `period = "trend"` (which would result in a plot with
-#'   too many gaps in it for sensible smoothing), or `type = "weekday"` and
-#'   `period = "weekday"`.
+#'   "season"` and `period = "trend"` (which would result in a plot with too
+#'   many gaps in it for sensible smoothing), or `type = "weekday"` and `period
+#'   = "weekday"`.
 #'
 #' @param statistic The statistic that should be applied to each wind
 #'   speed/direction bin. Can be \dQuote{mean} (default), \dQuote{median},
@@ -94,39 +112,47 @@
 #'   these statistics is only to provide an indication of overall pattern and
 #'   should not be interpreted in concentration units e.g. for `statistic =
 #'   "weighted.mean"` where the bin mean is multiplied by the bin frequency and
-#'   divided by the total frequency. In many cases using `polarFreq` will
-#'   be better. Setting `statistic = "weighted.mean"` can be useful because
-#'   it provides an indication of the concentration * frequency of occurrence
-#'   and will highlight the wind speed/direction conditions that dominate the
+#'   divided by the total frequency. In many cases using `polarFreq` will be
+#'   better. Setting `statistic = "weighted.mean"` can be useful because it
+#'   provides an indication of the concentration * frequency of occurrence and
+#'   will highlight the wind speed/direction conditions that dominate the
 #'   overall mean.
-#' @param percentile If `statistic = "percentile"` or `statistic =
-#'   "cpf"` then `percentile` is used, expressed from 0 to 100. Note that
-#'   the percentile value is calculated in the wind speed, wind direction
-#'   \sQuote{bins}. For this reason it can also be useful to set `min.bin`
-#'   to ensure there are a sufficient number of points available to estimate a
-#'   percentile. See `quantile` for more details of how percentiles are
-#'   calculated.
-#' @param width The width of the annulus; can be \dQuote{normal} (the default),
-#'   \dQuote{thin} or \dQuote{fat}.
-#' @param date.pad For `type = "trend"` (default), `date.pad = TRUE`
-#'   will pad-out missing data to the beginning of the first year and the end of
-#'   the last year. The purpose is to ensure that the trend plot begins and ends
-#'   at the beginning or end of year.
+#'
+#' @param percentile If `statistic = "percentile"` or `statistic = "cpf"` then
+#'   `percentile` is used, expressed from 0 to 100. Note that the percentile
+#'   value is calculated in the wind speed, wind direction \sQuote{bins}. For
+#'   this reason it can also be useful to set `min.bin` to ensure there are a
+#'   sufficient number of points available to estimate a percentile. See
+#'   `quantile` for more details of how percentiles are calculated.
+#'
+#' @param date.pad For `type = "trend"` (default), `date.pad = TRUE` will
+#'   pad-out missing data to the beginning of the first year and the end of the
+#'   last year. The purpose is to ensure that the trend plot begins and ends at
+#'   the beginning or end of year.
+#'
 #' @param k The smoothing value supplied to `gam` for the temporal and wind
 #'   direction components, respectively. In some cases e.g. a trend plot with
 #'   less than 1-year of data the smoothing with the default values may become
-#'   too noisy and affected more by outliers. Choosing a lower value of `k`
-#'   (say 10) may help produce a better plot.
-#' @param ... Other graphical parameters passed onto `lattice:levelplot`
-#'   and `cutData`. For example, `polarAnnulus` passes the option
-#'   `hemisphere = "southern"` on to `cutData` to provide southern
-#'   (rather than default northern) hemisphere handling of `type =
-#'   "season"`. Similarly, common axis and title labelling options (such as
-#'   `xlab`, `ylab`, `main`) are passed to `levelplot` via
-#'   `quickText` to handle routine formatting.
+#'   too noisy and affected more by outliers. Choosing a lower value of `k` (say
+#'   10) may help produce a better plot.
+#'
+#' @param angle.scale The scale is by default shown at a 315 degree angle.
+#'   Sometimes the placement of the scale may interfere with an interesting
+#'   feature. The user can therefore set `angle.scale` to another value (between
+#'   0 and 360 degrees) to mitigate such problems. For example `angle.scale =
+#'   45` will draw the scale heading in a NE direction.
+#'
+#' @param ... Other graphical parameters passed onto `lattice:levelplot` and
+#'   `cutData`. For example, `polarAnnulus` passes the option `hemisphere =
+#'   "southern"` on to `cutData` to provide southern (rather than default
+#'   northern) hemisphere handling of `type = "season"`. Similarly, common axis
+#'   and title labelling options (such as `xlab`, `ylab`, `main`) are passed to
+#'   `levelplot` via `quickText` to handle routine formatting.
+#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
+#' @author Jack Davison
 #' @family polar directional analysis functions
 #' @examples
 #' # diurnal plot for PM10 at Marylebone Rd
@@ -163,109 +189,94 @@ polarAnnulus <-
     percentile = NA,
     limits = NULL,
     cols = "default",
-    width = "normal",
+    col.na = "white",
+    offset = 50,
+    angle.scale = 0,
     min.bin = 1,
     exclude.missing = TRUE,
     date.pad = FALSE,
     force.positive = TRUE,
     k = c(20, 10),
     normalise = FALSE,
+    strip.position = "top",
     key.header = statistic,
     key.footer = pollutant,
     key.position = "right",
     key = TRUE,
     auto.text = TRUE,
-    alpha = 1,
     plot = TRUE,
     ...
   ) {
-    ## get rid of R check annoyances
-    wd <- u <- v <- z <- all.dates <- NULL
+    # check statistic value is valid
+    statistic <- tolower(statistic)
+    statistic <- rlang::arg_match(
+      statistic,
+      c(
+        "mean",
+        "median",
+        "frequency",
+        "max",
+        "stdev",
+        "weighted.mean",
+        "percentile",
+        "cpf"
+      )
+    )
 
-    if (
-      !statistic %in%
-        c(
-          "mean",
-          "median",
-          "frequency",
-          "max",
-          "stdev",
-          "weighted.mean",
-          "percentile",
-          "cpf"
-        )
-    ) {
-      stop(paste("statistic '", statistic, "' not recognised", sep = ""))
-    }
+    # check period value is valid
+    period <- tolower(period)
+    period <- rlang::arg_match(period, c("hour", "weekday", "season", "trend"))
 
-    if (statistic == "percentile" & is.na(percentile & statistic != "cpf")) {
-      warning("percentile value missing,  using 50")
+    # check other inputs
+    if (statistic == "percentile" && is.na(percentile & statistic != "cpf")) {
+      cli::cli_warn("{.arg percentile} value missing,  using 50")
       percentile <- 50
     }
 
     if (key.header[1] == "weighted.mean") {
-      key.header <- c("weighted", "mean")
+      key.header <- c("weighted mean")
     }
     if (key.header[1] == "percentile") {
-      key.header <- c(paste(percentile, "th", sep = ""), "percentile")
+      lastnum <- substr(percentile, nchar(percentile), nchar(percentile))
+      numend <- dplyr::case_match(
+        lastnum,
+        "1" ~ "st",
+        "2" ~ "nd",
+        "3" ~ "rd",
+        .default = "th"
+      )
+
+      key.header <- paste(paste0(percentile, numend), "percentile")
     }
     if (key.header[1] == "cpf") {
-      key.header <- c("CPF", "probability")
+      key.header <- c("CPF probability")
     }
 
-    ## extract variables of interest
+    # extract variables of interest
     vars <- c("wd", "date", pollutant)
 
-    if (period == "trend" & "season" %in% type) {
-      stop("Cannot have same type as 'season' and period as 'trend'.")
+    if (period == "trend" && "season" %in% type) {
+      cli::cli_abort(
+        "Cannot have same {.arg type} as {'season'} and {.arg period} as {'trend'}."
+      )
     }
     if (length(type) > 2) {
-      stop("Cannot have more than two types.")
+      cli::cli_abort("Cannot have more than two {.arg types}.")
     }
 
-    ## greyscale handling
-    if (length(cols) == 1 && cols == "greyscale") {
-      trellis.par.set(list(strip.background = list(col = "white")))
-    }
-
-    ## set graphics
-    current.strip <- trellis.par.get("strip.background")
-    current.font <- trellis.par.get("fontsize")
-
-    ## reset graphic parameters
-    on.exit(trellis.par.set(
-      fontsize = current.font
-    ))
-
-    ## extra.args setup
+    # extra.args setup
     extra.args <- list(...)
 
     # label controls
-    extra.args$xlab <- if ("xlab" %in% names(extra.args)) {
-      quickText(extra.args$xlab, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
-    extra.args$ylab <- if ("ylab" %in% names(extra.args)) {
-      quickText(extra.args$ylab, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
-    extra.args$main <- if ("main" %in% names(extra.args)) {
-      quickText(extra.args$main, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
+    extra.args$xlab <- quickText(extra.args$xlab, auto.text)
+    extra.args$ylab <- quickText(extra.args$ylab, auto.text)
+    extra.args$main <- quickText(extra.args$main, auto.text)
 
-    if ("fontsize" %in% names(extra.args)) {
-      trellis.par.set(fontsize = list(text = extra.args$fontsize))
-    }
-
-    ## check data
+    # check data
     mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
 
-    ## if more than one pollutant, need to stack the data and set type = "variable"
-    ## this case is most relevent for model-measurement compasrions where data are in columns
+    # if more than one pollutant, need to stack the data and set type = "variable"
+    # this case is most relevent for model-measurement compasrions where data are in columns
     if (length(pollutant) > 1) {
       mydata <- gather(
         mydata,
@@ -274,24 +285,12 @@ polarAnnulus <-
         pollutant,
         factor_key = TRUE
       )
-      ## now set pollutant to "value"
+      # now set pollutant to "value"
       pollutant <- "value"
       type <- "variable"
     }
 
-    d <- 10 ## d + upper = 1/2 width of annulus; do not need to adjust
-
-    if (width == "normal") {
-      upper <- 10
-    }
-    if (width == "thin") {
-      upper <- 15
-    }
-    if (width == "fat") {
-      upper <- 5
-    }
-
-    ## add extra wds - reduces discontinuity at 0/360
+    # add extra wds - reduces discontinuity at 0/360
     zero.wd <- subset(mydata, wd == 360)
 
     if (nrow(zero.wd) > 0) {
@@ -299,16 +298,16 @@ polarAnnulus <-
       mydata <- rbind(mydata, zero.wd)
     }
 
-    ## remove NAs
+    # remove NAs
     mydata <- na.omit(mydata)
     mydata <- cutData(mydata, type, ...)
 
-    ## convert to local time
+    # convert to local time
     if (!is.null(local.tz)) {
       attr(mydata$date, "tzone") <- local.tz
     }
 
-    ## for resolution of grid plotting (default = 0.2; fine = 0.1)
+    # for resolution of grid plotting (default = 0.2; fine = 0.1)
     if (resolution == "normal") {
       int <- 0.2
     }
@@ -319,9 +318,9 @@ polarAnnulus <-
       int <- 0.05
     } # very large files!
 
-    len.int <- 20 / int + 1 ## number of x and y points to make up surfacexb
+    len.int <- 20 / int + 1 # number of x and y points to make up surfacexb
 
-    ## for CPF
+    # for CPF
     Pval <- quantile(
       mydata[[pollutant]],
       probs = percentile / 100,
@@ -329,20 +328,19 @@ polarAnnulus <-
     )
 
     if (statistic == "cpf") {
-      sub <- paste(
+      sub <- paste0(
         "CPF probability at the ",
         percentile,
         "th percentile (=",
         round(Pval, 1),
-        ")",
-        sep = ""
+        ")"
       )
     } else {
       sub <- NULL
     }
 
     prepare.grid <- function(mydata) {
-      ## for padding to beginning of first year, end of last year
+      # for padding to beginning of first year, end of last year
       if (date.pad) {
         min.year <- as.numeric(format(min(mydata$date, na.rm = TRUE), "%Y"))
         max.year <- as.numeric(format(max(mydata$date, na.rm = TRUE), "%Y"))
@@ -358,17 +356,17 @@ polarAnnulus <-
         all.dates <- data.frame(date = all.dates)
       }
 
-      ## different date components, others available
+      # different date components, others available
       if (period == "trend") {
         if (date.pad) {
-          ## for new limits with padding
+          # for new limits with padding
           day <- as.numeric(format(all.dates$date, "%j"))
           year <- as.numeric(format(all.dates$date, "%Y"))
           trend2 <- year + day / 366
           min.trend <- min(trend2, na.rm = TRUE)
           max.trend <- max(trend2, na.rm = TRUE)
 
-          ## actual data
+          # actual data
           day <- as.numeric(format(mydata$date, "%j"))
           year <- as.numeric(format(mydata$date, "%Y"))
           trend <- year + day / 366
@@ -412,18 +410,15 @@ polarAnnulus <-
       wd <- seq(from = 0, to = 360, 10) # wind directions from 10 to 360
       ws.wd <- expand.grid(time.seq = time.seq, wd = wd)
 
-      ## identify which ws and wd bins the data belong
-      ## wd.cut <- cut(mydata$wd, seq(0, 360, 10))
+      # identify which ws and wd bins the data belong
       wd.cut <- cut(mydata$wd, seq(0, 360, length = 38), include.lowest = TRUE)
 
-      ## divide-up the data for the annulus
+      # divide-up the data for the annulus
       time.cut <- cut(
         mydata$trend,
         seq(0, 10, length = 25),
         include.lowest = TRUE
       )
-
-      #   binned <- tapply(mydata[, pollutant], list(time.cut, wd.cut), mean, na.rm = TRUE)
 
       binned <- switch(
         statistic,
@@ -475,14 +470,14 @@ polarAnnulus <-
 
       binned <- as.vector(binned)
 
-      ## frequency - remove points with freq < min.bin
+      # frequency - remove points with freq < min.bin
       bin.len <- tapply(mydata[, pollutant], list(time.cut, wd.cut), length)
       binned.len <- as.vector(bin.len)
 
       ids <- which(binned.len < min.bin)
       binned[ids] <- NA
 
-      ## data to predict over
+      # data to predict over
       time.seq <- ws.wd$time.seq
       wd <- ws.wd$wd
 
@@ -490,9 +485,9 @@ polarAnnulus <-
         time.seq = seq(0, 10, length = len.int),
         wd = seq(0, 360, length = len.int)
       )
-      ###################### Smoothing#################################################
+      # Smoothing
 
-      ## run GAM to make a smooth surface
+      # run GAM to make a smooth surface
       if (force.positive) {
         n <- 0.5
       } else {
@@ -501,7 +496,7 @@ polarAnnulus <-
 
       input <- data.frame(binned, time.seq, wd)
 
-      ## note use of cyclic smooth for the wind direction component
+      # note use of cyclic smooth for the wind direction component
       Mgam <- mgcv::gam(
         binned^n ~ te(time.seq, wd, k = k, bs = c("tp", "cc")),
         data = input
@@ -513,15 +508,14 @@ polarAnnulus <-
       input.data <- cbind(input.data, pred)
 
       if (exclude.missing) {
-        ## exclude predictions too far from data (from mgcv)
+        # exclude predictions too far from data (from mgcv)
         x <- seq(0, 10, length = len.int)
         y <- seq(0, 360, length = len.int)
         res <- len.int
         wsp <- rep(x, res)
         wdp <- rep(y, rep(res, res))
 
-        #  ind <- exclude.too.far(wsp, wdp, mydata$trend, mydata$wd, dist = 0.03)
-        ## data with gaps caused by min.bin
+        # data with gaps caused by min.bin
         all.data <- na.omit(data.frame(
           time.seq = ws.wd$time.seq,
           wd = ws.wd$wd,
@@ -533,310 +527,192 @@ polarAnnulus <-
         )
 
         input.data$pred[ind] <- NA
-        pred <- input.data$pred
       }
 
-      #############################################################################
-      ## transform to new coords - probably more efficient way of doing this
-      ## need to transform to/from annulus to a cartesian coords
+      # back-transform time axis to original scale
+      input.data$time.seq <- min.trend +
+        (input.data$time.seq / 10) * (max.trend - min.trend)
 
-      ## new grid for plotting (the annulus)
-      new.data <- expand.grid(
-        u = seq(-upper - d, upper + d, by = int),
-        v = seq(-upper - d, upper + d, by = int),
-        z = NA,
-        wd = NA,
-        time.val = NA
-      )
+      if (period == "trend") {
+        year_part <- floor(input.data$time.seq)
+        day_part <- round((input.data$time.seq - year_part) * 366)
+        input.data$time.seq <- as.Date(
+          paste(year_part, day_part, sep = "-"),
+          format = "%Y-%j"
+        )
+      }
 
-      new.data$id <- seq(nrow(new.data))
+      names(input.data)[names(input.data) == "time.seq"] <- period
 
-      ## calculate wd and time.val in on annulus in original units (helps with debugging)
-      ## essentially start with final grid (annulus) and work backwards to find original data point in
-      ## original coordinates
-      new.data <- within(new.data, time.val <- (u^2 + v^2)^0.5 - upper)
-      new.data <- within(new.data, wd <- 180 * atan2(u, v) / pi)
-      new.data <- within(new.data, wd[wd < 0] <- wd[wd < 0] + 360) ## correct negative wds
-
-      ## remove ids outside range
-      ids <- with(
-        new.data,
-        which((u^2 + v^2)^0.5 > d + upper | (u^2 + v^2)^0.5 < upper)
-      )
-      new.data$wd[ids] <- NA
-      new.data$time.val[ids] <- NA
-
-      ## ids where there are data
-      ids <- new.data$id[!is.na(new.data$wd)]
-
-      ## indexes in original (cartesian) coordinates
-      id.time <- round((2 * d / int) * new.data$time.val[ids] / 10) + 1
-      id.wd <- round((2 * d / int) * new.data$wd[ids] / 360) + 1
-
-      ## predicted values as a matrix
-      pred <- matrix(pred, nrow = len.int, ncol = len.int)
-
-      ## match the ids with predictions
-      new.data$z[ids] <- sapply(
-        seq_along(ids),
-        function(x) pred[id.time[x], id.wd[x]]
-      )
-
-      new.data
+      input.data
     }
 
-    ## more compact way?  Need to test
-    results.grid <- mydata |>
-      group_by(across(type)) |>
-      nest() |>
-      mutate(data = purrr::map(data, prepare.grid)) |>
-      unnest(cols = c(data))
+    # create grid for each type and bind together
+    results.grid <- mapType(
+      mydata,
+      type,
+      prepare.grid,
+      .include_default = TRUE
+    ) |>
+      dplyr::tibble()
 
-    ## normalise by divining by mean conditioning value if needed
+    # normalise by divining by mean conditioning value if needed
     if (normalise) {
-      results.grid <- results.grid |>
-        group_by(across(type)) |>
-        mutate(z = z / mean(z, na.rm = TRUE))
-
-      if (missing(key.footer)) key.footer <- "normalised \nlevel"
-    }
-
-    ## proper names of labelling ###################################################
-    strip.dat <- strip.fun(results.grid, type, auto.text)
-    strip <- strip.dat[[1]]
-    strip.left <- strip.dat[[2]]
-    pol.name <- strip.dat[[3]]
-
-    ## auto-scaling
-    nlev <- 200 # preferred number of intervals
-    ## handle missing breaks arguments
-    if (any(is.null(limits)) | any(is.na(limits))) {
-      # breaks <- pretty(results.grid$z, n = nlev)
-      breaks <- seq(
-        min(results.grid$z, na.rm = TRUE),
-        max(results.grid$z, na.rm = TRUE),
-        length.out = nlev
-      )
-      labs <- pretty(breaks, 7)
-      labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-      at <- labs
-    } else {
-      ## handle user limits and clipping
-      breaks <- seq(min(limits), max(limits), length.out = nlev)
-      labs <- pretty(breaks, 7)
-      labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-      at <- labs
-
-      ## case where user max is < data max
-      if (max(limits) < max(results.grid[["z"]], na.rm = TRUE)) {
-        id <- which(results.grid[["z"]] > max(limits))
-        results.grid[["z"]][id] <- max(limits)
-        labs[length(labs)] <- paste(">", labs[length(labs)])
-      }
-
-      ## case where user min is > data min
-      if (min(limits) > min(results.grid[["z"]], na.rm = TRUE)) {
-        id <- which(results.grid[["z"]] < min(limits))
-        results.grid[["z"]][id] <- min(limits)
-        labs[1] <- paste("<", labs[1])
-      }
-    }
-
-    nlev2 <- length(breaks)
-
-    col <- openColours(cols, (nlev2 - 1))
-    col.scale <- breaks
-
-    #################
-    ## scale key setup
-    #################
-    legend <- list(
-      col = col,
-      at = col.scale,
-      labels = list(labels = labs, at = at),
-      space = key.position,
-      auto.text = auto.text,
-      footer = key.footer,
-      header = key.header,
-      height = 1,
-      width = 1.5,
-      fit = "all"
-    )
-
-    legend <- makeOpenKeyLegend(key, legend, "polarAnnulus")
-
-    temp <- paste(type, collapse = "+")
-    myform <- formula(paste("z ~ u * v | ", temp, sep = ""))
-
-    levelplot.args <- list(
-      x = myform,
-      results.grid,
-      axes = FALSE,
-      as.table = TRUE,
-      aspect = 1,
-      colorkey = FALSE,
-      legend = legend,
-      at = col.scale,
-      col.regions = col,
-      par.strip.text = list(cex = 0.8),
-      scales = list(draw = FALSE),
-      strip = strip,
-      sub = sub,
-      len <- upper + d + 3,
-      xlim = c(-len, len),
-      ylim = c(-len, len),
-      panel = function(x, y, z, subscripts, ...) {
-        panel.levelplot(
-          x,
-          y,
-          z,
-          subscripts,
-          at = col.scale,
-          lwd = 1,
-          col.regions = col,
-          labels = FALSE,
-          alpha.regions = alpha
+      results.grid <-
+        dplyr::mutate(
+          results.grid,
+          pred = .data$pred / mean(.data$pred, na.rm = TRUE),
+          .by = dplyr::all_of(type)
         )
 
-        ## add axis line to central polarPlot
-        llines(c(upper, upper + d), c(0, 0), col = "grey20")
-        llines(c(0, 0), c(-upper, -upper - d), col = "grey20")
-
-        ## add axis line to central polarPlot
-        llines(c(0, 0), c(upper, upper + d), col = "grey20")
-        llines(c(-upper, -upper - d), c(0, 0), col = "grey20")
-
-        add.tick <- function(n, start = 0, end = 0) {
-          ## start is an offset if time series does not begin in January
-
-          ## left
-          lsegments(
-            seq(-upper - start, -upper - d + end, length = n),
-            rep(-.5, n),
-            seq(-upper - start, -upper - d + end, length = n),
-            rep(.5, n),
-            col = "grey20"
-          )
-          ## top
-          lsegments(
-            rep(-.5, n),
-            seq(upper + start, upper + d - end, length = n),
-            rep(.5, n),
-            seq(upper + start, upper + d - end, length = n)
-          )
-          ## right
-          lsegments(
-            seq(upper + start, upper + d - end, length = n),
-            rep(-.5, n),
-            seq(upper + start, upper + d - end, length = n),
-            rep(.5, n),
-            col = "grey20"
-          )
-          ## bottom
-          lsegments(
-            rep(-.5, n),
-            seq(-upper - start, -upper - d + end, length = n),
-            rep(.5, n),
-            seq(-upper - start, -upper - d + end, length = n)
-          )
-        }
-
-        label.axis <- function(x, lab1, lab2, ticks) {
-          ltext(x, upper, lab1, cex = 0.7, pos = 4)
-          ltext(x, upper + d, lab2, cex = 0.7, pos = 4)
-          ## at bottom
-          ltext(-x, -upper, lab1, cex = 0.7, pos = 2)
-          ltext(-x, -upper - d, lab2, cex = 0.7, pos = 2)
-          add.tick(ticks)
-        }
-
-        if (period == "trend") {
-          if (date.pad) {
-            date.start <- min(all.dates$date)
-            date.end <- max(all.dates$date)
-          } else {
-            date.start <- min(mydata$date)
-            date.end <- max(mydata$date)
-          }
-
-          label.axis(
-            0,
-            format(date.start, "%d-%b-%Y"),
-            format(date.end, "%d-%b-%Y"),
-            2
-          )
-
-          ## add ticks at 1-Jan each year (could be missing dates)
-          days <- seq(as.Date(date.start), as.Date(date.end), by = "day")
-
-          if (length(days) > 365) {
-            ## find number of Januarys
-            num.jans <- which(format(days, "%j") == "001")
-            ticks <- length(num.jans)
-            start <- 10 * (num.jans[1] - 1) / length(days)
-            end <- 10 - 10 * (num.jans[ticks] - 1) / length(days)
-            if (length(num.jans) > 0) add.tick(ticks, start, end)
-
-            ## mark montly intervals (approx)
-          } else {
-            ## find number of 01s
-            num.jans <- which(format(days, "%d") == "01")
-            ticks <- length(num.jans)
-            start <- 10 * (num.jans[1] - 1) / length(days)
-            end <- 10 - 10 * (num.jans[ticks] - 1) / length(days)
-            if (length(num.jans) > 0) add.tick(ticks, start, end)
-          }
-        }
-
-        if (period == "season") {
-          label.axis(
-            0,
-            format(ISOdate(2000, 1, 1), "%B"),
-            format(ISOdate(2000, 12, 1), "%B"),
-            13
-          )
-        }
-
-        if (period == "hour") {
-          label.axis(0, "0", "23", 7)
-        }
-
-        if (period == "weekday") {
-          local.weekdays <- format(ISOdate(2000, 1, 1:14), "%A")[order(format(
-            ISOdate(2000, 1, 1:14),
-            "%w"
-          ))]
-          loc.sunday <- local.weekdays[1]
-          loc.saturday <- local.weekdays[length(local.weekdays)]
-          label.axis(0, loc.sunday, loc.saturday, 8)
-        }
-
-        ## text for directions
-        ltext(-upper - d - 1.5, 0, "W", cex = 0.7)
-        ltext(0, -upper - d - 1.5, "S", cex = 0.7)
-        ltext(0, upper + d + 1.5, "N", cex = 0.7)
-        ltext(upper + d + 1.5, 0, "E", cex = 0.7)
-      }
-    )
-
-    # reset for extra.args
-    levelplot.args <- listUpdate(levelplot.args, extra.args)
-
-    # plot
-    plt <- do.call(levelplot, levelplot.args)
-
-    #################
-    # output
-    #################
-    if (plot) {
-      if (length(type) == 1) {
-        plot(plt)
-      } else {
-        plot(useOuterStrips(plt, strip = strip, strip.left = strip.left))
-      }
+      if (missing(key.footer)) key.footer <- "normalised level"
     }
-    newdata <- results.grid
-    output <- list(plot = plt, data = newdata, call = match.call())
+
+    # plotting
+    thePlot <-
+      ggplot2::ggplot(
+        results.grid,
+        ggplot2::aes(x = .data$wd, y = .data[[period]])
+      ) +
+      ggplot2::geom_tile(
+        ggplot2::aes(fill = .data$pred, colour = .data$pred),
+        na.rm = TRUE,
+        show.legend = TRUE
+      ) +
+      ggplot2::ggproto(
+        NULL,
+        ggplot2::coord_radial(
+          inner.radius = offset / 100,
+          r.axis.inside = angle.scale,
+          clip = "off"
+        ),
+        inner_radius = c(offset / 100, 1) * 0.475
+      ) +
+      scale_x_compass() +
+      theme_openair_radial(key.position, panel.ontop = TRUE) +
+      ggplot2::theme(
+        panel.grid.major.y = ggplot2::element_line(
+          colour = "grey50",
+          linetype = 2,
+          linewidth = 0.25
+        )
+      ) +
+      ggplot2::scale_fill_gradientn(
+        colours = openColours(cols),
+        aesthetics = c("colour", "fill"),
+        limits = limits,
+        breaks = scales::breaks_pretty(6),
+        na.value = col.na
+      ) +
+      ggplot2::labs(
+        x = extra.args$xlab,
+        y = extra.args$ylab,
+        title = extra.args$main,
+        caption = sub,
+        colour = quickText(
+          paste(
+            key.header,
+            key.footer,
+            sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
+          ),
+          auto.text = auto.text
+        ),
+        fill = quickText(
+          paste(
+            key.header,
+            key.footer,
+            sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
+          ),
+          auto.text = auto.text
+        )
+      ) +
+      annotate_compass_points(
+        size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
+      ) +
+      get_facet(
+        type = type,
+        extra.args = extra.args,
+        scales = "fixed",
+        auto.text = auto.text,
+        drop = FALSE,
+        strip.position = strip.position
+      ) +
+      ggplot2::guides(
+        r = ggplot2::guide_axis(check.overlap = TRUE)
+      )
+
+    # set y axis breaks and labels
+    if (period == "trend") {
+      # let ggplot2 decide - creates nice breaks regardless of width
+      thePlot <-
+        thePlot +
+        ggplot2::scale_y_date(
+          oob = scales::oob_keep,
+          expand = ggplot2::expansion(c(0, 0))
+        )
+    } else {
+      if (period == "hour") {
+        y_breaks <- seq(0, 23, length.out = 7)
+        y_labels <- seq(0, 24, length.out = 7)
+      }
+
+      if (period == "weekday") {
+        # a Sunday-Saturday sequence
+        weekdays <-
+          format(
+            seq(as.Date("2000-01-02"), by = "day", length.out = 7),
+            "%A"
+          )
+
+        middle_days <- !weekdays %in% c(weekdays[1], weekdays[length(weekdays)])
+        weekdays[middle_days] <- substr(weekdays[middle_days], 1, 1)
+
+        y_breaks <- seq(0, 7, length.out = 8)
+        y_breaks <- y_breaks[-length(y_breaks)]
+        y_labels <- weekdays
+      }
+
+      if (period == "season") {
+        months <- format(ISOdate(2000, 1:12, 1), "%B")
+        middle_months <- !months %in% c(months[1], months[length(months)])
+        months[middle_months] <- substr(months[middle_months], 1, 1)
+
+        y_breaks <- seq(0, 53, length.out = 13)
+        y_breaks <- y_breaks[-length(y_breaks)]
+        y_labels <- months
+      }
+
+      thePlot <-
+        thePlot +
+        ggplot2::scale_y_continuous(
+          oob = scales::oob_keep,
+          expand = ggplot2::expansion(c(0, 0)),
+          breaks = y_breaks,
+          labels = y_labels
+        )
+    }
+
+    # make key full width/height
+    if (key.position %in% c("left", "right")) {
+      thePlot <- thePlot +
+        ggplot2::theme(
+          legend.key.height = ggplot2::unit(1, "null"),
+          legend.key.spacing.y = ggplot2::unit(0, "cm")
+        )
+    }
+    if (key.position %in% c("top", "bottom")) {
+      thePlot <- thePlot +
+        ggplot2::theme(
+          legend.key.width = ggplot2::unit(1, "null"),
+          legend.key.spacing.x = ggplot2::unit(0, "cm")
+        )
+    }
+
+    # outputs
+    if (plot) {
+      plot(thePlot)
+    }
+    output <- list(plot = thePlot, data = results.grid, call = match.call())
     class(output) <- "openair"
 
     invisible(output)

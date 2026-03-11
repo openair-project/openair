@@ -559,10 +559,16 @@ windRose <- function(
         ggplot2::theme(legend.key.height = ggplot2::rel(0.5))
     }
 
-    thePlot <- thePlot +
-      annotate_compass_points(
-        size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
-      )
+    if (annotate) {
+      thePlot <- thePlot +
+        annotate_compass_points(
+          size = if (is.null(extra.args$fontsize)) {
+            3
+          } else {
+            extra.args$fontsize / 3
+          }
+        )
+    }
 
     if (plot) {
       plot(thePlot)
@@ -988,15 +994,12 @@ windRose <- function(
   }
 
   # add compass points
-  thePlot <- thePlot +
-    annotate_compass_points(
-      size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
-      labels = if (!diff) {
-        c("N", "E", "S", "W")
-      } else {
-        c("0", "+90", "+/-180", "-90")
-      }
-    )
+  if (annotate) {
+    thePlot <- thePlot +
+      annotate_compass_points(
+        size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
+      )
+  }
 
   # output
   if (plot) {
