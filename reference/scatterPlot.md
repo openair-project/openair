@@ -399,7 +399,7 @@ dat2004 <- selectByDate(mydata, year = 2004)
 # basic use, single pollutant
 
 scatterPlot(dat2004, x = "nox", y = "no2")
-
+#> Error in scatterPlot(dat2004, x = "nox", y = "no2"): object 'yscale.components.log10ticks' not found
 if (FALSE) { # \dontrun{
 # scatterPlot by year
 scatterPlot(mydata, x = "nox", y = "no2", type = "year")
@@ -410,7 +410,7 @@ scatterPlot(dat2004,
   x = "nox", y = "no2", type = "weekday", key =
     FALSE
 )
-
+#> Error in scatterPlot(dat2004, x = "nox", y = "no2", type = "weekday",     key = FALSE): object 'yscale.components.log10ticks' not found
 
 # example of the use of continuous where colour is used to show
 # different levels of a third (numeric) variable

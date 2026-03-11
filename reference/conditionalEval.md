@@ -24,12 +24,11 @@ conditionalEval(
   type = "default",
   bins = 31,
   statistic = "MB",
-  xlab = "predicted value",
-  ylab = "statistic",
-  col = brewer.pal(5, "YlOrRd"),
+  cols = "YlOrRd",
   col.var = "Set1",
   var.names = NULL,
   auto.text = TRUE,
+  plot = TRUE,
   ...
 )
 ```
@@ -53,30 +52,17 @@ conditionalEval(
 
   Other variable observations for which statistics should be calculated.
   Can be more than length one e.g. `var.obs = c("nox.obs", "ws.obs")`.
-  Note that including other variables could reduce the number of data
-  available to plot due to the need of having non-missing data for all
-  variables.
 
 - var.mod:
 
   Other variable predictions for which statistics should be calculated.
-  Can be more than length one e.g. `var.obs = c("nox.obs", "ws.obs")`.
+  Can be more than length one e.g. `var.mod = c("nox.mod", "ws.mod")`.
 
 - type:
 
   `type` determines how the data are split i.e. conditioned, and then
-  plotted. The default is will produce a single plot using the entire
-  data. Type can be one of the built-in types as detailed in `cutData`
-  e.g. "season", "year", "weekday" and so on. For example,
-  `type = "season"` will produce four plots — one for each season.
-
-  It is also possible to choose `type` as another variable in the data
-  frame. If that variable is numeric, then the data will be split into
-  four quantiles (if possible) and labelled accordingly. If type is an
-  existing character or factor variable, then those categories/levels
-  will be used directly. This offers great flexibility for understanding
-  the variation of different variables and how they depend on one
-  another.
+  plotted. Only one type can be used with this function. The default
+  produces a single plot using the entire data.
 
 - bins:
 
@@ -86,29 +72,25 @@ conditionalEval(
 - statistic:
 
   Statistic(s) to be plotted. Can be “MB”, “NMB”, “r”, “COE”, “MGE”,
-  “NMGE”, “RMSE” and “FAC2”, as described in `modStats`. When these
-  statistics are chosen, they are calculated from `var.mod` and
-  `var.mod`.
+  “NMGE”, “RMSE” and “FAC2”. `statistic` can also be a variable name in
+  the data frame or a date-based type (e.g. “season”), in which case the
+  plot shows the proportions of that variable across the prediction
+  intervals. A special case is “cluster”.
 
-  `statistic` can also be a value that can be supplied to `cutData`. For
-  example, `statistic = "season"` will show how model performance varies
-  by season across the distribution of predictions which might highlight
-  that at high concentrations of NOx the model tends to underestimate
-  concentrations and that these periods mostly occur in winter.
-  `statistic` can also be another variable in the data frame — see
-  `cutData` for more information. A special case is
-  `statistic = "cluster"` if clusters have been calculated using
-  `trajCluster`.
+- cols:
+
+  Passed to
+  [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+  with `n = 3`.
 
 - col.var:
 
-  Colours for the additional variables to be compared. See `openColours`
-  for more details.
+  Colours for the additional variables. See `openColours` for more
+  details.
 
 - var.names:
 
-  Variable names to be shown on plot for plotting `var.obs` and
-  `var.mod`.
+  Variable names to be shown in the legend for `var.obs` and `var.mod`.
 
 - auto.text:
 
@@ -116,15 +98,17 @@ conditionalEval(
   etc. will automatically try and format pollutant names and units
   properly e.g. by subscripting the \`2' in NO2.
 
+- plot:
+
+  Should a plot be produced? `FALSE` can be useful when analysing data
+  in other ways.
+
 - ...:
 
-  Other graphical parameters passed onto `conditionalQuantile` and
-  `cutData`. For example, `conditionalQuantile` passes the option
-  `hemisphere = "southern"` on to `cutData` to provide southern (rather
-  than default northern) hemisphere handling of `type = "season"`.
-  Similarly, common axis and title labelling options (such as `xlab`,
-  `ylab`, `main`) are passed to `xyplot` via `quickText` to handle
-  routine formatting.
+  Other graphical parameters passed onto
+  [`conditionalQuantile()`](https://openair-project.github.io/openair/reference/conditionalQuantile.md)
+  and
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
 
 ## Details
 
@@ -174,35 +158,17 @@ analysis could show for example, when ozone concentrations are
 under-predicted, the model may also be shown to over-predict
 concentrations of NOx at the same time, or under-predict wind speeds.
 Such information can thus help identify the underlying causes of poor
-model performance. For example, an under-prediction in wind speed could
-result in higher surface NOx concentrations and lower ozone
-concentrations. Similarly if wind speed predictions were good and NOx
-was over predicted it might suggest an over-estimate of NOx emissions.
-One or more additional variables can be plotted.
+model performance.
 
 A special case is `statistic = "cluster"`. In this case a data frame is
 provided that contains the cluster calculated by
 [`trajCluster()`](https://openair-project.github.io/openair/reference/trajCluster.md)
 and
 [`importTraj()`](https://openair-project.github.io/openair/reference/importTraj.md).
-Alternatively users could supply their own pre-calculated clusters.
-These calculations can be very useful in showing whether certain back
-trajectory clusters are associated with poor (or good) model
-performance. Note that in the case of `statistic = "cluster"` there will
-be fewer data points used in the analysis compared with the ordinary
-statistics above because the trajectories are available for every three
-hours. Also note that `statistic = "cluster"` cannot be used together
-with the ordinary model evaluation statistics such as MB. The output
-will be a bar chart showing the proportion of each interval of `mod` by
-cluster number.
-
-Far more insight can be gained into model performance through
-conditioning using `type`. For example, `type = "season"` will plot
-conditional quantiles and the associated model performance statistics of
-other variables by each season. `type` can also be a factor or character
-field e.g. representing different models used.
-
-See Wilks (2005) for more details of conditional quantile plots.
+Note that `statistic = "cluster"` cannot be used together with the
+ordinary model evaluation statistics such as MB. The output will be a
+bar chart showing the proportion of each interval of `mod` by cluster
+number.
 
 ## References
 

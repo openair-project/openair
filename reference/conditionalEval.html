@@ -91,12 +91,11 @@ underlying reasons why model performance is poor.</p>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  bins <span class="op">=</span> <span class="fl">31</span>,</span>
 <span>  statistic <span class="op">=</span> <span class="st">"MB"</span>,</span>
-<span>  xlab <span class="op">=</span> <span class="st">"predicted value"</span>,</span>
-<span>  ylab <span class="op">=</span> <span class="st">"statistic"</span>,</span>
-<span>  col <span class="op">=</span> <span class="fu">brewer.pal</span><span class="op">(</span><span class="fl">5</span>, <span class="st">"YlOrRd"</span><span class="op">)</span>,</span>
+<span>  cols <span class="op">=</span> <span class="st">"YlOrRd"</span>,</span>
 <span>  col.var <span class="op">=</span> <span class="st">"Set1"</span>,</span>
 <span>  var.names <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -120,28 +119,18 @@ representing observed and modelled values.</p></dd>
 
 <dt id="arg-var-obs">var.obs<a class="anchor" aria-label="anchor" href="#arg-var-obs"></a></dt>
 <dd><p>Other variable observations for which statistics should be
-calculated. Can be more than length one e.g. <code>var.obs = c("nox.obs", "ws.obs")</code>. Note that including other variables could reduce the number of
-data available to plot due to the need of having non-missing data for all
-variables.</p></dd>
+calculated. Can be more than length one e.g. <code>var.obs = c("nox.obs", "ws.obs")</code>.</p></dd>
 
 
 <dt id="arg-var-mod">var.mod<a class="anchor" aria-label="anchor" href="#arg-var-mod"></a></dt>
 <dd><p>Other variable predictions for which statistics should be
-calculated. Can be more than length one e.g. <code>var.obs = c("nox.obs", "ws.obs")</code>.</p></dd>
+calculated. Can be more than length one e.g. <code>var.mod = c("nox.mod", "ws.mod")</code>.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p><code>type</code> determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-<code>cutData</code> e.g. "season", "year", "weekday" and so on. For example,
-<code>type = "season"</code> will produce four plots — one for each season.</p>
-<p>It is also possible to choose <code>type</code> as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
-quantiles (if possible) and labelled accordingly. If type is an existing
-character or factor variable, then those categories/levels will be used
-directly. This offers great flexibility for understanding the variation of
-different variables and how they depend on one another.</p></dd>
+and then plotted. Only one type can be used with this function. The
+default produces a single plot using the entire data.</p></dd>
 
 
 <dt id="arg-bins">bins<a class="anchor" aria-label="anchor" href="#arg-bins"></a></dt>
@@ -152,26 +141,24 @@ levels.</p></dd>
 <dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
 <dd><p>Statistic(s) to be plotted. Can be “MB”,
 “NMB”, “r”, “COE”, “MGE”, “NMGE”,
-“RMSE” and “FAC2”, as described in <code>modStats</code>. When
-these statistics are chosen, they are calculated from <code>var.mod</code> and
-<code>var.mod</code>.</p>
-<p><code>statistic</code> can also be a value that can be supplied to
-<code>cutData</code>. For example, <code>statistic = "season"</code> will show how
-model performance varies by season across the distribution of predictions
-which might highlight that at high concentrations of NOx the model tends to
-underestimate concentrations and that these periods mostly occur in winter.
-<code>statistic</code> can also be another variable in the data frame — see
-<code>cutData</code> for more information. A special case is <code>statistic = "cluster"</code> if clusters have been calculated using <code>trajCluster</code>.</p></dd>
+“RMSE” and “FAC2”. <code>statistic</code> can also be a variable
+name in the data frame or a date-based type (e.g. “season”), in
+which case the plot shows the proportions of that variable across the
+prediction intervals. A special case is “cluster”.</p></dd>
+
+
+<dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
+<dd><p>Passed to <code><a href="openColours.html">openColours()</a></code> with <code>n = 3</code>.</p></dd>
 
 
 <dt id="arg-col-var">col.var<a class="anchor" aria-label="anchor" href="#arg-col-var"></a></dt>
-<dd><p>Colours for the additional variables to be compared. See
-<code>openColours</code> for more details.</p></dd>
+<dd><p>Colours for the additional variables. See <code>openColours</code>
+for more details.</p></dd>
 
 
 <dt id="arg-var-names">var.names<a class="anchor" aria-label="anchor" href="#arg-var-names"></a></dt>
-<dd><p>Variable names to be shown on plot for plotting
-<code>var.obs</code> and <code>var.mod</code>.</p></dd>
+<dd><p>Variable names to be shown in the legend for <code>var.obs</code>
+and <code>var.mod</code>.</p></dd>
 
 
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
@@ -180,13 +167,14 @@ titles and axis labels etc. will automatically try and format pollutant
 names and units properly e.g.  by subscripting the `2' in NO2.</p></dd>
 
 
+<dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
+<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
+data in other ways.</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other graphical parameters passed onto <code>conditionalQuantile</code>
-and <code>cutData</code>. For example, <code>conditionalQuantile</code> passes the
-option <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide
-southern (rather than default northern) hemisphere handling of <code>type = "season"</code>. Similarly, common axis and title labelling options (such as
-<code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed to <code>xyplot</code> via
-<code>quickText</code> to handle routine formatting.</p></dd>
+<dd><p>Other graphical parameters passed onto <code><a href="conditionalQuantile.html">conditionalQuantile()</a></code>
+and <code><a href="cutData.html">cutData()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -227,29 +215,13 @@ example, to consider how well the model predicts NOx and wind speed
 when ozone concentrations are under-predicted, the model may also be shown to
 over-predict concentrations of NOx at the same time, or under-predict wind
 speeds. Such information can thus help identify the underlying causes of poor
-model performance. For example, an under-prediction in wind speed could
-result in higher surface NOx concentrations and lower ozone concentrations.
-Similarly if wind speed predictions were good and NOx was over predicted it
-might suggest an over-estimate of NOx emissions. One or more additional
-variables can be plotted.</p>
+model performance.</p>
 <p>A special case is <code>statistic = "cluster"</code>. In this case a data frame is
 provided that contains the cluster calculated by <code><a href="trajCluster.html">trajCluster()</a></code>
-and <code><a href="importTraj.html">importTraj()</a></code>. Alternatively users could supply their own
-pre-calculated clusters. These calculations can be very useful in showing
-whether certain back trajectory clusters are associated with poor (or good)
-model performance. Note that in the case of <code>statistic = "cluster"</code>
-there will be fewer data points used in the analysis compared with the
-ordinary statistics above because the trajectories are available for every
-three hours. Also note that <code>statistic = "cluster"</code> cannot be used
-together with the ordinary model evaluation statistics such as MB. The output
-will be a bar chart showing the proportion of each interval of <code>mod</code> by
-cluster number.</p>
-<p>Far more insight can be gained into model performance through conditioning
-using <code>type</code>. For example, <code>type = "season"</code> will plot conditional
-quantiles and the associated model performance statistics of other variables
-by each season. <code>type</code> can also be a factor or character field e.g.
-representing different models used.</p>
-<p>See Wilks (2005) for more details of conditional quantile plots.</p>
+and <code><a href="importTraj.html">importTraj()</a></code>. Note that <code>statistic = "cluster"</code> cannot be
+used together with the ordinary model evaluation statistics such as MB.
+The output will be a bar chart showing the proportion of each interval of
+<code>mod</code> by cluster number.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
