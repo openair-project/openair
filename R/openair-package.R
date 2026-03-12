@@ -76,9 +76,6 @@
 #' # load package
 #' library(openair)
 #'
-#' # summarise data in a compact way
-#' summaryPlot(mydata)
-#'
 #' # traditional wind rose
 #' windRose(mydata)
 #'

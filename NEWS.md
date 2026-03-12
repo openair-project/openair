@@ -18,6 +18,8 @@
 
 - `linearRelation()` and `calcFno2()` have been removed from `openair` due to using outdated methodology and assumptions.
 
+- `summaryPlot()` has been removed from `openair`. This function was very old and inconsistent with the rest of openair. It is planned to be replaced in the future with new summary functions.
+
 - Argument names have been standardised throughout `openair`. For example, instances of `col` have been replaced with `cols`. This may cause some existing code to break, but will ensure each function behaves more similarly going into the future.
 
 ## New Features

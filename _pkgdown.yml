@@ -31,7 +31,6 @@ reference:
 - title: Other Plots
   desc: Additional plotting functions for visualising air quality data.
   contents:
-  - summaryPlot
   - scatterPlot
   - corPlot
 
