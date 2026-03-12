@@ -110,8 +110,6 @@ Compare models against measurements and models against other models.
 
 Additional plotting functions for visualising air quality data.
 
-- [`summaryPlot()`](https://openair-project.github.io/openair/reference/summaryPlot.md)
-  : Function to rapidly provide an overview of air quality data
 - [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
   : Flexible scatter plots
 - [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)

@@ -65,6 +65,7 @@
 <li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code>, <code><a href="../reference/trajLevel.html">trajLevel()</a></code> and <code><a href="../reference/trajCluster.html">trajCluster()</a></code> have had their three projection related arguments removed and replaced with a single <code>crs</code> argument, which defaults to lat/lng (<code>4326</code>).</p></li>
 <li><p>As the above three functions no longer call <code><a href="../reference/scatterPlot.html">scatterPlot()</a></code>, <code><a href="../reference/scatterPlot.html">scatterPlot()</a></code> no longer has the <code>map</code> argument.</p></li>
 <li><p><code>linearRelation()</code> and <code>calcFno2()</code> have been removed from <code>openair</code> due to using outdated methodology and assumptions.</p></li>
+<li><p><code>summaryPlot()</code> has been removed from <code>openair</code>. This function was very old and inconsistent with the rest of openair. It is planned to be replaced in the future with new summary functions.</p></li>
 <li><p>Argument names have been standardised throughout <code>openair</code>. For example, instances of <code>col</code> have been replaced with <code>cols</code>. This may cause some existing code to break, but will ensure each function behaves more similarly going into the future.</p></li>
 </ul></div>
 <div class="section level3">
@@ -260,7 +261,7 @@
 <li><p>The <code>year</code> argument of <code><a href="../reference/importMeta.html">importMeta()</a></code> is now respected when <code>source = "kcl"</code> and <code>"europe"</code>.</p></li>
 <li><p>Several of the directional analysis plot family (e.g., <code><a href="../reference/polarFreq.html">polarFreq()</a></code>) have been refactored to use <code><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null()</a></code> or <code><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na()</a></code> over <code><a href="https://rdrr.io/r/base/missing.html" class="external-link">missing()</a></code>. While predominantly an internal change, this should be make these functions easier to use inside of other functions (e.g., <code>function(data, breaks = NA) polarFreq(data, breaks = breaks))</code> will now run successfully).</p></li>
 <li><p>For <code>calendarPlot</code> when annotated with ws or wd arrows, use max ws/wd that corresponds to hour of maximum pollutant concentration and not simple the max ws/wd for a day.</p></li>
-<li><p><code><a href="../reference/summaryPlot.html">summaryPlot()</a></code> no longer forces time zones to be GMT. (<a href="https://github.com/openair-project/openair/issues/356" class="external-link">#356</a>)</p></li>
+<li><p><code>summaryPlot()</code> no longer forces time zones to be GMT. (<a href="https://github.com/openair-project/openair/issues/356" class="external-link">#356</a>)</p></li>
 </ul></div>
 </div>
     <div class="section level2">

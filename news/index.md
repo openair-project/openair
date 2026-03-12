@@ -36,6 +36,10 @@
 - `linearRelation()` and `calcFno2()` have been removed from `openair`
   due to using outdated methodology and assumptions.
 
+- `summaryPlot()` has been removed from `openair`. This function was
+  very old and inconsistent with the rest of openair. It is planned to
+  be replaced in the future with new summary functions.
+
 - Argument names have been standardised throughout `openair`. For
   example, instances of `col` have been replaced with `cols`. This may
   cause some existing code to break, but will ensure each function
@@ -648,8 +652,7 @@ CRAN release: 2023-10-09
   that corresponds to hour of maximum pollutant concentration and not
   simple the max ws/wd for a day.
 
-- [`summaryPlot()`](https://openair-project.github.io/openair/reference/summaryPlot.md)
-  no longer forces time zones to be GMT.
+- `summaryPlot()` no longer forces time zones to be GMT.
   ([\#356](https://github.com/openair-project/openair/issues/356))
 
 ## openair 2.17-0
