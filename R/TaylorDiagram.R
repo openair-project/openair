@@ -142,6 +142,16 @@
 #'   axis labels will automatically try and format pollutant names and units
 #'   properly e.g.  by subscripting the `2' in NO2.
 #'
+#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
+#'   data to extract trend components and plotting them in other ways.
+#'
+#' @param strip.position Location where the facet 'strips' are located when
+#'   using `type`. When one `type` is provided, can be one of `"left"`,
+#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
+#'   argument defines whether the strips are "switched" and can take either
+#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
+#'   locations to the bottom of the plot.
+#'
 #' @param ... Other graphical parameters are passed onto `cutData` and
 #'   `lattice:xyplot`. For example, `TaylorDiagram` passes the option
 #'   `hemisphere = "southern"` on to `cutData` to provide southern (rather than
