@@ -1160,9 +1160,5 @@ pollutionRose <- function(
 wrap_wd_label <- function(x) {
   x <- ifelse(x > 180, x - 360, x)
   x <- round(x, 1)
-  if (sign(x) != -1) {
-    paste0("+", x)
-  } else {
-    as.character(x)
-  }
+  ifelse(sign(x) != -1, paste0("+", x), as.character(x))
 }
