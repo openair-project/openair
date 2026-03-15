@@ -24,9 +24,11 @@
 
 ## New Features
 
-- `timeVariation()` has been almost completely rewritten, allowing for the following updates:
+- `timeVariation()` has been almost completely rewritten. It is now a thin wrapper around the new `variationPlot()`, which can take any arbitrary `x` value - passed to [cutData()] - to use for its x-axis.
 
-    - Gained the `panels` argument. This allows for panels other than "hour.weekday", "hour", "month", and "weekday" to be represented in the plot assembly. The first panel will be the top row, and the re
+- `timeVariation()` has the following changes:
+
+    - Gained the `panels` argument. This allows for panels other than "hour.weekday", "hour", "month", and "weekday" to be represented in the plot assembly.
     
     - `timeVariation()` will now change lines to points and polygons to rectangles for certain panel and `group` combinations: month-season, weekday-weekend, and hour-daylight.
 
