@@ -439,7 +439,7 @@ variationPlot <- function(
   while (length(ltys) < nlevels(mydata$group)) {
     ltys <- c(ltys, ltys)
   }
-  ltys < ltys[1:nlevels(mydata$group)]
+  ltys <- ltys[1:nlevels(mydata$group)]
 
   # construct plot
   thePlot <-
