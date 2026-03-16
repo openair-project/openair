@@ -167,13 +167,6 @@ checkPrep <- function(
     }
   }
 
-  if (strip.white) {
-    # set panel strip to white
-    suppressWarnings(trellis.par.set(list(
-      strip.background = list(col = "white")
-    )))
-  }
-
   # return data frame
   return(mydata)
 }

@@ -20,7 +20,8 @@ theme_openair <- function(key.position) {
         if (key.position %in% c("bottom", "right")) c(-0.2, 0) else c(0, -0.2),
         class = "rel"
       ),
-      plot.background = ggplot2::element_rect(fill = "transparent", color = NA)
+      plot.background = ggplot2::element_rect(fill = "transparent", color = NA),
+      strip.text = ggplot2::element_text(margin = ggplot2::margin_auto(1))
     )
 }
 
@@ -55,6 +56,24 @@ theme_openair_radial <- function(key.position, panel.ontop = FALSE) {
       panel.ontop = panel.ontop,
       panel.background = ggplot2::element_rect(fill = "transparent"),
       strip.text = ggplot2::element_text(margin = ggplot2::margin_auto(0.5))
+    )
+  )
+}
+
+# adapted theme_openair with a (by default) blue dashed gridline
+theme_openair_sf <- function(key.position, grid.col) {
+  list(
+    theme_openair(key.position),
+    ggplot2::theme(
+      panel.grid = ggplot2::element_line(
+        colour = grid.col,
+        linetype = 2,
+        linewidth = 0.25
+      ),
+      axis.ticks = ggplot2::element_blank(),
+      axis.text = ggplot2::element_text(colour = grid.col),
+      panel.ontop = TRUE,
+      panel.background = ggplot2::element_blank()
     )
   )
 }
@@ -106,7 +125,11 @@ get_facet <- function(
             facets = ggplot2::vars(.data[[type]]),
             labeller = labeller_openair(auto_text = auto.text),
             ncol = if (!is.null(lay) && !is.na(lay[1])) lay[1] else NULL,
-            nrow = if (!is.null(lay) && length(lay) > 1 && !is.na(lay[2])) lay[2] else NULL,
+            nrow = if (!is.null(lay) && length(lay) > 1 && !is.na(lay[2])) {
+              lay[2]
+            } else {
+              NULL
+            },
             scales = scales,
             strip.position = strip.position,
             ...

@@ -760,9 +760,9 @@ cutVecDaylight <- function(
       ifelse(
         sunrise.time.lst < sunset.time.lst,
         p.day < sunset.time.lst &
-            p.day > sunrise.time.lst,
+          p.day > sunrise.time.lst,
         !(p.day <= sunrise.time.lst &
-            p.day >= sunset.time.lst)
+          p.day >= sunset.time.lst)
       )
     )
   )

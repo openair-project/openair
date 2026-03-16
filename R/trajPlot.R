@@ -534,21 +534,3 @@ make_sf_world_map <- function(crs = 4326) {
     sf::st_cast("POLYGON") |>
     sf::st_transform(crs = crs)
 }
-
-# adapted theme_openair with a (by default) blue dashed gridline
-theme_openair_sf <- function(key.position, grid.col) {
-  list(
-    theme_openair(key.position),
-    ggplot2::theme(
-      panel.grid = ggplot2::element_line(
-        colour = grid.col,
-        linetype = 2,
-        linewidth = 0.25
-      ),
-      axis.ticks = ggplot2::element_blank(),
-      axis.text = ggplot2::element_text(colour = grid.col),
-      panel.ontop = TRUE,
-      panel.background = ggplot2::element_blank()
-    )
-  )
-}
