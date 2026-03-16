@@ -138,16 +138,16 @@ get_saq_observations_worker <- function(file, tz) {
 # Reading function
 read_saq_observations <- function(file, tz = tz, verbose) {
   # Data types
-  col_types <- cols(
-    date = col_character(),
-    date_end = col_character(),
-    site = col_character(),
-    variable = col_character(),
-    process = col_integer(),
-    summary = col_integer(),
-    validity = col_integer(),
-    unit = col_character(),
-    value = col_double()
+  col_types <- readr::cols(
+    date = readr::col_character(),
+    date_end = readr::col_character(),
+    site = readr::col_character(),
+    variable = readr::col_character(),
+    process = readr::col_integer(),
+    summary = readr::col_integer(),
+    validity = readr::col_integer(),
+    unit = readr::col_character(),
+    value = readr::col_double()
   )
 
   # Create gz connection

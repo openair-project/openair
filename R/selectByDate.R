@@ -24,7 +24,6 @@
 #' @param hour An hour or hours to select from 0-23 e.g. `hour = 0:12` to select
 #'   hours 0 to 12 inclusive.
 #' @export
-#' @importFrom stats setNames
 #' @author David Carslaw
 #' @examples
 #'
@@ -112,7 +111,7 @@ selectByDate <- function(
     # If user provided names (e.g. "Jan", "february"), convert to integers 1-12
     if (is.character(month)) {
       # Create lookup: "jan" -> 1, "feb" -> 2...
-      lookup <- setNames(1:12, tolower(month.abb))
+      lookup <- stats::setNames(1:12, tolower(month.abb))
 
       # Clean input: lowercase and first 3 chars
       clean_input <- substr(tolower(month), 1, 3)

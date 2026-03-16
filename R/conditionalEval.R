@@ -237,7 +237,7 @@ conditionalEval <- function(
     ) +
       ggplot2::geom_col(width = bin_width, position = "stack", color = NA) +
       ggplot2::scale_fill_manual(
-        values = setNames(cols, stat_levels),
+        values = stats::setNames(cols, stat_levels),
         labels = \(x) label_openair(x, auto_text = auto.text)
       ) +
       ggplot2::coord_cartesian(expand = FALSE) +
@@ -403,7 +403,7 @@ conditionalEval <- function(
         na.rm = TRUE
       ) +
       ggplot2::scale_color_manual(
-        values = setNames(myColors, var.obs),
+        values = stats::setNames(myColors, var.obs),
         labels = display_names,
         aesthetics = c("colour", "fill")
       ) +

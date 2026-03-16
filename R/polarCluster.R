@@ -144,18 +144,6 @@ polarCluster <-
     # avoid R check annoyances
     u <- v <- z <- strip <- strip.left <- NULL
 
-    # greyscale handling
-    if (length(cols) == 1 && cols == "greyscale") {
-      trellis.par.set(list(strip.background = list(col = "white")))
-    }
-
-    # set graphics
-    current.strip <- trellis.par.get("strip.background")
-    current.font <- trellis.par.get("fontsize")
-
-    # reset graphic parameters
-    on.exit(trellis.par.set(fontsize = current.font))
-
     # add id for later merging
     mydata <- mutate(mydata, .id = seq_len(nrow(mydata)))
 
@@ -199,10 +187,6 @@ polarCluster <-
       quickText(extra.args$main, auto.text)
     } else {
       quickText("", auto.text)
-    }
-
-    if ("fontsize" %in% names(extra.args)) {
-      trellis.par.set(fontsize = list(text = extra.args$fontsize))
     }
 
     # layout default

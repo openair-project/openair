@@ -85,7 +85,6 @@
 #' @seealso the `networkMap()` function from the `openairmaps` package which can
 #'   visualise site metadata on an interactive map.
 #' @export
-#' @import readr
 #' @examples
 #' \dontrun{
 #' # basic info:
@@ -200,27 +199,27 @@ importMeta <-
           "http://aq-data.ricardo-aea.com/R_data/saqgetr/helper_tables/sites_table.csv.gz"
 
         # Define data types
-        col_types <- cols(
-          site = col_character(),
-          site_name = col_character(),
-          latitude = col_double(),
-          longitude = col_double(),
-          elevation = col_double(),
-          country = col_character(),
-          country_iso_code = col_character(),
-          site_type = col_character(),
-          site_area = col_character(),
-          date_start = col_character(),
-          date_end = col_character(),
-          network = col_character(),
-          eu_code = col_character(),
-          eoi_code = col_character(),
-          data_source = col_character()
+        col_types <- readr::cols(
+          site = readr::col_character(),
+          site_name = readr::col_character(),
+          latitude = readr::col_double(),
+          longitude = readr::col_double(),
+          elevation = readr::col_double(),
+          country = readr::col_character(),
+          country_iso_code = readr::col_character(),
+          site_type = readr::col_character(),
+          site_area = readr::col_character(),
+          date_start = readr::col_character(),
+          date_end = readr::col_character(),
+          network = readr::col_character(),
+          eu_code = readr::col_character(),
+          eoi_code = readr::col_character(),
+          data_source = readr::col_character()
         )
 
         # Read data and parse dates
         meta <-
-          read_csv(file, col_types = col_types, progress = FALSE) |>
+          readr::read_csv(file, col_types = col_types, progress = FALSE) |>
           mutate(
             date_start = lubridate::ymd_hms(.data$date_start, tz = "UTC"),
             date_end = lubridate::ymd_hms(.data$date_end, tz = "UTC")

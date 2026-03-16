@@ -235,8 +235,6 @@ TheilSen <- function(
 
   # greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
-    trellis.par.set(list(strip.background = list(col = "white")))
-    # other local colours
     trend$col <- c("black", "black")
     data.col <- "darkgrey"
     text.col <- "black"
