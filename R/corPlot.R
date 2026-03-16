@@ -115,12 +115,7 @@
 #'   matrices. American Statistician, 2002(4), 1-16. doi:10.1198/000313002533
 #'
 #' @examples
-<<<<<<< HEAD
-#' \dontrun{
-#' ## basic corrgram plot
-=======
 #' # basic corrgram plot
->>>>>>> 6becaee8 (feat: convert `corPlot()` to `ggplot2`)
 #' corPlot(mydata)
 #'
 #' # plot by season
@@ -129,12 +124,9 @@
 #' # recover dendrogram when cluster = TRUE and plot it
 #' res <- corPlot(mydata, plot = FALSE)
 #' plot(res$clust)
-<<<<<<< HEAD
-#' #' ## a more interesting are hydrocarbon measurements
-=======
+#'
 #' \dontrun{
 #' # a more interesting are hydrocarbon measurements
->>>>>>> 6becaee8 (feat: convert `corPlot()` to `ggplot2`)
 #' hc <- importAURN(site = "my1", year = 2005, hc = TRUE)
 #'
 #' # now it is possible to see the hydrocarbons that behave most
@@ -165,6 +157,12 @@ corPlot <- function(
 ) {
   if (rlang::is_logical(key) && !key) {
     key.position <- "none"
+  }
+
+  if (length(type) > 1) {
+    cli::cli_abort(
+      "Only one {.arg type} is permitted in {.fun openair::corPlot}"
+    )
   }
 
   # extra.args setup
@@ -459,9 +457,7 @@ corPlot <- function(
       type,
       extra.args,
       scales = "free",
-      auto.text = auto.text,
-      # need to use ggh4x if clustered & multiple types
-      independent = cluster
+      auto.text = auto.text
     ) +
     theme_openair(key.position) +
     ggplot2::theme(panel.grid = ggplot2::element_blank(), aspect.ratio = 1) +
