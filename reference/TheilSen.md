@@ -235,7 +235,7 @@ TheilSen(
 
 - ...:
 
-  Other graphical parameters passed onto `cutData` and `lattice:xyplot`.
+  Other graphical parameters passed onto `cutData` and other functions.
   For example, `TheilSen` passes the option `hemisphere = "southern"` on
   to `cutData` to provide southern (rather than default northern)
   hemisphere handling of `type = "season"`. Similarly, common axis and

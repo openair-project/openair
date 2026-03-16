@@ -205,8 +205,7 @@ number of pollutants.</p></dd>
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
 <dd><p>Position of the key e.g. “top”, “bottom”,
-“left” and “right”. See details in <code>lattice:xyplot</code> for more
-details about finer control.</p></dd>
+“left” and “right”.</p></dd>
 
 
 <dt id="arg-strip-position">strip.position<a class="anchor" aria-label="anchor" href="#arg-strip-position"></a></dt>
@@ -230,15 +229,14 @@ data to extract trend components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other graphical parameters are passed onto <code>cutData</code> and
-<code>lattice:xyplot</code>. For example, <code>TaylorDiagram</code> passes the option
-<code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern (rather than
-default northern) hemisphere handling of <code>type = "season"</code>. Similarly,
-common graphical parameters, such as <code>layout</code> for panel arrangement and
-<code>pch</code> and <code>cex</code> for plot symbol type and size, are passed on to <code>xyplot</code>.
-Most are passed unmodified, although there are some special cases where
-<code>openair</code> may locally manage this process. For example, common axis and
-title labelling options (such as <code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed via
+<dd><p>Other graphical parameters are passed onto <code>cutData</code> and other
+functions. For example, <code>TaylorDiagram</code> passes the option <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern (rather than default
+northern) hemisphere handling of <code>type = "season"</code>. Similarly, common
+graphical parameters, such as <code>layout</code> for panel arrangement and <code>pch</code> and
+<code>cex</code> for plot symbol type and size, are passed on to <code>xyplot</code>. Most are
+passed unmodified, although there are some special cases where <code>openair</code>
+may locally manage this process. For example, common axis and title
+labelling options (such as <code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed via
 <code>quickText</code> to handle routine formatting.</p></dd>
 
 </dl></div>

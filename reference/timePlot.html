@@ -255,8 +255,7 @@ should be used for a vertical line e.g. <code>ref.x = list(v = as.POSIXct("2000-
 <dt id="arg-ref-y">ref.y<a class="anchor" aria-label="anchor" href="#arg-ref-y"></a></dt>
 <dd><p>A list with details of the horizontal lines to be added
 representing reference line(s). For example, <code>ref.y = list(h = 50, lty = 5)</code> will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))</code>. See <code>panel.abline</code> in the <code>lattice</code> package for more details on
-adding/controlling lines.</p></dd>
+e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))</code>.</p></dd>
 
 
 <dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
@@ -320,16 +319,14 @@ data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other graphical parameters are passed onto <code><a href="cutData.html">cutData()</a></code> and
-<code><a href="https://rdrr.io/pkg/lattice/man/xyplot.html" class="external-link">lattice::xyplot()</a></code>. For example, <code>timePlot()</code> passes the option
-<code>hemisphere = "southern"</code> on to <code><a href="cutData.html">cutData()</a></code> to provide southern (rather
-than default northern) hemisphere handling of <code>type = "season"</code>. Similarly,
-most common plotting parameters, such as <code>layout</code> for panel arrangement and
-<code>pch</code> and <code>cex</code> for plot symbol type and size and <code>lty</code> and <code>lwd</code> for line
-type and width, as passed to <code><a href="https://rdrr.io/pkg/lattice/man/xyplot.html" class="external-link">lattice::xyplot()</a></code>, although some maybe
-locally managed by <code>openair</code> on route, e.g., axis and title labelling
-options (such as <code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed via <code><a href="quickText.html">quickText()</a></code> to
-handle routine formatting. See examples below.</p></dd>
+<dd><p>Other graphical parameters are passed onto <code><a href="cutData.html">cutData()</a></code> and other
+functions. For example, <code>timePlot()</code> passes the option <code>hemisphere = "southern"</code> on to <code><a href="cutData.html">cutData()</a></code> to provide southern (rather than default
+northern) hemisphere handling of <code>type = "season"</code>. Similarly, most common
+plotting parameters, such as <code>layout</code> for panel arrangement and <code>pch</code> and
+<code>cex</code> for plot symbol type and size and <code>lty</code> and <code>lwd</code> for line type and
+width, although some maybe locally managed by <code>openair</code> on route, e.g.,
+axis and title labelling options (such as <code>xlab</code>, <code>ylab</code>, <code>main</code>) are
+passed via <code><a href="quickText.html">quickText()</a></code> to handle routine formatting. See examples below.</p></dd>
 
 </dl></div>
     <div class="section level2">

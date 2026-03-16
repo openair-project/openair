@@ -154,8 +154,7 @@ TaylorDiagram(
 
 - key.position:
 
-  Position of the key e.g. “top”, “bottom”, “left” and “right”. See
-  details in `lattice:xyplot` for more details about finer control.
+  Position of the key e.g. “top”, “bottom”, “left” and “right”.
 
 - strip.position:
 
@@ -179,8 +178,8 @@ TaylorDiagram(
 
 - ...:
 
-  Other graphical parameters are passed onto `cutData` and
-  `lattice:xyplot`. For example, `TaylorDiagram` passes the option
+  Other graphical parameters are passed onto `cutData` and other
+  functions. For example, `TaylorDiagram` passes the option
   `hemisphere = "southern"` on to `cutData` to provide southern (rather
   than default northern) hemisphere handling of `type = "season"`.
   Similarly, common graphical parameters, such as `layout` for panel

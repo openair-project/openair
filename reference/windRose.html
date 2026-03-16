@@ -230,15 +230,15 @@ radial limits.</p></dd>
 
 
 <dt id="arg-paddle">paddle<a class="anchor" aria-label="anchor" href="#arg-paddle"></a></dt>
-<dd><p>Either <code>TRUE</code> or <code>FALSE</code>. If <code>TRUE</code> plots rose using 'paddle' style
-spokes. If <code>FALSE</code> plots rose using 'wedge' style spokes.</p></dd>
+<dd><p>Either <code>TRUE</code> or <code>FALSE</code>. If <code>TRUE</code> plots rose using 'paddle'
+style spokes. If <code>FALSE</code> plots rose using 'wedge' style spokes.</p></dd>
 
 
 <dt id="arg-key-header">key.header<a class="anchor" aria-label="anchor" href="#arg-key-header"></a></dt>
 <dd><p>Adds additional text/labels above the scale key. For
 example, passing <code>windRose(mydata, key.header = "ws")</code> adds the addition
-text as a scale header. Note: This argument is passed to <code><a href="drawOpenKey.html">drawOpenKey()</a></code>
-via <code><a href="quickText.html">quickText()</a></code>, applying the auto.text argument, to handle formatting.</p></dd>
+text as a scale header. Note: This argument is passed to <code><a href="quickText.html">quickText()</a></code>,
+applying the auto.text argument, to handle formatting.</p></dd>
 
 
 <dt id="arg-key-footer">key.footer<a class="anchor" aria-label="anchor" href="#arg-key-footer"></a></dt>
@@ -253,7 +253,7 @@ and “left”.</p></dd>
 
 
 <dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>Fine control of the scale key via <code><a href="drawOpenKey.html">drawOpenKey()</a></code>.</p></dd>
+<dd><p>Show a key?</p></dd>
 
 
 <dt id="arg-dig-lab">dig.lab<a class="anchor" aria-label="anchor" href="#arg-dig-lab"></a></dt>
@@ -307,10 +307,9 @@ data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other parameters that are passed on to <code>drawOpenKey</code>,
-<code>lattice:xyplot</code> and <code>cutData</code>. Axis and title labelling options (<code>xlab</code>,
-<code>ylab</code>, <code>main</code>) are passed to <code>xyplot</code> via <code>quickText</code> to handle routine
-formatting.</p></dd>
+<dd><p>Other parameters that are passed on to <code>cutData</code> and other
+functions. Axis and title labelling options (<code>xlab</code>, <code>ylab</code>, <code>main</code>) are
+passed to <code>quickText</code> to handle routine formatting.</p></dd>
 
 </dl></div>
     <div class="section level2">

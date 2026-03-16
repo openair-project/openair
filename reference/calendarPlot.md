@@ -207,11 +207,7 @@ calendarPlot(
 
 - key:
 
-  Fine control of the scale key via
-  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md).
-  See
-  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md)
-  for further details.
+  Show a key?
 
 - key.header, key.footer:
 

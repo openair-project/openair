@@ -56,16 +56,18 @@
 <div class="section level3">
 <h3 id="dependency-changes-development-version">Dependency Changes<a class="anchor" aria-label="anchor" href="#dependency-changes-development-version"></a></h3>
 <ul><li><p><code>openair</code> now depends on R v4.1 and, internally, uses the base R pipe (<code>|&gt;</code>).</p></li>
-<li><p><code>openair</code> now imports <code>ggplot2</code> and <code>scales</code>.</p></li>
-<li><p><code>openair</code> no longer suggests <code>maps</code> or <code>mapdata</code> or imports <code>mapproj</code>. Instead, it suggests <code>sf</code>.</p></li>
+<li><p><code>openair</code> now imports <code>ggplot2</code> and <code>scales</code> and suggests <code>sf</code>.</p></li>
+<li><p><code>openair</code> no longer imports <code>lattice</code>, <code>latticeExtra</code>, <code>hexbin</code> or <code>mapproj</code>.</p></li>
+<li><p><code>openair</code> no longer imports <code>mapproj</code> or suggests <code>maps</code> or <code>mapdata</code>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-development-version">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
 <ul><li><p>All plotting functions are now written in <code>ggplot2</code>. <code>lattice</code> specific options and annotations will no longer work, but many can now be achieved using <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/annotate.html" class="external-link">ggplot2::annotate()</a></code>.</p></li>
 <li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code>, <code><a href="../reference/trajLevel.html">trajLevel()</a></code> and <code><a href="../reference/trajCluster.html">trajCluster()</a></code> have had their three projection related arguments removed and replaced with a single <code>crs</code> argument, which defaults to lat/lng (<code>4326</code>).</p></li>
 <li><p>As the above three functions no longer call <code><a href="../reference/scatterPlot.html">scatterPlot()</a></code>, <code><a href="../reference/scatterPlot.html">scatterPlot()</a></code> no longer has the <code>map</code> argument.</p></li>
+<li><p><code>drawOpenKey()</code> has been removed due to being <code>lattice</code>-specific.</p></li>
 <li><p><code>linearRelation()</code> and <code>calcFno2()</code> have been removed from <code>openair</code> due to using outdated methodology and assumptions.</p></li>
-<li><p><code>summaryPlot()</code> has been removed from <code>openair</code>. This function was very old and inconsistent with the rest of openair. It is planned to be replaced in the future with new summary functions.</p></li>
+<li><p><code>summaryPlot()</code> has been removed from <code>openair</code>. This function was very old and inconsistent with the rest of <code>openair</code>. It is planned to be replaced in the future with new summary functions.</p></li>
 <li><p>Argument names have been standardised throughout <code>openair</code>. For example, instances of <code>col</code> have been replaced with <code>cols</code>. This may cause some existing code to break, but will ensure each function behaves more similarly going into the future.</p></li>
 </ul></div>
 <div class="section level3">
@@ -107,18 +109,18 @@
 <li><p><code>"season"</code> is now a permitted <code>avg.time</code> option in <code><a href="../reference/timeProp.html">timeProp()</a></code>, better aligning it with the options in <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
 <li><p><code>...</code> is now correctly passed to <code><a href="../reference/cutData.html">cutData()</a></code> when using <code>type</code>/<code>proportion</code>.</p></li>
 </ul></li>
-<li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> have gained the <code>grid.nx</code> and <code>grid.ny</code> arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.</p></li>
-<li><p><code><a href="../reference/quickText.html">quickText()</a></code> now converts <code>air_temp</code> (a common <code>worldmet</code> variable) into <code>"Temperature"</code>.</p></li>
-<li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> is much faster with the bulk of the calculations made using C++.</p></li>
-<li><p><code>runRegression</code> is now much faster with a new algorithm.</p></li>
-<li><p><code><a href="../reference/trendLevel.html">trendLevel()</a></code> now supports 2 values being passed to <code>type</code>, which will create a 2D grid using <code><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">ggplot2::facet_grid()</a></code>.</p></li>
-<li><p>New function <code><a href="../reference/WhittakerSmooth.html">WhittakerSmooth()</a></code> to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.</p></li>
 <li>
-<p><code><a href="../reference/corPlot.html">corPlot()</a></code> has gained several new features:</p>
+<p><code><a href="../reference/corPlot.html">corPlot()</a></code> refinements:</p>
 <ul><li><p>Added the <code>annotate</code> argument which can change the correlation annotation to a p-value marker or stars, or remove it entirely.</p></li>
 <li><p>Added two new arguments <code>triangle</code> and <code>diagonal</code> for controlling the plot appearance.</p></li>
 <li><p>Added arguments <code>key</code>, <code>key.position</code> and <code>key.header</code> for adding and refining a plot legend.</p></li>
 </ul></li>
+<li><p>New function <code><a href="../reference/WhittakerSmooth.html">WhittakerSmooth()</a></code> to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.</p></li>
+<li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> have gained the <code>grid.nx</code> and <code>grid.ny</code> arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.</p></li>
+<li><p><code><a href="../reference/quickText.html">quickText()</a></code> now converts <code>air_temp</code> (a common <code>worldmet</code> variable) into <code>"Temperature"</code>.</p></li>
+<li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> is much faster with the bulk of the calculations made using C++.</p></li>
+<li><p><code><a href="../reference/runRegression.html">runRegression()</a></code> is now much faster with a new algorithm.</p></li>
+<li><p><code><a href="../reference/trendLevel.html">trendLevel()</a></code> now supports 2 values being passed to <code>type</code>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>

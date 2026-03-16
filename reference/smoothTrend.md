@@ -176,8 +176,6 @@ smoothTrend(
   reference line(s). For example, `ref.y = list(h = 50, lty = 5)` will
   add a dashed horizontal line at 50. Several lines can be plotted e.g.
   `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))`.
-  See `panel.abline` in the `lattice` package for more details on
-  adding/controlling lines.
 
 - key:
 
@@ -261,20 +259,15 @@ smoothTrend(
 
   Other graphical parameters are passed onto
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-  and
-  [`lattice::xyplot()`](https://rdrr.io/pkg/lattice/man/xyplot.html).
-  For example, `smoothTrend()` passes the option
+  and other functions. For example, `smoothTrend()` passes the option
   `hemisphere = "southern"` on to
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
   to provide southern (rather than default northern) hemisphere handling
   of `type = "season"`. Similarly, common graphical arguments, such as
   `xlim` and `ylim` for plotting ranges and `pch` and `cex` for plot
-  symbol type and size, are passed on
-  [`lattice::xyplot()`](https://rdrr.io/pkg/lattice/man/xyplot.html),
-  although some local modifications may be applied by openair. For
-  example, axis and title labelling options (such as `xlab`, `ylab` and
-  `main`) are passed to
-  [`lattice::xyplot()`](https://rdrr.io/pkg/lattice/man/xyplot.html) via
+  symbol type and size are honoured, although some local modifications
+  may be applied by openair. For example, axis and title labelling
+  options (such as `xlab`, `ylab` and `main`) are passed to to
   [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
   to handle routine formatting. One special case here is that many
   graphical parameters can be vectors when used with

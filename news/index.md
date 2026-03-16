@@ -7,10 +7,12 @@
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe
   (`|>`).
 
-- `openair` now imports `ggplot2` and `scales`.
+- `openair` now imports `ggplot2` and `scales` and suggests `sf`.
 
-- `openair` no longer suggests `maps` or `mapdata` or imports `mapproj`.
-  Instead, it suggests `sf`.
+- `openair` no longer imports `lattice`, `latticeExtra`, `hexbin` or
+  `mapproj`.
+
+- `openair` no longer imports `mapproj` or suggests `maps` or `mapdata`.
 
 ### Breaking Changes
 
@@ -33,11 +35,13 @@
   [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
   no longer has the `map` argument.
 
+- `drawOpenKey()` has been removed due to being `lattice`-specific.
+
 - `linearRelation()` and `calcFno2()` have been removed from `openair`
   due to using outdated methodology and assumptions.
 
 - `summaryPlot()` has been removed from `openair`. This function was
-  very old and inconsistent with the rest of openair. It is planned to
+  very old and inconsistent with the rest of `openair`. It is planned to
   be replaced in the future with new summary functions.
 
 - Argument names have been standardised throughout `openair`. For
@@ -158,6 +162,26 @@
     [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
     when using `type`/`proportion`.
 
+- [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
+  refinements:
+
+  - Added the `annotate` argument which can change the correlation
+    annotation to a p-value marker or stars, or remove it entirely.
+
+  - Added two new arguments `triangle` and `diagonal` for controlling
+    the plot appearance.
+
+  - Added arguments `key`, `key.position` and `key.header` for adding
+    and refining a plot legend.
+
+- New function
+  [`WhittakerSmooth()`](https://openair-project.github.io/openair/reference/WhittakerSmooth.md)
+  to do Whittaker-Eilers Smoothing. This is a fast and general smoothing
+  technique, well-suited to a wide range of problems. The function can
+  be used to flexibly smooth and interpolate missing data. Additionally,
+  the function can flexibly define a baseline (and hence increment) for
+  a time series.
+
 - [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md)
   and
   [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md)
@@ -172,32 +196,11 @@
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
   is much faster with the bulk of the calculations made using C++.
 
-- `runRegression` is now much faster with a new algorithm.
+- [`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md)
+  is now much faster with a new algorithm.
 
 - [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
-  now supports 2 values being passed to `type`, which will create a 2D
-  grid using
-  [`ggplot2::facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html).
-
-- New function
-  [`WhittakerSmooth()`](https://openair-project.github.io/openair/reference/WhittakerSmooth.md)
-  to do Whittaker-Eilers Smoothing. This is a fast and general smoothing
-  technique, well-suited to a wide range of problems. The function can
-  be used to flexibly smooth and interpolate missing data. Additionally,
-  the function can flexibly define a baseline (and hence increment) for
-  a time series.
-
-- [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
-  has gained several new features:
-
-  - Added the `annotate` argument which can change the correlation
-    annotation to a p-value marker or stars, or remove it entirely.
-
-  - Added two new arguments `triangle` and `diagonal` for controlling
-    the plot appearance.
-
-  - Added arguments `key`, `key.position` and `key.header` for adding
-    and refining a plot legend.
+  now supports 2 values being passed to `type`.
 
 ### Bug Fixes
 

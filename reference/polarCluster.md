@@ -51,8 +51,8 @@ polarCluster(
 - n.clusters:
 
   Number of clusters to use. If `n.clusters` is more than length 1, then
-  a `lattice` panel plot will be output showing the clusters identified
-  for each one of `n.clusters`.
+  a faceted plot will be output showing the clusters identified for each
+  one of `n.clusters`.
 
 - after:
 
@@ -337,8 +337,8 @@ polarCluster(
   :   Adds additional text/labels to the scale key. For example, passing
       the options `key.header = "header", key.footer = "footer1"` adds
       addition text above and below the scale key. These arguments are
-      passed to `drawOpenKey` via `quickText`, applying the `auto.text`
-      argument, to handle formatting.
+      passed to `quickText`, applying the `auto.text` argument, to
+      handle formatting.
 
   `key.footer`
 
@@ -351,8 +351,7 @@ polarCluster(
 
   `key`
 
-  :   Fine control of the scale key via `drawOpenKey`. See `drawOpenKey`
-      for further details.
+  :   Show a key?
 
   `ws_spread`
 

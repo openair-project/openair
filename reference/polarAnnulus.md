@@ -249,8 +249,7 @@ polarAnnulus(
   Adds additional text/labels to the scale key. For example, passing the
   options `key.header = "header", key.footer = "footer1"` adds addition
   text above and below the scale key. These arguments are passed to
-  `drawOpenKey` via `quickText`, applying the `auto.text` argument, to
-  handle formatting.
+  `quickText`, applying the `auto.text` argument, to handle formatting.
 
 - key.footer:
 
@@ -263,8 +262,7 @@ polarAnnulus(
 
 - key:
 
-  Fine control of the scale key via `drawOpenKey`. See `drawOpenKey` for
-  further details.
+  Show a key?
 
 - auto.text:
 
@@ -279,8 +277,8 @@ polarAnnulus(
 
 - ...:
 
-  Other graphical parameters passed onto `lattice:levelplot` and
-  `cutData`. For example, `polarAnnulus` passes the option
+  Other graphical parameters passed onto `cutData` and other functions.
+  For example, `polarAnnulus` passes the option
   `hemisphere = "southern"` on to `cutData` to provide southern (rather
   than default northern) hemisphere handling of `type = "season"`.
   Similarly, common axis and title labelling options (such as `xlab`,

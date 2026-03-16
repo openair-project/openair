@@ -157,16 +157,14 @@ percentileRose(
 
 - key:
 
-  Fine control of the scale key via `drawOpenKey`. See `drawOpenKey` for
-  further details.
+  Show a key?
 
 - key.header:
 
   Adds additional text/labels to the scale key. For example, passing the
   options `key.header = "header", key.footer = "footer1"` adds addition
   text above and below the scale key. These arguments are passed to
-  `drawOpenKey` via `quickText`, applying the `auto.text` argument, to
-  handle formatting.
+  `quickText`, applying the `auto.text` argument, to handle formatting.
 
 - key.footer:
 
@@ -193,8 +191,8 @@ percentileRose(
 
 - ...:
 
-  Other graphical parameters are passed onto `cutData` and
-  `lattice:xyplot`. For example, `percentileRose` passes the option
+  Other graphical parameters are passed onto `cutData` and other
+  functions. For example, `percentileRose` passes the option
   `hemisphere = "southern"` on to `cutData` to provide southern (rather
   than default northern) hemisphere handling of `type = "season"`.
   Similarly, common graphical arguments, such as `xlim` and `ylim` for

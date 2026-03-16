@@ -249,8 +249,20 @@ Tools for refining openair plots.
   : Pre-defined openair colours and definition of user-defined colours
 - [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
   : Automatic text formatting for openair
-- [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md)
-  : Scale key handling for openair
+
+### Smoothing Functions
+
+Tools for smoothing data for plotting or analysis
+
+- [`rollingMean()`](https://openair-project.github.io/openair/reference/rollingMean.md)
+  : Calculate rolling mean pollutant values
+- [`rollingQuantile()`](https://openair-project.github.io/openair/reference/rollingQuantile.md)
+  : Calculate rolling quantile pollutant values
+- [`GaussianSmooth()`](https://openair-project.github.io/openair/reference/GaussianSmooth.md)
+  : Calculate rolling Gaussian smooth of pollutant values
+- [`WhittakerSmooth()`](https://openair-project.github.io/openair/reference/WhittakerSmooth.md)
+  : Calculate Whittaker-Eilers Smoothing, Interpolation and Baseline
+  Determination
 
 ### Data Utilities
 
@@ -268,17 +280,8 @@ Tools for manipulating and summarising air quality data.
   : Function to split data in different ways for conditioning
 - [`datePad()`](https://openair-project.github.io/openair/reference/datePad.md)
   : Pad a time-series dataframe and optionally fill values by block
-- [`rollingMean()`](https://openair-project.github.io/openair/reference/rollingMean.md)
-  : Calculate rolling mean pollutant values
-- [`rollingQuantile()`](https://openair-project.github.io/openair/reference/rollingQuantile.md)
-  : Calculate rolling quantile pollutant values
 - [`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md)
   : Rolling regression for pollutant source characterisation.
-- [`GaussianSmooth()`](https://openair-project.github.io/openair/reference/GaussianSmooth.md)
-  : Calculate rolling Gaussian smooth of pollutant values
-- [`WhittakerSmooth()`](https://openair-project.github.io/openair/reference/WhittakerSmooth.md)
-  : Calculate Whittaker-Eilers Smoothing, Interpolation and Baseline
-  Determination
 - [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
   : Subset a data frame based on date
 - [`selectRunning()`](https://openair-project.github.io/openair/reference/selectRunning.md)

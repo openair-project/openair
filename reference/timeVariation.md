@@ -177,8 +177,6 @@ timeVariation(
   reference line(s). For example, `ref.y = list(h = 50, lty = 5)` will
   add a dashed horizontal line at 50. Several lines can be plotted e.g.
   `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))`.
-  See `panel.abline` in the `lattice` package for more details on
-  adding/controlling lines.
 
 - key:
 

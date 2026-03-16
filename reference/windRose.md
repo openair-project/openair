@@ -187,8 +187,6 @@ windRose(
   Adds additional text/labels above the scale key. For example, passing
   `windRose(mydata, key.header = "ws")` adds the addition text as a
   scale header. Note: This argument is passed to
-  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md)
-  via
   [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md),
   applying the auto.text argument, to handle formatting.
 
@@ -204,8 +202,7 @@ windRose(
 
 - key:
 
-  Fine control of the scale key via
-  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md).
+  Show a key?
 
 - dig.lab:
 
@@ -259,10 +256,9 @@ windRose(
 
 - ...:
 
-  Other parameters that are passed on to `drawOpenKey`, `lattice:xyplot`
-  and `cutData`. Axis and title labelling options (`xlab`, `ylab`,
-  `main`) are passed to `xyplot` via `quickText` to handle routine
-  formatting.
+  Other parameters that are passed on to `cutData` and other functions.
+  Axis and title labelling options (`xlab`, `ylab`, `main`) are passed
+  to `quickText` to handle routine formatting.
 
 ## Value
 

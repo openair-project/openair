@@ -46,8 +46,7 @@ pollutionRose(
 
 - key:
 
-  Fine control of the scale key via
-  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md).
+  Show a key?
 
 - breaks:
 
@@ -196,8 +195,6 @@ pollutionRose(
   :   Adds additional text/labels above the scale key. For example,
       passing `windRose(mydata, key.header = "ws")` adds the addition
       text as a scale header. Note: This argument is passed to
-      [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md)
-      via
       [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md),
       applying the auto.text argument, to handle formatting.
 

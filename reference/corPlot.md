@@ -1,8 +1,8 @@
 # Correlation matrices with conditioning
 
-Function to to draw and visualise correlation matrices using lattice.
-The primary purpose is as a tool for exploratory data analysis.
-Hierarchical clustering is used to group similar variables.
+Function to to draw and visualise correlation matrices. The primary
+purpose is as a tool for exploratory data analysis. Hierarchical
+clustering is used to group similar variables.
 
 ## Usage
 
@@ -190,14 +190,6 @@ more clearly; see examples below.
 It is also possible to use the `openair` type option to condition the
 data in many flexible ways, although this may become difficult to
 visualise with too many panels.
-
-## References
-
-Sarkar, D. (2007). Lattice Multivariate Data Visualization with R. New
-York: Springer.
-
-Friendly, M. (2002). Corrgrams : Exploratory displays for correlation
-matrices. American Statistician, 2002(4), 1-16. doi:10.1198/000313002533
 
 ## Author
 

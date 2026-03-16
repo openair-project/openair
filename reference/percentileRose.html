@@ -207,16 +207,14 @@ properly e.g.  by subscripting the `2' in NO2.</p></dd>
 
 
 <dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>Fine control of the scale key via <code>drawOpenKey</code>. See <code>drawOpenKey</code>
-for further details.</p></dd>
+<dd><p>Show a key?</p></dd>
 
 
 <dt id="arg-key-header">key.header<a class="anchor" aria-label="anchor" href="#arg-key-header"></a></dt>
 <dd><p>Adds additional text/labels to the scale key. For example,
 passing the options <code>key.header = "header", key.footer = "footer1"</code> adds
 addition text above and below the scale key. These arguments are passed to
-<code>drawOpenKey</code> via <code>quickText</code>, applying the <code>auto.text</code> argument, to handle
-formatting.</p></dd>
+<code>quickText</code>, applying the <code>auto.text</code> argument, to handle formatting.</p></dd>
 
 
 <dt id="arg-key-footer">key.footer<a class="anchor" aria-label="anchor" href="#arg-key-footer"></a></dt>
@@ -243,16 +241,14 @@ data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other graphical parameters are passed onto <code>cutData</code> and
-<code>lattice:xyplot</code>. For example, <code>percentileRose</code> passes the option
-<code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern (rather than
-default northern) hemisphere handling of <code>type = "season"</code>. Similarly,
-common graphical arguments, such as <code>xlim</code> and <code>ylim</code> for plotting ranges
-and <code>lwd</code> for line thickness when using <code>fill = FALSE</code>, are passed on
-<code>xyplot</code>, although some local modifications may be applied by openair. For
-example, axis and title labelling options (such as <code>xlab</code>, <code>ylab</code> and
-<code>main</code>) are passed to <code>xyplot</code> via <code>quickText</code> to handle routine
-formatting.</p></dd>
+<dd><p>Other graphical parameters are passed onto <code>cutData</code> and other
+functions. For example, <code>percentileRose</code> passes the option <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern (rather than default
+northern) hemisphere handling of <code>type = "season"</code>. Similarly, common
+graphical arguments, such as <code>xlim</code> and <code>ylim</code> for plotting ranges and
+<code>lwd</code> for line thickness when using <code>fill = FALSE</code>, are passed on <code>xyplot</code>,
+although some local modifications may be applied by openair. For example,
+axis and title labelling options (such as <code>xlab</code>, <code>ylab</code> and <code>main</code>) are
+passed to <code>xyplot</code> via <code>quickText</code> to handle routine formatting.</p></dd>
 
 </dl></div>
     <div class="section level2">

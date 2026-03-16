@@ -171,8 +171,7 @@ scatterPlot(
   model evaluation. The 1:1 line is solid and the 1:0.5 and 1:2 lines
   are dashed. Together these lines help show how close a group of points
   are to a 1:1 relationship and also show the points that are within a
-  factor of two (FAC2). `mod.line` is appropriately transformed when x
-  or y axes are on a log scale.
+  factor of two (FAC2).
 
 - cols:
 
@@ -185,8 +184,8 @@ scatterPlot(
 
 - plot.type:
 
-  `lattice` plot type. Can be “p” (points — default), “l” (lines) or “b”
-  (lines and points).
+  Type of plot: “p” (points, default), “l” (lines) or “b” (both points
+  and lines).
 
 - key:
 
@@ -247,18 +246,6 @@ scatterPlot(
   `windflow = list(col = "grey", lwd = 2, scale = 0.1)`. This option
   requires wind speed (`ws`) and wind direction (`wd`) to be available.
 
-  The maximum length of the arrow plotted is a fraction of the plot
-  dimension with the longest arrow being `scale` of the plot x-y
-  dimension. Note, if the plot size is adjusted manually by the user it
-  should be re-plotted to ensure the correct wind angle. The list may
-  contain other options to `panel.arrows` in the `lattice` package.
-  Other useful options include `length`, which controls the length of
-  the arrow head and `angle`, which controls the angle of the arrow
-  head.
-
-  This option works best where there are not too many data to ensure
-  over-plotting does not become a problem.
-
 - y.relation:
 
   This determines how the y-axis scale is plotted. “same” ensures all
@@ -273,18 +260,13 @@ scatterPlot(
   The latter is a useful setting when plotting data with very different
   values.
 
-- ref.x:
+- ref.x, ref.y:
 
-  See `ref.y` for details.
-
-- ref.y:
-
-  A list with details of the horizontal lines to be added representing
-  reference line(s). For example, `ref.y = list(h = 50, lty = 5)` will
-  add a dashed horizontal line at 50. Several lines can be plotted e.g.
+  A list with details of the horizontal or vertical lines to be added
+  representing reference line(s). For example,
+  `ref.y = list(h = 50, lty = 5)` will add a dashed horizontal line
+  at 50. Several lines can be plotted e.g.
   `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))`.
-  See `panel.abline` in the `lattice` package for more details on
-  adding/controlling lines.
 
 - k:
 
@@ -293,10 +275,11 @@ scatterPlot(
 
 - dist:
 
-  When plotting smooth surfaces (`method = "level"` and `smooth = TRUE`,
-  `dist` controls how far from the original data the predictions should
-  be made. See `exclude.too.far` from the `mgcv` package. Data are first
-  transformed to a unit square. Values should be between 0 and 1.
+  When plotting smooth surfaces (`method = "level"` and
+  `smooth = TRUE`), `dist` controls how far from the original data the
+  predictions should be made. See `exclude.too.far` from the `mgcv`
+  package. Data are first transformed to a unit square. Values should be
+  between 0 and 1.
 
 - auto.text:
 
@@ -311,26 +294,14 @@ scatterPlot(
 
 - ...:
 
-  Other graphical parameters are passed onto `cutData` and an
-  appropriate `lattice` plot function (`xyplot`, `levelplot` or
-  `hexbinplot` depending on `method`). For example, `scatterPlot` passes
-  the option `hemisphere = "southern"` on to `cutData` to provide
-  southern (rather than default northern) hemisphere handling of
-  `type = "season"`. Similarly, for the default case
-  `method = "scatter"` common axis and title labelling options (such as
-  `xlab`, `ylab`, `main`) are passed to `xyplot` via `quickText` to
-  handle routine formatting. Other common graphical parameters, e.g.
-  `layout` for panel arrangement, `pch` for plot symbol and `lwd` and
-  `lty` for line width and type, as also available (see examples below).
-
-  For `method = "hexbin"` it can be useful to transform the scale if it
-  is dominated by a few very high values. This is possible by supplying
-  two functions: one that that applies the transformation and the other
-  that inverses it. For log scaling (the default) for example,
-  `trans = function(x) log(x)` and `inv = function(x) exp(x)`. For a
-  square root transform use `trans = sqrt` and `inv = function(x) x^2`.
-  To not carry out any transformation the options `trans = NULL` and
-  `inv = NULL` should be used.
+  Other graphical parameters passed onto `cutData` and ggplot2 layers.
+  For example, `scatterPlot` passes the option `hemisphere = "southern"`
+  on to `cutData` to provide southern (rather than default northern)
+  hemisphere handling of `type = "season"`. Common graphical parameters
+  include `xlab`, `ylab`, `main`, `alpha`, `cex` (point size), `lwd`
+  (line width) and `lty` (line type). For `method = "hexbin"` a
+  log-scale fill is applied by default; pass `trans = NULL` to disable
+  or provide custom `trans` and `inv` transform functions.
 
 ## Value
 
@@ -399,6 +370,8 @@ dat2004 <- selectByDate(mydata, year = 2004)
 # basic use, single pollutant
 
 scatterPlot(dat2004, x = "nox", y = "no2")
+#> Warning: Removed 20 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
 
 if (FALSE) { # \dontrun{
 # scatterPlot by year
@@ -410,6 +383,8 @@ scatterPlot(dat2004,
   x = "nox", y = "no2", type = "weekday", key =
     FALSE
 )
+#> Warning: Removed 20 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
 
 
 # example of the use of continuous where colour is used to show
@@ -448,9 +423,6 @@ scatterPlot(mydata,
 scatterPlot(mydata, x = "nox", y = "no2", z = "o3", type = c("season", "weekend"))
 
 # use hexagonal binning
-
-library(hexbin)
-# basic use, single pollutant
 scatterPlot(mydata, x = "nox", y = "no2", method = "hexbin")
 
 # scatterPlot by year
@@ -459,15 +431,10 @@ scatterPlot(mydata,
     "hexbin"
 )
 
-
 ## bin data and plot it - can see how for high NO2, O3 is also high
-
 scatterPlot(mydata, x = "nox", y = "no2", z = "o3", method = "level", dist = 0.02)
 
-
-## fit surface for clearer view of relationship - clear effect of
-## increased O3
-
+## fit surface for clearer view of relationship
 scatterPlot(mydata,
   x = "nox", y = "no2", z = "o3", method = "level",
   x.inc = 10, y.inc = 2, smooth = TRUE

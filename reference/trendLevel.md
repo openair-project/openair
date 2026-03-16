@@ -99,8 +99,7 @@ trendLevel(
 
 - key:
 
-  Fine control of the scale key via
-  [`drawOpenKey()`](https://openair-project.github.io/openair/reference/drawOpenKey.md).
+  Show a key?
 
 - key.header, key.footer:
 

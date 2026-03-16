@@ -55,6 +55,8 @@ scatterPlot(
   x = "no2",
   y = "pm10"
 )
+#> Warning: Removed 4000 rows containing missing values or values outside the scale range
+#> (`geom_point()`).
 
 
 # using quickText in other plots

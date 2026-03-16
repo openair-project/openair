@@ -91,8 +91,8 @@ are required.</p></dd>
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
 <dd><p>Mandatory. A pollutant name corresponding to a variable in a
-data frame should be supplied e.g. <code>pollutant = "nox"</code>. Only one
-pollutant can be chosen.</p></dd>
+data frame should be supplied e.g. <code>pollutant = "nox"</code>. Only one pollutant
+can be chosen.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
@@ -105,15 +105,15 @@ coordinates, the default is wind speed, “ws”.</p></dd>
 
 
 <dt id="arg-n-clusters">n.clusters<a class="anchor" aria-label="anchor" href="#arg-n-clusters"></a></dt>
-<dd><p>Number of clusters to use. If <code>n.clusters</code> is more
-than length 1, then a <code>lattice</code> panel plot will be output showing the
-clusters identified for each one of <code>n.clusters</code>.</p></dd>
+<dd><p>Number of clusters to use. If <code>n.clusters</code> is more than
+length 1, then a faceted plot will be output showing the clusters
+identified for each one of <code>n.clusters</code>.</p></dd>
 
 
 <dt id="arg-after">after<a class="anchor" aria-label="anchor" href="#arg-after"></a></dt>
 <dd><p>The function can be applied to differences between polar plot
-surfaces (see <a href="polarDiff.html">polarDiff</a> for details). If an <code>after</code> data frame
-is supplied, the clustering will be carried out on the differences between
+surfaces (see <a href="polarDiff.html">polarDiff</a> for details). If an <code>after</code> data frame is
+supplied, the clustering will be carried out on the differences between
 <code>after</code> and <code>mydata</code> in the same way as <a href="polarDiff.html">polarDiff</a>.</p></dd>
 
 
@@ -343,8 +343,7 @@ more than one <code>pollutant</code> is chosen.</p></dd>
 <dd><p>Adds additional text/labels to the scale key. For example,
 passing the options <code>key.header = "header", key.footer = "footer1"</code> adds
 addition text above and below the scale key. These arguments are passed to
-<code>drawOpenKey</code> via <code>quickText</code>, applying the <code>auto.text</code> argument, to handle
-formatting.</p></dd>
+<code>quickText</code>, applying the <code>auto.text</code> argument, to handle formatting.</p></dd>
 
     <dt><code>key.footer</code></dt>
 <dd><p>see <code>key.footer</code>.</p></dd>
@@ -354,8 +353,7 @@ formatting.</p></dd>
 arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code> and <code>"left"</code>.</p></dd>
 
     <dt><code>key</code></dt>
-<dd><p>Fine control of the scale key via <code>drawOpenKey</code>. See <code>drawOpenKey</code>
-for further details.</p></dd>
+<dd><p>Show a key?</p></dd>
 
     <dt><code>ws_spread</code></dt>
 <dd><p>The value of sigma used for Gaussian kernel weighting of
@@ -396,23 +394,22 @@ be ignored if <code>"quantile.slope"</code> is not used.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>an <a href="openair-package.html">openair</a> object. The object includes four main
-components: <code>call</code>, the command used to generate the plot;
-<code>data</code>, by default the original data frame with a new field
-<code>cluster</code> identifying the cluster, <code>clust_stats</code> giving the
-contributions made by each cluster to number of measurements, their
-percentage and the percentage by pollutant; and <code>plot</code>, the plot
-itself. Note that any rows where the value of <code>pollutant</code> is <code>NA</code>
-are ignored so that the returned data frame may have fewer rows than the
-original.</p>
-<p>If the clustering is carried out considering differences, i.e., an
-<code>after</code> data frame is supplied, the output also includes the
-<code>after</code> data frame with cluster identified.</p>
+components: <code>call</code>, the command used to generate the plot; <code>data</code>, by
+default the original data frame with a new field <code>cluster</code> identifying the
+cluster, <code>clust_stats</code> giving the contributions made by each cluster to
+number of measurements, their percentage and the percentage by pollutant;
+and <code>plot</code>, the plot itself. Note that any rows where the value of
+<code>pollutant</code> is <code>NA</code> are ignored so that the returned data frame may have
+fewer rows than the original.</p>
+<p>If the clustering is carried out considering differences, i.e., an <code>after</code>
+data frame is supplied, the output also includes the <code>after</code> data frame
+with cluster identified.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Bivariate polar plots generated using the <code>polarPlot</code> function provide a
-very useful graphical technique for identifying and characterising different
-air pollution sources. While bivariate polar plots provide a useful graphical
+    <p>Bivariate polar plots generated using the <code>polarPlot</code> function provide a very
+useful graphical technique for identifying and characterising different air
+pollution sources. While bivariate polar plots provide a useful graphical
 indication of potential sources, their location and wind-speed or other
 variable dependence, they do have several limitations. Often, a `feature'
 will be detected in a plot but the subsequent analysis of data meeting
@@ -420,18 +417,18 @@ particular wind speed/direction criteria will be based only on the judgement
 of the investigator concerning the wind speed-direction intervals of
 interest. Furthermore, the identification of a feature can depend on the
 choice of the colour scale used, making the process somewhat arbitrary.</p>
-<p><code>polarCluster</code> applies Partition Around Medoids (PAM) clustering
-techniques to <code><a href="polarPlot.html">polarPlot()</a></code> surfaces to help identify potentially interesting
-features for further analysis. Details of PAM can be found in the
-<code>cluster</code> package (a core R package that will be pre-installed on all R
-systems). PAM clustering is similar to k-means but has several advantages
-e.g. is more robust to outliers. The clustering is based on the equal
-contribution assumed from the u and v wind components and the associated
-concentration. The data are standardized before clustering takes place.</p>
+<p><code>polarCluster</code> applies Partition Around Medoids (PAM) clustering techniques
+to <code><a href="polarPlot.html">polarPlot()</a></code> surfaces to help identify potentially interesting features
+for further analysis. Details of PAM can be found in the <code>cluster</code> package (a
+core R package that will be pre-installed on all R systems). PAM clustering
+is similar to k-means but has several advantages e.g. is more robust to
+outliers. The clustering is based on the equal contribution assumed from the
+u and v wind components and the associated concentration. The data are
+standardized before clustering takes place.</p>
 <p>The function works best by first trying different numbers of clusters and
-plotting them. This is achieved by setting <code>n.clusters</code> to be of length
-more than 1. For example, if <code>n.clusters = 2:10</code> then a plot will be
-output showing the 9 cluster levels 2 to 10.</p>
+plotting them. This is achieved by setting <code>n.clusters</code> to be of length more
+than 1. For example, if <code>n.clusters = 2:10</code> then a plot will be output
+showing the 9 cluster levels 2 to 10.</p>
 <p>The clustering can also be applied to differences in polar plot surfaces (see
 <code><a href="polarDiff.html">polarDiff()</a></code>). On this case a second data frame (<code>after</code>) should be
 supplied.</p>
@@ -440,19 +437,18 @@ long time to run — particularly when the number of clusters is increased.
 For this reason it can be a good idea to run a few clusters first to get a
 feel for it e.g. <code>n.clusters = 2:5</code>.</p>
 <p>Once the number of clusters has been decided, the user can then run
-<code>polarCluster</code> to return the original data frame together with a new
-column <code>cluster</code>, which gives the cluster number as a character (see
-example). Note that any rows where the value of <code>pollutant</code> is <code>NA</code>
-are ignored so that the returned data frame may have fewer rows than the
-original.</p>
+<code>polarCluster</code> to return the original data frame together with a new column
+<code>cluster</code>, which gives the cluster number as a character (see example). Note
+that any rows where the value of <code>pollutant</code> is <code>NA</code> are ignored so that the
+returned data frame may have fewer rows than the original.</p>
 <p>Note that there are no automatic ways in ensuring the most appropriate number
 of clusters as this is application dependent. However, there is often
 a-priori information available on what different features in polar plots
 correspond to. Nevertheless, the appropriateness of different clusters is
 best determined by post-processing the data. The Carslaw and Beevers (2012)
 paper discusses these issues in more detail.</p>
-<p>Note that unlike most other <code>openair</code> functions only a single
-<code>type</code> “default” is allowed.</p>
+<p>Note that unlike most other <code>openair</code> functions only a single <code>type</code>
+“default” is allowed.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
