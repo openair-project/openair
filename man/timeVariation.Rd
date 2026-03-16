@@ -120,8 +120,7 @@ where over-lapping confidence intervals can over complicate plots.}
 
 \item{ref.y}{A list with details of the horizontal lines to be added
 representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more details on
-adding/controlling lines.}
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}.}
 
 \item{key}{By default \code{\link[=timeVariation]{timeVariation()}} produces four plots on one page.
 While it is useful to see these plots together, it is sometimes necessary

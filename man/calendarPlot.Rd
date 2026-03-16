@@ -141,8 +141,7 @@ labels include the year label? \code{TRUE} creates labels like "January-2000",
 \code{FALSE} labels just as "January". If multiple years of data are detected,
 this option is forced to be \code{TRUE}.}
 
-\item{key}{Fine control of the scale key via \code{\link[=drawOpenKey]{drawOpenKey()}}. See
-\code{\link[=drawOpenKey]{drawOpenKey()}} for further details.}
+\item{key}{Show a key?}
 
 \item{key.header, key.footer}{Used to control the title of the plot key. By
 default, \code{key.header} is the \code{statistic} and \code{key.footer} is the

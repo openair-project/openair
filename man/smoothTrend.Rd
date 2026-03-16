@@ -128,8 +128,7 @@ should be used for a vertical line e.g. \code{ref.x = list(v = as.POSIXct("2000-
 
 \item{ref.y}{A list with details of the horizontal lines to be added
 representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more details on
-adding/controlling lines.}
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}.}
 
 \item{key}{Should a key be drawn? The default is \code{TRUE}.}
 
@@ -181,18 +180,15 @@ data to extract plot components and plotting them in other ways.}
 \item{progress}{Show a progress bar when many groups make up \code{type}? Defaults
 to \code{TRUE}.}
 
-\item{...}{Other graphical parameters are passed onto \code{\link[=cutData]{cutData()}} and
-\code{\link[lattice:xyplot]{lattice::xyplot()}}. For example, \code{\link[=smoothTrend]{smoothTrend()}} passes the option
-\code{hemisphere = "southern"} on to \code{\link[=cutData]{cutData()}} to provide southern (rather
-than default northern) hemisphere handling of \code{type = "season"}. Similarly,
-common graphical arguments, such as \code{xlim} and \code{ylim} for plotting ranges
-and \code{pch} and \code{cex} for plot symbol type and size, are passed on
-\code{\link[lattice:xyplot]{lattice::xyplot()}}, although some local modifications may be applied by
-openair. For example, axis and title labelling options (such as \code{xlab},
-\code{ylab} and \code{main}) are passed to \code{\link[lattice:xyplot]{lattice::xyplot()}} via \code{\link[=quickText]{quickText()}} to
-handle routine formatting. One special case here is that many graphical
-parameters can be vectors when used with \code{statistic = "percentile"} and a
-vector of \code{percentile} values, see examples below.}
+\item{...}{Other graphical parameters are passed onto \code{\link[=cutData]{cutData()}} and other
+functions. For example, \code{\link[=smoothTrend]{smoothTrend()}} passes the option \code{hemisphere = "southern"} on to \code{\link[=cutData]{cutData()}} to provide southern (rather than default
+northern) hemisphere handling of \code{type = "season"}. Similarly, common
+graphical arguments, such as \code{xlim} and \code{ylim} for plotting ranges and
+\code{pch} and \code{cex} for plot symbol type and size are honoured, although some
+local modifications may be applied by openair. For example, axis and title
+labelling options (such as \code{xlab}, \code{ylab} and \code{main}) are passed to to
+\code{\link[=quickText]{quickText()}} to handle routine formatting. One special case here is that
+many graphical parameters can be vectors when used with \code{statistic = "percentile"} and a vector of \code{percentile} values, see examples below.}
 }
 \value{
 an \link[=openair-package]{openair} object

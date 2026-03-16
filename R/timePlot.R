@@ -120,8 +120,7 @@
 #'   representing reference line(s). For example, `ref.y = list(h = 50, lty =
 #'   5)` will add a dashed horizontal line at 50. Several lines can be plotted
 #'   e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-#'   "blue"))`. See `panel.abline` in the `lattice` package for more details on
-#'   adding/controlling lines.
+#'   "blue"))`.
 #'
 #' @param key.columns Number of columns to be used in the key. With many
 #'   pollutants a single column can make to key too wide. The user can thus
@@ -164,16 +163,15 @@
 #' @param plot Should a plot be produced? `FALSE` can be useful when analysing
 #'   data to extract plot components and plotting them in other ways.
 #'
-#' @param ... Other graphical parameters are passed onto [cutData()] and
-#'   [lattice::xyplot()]. For example, [timePlot()] passes the option
-#'   `hemisphere = "southern"` on to [cutData()] to provide southern (rather
-#'   than default northern) hemisphere handling of `type = "season"`. Similarly,
-#'   most common plotting parameters, such as `layout` for panel arrangement and
-#'   `pch` and `cex` for plot symbol type and size and `lty` and `lwd` for line
-#'   type and width, as passed to [lattice::xyplot()], although some maybe
-#'   locally managed by `openair` on route, e.g., axis and title labelling
-#'   options (such as `xlab`, `ylab`, `main`) are passed via [quickText()] to
-#'   handle routine formatting. See examples below.
+#' @param ... Other graphical parameters are passed onto [cutData()] and other
+#'   functions. For example, [timePlot()] passes the option `hemisphere =
+#'   "southern"` on to [cutData()] to provide southern (rather than default
+#'   northern) hemisphere handling of `type = "season"`. Similarly, most common
+#'   plotting parameters, such as `layout` for panel arrangement and `pch` and
+#'   `cex` for plot symbol type and size and `lty` and `lwd` for line type and
+#'   width, although some maybe locally managed by `openair` on route, e.g.,
+#'   axis and title labelling options (such as `xlab`, `ylab`, `main`) are
+#'   passed via [quickText()] to handle routine formatting. See examples below.
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw

@@ -4,21 +4,25 @@
 
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe (`|>`).
 
-- `openair` now imports `ggplot2` and `scales`.
+- `openair` now imports `ggplot2` and `scales` and suggests `sf`.
 
-- `openair` no longer suggests `maps` or `mapdata` or imports `mapproj`. Instead, it suggests `sf`.
+- `openair` no longer imports `lattice`, `latticeExtra`, `hexbin` or `mapproj`.
+
+- `openair` no longer imports `mapproj` or suggests `maps` or `mapdata`.
 
 ## Breaking Changes
 
 - All plotting functions are now written in `ggplot2`. `lattice` specific options and annotations will no longer work, but many can now be achieved using `ggplot2::theme()` and `ggplot2::annotate()`.
-  
+
 - `trajPlot()`, `trajLevel()` and `trajCluster()` have had their three projection related arguments removed and replaced with a single `crs` argument, which defaults to lat/lng (`4326`).
 
 - As the above three functions no longer call `scatterPlot()`, `scatterPlot()` no longer has the `map` argument.
 
+- `drawOpenKey()` has been removed due to being `lattice`-specific.
+
 - `linearRelation()` and `calcFno2()` have been removed from `openair` due to using outdated methodology and assumptions.
 
-- `summaryPlot()` has been removed from `openair`. This function was very old and inconsistent with the rest of openair. It is planned to be replaced in the future with new summary functions.
+- `summaryPlot()` has been removed from `openair`. This function was very old and inconsistent with the rest of `openair`. It is planned to be replaced in the future with new summary functions.
 
 - Argument names have been standardised throughout `openair`. For example, instances of `col` have been replaced with `cols`. This may cause some existing code to break, but will ensure each function behaves more similarly going into the future.
 
@@ -78,25 +82,25 @@
     
     - `...` is now correctly passed to `cutData()` when using `type`/`proportion`.
 
-- `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
-
-- `quickText()` now converts `air_temp` (a common `worldmet` variable) into `"Temperature"`.
-
-- `timeAverage()` is much faster with the bulk of the calculations made using C++.
-
-- `runRegression` is now much faster with a new algorithm.
-
-- `trendLevel()` now supports 2 values being passed to `type`, which will create a 2D grid using `ggplot2::facet_grid()`.
-
-- New function `WhittakerSmooth()` to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.
-
-- `corPlot()` has gained several new features:
+- `corPlot()` refinements:
 
     - Added the `annotate` argument which can change the correlation annotation to a p-value marker or stars, or remove it entirely.
 
     - Added two new arguments `triangle` and `diagonal` for controlling the plot appearance.
     
     - Added arguments `key`, `key.position` and `key.header` for adding and refining a plot legend.
+
+- New function `WhittakerSmooth()` to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.
+
+- `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
+
+- `quickText()` now converts `air_temp` (a common `worldmet` variable) into `"Temperature"`.
+
+- `timeAverage()` is much faster with the bulk of the calculations made using C++.
+
+- `runRegression()` is now much faster with a new algorithm.
+
+- `trendLevel()` now supports 2 values being passed to `type`.
 
 ## Bug Fixes
 

@@ -3,9 +3,9 @@
 #' Function for identifying clusters in bivariate polar plots ([polarPlot()]);
 #' identifying clusters in the original data for subsequent processing.
 #'
-#' Bivariate polar plots generated using the `polarPlot` function provide a
-#' very useful graphical technique for identifying and characterising different
-#' air pollution sources. While bivariate polar plots provide a useful graphical
+#' Bivariate polar plots generated using the `polarPlot` function provide a very
+#' useful graphical technique for identifying and characterising different air
+#' pollution sources. While bivariate polar plots provide a useful graphical
 #' indication of potential sources, their location and wind-speed or other
 #' variable dependence, they do have several limitations. Often, a `feature'
 #' will be detected in a plot but the subsequent analysis of data meeting
@@ -14,19 +14,19 @@
 #' interest. Furthermore, the identification of a feature can depend on the
 #' choice of the colour scale used, making the process somewhat arbitrary.
 #'
-#' `polarCluster` applies Partition Around Medoids (PAM) clustering
-#' techniques to [polarPlot()] surfaces to help identify potentially interesting
-#' features for further analysis. Details of PAM can be found in the
-#' `cluster` package (a core R package that will be pre-installed on all R
-#' systems). PAM clustering is similar to k-means but has several advantages
-#' e.g. is more robust to outliers. The clustering is based on the equal
-#' contribution assumed from the u and v wind components and the associated
-#' concentration. The data are standardized before clustering takes place.
+#' `polarCluster` applies Partition Around Medoids (PAM) clustering techniques
+#' to [polarPlot()] surfaces to help identify potentially interesting features
+#' for further analysis. Details of PAM can be found in the `cluster` package (a
+#' core R package that will be pre-installed on all R systems). PAM clustering
+#' is similar to k-means but has several advantages e.g. is more robust to
+#' outliers. The clustering is based on the equal contribution assumed from the
+#' u and v wind components and the associated concentration. The data are
+#' standardized before clustering takes place.
 #'
 #' The function works best by first trying different numbers of clusters and
-#' plotting them. This is achieved by setting `n.clusters` to be of length
-#' more than 1. For example, if `n.clusters = 2:10` then a plot will be
-#' output showing the 9 cluster levels 2 to 10.
+#' plotting them. This is achieved by setting `n.clusters` to be of length more
+#' than 1. For example, if `n.clusters = 2:10` then a plot will be output
+#' showing the 9 cluster levels 2 to 10.
 #'
 #' The clustering can also be applied to differences in polar plot surfaces (see
 #' [polarDiff()]). On this case a second data frame (`after`) should be
@@ -38,11 +38,10 @@
 #' feel for it e.g. `n.clusters = 2:5`.
 #'
 #' Once the number of clusters has been decided, the user can then run
-#' `polarCluster` to return the original data frame together with a new
-#' column `cluster`, which gives the cluster number as a character (see
-#' example). Note that any rows where the value of `pollutant` is `NA`
-#' are ignored so that the returned data frame may have fewer rows than the
-#' original.
+#' `polarCluster` to return the original data frame together with a new column
+#' `cluster`, which gives the cluster number as a character (see example). Note
+#' that any rows where the value of `pollutant` is `NA` are ignored so that the
+#' returned data frame may have fewer rows than the original.
 #'
 #' Note that there are no automatic ways in ensuring the most appropriate number
 #' of clusters as this is application dependent. However, there is often
@@ -51,21 +50,21 @@
 #' best determined by post-processing the data. The Carslaw and Beevers (2012)
 #' paper discusses these issues in more detail.
 #'
-#' Note that unlike most other `openair` functions only a single
-#' `type` \dQuote{default} is allowed.
+#' Note that unlike most other `openair` functions only a single `type`
+#' \dQuote{default} is allowed.
 #'
 #' @inheritParams polarPlot
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
-#'   data frame should be supplied e.g. `pollutant = "nox"`. Only one
-#'   pollutant can be chosen.
+#'   data frame should be supplied e.g. `pollutant = "nox"`. Only one pollutant
+#'   can be chosen.
 #' @param x Name of variable to plot against wind direction in polar
 #'   coordinates, the default is wind speed, \dQuote{ws}.
-#' @param n.clusters Number of clusters to use. If `n.clusters` is more
-#'   than length 1, then a `lattice` panel plot will be output showing the
-#'   clusters identified for each one of `n.clusters`.
+#' @param n.clusters Number of clusters to use. If `n.clusters` is more than
+#'   length 1, then a faceted plot will be output showing the clusters
+#'   identified for each one of `n.clusters`.
 #' @param after The function can be applied to differences between polar plot
-#'   surfaces (see [polarDiff] for details). If an `after` data frame
-#'   is supplied, the clustering will be carried out on the differences between
+#'   surfaces (see [polarDiff] for details). If an `after` data frame is
+#'   supplied, the clustering will be carried out on the differences between
 #'   `after` and `mydata` in the same way as [polarDiff].
 #' @param plot.data By default, the `data` component of `polarCluster()`
 #'   contains the original data frame appended with a new "cluster" column. When
@@ -78,18 +77,17 @@
 #' @export
 #' @import cluster
 #' @return an [openair][openair-package] object. The object includes four main
-#'   components: `call`, the command used to generate the plot;
-#'   `data`, by default the original data frame with a new field
-#'   `cluster` identifying the cluster, `clust_stats` giving the
-#'   contributions made by each cluster to number of measurements, their
-#'   percentage and the percentage by pollutant; and `plot`, the plot
-#'   itself. Note that any rows where the value of `pollutant` is `NA`
-#'   are ignored so that the returned data frame may have fewer rows than the
-#'   original.
+#'   components: `call`, the command used to generate the plot; `data`, by
+#'   default the original data frame with a new field `cluster` identifying the
+#'   cluster, `clust_stats` giving the contributions made by each cluster to
+#'   number of measurements, their percentage and the percentage by pollutant;
+#'   and `plot`, the plot itself. Note that any rows where the value of
+#'   `pollutant` is `NA` are ignored so that the returned data frame may have
+#'   fewer rows than the original.
 #'
-#'   If the clustering is carried out considering differences, i.e., an
-#'   `after` data frame is supplied, the output also includes the
-#'   `after` data frame with cluster identified.
+#'   If the clustering is carried out considering differences, i.e., an `after`
+#'   data frame is supplied, the output also includes the `after` data frame
+#'   with cluster identified.
 #' @author David Carslaw
 #' @family polar directional analysis functions
 #' @family cluster analysis functions

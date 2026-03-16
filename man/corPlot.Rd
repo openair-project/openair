@@ -106,13 +106,13 @@ Some additional arguments are also available:
 an \link[=openair-package]{openair} object
 }
 \description{
-Function to to draw and visualise correlation matrices using lattice. The
-primary purpose is as a tool for exploratory data analysis. Hierarchical
-clustering is used to group similar variables.
+Function to to draw and visualise correlation matrices. The primary purpose
+is as a tool for exploratory data analysis. Hierarchical clustering is used
+to group similar variables.
 }
 \details{
-The \code{\link[=corPlot]{corPlot()}} function plots correlation matrices. The implementation relies
-heavily on that shown in Sarkar (2007), with a few extensions.
+The \code{\link[=corPlot]{corPlot()}} function plots correlation matrices. The implementation
+relies heavily on that shown in Sarkar (2007), with a few extensions.
 
 Correlation matrices are a very effective way of understating relationships
 between many variables. The \code{\link[=corPlot]{corPlot()}} shows the correlation coded in three
@@ -157,13 +157,6 @@ hc <- importAURN(site = "my1", year = 2005, hc = TRUE)
 corPlot(hc)
 }
 
-}
-\references{
-Sarkar, D. (2007). Lattice Multivariate Data Visualization with
-R. New York: Springer.
-
-Friendly, M. (2002). Corrgrams : Exploratory displays for correlation
-matrices. American Statistician, 2002(4), 1-16. doi:10.1198/000313002533
 }
 \author{
 David Carslaw

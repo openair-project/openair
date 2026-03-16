@@ -99,8 +99,6 @@
 #' @keywords internal
 "_PACKAGE"
 ## usethis namespace: start
-#' @import lattice
-#' @importFrom latticeExtra useOuterStrips
 #' @importFrom lubridate as_date
 #' @importFrom lubridate ceiling_date
 #' @importFrom lubridate day

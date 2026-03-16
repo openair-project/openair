@@ -169,8 +169,8 @@ data to extract trend components and plotting them in other ways.}
 \item{silent}{When \code{FALSE} the function will give updates on trend-fitting
 progress.}
 
-\item{...}{Other graphical parameters passed onto \code{cutData} and
-\code{lattice:xyplot}. For example, \code{TheilSen} passes the option \code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than default
+\item{...}{Other graphical parameters passed onto \code{cutData} and other
+functions. For example, \code{TheilSen} passes the option \code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than default
 northern) hemisphere handling of \code{type = "season"}. Similarly, common axis
 and title labelling options (such as \code{xlab}, \code{ylab}, \code{main}) are passed to
 \code{xyplot} via \code{quickText} to handle routine formatting.}

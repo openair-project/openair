@@ -130,8 +130,7 @@ value is also shown.}
 inform model evaluation. The 1:1 line is solid and the 1:0.5 and 1:2 lines
 are dashed. Together these lines help show how close a group of points are
 to a 1:1 relationship and also show the points that are within a factor of
-two (FAC2). \code{mod.line} is appropriately transformed when x or y axes are on
-a log scale.}
+two (FAC2).}
 
 \item{cols}{Colours to be used for plotting. Options include
 \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
@@ -140,8 +139,8 @@ more details. For user defined the user can supply a list of colour names
 recognised by R (type \code{colours()} to see the full list). An example would
 be \code{cols = c("yellow", "green", "blue")}}
 
-\item{plot.type}{\code{lattice} plot type. Can be \dQuote{p} (points --- default),
-\dQuote{l} (lines) or \dQuote{b} (lines and points).}
+\item{plot.type}{Type of plot: \dQuote{p} (points, default), \dQuote{l}
+(lines) or \dQuote{b} (both points and lines).}
 
 \item{key}{Should a key be drawn? The default is \code{TRUE}.}
 
@@ -178,18 +177,7 @@ span 0-100.}
 
 \item{windflow}{This option allows a scatter plot to show the wind
 speed/direction shows as an arrow. The option is a list e.g. \code{windflow = list(col = "grey", lwd = 2, scale = 0.1)}. This option requires wind speed
-(\code{ws}) and wind direction (\code{wd}) to be available.
-
-The maximum length of the arrow plotted is a fraction of the plot dimension
-with the longest arrow being \code{scale} of the plot x-y dimension. Note, if
-the plot size is adjusted manually by the user it should be re-plotted to
-ensure the correct wind angle. The list may contain other options to
-\code{panel.arrows} in the \code{lattice} package. Other useful options include
-\code{length}, which controls the length of the arrow head and \code{angle}, which
-controls the angle of the arrow head.
-
-This option works best where there are not too many data to ensure
-over-plotting does not become a problem.}
+(\code{ws}) and wind direction (\code{wd}) to be available.}
 
 \item{y.relation}{This determines how the y-axis scale is plotted.
 \dQuote{same} ensures all panels use the same scale and \dQuote{free} will
@@ -201,48 +189,31 @@ data with very different values.}
 use panel-specific scales. The latter is a useful setting when plotting
 data with very different values.}
 
-\item{ref.x}{See \code{ref.y} for details.}
+\item{ref.x, ref.y}{A list with details of the horizontal or vertical lines to
+be added representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be
+plotted e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}.}
 
-\item{ref.y}{A list with details of the horizontal lines to be added
-representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more
-details on adding/controlling lines.}
+\item{k}{Smoothing parameter supplied to \code{gam} for fitting a smooth surface
+when \code{method = "level"}.}
 
-\item{k}{Smoothing parameter supplied to \code{gam} for fitting a smooth
-surface when \code{method = "level"}.}
+\item{dist}{When plotting smooth surfaces (\code{method = "level"} and \code{smooth = TRUE}), \code{dist} controls how far from the original data the predictions
+should be made. See \code{exclude.too.far} from the \code{mgcv} package. Data are
+first transformed to a unit square. Values should be between 0 and 1.}
 
-\item{dist}{When plotting smooth surfaces (\code{method = "level"} and
-\code{smooth = TRUE}, \code{dist} controls how far from the original data
-the predictions should be made. See \code{exclude.too.far} from the
-\code{mgcv} package. Data are first transformed to a unit square. Values
-should be between 0 and 1.}
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly e.g.  by subscripting the \sQuote{2} in NO2.}
 
-\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
-titles and axis labels will automatically try and format pollutant names
-and units properly e.g.  by subscripting the \sQuote{2} in NO2.}
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data to extract plot components and plotting them in other ways.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other ways.}
-
-\item{...}{Other graphical parameters are passed onto \code{cutData} and an
-appropriate \code{lattice} plot function (\code{xyplot}, \code{levelplot} or \code{hexbinplot}
-depending on \code{method}). For example, \code{scatterPlot} passes the option
-\code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than
-default northern) hemisphere handling of \code{type = "season"}. Similarly, for
-the default case \code{method = "scatter"} common axis and title labelling
-options (such as \code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
-\code{quickText} to handle routine formatting. Other common graphical
-parameters, e.g. \code{layout} for panel arrangement, \code{pch} for plot symbol and
-\code{lwd} and \code{lty} for line width and type, as also available (see examples
-below).
-
-For \code{method = "hexbin"} it can be useful to transform the scale if it is
-dominated by a few very high values. This is possible by supplying two
-functions: one that that applies the transformation and the other that
-inverses it. For log scaling (the default) for example, \code{trans = function(x) log(x)} and \code{inv = function(x) exp(x)}. For a square root
-transform use \code{trans = sqrt} and \code{inv = function(x) x^2}. To not carry out
-any transformation the options \code{trans = NULL} and \code{inv = NULL} should be
-used.}
+\item{...}{Other graphical parameters passed onto \code{cutData} and ggplot2
+layers. For example, \code{scatterPlot} passes the option \code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than default
+northern) hemisphere handling of \code{type = "season"}. Common graphical
+parameters include \code{xlab}, \code{ylab}, \code{main}, \code{alpha}, \code{cex} (point size),
+\code{lwd} (line width) and \code{lty} (line type). For \code{method = "hexbin"} a
+log-scale fill is applied by default; pass \code{trans = NULL} to disable or
+provide custom \code{trans} and \code{inv} transform functions.}
 }
 \value{
 an \link[=openair-package]{openair} object
@@ -341,9 +312,6 @@ scatterPlot(mydata,
 scatterPlot(mydata, x = "nox", y = "no2", z = "o3", type = c("season", "weekend"))
 
 # use hexagonal binning
-
-library(hexbin)
-# basic use, single pollutant
 scatterPlot(mydata, x = "nox", y = "no2", method = "hexbin")
 
 # scatterPlot by year
@@ -352,15 +320,10 @@ scatterPlot(mydata,
     "hexbin"
 )
 
-
 ## bin data and plot it - can see how for high NO2, O3 is also high
-
 scatterPlot(mydata, x = "nox", y = "no2", z = "o3", method = "level", dist = 0.02)
 
-
-## fit surface for clearer view of relationship - clear effect of
-## increased O3
-
+## fit surface for clearer view of relationship
 scatterPlot(mydata,
   x = "nox", y = "no2", z = "o3", method = "level",
   x.inc = 10, y.inc = 2, smooth = TRUE

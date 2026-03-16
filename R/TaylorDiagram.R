@@ -135,8 +135,7 @@
 #'   number of pollutants.
 #'
 #' @param key.position Position of the key e.g. \dQuote{top}, \dQuote{bottom},
-#'   \dQuote{left} and \dQuote{right}. See details in `lattice:xyplot` for more
-#'   details about finer control.
+#'   \dQuote{left} and \dQuote{right}.
 #'
 #' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
 #'   axis labels will automatically try and format pollutant names and units
@@ -152,15 +151,15 @@
 #'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
 #'   locations to the bottom of the plot.
 #'
-#' @param ... Other graphical parameters are passed onto `cutData` and
-#'   `lattice:xyplot`. For example, `TaylorDiagram` passes the option
-#'   `hemisphere = "southern"` on to `cutData` to provide southern (rather than
-#'   default northern) hemisphere handling of `type = "season"`. Similarly,
-#'   common graphical parameters, such as `layout` for panel arrangement and
-#'   `pch` and `cex` for plot symbol type and size, are passed on to `xyplot`.
-#'   Most are passed unmodified, although there are some special cases where
-#'   `openair` may locally manage this process. For example, common axis and
-#'   title labelling options (such as `xlab`, `ylab`, `main`) are passed via
+#' @param ... Other graphical parameters are passed onto `cutData` and other
+#'   functions. For example, `TaylorDiagram` passes the option `hemisphere =
+#'   "southern"` on to `cutData` to provide southern (rather than default
+#'   northern) hemisphere handling of `type = "season"`. Similarly, common
+#'   graphical parameters, such as `layout` for panel arrangement and `pch` and
+#'   `cex` for plot symbol type and size, are passed on to `xyplot`. Most are
+#'   passed unmodified, although there are some special cases where `openair`
+#'   may locally manage this process. For example, common axis and title
+#'   labelling options (such as `xlab`, `ylab`, `main`) are passed via
 #'   `quickText` to handle routine formatting.
 #'
 #' @export

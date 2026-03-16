@@ -143,8 +143,8 @@
 #'   argument defines whether the strips are "switched" and can take either
 #'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
 #'   locations to the bottom of the plot.
-#' @param ... Other graphical parameters passed onto `cutData` and
-#'   `lattice:xyplot`. For example, `TheilSen` passes the option `hemisphere =
+#' @param ... Other graphical parameters passed onto `cutData` and other
+#'   functions. For example, `TheilSen` passes the option `hemisphere =
 #'   "southern"` on to `cutData` to provide southern (rather than default
 #'   northern) hemisphere handling of `type = "season"`. Similarly, common axis
 #'   and title labelling options (such as `xlab`, `ylab`, `main`) are passed to

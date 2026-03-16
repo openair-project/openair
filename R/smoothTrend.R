@@ -70,18 +70,17 @@
 #'   in package `mgcv`. By default it is not used and the amount of smoothing is
 #'   optimised automatically. However, sometimes it is useful to set the
 #'   smoothing amount manually using `k`.
-#' @param ... Other graphical parameters are passed onto [cutData()] and
-#'   [lattice::xyplot()]. For example, [smoothTrend()] passes the option
-#'   `hemisphere = "southern"` on to [cutData()] to provide southern (rather
-#'   than default northern) hemisphere handling of `type = "season"`. Similarly,
-#'   common graphical arguments, such as `xlim` and `ylim` for plotting ranges
-#'   and `pch` and `cex` for plot symbol type and size, are passed on
-#'   [lattice::xyplot()], although some local modifications may be applied by
-#'   openair. For example, axis and title labelling options (such as `xlab`,
-#'   `ylab` and `main`) are passed to [lattice::xyplot()] via [quickText()] to
-#'   handle routine formatting. One special case here is that many graphical
-#'   parameters can be vectors when used with `statistic = "percentile"` and a
-#'   vector of `percentile` values, see examples below.
+#' @param ... Other graphical parameters are passed onto [cutData()] and other
+#'   functions. For example, [smoothTrend()] passes the option `hemisphere =
+#'   "southern"` on to [cutData()] to provide southern (rather than default
+#'   northern) hemisphere handling of `type = "season"`. Similarly, common
+#'   graphical arguments, such as `xlim` and `ylim` for plotting ranges and
+#'   `pch` and `cex` for plot symbol type and size are honoured, although some
+#'   local modifications may be applied by openair. For example, axis and title
+#'   labelling options (such as `xlab`, `ylab` and `main`) are passed to to
+#'   [quickText()] to handle routine formatting. One special case here is that
+#'   many graphical parameters can be vectors when used with `statistic =
+#'   "percentile"` and a vector of `percentile` values, see examples below.
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw

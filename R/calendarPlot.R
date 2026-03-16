@@ -105,8 +105,7 @@
 #'   `pollutant`. These are pasted together to form the key title.
 #' @param key.position Location where the scale key is to plotted. Allowed
 #'   arguments currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
-#' @param key Fine control of the scale key via [drawOpenKey()]. See
-#'   [drawOpenKey()] for further details.
+#' @param key Show a key?
 #' @param strip.position Location where the facet 'strips' are located when
 #'   using `type`. Can be one of `"left"`, `"right"`, `"bottom"` or `"top"`.
 #' @param ... The following additional arguments are available:

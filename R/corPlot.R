@@ -1,11 +1,11 @@
 #' Correlation matrices with conditioning
 #'
-#' Function to to draw and visualise correlation matrices using lattice. The
-#' primary purpose is as a tool for exploratory data analysis. Hierarchical
-#' clustering is used to group similar variables.
+#' Function to to draw and visualise correlation matrices. The primary purpose
+#' is as a tool for exploratory data analysis. Hierarchical clustering is used
+#' to group similar variables.
 #'
-#' The [corPlot()] function plots correlation matrices. The implementation relies
-#' heavily on that shown in Sarkar (2007), with a few extensions.
+#' The [corPlot()] function plots correlation matrices. The implementation
+#' relies heavily on that shown in Sarkar (2007), with a few extensions.
 #'
 #' Correlation matrices are a very effective way of understating relationships
 #' between many variables. The [corPlot()] shows the correlation coded in three
@@ -107,12 +107,6 @@
 #'
 #' @return an [openair][openair-package] object
 #' @export
-#'
-#' @references Sarkar, D. (2007). Lattice Multivariate Data Visualization with
-#'   R. New York: Springer.
-#'
-#'   Friendly, M. (2002). Corrgrams : Exploratory displays for correlation
-#'   matrices. American Statistician, 2002(4), 1-16. doi:10.1198/000313002533
 #'
 #' @examples
 #' # basic corrgram plot

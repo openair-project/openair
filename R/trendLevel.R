@@ -60,7 +60,7 @@
 #'   part of the legend title.
 #' @param key.position Location where the scale key should be plotted. Allowed
 #'   arguments currently include `"top"`, `"right"`, `"bottom"`, and `"left"`.
-#' @param key Fine control of the scale key via [drawOpenKey()].
+#' @param key Show a key?
 #' @param strip.position Location where the facet 'strips' are located when
 #'   using `type`. When one `type` is provided, can be one of `"left"`,
 #'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
