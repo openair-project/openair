@@ -282,16 +282,14 @@
 #' @param key.header Adds additional text/labels to the scale key. For example,
 #'   passing the options `key.header = "header", key.footer = "footer1"` adds
 #'   addition text above and below the scale key. These arguments are passed to
-#'   `drawOpenKey` via `quickText`, applying the `auto.text` argument, to handle
-#'   formatting.
+#'   `quickText`, applying the `auto.text` argument, to handle formatting.
 #'
 #' @param key.footer see `key.footer`.
 #'
 #' @param key.position Location where the scale key is to plotted. Allowed
 #'   arguments currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
 #'
-#' @param key Fine control of the scale key via `drawOpenKey`. See `drawOpenKey`
-#'   for further details.
+#' @param key Show a key?
 #'
 #' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
 #'   axis labels will automatically try and format pollutant names and units

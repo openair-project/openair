@@ -142,8 +142,8 @@
 #'   0 and 360 degrees) to mitigate such problems. For example `angle.scale =
 #'   45` will draw the scale heading in a NE direction.
 #'
-#' @param ... Other graphical parameters passed onto `lattice:levelplot` and
-#'   `cutData`. For example, `polarAnnulus` passes the option `hemisphere =
+#' @param ... Other graphical parameters passed onto `cutData` and other
+#'   functions. For example, `polarAnnulus` passes the option `hemisphere =
 #'   "southern"` on to `cutData` to provide southern (rather than default
 #'   northern) hemisphere handling of `type = "season"`. Similarly, common axis
 #'   and title labelling options (such as `xlab`, `ylab`, `main`) are passed to

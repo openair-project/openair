@@ -114,8 +114,7 @@ choose to use several columns by setting \code{columns} to be less than the
 number of pollutants.}
 
 \item{key.position}{Position of the key e.g. \dQuote{top}, \dQuote{bottom},
-\dQuote{left} and \dQuote{right}. See details in \code{lattice:xyplot} for more
-details about finer control.}
+\dQuote{left} and \dQuote{right}.}
 
 \item{strip.position}{Location where the facet 'strips' are located when
 using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
@@ -131,15 +130,14 @@ properly e.g.  by subscripting the `2' in NO2.}
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract trend components and plotting them in other ways.}
 
-\item{...}{Other graphical parameters are passed onto \code{cutData} and
-\code{lattice:xyplot}. For example, \code{TaylorDiagram} passes the option
-\code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than
-default northern) hemisphere handling of \code{type = "season"}. Similarly,
-common graphical parameters, such as \code{layout} for panel arrangement and
-\code{pch} and \code{cex} for plot symbol type and size, are passed on to \code{xyplot}.
-Most are passed unmodified, although there are some special cases where
-\code{openair} may locally manage this process. For example, common axis and
-title labelling options (such as \code{xlab}, \code{ylab}, \code{main}) are passed via
+\item{...}{Other graphical parameters are passed onto \code{cutData} and other
+functions. For example, \code{TaylorDiagram} passes the option \code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than default
+northern) hemisphere handling of \code{type = "season"}. Similarly, common
+graphical parameters, such as \code{layout} for panel arrangement and \code{pch} and
+\code{cex} for plot symbol type and size, are passed on to \code{xyplot}. Most are
+passed unmodified, although there are some special cases where \code{openair}
+may locally manage this process. For example, common axis and title
+labelling options (such as \code{xlab}, \code{ylab}, \code{main}) are passed via
 \code{quickText} to handle routine formatting.}
 }
 \value{

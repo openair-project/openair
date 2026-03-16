@@ -153,7 +153,7 @@ timeProp <- function(
       n = dplyr::n(),
       .by = dplyr::all_of(group_2)
     ) |>
-    # needs specific arrangement for lattice
+    # needs specific arrangement
     dplyr::arrange(
       dplyr::pick(dplyr::all_of(type)),
       .data$xleft,

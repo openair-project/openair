@@ -75,8 +75,8 @@
 #'   wider.
 #' @param seg `seg` determines with width of the segments. For example, `seg =
 #'   0.5` will produce segments 0.5 * `angle`.
-#' @param paddle Either `TRUE` or `FALSE`. If `TRUE` plots rose using 'paddle' style
-#'   spokes. If `FALSE` plots rose using 'wedge' style spokes.
+#' @param paddle Either `TRUE` or `FALSE`. If `TRUE` plots rose using 'paddle'
+#'   style spokes. If `FALSE` plots rose using 'wedge' style spokes.
 #' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
 #'   axis labels will automatically try and format pollutant names and units
 #'   properly, e.g., by subscripting the \sQuote{2} in NO2.
@@ -97,14 +97,14 @@
 #'   radial limits.
 #' @param key.header Adds additional text/labels above the scale key. For
 #'   example, passing `windRose(mydata, key.header = "ws")` adds the addition
-#'   text as a scale header. Note: This argument is passed to [drawOpenKey()]
-#'   via [quickText()], applying the auto.text argument, to handle formatting.
+#'   text as a scale header. Note: This argument is passed to [quickText()],
+#'   applying the auto.text argument, to handle formatting.
 #' @param key.footer Adds additional text/labels below the scale key. See
 #'   `key.header` for further information.
 #' @param key.position Location where the scale key is to plotted. Allowed
 #'   arguments currently include \dQuote{top}, \dQuote{right}, \dQuote{bottom}
 #'   and \dQuote{left}.
-#' @param key Fine control of the scale key via [drawOpenKey()].
+#' @param key Show a key?
 #' @param dig.lab The number of significant figures at which scientific number
 #'   formatting is used in break point and key labelling. Default 5.
 #' @param include.lowest Logical. If `FALSE` (the default), the first interval
@@ -132,10 +132,9 @@
 #' @param border Border colour for shaded areas. Default is no border.
 #' @param plot Should a plot be produced? `FALSE` can be useful when analysing
 #'   data to extract plot components and plotting them in other ways.
-#' @param ... Other parameters that are passed on to `drawOpenKey`,
-#'   `lattice:xyplot` and `cutData`. Axis and title labelling options (`xlab`,
-#'   `ylab`, `main`) are passed to `xyplot` via `quickText` to handle routine
-#'   formatting.
+#' @param ... Other parameters that are passed on to `cutData` and other
+#'   functions. Axis and title labelling options (`xlab`, `ylab`, `main`) are
+#'   passed to `quickText` to handle routine formatting.
 #'
 #' @export
 #' @import dplyr
@@ -994,24 +993,12 @@ windRose <- function(
   }
 
   # add compass points
-<<<<<<< HEAD
-  thePlot <- thePlot +
-    annotate_compass_points(
-      size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
-      labels = if (!diff) {
-        c("N", "E", "S", "W")
-      } else {
-        c("0", "+90", "+/-180", "-90")
-      }
-    )
-=======
   if (annotate) {
     thePlot <- thePlot +
       annotate_compass_points(
         size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
       )
   }
->>>>>>> origin/main
 
   # output
   if (plot) {
@@ -1172,13 +1159,5 @@ pollutionRose <- function(
 wrap_wd_label <- function(x) {
   x <- ifelse(x > 180, x - 360, x)
   x <- round(x, 1)
-<<<<<<< HEAD
-  if (sign(x) != -1) {
-    paste0("+", x)
-  } else {
-    as.character(x)
-  }
-=======
   ifelse(sign(x) != -1, paste0("+", x), as.character(x))
->>>>>>> origin/main
 }

@@ -111,14 +111,12 @@ hole that takes up the entire plotting area.}
 axis labels will automatically try and format pollutant names and units
 properly e.g.  by subscripting the `2' in NO2.}
 
-\item{key}{Fine control of the scale key via \code{drawOpenKey}. See \code{drawOpenKey}
-for further details.}
+\item{key}{Show a key?}
 
 \item{key.header}{Adds additional text/labels to the scale key. For example,
 passing the options \verb{key.header = "header", key.footer = "footer1"} adds
 addition text above and below the scale key. These arguments are passed to
-\code{drawOpenKey} via \code{quickText}, applying the \code{auto.text} argument, to handle
-formatting.}
+\code{quickText}, applying the \code{auto.text} argument, to handle formatting.}
 
 \item{key.footer}{see \code{key.footer}.}
 
@@ -135,16 +133,14 @@ locations to the bottom of the plot.}
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}
 
-\item{...}{Other graphical parameters are passed onto \code{cutData} and
-\code{lattice:xyplot}. For example, \code{percentileRose} passes the option
-\code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than
-default northern) hemisphere handling of \code{type = "season"}. Similarly,
-common graphical arguments, such as \code{xlim} and \code{ylim} for plotting ranges
-and \code{lwd} for line thickness when using \code{fill = FALSE}, are passed on
-\code{xyplot}, although some local modifications may be applied by openair. For
-example, axis and title labelling options (such as \code{xlab}, \code{ylab} and
-\code{main}) are passed to \code{xyplot} via \code{quickText} to handle routine
-formatting.}
+\item{...}{Other graphical parameters are passed onto \code{cutData} and other
+functions. For example, \code{percentileRose} passes the option \code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than default
+northern) hemisphere handling of \code{type = "season"}. Similarly, common
+graphical arguments, such as \code{xlim} and \code{ylim} for plotting ranges and
+\code{lwd} for line thickness when using \code{fill = FALSE}, are passed on \code{xyplot},
+although some local modifications may be applied by openair. For example,
+axis and title labelling options (such as \code{xlab}, \code{ylab} and \code{main}) are
+passed to \code{xyplot} via \code{quickText} to handle routine formatting.}
 }
 \value{
 an \link[=openair-package]{openair} object

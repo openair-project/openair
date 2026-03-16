@@ -228,13 +228,11 @@ more than one \code{pollutant} is chosen.}
     \item{\code{key.header}}{Adds additional text/labels to the scale key. For example,
 passing the options \verb{key.header = "header", key.footer = "footer1"} adds
 addition text above and below the scale key. These arguments are passed to
-\code{drawOpenKey} via \code{quickText}, applying the \code{auto.text} argument, to handle
-formatting.}
+\code{quickText}, applying the \code{auto.text} argument, to handle formatting.}
     \item{\code{key.footer}}{see \code{key.footer}.}
     \item{\code{key.position}}{Location where the scale key is to plotted. Allowed
 arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"} and \code{"left"}.}
-    \item{\code{key}}{Fine control of the scale key via \code{drawOpenKey}. See \code{drawOpenKey}
-for further details.}
+    \item{\code{key}}{Show a key?}
     \item{\code{ws_spread}}{The value of sigma used for Gaussian kernel weighting of
 wind speed when \code{statistic = "nwr"} or when correlation and regression
 statistics are used such as \emph{r}. Default is \code{0.5}.}

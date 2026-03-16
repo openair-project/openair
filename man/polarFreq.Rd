@@ -120,14 +120,12 @@ hole that takes up the entire plotting area.}
 bin. The default is transparent. Another useful choice sometimes is
 "white".}
 
-\item{key}{Fine control of the scale key via \code{drawOpenKey}. See \code{drawOpenKey}
-for further details.}
+\item{key}{Show a key?}
 
 \item{key.header}{Adds additional text/labels to the scale key. For example,
 passing the options \verb{key.header = "header", key.footer = "footer1"} adds
 addition text above and below the scale key. These arguments are passed to
-\code{drawOpenKey} via \code{quickText}, applying the \code{auto.text} argument, to handle
-formatting.}
+\code{quickText}, applying the \code{auto.text} argument, to handle formatting.}
 
 \item{key.footer}{see \code{key.footer}.}
 

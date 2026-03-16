@@ -69,7 +69,7 @@ provide common text formatting.  The alternative \code{auto.text = FALSE} turns
 this option off and passes any supplied labels to the plot without
 modification.}
 
-\item{key}{Fine control of the scale key via \code{\link[=drawOpenKey]{drawOpenKey()}}.}
+\item{key}{Show a key?}
 
 \item{key.header, key.footer}{\code{key.header} adds a title to the legend, passed
 through \code{\link[=quickText]{quickText()}} if \code{quick.text = TRUE}. \code{key.footer} is no longer

@@ -77,16 +77,15 @@
 #'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
 #'   locations to the bottom of the plot.
 #'
-#' @param ... Other graphical parameters are passed onto `cutData` and
-#'   `lattice:xyplot`. For example, `percentileRose` passes the option
-#'   `hemisphere = "southern"` on to `cutData` to provide southern (rather than
-#'   default northern) hemisphere handling of `type = "season"`. Similarly,
-#'   common graphical arguments, such as `xlim` and `ylim` for plotting ranges
-#'   and `lwd` for line thickness when using `fill = FALSE`, are passed on
-#'   `xyplot`, although some local modifications may be applied by openair. For
-#'   example, axis and title labelling options (such as `xlab`, `ylab` and
-#'   `main`) are passed to `xyplot` via `quickText` to handle routine
-#'   formatting.
+#' @param ... Other graphical parameters are passed onto `cutData` and other
+#'   functions. For example, `percentileRose` passes the option `hemisphere =
+#'   "southern"` on to `cutData` to provide southern (rather than default
+#'   northern) hemisphere handling of `type = "season"`. Similarly, common
+#'   graphical arguments, such as `xlim` and `ylim` for plotting ranges and
+#'   `lwd` for line thickness when using `fill = FALSE`, are passed on `xyplot`,
+#'   although some local modifications may be applied by openair. For example,
+#'   axis and title labelling options (such as `xlab`, `ylab` and `main`) are
+#'   passed to `xyplot` via `quickText` to handle routine formatting.
 #'
 #' @export
 #' @return an [openair][openair-package] object

@@ -27,21 +27,21 @@ speed) and a pollutant. Should also contain \code{date} if plots by time period
 are required.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
-data frame should be supplied e.g. \code{pollutant = "nox"}. Only one
-pollutant can be chosen.}
+data frame should be supplied e.g. \code{pollutant = "nox"}. Only one pollutant
+can be chosen.}
 
 \item{x}{Name of variable to plot against wind direction in polar
 coordinates, the default is wind speed, \dQuote{ws}.}
 
 \item{wd}{Name of wind direction field.}
 
-\item{n.clusters}{Number of clusters to use. If \code{n.clusters} is more
-than length 1, then a \code{lattice} panel plot will be output showing the
-clusters identified for each one of \code{n.clusters}.}
+\item{n.clusters}{Number of clusters to use. If \code{n.clusters} is more than
+length 1, then a faceted plot will be output showing the clusters
+identified for each one of \code{n.clusters}.}
 
 \item{after}{The function can be applied to differences between polar plot
-surfaces (see \link{polarDiff} for details). If an \code{after} data frame
-is supplied, the clustering will be carried out on the differences between
+surfaces (see \link{polarDiff} for details). If an \code{after} data frame is
+supplied, the clustering will be carried out on the differences between
 \code{after} and \code{mydata} in the same way as \link{polarDiff}.}
 
 \item{cols}{Colours to be used for plotting. Options include
@@ -243,13 +243,11 @@ more than one \code{pollutant} is chosen.}
     \item{\code{key.header}}{Adds additional text/labels to the scale key. For example,
 passing the options \verb{key.header = "header", key.footer = "footer1"} adds
 addition text above and below the scale key. These arguments are passed to
-\code{drawOpenKey} via \code{quickText}, applying the \code{auto.text} argument, to handle
-formatting.}
+\code{quickText}, applying the \code{auto.text} argument, to handle formatting.}
     \item{\code{key.footer}}{see \code{key.footer}.}
     \item{\code{key.position}}{Location where the scale key is to plotted. Allowed
 arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"} and \code{"left"}.}
-    \item{\code{key}}{Fine control of the scale key via \code{drawOpenKey}. See \code{drawOpenKey}
-for further details.}
+    \item{\code{key}}{Show a key?}
     \item{\code{ws_spread}}{The value of sigma used for Gaussian kernel weighting of
 wind speed when \code{statistic = "nwr"} or when correlation and regression
 statistics are used such as \emph{r}. Default is \code{0.5}.}
@@ -272,27 +270,26 @@ be ignored if \code{"quantile.slope"} is not used.}
 }
 \value{
 an \link[=openair-package]{openair} object. The object includes four main
-components: \code{call}, the command used to generate the plot;
-\code{data}, by default the original data frame with a new field
-\code{cluster} identifying the cluster, \code{clust_stats} giving the
-contributions made by each cluster to number of measurements, their
-percentage and the percentage by pollutant; and \code{plot}, the plot
-itself. Note that any rows where the value of \code{pollutant} is \code{NA}
-are ignored so that the returned data frame may have fewer rows than the
-original.
+components: \code{call}, the command used to generate the plot; \code{data}, by
+default the original data frame with a new field \code{cluster} identifying the
+cluster, \code{clust_stats} giving the contributions made by each cluster to
+number of measurements, their percentage and the percentage by pollutant;
+and \code{plot}, the plot itself. Note that any rows where the value of
+\code{pollutant} is \code{NA} are ignored so that the returned data frame may have
+fewer rows than the original.
 
-If the clustering is carried out considering differences, i.e., an
-\code{after} data frame is supplied, the output also includes the
-\code{after} data frame with cluster identified.
+If the clustering is carried out considering differences, i.e., an \code{after}
+data frame is supplied, the output also includes the \code{after} data frame
+with cluster identified.
 }
 \description{
 Function for identifying clusters in bivariate polar plots (\code{\link[=polarPlot]{polarPlot()}});
 identifying clusters in the original data for subsequent processing.
 }
 \details{
-Bivariate polar plots generated using the \code{polarPlot} function provide a
-very useful graphical technique for identifying and characterising different
-air pollution sources. While bivariate polar plots provide a useful graphical
+Bivariate polar plots generated using the \code{polarPlot} function provide a very
+useful graphical technique for identifying and characterising different air
+pollution sources. While bivariate polar plots provide a useful graphical
 indication of potential sources, their location and wind-speed or other
 variable dependence, they do have several limitations. Often, a `feature'
 will be detected in a plot but the subsequent analysis of data meeting
@@ -301,19 +298,19 @@ of the investigator concerning the wind speed-direction intervals of
 interest. Furthermore, the identification of a feature can depend on the
 choice of the colour scale used, making the process somewhat arbitrary.
 
-\code{polarCluster} applies Partition Around Medoids (PAM) clustering
-techniques to \code{\link[=polarPlot]{polarPlot()}} surfaces to help identify potentially interesting
-features for further analysis. Details of PAM can be found in the
-\code{cluster} package (a core R package that will be pre-installed on all R
-systems). PAM clustering is similar to k-means but has several advantages
-e.g. is more robust to outliers. The clustering is based on the equal
-contribution assumed from the u and v wind components and the associated
-concentration. The data are standardized before clustering takes place.
+\code{polarCluster} applies Partition Around Medoids (PAM) clustering techniques
+to \code{\link[=polarPlot]{polarPlot()}} surfaces to help identify potentially interesting features
+for further analysis. Details of PAM can be found in the \code{cluster} package (a
+core R package that will be pre-installed on all R systems). PAM clustering
+is similar to k-means but has several advantages e.g. is more robust to
+outliers. The clustering is based on the equal contribution assumed from the
+u and v wind components and the associated concentration. The data are
+standardized before clustering takes place.
 
 The function works best by first trying different numbers of clusters and
-plotting them. This is achieved by setting \code{n.clusters} to be of length
-more than 1. For example, if \code{n.clusters = 2:10} then a plot will be
-output showing the 9 cluster levels 2 to 10.
+plotting them. This is achieved by setting \code{n.clusters} to be of length more
+than 1. For example, if \code{n.clusters = 2:10} then a plot will be output
+showing the 9 cluster levels 2 to 10.
 
 The clustering can also be applied to differences in polar plot surfaces (see
 \code{\link[=polarDiff]{polarDiff()}}). On this case a second data frame (\code{after}) should be
@@ -325,11 +322,10 @@ For this reason it can be a good idea to run a few clusters first to get a
 feel for it e.g. \code{n.clusters = 2:5}.
 
 Once the number of clusters has been decided, the user can then run
-\code{polarCluster} to return the original data frame together with a new
-column \code{cluster}, which gives the cluster number as a character (see
-example). Note that any rows where the value of \code{pollutant} is \code{NA}
-are ignored so that the returned data frame may have fewer rows than the
-original.
+\code{polarCluster} to return the original data frame together with a new column
+\code{cluster}, which gives the cluster number as a character (see example). Note
+that any rows where the value of \code{pollutant} is \code{NA} are ignored so that the
+returned data frame may have fewer rows than the original.
 
 Note that there are no automatic ways in ensuring the most appropriate number
 of clusters as this is application dependent. However, there is often
@@ -338,8 +334,8 @@ correspond to. Nevertheless, the appropriateness of different clusters is
 best determined by post-processing the data. The Carslaw and Beevers (2012)
 paper discusses these issues in more detail.
 
-Note that unlike most other \code{openair} functions only a single
-\code{type} \dQuote{default} is allowed.
+Note that unlike most other \code{openair} functions only a single \code{type}
+\dQuote{default} is allowed.
 }
 \examples{
 \dontrun{

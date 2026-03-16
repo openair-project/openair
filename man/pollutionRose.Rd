@@ -31,15 +31,15 @@ data frame should be supplied e.g. \code{pollutant = "nox"}.}
 arguments currently include \dQuote{top}, \dQuote{right}, \dQuote{bottom}
 and \dQuote{left}.}
 
-\item{key}{Fine control of the scale key via \code{\link[=drawOpenKey]{drawOpenKey()}}.}
+\item{key}{Show a key?}
 
 \item{breaks}{Most commonly, the number of break points for pollutant
 concentrations. The default, 6, attempts to breaks the supplied data at
 approximately 6 sensible break points. However, \code{breaks} can also be
 used to set specific break points. For example, the argument \code{breaks = c(0, 1, 10, 100)} breaks the data into segments <1, 1-10, 10-100, >100.}
 
-\item{paddle}{Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose using 'paddle' style
-spokes. If \code{FALSE} plots rose using 'wedge' style spokes.}
+\item{paddle}{Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose using 'paddle'
+style spokes. If \code{FALSE} plots rose using 'wedge' style spokes.}
 
 \item{seg}{\code{seg} determines with width of the segments. For example, \code{seg = 0.5} will produce segments 0.5 * \code{angle}.}
 
@@ -114,8 +114,8 @@ the radial limits. This is useful to ensure several plots use the same
 radial limits.}
     \item{\code{key.header}}{Adds additional text/labels above the scale key. For
 example, passing \code{windRose(mydata, key.header = "ws")} adds the addition
-text as a scale header. Note: This argument is passed to \code{\link[=drawOpenKey]{drawOpenKey()}}
-via \code{\link[=quickText]{quickText()}}, applying the auto.text argument, to handle formatting.}
+text as a scale header. Note: This argument is passed to \code{\link[=quickText]{quickText()}},
+applying the auto.text argument, to handle formatting.}
     \item{\code{dig.lab}}{The number of significant figures at which scientific number
 formatting is used in break point and key labelling. Default 5.}
     \item{\code{include.lowest}}{Logical. If \code{FALSE} (the default), the first interval

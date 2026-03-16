@@ -157,8 +157,7 @@ should be used for a vertical line e.g. \code{ref.x = list(v = as.POSIXct("2000-
 
 \item{ref.y}{A list with details of the horizontal lines to be added
 representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{panel.abline} in the \code{lattice} package for more details on
-adding/controlling lines.}
+e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}.}
 
 \item{key}{Should a key be drawn? The default is \code{TRUE}.}
 
@@ -202,16 +201,14 @@ properly, e.g., by subscripting the '2' in NO2.}
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}
 
-\item{...}{Other graphical parameters are passed onto \code{\link[=cutData]{cutData()}} and
-\code{\link[lattice:xyplot]{lattice::xyplot()}}. For example, \code{\link[=timePlot]{timePlot()}} passes the option
-\code{hemisphere = "southern"} on to \code{\link[=cutData]{cutData()}} to provide southern (rather
-than default northern) hemisphere handling of \code{type = "season"}. Similarly,
-most common plotting parameters, such as \code{layout} for panel arrangement and
-\code{pch} and \code{cex} for plot symbol type and size and \code{lty} and \code{lwd} for line
-type and width, as passed to \code{\link[lattice:xyplot]{lattice::xyplot()}}, although some maybe
-locally managed by \code{openair} on route, e.g., axis and title labelling
-options (such as \code{xlab}, \code{ylab}, \code{main}) are passed via \code{\link[=quickText]{quickText()}} to
-handle routine formatting. See examples below.}
+\item{...}{Other graphical parameters are passed onto \code{\link[=cutData]{cutData()}} and other
+functions. For example, \code{\link[=timePlot]{timePlot()}} passes the option \code{hemisphere = "southern"} on to \code{\link[=cutData]{cutData()}} to provide southern (rather than default
+northern) hemisphere handling of \code{type = "season"}. Similarly, most common
+plotting parameters, such as \code{layout} for panel arrangement and \code{pch} and
+\code{cex} for plot symbol type and size and \code{lty} and \code{lwd} for line type and
+width, although some maybe locally managed by \code{openair} on route, e.g.,
+axis and title labelling options (such as \code{xlab}, \code{ylab}, \code{main}) are
+passed via \code{\link[=quickText]{quickText()}} to handle routine formatting. See examples below.}
 }
 \value{
 an \link[=openair-package]{openair} object

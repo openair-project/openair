@@ -128,13 +128,13 @@ wind directions is from a particular wind sector is also shown.}
 the radial limits. This is useful to ensure several plots use the same
 radial limits.}
 
-\item{paddle}{Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose using 'paddle' style
-spokes. If \code{FALSE} plots rose using 'wedge' style spokes.}
+\item{paddle}{Either \code{TRUE} or \code{FALSE}. If \code{TRUE} plots rose using 'paddle'
+style spokes. If \code{FALSE} plots rose using 'wedge' style spokes.}
 
 \item{key.header}{Adds additional text/labels above the scale key. For
 example, passing \code{windRose(mydata, key.header = "ws")} adds the addition
-text as a scale header. Note: This argument is passed to \code{\link[=drawOpenKey]{drawOpenKey()}}
-via \code{\link[=quickText]{quickText()}}, applying the auto.text argument, to handle formatting.}
+text as a scale header. Note: This argument is passed to \code{\link[=quickText]{quickText()}},
+applying the auto.text argument, to handle formatting.}
 
 \item{key.footer}{Adds additional text/labels below the scale key. See
 \code{key.header} for further information.}
@@ -143,7 +143,7 @@ via \code{\link[=quickText]{quickText()}}, applying the auto.text argument, to h
 arguments currently include \dQuote{top}, \dQuote{right}, \dQuote{bottom}
 and \dQuote{left}.}
 
-\item{key}{Fine control of the scale key via \code{\link[=drawOpenKey]{drawOpenKey()}}.}
+\item{key}{Show a key?}
 
 \item{dig.lab}{The number of significant figures at which scientific number
 formatting is used in break point and key labelling. Default 5.}
@@ -179,10 +179,9 @@ feature. The user can therefore set \code{angle.scale} to another value (between
 \item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
 data to extract plot components and plotting them in other ways.}
 
-\item{...}{Other parameters that are passed on to \code{drawOpenKey},
-\code{lattice:xyplot} and \code{cutData}. Axis and title labelling options (\code{xlab},
-\code{ylab}, \code{main}) are passed to \code{xyplot} via \code{quickText} to handle routine
-formatting.}
+\item{...}{Other parameters that are passed on to \code{cutData} and other
+functions. Axis and title labelling options (\code{xlab}, \code{ylab}, \code{main}) are
+passed to \code{quickText} to handle routine formatting.}
 }
 \value{
 an \link[=openair-package]{openair} object. Summarised proportions can be
