@@ -263,7 +263,7 @@ timeAverage <- function(
     # if interval specified, then use it to pad the data
     if (!is.na(interval)) {
       mydata <-
-        mapType(
+        map_type(
           mydata,
           type = type,
           fun = \(df) pad_dates_timeavg(df, type = type, interval = interval),
@@ -353,7 +353,7 @@ timeAverage <- function(
   mydata <- cutData(mydata, type, ...)
 
   # check for duplicate dates
-  checkDuplicateRows(mydata, type, fn = cli::cli_warn)
+  check_duplicate_rows(mydata, type, fn = cli::cli_warn)
 
   # select date, type, and all non-factor/character columns
   mydata <-
@@ -372,7 +372,7 @@ timeAverage <- function(
 
   # calculate averages
   mydata <-
-    mapType(
+    map_type(
       mydata,
       type = type,
       fun = \(df) {
@@ -488,7 +488,7 @@ pad_dates_timeavg <- function(mydata, type = NULL, interval = "month") {
 #' @noRd
 get_time_parameters <- function(mydata, avg.time) {
   # Time diff in seconds of original data
-  seconds_data_interval <- find.time.interval(
+  seconds_data_interval <- find_time_interval(
     mydata$date,
     return.seconds = TRUE
   )

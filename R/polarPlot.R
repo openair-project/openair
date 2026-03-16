@@ -786,7 +786,7 @@ polarPlot <-
       tmp <- min.bin
       min.bin <- 0
       res1 <-
-        mapType(
+        map_type(
           mydata,
           type,
           prepare.grid,
@@ -796,7 +796,7 @@ polarPlot <-
       min.bin <- tmp
 
       res <-
-        mapType(
+        map_type(
           mydata,
           type,
           prepare.grid,
@@ -805,7 +805,7 @@ polarPlot <-
 
       res$miss <- res1$z
     } else {
-      res <- mapType(
+      res <- map_type(
         mydata,
         type,
         prepare.grid,

@@ -339,7 +339,7 @@ trajLevel <- function(
 
     if (smooth) {
       out_data <-
-        mapType(
+        map_type(
           out_data,
           type = type,
           \(x) smooth_trajgrid(x, z = pollutant),
@@ -367,7 +367,7 @@ trajLevel <- function(
 
     if (smooth) {
       mydata <-
-        mapType(
+        map_type(
           mydata,
           type = type,
           \(x) smooth_trajgrid(x, z = pollutant),
@@ -424,7 +424,7 @@ trajLevel <- function(
 
     if (smooth) {
       mydata <-
-        mapType(
+        map_type(
           mydata,
           type = type,
           \(x) smooth_trajgrid(x, z = pollutant),
@@ -493,7 +493,7 @@ trajLevel <- function(
     # set include_default to be FALSE as sqtba doesn't use type
     if (smooth) {
       mydata <-
-        mapType(
+        map_type(
           mydata,
           type = type,
           \(x) smooth_trajgrid(x, z = pollutant),
@@ -545,7 +545,7 @@ trajLevel <- function(
 
     if (smooth) {
       mydata <-
-        mapType(
+        map_type(
           mydata,
           type = type,
           \(x) smooth_trajgrid(x, z = pollutant),

@@ -590,7 +590,7 @@ prepare_timeplot_data <- function(
 
   # check for duplicates - can't really have duplicate data in a timeplot
   if (avg.time == "default") {
-    checkDuplicateRows(mydata, type, fn = cli::cli_abort)
+    check_duplicate_rows(mydata, type, fn = cli::cli_abort)
   }
 
   # return data

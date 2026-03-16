@@ -449,7 +449,7 @@ variationPlot <- function(
 
   # normalise the pattern by group (i.e., colour) if requested
   if (normalise) {
-    mydata <- mapType(mydata, type = "group", fun = function(x) {
+    mydata <- map_type(mydata, type = "group", fun = function(x) {
       avg <- mean(x$mid, na.rm = TRUE)
       x$mid <- x$mid / avg
       x$min <- x$min / avg

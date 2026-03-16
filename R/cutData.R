@@ -405,13 +405,13 @@ cutVecHour <- function(x, drop) {
 cutVecWeek <- function(x, drop) {
   x <- as.numeric(format(x, "%W"))
   if (drop %in% c("none")) {
-    x <- ordered(strpad(x, 2), levels = strpad(0:53))
+    x <- ordered(pad_string(x, 2), levels = pad_string(0:53))
   } else if (drop == "outside") {
     x_range <- range(unique(x), na.rm = TRUE)
     levels <- seq(x_range[1], x_range[2], by = 1L)
-    x <- ordered(strpad(x, 2), levels = strpad(levels, 2))
+    x <- ordered(pad_string(x, 2), levels = pad_string(levels, 2))
   } else if (drop %in% c("default", "empty")) {
-    x <- ordered(strpad(x, 2), levels = strpad(unique(x), 2))
+    x <- ordered(pad_string(x, 2), levels = pad_string(unique(x), 2))
   }
   return(x)
 }

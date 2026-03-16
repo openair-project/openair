@@ -178,7 +178,7 @@ modStats <- function(
   ## calculate the various statistics
 
   calculateStat <- function(f, ...) {
-    res.n <- mapType(
+    res.n <- map_type(
       mydata,
       type = type,
       fun = \(x) f(x, mod, obs, ...),
@@ -276,7 +276,7 @@ modStats <- function(
     if (length(types) == 0) {
       results <- rankModels(results, rank.name)
     } else {
-      results <- mapType(
+      results <- map_type(
         results,
         type = types,
         fun = \(x) rankModels(x, rank.name = rank.name),

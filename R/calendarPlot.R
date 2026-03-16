@@ -340,7 +340,7 @@ calendarPlot <-
     }
 
     # transform data into a calendar grid
-    mydata <- mapType(
+    mydata <- map_type(
       mydata,
       type = type,
       fun = \(df) prepare_calendar_grid(df, pollutant, w.shift),
@@ -353,7 +353,7 @@ calendarPlot <-
     categorical <- FALSE
     if (!is.null(breaks)) {
       # assign labels if no labels are given
-      labels <- breaksToLabels(breaks, labels)
+      labels <- get_labels_from_breaks(breaks, labels)
       categorical <- TRUE
       mydata <- dplyr::mutate(
         mydata,

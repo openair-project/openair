@@ -548,7 +548,7 @@ polarAnnulus <-
     }
 
     # create grid for each type and bind together
-    results.grid <- mapType(
+    results.grid <- map_type(
       mydata,
       type,
       prepare.grid,

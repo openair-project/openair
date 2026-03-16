@@ -213,7 +213,7 @@ corPlot <- function(
   # remove variables where all are NA, or values are constant
   # done per-type to remove, e.g., lat/lng
   mydata <-
-    mapType(
+    map_type(
       mydata,
       type = type,
       fun = \(df) {
@@ -234,7 +234,7 @@ corPlot <- function(
 
   # create plot data
   cor_data <-
-    mapType(
+    map_type(
       mydata,
       type,
       \(df) {

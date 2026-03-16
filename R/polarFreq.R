@@ -313,7 +313,7 @@ polarFreq <- function(
   }
 
   results.grid <-
-    mapType(
+    map_type(
       mydata,
       type = type,
       fun = prepare.grid,
@@ -330,7 +330,7 @@ polarFreq <- function(
   categorical <- FALSE
   if (!is.null(breaks)) {
     # assign labels if no labels are given
-    labels <- breaksToLabels(breaks, labels)
+    labels <- get_labels_from_breaks(breaks, labels)
     categorical <- TRUE
     results.grid <- dplyr::mutate(
       results.grid,

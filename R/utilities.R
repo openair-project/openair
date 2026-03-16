@@ -17,16 +17,16 @@ dateTypes <- c(
 )
 
 # get date components
-startYear <- function(dat) {
+get_first_year <- function(dat) {
   as.numeric(format(min(sort(dat, na.last = TRUE)), "%Y"))
 }
-endYear <- function(dat) {
+get_last_year <- function(dat) {
   as.numeric(format(max(sort(dat, na.last = TRUE)), "%Y"))
 }
-startMonth <- function(dat) {
+get_first_month <- function(dat) {
   as.numeric(format(min(sort(dat, na.last = TRUE)), "%m"))
 }
-endMonth <- function(dat) {
+get_last_month <- function(dat) {
   as.numeric(format(max(sort(dat, na.last = TRUE)), "%m"))
 }
 
@@ -41,8 +41,8 @@ endMonth <- function(dat) {
 #'
 #' @param dates A vector of Date or POSIXt timestamps.
 #' @return A character string describing the detected interval.
-#' @keywords internal
-find.time.interval <- function(dates, return.seconds = FALSE) {
+#' @noRd
+find_time_interval <- function(dates, return.seconds = FALSE) {
   # make sure data in POSIXct format
   if (inherits(dates, "Date")) {
     dates <- as.POSIXct(dates)
@@ -95,60 +95,13 @@ find.time.interval <- function(dates, return.seconds = FALSE) {
   return(paste(mode_seconds, "sec"))
 }
 
-# .smoothScatterCalcDensity() is also in graphics, but not exported.
-.smoothScatterCalcDensity <- function(x, nbin, bandwidth, range.x) {
-  if (!("KernSmooth" %in% loadedNamespaces())) {
-    ns <- try(loadNamespace("KernSmooth"))
-    if (isNamespace(ns)) {
-      message("(loaded the KernSmooth namespace)")
-    } else {
-      stop(
-        "panel.smoothScatter() requires the KernSmooth package, but unable to load KernSmooth namespace"
-      )
-    }
-  }
-  if (length(nbin) == 1) {
-    nbin <- c(nbin, nbin)
-  }
-  if (!is.numeric(nbin) || (length(nbin) != 2)) {
-    stop("'nbin' must be numeric of length 1 or 2")
-  }
-  if (missing(bandwidth)) {
-    bandwidth <- diff(apply(
-      x,
-      2,
-      quantile,
-      probs = c(0.05, 0.95),
-      na.rm = TRUE
-    )) /
-      25
-  } else {
-    if (!is.numeric(bandwidth)) stop("'bandwidth' must be numeric")
-  }
-  bandwidth[bandwidth == 0] <- 1
-  # create density map
-  if (missing(range.x)) {
-    rv <- KernSmooth::bkde2D(x, gridsize = nbin, bandwidth = bandwidth)
-  } else {
-    rv <- KernSmooth::bkde2D(
-      x,
-      gridsize = nbin,
-      bandwidth = bandwidth,
-      range.x = range.x
-    )
-  }
-  rv$bandwidth <- bandwidth
-  return(rv)
-}
-
-
 # simple rounding function from plyr
 round_any <- function(x, accuracy, f = round) {
   f(x / accuracy) * accuracy
 }
 
 # function to check variables are numeric, if not force with warning
-checkNum <- function(mydata, vars) {
+check_numeric <- function(mydata, vars) {
   for (i in seq_along(vars)) {
     if (!is.numeric(mydata[[vars[i]]])) {
       mydata[[vars[i]]] <- as.numeric(as.character(mydata[[vars[i]]]))
@@ -168,7 +121,7 @@ checkNum <- function(mydata, vars) {
 #' @param type `type` from parent function
 #' @param fn One of `cli::cli_warn` or `cli::cli_abort`
 #' @noRd
-checkDuplicateRows <- function(mydata, type = NULL, fn = cli::cli_warn) {
+check_duplicate_rows <- function(mydata, type = NULL, fn = cli::cli_warn) {
   if (is.null(type)) {
     flag <- length(mydata$date) != length(unique(mydata$date))
   } else {
@@ -213,8 +166,8 @@ checkDuplicateRows <- function(mydata, type = NULL, fn = cli::cli_warn) {
 #'
 #' @noRd
 #' @examples
-#' mapType(openairmaps::polar_data, fun = head, type = c("site", "site_type"))
-mapType <- function(
+#' map_type(openairmaps::polar_data, fun = head, type = c("site", "site_type"))
+map_type <- function(
   mydata,
   type,
   fun,
@@ -249,7 +202,7 @@ mapType <- function(
 
 #' Create nice labels out of breaks, if only breaks are provided
 #' @noRd
-breaksToLabels <- function(breaks, labels = NULL, sep = " - ") {
+get_labels_from_breaks <- function(breaks, labels = NULL, sep = " - ") {
   if (is.null(labels) || anyNA(labels)) {
     labels <- paste(
       format(
@@ -272,7 +225,7 @@ breaksToLabels <- function(breaks, labels = NULL, sep = " - ") {
 
 #' pad out a set of numbers with zeroes to create consistent width
 #' @noRd
-strpad <- function(y, n = NULL) {
+pad_string <- function(y, n = NULL) {
   y <- as.character(y)
   n <- n %||% max(nchar(y))
   while (any(nchar(y) < n)) {

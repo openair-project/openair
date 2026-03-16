@@ -84,7 +84,7 @@ rollingMean <- function(
   mydata <- cutData(mydata, type = type, ...)
 
   # error if duplicate dates
-  checkDuplicateRows(mydata, type, fn = cli::cli_abort)
+  check_duplicate_rows(mydata, type, fn = cli::cli_abort)
 
   # function to perform rolling average
   calc.rolling <- function(mydata) {
@@ -124,7 +124,7 @@ rollingMean <- function(
   }
 
   # split if several sites
-  mydata <- mapType(
+  mydata <- map_type(
     mydata,
     type = type,
     fun = calc.rolling,

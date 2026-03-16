@@ -392,7 +392,7 @@ TaylorDiagram <- function(
   mydata <- checkPrep(mydata, vars, type)
 
   # check mod and obs are numbers
-  mydata <- checkNum(mydata, vars = c(obs, mod))
+  mydata <- check_numeric(mydata, vars = c(obs, mod))
 
   # remove missing data
   mydata <- na.omit(mydata)
@@ -414,7 +414,7 @@ TaylorDiagram <- function(
   vars <- c(group, type)
 
   results <-
-    mapType(
+    map_type(
       mydata,
       type = vars,
       fun = \(x) calcStats(x, obs = obs, mod = mod[1]),
@@ -426,7 +426,7 @@ TaylorDiagram <- function(
   # in model performance from the first to the second.
   if (combine) {
     results.new <-
-      mapType(
+      map_type(
         mydata,
         type = vars,
         fun = \(x) calcStats(x, obs = obs, mod = mod[2]),
@@ -455,7 +455,7 @@ TaylorDiagram <- function(
   # combination of type variables) because the observed standard deviation can
   # differ between panels
   crmse_grid <-
-    mapType(
+    map_type(
       results,
       type,
       \(df) {

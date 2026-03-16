@@ -1092,7 +1092,7 @@ scatter_level <- function(
   ## smooth surface via GAM
   if (smooth) {
     k_val <- if (is.na(k)) 10L else k
-    mydata <- mapType(
+    mydata <- map_type(
       mydata,
       type = type,
       fun = function(df) smooth_level_grid(df, z, k_val, dist),

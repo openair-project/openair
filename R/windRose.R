@@ -217,7 +217,7 @@ windRose <- function(
   }
 
   # make sure ws and wd and numeric
-  mydata <- checkNum(mydata, vars = c(ws, wd))
+  mydata <- check_numeric(mydata, vars = c(ws, wd))
 
   if (!is.na(ws2) && !is.na(wd2) && missing(angle)) {
     angle <- 10
@@ -683,7 +683,7 @@ windRose <- function(
   }
 
   # prepare grid for each type
-  results <- mapType(
+  results <- map_type(
     mydata,
     fun = prepare.grid,
     type = type,
@@ -725,7 +725,7 @@ windRose <- function(
 
   # correction for bias when angle does not divide exactly into 360
   if (bias.corr) {
-    results <- mapType(
+    results <- map_type(
       results,
       type = type,
       fun = corr_bias,
@@ -789,7 +789,10 @@ windRose <- function(
       .by = dplyr::all_of(c("wd", type))
     ) |>
     dplyr::mutate(
-      name = factor(.data$name, labels = breaksToLabels(breaks, sep = " to "))
+      name = factor(
+        .data$name,
+        labels = get_labels_from_breaks(breaks, sep = " to ")
+      )
     )
 
   key_label <- quickText(paste(key.header, key.footer), auto.text = auto.text)
@@ -1007,7 +1010,7 @@ windRose <- function(
 
   # give informative labels
   newdata <- as_tibble(results)
-  attr(newdata, "intervals") <- breaksToLabels(breaks, sep = " to ")
+  attr(newdata, "intervals") <- get_labels_from_breaks(breaks, sep = " to ")
 
   # output
   output <- list(plot = thePlot, data = newdata, call = match.call())

@@ -64,7 +64,7 @@ datePad <- function(
 
   # 1. Detect Native Interval (The resolution of the INPUT data)
   # We need this to correctly establish the "blocks" of time before expanding
-  native_interval <- find.time.interval(mydata$date)
+  native_interval <- find_time_interval(mydata$date)
 
   # 2. Determine Target Interval
   if (!is.null(interval)) {
@@ -98,7 +98,7 @@ datePad <- function(
   # Core Logic Helper
   # -----------------------------------------------------------------------
   process_group <- function(df) {
-    checkDuplicateRows(df, type, fn = cli::cli_abort)
+    check_duplicate_rows(df, type, fn = cli::cli_abort)
 
     # A. Define limits for this group
     s_date <- if (is.null(start.date)) {
@@ -143,7 +143,7 @@ datePad <- function(
 
   mydata <- cutData(mydata, type = type, ...)
 
-  out <- mapType(
+  out <- map_type(
     mydata,
     type = type,
     fun = process_group,

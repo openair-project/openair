@@ -414,7 +414,7 @@ trendLevel <- function(
   categorical <- FALSE
   if (!is.null(breaks)) {
     # get breaks
-    labels <- breaksToLabels(breaks, labels)
+    labels <- get_labels_from_breaks(breaks, labels)
 
     # cut data into categories
     newdata$cuts <- cut(

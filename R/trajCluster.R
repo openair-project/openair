@@ -144,7 +144,7 @@ trajCluster <- function(
 
   if (split.after) {
     traj$default <- "default"
-    traj <- mapType(
+    traj <- map_type(
       traj,
       type = "default",
       fun = calcTraj
@@ -152,7 +152,7 @@ trajCluster <- function(
     traj <- cutData(traj, type)
   } else {
     traj <- cutData(traj, type)
-    traj <- mapType(
+    traj <- map_type(
       traj,
       type = type,
       fun = calcTraj

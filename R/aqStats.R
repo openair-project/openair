@@ -94,7 +94,7 @@ aqStats <- function(
   mydata <- cutData(mydata, type)
 
   # check for duplicate dates
-  checkDuplicateRows(mydata, type, fn = cli::cli_abort)
+  check_duplicate_rows(mydata, type, fn = cli::cli_abort)
 
   # check we have the variables
   mydata <- checkPrep(
@@ -118,7 +118,7 @@ aqStats <- function(
 
   # calculate the statistics
   results <-
-    mapType(
+    map_type(
       mydata,
       type = vars,
       fun = \(df) {
@@ -161,7 +161,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
   end.date <- lubridate::ceiling_date(max(mydata$date), "year") - 3600
 
   # find time interval of data and pad any missing times
-  interval <- find.time.interval(mydata$date)
+  interval <- find_time_interval(mydata$date)
 
   mydata <- datePad(
     mydata,

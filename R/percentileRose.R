@@ -371,7 +371,7 @@ percentileRose <- function(
       purrr::list_rbind()
 
     ## return both percentile and mean results together to avoid a second
-    ## mapType pass (which would recompute everything from scratch)
+    ## map_type pass (which would recompute everything from scratch)
     results$stat_type <- "percentile"
     Mean$stat_type <- "mean"
     dplyr::bind_rows(results, Mean)
@@ -414,7 +414,7 @@ percentileRose <- function(
   }
 
   all_grid_results <-
-    mapType(
+    map_type(
       mydata,
       type = type,
       fun = prepare.grid,
@@ -455,7 +455,7 @@ percentileRose <- function(
 
   # labels for factor levels
   if (fill) {
-    fct_labels <- breaksToLabels(percentile)
+    fct_labels <- get_labels_from_breaks(percentile)
   } else {
     fct_labels <- as.character(percentile)
   }

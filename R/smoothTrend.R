@@ -185,7 +185,7 @@ smoothTrend <- function(
   # find time interval
   # need this because if user has a data capture threshold, need to know
   # original time interval. better to do this before conditioning
-  interval <- find.time.interval(mydata$date)
+  interval <- find_time_interval(mydata$date)
 
   # equivalent number of days, used to refine interval for month/year
   days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) / 24 / 3600
@@ -219,7 +219,7 @@ smoothTrend <- function(
 
   # prep data for modelling
   newdata <-
-    mapType(
+    map_type(
       mydata,
       type = vars,
       fun = \(df) deseason_smoothtrend_data(df, deseason = deseason),
@@ -228,7 +228,7 @@ smoothTrend <- function(
 
   # fit a smooth model
   fit <-
-    mapType(
+    map_type(
       newdata,
       type = vars,
       fun = \(df) {
@@ -468,10 +468,10 @@ deseason_smoothtrend_data <- function(mydata, deseason) {
   mydata <- mydata[min.idx:max.idx, ]
 
   # these subsets may have different dates to overall
-  start.year <- startYear(mydata$date)
-  end.year <- endYear(mydata$date)
-  start.month <- startMonth(mydata$date)
-  end.month <- endMonth(mydata$date)
+  start.year <- get_first_year(mydata$date)
+  end.year <- get_last_year(mydata$date)
+  start.month <- get_first_month(mydata$date)
+  end.month <- get_last_month(mydata$date)
 
   # can't deseason less than 2 years of data
   if (nrow(mydata) <= 24) {
