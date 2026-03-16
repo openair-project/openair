@@ -942,6 +942,11 @@ polarPlot <-
         )
       )
 
+    # Normalise limits: must be NULL or a numeric vector of length 2
+    if (!is.null(limits) && !(is.numeric(limits) && length(limits) == 2)) {
+      limits <- NULL
+    }
+
     thePlot <-
       plot_data |>
       dplyr::arrange(!is.na(.data$z), .data$z) |>
