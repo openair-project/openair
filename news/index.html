@@ -112,7 +112,13 @@
 <li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> is much faster with the bulk of the calculations made using C++.</p></li>
 <li><p><code>runRegression</code> is now much faster with a new algorithm.</p></li>
 <li><p><code><a href="../reference/trendLevel.html">trendLevel()</a></code> now supports 2 values being passed to <code>type</code>, which will create a 2D grid using <code><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">ggplot2::facet_grid()</a></code>.</p></li>
-<li><p>New function <code>WhittakerSmooth</code> to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.</p></li>
+<li><p>New function <code><a href="../reference/WhittakerSmooth.html">WhittakerSmooth()</a></code> to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.</p></li>
+<li>
+<p><code><a href="../reference/corPlot.html">corPlot()</a></code> has gained several new features:</p>
+<ul><li><p>Added the <code>annotate</code> argument which can change the correlation annotation to a p-value marker or stars, or remove it entirely.</p></li>
+<li><p>Added two new arguments <code>triangle</code> and <code>diagonal</code> for controlling the plot appearance.</p></li>
+<li><p>Added arguments <code>key</code>, <code>key.position</code> and <code>key.header</code> for adding and refining a plot legend.</p></li>
+</ul></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>

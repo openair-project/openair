@@ -14,11 +14,16 @@ corPlot(
   cluster = TRUE,
   method = "pearson",
   use = "pairwise.complete.obs",
+  annotate = c("cor", "signif", "stars", "none"),
   dendrogram = FALSE,
-  lower = FALSE,
+  triangle = c("both", "upper", "lower"),
+  diagonal = TRUE,
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
+  key.header = NULL,
+  key.position = "right",
+  key = FALSE,
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -34,58 +39,70 @@ corPlot(
 - pollutants:
 
   the names of data-series in `mydata` to be plotted by `corPlot`. The
-  default option `NULL` and the alternative “all” use all available
+  default option `NULL` and the alternative `"all"` use all available
   valid (numeric) data.
 
 - type:
 
   `type` determines how the data are split i.e. conditioned, and then
-  plotted. The default is will produce a single plot using the entire
-  data. Type can be one of the built-in types as detailed in `cutData`
-  e.g. “season”, “year”, “weekday” and so on. For example,
-  `type = "season"` will produce four plots — one for each season.
-
-  It is also possible to choose `type` as another variable in the data
-  frame. If that variable is numeric, then the data will be split into
-  four quantiles (if possible) and labelled accordingly. If type is an
-  existing character or factor variable, then those categories/levels
-  will be used directly. This offers great flexibility for understanding
-  the variation of different variables and how they depend on one
-  another.
+  plotted. For example, `type = "season"` will produce four plots — one
+  for each season. See
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for more information.
 
 - cluster:
 
   Should the data be ordered according to cluster analysis. If `TRUE`
   hierarchical clustering is applied to the correlation matrices using
-  `hclust` to group similar variables together. With many variables
-  clustering can greatly assist interpretation.
+  [`hclust()`](https://rdrr.io/r/stats/hclust.html) to group similar
+  variables together. With many variables clustering can greatly assist
+  interpretation.
 
 - method:
 
-  The correlation method to use. Can be “pearson”, “spearman” or
-  “kendall”.
+  The correlation method to use. Can be `"pearson"`, `"spearman"` or
+  `"kendall"`.
 
 - use:
 
   How to handle missing values in the `cor` function. The default is
-  "pairwise.complete.obs". Care should be taken with the choice of how
+  `"pairwise.complete.obs"`. Care should be taken with the choice of how
   to handle missing data when considering pair-wise correlations.
+
+- annotate:
+
+  What to annotate each correlation tile with. One of:
+
+  - `"cor"`, the correlation coefficient to 2 decimal places.
+
+  - `"signif"`, an X marker if the correlation is significant.
+
+  - `"stars"`, standard significance stars.
+
+  - `"none"`, no annotation.
 
 - dendrogram:
 
   Should a dendrogram be plotted? When `TRUE` a dendrogram is shown on
-  the right of the plot. Note that this will only work for
-  `type = "default"`.
+  the plot. Note that this will only work for `type = "default"`.
+  Defaults to `FALSE`.
 
-- lower:
+- triangle:
 
-  Should only the lower triangle be plotted?
+  Which 'triangles' of the correlation plot should be shown? Can be
+  `"both"`, `"lower"` or `"upper"`. Defaults to `"both"`.
+
+- diagonal:
+
+  Should the 'diagonal' of the correlation plot be shown? The diagonal
+  of a correlation matrix is axiomatically always `1` as it represents
+  correlating a variable with itself. Defaults to `TRUE`.
 
 - cols:
 
-  Colours to be used for plotting. Options include “default”,
-  “increment”, “heat”, “spectral”, “hue”, “greyscale” and user defined
-  (see `openColours` for more details).
+  Colours to be used for plotting. See
+  [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+  for more details.
 
 - r.thresh:
 
@@ -98,11 +115,25 @@ corPlot(
   value controls the colour of negative correlations and the second
   positive.
 
+- key.header:
+
+  Used to control the title of the plot key. Defaults to `NULL`; no
+  header.
+
+- key.position:
+
+  Location where the scale key is to plotted. Allowed arguments
+  currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
+
+- key:
+
+  Should a key be shown? In `corPlot()` this defaults to `FALSE`.
+
 - auto.text:
 
   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
-  will automatically try and format pollutant names and units properly
-  e.g. by subscripting the \`2' in NO2.
+  will automatically try and format pollutant names and units properly,
+  e.g., by subscripting the \`2' in NO2.
 
 - plot:
 
@@ -111,9 +142,19 @@ corPlot(
 
 - ...:
 
-  Other graphical parameters passed onto `lattice:levelplot`, with
-  common axis and title labelling options (such as `xlab`, `ylab`,
-  `main`) being passed via `quickText` to handle routine formatting.
+  Addition options are passed on to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for `type` handling. Some additional arguments are also available:
+
+  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
+    and plot title.
+
+  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
+    2 columns and 5 rows.
+
+  - `fontsize` overrides the overall font size of the plot.
+
+  - `border` sets the border colour of each ellipse.
 
 ## Value
 
@@ -123,11 +164,11 @@ object
 
 ## Details
 
-The `corPlot` function plots correlation matrices. The implementation
+The `corPlot()` function plots correlation matrices. The implementation
 relies heavily on that shown in Sarkar (2007), with a few extensions.
 
 Correlation matrices are a very effective way of understating
-relationships between many variables. The `corPlot` shows the
+relationships between many variables. The `corPlot()` shows the
 correlation coded in three ways: by shape (ellipses), colour and the
 numeric value. The ellipses can be thought of as visual representations
 of scatter plot. With a perfect positive correlation a line at 45
@@ -158,30 +199,36 @@ York: Springer.
 Friendly, M. (2002). Corrgrams : Exploratory displays for correlation
 matrices. American Statistician, 2002(4), 1-16. doi:10.1198/000313002533
 
-## See also
-
-`taylor.diagram` from the `plotrix` package from which some of the
-annotation code was used.
-
 ## Author
 
-David Carslaw — but mostly based on code contained in Sarkar (2007)
+David Carslaw
+
+Jack Davison
+
+Adapted from the approach taken by Sarkar (2007)
 
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
-## basic corrgram plot
+# basic corrgram plot
 corPlot(mydata)
-## plot by season ... and so on
+
+
+# plot by season
 corPlot(mydata, type = "season")
-## recover dendrogram when cluster = TRUE and plot it
-res <- corPlot(mydata)
+
+
+# recover dendrogram when cluster = TRUE and plot it
+res <- corPlot(mydata, plot = FALSE)
 plot(res$clust)
-#' ## a more interesting are hydrocarbon measurements
+
+
+if (FALSE) { # \dontrun{
+# a more interesting are hydrocarbon measurements
 hc <- importAURN(site = "my1", year = 2005, hc = TRUE)
-## now it is possible to see the hydrocarbons that behave most
-## similarly to one another
+
+# now it is possible to see the hydrocarbons that behave most
+# similarly to one another
 corPlot(hc)
 } # }
 ```
