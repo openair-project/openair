@@ -50,6 +50,7 @@ Suggests:
     geomtextpath,
     KernSmooth,
     knitr,
+    legendry (>= 0.2.4),
     quantreg,
     rmarkdown,
     sf,
