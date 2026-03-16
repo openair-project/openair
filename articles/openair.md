@@ -158,10 +158,7 @@ However, the real flexibility comes from being able to use the type
 option.
 
 ``` r
-windRose(mydata,
-  type = "year",
-  layout = c(4, 2)
-)
+windRose(mydata, type = "year", layout = c(4, 2), width = 0.4)
 ```
 
 ![](openair_files/figure-html/windrose2-1.png)
@@ -175,7 +172,8 @@ There are many flavours of bivariate polar plots, as described
 that are useful for understanding air pollution sources.
 
 ``` r
-polarPlot(mydata,
+polarPlot(
+  mydata,
   pollutant = "so2",
   statistic = "cpf",
   percentile = 90,
