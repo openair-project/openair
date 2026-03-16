@@ -5,13 +5,15 @@ shown, such as hour of the day, day of the week, week of the year, month of
 the year, annual mean, or any other time-based grouping the user specifies.
 By default, this function plots the diurnal, day of the week and monthly
 variation for different variables, typically pollutant concentrations. Four
-separate plots are produced."><meta property="og:description" content="Plots temporal variation for different variables, typically pollutant
+separate plots are produced. This is a convenient alternative to using
+variationPlot() and assembling the plots manually."><meta property="og:description" content="Plots temporal variation for different variables, typically pollutant
 concentrations, across user-defined time scales. Multiple panels can be
 shown, such as hour of the day, day of the week, week of the year, month of
 the year, annual mean, or any other time-based grouping the user specifies.
 By default, this function plots the diurnal, day of the week and monthly
 variation for different variables, typically pollutant concentrations. Four
-separate plots are produced."><meta property="og:image" content="https://openair-project.github.io/openair/logo.png"></head><body>
+separate plots are produced. This is a convenient alternative to using
+variationPlot() and assembling the plots manually."><meta property="og:image" content="https://openair-project.github.io/openair/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -71,7 +73,8 @@ shown, such as hour of the day, day of the week, week of the year, month of
 the year, annual mean, or any other time-based grouping the user specifies.
 By default, this function plots the diurnal, day of the week and monthly
 variation for different variables, typically pollutant concentrations. Four
-separate plots are produced.</p>
+separate plots are produced. This is a convenient alternative to using
+<code><a href="variationPlot.html">variationPlot()</a></code> and assembling the plots manually.</p>
     </div>
 
     <div class="section level2">
@@ -83,20 +86,21 @@ separate plots are produced.</p>
 <span>  local.tz <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  normalise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  xlab <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  name.pol <span class="op">=</span> <span class="va">pollutant</span>,</span>
+<span>  name.pol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  group <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  difference <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  statistic <span class="op">=</span> <span class="st">"mean"</span>,</span>
-<span>  conf.int <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  conf.int <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  B <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"hue"</span>,</span>
 <span>  ref.y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  key.columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  start.day <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  panel.gap <span class="op">=</span> <span class="fl">0.2</span>,</span>
+<span>  key.position <span class="op">=</span> <span class="st">"top"</span>,</span>
+<span>  strip.position <span class="op">=</span> <span class="st">"top"</span>,</span>
+<span>  panel.gap <span class="op">=</span> <span class="fl">1.5</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.4</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -130,19 +134,12 @@ facet.</p></dd>
 
 
 <dt id="arg-local-tz">local.tz<a class="anchor" aria-label="anchor" href="#arg-local-tz"></a></dt>
-<dd><p>Should the results be calculated in local time that includes
-a treatment of daylight savings time (DST)? The default is not to consider
-DST issues, provided the data were imported without a DST offset. Emissions
-activity tends to occur at local time e.g. rush hour is at 8 am every day.
-When the clocks go forward in spring, the emissions are effectively
-released into the atmosphere typically 1 hour earlier during the summertime
-i.e. when DST applies. When plotting diurnal profiles, this has the effect
-of “smearing-out” the concentrations. Sometimes, a useful approach
-is to express time as local time. This correction tends to produce
-better-defined diurnal profiles of concentration (or other variables) and
-allows a better comparison to be made with emissions/activity data. If set
-to <code>FALSE</code> then GMT is used. Examples of usage include <code>local.tz = "Europe/London"</code>, <code>local.tz = "America/New_York"</code>. See <code>cutData</code> and
-<code>import</code> for more details.</p></dd>
+<dd><p>Used for identifying whether a date has daylight savings time
+(DST) applied or not. Examples include <code>local.tz = "Europe/London"</code>,
+<code>local.tz = "America/New_York"</code>, i.e., time zones that assume DST.
+<a href="https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones" class="external-link">https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones</a> shows time
+zones that should be valid for most systems. It is important that the
+original data are in GMT (UTC) or a fixed offset from GMT.</p></dd>
 
 
 <dt id="arg-normalise">normalise<a class="anchor" aria-label="anchor" href="#arg-normalise"></a></dt>
@@ -184,7 +181,7 @@ argument (e.g, <code>panels = c("hour.weekday")</code>).</p></dd>
 <dt id="arg-group">group<a class="anchor" aria-label="anchor" href="#arg-group"></a></dt>
 <dd><p>This sets the grouping variable to be used. For example, if a
 data frame had a column <code>site</code> setting <code>group = "site"</code> will plot all sites
-together in each panel.</p></dd>
+together in each panel. Passed to <code><a href="cutData.html">cutData()</a></code>.</p></dd>
 
 
 <dt id="arg-difference">difference<a class="anchor" aria-label="anchor" href="#arg-difference"></a></dt>
@@ -193,8 +190,8 @@ together in each panel.</p></dd>
 difference in means are also calculated. A horizontal dashed line is shown
 at y = 0. The difference can also be calculated if there is a column that
 identifies two groups, e.g., having used <code><a href="splitByDate.html">splitByDate()</a></code>. In this case it
-is possible to call <code>timeVariation()</code> with the option <code>group = "split.by"</code>
-and <code>difference = TRUE</code>.</p></dd>
+is possible to call the function with the option <code>group = "split.by"</code> and
+<code>difference = TRUE</code>.</p></dd>
 
 
 <dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
@@ -208,9 +205,7 @@ control the confidence intervals with <code>conf.int</code>.</p></dd>
 <dt id="arg-conf-int">conf.int<a class="anchor" aria-label="anchor" href="#arg-conf-int"></a></dt>
 <dd><p>The confidence intervals to be plotted. If <code>statistic = "mean"</code> then the confidence intervals in the mean are plotted. If
 <code>statistic = "median"</code> then the <code>conf.int</code> and <code>1 - conf.int</code> <em>quantiles</em>
-are plotted. <code>conf.int</code> can be of length 2, which is most useful for
-showing quantiles. For example <code>conf.int = c(0.75, 0.99)</code> will yield a plot
-showing the median, 25/75 and 5/95th quantiles.</p></dd>
+are plotted. Any number of <code>conf.int</code>s can be provided.</p></dd>
 
 
 <dt id="arg-b">B<a class="anchor" aria-label="anchor" href="#arg-b"></a></dt>
@@ -252,10 +247,18 @@ choose to use several columns by setting <code>columns</code> to be less than th
 number of pollutants.</p></dd>
 
 
-<dt id="arg-start-day">start.day<a class="anchor" aria-label="anchor" href="#arg-start-day"></a></dt>
-<dd><p>What day of the week should the plots start on? The user can
-change the start day by supplying an integer between <code>0</code> and <code>6</code>. <code>Sunday = 0</code>, <code>Monday = 1</code>, and so on. For example to start the weekday plots on a
-Saturday, choose <code>start.day = 6</code>.</p></dd>
+<dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
+<dd><p>Location where the scale key is to plotted. Can include
+<code>"top"</code>, <code>"bottom"</code>, <code>"right"</code> and <code>"left"</code>.</p></dd>
+
+
+<dt id="arg-strip-position">strip.position<a class="anchor" aria-label="anchor" href="#arg-strip-position"></a></dt>
+<dd><p>Location where the facet 'strips' are located when
+using <code>type</code>. When one <code>type</code> is provided, can be one of <code>"left"</code>,
+<code>"right"</code>, <code>"bottom"</code> or <code>"top"</code>. When two <code>type</code>s are provided, this
+argument defines whether the strips are "switched" and can take either
+<code>"x"</code>, <code>"y"</code>, or <code>"both"</code>. For example, <code>"x"</code> will switch the 'top' strip
+locations to the bottom of the plot.</p></dd>
 
 
 <dt id="arg-panel-gap">panel.gap<a class="anchor" aria-label="anchor" href="#arg-panel-gap"></a></dt>
@@ -280,17 +283,14 @@ data to extract plot components and plotting them in other ways.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other graphical parameters passed onto <code><a href="https://rdrr.io/pkg/lattice/man/xyplot.html" class="external-link">lattice::xyplot()</a></code> and
-<code><a href="cutData.html">cutData()</a></code>. For example, in the case of <code><a href="cutData.html">cutData()</a></code> the option <code>hemisphere = "southern"</code>. Note that <code><a href="cutData.html">cutData()</a></code> is used in <code>type</code>, <code>group</code> and
-<code>panels</code>, and <code>...</code> will be passed to all three.</p></dd>
+<dd><p>Passed to <code><a href="cutData.html">cutData()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>an <a href="openair-package.html">openair</a> object. The components of
-<code>timeVariation()</code> are named after <code>panels</code>. Associated data.frames can be
-extracted directly using the <code>subset</code> option, e.g. as in <code>plot(object, subset = "day.hour")</code>, <code>summary(output, subset = "hour")</code>, etc., for
-<code>output &lt;- timeVariation(mydata, "nox")</code></p>
+<code>timeVariation()</code> are named after <code>panels</code>. <code>main.plot</code> is a
+<a href="https://patchwork.data-imaginist.com/reference/patchwork-package.html" class="external-link">patchwork</a> assembly.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -298,40 +298,15 @@ extracted directly using the <code>subset</code> option, e.g. as in <code>plot(o
 features that relate to source types and meteorology. For traffic sources,
 there are often important differences in the way vehicles vary by type -
 e.g., fewer heavy vehicles at weekends.</p>
-<p>The <code>timeVariation()</code> function makes it easy to see how concentrations (and
-many other variable types) vary across different temporal resolutions. Users
-have full control over which based panels are shown, allowing for more
-tailored and insightful analysis.</p>
-<p>The plots also show the 95% confidence intervals in the mean. The 95%
-confidence intervals are calculated through bootstrap simulations, which will
-provide more robust estimates of the confidence intervals (particularly when
-there are relatively few data).</p>
-<p>The function can handle multiple pollutants and uses the flexible <code>type</code>
-option to provide separate panels for each 'type' — see <code><a href="cutData.html">cutData()</a></code> for more
-details. <code>timeVariation()</code> also accepts a <code>group</code> option, useful for stacked
-data. This works similarly to having multiple pollutants in separate columns.</p>
 <p>Users can supply their own <code>ylim</code>, e.g. <code>ylim = c(0, 200)</code>, which will be
 used for all plots. Alternatively, <code>ylim</code> can be a list equal to the length
 of <code>panels</code> to control y-limits for each individual panel, e.g. <code>ylim = list(c(-100,500), c(200, 300), c(-400,400), c(50,70))</code>.</p>
-<p>The <code>difference</code> option calculates the difference in means between two
-pollutants, along with bootstrap estimates of the 95\<!-- % confidence intervals -->
-in the difference. This works in two ways: either two pollutants are supplied
-in separate columns (e.g. <code>pollutant = c("no2", "o3")</code>), or there are two
-unique values of <code>group</code>. The difference is calculated as the second
-pollutant minus the first and is labelled accordingly. This feature is
-particularly useful for model evaluation and identifying where models diverge
-from observations across time scales.</p>
 <p>Note also that the <code>timeVariation()</code> function works well on a subset of data
 and in conjunction with other plots. For example, a <code><a href="polarPlot.html">polarPlot()</a></code> may
 highlight an interesting feature for a particular wind speed/direction range.
 By filtering for those conditions <code>timeVariation()</code> can help determine
 whether the temporal variation of that feature differs from other features
 — and help with source identification.</p>
-<p>The function also supports non-pollutant variables, such as meteorological or
-traffic flow data.</p>
-<p>Depending on the choice of statistic, a subheading is added. Users can
-control the text in the subheading through the use of <code>sub</code> e.g. <code>sub = ""</code>
-will remove any subheading.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -346,6 +321,7 @@ will remove any subheading.</p>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>David Carslaw</p>
+<p>Jack Davison</p>
     </div>
 
     <div class="section level2">
@@ -400,27 +376,35 @@ will remove any subheading.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># sub plots can be extracted from the openair object</span></span></span>
 <span class="r-in"><span><span class="va">myplot</span> <span class="op">&lt;-</span> <span class="fu">timeVariation</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"no2"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">myplot</span>, subset <span class="op">=</span> <span class="st">"day.hour"</span><span class="op">)</span> <span class="co"># top weekday and plot</span></span></span>
+<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">plot</span><span class="op">$</span><span class="va">hour.weekday</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># individual plots</span></span></span>
-<span class="r-in"><span><span class="co"># plot(myplot, subset="day.hour") for the weekday and hours subplot (top)</span></span></span>
-<span class="r-in"><span><span class="co"># plot(myplot, subset="hour") for the diurnal plot</span></span></span>
-<span class="r-in"><span><span class="co"># plot(myplot, subset="day") for the weekday plot</span></span></span>
-<span class="r-in"><span><span class="co"># plot(myplot, subset="month") for the monthly plot</span></span></span>
+<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">plot</span><span class="op">$</span><span class="va">hour.weekday</span></span></span>
+<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">plot</span><span class="op">$</span><span class="va">hour</span></span></span>
+<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">plot</span><span class="op">$</span><span class="va">day</span></span></span>
+<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">plot</span><span class="op">$</span><span class="va">month</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># numerical results (mean, lower/upper uncertainties)</span></span></span>
-<span class="r-in"><span><span class="co"># myplot$data$day.hour # the weekday and hour data set</span></span></span>
-<span class="r-in"><span><span class="co"># summary(myplot, subset = "hour") #summary of hour data set</span></span></span>
-<span class="r-in"><span><span class="co"># head(myplot, subset = "day") #head/top of day data set</span></span></span>
-<span class="r-in"><span><span class="co"># tail(myplot, subset = "month") #tail/top of month data set</span></span></span>
+<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">hour.weekday</span></span></span>
+<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">hour</span></span></span>
+<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">day</span></span></span>
+<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">month</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># plot quantiles and median</span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span><span class="va">mydata</span>, stati <span class="op">=</span> <span class="st">"median"</span>, poll <span class="op">=</span> <span class="st">"pm10"</span>, col <span class="op">=</span> <span class="st">"firebrick"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  statistic <span class="op">=</span> <span class="st">"median"</span>,</span></span>
+<span class="r-in"><span>  poll <span class="op">=</span> <span class="st">"pm10"</span>,</span></span>
+<span class="r-in"><span>  cols <span class="op">=</span> <span class="st">"firebrick"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># with different intervals</span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
-<span class="r-in"><span>  stati <span class="op">=</span> <span class="st">"median"</span>, poll <span class="op">=</span> <span class="st">"pm10"</span>, conf.int <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">0.99</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  col <span class="op">=</span> <span class="st">"firebrick"</span></span></span>
+<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  statistic <span class="op">=</span> <span class="st">"median"</span>,</span></span>
+<span class="r-in"><span>  poll <span class="op">=</span> <span class="st">"pm10"</span>,</span></span>
+<span class="r-in"><span>  conf.int <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">0.99</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  cols <span class="op">=</span> <span class="st">"firebrick"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># with different (arbitrary) panels</span></span></span>

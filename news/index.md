@@ -48,12 +48,18 @@
 ### New Features
 
 - [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
-  has been almost completely rewritten, allowing for the following
-  updates:
+  has been almost completely rewritten. It is now a thin wrapper around
+  the new
+  [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md),
+  which can take any arbitrary `x` value - passed to \[cutData()\] - to
+  use for its x-axis.
+
+- [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+  has the following changes:
 
   - Gained the `panels` argument. This allows for panels other than
     “hour.weekday”, “hour”, “month”, and “weekday” to be represented in
-    the plot assembly. The first panel will be the top row, and the re
+    the plot assembly.
 
   - [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
     will now change lines to points and polygons to rectangles for

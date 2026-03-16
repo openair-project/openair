@@ -110,6 +110,8 @@ Compare models against measurements and models against other models.
 
 Additional plotting functions for visualising air quality data.
 
+- [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
+  : Variation Plot
 - [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
   : Flexible scatter plots
 - [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)

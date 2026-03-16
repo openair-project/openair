@@ -6,7 +6,10 @@ shown, such as hour of the day, day of the week, week of the year, month
 of the year, annual mean, or any other time-based grouping the user
 specifies. By default, this function plots the diurnal, day of the week
 and monthly variation for different variables, typically pollutant
-concentrations. Four separate plots are produced.
+concentrations. Four separate plots are produced. This is a convenient
+alternative to using
+[`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
+and assembling the plots manually.
 
 ## Usage
 
@@ -18,20 +21,21 @@ timeVariation(
   local.tz = NULL,
   normalise = FALSE,
   xlab = NULL,
-  name.pol = pollutant,
+  name.pol = NULL,
   type = "default",
   group = NULL,
   difference = FALSE,
   statistic = "mean",
-  conf.int = 0.95,
+  conf.int = NULL,
   B = 100,
   ci = TRUE,
   cols = "hue",
   ref.y = NULL,
   key = NULL,
   key.columns = NULL,
-  start.day = 1,
-  panel.gap = 0.2,
+  key.position = "top",
+  strip.position = "top",
+  panel.gap = 1.5,
   auto.text = TRUE,
   alpha = 0.4,
   plot = TRUE,
@@ -64,21 +68,12 @@ timeVariation(
 
 - local.tz:
 
-  Should the results be calculated in local time that includes a
-  treatment of daylight savings time (DST)? The default is not to
-  consider DST issues, provided the data were imported without a DST
-  offset. Emissions activity tends to occur at local time e.g. rush hour
-  is at 8 am every day. When the clocks go forward in spring, the
-  emissions are effectively released into the atmosphere typically 1
-  hour earlier during the summertime i.e. when DST applies. When
-  plotting diurnal profiles, this has the effect of “smearing-out” the
-  concentrations. Sometimes, a useful approach is to express time as
-  local time. This correction tends to produce better-defined diurnal
-  profiles of concentration (or other variables) and allows a better
-  comparison to be made with emissions/activity data. If set to `FALSE`
-  then GMT is used. Examples of usage include
-  `local.tz = "Europe/London"`, `local.tz = "America/New_York"`. See
-  `cutData` and `import` for more details.
+  Used for identifying whether a date has daylight savings time (DST)
+  applied or not. Examples include `local.tz = "Europe/London"`,
+  `local.tz = "America/New_York"`, i.e., time zones that assume DST.
+  <https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones> shows time
+  zones that should be valid for most systems. It is important that the
+  original data are in GMT (UTC) or a fixed offset from GMT.
 
 - normalise:
 
@@ -127,7 +122,8 @@ timeVariation(
 
   This sets the grouping variable to be used. For example, if a data
   frame had a column `site` setting `group = "site"` will plot all sites
-  together in each panel.
+  together in each panel. Passed to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
 
 - difference:
 
@@ -138,7 +134,7 @@ timeVariation(
   difference can also be calculated if there is a column that identifies
   two groups, e.g., having used
   [`splitByDate()`](https://openair-project.github.io/openair/reference/splitByDate.md).
-  In this case it is possible to call `timeVariation()` with the option
+  In this case it is possible to call the function with the option
   `group = "split.by"` and `difference = TRUE`.
 
 - statistic:
@@ -154,9 +150,7 @@ timeVariation(
   The confidence intervals to be plotted. If `statistic = "mean"` then
   the confidence intervals in the mean are plotted. If
   `statistic = "median"` then the `conf.int` and `1 - conf.int`
-  *quantiles* are plotted. `conf.int` can be of length 2, which is most
-  useful for showing quantiles. For example `conf.int = c(0.75, 0.99)`
-  will yield a plot showing the median, 25/75 and 5/95th quantiles.
+  *quantiles* are plotted. Any number of `conf.int`s can be provided.
 
 - B:
 
@@ -201,12 +195,19 @@ timeVariation(
   several columns by setting `columns` to be less than the number of
   pollutants.
 
-- start.day:
+- key.position:
 
-  What day of the week should the plots start on? The user can change
-  the start day by supplying an integer between `0` and `6`.
-  `Sunday = 0`, `Monday = 1`, and so on. For example to start the
-  weekday plots on a Saturday, choose `start.day = 6`.
+  Location where the scale key is to plotted. Can include `"top"`,
+  `"bottom"`, `"right"` and `"left"`.
+
+- strip.position:
+
+  Location where the facet 'strips' are located when using `type`. When
+  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
+  or `"top"`. When two `type`s are provided, this argument defines
+  whether the strips are "switched" and can take either `"x"`, `"y"`, or
+  `"both"`. For example, `"x"` will switch the 'top' strip locations to
+  the bottom of the plot.
 
 - panel.gap:
 
@@ -231,25 +232,17 @@ timeVariation(
 
 - ...:
 
-  Other graphical parameters passed onto
-  [`lattice::xyplot()`](https://rdrr.io/pkg/lattice/man/xyplot.html) and
+  Passed to
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
-  For example, in the case of
-  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-  the option `hemisphere = "southern"`. Note that
-  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-  is used in `type`, `group` and `panels`, and `...` will be passed to
-  all three.
 
 ## Value
 
 an
 [openair](https://openair-project.github.io/openair/reference/openair-package.md)
 object. The components of `timeVariation()` are named after `panels`.
-Associated data.frames can be extracted directly using the `subset`
-option, e.g. as in `plot(object, subset = "day.hour")`,
-`summary(output, subset = "hour")`, etc., for
-`output <- timeVariation(mydata, "nox")`
+`main.plot` is a
+[patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html)
+assembly.
 
 ## Details
 
@@ -258,36 +251,10 @@ interesting features that relate to source types and meteorology. For
 traffic sources, there are often important differences in the way
 vehicles vary by type - e.g., fewer heavy vehicles at weekends.
 
-The `timeVariation()` function makes it easy to see how concentrations
-(and many other variable types) vary across different temporal
-resolutions. Users have full control over which based panels are shown,
-allowing for more tailored and insightful analysis.
-
-The plots also show the 95% confidence intervals in the mean. The 95%
-confidence intervals are calculated through bootstrap simulations, which
-will provide more robust estimates of the confidence intervals
-(particularly when there are relatively few data).
-
-The function can handle multiple pollutants and uses the flexible `type`
-option to provide separate panels for each 'type' — see
-[`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-for more details. `timeVariation()` also accepts a `group` option,
-useful for stacked data. This works similarly to having multiple
-pollutants in separate columns.
-
 Users can supply their own `ylim`, e.g. `ylim = c(0, 200)`, which will
 be used for all plots. Alternatively, `ylim` can be a list equal to the
 length of `panels` to control y-limits for each individual panel, e.g.
 `ylim = list(c(-100,500), c(200, 300), c(-400,400), c(50,70))`.
-
-The `difference` option calculates the difference in means between two
-pollutants, along with bootstrap estimates of the 95\\ in the
-difference. This works in two ways: either two pollutants are supplied
-in separate columns (e.g. `pollutant = c("no2", "o3")`), or there are
-two unique values of `group`. The difference is calculated as the second
-pollutant minus the first and is labelled accordingly. This feature is
-particularly useful for model evaluation and identifying where models
-diverge from observations across time scales.
 
 Note also that the `timeVariation()` function works well on a subset of
 data and in conjunction with other plots. For example, a
@@ -297,13 +264,6 @@ speed/direction range. By filtering for those conditions
 `timeVariation()` can help determine whether the temporal variation of
 that feature differs from other features — and help with source
 identification.
-
-The function also supports non-pollutant variables, such as
-meteorological or traffic flow data.
-
-Depending on the choice of statistic, a subheading is added. Users can
-control the text in the subheading through the use of `sub` e.g.
-`sub = ""` will remove any subheading.
 
 ## See also
 
@@ -318,6 +278,8 @@ Other time series and trend functions:
 ## Author
 
 David Carslaw
+
+Jack Davison
 
 ## Examples
 
@@ -371,27 +333,35 @@ timeVariation(mydata, pollutant = "no2", group = "split.by", difference = TRUE)
 
 # sub plots can be extracted from the openair object
 myplot <- timeVariation(mydata, pollutant = "no2")
-plot(myplot, subset = "day.hour") # top weekday and plot
+myplot$plot$hour.weekday
 
 # individual plots
-# plot(myplot, subset="day.hour") for the weekday and hours subplot (top)
-# plot(myplot, subset="hour") for the diurnal plot
-# plot(myplot, subset="day") for the weekday plot
-# plot(myplot, subset="month") for the monthly plot
+myplot$plot$hour.weekday
+myplot$plot$hour
+myplot$plot$day
+myplot$plot$month
 
 # numerical results (mean, lower/upper uncertainties)
-# myplot$data$day.hour # the weekday and hour data set
-# summary(myplot, subset = "hour") #summary of hour data set
-# head(myplot, subset = "day") #head/top of day data set
-# tail(myplot, subset = "month") #tail/top of month data set
+myplot$data$hour.weekday
+myplot$data$hour
+myplot$data$day
+myplot$data$month
 
 # plot quantiles and median
-timeVariation(mydata, stati = "median", poll = "pm10", col = "firebrick")
+timeVariation(
+  mydata,
+  statistic = "median",
+  poll = "pm10",
+  cols = "firebrick"
+)
 
 # with different intervals
-timeVariation(mydata,
-  stati = "median", poll = "pm10", conf.int = c(0.75, 0.99),
-  col = "firebrick"
+timeVariation(
+  mydata,
+  statistic = "median",
+  poll = "pm10",
+  conf.int = c(0.75, 0.99),
+  cols = "firebrick"
 )
 
 # with different (arbitrary) panels

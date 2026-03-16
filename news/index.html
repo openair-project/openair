@@ -70,9 +70,10 @@
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li>
-<p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> has been almost completely rewritten, allowing for the following updates:</p>
-<ul><li><p>Gained the <code>panels</code> argument. This allows for panels other than “hour.weekday”, “hour”, “month”, and “weekday” to be represented in the plot assembly. The first panel will be the top row, and the re</p></li>
+<ul><li><p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> has been almost completely rewritten. It is now a thin wrapper around the new <code><a href="../reference/variationPlot.html">variationPlot()</a></code>, which can take any arbitrary <code>x</code> value - passed to [cutData()] - to use for its x-axis.</p></li>
+<li>
+<p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> has the following changes:</p>
+<ul><li><p>Gained the <code>panels</code> argument. This allows for panels other than “hour.weekday”, “hour”, “month”, and “weekday” to be represented in the plot assembly.</p></li>
 <li><p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> will now change lines to points and polygons to rectangles for certain panel and <code>group</code> combinations: month-season, weekday-weekend, and hour-daylight.</p></li>
 <li><p>When <code>key</code> is <code>FALSE</code>, no key is shown for any of the four <code><a href="../reference/timeVariation.html">timeVariation()</a></code> plots. Previously, any value passed to <code>key</code> would cause all four plots to display a key.</p></li>
 <li><p>(!) BREAKING: The order of <code>xlab</code> and <code>ylim</code> now matches the order of <code>panels</code>. <code>month.last</code> has also been deprecated; if used and <code>TRUE</code>, this will override <code>panels</code> with a warning. The output names <code>output$data</code> will now vary based on <code>panels</code>, and the <code>type</code> column will be named <code>{type}_type</code> (e.g., “hour_type”).</p></li>
