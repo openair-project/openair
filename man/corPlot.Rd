@@ -137,6 +137,27 @@ It is also possible to use the \code{openair} type option to condition the data 
 many flexible ways, although this may become difficult to visualise with too
 many panels.
 }
+\examples{
+# basic corrgram plot
+corPlot(mydata)
+
+# plot by season
+corPlot(mydata, type = "season")
+
+# recover dendrogram when cluster = TRUE and plot it
+res <- corPlot(mydata, plot = FALSE)
+plot(res$clust)
+
+\dontrun{
+# a more interesting are hydrocarbon measurements
+hc <- importAURN(site = "my1", year = 2005, hc = TRUE)
+
+# now it is possible to see the hydrocarbons that behave most
+# similarly to one another
+corPlot(hc)
+}
+
+}
 \references{
 Sarkar, D. (2007). Lattice Multivariate Data Visualization with
 R. New York: Springer.
