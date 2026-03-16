@@ -894,6 +894,14 @@ windRose <- function(
       )
   } else {
     if (paddle) {
+      # widths of paddles similar to original behaviour
+      box.widths <- seq(
+        0.002^0.25,
+        0.016^0.25,
+        length.out = dplyr::n_distinct(levels(plot_data$name))
+      )^4
+      box.widths <- box.widths * max.freq * angle / 5
+      
       thePlot <-
         thePlot +
         geom_stroked_path(
@@ -913,11 +921,7 @@ windRose <- function(
           stroke_colour = border
         ) +
         ggplot2::scale_linewidth_manual(
-          values = seq(
-            angle / 360 * width * 30,
-            angle / 360 * width * 125,
-            length.out = dplyr::n_distinct(levels(plot_data$name))
-          )
+          values = 3 * width * box.widths
         ) +
         ggplot2::labs(
           linewidth = key_label,
