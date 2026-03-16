@@ -431,6 +431,27 @@ variationPlot <- function(
     })
   }
 
+  # introduce NA gaps for missing x values so lines don't connect across absent data
+  gap_cols <- intersect(c(type_cols, "group", "ci"), names(mydata))
+  if (is.numeric(mydata$x)) {
+    full_x <- switch(x,
+      "hour" = 0:23,
+      "week" = 1:53,
+      seq(min(mydata$x, na.rm = TRUE), max(mydata$x, na.rm = TRUE))
+    )
+    mydata <- tidyr::complete(
+      mydata,
+      x = full_x,
+      tidyr::nesting(!!!rlang::syms(gap_cols))
+    )
+  } else if (is.factor(mydata$x)) {
+    mydata <- tidyr::complete(
+      mydata,
+      x,
+      tidyr::nesting(!!!rlang::syms(gap_cols))
+    )
+  }
+
   # set pollutant labels for legend
   poll_labels <- name.pol %||% levels(mydata$group)
 
@@ -518,6 +539,7 @@ variationPlot <- function(
             group = interaction(.data$group, .data$ci)
           ),
           show.legend = FALSE,
+          na.rm = TRUE,
           alpha = alpha / dplyr::n_distinct(mydata$ci)
         )
     }
@@ -531,6 +553,7 @@ variationPlot <- function(
           linetype = .data$group
         ),
         show.legend = TRUE,
+        na.rm = TRUE,
         key_glyph = "point"
       ) +
       ggplot2::scale_x_continuous(
@@ -581,6 +604,7 @@ variationPlot <- function(
             linetype = .data$group
           ),
           show.legend = TRUE,
+          na.rm = TRUE,
           key_glyph = "point"
         )
     } else {
