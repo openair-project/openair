@@ -189,27 +189,23 @@ data with very different values.}
 use panel-specific scales. The latter is a useful setting when plotting
 data with very different values.}
 
-\item{ref.x}{See \code{ref.y} for details.}
+\item{ref.x, ref.y}{A list with details of the horizontal or vertical lines to
+be added representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be
+plotted e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}.}
 
-\item{ref.y}{A list with details of the horizontal lines to be added
-representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}. See \code{gg_ref_y} for more details.}
+\item{k}{Smoothing parameter supplied to \code{gam} for fitting a smooth surface
+when \code{method = "level"}.}
 
-\item{k}{Smoothing parameter supplied to \code{gam} for fitting a smooth
-surface when \code{method = "level"}.}
+\item{dist}{When plotting smooth surfaces (\code{method = "level"} and \code{smooth = TRUE}), \code{dist} controls how far from the original data the predictions
+should be made. See \code{exclude.too.far} from the \code{mgcv} package. Data are
+first transformed to a unit square. Values should be between 0 and 1.}
 
-\item{dist}{When plotting smooth surfaces (\code{method = "level"} and
-\code{smooth = TRUE}), \code{dist} controls how far from the original data
-the predictions should be made. See \code{exclude.too.far} from the
-\code{mgcv} package. Data are first transformed to a unit square. Values
-should be between 0 and 1.}
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly e.g.  by subscripting the \sQuote{2} in NO2.}
 
-\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
-titles and axis labels will automatically try and format pollutant names
-and units properly e.g.  by subscripting the \sQuote{2} in NO2.}
-
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when
-analysing data to extract plot components and plotting them in other ways.}
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data to extract plot components and plotting them in other ways.}
 
 \item{...}{Other graphical parameters passed onto \code{cutData} and ggplot2
 layers. For example, \code{scatterPlot} passes the option \code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than default

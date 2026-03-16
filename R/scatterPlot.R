@@ -156,24 +156,22 @@
 #'   \dQuote{same} ensures all panels use the same scale and \dQuote{free} will
 #'   use panel-specific scales. The latter is a useful setting when plotting
 #'   data with very different values.
-#' @param ref.x See `ref.y` for details.
-#' @param ref.y A list with details of the horizontal lines to be added
-#'   representing reference line(s). For example, `ref.y = list(h = 50, lty =
-#'   5)` will add a dashed horizontal line at 50. Several lines can be plotted
-#'   e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-#'   "blue"))`. See `gg_ref_y` for more details.
-#' @param k Smoothing parameter supplied to `gam` for fitting a smooth
-#'   surface when `method = "level"`.
-#' @param dist When plotting smooth surfaces (`method = "level"` and
-#'   `smooth = TRUE`), `dist` controls how far from the original data
-#'   the predictions should be made. See `exclude.too.far` from the
-#'   `mgcv` package. Data are first transformed to a unit square. Values
-#'   should be between 0 and 1.
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
-#'   titles and axis labels will automatically try and format pollutant names
-#'   and units properly e.g.  by subscripting the \sQuote{2} in NO2.
-#' @param plot Should a plot be produced? `FALSE` can be useful when
-#'   analysing data to extract plot components and plotting them in other ways.
+#' @param ref.x,ref.y A list with details of the horizontal or vertical lines to
+#'   be added representing reference line(s). For example, `ref.y = list(h = 50,
+#'   lty = 5)` will add a dashed horizontal line at 50. Several lines can be
+#'   plotted e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
+#'   "blue"))`.
+#' @param k Smoothing parameter supplied to `gam` for fitting a smooth surface
+#'   when `method = "level"`.
+#' @param dist When plotting smooth surfaces (`method = "level"` and `smooth =
+#'   TRUE`), `dist` controls how far from the original data the predictions
+#'   should be made. See `exclude.too.far` from the `mgcv` package. Data are
+#'   first transformed to a unit square. Values should be between 0 and 1.
+#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
+#'   axis labels will automatically try and format pollutant names and units
+#'   properly e.g.  by subscripting the \sQuote{2} in NO2.
+#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
+#'   data to extract plot components and plotting them in other ways.
 #' @param ... Other graphical parameters passed onto `cutData` and ggplot2
 #'   layers. For example, `scatterPlot` passes the option `hemisphere =
 #'   "southern"` on to `cutData` to provide southern (rather than default
@@ -673,7 +671,8 @@ scatter_scatter <- function(
         guide = ggplot2::guide_colorbar(
           title = quickText(z, auto.text),
           position = key.position
-        )
+        ),
+        aesthetics = c("colour", "fill")
       )
   } else if (has_group) {
     grp_aes <- ggplot2::aes(
@@ -715,7 +714,8 @@ scatter_scatter <- function(
       ggplot2::scale_color_manual(
         values = myColors,
         labels = pol_name,
-        guide = theGuide
+        guide = theGuide,
+        aesthetics = c("colour", "fill")
       ) +
       ggplot2::scale_shape_manual(
         values = pch_vals,
@@ -806,17 +806,19 @@ scatter_scatter <- function(
     )
     if (!is.null(lm_labs) && nrow(lm_labs) > 0L) {
       if (has_group) {
-        plt <- plt +
+        plt <-
+          plt +
           ggplot2::geom_text(
-            data = lm_labs,
+            data = lm_labs |>
+              dplyr::mutate(y = 0.98 - ((.data$g_idx - 1) * 0.05)),
             mapping = ggplot2::aes(
-              x = .data$x_pos,
-              y = .data$y_pos,
+              x = I(0.025),
+              y = I(.data$y),
               label = .data$label,
-              vjust = .data$g_idx * 1.5,
               color = .data[[group_var]]
             ),
             hjust = 0,
+            vjust = 1,
             inherit.aes = FALSE,
             parse = TRUE,
             size = 2.5,
@@ -825,14 +827,15 @@ scatter_scatter <- function(
       } else {
         plt <- plt +
           ggplot2::geom_text(
-            data = lm_labs,
+            data = lm_labs |>
+              dplyr::mutate(y = 0.98 - ((.data$g_idx - 1) * 0.05)),
             mapping = ggplot2::aes(
-              x = .data$x_pos,
-              y = .data$y_pos,
+              x = I(0.025),
+              y = I(.data$y),
               label = .data$label,
-              vjust = .data$g_idx * 1.5
             ),
             hjust = 0,
+            vjust = 1,
             inherit.aes = FALSE,
             parse = TRUE,
             size = 2.5,
@@ -858,7 +861,7 @@ scatter_scatter <- function(
           ends = windflow$ends %||% "last",
           type = windflow$type %||% "closed"
         ),
-        colour = windflow$col %||% "grey",
+        colour = windflow$col %||% "grey25",
         linewidth = (windflow$lwd %||% 1) / 2
       )
   }
