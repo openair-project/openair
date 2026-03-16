@@ -58,7 +58,7 @@ importEurope <- function(
     "http://aq-data.ricardo-aea.com/R_data/saqgetr/observations"
 
   # Produce file names
-  file_remote <- crossing(
+  file_remote <- tidyr::crossing(
     site = site,
     year = year
   ) |>
@@ -193,7 +193,7 @@ make_saq_observations_wider <- function(df) {
           variable,
           value
         ) |>
-        spread(variable, value)
+        tidyr::spread(variable, value)
     },
     error = function(e) {
       warning(
@@ -210,7 +210,7 @@ make_saq_observations_wider <- function(df) {
           value
         ) |>
         distinct(date, site, variable, .keep_all = TRUE) |>
-        spread(variable, value)
+        tidyr::spread(variable, value)
     }
   )
 }

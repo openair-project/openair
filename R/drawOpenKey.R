@@ -183,13 +183,13 @@ drawOpenKey <- function(key, draw = FALSE, vp = NULL) {
         }
         key$at <- 0:length(key$labels$labels)
         if (is.null(key$labels$at)) {
-          key$labels$at <- 1:length(key$labels$labels) - 0.5
+          key$labels$at <- seq_along(key$labels$labels) - 0.5
         }
       } else {
         key$at <- 0:length(key$labels)
         key$labels <- list(
           labels = key$labels,
-          at = 1:length(key$labels) - 0.5
+          at = seq_along(key$labels) - 0.5
         )
       }
     }

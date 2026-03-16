@@ -35,6 +35,7 @@ Imports:
     MASS,
     methods,
     mgcv,
+    patchwork,
     purrr (>= 1.0.0),
     Rcpp,
     readr,
@@ -45,9 +46,10 @@ Imports:
     tidyr,
     utils
 Suggests:
-    hexbin,
+    geomtextpath,
     KernSmooth,
     knitr,
+    legendry (>= 0.2.4),
     quantreg,
     rmarkdown,
     sf,

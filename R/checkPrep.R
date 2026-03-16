@@ -48,7 +48,7 @@ checkPrep <- function(
   varNames <- c(Names, type)
   matching <- varNames %in% all.vars
 
-  if (any(!matching)) {
+  if (!all(matching)) {
     # not all variables are present
     stop(cat("Can't find the variable(s)", varNames[!matching], "\n"))
   }
@@ -134,7 +134,7 @@ checkPrep <- function(
 
   # make sure date is ordered in time if present
   if ("date" %in% Names) {
-    if ("POSIXlt" %in% class(mydata$date)) {
+    if (inherits(mydata$date, "POSIXlt")) {
       stop("date should be in POSIXct format not POSIXlt")
     }
 
@@ -165,13 +165,6 @@ checkPrep <- function(
     if (any(dst(mydata$date))) {
       message("Detected data with Daylight Saving Time.")
     }
-  }
-
-  if (strip.white) {
-    # set panel strip to white
-    suppressWarnings(trellis.par.set(list(
-      strip.background = list(col = "white")
-    )))
   }
 
   # return data frame

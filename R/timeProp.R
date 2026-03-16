@@ -191,7 +191,7 @@ timeProp <- function(
 
   # set up key, if required
   if (!key) {
-    key.position = "none"
+    key.position <- "none"
   }
 
   # x-axis scale function

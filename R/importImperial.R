@@ -377,7 +377,7 @@ importImperial <-
     if (to_narrow) {
       if (meta) {
         thedata <-
-          pivot_longer(
+          tidyr::pivot_longer(
             thedata,
             -c(date, site, code, latitude, longitude, site.type),
             names_to = "pollutant"
@@ -385,7 +385,7 @@ importImperial <-
           arrange(site, code, pollutant, date)
       } else {
         thedata <-
-          pivot_longer(
+          tidyr::pivot_longer(
             thedata,
             -c(date, site, code),
             names_to = "pollutant"

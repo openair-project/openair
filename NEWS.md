@@ -10,37 +10,25 @@
 
 ## Breaking Changes
 
+- All plotting functions are now written in `ggplot2`. `lattice` specific options and annotations will no longer work, but many can now be achieved using `ggplot2::theme()` and `ggplot2::annotate()`.
+  
+- `trajPlot()`, `trajLevel()` and `trajCluster()` have had their three projection related arguments removed and replaced with a single `crs` argument, which defaults to lat/lng (`4326`).
+
+- As the above three functions no longer call `scatterPlot()`, `scatterPlot()` no longer has the `map` argument.
+
 - `linearRelation()` and `calcFno2()` have been removed from `openair` due to using outdated methodology and assumptions.
 
-- The following functions are now written in `ggplot2`:
+- `summaryPlot()` has been removed from `openair`. This function was very old and inconsistent with the rest of openair. It is planned to be replaced in the future with new summary functions.
 
-  - `trendLevel()`
-  
-  - `calendarPlot()`
-  
-  - `TheilSen()`
-  
-  - `timeProp()`
-  
-  - `trajPlot()`
-  
-  - `trajLevel()`
-  
-  - `trajCluster()`
-
-  This is the beginning of a move away from `lattice` to a more modern plotting engine. For most users there will be no real change, but some arguments passed to `...` may no longer be supported. Any `lattice`-specific annotations also will not work, but equivalent `ggplot2` methods should be available.
-  
-  There are some important changes to be aware of:
-  
-  - `trajPlot()`, `trajLevel()` and `trajCluster()` have had their three projection related arguments removed and replaced with a single `crs` argument, which defaults to lat/lng (`4326`).
-
-  - As the above three functions no longer call `scatterPlot()`, `scatterPlot()` no longer has the `map` argument.
+- Argument names have been standardised throughout `openair`. For example, instances of `col` have been replaced with `cols`. This may cause some existing code to break, but will ensure each function behaves more similarly going into the future.
 
 ## New Features
 
-- `timeVariation()` has been almost completely rewritten, allowing for the following updates:
+- `timeVariation()` has been almost completely rewritten. It is now a thin wrapper around the new `variationPlot()`, which can take any arbitrary `x` value - passed to [cutData()] - to use for its x-axis.
 
-    - Gained the `panels` argument. This allows for panels other than "hour.weekday", "hour", "month", and "weekday" to be represented in the plot assembly. The first panel will be the top row, and the re
+- `timeVariation()` has the following changes:
+
+    - Gained the `panels` argument. This allows for panels other than "hour.weekday", "hour", "month", and "weekday" to be represented in the plot assembly.
     
     - `timeVariation()` will now change lines to points and polygons to rectangles for certain panel and `group` combinations: month-season, weekday-weekend, and hour-daylight.
 
@@ -100,7 +88,15 @@
 
 - `trendLevel()` now supports 2 values being passed to `type`, which will create a 2D grid using `ggplot2::facet_grid()`.
 
-- New function `WhittakerSmooth` to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.
+- New function `WhittakerSmooth()` to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.
+
+- `corPlot()` has gained several new features:
+
+    - Added the `annotate` argument which can change the correlation annotation to a p-value marker or stars, or remove it entirely.
+
+    - Added two new arguments `triangle` and `diagonal` for controlling the plot appearance.
+    
+    - Added arguments `key`, `key.position` and `key.header` for adding and refining a plot legend.
 
 ## Bug Fixes
 

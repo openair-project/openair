@@ -11,12 +11,13 @@ conditionalQuantile(
   type = "default",
   bins = 31,
   min.bin = c(10, 20),
-  xlab = "predicted value",
-  ylab = "observed value",
-  col = brewer.pal(5, "YlOrRd"),
+  cols = "YlOrRd",
+  key = TRUE,
   key.columns = 2,
   key.position = "bottom",
+  strip.position = "top",
   auto.text = TRUE,
+  plot = TRUE,
   ...
 )
 }
@@ -44,7 +45,7 @@ different variables and how they depend on one another.
 
 Type can be up length two e.g. \code{type = c("season", "weekday")} will
 produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.}
+types are provided the first forms the rows and the second the columns.}
 
 \item{bins}{Number of bins to be used in calculating the different quantile
 levels.}
@@ -52,29 +53,33 @@ levels.}
 \item{min.bin}{The minimum number of points required for the estimates of the
 25/75th and 10/90th percentiles.}
 
-\item{xlab}{label for the x-axis, by default \dQuote{predicted value}.}
+\item{cols}{Passed to \code{openColours()} with \code{n = 3}.}
 
-\item{ylab}{label for the y-axis, by default \dQuote{observed value}.}
-
-\item{col}{Colours to be used for plotting the uncertainty bands and median
-line. Must be of length 5 or more.}
+\item{key}{Should a key be shown? Defaults to \code{TRUE}.}
 
 \item{key.columns}{Number of columns to be used in the key.}
 
 \item{key.position}{Location of the key e.g. \dQuote{top}, \dQuote{bottom},
-\dQuote{right}, \dQuote{left}. See \code{lattice} \code{xyplot} for more
-details.}
+\dQuote{right}, \dQuote{left}.}
+
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
 titles and axis labels etc. will automatically try and format pollutant
 names and units properly e.g.  by subscripting the `2' in NO2.}
 
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data in other ways.}
+
 \item{\dots}{Other graphical parameters passed onto \code{cutData} and
-\code{lattice:xyplot}. For example, \code{conditionalQuantile} passes the
-option \code{hemisphere = "southern"} on to \code{cutData} to provide
-southern (rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common axis and title labelling options (such as
-\code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
-\code{quickText} to handle routine formatting.}
+\code{ggplot2}. For example, \code{conditionalQuantile} passes the option
+\code{hemisphere = "southern"} on to \code{cutData} to provide southern
+(rather than default northern) hemisphere handling of \code{type = "season"}.}
 }
 \description{
 Function to calculate conditional quantiles with flexible conditioning. The
@@ -119,7 +124,7 @@ according to values of the predictions. The median prediction line together
 with the 25/75th and 10/90th quantile values are plotted together with a line
 showing a \dQuote{perfect} model. Also shown is a histogram of predicted
 values (shaded grey) and a histogram of observed values (shown as a blue
-line).
+outline).
 
 Far more insight can be gained into model performance through conditioning
 using \code{type}. For example, \code{type = "season"} will plot conditional
@@ -129,24 +134,24 @@ e.g. representing different models used.
 See Wilks (2005) for more details and the examples below.
 }
 \examples{
-## make some dummy prediction data based on 'nox'
+# make some dummy prediction data based on 'nox'
 mydata$mod <- mydata$nox * 1.1 + mydata$nox * runif(1:nrow(mydata))
 
 # basic conditional quantile plot
-## A "perfect" model is shown by the blue line
-## predictions tend to be increasingly positively biased at high nox,
-## shown by departure of median line from the blue one.
-## The widening uncertainty bands with increasing NOx shows that
-## hourly predictions are worse for higher NOx concentrations.
-## Also, the red (median) line extends beyond the data (blue line),
-## which shows in this case some predictions are much higher than
-## the corresponding measurements. Note that the uncertainty bands
-## do not extend as far as the median line because there is insufficient
+# A "perfect" model is shown by the blue line
+# predictions tend to be increasingly positively biased at high nox,
+# shown by departure of median line from the blue one.
+# The widening uncertainty bands with increasing NOx shows that
+# hourly predictions are worse for higher NOx concentrations.
+# Also, the red (median) line extends beyond the data (blue line),
+# which shows in this case some predictions are much higher than
+# the corresponding measurements. Note that the uncertainty bands
+# do not extend as far as the median line because there is insufficient
 # to calculate them
 conditionalQuantile(mydata, obs = "nox", mod = "mod")
 
-## can split by season to show seasonal performance (not very
-## enlightening in this case - try some real data and it will be!)
+# can split by season to show seasonal performance (not very
+# enlightening in this case - try some real data and it will be!)
 
 \dontrun{
 conditionalQuantile(mydata, obs = "nox", mod = "mod", type = "season")
@@ -171,5 +176,7 @@ Other model evaluation functions:
 }
 \author{
 David Carslaw
+
+Jack Davison
 }
 \concept{model evaluation functions}

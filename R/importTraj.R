@@ -140,7 +140,7 @@ importTraj <-
         {
           if (is.na(local)) {
             fileName <- paste(
-              "http://met-data.ricardo-aea.com/trajectories/",
+              "https://aq-data.ricardo-aea.com/trajectories/",
               x,
               ".RData",
               sep = ""

@@ -13,12 +13,11 @@ conditionalEval(
   type = "default",
   bins = 31,
   statistic = "MB",
-  xlab = "predicted value",
-  ylab = "statistic",
-  col = brewer.pal(5, "YlOrRd"),
+  cols = "YlOrRd",
   col.var = "Set1",
   var.names = NULL,
   auto.text = TRUE,
+  plot = TRUE,
   ...
 )
 }
@@ -31,66 +30,42 @@ representing observed and modelled values.}
 \item{mod}{The name of the predictions (modelled values) in \code{mydata}.}
 
 \item{var.obs}{Other variable observations for which statistics should be
-calculated. Can be more than length one e.g. \code{var.obs = c("nox.obs", "ws.obs")}. Note that including other variables could reduce the number of
-data available to plot due to the need of having non-missing data for all
-variables.}
-
-\item{var.mod}{Other variable predictions for which statistics should be
 calculated. Can be more than length one e.g. \code{var.obs = c("nox.obs", "ws.obs")}.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned,
-and then plotted. The default is will produce a single plot using the
-entire data. Type can be one of the built-in types as detailed in
-\code{cutData} e.g. "season", "year", "weekday" and so on. For example,
-\code{type = "season"} will produce four plots --- one for each season.
+\item{var.mod}{Other variable predictions for which statistics should be
+calculated. Can be more than length one e.g. \code{var.mod = c("nox.mod", "ws.mod")}.}
 
-It is also possible to choose \code{type} as another variable in the data
-frame. If that variable is numeric, then the data will be split into four
-quantiles (if possible) and labelled accordingly. If type is an existing
-character or factor variable, then those categories/levels will be used
-directly. This offers great flexibility for understanding the variation of
-different variables and how they depend on one another.}
+\item{type}{\code{type} determines how the data are split i.e. conditioned,
+and then plotted. Only one type can be used with this function. The
+default produces a single plot using the entire data.}
 
 \item{bins}{Number of bins to be used in calculating the different quantile
 levels.}
 
 \item{statistic}{Statistic(s) to be plotted. Can be \dQuote{MB},
 \dQuote{NMB}, \dQuote{r}, \dQuote{COE}, \dQuote{MGE}, \dQuote{NMGE},
-\dQuote{RMSE} and \dQuote{FAC2}, as described in \code{modStats}. When
-these statistics are chosen, they are calculated from \code{var.mod} and
-\code{var.mod}.
+\dQuote{RMSE} and \dQuote{FAC2}. \code{statistic} can also be a variable
+name in the data frame or a date-based type (e.g. \dQuote{season}), in
+which case the plot shows the proportions of that variable across the
+prediction intervals. A special case is \dQuote{cluster}.}
 
-\code{statistic} can also be a value that can be supplied to
-\code{cutData}. For example, \code{statistic = "season"} will show how
-model performance varies by season across the distribution of predictions
-which might highlight that at high concentrations of NOx the model tends to
-underestimate concentrations and that these periods mostly occur in winter.
-\code{statistic} can also be another variable in the data frame --- see
-\code{cutData} for more information. A special case is \code{statistic = "cluster"} if clusters have been calculated using \code{trajCluster}.}
+\item{cols}{Passed to \code{openColours()} with \code{n = 3}.}
 
-\item{xlab}{label for the x-axis, by default \dQuote{predicted value}.}
+\item{col.var}{Colours for the additional variables. See \code{openColours}
+for more details.}
 
-\item{ylab}{label for the y-axis, by default \dQuote{observed value}.}
-
-\item{col}{Colours to be used for plotting the uncertainty bands and median
-line. Must be of length 5 or more.}
-
-\item{col.var}{Colours for the additional variables to be compared. See
-\code{openColours} for more details.}
-
-\item{var.names}{Variable names to be shown on plot for plotting
-\code{var.obs} and \code{var.mod}.}
+\item{var.names}{Variable names to be shown in the legend for \code{var.obs}
+and \code{var.mod}.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
 titles and axis labels etc. will automatically try and format pollutant
 names and units properly e.g.  by subscripting the `2' in NO2.}
 
-\item{...}{Other graphical parameters passed onto \code{conditionalQuantile}
-and \code{cutData}. For example, \code{conditionalQuantile} passes the
-option \code{hemisphere = "southern"} on to \code{cutData} to provide
-southern (rather than default northern) hemisphere handling of \code{type = "season"}. Similarly, common axis and title labelling options (such as
-\code{xlab}, \code{ylab}, \code{main}) are passed to \code{xyplot} via
-\code{quickText} to handle routine formatting.}
+\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
+data in other ways.}
+
+\item{...}{Other graphical parameters passed onto \code{\link[=conditionalQuantile]{conditionalQuantile()}}
+and \code{\link[=cutData]{cutData()}}.}
 }
 \description{
 This function enhances \code{\link[=conditionalQuantile]{conditionalQuantile()}} by also considering how other
@@ -142,32 +117,14 @@ example, to consider how well the model predicts NOx and wind speed
 when ozone concentrations are under-predicted, the model may also be shown to
 over-predict concentrations of NOx at the same time, or under-predict wind
 speeds. Such information can thus help identify the underlying causes of poor
-model performance. For example, an under-prediction in wind speed could
-result in higher surface NOx concentrations and lower ozone concentrations.
-Similarly if wind speed predictions were good and NOx was over predicted it
-might suggest an over-estimate of NOx emissions. One or more additional
-variables can be plotted.
+model performance.
 
 A special case is \code{statistic = "cluster"}. In this case a data frame is
 provided that contains the cluster calculated by \code{\link[=trajCluster]{trajCluster()}}
-and \code{\link[=importTraj]{importTraj()}}. Alternatively users could supply their own
-pre-calculated clusters. These calculations can be very useful in showing
-whether certain back trajectory clusters are associated with poor (or good)
-model performance. Note that in the case of \code{statistic = "cluster"}
-there will be fewer data points used in the analysis compared with the
-ordinary statistics above because the trajectories are available for every
-three hours. Also note that \code{statistic = "cluster"} cannot be used
-together with the ordinary model evaluation statistics such as MB. The output
-will be a bar chart showing the proportion of each interval of \code{mod} by
-cluster number.
-
-Far more insight can be gained into model performance through conditioning
-using \code{type}. For example, \code{type = "season"} will plot conditional
-quantiles and the associated model performance statistics of other variables
-by each season. \code{type} can also be a factor or character field e.g.
-representing different models used.
-
-See Wilks (2005) for more details of conditional quantile plots.
+and \code{\link[=importTraj]{importTraj()}}. Note that \code{statistic = "cluster"} cannot be
+used together with the ordinary model evaluation statistics such as MB.
+The output will be a bar chart showing the proportion of each interval of
+\code{mod} by cluster number.
 }
 \references{
 Wilks, D. S., 2005. Statistical Methods in the Atmospheric

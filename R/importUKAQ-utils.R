@@ -286,7 +286,7 @@ readSummaryData <-
 
     if (data_type == "annual") {
       thedata <- rename(thedata, date = year) |>
-        drop_na(date) |>
+        tidyr::drop_na(date) |>
         mutate(date = lubridate::ymd(paste0(date, "-01-01"), tz = "UTC"))
     }
 
@@ -299,14 +299,14 @@ readSummaryData <-
         select(thedata, contains("capture") | c(code, date, site)) |>
         select(!matches("uka_code"))
 
-      values <- pivot_longer(
+      values <- tidyr::pivot_longer(
         values,
         -c(date, code, site),
         values_to = "value",
         names_to = "species"
       )
 
-      capture <- pivot_longer(
+      capture <- tidyr::pivot_longer(
         capture,
         -c(date, code, site),
         values_to = "data_capture",
@@ -391,7 +391,7 @@ add_meta <- function(source, columns, aq_data) {
 #' @noRd
 add_ratified <- function(aq_data, source, to_narrow) {
   meta <-
-    importMeta(unique(source), all = T) |>
+    importMeta(unique(source), all = TRUE) |>
     dplyr::filter(
       code %in% aq_data$code,
       !variable %in%
@@ -501,7 +501,7 @@ guess_source <- function(site) {
     data.frame(code = toupper(site)) |>
     dplyr::left_join(ukaq_meta, by = "code")
 
-  if (any(is.na(source_tbl$source))) {
+  if (anyNA(source_tbl$source)) {
     ambiguous_codes <-
       source_tbl |>
       dplyr::filter(is.na(.data$source)) |>

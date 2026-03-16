@@ -53,7 +53,7 @@ rollingMean <- function(
   align <- rlang::arg_match(align, multiple = FALSE)
 
   if (align == "center") {
-    align = "centre"
+    align <- "centre"
   }
 
   # data.thresh must be between 0 & 100
@@ -103,7 +103,7 @@ rollingMean <- function(
 
     # call C code
 
-    data.thresh = data.thresh / 100
+    data.thresh <- data.thresh / 100
     results <- rolling_average_cpp(
       mydata[[pollutant]],
       width,

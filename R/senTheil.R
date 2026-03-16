@@ -110,8 +110,8 @@ elimna <- function(m) {
   # remove any rows of data having missing values
   #
   m <- as.matrix(m)
-  ikeep <- c(1:nrow(m))
-  for (i in 1:nrow(m)) {
+  ikeep <- c(seq_len(nrow(m)))
+  for (i in seq_len(nrow(m))) {
     if (sum(is.na(m[i, ]) >= 1)) {
       ikeep[i] <- 0
     }
@@ -165,7 +165,7 @@ tsreg <- function(
   x <- as.matrix(x)
   xx <- cbind(x, y)
   xx <- elimna(xx)
-  x <- xx[, 1:ncol(x)]
+  x <- xx[, seq_len(ncol(x))]
   x <- as.matrix(x)
   y <- xx[, ncol(x) + 1]
   temp <- NA
@@ -183,7 +183,7 @@ tsreg <- function(
     res <- temp1$res
   }
   if (ncol(x) > 1) {
-    for (p in 1:ncol(x)) {
+    for (p in seq_len(ncol(x))) {
       temp[p] <- tsp1reg(x[, p], y)$coef[2]
     }
     res <- y - x %*% temp
@@ -191,7 +191,7 @@ tsreg <- function(
     r <- matrix(NA, ncol = ncol(x), nrow = nrow(x))
     tempold <- temp
     for (it in 1:iter) {
-      for (p in 1:ncol(x)) {
+      for (p in seq_len(ncol(x))) {
         r[, p] <- y - x %*% temp - alpha + temp[p] * x[, p]
         temp[p] <- tsp1reg(x[, p], r[, p], plotit = FALSE)$coef[2]
       }

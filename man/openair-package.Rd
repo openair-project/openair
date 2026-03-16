@@ -78,9 +78,6 @@ show some examples of using an \code{openair} object.
 # load package
 library(openair)
 
-# summarise data in a compact way
-summaryPlot(mydata)
-
 # traditional wind rose
 windRose(mydata)
 

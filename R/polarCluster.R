@@ -106,21 +106,21 @@
 #' doi:10.1016/j.envsoft.2012.09.005
 #' @examples
 #' \dontrun{
-#' ## plot 2-8 clusters. Warning! This can take several minutes...
+#' # plot 2-8 clusters. Warning! This can take several minutes...
 #' polarCluster(mydata, pollutant = "nox", n.clusters = 2:8)
 #'
 #' # basic plot with 6 clusters
 #' results <- polarCluster(mydata, pollutant = "nox", n.clusters = 6)
 #'
-#' ## get results, could read into a new data frame to make it easier to refer to
-#' ## e.g. results <- results$data...
+#' # get results, could read into a new data frame to make it easier to refer to
+#' # e.g. results <- results$data...
 #' head(results$data)
 #'
-#' ## how many points are there in each cluster?
+#' # how many points are there in each cluster?
 #' table(results$data$cluster)
 #'
-#' ## plot clusters 3 and 4 as a timeVariation plot using SAME colours as in
-#' ## cluster plot
+#' # plot clusters 3 and 4 as a timeVariation plot using SAME colours as in
+#' # cluster plot
 #' timeVariation(subset(results$data, cluster %in% c("3", "4")),
 #'   pollutant = "nox",
 #'   group = "cluster", col = openColours("Paired", 6)[c(3, 4)]
@@ -143,31 +143,31 @@ polarCluster <-
     plot.data = FALSE,
     ...
   ) {
-    ## avoid R check annoyances
+    # avoid R check annoyances
     u <- v <- z <- strip <- strip.left <- NULL
 
-    ## greyscale handling
+    # greyscale handling
     if (length(cols) == 1 && cols == "greyscale") {
       trellis.par.set(list(strip.background = list(col = "white")))
     }
 
-    ## set graphics
+    # set graphics
     current.strip <- trellis.par.get("strip.background")
     current.font <- trellis.par.get("fontsize")
 
-    ## reset graphic parameters
+    # reset graphic parameters
     on.exit(trellis.par.set(fontsize = current.font))
 
     # add id for later merging
-    mydata <- mutate(mydata, .id = 1:nrow(mydata))
+    mydata <- mutate(mydata, .id = seq_len(nrow(mydata)))
 
     if (is.data.frame(after)) {
-      after <- mutate(after, .id = 1:nrow(after))
+      after <- mutate(after, .id = seq_len(nrow(after)))
       data.orig.after <- after
     }
 
     data.orig <-
-      mydata ## keep original data so cluster can be merged with it
+      mydata # keep original data so cluster can be merged with it
     type <- "default"
     vars <- c("wd", x, pollutant)
     vars <- c(vars, "date", ".id")
@@ -186,7 +186,7 @@ polarCluster <-
 
     extra.args <- list(...)
 
-    ## label controls
+    # label controls
     extra.args$xlab <- if ("xlab" %in% names(extra.args)) {
       quickText(extra.args$xlab, auto.text)
     } else {
@@ -207,7 +207,7 @@ polarCluster <-
       trellis.par.set(fontsize = list(text = extra.args$fontsize))
     }
 
-    ## layout default
+    # layout default
     if (!"layout" %in% names(extra.args)) {
       extra.args$layout <- NULL
     }
@@ -235,12 +235,15 @@ polarCluster <-
       )$data
     }
 
-    ## remove missing because we don't want to find clusters for those points
-    ## saves a lot on computation
+    # remove missing because we don't want to find clusters for those points
+    # saves a lot on computation
     results.grid <- na.omit(results.grid)
-    results.grid <- subset(results.grid, select = c(u, v, z))
+    results.grid <- dplyr::select(
+      results.grid,
+      dplyr::all_of(c("u", "v", "z", "x", wd))
+    )
 
-    ## sequence of u or v, based on unique values that already exist
+    # sequence of u or v, based on unique values that already exist
     uv.id <- with(results.grid, sort(unique(c(u, v))))
 
     make.clust <- function(i, results.grid) {
@@ -264,7 +267,7 @@ polarCluster <-
     results.grid$nclust <-
       ordered(results.grid$nclust, levels = paste(n.clusters, "clusters"))
 
-    ## auto scaling
+    # auto scaling
     nlev <- max(n.clusters) + 1
     breaks <- c(0, 1:max(n.clusters))
     nlev2 <- length(breaks)
@@ -273,9 +276,9 @@ polarCluster <-
 
     myform <- formula("cluster ~ u * v | nclust")
 
-    ## find ids of u and v if only one cluster used
+    # find ids of u and v if only one cluster used
     if (length(n.clusters) == 1L) {
-      ## find indices in u-v space
+      # find indices in u-v space
       results.grid$u.id <- findInterval(results.grid$u, uv.id)
       results.grid$v.id <- findInterval(results.grid$v, uv.id)
 
@@ -289,22 +292,22 @@ polarCluster <-
       mydata$u.id <- findInterval(mydata$u, uv.id, all.inside = TRUE)
       mydata$v.id <- findInterval(mydata$v, uv.id, all.inside = TRUE)
 
-      ## convert to matrix for direct lookup
-      ## need to do this because some data are missing due to exclude.missing in polarPlot
+      # convert to matrix for direct lookup
+      # need to do this because some data are missing due to exclude.missing in polarPlot
       mat.dim <-
-        max(results.grid[, c("u.id", "v.id")]) ## size of lookup matrix
+        max(results.grid[, c("u.id", "v.id")]) # size of lookup matrix
       temp <- matrix(NA, ncol = mat.dim, nrow = mat.dim)
 
-      ## matrix of clusters by u.id, v.id with missings
+      # matrix of clusters by u.id, v.id with missings
       temp[cbind(results.grid$u.id, results.grid$v.id)] <-
         results.grid$cluster
 
-      ## match u.id, v.id in mydata to cluster
+      # match u.id, v.id in mydata to cluster
       mydata$cluster <-
         as.factor(temp[cbind(mydata$u.id, mydata$v.id)])
 
       mydata <-
-        select(mydata, date, cluster, .id) ## just need date/cluster
+        select(mydata, date, cluster, .id) # just need date/cluster
       mydata <- left_join(data.orig, mydata, by = c(".id", "date"))
       results <- mydata
       myform <- formula("cluster ~ u * v")
@@ -321,167 +324,92 @@ polarCluster <-
         after$u.id <- findInterval(after$u, uv.id, all.inside = TRUE)
         after$v.id <- findInterval(after$v, uv.id, all.inside = TRUE)
 
-        ## convert to matrix for direct lookup
-        ## need to do this because some data are missing due to exclude.missing in polarPlot
+        # convert to matrix for direct lookup
+        # need to do this because some data are missing due to exclude.missing in polarPlot
         mat.dim <-
-          max(results.grid[, c("u.id", "v.id")]) ## size of lookup matrix
+          max(results.grid[, c("u.id", "v.id")]) # size of lookup matrix
         temp <- matrix(NA, ncol = mat.dim, nrow = mat.dim)
 
-        ## matrix of clusters by u.id, v.id with missings
+        # matrix of clusters by u.id, v.id with missings
         temp[cbind(results.grid$u.id, results.grid$v.id)] <-
           results.grid$cluster
 
-        ## match u.id, v.id in after to cluster
+        # match u.id, v.id in after to cluster
         after$cluster <-
           as.factor(temp[cbind(after$u.id, after$v.id)])
 
         after <-
-          select(after, date, cluster, .id) ## just need date/cluster
+          select(after, date, cluster, .id) # just need date/cluster
         after <-
           left_join(data.orig.after, after, by = c(".id", "date"))
       }
     }
 
-    ## scaling of 'zeroed' data
-    ## scale data by subtracting the min value
-    ## this helps with dealing with data with offsets - e.g. negative data
-    mydata[[x]] <- mydata[[x]] - min(mydata[[x]], na.rm = TRUE)
-    intervals <- pretty(range(mydata[, x], na.rm = TRUE))
+    key.position <- extra.args$key.position %||% "right"
 
-    ## labels for scaling
-    labels <- pretty(intervals + min.scale)
-    upper <- max(mydata[[x]], na.rm = TRUE)
-
-    ## offset the lines/labels if necessary
-    intervals <- intervals + (min(labels) - min.scale)
-
-    ## add zero in the middle if it exists
-    if (min.scale != 0) {
-      labels <- labels[-1]
-      intervals <- intervals[-1]
-    }
-
-    # interpolate grid, but first must make rectangular
-
-    # interval
-    int <-
-      as.numeric(tail(
-        names(sort(table(
-          diff(results.grid$u)
-        ))),
-        1
-      ))
-
-    # extent of grid required
-    extent <- max(abs(c(results.grid$u, results.grid$v)))
-
-    new_grid <- expand.grid(
-      u = seq(-extent, extent, by = int),
-      v = seq(-extent, extent, by = int)
-    )
-
-    levelplot.args <- list(
-      x = myform,
-      results.grid,
-      axes = FALSE,
-      as.table = TRUE,
-      col.regions = col,
-      region = TRUE,
-      aspect = 1,
-      at = col.scale,
-      par.strip.text = list(cex = 0.8),
-      scales = list(draw = FALSE),
-      xlim = c(-upper * 1.025, upper * 1.025),
-      ylim = c(-upper * 1.025, upper * 1.025),
-      colorkey = FALSE,
-      # legend = legend,
-      key = list(
-        rectangles = list(
-          col = openColours(
-            cols,
-            max(n.clusters)
-          ),
-          border = NA
+    # plot clusters
+    thePlot <-
+      results.grid |>
+      dplyr::arrange(!is.na(.data$cluster), .data$cluster) |>
+      ggplot2::ggplot(ggplot2::aes(x = .data$wd, y = .data$x)) +
+      ggplot2::geom_point(
+        ggplot2::aes(
+          colour = factor(.data$cluster, levels = sort(unique(.data$cluster)))
         ),
-        text = list(lab = as.character(1:max(n.clusters))),
-        space = "right",
-        columns = 1,
-        title = "cluster",
-        cex.title = 1,
-        lines.title = 2
-      ),
-      panel = function(x, y, z, subscripts, ...) {
-        panel.levelplot(
-          x,
-          y,
-          z,
-          subscripts,
-          at = col.scale,
-          pretty = TRUE,
-          col.regions = col,
-          labels = FALSE
-        )
-
-        angles <- seq(0, 2 * pi, length = 360)
-
-        sapply(intervals, function(x) {
-          llines(
-            x * sin(angles),
-            x * cos(angles),
-            col = "grey",
-            lty = 5
-          )
-        })
-
-        ltext(
-          1.07 * intervals * sin(pi * angle.scale / 180),
-          1.07 * intervals * cos(pi * angle.scale / 180),
-          sapply(
-            paste(
-              labels,
-              c(
-                "",
-                "",
-                units,
-                rep("", 7)
-              )
+        shape = 15,
+        show.legend = TRUE
+      ) +
+      ggplot2::ggproto(
+        NULL,
+        ggplot2::coord_radial(r.axis.inside = angle.scale),
+        inner_radius = c(0, 1) * 0.475
+      ) +
+      scale_x_compass() +
+      ggplot2::scale_y_continuous(
+        limits = range(pretty(results.grid$x, 6)),
+        expand = ggplot2::expansion()
+      ) +
+      ggplot2::scale_color_manual(
+        values = openColours(cols, n = dplyr::n_distinct(results.grid$cluster)),
+        drop = FALSE
+      ) +
+      theme_openair_radial(key.position %||% "right", panel.ontop = TRUE) +
+      set_extra_fontsize(extra.args) +
+      annotate_compass_points(
+        size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
+      ) +
+      ggplot2::labs(
+        color = "Cluster",
+        x = extra.args$xlab,
+        y = extra.args$ylab,
+        title = extra.args$main
+      ) +
+      get_facet(
+        ifelse(dplyr::n_distinct(results.grid$nclust) > 1, "nclust", "default"),
+        extra.args = extra.args,
+        scales = "fixed",
+        auto.text = auto.text,
+        strip.position = extra.args$strip.position %||% "top"
+      ) +
+      ggplot2::guides(
+        fill = ggplot2::guide_colorbar(
+          theme = ggplot2::theme(
+            legend.title.position = ifelse(
+              key.position %in% c("left", "right"),
+              "top",
+              key.position
             ),
-            function(x) {
-              quickText(x, auto.text)
-            }
-          ),
-          cex = 0.7,
-          pos = 4
+            legend.text.position = key.position
+          )
         )
+      )
 
-        ## add axis line to central polarPlot
-        larrows(-upper, 0, upper, 0, code = 3, length = 0.1)
-        larrows(0, -upper, 0, upper, code = 3, length = 0.1)
-
-        ltext(upper * -1 * 0.95, 0.07 * upper, "W", cex = 0.7)
-        ltext(0.07 * upper, upper * -1 * 0.95, "S", cex = 0.7)
-        ltext(0.07 * upper, upper * 0.95, "N", cex = 0.7)
-        ltext(upper * 0.95, 0.07 * upper, "E", cex = 0.7)
-      }
-    )
-
-    ## reset for extra.args
-    levelplot.args <- listUpdate(levelplot.args, extra.args)
-
-    ## plot
-    plt <- do.call(levelplot, levelplot.args)
-
-    ## output ################################################################
+    # output
     if (plot) {
-      if (length(type) == 1L) {
-        plot(plt)
-      } else {
-        plot(useOuterStrips(plt, strip = strip, strip.left = strip.left))
-      }
+      plot(thePlot)
     }
 
     out_data <- results
-
     # currently conflicts with length(n.clusters) > 1 - resolve
     if (is.function(out_data)) {
       out_data <- NULL
@@ -512,6 +440,7 @@ polarCluster <-
           n_percent = round(100 * n / sum(n), 1),
           {{ var_percent }} := round(100 * n_mean / sum(n_mean), 1)
         ) |>
+        dplyr::ungroup() |>
         dplyr::select(-n_mean)
     } else {
       clust_stats <- NULL
@@ -529,7 +458,7 @@ polarCluster <-
     if (is.data.frame(after)) {
       output <-
         list(
-          plot = plt,
+          plot = thePlot,
           data = out_data,
           after = after,
           call = match.call(),
@@ -537,7 +466,7 @@ polarCluster <-
         )
     } else {
       output <- list(
-        plot = plt,
+        plot = thePlot,
         data = out_data,
         call = match.call(),
         clust_stats = clust_stats

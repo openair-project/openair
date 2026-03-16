@@ -159,7 +159,7 @@ modStats <- function(
 
   matching <- statistic %in% theStats
 
-  if (any(!matching)) {
+  if (!all(matching)) {
     ## not all variables are present
     stop(cat("Can't find the statistic(s)", statistic[!matching], "\n"))
   }
@@ -294,7 +294,7 @@ sortDataFrame <- function(x, key, ...) {
 
   if (missing(key)) {
     rn <- rownames(x)
-    if (all(rn %in% 1:nrow(x))) {
+    if (all(rn %in% seq_len(nrow(x)))) {
       rn <- as.numeric(rn)
     }
     x[order(rn, ...), , drop = FALSE]

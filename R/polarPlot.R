@@ -238,11 +238,6 @@
 #'   `mis.col`. To not highlight missing data when `min.bin` > 1 choose `mis.col
 #'   = "transparent"`.
 #'
-#' @param alpha The alpha transparency to use for the plotting surface (a value
-#'   between 0 and 1 with zero being fully transparent and 1 fully opaque).
-#'   Setting a value below 1 can be useful when plotting surfaces on a map using
-#'   the package `openairmaps`.
-#'
 #' @param upper This sets the upper limit wind speed to be used. Often there are
 #'   only a relatively few data points at very high wind speeds and plotting all
 #'   of them can reduce the useful information in the plot.
@@ -332,14 +327,12 @@
 #' @param plot Should a plot be produced? `FALSE` can be useful when analysing
 #'   data to extract plot components and plotting them in other ways.
 #'
-#' @param ... Other graphical parameters passed onto `lattice:levelplot` and
-#'   `cutData`. For example, `polarPlot` passes the option `hemisphere =
-#'   "southern"` on to `cutData` to provide southern (rather than default
-#'   northern) hemisphere handling of `type = "season"`. Similarly, common axis
-#'   and title labelling options (such as `xlab`, `ylab`, `main`) are passed to
-#'   `levelplot` via `quickText` to handle routine formatting.
+#' @param ... Other graphical parameters passed onto `cutData`. For example,
+#'   `polarPlot` passes the option `hemisphere = "southern"` on to `cutData` to
+#'   provide southern (rather than default northern) hemisphere handling of
+#'   `type = "season"`. The `main` argument is passed to `ggplot2::labs()` for
+#'   the plot title.
 #'
-#' @import lattice
 #' @import mgcv
 #' @return an [openair][openair-package] object. `data` contains four set
 #'   columns: `cond`, conditioning based on `type`; `u` and `v`, the
@@ -453,19 +446,17 @@ polarPlot <-
     kernel = "gaussian",
     formula.label = TRUE,
     tau = 0.5,
-    alpha = 1,
     plot = TRUE,
     ...
   ) {
-    ## get rid of R check annoyances
-    z <- . <- NULL
-
-    if (statistic == "percentile" & is.na(percentile[1] & statistic != "cpf")) {
+    if (
+      statistic == "percentile" && is.na(percentile[1] && statistic != "cpf")
+    ) {
       warning("percentile value missing, using 50")
       percentile <- 50
     }
 
-    if (statistic == "cpf" & is.na(percentile[1])) {
+    if (statistic == "cpf" && is.na(percentile[1])) {
       warning("percentile value missing, using 75")
       percentile <- 75
     }
@@ -484,22 +475,12 @@ polarPlot <-
       "quantile_intercept",
       "Pearson",
       "Spearman",
-      "york_slope",
-      "trend"
+      "york_slope"
     )
 
     if (statistic %in% correlation_stats && length(pollutant) != 2) {
       stop("Correlation statistic requires two pollutants.")
     }
-
-    # if statistic is trend, then don't force to be positive
-    if (statistic == "trend") {
-      force.positive <- FALSE
-    }
-
-    # names of variables for use later
-    nam.x <- x
-    nam.wd <- wd
 
     if (length(type) > 2) {
       stop("Maximum number of types is 2.")
@@ -510,7 +491,7 @@ polarPlot <-
       type <- "default"
     }
 
-    if (uncertainty & length(pollutant) > 1) {
+    if (uncertainty && length(pollutant) > 1) {
       stop("Can only have one pollutant when uncertainty = TRUE")
     }
 
@@ -522,7 +503,6 @@ polarPlot <-
           "frequency",
           "max",
           "stdev",
-          "trend",
           "weighted_mean",
           "percentile",
           "cpf",
@@ -530,7 +510,7 @@ polarPlot <-
           correlation_stats
         )
     ) {
-      stop(paste0("statistic '", statistic, "' not recognised."), call. = FALSE)
+      stop("statistic '", statistic, "' not recognised.")
     }
 
     if (length(weights) != 3) {
@@ -544,26 +524,17 @@ polarPlot <-
       key.header <- "weighted\nmean"
     }
     if (key.header == "percentile") {
-      key.header <- c(paste(percentile, "th", sep = ""), "percentile")
+      key.header <- c(paste0(percentile, "th"), "percentile")
     }
 
     if ("cpf" %in% key.header) {
       key.header <- c("CPF", "probability")
     }
 
-    ## greyscale handling
-    if (length(cols) == 1 && cols == "greyscale") {
-      trellis.par.set(list(strip.background = list(col = "white")))
+    ## key handling
+    if (!key) {
+      key.position <- "none"
     }
-
-    ## set graphics
-    current.strip <- trellis.par.get("strip.background")
-    current.font <- trellis.par.get("fontsize")
-
-    ## reset graphic parameters
-    on.exit(trellis.par.set(
-      fontsize = current.font
-    ))
 
     ## extra.args setup
     extra.args <- list(...)
@@ -585,10 +556,6 @@ polarPlot <-
       quickText(extra.args$main, auto.text)
     } else {
       quickText("", auto.text)
-    }
-
-    if ("fontsize" %in% names(extra.args)) {
-      trellis.par.set(fontsize = list(text = extra.args$fontsize))
     }
 
     # if clustering, return lower resolution plot
@@ -618,9 +585,6 @@ polarPlot <-
 
     mydata <- na.omit(mydata)
 
-    ## this is used later for the 'x' scale
-    min.scale <- min(mydata[[x]], na.rm = TRUE)
-
     # check to see if a high proportion of the data is negative
     if (
       length(which(mydata[pollutant] < 0)) / nrow(mydata) > 0.1 &&
@@ -647,12 +611,12 @@ polarPlot <-
     # if statistic is 'r' we need the data for two pollutants in columns
     if (length(pollutant) > 1 && !statistic %in% correlation_stats) {
       if (length(type) > 1) {
-        warning(paste("Only type = '", type[1], "' will be used", sep = ""))
+        cli::cli_warn("Only {.arg type} = '{type[1]}' will be used.")
         type <- type[1]
       }
 
       ## use pollutants as conditioning variables
-      mydata <- gather(
+      mydata <- tidyr::gather(
         mydata,
         key = variable,
         value = value,
@@ -718,6 +682,9 @@ polarPlot <-
       v = seq(-upper, upper, length = int)
     )
 
+    ## Pval is only set in the CPF branch; initialise to NULL so it always exists
+    Pval <- NULL
+
     if (statistic == "cpf") {
       ## can be interval of percentiles or a single (threshold)
       if (length(percentile) > 1) {
@@ -750,13 +717,12 @@ polarPlot <-
           )
         }
 
-        sub <- paste(
+        sub <- paste0(
           "CPF (",
           format(Pval[1], digits = 2),
           " to ",
           format(Pval[2], digits = 2),
-          ")",
-          sep = ""
+          ")"
         )
       } else {
         Pval <- quantile(
@@ -765,13 +731,12 @@ polarPlot <-
           na.rm = TRUE
         )
 
-        sub <- paste(
+        sub <- paste0(
           "CPF at the ",
           percentile,
           "th percentile (=",
           format(Pval, digits = 2),
-          ")",
-          sep = ""
+          ")"
         )
         if (!formula.label) sub <- NULL # no label
       }
@@ -779,235 +744,40 @@ polarPlot <-
       sub <- NULL
     }
 
+    ## Thin wrapper — delegates to polar_prepare_grid() with all dependencies
+    ## passed explicitly rather than captured from the enclosing scope.
     prepare.grid <- function(mydata) {
-      ## identify which ws and wd bins the data belong
-      wd <- cut(
-        wd.int * ceiling(mydata[[wd]] / wd.int - 0.5),
-        breaks = seq(0, 360, wd.int),
-        include.lowest = TRUE
+      polar_prepare_grid(
+        mydata = mydata,
+        wd_col = wd,
+        x_col = x,
+        pollutant = pollutant,
+        statistic = statistic,
+        correlation_stats = correlation_stats,
+        Pval = Pval,
+        percentile = percentile,
+        ws.wd = ws.wd,
+        u = u,
+        v = v,
+        input.data = input.data,
+        ws_bins = ws_bins,
+        wd.int = wd.int,
+        max.ws = max.ws,
+        weights = weights,
+        min.bin = min.bin,
+        force.positive = force.positive,
+        uncertainty = uncertainty,
+        exclude.missing = exclude.missing,
+        upper = upper,
+        k = k,
+        ws_spread = ws_spread,
+        wd_spread = wd_spread,
+        kernel = kernel,
+        tau = tau,
+        x_error = x_error,
+        y_error = y_error,
+        cluster = extra.args$cluster
       )
-
-      x <- cut(
-        mydata[[x]],
-        breaks = seq(0, max.ws, length = ws_bins + 1),
-        include.lowest = TRUE
-      )
-
-      if (!statistic %in% c(correlation_stats, "nwr", "trend")) {
-        binned <- switch(
-          statistic,
-          frequency = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-            length(na.omit(x))
-          }),
-          mean = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-            mean(x, na.rm = TRUE)
-          }),
-          median = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-            median(x, na.rm = TRUE)
-          }),
-          max = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-            max(x, na.rm = TRUE)
-          }),
-          stdev = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-            sd(x, na.rm = TRUE)
-          }),
-          cpf = tapply(
-            mydata[[pollutant]],
-            list(wd, x),
-            function(x) {
-              (length(which(
-                x > Pval
-              )) /
-                length(x))
-            }
-          ),
-          cpfi = tapply(
-            mydata[[pollutant]],
-            list(wd, x),
-            function(x) {
-              (length(
-                which(x > Pval[1] & x <= Pval[2])
-              ) /
-                length(x))
-            }
-          ),
-          weighted_mean = tapply(
-            mydata[[pollutant]],
-            list(wd, x),
-            function(x) {
-              (mean(x) * length(x) / nrow(mydata))
-            }
-          ),
-          percentile = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-            quantile(x, probs = percentile / 100, na.rm = TRUE)
-          })
-        )
-
-        binned <- as.vector(t(binned))
-      } else if (toupper(statistic) == "NWR") {
-        binned <- rowwise(ws.wd) |>
-          summarise(simple_kernel(
-            across(.cols = everything()),
-            mydata,
-            x = nam.x,
-            y = nam.wd,
-            pollutant = pollutant,
-            ws_spread = ws_spread,
-            wd_spread = wd_spread,
-            kernel
-          ))
-
-        binned <- binned$conc
-      } else if (toupper(statistic) == "TREND") {
-        binned <- rowwise(ws.wd) |>
-          summarise(simple_kernel_trend(
-            across(.cols = everything()),
-            mydata,
-            x = nam.x,
-            y = nam.wd,
-            pollutant = pollutant,
-            "date",
-            ws_spread = ws_spread,
-            wd_spread = wd_spread,
-            kernel,
-            tau = tau
-          ))
-
-        binned <- binned$conc
-      } else {
-        binned <- rowwise(ws.wd) |>
-          summarise(calculate_weighted_statistics(
-            across(.cols = everything()),
-            mydata,
-            statistic = statistic,
-            x = nam.x,
-            y = nam.wd,
-            pol_1 = pollutant[1],
-            pol_2 = pollutant[2],
-            ws_spread = ws_spread,
-            wd_spread = wd_spread,
-            kernel,
-            tau = tau,
-            x_error = x_error,
-            y_error = y_error
-          ))
-
-        # Get vector
-        binned <- binned$stat_weighted
-
-        # A catch for surface plotting
-        binned <- ifelse(binned == Inf, NA, binned)
-      }
-
-      # Building the plot begins...
-      ## frequency - remove points with freq < min.bin
-      bin.len <- tapply(mydata[[pollutant[1]]], list(x, wd), length)
-      binned.len <- as.vector(bin.len)
-
-      ## apply weights
-      W <- rep(1, times = length(binned))
-      ids <- which(binned.len == 1)
-      W[ids] <- W[ids] * weights[1]
-      ids <- which(binned.len == 2)
-      W[ids] <- W[ids] * weights[2]
-      ids <- which(binned.len == 3)
-      W[ids] <- W[ids] * weights[3]
-
-      ## set missing to NA
-      ids <- which(binned.len < min.bin)
-      binned[ids] <- NA
-
-      # for removing missing data later
-      binned.len[ids] <- NA
-
-      if (force.positive) {
-        n <- 0.5
-      } else {
-        n <- 1
-      }
-
-      ## no uncertainty to calculate
-      if (!uncertainty) {
-        ## catch errors when not enough data to calculate surface
-        Mgam <- try(mgcv::gam(binned^n ~ s(u, v, k = k), weights = W), TRUE)
-
-        if (!inherits(Mgam, "try-error")) {
-          pred <- predict.gam(Mgam, input.data)
-          pred <- pred^(1 / n)
-          pred <- as.vector(pred)
-
-          # interpolate results for speed, but not for clustering
-          if (extra.args$cluster) {
-            results <- interp_grid(input.data, z = pred, n = 101)
-            int <- 101
-          } else {
-            results <- interp_grid(input.data, z = pred, n = 201)
-            int <- 201
-          }
-        } else {
-          results <- data.frame(u = u, v = v, z = binned)
-          exclude.missing <- FALSE
-          warning(
-            call. = FALSE,
-            paste(
-              "Not enough data to fit surface.\nTry reducing the value of the smoothing parameter, k to less than ",
-              k,
-              ". \nOr use statistic = 'nwr'.",
-              sep = ""
-            )
-          )
-        }
-      } else {
-        ## uncertainties calculated, weighted by number of points in each bin
-        Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k), weights = binned.len)
-        pred <- predict.gam(Mgam, input.data, se.fit = TRUE)
-        uncer <- 2 * as.vector(pred[[2]]) ## for approx 95% CI
-        pred <- as.vector(pred[[1]])^(1 / n)
-
-        ## do not weight for central prediction
-        Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k))
-        pred <- predict.gam(Mgam, input.data)
-        pred <- as.vector(pred)
-        Lower <- (pred - uncer)^(1 / n)
-        Upper <- (pred + uncer)^(1 / n)
-        pred <- pred^(1 / n)
-
-        n <- length(pred)
-
-        # interpolate each uncertainty surface
-
-        lower_uncer <- interp_grid(input.data, z = Lower, n = 201) |>
-          mutate(uncertainty = "lower uncertainty")
-        upper_uncer <- interp_grid(input.data, z = Upper, n = 201) |>
-          mutate(uncertainty = "upper uncertainty")
-        prediction <- interp_grid(input.data, z = pred, n = 201) |>
-          mutate(uncertainty = "prediction")
-        results <- bind_rows(prediction, lower_uncer, upper_uncer)
-        int <- 201
-      }
-
-      ## function to remove points too far from original data
-      exclude <- function(results) {
-        ## exclude predictions too far from data (from mgcv)
-        x <- seq(-upper, upper, length = int)
-        y <- x
-        res <- int
-        wsp <- rep(x, res)
-        wdp <- rep(y, rep(res, res))
-
-        ## data with gaps caused by min.bin
-        all.data <- na.omit(data.frame(u, v, binned.len))
-        ind <- with(all.data, exclude.too.far(wsp, wdp, u, v, dist = 0.05))
-
-        results$z[ind] <- NA
-        results
-      }
-
-      if (exclude.missing) {
-        results <- exclude(results)
-      }
-
-      results
     }
 
     ## if min.bin >1 show the missing data. Work this out by running twice:
@@ -1017,25 +787,36 @@ polarPlot <-
     if (!missing(min.bin)) {
       tmp <- min.bin
       min.bin <- 0
-      res1 <- mydata |>
-        group_by(across(type)) |>
-        group_modify(~ prepare.grid(.))
+      res1 <-
+        mapType(
+          mydata,
+          type,
+          prepare.grid,
+          .include_default = TRUE
+        )
 
       min.bin <- tmp
 
-      res <- mydata |>
-        group_by(across(type)) |>
-        group_modify(~ prepare.grid(.))
+      res <-
+        mapType(
+          mydata,
+          type,
+          prepare.grid,
+          .include_default = TRUE
+        )
 
       res$miss <- res1$z
     } else {
-      res <- mydata |>
-        group_by(across(type)) |>
-        group_modify(~ prepare.grid(.))
+      res <- mapType(
+        mydata,
+        type,
+        prepare.grid,
+        .include_default = TRUE
+      )
     }
 
     ## with CPF make sure not >1 due to surface fitting
-    if (any(res$z > 1, na.rm = TRUE) & statistic %in% c("cpf", "cpfi")) {
+    if (any(res$z > 1, na.rm = TRUE) && statistic %in% c("cpf", "cpfi")) {
       id <- which(res$z > 1)
       res$z[id] <- 1
     }
@@ -1043,15 +824,6 @@ polarPlot <-
     ## remove wind speeds > upper to make a circle
     if (clip) {
       res$z[(res$u^2 + res$v^2)^0.5 > upper] <- NA
-    }
-
-    ## proper names of labelling
-    strip.dat <- strip.fun(res, type, auto.text)
-    strip <- strip.dat[[1]]
-    strip.left <- strip.dat[[2]]
-    pol.name <- strip.dat[[3]]
-    if (uncertainty) {
-      strip <- TRUE
     }
 
     ## normalise by divining by mean conditioning value if needed
@@ -1079,7 +851,7 @@ polarPlot <-
     }
 
     # if regression, set key.footer to 'm' (slope)
-    if (grepl("slope|intercept", statistic) & length(pollutant == 2)) {
+    if (grepl("slope|intercept", statistic) && length(pollutant) == 2) {
       key.footer <- "m"
     }
 
@@ -1112,83 +884,9 @@ polarPlot <-
       key.header <- paste0("quantile intercept\n(tau: ", tau, ")")
     }
 
-    ## auto-scaling
-    nlev <- 200 ## preferred number of intervals
-
-    ## handle missing breaks arguments
-
-    if (any(is.null(limits)) | any(is.na(limits))) {
-      # breaks <- pretty(res$z, n = nlev)
-      breaks <- seq(
-        min(res$z, na.rm = TRUE),
-        max(res$z, na.rm = TRUE),
-        length.out = nlev
-      )
-      labs <- pretty(breaks, 7)
-      labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-      at <- labs
-    } else {
-      ## handle user limits and clipping
-      breaks <- seq(min(limits), max(limits), length.out = nlev)
-      labs <- pretty(breaks, 7)
-      labs <- labs[labs >= min(breaks) & labs <= max(breaks)]
-      at <- labs
-
-      ## case where user max is < data max
-      if (max(limits) < max(res[["z"]], na.rm = TRUE)) {
-        id <- which(res[["z"]] > max(limits))
-        res[["z"]][id] <- max(limits)
-        labs[length(labs)] <- paste(">", labs[length(labs)])
-      }
-
-      ## case where user min is > data min
-      if (min(limits) > min(res[["z"]], na.rm = TRUE)) {
-        id <- which(res[["z"]] < min(limits))
-        res[["z"]][id] <- min(limits)
-        labs[1] <- paste("<", labs[1])
-      }
-    }
-
-    nlev2 <- length(breaks)
-
-    col <- openColours(cols, (nlev2 - 1))
-
-    col.scale <- breaks
-
     ## special handling of layout for uncertainty
-    if (uncertainty & is.null(extra.args$layout)) {
+    if (uncertainty && is.null(extra.args$layout)) {
       extra.args$layout <- c(3, 1)
-    }
-
-    legend <- list(
-      col = col,
-      at = col.scale,
-      labels = list(labels = labs, at = at),
-      space = key.position,
-      auto.text = auto.text,
-      footer = key.footer,
-      header = key.header,
-      height = 1,
-      width = 1.5,
-      fit = "all"
-    )
-
-    legend <- makeOpenKeyLegend(key, legend, "polarPlot")
-
-    ## scaling
-    ## scaling of 'zeroed' data
-    ## note - add upper because user can set this to be different to data
-    intervals <- pretty(c(mydata[[x]], upper))
-
-    ## labels for scaling
-    labels <- pretty(c(mydata[[x]], upper) + min.scale)
-    ## offset the lines/labels if necessary
-    intervals <- intervals + (min(labels) - min.scale)
-
-    ## add zero in the middle if it exists
-    if (min.scale != 0) {
-      labels <- labels[-1]
-      intervals <- intervals[-1]
     }
 
     # if uncertainty = TRUE, change type for plotting (3 panels)
@@ -1196,133 +894,370 @@ polarPlot <-
       type <- "uncertainty"
     }
 
-    temp <- paste(type, collapse = "+")
-    myform <- formula(paste("z ~ u * v | ", temp, sep = ""))
-
-    Args <- list(
-      x = myform,
-      res,
-      axes = FALSE,
-      as.table = TRUE,
-      strip = strip,
-      strip.left = strip.left,
-      col.regions = col,
-      region = TRUE,
-      aspect = 1,
-      sub = sub,
-      par.strip.text = list(cex = 0.8),
-      scales = list(draw = FALSE),
-      xlim = c(-upper * 1.025, upper * 1.025),
-      ylim = c(-upper * 1.025, upper * 1.025),
-      colorkey = FALSE,
-      legend = legend,
-
-      # add footnote formula if regression used
-      page = function(n) {
-        if (
-          formula.label &
-            grepl("slope|intercept", statistic) &
-            length(pollutant == 2)
-        ) {
-          grid.text(
-            quickText(paste0(
-              "Formula: ",
-              pollutant[1],
-              " = m.",
-              pollutant[2],
-              " + c"
-            )),
-            x = .99,
-            y = 0.01,
-            default.units = "npc",
-            gp = gpar(fontsize = 10),
-            just = c("right", "bottom")
-          )
-        }
-      },
-      panel = function(x, y, z, subscripts, ...) {
-        ## show missing data due to min.bin
-        if (min.bin > 1) {
-          panel.levelplot(
-            x,
-            y,
-            res$miss,
-            subscripts,
-            col.regions = mis.col,
-            labels = FALSE
-          )
-        }
-
-        panel.levelplot(
-          x,
-          y,
-          z,
-          subscripts,
-          at = col.scale,
-          pretty = TRUE,
-          col.regions = col,
-          labels = FALSE,
-          alpha.regions = alpha
-        )
-
-        angles <- seq(0, 2 * pi, length = 360)
-
-        sapply(intervals, function(x) {
-          llines(
-            x * sin(angles),
-            x * cos(angles),
-            col = "grey",
-            lty = 5
-          )
-        })
-
-        ltext(
-          1.07 * intervals * sin(pi * angle.scale / 180),
-          1.07 * intervals * cos(pi * angle.scale / 180),
-          sapply(
-            paste(labels, c("", "", units, rep("", 7))),
-            function(x) {
-              quickText(x, auto.text)
-            }
-          ),
-          cex = 0.7,
-          pos = 4
-        )
-
-        ## add axis line to central polarPlot
-        lsegments(-upper, 0, upper, 0)
-        lsegments(0, -upper, 0, upper)
-
-        ltext(upper * -1 * 0.95, 0.07 * upper, "W", cex = 0.7)
-        ltext(0.07 * upper, upper * -1 * 0.95, "S", cex = 0.7)
-        ltext(0.07 * upper, upper * 0.95, "N", cex = 0.7)
-        ltext(upper * 0.95, 0.07 * upper, "E", cex = 0.7)
-      }
+    ## Format legend title (key.header may be an expression)
+    if (is.expression(key.header)) {
+      header_str <- tryCatch(
+        as.character(key.header[[1]][[2]]),
+        error = function(e) deparse(key.header)
+      )
+    } else {
+      header_str <- paste(key.header, collapse = "\n")
+    }
+    footer_str <- paste(key.footer, collapse = "\n")
+    title_sep <- if (key.position %in% c("top", "bottom")) " " else "\n"
+    title_parts <- c(header_str, footer_str)
+    title_parts <- title_parts[nzchar(trimws(title_parts))]
+    legend_title <- quickText(
+      paste(title_parts, collapse = title_sep),
+      auto.text
     )
 
-    ## reset for extra.args
-    Args <- listUpdate(Args, extra.args)
+    # restore to polar coordinates
+    plot_data <-
+      res |>
+      dplyr::mutate(
+        x = sqrt(.data$u^2 + .data$v^2),
+        wd = 270 - atan2(.data$v, .data$u) * (180 / pi),
+        wd = (wd + 180) %% 360
+      )
 
-    plt <- do.call(levelplot, Args)
-
-    if (plot) {
-      if (length(type) == 1) {
-        plot(plt)
-      } else {
-        plot(useOuterStrips(plt, strip = strip, strip.left = strip.left))
-      }
+    # if using the min.bin arg, just drop missing z that's also missing "miss".
+    # otherwise drop all of missing z
+    if ("miss" %in% names(plot_data)) {
+      plot_data <- dplyr::filter(
+        plot_data,
+        !(is.na(.data$z) & is.na(.data$miss))
+      ) |>
+        dplyr::select(!"miss")
+    } else {
+      plot_data <- tidyr::drop_na(plot_data, "z")
     }
 
-    newdata <- res
+    # restore scale pre-normalisation
+    plot_data <-
+      dplyr::mutate(
+        plot_data,
+        x = scales::rescale(
+          .data$x,
+          to = radial_scale,
+          from = c(0, diff(radial_scale))
+        )
+      )
+
+    thePlot <-
+      plot_data |>
+      dplyr::arrange(!is.na(.data$z), .data$z) |>
+      ggplot2::ggplot(ggplot2::aes(x = .data$wd, y = .data$x)) +
+      ggplot2::geom_point(ggplot2::aes(colour = .data$z)) +
+      ggplot2::ggproto(
+        NULL,
+        ggplot2::coord_radial(r.axis.inside = angle.scale),
+        inner_radius = c(0, 1) * 0.475
+      ) +
+      scale_x_compass() +
+      ggplot2::scale_y_continuous(
+        limits = range(pretty(plot_data$x, 20)),
+        expand = ggplot2::expansion()
+      ) +
+      ggplot2::scale_color_gradientn(
+        colours = openColours(cols),
+        oob = scales::oob_squish,
+        na.value = mis.col,
+        limits = limits
+      ) +
+      theme_openair_radial(key.position, panel.ontop = TRUE) +
+      set_extra_fontsize(extra.args) +
+      annotate_compass_points(
+        size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
+      ) +
+      ggplot2::labs(
+        color = legend_title,
+        x = extra.args$xlab,
+        y = extra.args$ylab,
+        title = extra.args$main,
+        subtitle = sub,
+        caption = if (
+          formula.label &&
+            grepl("slope|intercept", statistic) &&
+            length(pollutant) == 2
+        ) {
+          quickText(
+            paste0("Formula: ", pollutant[1], " = m.", pollutant[2], " + c"),
+            auto.text
+          )
+        } else {
+          NULL
+        }
+      ) +
+      {
+        if (key.position %in% c("left", "right")) {
+          ggplot2::theme(
+            legend.key.height = ggplot2::unit(1, "null"),
+            legend.key.spacing.y = ggplot2::unit(0, "cm")
+          )
+        }
+      } +
+      {
+        if (key.position %in% c("top", "bottom")) {
+          ggplot2::theme(
+            legend.key.width = ggplot2::unit(1, "null"),
+            legend.key.spacing.x = ggplot2::unit(0, "cm")
+          )
+        }
+      } +
+      get_facet(
+        type,
+        extra.args = extra.args,
+        scales = "fixed",
+        auto.text = auto.text
+      ) +
+      ggplot2::guides(
+        fill = ggplot2::guide_colorbar(
+          theme = ggplot2::theme(
+            legend.title.position = ifelse(
+              key.position %in% c("left", "right"),
+              "top",
+              key.position
+            ),
+            legend.text.position = key.position
+          )
+        )
+      )
+
+    if (plot) {
+      plot(thePlot)
+    }
+
+    newdata <- plot_data
 
     # return attribute of scale used - useful for data with negative scales such as air_temp
     attr(newdata, "radial_scale") <- range(radial_scale)
-    output <- list(plot = plt, data = newdata, call = match.call())
+    output <- list(plot = thePlot, data = newdata, call = match.call())
     class(output) <- "openair"
 
     # Final return
     invisible(output)
   }
+
+
+## Top-level surface-fitting worker for polarPlot().
+##
+## In the original code this was a nested closure (prepare.grid) that implicitly
+## captured ~25 variables from the enclosing polarPlot() scope.  Lifting it to a
+## top-level function makes every dependency explicit, improves readability, and
+## allows independent testing.
+##
+## Parameters mirror the variables previously captured from polarPlot():
+##   wd_col / x_col  — column names for wind direction and the radial variable
+##                     (renamed to avoid shadowing the local cut() results)
+polar_prepare_grid <- function(
+  mydata,
+  wd_col,
+  x_col,
+  pollutant,
+  statistic,
+  correlation_stats,
+  Pval = NULL,
+  percentile = NA,
+  ws.wd,
+  u,
+  v,
+  input.data,
+  ws_bins,
+  wd.int,
+  max.ws,
+  weights,
+  min.bin,
+  force.positive,
+  uncertainty,
+  exclude.missing,
+  upper,
+  k,
+  ws_spread,
+  wd_spread,
+  kernel,
+  tau,
+  x_error,
+  y_error,
+  cluster = FALSE
+) {
+  ## Identify which ws and wd bins the data belong to.
+  ## Note: local variables 'wd' and 'x' shadow the column-name parameters.
+  wd <- cut(
+    wd.int * ceiling(mydata[[wd_col]] / wd.int - 0.5),
+    breaks = seq(0, 360, wd.int),
+    include.lowest = TRUE
+  )
+
+  x <- cut(
+    mydata[[x_col]],
+    breaks = seq(0, max.ws, length = ws_bins + 1),
+    include.lowest = TRUE
+  )
+
+  if (!statistic %in% c(correlation_stats, "nwr")) {
+    ## Simple binned statistics computed via tapply
+    binned <- switch(
+      statistic,
+      frequency = tapply(mydata[[pollutant]], list(wd, x), function(x) {
+        length(na.omit(x))
+      }),
+      mean = tapply(mydata[[pollutant]], list(wd, x), function(x) {
+        mean(x, na.rm = TRUE)
+      }),
+      median = tapply(mydata[[pollutant]], list(wd, x), function(x) {
+        median(x, na.rm = TRUE)
+      }),
+      max = tapply(mydata[[pollutant]], list(wd, x), function(x) {
+        max(x, na.rm = TRUE)
+      }),
+      stdev = tapply(mydata[[pollutant]], list(wd, x), function(x) {
+        sd(x, na.rm = TRUE)
+      }),
+      cpf = tapply(
+        mydata[[pollutant]],
+        list(wd, x),
+        function(x) length(which(x > Pval)) / length(x)
+      ),
+      cpfi = tapply(
+        mydata[[pollutant]],
+        list(wd, x),
+        function(x) length(which(x > Pval[1] & x <= Pval[2])) / length(x)
+      ),
+      weighted_mean = tapply(
+        mydata[[pollutant]],
+        list(wd, x),
+        function(x) mean(x) * length(x) / nrow(mydata)
+      ),
+      percentile = tapply(mydata[[pollutant]], list(wd, x), function(x) {
+        quantile(x, probs = percentile / 100, na.rm = TRUE)
+      })
+    )
+
+    binned <- as.vector(t(binned))
+  } else if (toupper(statistic) == "NWR") {
+    ## Non-parametric Wind Regression: fully vectorised over all grid points.
+    ##
+    ## For each grid point g and each observation d, compute the Gaussian kernel
+    ## weight w[g,d] in one shot via outer(), then recover the weighted mean as
+    ## a matrix–vector product.  Avoids the per-row dplyr rowwise() overhead.
+    ws_diff <- outer(ws.wd$x, mydata[[x_col]], `-`) # n_grid × n_data
+    wd_diff <- outer(ws.wd$wd, mydata[[wd_col]], `-`) # n_grid × n_data
+    wd_diff[wd_diff < -180] <- wd_diff[wd_diff < -180] + 360
+    W <- gauss_dens(ws_diff, wd_diff, 0, 0, ws_spread, wd_spread)
+    binned <- drop(W %*% mydata[[pollutant]]) / rowSums(W)
+  } else {
+    ## Kernel-weighted pair-wise statistics (correlation, regression, etc.)
+    binned <- mapply(
+      calculate_weighted_statistics,
+      ws1 = ws.wd$x,
+      wd1 = ws.wd$wd,
+      MoreArgs = list(
+        mydata = mydata,
+        statistic = statistic,
+        x = x_col,
+        y = wd_col,
+        pol_1 = pollutant[1],
+        pol_2 = pollutant[2],
+        ws_spread = ws_spread,
+        wd_spread = wd_spread,
+        kernel = kernel,
+        tau = tau,
+        x_error = x_error,
+        y_error = y_error
+      )
+    )
+    binned <- ifelse(binned == Inf, NA, binned)
+  }
+
+  ## Bin frequencies — used for weighting and min.bin filtering
+  bin.len <- tapply(mydata[[pollutant[1]]], list(x, wd), length)
+  binned.len <- as.vector(bin.len)
+
+  ## Apply edge weights (down-weight bins with very few observations)
+  W <- rep(1, times = length(binned))
+  ids <- which(binned.len == 1)
+  W[ids] <- W[ids] * weights[1]
+  ids <- which(binned.len == 2)
+  W[ids] <- W[ids] * weights[2]
+  ids <- which(binned.len == 3)
+  W[ids] <- W[ids] * weights[3]
+
+  ## Remove bins with fewer than min.bin observations
+  ids <- which(binned.len < min.bin)
+  binned[ids] <- NA
+  binned.len[ids] <- NA
+
+  ## GAM power transform: sqrt for positive-only data, identity otherwise
+  n <- if (force.positive) 0.5 else 1
+
+  if (!uncertainty) {
+    ## Standard surface fit (no confidence intervals)
+    Mgam <- try(mgcv::gam(binned^n ~ s(u, v, k = k), weights = W), TRUE)
+
+    if (!inherits(Mgam, "try-error")) {
+      pred <- as.vector(predict.gam(Mgam, input.data))^(1 / n)
+
+      if (cluster) {
+        results <- interp_grid(input.data, z = pred, n = 101)
+        int <- 101
+      } else {
+        results <- interp_grid(input.data, z = pred, n = 201)
+        int <- 201
+      }
+    } else {
+      results <- data.frame(u = u, v = v, z = binned)
+      exclude.missing <- FALSE
+      cli::cli_warn(
+        c(
+          "Not enough data to fit surface. Try:",
+          "i" = "Reducing the value of the smoothing parameter, k to less than {k}, or",
+          "i" = "Using {.arg statistic} = 'nwr'"
+        )
+      )
+    }
+  } else {
+    ## Surface fit with 95% confidence intervals
+    Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k), weights = binned.len)
+    pred_se <- predict.gam(Mgam, input.data, se.fit = TRUE)
+    uncer <- 2 * as.vector(pred_se[[2]]) ## approx 95% CI half-width
+
+    ## Unweighted central prediction
+    Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k))
+    pred <- as.vector(predict.gam(Mgam, input.data))
+    Lower <- (pred - uncer)^(1 / n)
+    Upper <- (pred + uncer)^(1 / n)
+    pred <- pred^(1 / n)
+
+    int <- 201
+    lower_uncer <- interp_grid(input.data, z = Lower, n = int) |>
+      mutate(uncertainty = "lower uncertainty")
+    upper_uncer <- interp_grid(input.data, z = Upper, n = int) |>
+      mutate(uncertainty = "upper uncertainty")
+    prediction <- interp_grid(input.data, z = pred, n = int) |>
+      mutate(uncertainty = "prediction")
+    results <- bind_rows(prediction, lower_uncer, upper_uncer)
+  }
+
+  ## Remove predictions that are too far from the original data
+  exclude <- function(results) {
+    x <- seq(-upper, upper, length = int)
+    wsp <- rep(x, int)
+    wdp <- rep(x, rep(int, int))
+
+    all.data <- na.omit(data.frame(u, v, binned.len))
+    ind <- with(all.data, exclude.too.far(wsp, wdp, u, v, dist = 0.05))
+    results$z[ind] <- NA
+    results
+  }
+
+  if (exclude.missing) {
+    results <- exclude(results)
+  }
+
+  results
+}
+
 
 # Gaussian bivariate density function
 gauss_dens <- function(x, y, mx, my, sx, sy) {
@@ -1330,58 +1265,32 @@ gauss_dens <- function(x, y, mx, my, sx, sy) {
     exp((-1 / 2) * ((x - mx)^2 / sx^2 + (y - my)^2 / sy^2))
 }
 
-# NWR kernel calculations
-simple_kernel <- function(
-  data,
+
+## Kernel-weighted pair-wise statistics dispatcher.
+##
+## Takes the grid centre (ws1, wd1) directly — no more data[[1]] / across()
+## indirection.  Computes Gaussian kernel weights, filters low-weight rows, then
+## delegates to the appropriate sub-function.  Returns a scalar suitable for
+## direct use with mapply().
+calculate_weighted_statistics <- function(
+  ws1,
+  wd1,
   mydata,
+  statistic,
   x = "ws",
   y = "wd",
-  pollutant,
-  ws_spread,
-  wd_spread,
-  kernel
-) {
-  # Centres
-  ws1 <- data[[1]]
-  wd1 <- data[[2]]
-
-  # centred ws, wd
-  ws_cent <- mydata[[x]] - ws1
-  wd_cent <- mydata[[y]] - wd1
-  wd_cent <- ifelse(wd_cent < -180, wd_cent + 360, wd_cent)
-
-  weight <- gauss_dens(ws_cent, wd_cent, 0, 0, ws_spread, wd_spread)
-
-  conc <- sum(mydata[[pollutant]] * weight) /
-    sum(weight)
-
-  return(data.frame(conc = conc))
-}
-
-# function to to kernel weighting of a quantile regression trend
-simple_kernel_trend <- function(
-  data,
-  mydata,
-  x = "ws",
-  y = "wd",
-  pollutant,
-  date,
+  pol_1,
+  pol_2,
   ws_spread,
   wd_spread,
   kernel,
-  tau
+  tau,
+  x_error,
+  y_error
 ) {
-  # Centres
-  ws1 <- data[[1]]
-  wd1 <- data[[2]]
+  weight <- NULL
 
-  # Gaussian bivariate density function
-  gauss_dens <- function(x, y, mx, my, sx, sy) {
-    (1 / (2 * pi * sx * sy)) *
-      exp((-1 / 2) * ((x - mx)^2 / sx^2 + (y - my)^2 / sy^2))
-  }
-
-  # centred ws, wd
+  # Gaussian kernel weights centred on this ws/wd point
   ws_cent <- mydata[[x]] - ws1
   wd_cent <- mydata[[y]] - wd1
   wd_cent <- ifelse(wd_cent < -180, wd_cent + 360, wd_cent)
@@ -1391,287 +1300,129 @@ simple_kernel_trend <- function(
 
   mydata$weight <- weight
 
-  # quantreg is a Suggests package, so make sure it is there
-  try_require("quantreg", "polarPlot")
+  # Select columns and filter low-weight rows
+  vars <- c(pol_1, pol_2, "weight")
+  if (!all(is.na(c(x_error, y_error)))) {
+    vars <- c(vars, x_error, y_error)
+  }
+  thedata <- mydata[vars]
+  thedata <- thedata[which(thedata$weight > 0.001), ]
 
-  # don't fit all data - takes too long with no gain
-  mydata <- filter(mydata, weight > 0.00001)
+  # Insufficient data — return NA
+  if (nrow(thedata) < 100) {
+    return(NA)
+  }
 
-  # Drop dplyr's data frame for formula
-  mydata <- data.frame(mydata)
+  # Dispatch to the appropriate statistical sub-function
+  if (statistic %in% c("r", "Pearson", "Spearman")) {
+    stat_weighted <- calc_corr_stat(thedata, pol_1, pol_2, statistic)
+  } else if (statistic %in% c("slope", "intercept")) {
+    stat_weighted <- calc_lm_stat(thedata, pol_1, pol_2, statistic)
+  } else if (statistic == "york_slope") {
+    stat_weighted <- calc_york_stat(thedata, pol_1, pol_2, x_error, y_error)
+  } else if (grepl("robust", statistic, ignore.case = TRUE)) {
+    stat_weighted <- calc_robust_stat(thedata, pol_1, pol_2, statistic)
+  } else if (grepl("quantile", statistic, ignore.case = TRUE)) {
+    stat_weighted <- calc_quantile_stat(thedata, pol_1, pol_2, statistic, tau)
+  } else {
+    stat_weighted <- NA
+  }
 
-  # Build model
-  suppressWarnings(
-    fit <- try(
-      quantreg::rq(
-        mydata[[pollutant[1]]] ~ mydata[[date]],
-        tau = tau,
-        weights = mydata[["weight"]],
-        method = "fn"
+  stat_weighted
+}
+
+
+# Weighted Pearson or Spearman correlation
+calc_corr_stat <- function(thedata, pol_1, pol_2, statistic) {
+  if (statistic == "r") {
+    statistic <- "Pearson"
+  }
+  cont_corr(
+    thedata[[pol_1]],
+    thedata[[pol_2]],
+    w = thedata$weight,
+    method = statistic
+  )
+}
+
+
+# Weighted OLS slope or intercept
+calc_lm_stat <- function(thedata, pol_1, pol_2, statistic) {
+  thedata <- data.frame(thedata)
+  fit <- lm(
+    thedata[, pol_1] ~ thedata[, pol_2],
+    weights = thedata[, "weight"]
+  )
+  if (statistic == "slope") fit$coefficients[2] else fit$coefficients[1]
+}
+
+
+# York regression slope (errors-in-variables)
+calc_york_stat <- function(thedata, pol_1, pol_2, x_error, y_error) {
+  thedata <- as.data.frame(thedata)
+  result <- try(
+    YorkFit(
+      thedata,
+      X = names(thedata)[2],
+      Y = names(thedata)[1],
+      Xstd = x_error,
+      Ystd = y_error,
+      weight = thedata$weight
+    ),
+    TRUE
+  )
+  if (!inherits(result, "try-error")) result$Slope else NA
+}
+
+
+# Weighted robust (M-estimator) regression slope or intercept
+calc_robust_stat <- function(thedata, pol_1, pol_2, statistic) {
+  thedata <- data.frame(thedata)
+  fit <- suppressWarnings(
+    try(
+      MASS::rlm(
+        thedata[, pol_1] ~ thedata[, pol_2],
+        weights = thedata[, "weight"],
+        method = "M"
       ),
       TRUE
     )
   )
+  if (inherits(fit, "try-error")) {
+    return(NA)
+  }
+  if (statistic == "robust_slope") fit$coefficients[2] else fit$coefficients[1]
+}
 
-  # Extract statistics
-  if (!inherits(fit, "try-error")) {
-    # Extract statistics
-    slope <- 365.25 * 24 * 3600 * fit$coefficients[2]
+
+# Weighted quantile regression slope or intercept
+calc_quantile_stat <- function(thedata, pol_1, pol_2, statistic, tau) {
+  try_require("quantreg", "polarPlot")
+  thedata <- data.frame(thedata)
+  fit <- suppressWarnings(
+    try(
+      quantreg::rq(
+        thedata[[pol_1]] ~ thedata[[pol_2]],
+        tau = tau,
+        weights = thedata[["weight"]],
+        method = "br"
+      ),
+      TRUE
+    )
+  )
+  if (inherits(fit, "try-error")) {
+    return(NA)
+  }
+  if (statistic == "quantile_slope") {
+    fit$coefficients[2]
   } else {
-    slope <- NA
+    fit$coefficients[1]
   }
-
-  return(data.frame(conc = slope))
 }
 
 
-# No export
-calculate_weighted_statistics <-
-  function(
-    data,
-    mydata,
-    statistic,
-    x = "ws",
-    y = "wd",
-    pol_1,
-    pol_2,
-    ws_spread,
-    wd_spread,
-    kernel,
-    tau,
-    x_error,
-    y_error
-  ) {
-    weight <- NULL
-    # Centres
-    ws1 <- data[[1]]
-    wd1 <- data[[2]]
-
-    # centred ws, wd
-    ws_cent <- mydata[[x]] - ws1
-    wd_cent <- mydata[[y]] - wd1
-    wd_cent <- ifelse(wd_cent < -180, wd_cent + 360, wd_cent)
-
-    weight <- gauss_dens(ws_cent, wd_cent, 0, 0, ws_spread, wd_spread)
-    weight <- weight / max(weight)
-
-    mydata$weight <- weight
-
-    # Select and filter
-    vars <- c(pol_1, pol_2, "weight")
-
-    if (!all(is.na(c(x_error, y_error)))) {
-      vars <- c(vars, x_error, y_error)
-    }
-    thedata <- mydata[vars]
-    #  thedata <- thedata[complete.cases(thedata), ]
-
-    # don't fit all data - takes too long with no gain
-    thedata <- thedata[which(thedata$weight > 0.001), ]
-
-    # don't try and calculate stats is there's not much data
-    if (nrow(thedata) < 100) {
-      return(data.frame(ws1, wd1, NA))
-    }
-
-    # useful for showing what the weighting looks like as a surface
-    # openair::scatterPlot(mydata, x = "ws", y = "wd", z = "weight", method = "level")
-
-    if (statistic %in% c("r", "Pearson", "Spearman")) {
-      if (statistic == "r") {
-        statistic <- "Pearson"
-      }
-
-      # Weighted Pearson correlation
-      stat_weighted <- contCorr(
-        thedata[[pol_1]],
-        thedata[[pol_2]],
-        w = thedata$weight,
-        method = statistic
-      )
-
-      result <- data.frame(ws1, wd1, stat_weighted)
-    }
-
-    # Simple least squared regression with weights
-    if (statistic %in% c("slope", "intercept")) {
-      # Drop dplyr's data frame for formula
-      thedata <- data.frame(thedata)
-
-      # Calculate model, no warnings on perfect fits.
-      fit <- lm(
-        thedata[, pol_1] ~ thedata[, pol_2],
-        weights = thedata[, "weight"]
-      )
-
-      # Extract statistics
-      if (statistic == "slope") {
-        stat_weighted <- fit$coefficients[2]
-      }
-      if (statistic == "intercept") {
-        stat_weighted <- fit$coefficients[1]
-      }
-
-      # Bind together
-      result <- data.frame(ws1, wd1, stat_weighted)
-    }
-
-    if (statistic == "york_slope") {
-      thedata <- as.data.frame(thedata) # so formula works
-
-      result <- try(
-        YorkFit(
-          thedata,
-          X = names(thedata)[2],
-          Y = names(thedata)[1],
-          Xstd = x_error,
-          Ystd = y_error,
-          weight = thedata$weight
-        ),
-        TRUE
-      )
-
-      # Extract statistics
-      if (!inherits(result, "try-error")) {
-        # Extract statistics
-        stat_weighted <- result$Slope
-      } else {
-        stat_weighted <- NA
-      }
-
-      result <- data.frame(ws1, wd1, stat_weighted)
-    }
-
-    # Robust linear regression with weights
-    if (grepl("robust", statistic, ignore.case = TRUE)) {
-      # Drop dplyr's data frame for formula
-      thedata <- data.frame(thedata)
-
-      # Build model, optimal method (MM) cannot use weights
-      fit <- suppressWarnings(
-        try(
-          MASS::rlm(
-            thedata[, pol_1] ~ thedata[, pol_2],
-            weights = thedata[, "weight"],
-            method = "M"
-          ),
-          TRUE
-        )
-      )
-
-      # Extract statistics
-      if (!inherits(fit, "try-error")) {
-        # Extract statistics
-        if (statistic == "robust_slope") {
-          stat_weighted <- fit$coefficients[2]
-        }
-        if (statistic == "robust_intercept") {
-          stat_weighted <- fit$coefficients[1]
-        }
-      } else {
-        if (statistic == "robust_slope") {
-          stat_weighted <- NA
-        }
-        if (statistic == "robust_intercept") stat_weighted <- NA
-      }
-
-      # Bind together
-      result <- data.frame(ws1, wd1, stat_weighted)
-    }
-
-    # Quantile regression with weights
-    if (grepl("quantile", statistic, ignore.case = TRUE)) {
-      # quantreg is a Suggests package, so make sure it is there
-      try_require("quantreg", "polarPlot")
-
-      # Drop dplyr's data frame for formula
-      thedata <- data.frame(thedata)
-
-      # Build model
-      suppressWarnings(
-        fit <- try(
-          quantreg::rq(
-            thedata[[pol_1]] ~ thedata[[pol_2]],
-            tau = tau,
-            weights = thedata[["weight"]],
-            method = "br"
-          ),
-          TRUE
-        )
-      )
-
-      if (!inherits(fit, "try-error")) {
-        # Extract statistics
-        if (statistic == "quantile_slope") {
-          stat_weighted <- fit$coefficients[2]
-        }
-        if (statistic == "quantile_intercept") {
-          stat_weighted <- fit$coefficients[1]
-        }
-      } else {
-        if (statistic == "quantile_slope") {
-          stat_weighted <- NA
-        }
-        if (statistic == "quantile_intercept") stat_weighted <- NA
-      }
-
-      # Bind together
-      result <- data.frame(ws1, wd1, stat_weighted)
-    }
-
-    # Return
-    result
-  }
-
-
-# Taken directly from the boot package to save importing
-corr <- function(d, w = rep(1, nrow(d)) / nrow(d)) {
-  s <- sum(w)
-  m1 <- sum(d[, 1L] * w) / s
-  m2 <- sum(d[, 2L] * w) / s
-  (sum(d[, 1L] * d[, 2L] * w) / s - m1 * m2) /
-    sqrt((sum(d[, 1L]^2 * w) / s - m1^2) * (sum(d[, 2L]^2 * w) / s - m2^2))
-}
-
-
-# From enlightenr package
-kernel_smoother <- function(x, kernel = "gaussian") {
-  kernel <- tolower(kernel)
-  if (kernel %in% c("gaussian", "normal")) {
-    x <- (2 * pi)^-0.5 * exp(-0.5 * x^2)
-  }
-  if (kernel == "epanechnikov") {
-    x <- 3 / 4 * (1 - x^2) * indicator_function(x)
-  }
-  if (kernel == "logistic") {
-    x <- 1 / (exp(x) + 2 + exp(-x))
-  }
-  if (kernel == "cosine") {
-    x <- pi / 4 * cos((pi / 2) * x) * indicator_function(x)
-  }
-  if (kernel == "triangular") {
-    x <- (1 - abs(x)) * indicator_function(x)
-  }
-  if (kernel %in% c("box", "uniform")) {
-    x <- 1 / 2 * indicator_function(x)
-  }
-  if (kernel == "tricube") {
-    x <- 70 / 81 * (1 - abs(x)^3)^3 * indicator_function(x)
-  }
-  if (kernel == "triweight") {
-    x <- 35 / 32 * (1 - x^2)^3 * indicator_function(x)
-  }
-  if (kernel %in% c("biweight", "quartic")) {
-    x <- 15 / 16 * (1 - x^2)^2 * indicator_function(x)
-  }
-  x
-}
-
-
-indicator_function <- function(x) ifelse(abs(x) <= 1, 1, 0)
-
-# weighted Pearson and Spearman correlations, based on wCorr package
-contCorr <- function(x, y, w, method = c("Pearson", "Spearman")) {
+# Weighted Pearson and Spearman correlations, based on wCorr package
+cont_corr <- function(x, y, w, method = c("Pearson", "Spearman")) {
   if (!is.numeric(x)) {
     x <- as.numeric(x)
   }
@@ -1683,8 +1434,6 @@ contCorr <- function(x, y, w, method = c("Pearson", "Spearman")) {
   }
   pm <- pmatch(tolower(method[[1]]), tolower(c("Pearson", "Spearman")))
   if (pm == 2) {
-    # x <- rank(x) # rank gives averages for ties
-    # y <- rank(y)
     x <- wrank(x, w)
     y <- wrank(y, w)
   }
@@ -1699,7 +1448,7 @@ contCorr <- function(x, y, w, method = c("Pearson", "Spearman")) {
 wrank <- function(x, w = rep(1, length(x))) {
   # sort by x so we can just traverse once
   ord <- order(x)
-  rord <- (1:length(x))[order(ord)] # reverse order
+  rord <- (seq_along(x))[order(ord)] # reverse order
   xp <- x[ord] # x, permuted
   wp <- w[ord] # weights, permuted
   rnk <- rep(NA, length(x)) # blank ranks vector
@@ -1737,6 +1486,7 @@ wrank <- function(x, w = rep(1, length(x))) {
   # order by incoming index, so put in the original order
   rnk[rord]
 }
+
 
 YorkFit <- function(
   input_data,
@@ -1854,11 +1604,13 @@ YorkFit <- function(
   return(ans)
 }
 
-# bi-linear interpolation on a regular grid
-# allows surface predictions at a low resolution to be interpolated, rather than using a GAM
-interp.surface <- function(obj, loc) {
-  # obj is a surface or image  object like the list for contour, persp or image.
-  # loc a matrix of 2 d locations -- new points to evaluate the surface.
+
+# Bi-linear interpolation on a regular grid.
+# Allows surface predictions at a low resolution to be interpolated rather than
+# using a high-k GAM directly.
+interp_surface <- function(obj, loc) {
+  # obj is a surface or image object like the list for contour, persp or image.
+  # loc a matrix of 2-d locations -- new points to evaluate the surface.
   x <- obj$x
   y <- obj$y
   z <- obj$z
@@ -1880,28 +1632,19 @@ interp.surface <- function(obj, loc) {
   lx1[lx1 == nx] <- nx - 1
   ly1[ly1 == ny] <- ny - 1
   # bilinear interpolation finds simple weights based on the
-  # the four corners of the grid box containing the new
-  # points.
+  # the four corners of the grid box containing the new points.
   return(
     z[cbind(lx1, ly1)] *
       (1 - ex) *
       (1 - ey) +
-      z[cbind(
-        lx1 +
-          1,
-        ly1
-      )] *
-        ex *
-        (1 - ey) +
-      z[cbind(lx1, ly1 + 1)] *
-        (1 -
-          ex) *
-        ey +
+      z[cbind(lx1 + 1, ly1)] * ex * (1 - ey) +
+      z[cbind(lx1, ly1 + 1)] * (1 - ex) * ey +
       z[cbind(lx1 + 1, ly1 + 1)] * ex * ey
   )
 }
 
-# function to do bilinear interpolation given input grid and number of points required
+
+# Bilinear interpolation from a coarse GAM prediction grid to a fine output grid
 interp_grid <- function(input.data, x = "u", y = "v", z, n = 201) {
   # current number of points
   int <- length(unique(input.data[[x]]))
@@ -1917,12 +1660,12 @@ interp_grid <- function(input.data, x = "u", y = "v", z, n = 201) {
     y = seq(min(input.data[[y]]), max(input.data[[y]]), length.out = n)
   )
 
-  res.interp <- interp.surface(obj, loc)
+  res.interp <- interp_surface(obj, loc)
 
   out <- expand.grid(
     u = seq(min(input.data[[x]]), max(input.data[[x]]), length.out = n),
     v = seq(min(input.data[[y]]), max(input.data[[y]]), length.out = n)
   )
 
-  results <- data.frame(out, z = res.interp)
+  data.frame(out, z = res.interp)
 }

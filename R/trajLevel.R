@@ -449,11 +449,11 @@ trajLevel <- function(
     # calculate sigma
     mydata <- mydata |>
       mutate(sigma = sigma * abs(hour.inc)) |>
-      drop_na({{ pollutant }})
+      tidyr::drop_na({{ pollutant }})
 
     # receptor grid
     # use trajectory data to determine grid size - don't go to extremes
-    r_grid <- expand_grid(
+    r_grid <- tidyr::expand_grid(
       lat = seq(
         round(quantile(mydata$lat, probs = 0.002)),
         round(quantile(mydata$lat, probs = 0.998)),
@@ -602,7 +602,7 @@ trajLevel <- function(
   # panels in the plot
   n_types <- c()
   for (i in type) {
-    n_types <- c(n_types, length(levels(mydata[[i]])))
+    n_types <- c(n_types, nlevels(mydata[[i]]))
   }
   n_types <- purrr::reduce(n_types, .f = `*`)
 
@@ -778,7 +778,7 @@ trajLevel <- function(
         ggplot2::aes(
           x = .data$xgrid,
           y = .data$ygrid,
-          alpha = ifelse(ggplot2::after_stat(.data$count) < min.bin, 0, 1)
+          alpha = as.integer(!(ggplot2::after_stat(.data$count) < min.bin))
         ),
         binwidth = min(c(lat.inc * 1.5, lon.inc * 1.5))
       )

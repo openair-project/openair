@@ -30,7 +30,13 @@
 #' polarDiff(before_data, after_data, pollutant = "no2")
 #'
 #' # with some options
-#' polarDiff(before_data, after_data, pollutant = "no2", cols = "RdYlBu", limits = c(-20, 20))
+#' polarDiff(
+#'   before_data,
+#'   after_data,
+#'   pollutant = "no2",
+#'   cols = "RdYlBu",
+#'   limits = c(-20, 20)
+#' )
 #' }
 polarDiff <- function(
   before,
@@ -43,42 +49,36 @@ polarDiff <- function(
   plot = TRUE,
   ...
 ) {
-  if (is.null(limits)) {
-    limits <- NA
-  }
-
   # extra args setup
   Args <- list(...)
 
   # variables needed, check for York regression where x and y error needed
-  if (all(c("x_error", "y_error") %in% names(Args))) {
-    vars <- c(x, "wd", pollutant, Args$x_error, Args$y_error)
+  vars <- if (all(c("x_error", "y_error") %in% names(Args))) {
+    c(x, "wd", pollutant, Args$x_error, Args$y_error)
   } else {
-    vars <- c(x, "wd", pollutant)
+    c(x, "wd", pollutant)
   }
 
-  # check variables exists
-  before <- cutData(before, type = type) |>
-    checkPrep(vars, type, remove.calm = FALSE) |>
-    dplyr::mutate(period = "before")
+  # collapse multi-pollutant name once, used throughout
+  pollutant_name <- paste(pollutant, collapse = "_")
 
-  after <- cutData(after, type = type) |>
-    checkPrep(vars, type, remove.calm = FALSE) |>
-    dplyr::mutate(period = "after")
-
-  if (type == "default") {
-    before$default <- "default"
-    after$default <- "default"
+  # prepare before/after, tagging each with a period label
+  prepare <- function(data, period) {
+    data <- cutData(data, type = type) |>
+      checkPrep(vars, type, remove.calm = FALSE) |>
+      dplyr::mutate(period = period)
+    if (type == "default") {
+      data$default <- "default"
+    }
+    data
   }
 
-  # bind 'before' and 'after' into a single dataframe
+  before <- prepare(before, "before")
+  after <- prepare(after, "after")
+
   all_data <- dplyr::bind_rows(before, after)
 
-  # need to pass on use limits only to final plot
-  Args$new_limits <- limits
-  Args$limits <- NA
-
-  # map over "type" - get difference between 'before' and 'after'
+  # map over type levels - subtract 'before' surface from 'after' surface
   polar_data <-
     purrr::map(
       .x = unique(c(before[[type]], after[[type]])),
@@ -94,11 +94,7 @@ polarDiff <- function(
           ...
         )
 
-        if (length(pollutant) > 1) {
-          pollutant <- paste(pollutant, collapse = "_")
-        }
-
-        polar_data <-
+        out <-
           polar_plt$data |>
           tidyr::pivot_wider(
             id_cols = u:v,
@@ -106,104 +102,87 @@ polarDiff <- function(
             values_from = z
           ) |>
           dplyr::mutate(
-            {{ pollutant }} := after - before,
+            {{ pollutant_name }} := after - before,
             {{ x }} := (u^2 + v^2)^0.5,
             wd = 180 * atan2(u, v) / pi,
             wd = ifelse(wd < 0, wd + 360, wd)
           )
 
-        polar_data[[type]] <- theData[[type]][1]
-
-        return(polar_data)
+        out[[type]] <- theData[[type]][1]
+        out
       }
     ) |>
     purrr::list_rbind()
 
-  # other arguments
-  # colours
-  Args$cols <- if ("cols" %in% names(Args)) {
-    Args$cols
-  } else {
-    c(
-      "#002F70",
-      "#3167BB",
-      "#879FDB",
-      "#C8D2F1",
-      "#F6F6F6",
-      "#F4C8C8",
-      "#DA8A8B",
-      "#AE4647",
-      "#5F1415"
-    )
-  }
-
-  # limits
-  Args$limits <- if (is.na(Args$new_limits[1])) {
+  # resolve limits: user-supplied or symmetric pretty range
+  resolved_limits <- if (is.null(limits)) {
     lims_adj <- pretty(seq(
       0,
-      max(abs(polar_data[[pollutant]]), na.rm = TRUE),
+      max(abs(polar_data[[pollutant_name]]), na.rm = TRUE),
       5
     ))
-    lims_adj <- lims_adj[length(lims_adj) - 1]
-    c(-lims_adj, lims_adj)
+    lims_val <- lims_adj[length(lims_adj) - 1]
+    c(-lims_val, lims_val)
   } else {
-    Args$new_limits
+    limits
   }
 
-  # other useful args
-  Args$key <- Args$key %||% TRUE
-  Args$par.settings <- Args$par.settings %||%
-    list(axis.line = list(col = "black"))
-  Args$alpha <- Args$alpha %||% 1
-  Args$key.header <- Args$key.header %||% "Difference"
-  Args$key.footer <- Args$key.footer %||% paste(pollutant, collapse = ", ")
-  Args$main <- Args$main %||% ""
-
-  if (type == "default") {
-    plt <-
-      polarPlot(
-        polar_data,
-        pollutant = pollutant,
-        x = x,
-        plot = plot,
-        cols = Args$cols,
-        limits = Args$limits,
-        force.positive = FALSE,
-        alpha = Args$alpha,
-        key = Args$key,
-        par.settings = Args$par.settings,
-        key.header = Args$key.header,
-        key.footer = Args$key.footer,
-        main = Args$main,
-        auto.text = auto.text
+  # build final polarPlot args, merging defaults with user-supplied Args
+  plot_args <- utils::modifyList(
+    list(
+      cols = c(
+        "#002F70",
+        "#3167BB",
+        "#879FDB",
+        "#C8D2F1",
+        "#F6F6F6",
+        "#F4C8C8",
+        "#DA8A8B",
+        "#AE4647",
+        "#5F1415"
+      ),
+      key = TRUE,
+      par.settings = list(axis.line = list(col = "black")),
+      alpha = 1,
+      key.header = "Difference",
+      key.footer = pollutant_name,
+      main = ""
+    ),
+    Args[intersect(
+      names(Args),
+      c(
+        "cols",
+        "key",
+        "par.settings",
+        "alpha",
+        "key.header",
+        "key.footer",
+        "main"
       )
-  } else {
-    # stop polarPlot wanting 'date' for date types
+    )]
+  )
+
+  # for non-default types, rename type column to avoid polarPlot date coercion
+  if (type != "default") {
     names(polar_data)[names(polar_data) == type] <- "finaltype"
-
-    # final plot
-    plt <-
-      polarPlot(
-        polar_data,
-        pollutant = pollutant,
-        x = x,
-        type = "finaltype",
-        plot = plot,
-        cols = Args$cols,
-        limits = Args$limits,
-        force.positive = FALSE,
-        alpha = Args$alpha,
-        key = Args$key,
-        par.settings = Args$par.settings,
-        key.header = Args$key.header,
-        key.footer = Args$key.footer,
-        main = Args$main,
-        auto.text = auto.text
-      )
+    plot_args$type <- "finaltype"
   }
 
-  # return
-  output <- list(plot = plt$plot, data = polar_data, call = match.call())
+  plt <- do.call(
+    polarPlot,
+    c(
+      list(
+        mydata = polar_data,
+        pollutant = pollutant,
+        x = x,
+        limits = resolved_limits,
+        force.positive = FALSE,
+        plot = plot,
+        auto.text = auto.text
+      ),
+      plot_args
+    )
+  )
 
-  invisible(output)
+  invisible(list(plot = plt$plot, data = polar_data, call = match.call()))
 }
