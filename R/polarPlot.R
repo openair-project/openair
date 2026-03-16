@@ -1397,7 +1397,7 @@ calc_robust_stat <- function(thedata, pol_1, pol_2, statistic) {
 
 # Weighted quantile regression slope or intercept
 calc_quantile_stat <- function(thedata, pol_1, pol_2, statistic, tau) {
-  try_require("quantreg", "polarPlot")
+  rlang::check_installed("quantreg")
   thedata <- data.frame(thedata)
   fit <- suppressWarnings(
     try(

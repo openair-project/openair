@@ -41,7 +41,13 @@ reference:
   contents:
   - openColours
   - quickText
-  - drawOpenKey
+- subtitle: Smoothing Functions
+  desc: Tools for smoothing data for plotting or analysis
+  contents:
+  - rollingMean
+  - rollingQuantile
+  - GaussianSmooth
+  - WhittakerSmooth
 - subtitle: Data Utilities
   desc: Tools for manipulating and summarising air quality data.
   contents:
@@ -50,13 +56,8 @@ reference:
   - calcPercentile
   - cutData
   - datePad
-  - rollingMean
-  - rollingQuantile
   - runRegression
-  - GaussianSmooth
-  - WhittakerSmooth
   - selectByDate
   - selectRunning
   - splitByDate
   - timeAverage
-

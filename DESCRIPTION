@@ -29,8 +29,6 @@ Imports:
     graphics,
     grDevices,
     grid,
-    lattice,
-    latticeExtra,
     lubridate,
     MASS,
     methods,

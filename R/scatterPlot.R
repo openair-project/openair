@@ -1051,7 +1051,10 @@ scatter_level <- function(
 ) {
   mydata <- cutData(mydata, type)
 
-  ## bin intervals
+  # bin intervals
+  prettyGap <- function(x, n = 100) {
+    return(diff(pretty(x, n))[1])
+  }
   if (is.null(x.inc)) {
     x.inc <- prettyGap(mydata[[x]])
   }
