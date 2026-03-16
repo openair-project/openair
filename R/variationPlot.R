@@ -170,8 +170,10 @@ variationPlot <- function(
     extra.args$sub %||% create_varplot_sub_text(statistic, conf.int),
     auto.text
   )
-  extra.args$drop <- extra.args$drop %||% "none"
   extra.args$lty <- extra.args$lty %||% 1
+
+  drop <- extra.args$drop %||% "none"
+  extra.args$drop <- NULL
 
   # check & cut data
   # always need date for the 'difference' path
@@ -195,30 +197,55 @@ variationPlot <- function(
   }
 
   # data checks
+  # need special handling of cutData as `drop` needs to be passed separately
   mydata <- mydata |>
     checkPrep(vars, c(type, group), remove.calm = FALSE) |>
-    cutData(
-      type = x,
-      names = "x",
-      local.tz = local.tz,
-      is.axis = TRUE,
-      drop = extra.args$drop,
-      ...
-    ) |>
-    cutData(
-      type = type,
-      names = type_cols,
-      local.tz = local.tz,
-      drop = extra.args$drop,
-      ...
-    ) |>
-    cutData(
-      type = group,
-      names = "group",
-      local.tz = local.tz,
-      drop = extra.args$drop,
-      ...
-    )
+    (\(df) {
+      do.call(
+        cutData,
+        append(
+          list(
+            x = df,
+            type = x,
+            names = "x",
+            local.tz = local.tz,
+            is.axis = TRUE,
+            drop = drop
+          ),
+          extra.args
+        )
+      )
+    })() |>
+    (\(df) {
+      do.call(
+        cutData,
+        append(
+          list(
+            x = df,
+            type = type,
+            names = type_cols,
+            local.tz = local.tz,
+            drop = drop
+          ),
+          extra.args
+        )
+      )
+    })() |>
+    (\(df) {
+      do.call(
+        cutData,
+        append(
+          list(
+            x = df,
+            type = group,
+            names = "group",
+            local.tz = local.tz,
+            drop = drop
+          ),
+          extra.args
+        )
+      )
+    })()
 
   # put in local time if needed
   if (!is.null(local.tz)) {
@@ -431,10 +458,12 @@ variationPlot <- function(
     })
   }
 
-  # introduce NA gaps for missing x values so lines don't connect across absent data
+  # introduce NA gaps for missing x values so lines don't connect across absent
+  # data
   gap_cols <- intersect(c(type_cols, "group", "ci"), names(mydata))
   if (is.numeric(mydata$x)) {
-    full_x <- switch(x,
+    full_x <- switch(
+      x,
       "hour" = 0:23,
       "week" = 1:53,
       seq(min(mydata$x, na.rm = TRUE), max(mydata$x, na.rm = TRUE))
@@ -581,7 +610,8 @@ variationPlot <- function(
             show.legend = FALSE,
             color = NA,
             alpha = alpha / dplyr::n_distinct(mydata$ci),
-            width = widths[[i]]
+            width = widths[[i]],
+            na.rm = TRUE
           )
       }
     }
@@ -591,7 +621,12 @@ variationPlot <- function(
     # lines
     use_point <- !is.ordered(mydata$x) ||
       (x == "month" && group == "season") ||
-      (x == "weekday" && group == "weekend")
+      (x == "weekday" && group == "weekend") ||
+      ((mydata |>
+        tidyr::drop_na() |>
+        dplyr::pull("x") |>
+        dplyr::n_distinct()) ==
+        1L)
 
     if (!use_point) {
       thePlot <-
@@ -617,7 +652,8 @@ variationPlot <- function(
             group = .data$group
           ),
           show.legend = TRUE,
-          key_glyph = "point"
+          key_glyph = "point",
+          na.rm = TRUE
         )
     }
 
