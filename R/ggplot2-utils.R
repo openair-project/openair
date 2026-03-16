@@ -98,7 +98,6 @@ get_facet <- function(
   scales,
   auto.text,
   drop = FALSE,
-  independent = FALSE,
   strip.position = "top",
   ...
 ) {
@@ -141,31 +140,16 @@ get_facet <- function(
         strip.position <- NULL
       }
 
-      if (independent) {
-        rlang::check_installed("ggh4x")
-        fun <-
-          ggh4x::facet_grid2(
-            drop = drop,
-            rows = ggplot2::vars(.data[[type[1]]]),
-            cols = ggplot2::vars(.data[[type[2]]]),
-            labeller = labeller_openair(auto_text = auto.text),
-            scales = scales,
-            switch = strip.position,
-            independent = TRUE,
-            ...
-          )
-      } else {
-        fun <-
-          ggplot2::facet_grid(
-            drop = drop,
-            rows = ggplot2::vars(.data[[type[1]]]),
-            cols = ggplot2::vars(.data[[type[2]]]),
-            labeller = labeller_openair(auto_text = auto.text),
-            scales = scales,
-            switch = strip.position,
-            ...
-          )
-      }
+      fun <-
+        ggplot2::facet_grid(
+          drop = drop,
+          rows = ggplot2::vars(.data[[type[1]]]),
+          cols = ggplot2::vars(.data[[type[2]]]),
+          labeller = labeller_openair(auto_text = auto.text),
+          scales = scales,
+          switch = strip.position,
+          ...
+        )
     }
   }
   fun
