@@ -206,6 +206,7 @@ polarCluster <-
       )$data
 
       results.grid$z <- results.grid[[pollutant]]
+      results.grid$x <- sqrt(results.grid$u^2 + results.grid$v^2)
     } else {
       results.grid <- polarPlot(
         mydata,
@@ -220,9 +221,10 @@ polarCluster <-
     # remove missing because we don't want to find clusters for those points
     # saves a lot on computation
     results.grid <- na.omit(results.grid)
+    cols_to_keep <- c("u", "v", "z", "x", wd)
     results.grid <- dplyr::select(
       results.grid,
-      dplyr::all_of(c("u", "v", "z", "x", wd))
+      dplyr::all_of(cols_to_keep)
     )
 
     # sequence of u or v, based on unique values that already exist
