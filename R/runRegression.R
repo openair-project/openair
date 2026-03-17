@@ -25,8 +25,6 @@
 #'   made?
 #' @return A tibble with `date` and calculated regression coefficients and
 #'   other information to plot dilution lines.
-#' @importFrom stats coefficients
-#' @importFrom stats .lm.fit
 #' @export
 #' @references
 #'

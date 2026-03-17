@@ -114,7 +114,6 @@
 #'   - `fontsize` overrides the overall font size of the plot.
 #'   - `border` sets the border colour of each tile.
 #' @export
-#' @import grid
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
 #' @family time series and trend functions

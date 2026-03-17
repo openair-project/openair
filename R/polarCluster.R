@@ -75,7 +75,6 @@
 #' @inheritDotParams polarPlot -mydata -pollutant -x -wd -cols -angle.scale
 #'   -units -auto.text -plot
 #' @export
-#' @import cluster
 #' @return an [openair][openair-package] object. The object includes four main
 #'   components: `call`, the command used to generate the plot; `data`, by
 #'   default the original data frame with a new field `cluster` identifying the

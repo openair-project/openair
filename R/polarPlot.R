@@ -331,7 +331,6 @@
 #'   `type = "season"`. The `main` argument is passed to `ggplot2::labs()` for
 #'   the plot title.
 #'
-#' @import mgcv
 #' @return an [openair][openair-package] object. `data` contains four set
 #'   columns: `cond`, conditioning based on `type`; `u` and `v`, the
 #'   translational vectors based on `ws` and `wd`; and the local `pollutant`

@@ -137,7 +137,6 @@
 #'   passed to `quickText` to handle routine formatting.
 #'
 #' @export
-#' @import dplyr
 #' @return an [openair][openair-package] object. Summarised proportions can be
 #'   extracted directly using the `$data` operator, e.g. `object$data` for
 #'   `output <- windRose(mydata)`. This returns a data frame with three set

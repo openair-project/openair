@@ -99,6 +99,10 @@
 #' @keywords internal
 "_PACKAGE"
 ## usethis namespace: start
+#' @import grid
+#' @import cluster
+#' @import dplyr
+#' @import mgcv
 #' @importFrom lubridate as_date
 #' @importFrom lubridate ceiling_date
 #' @importFrom lubridate day
@@ -161,5 +165,7 @@
 #' @importFrom utils modifyList
 #' @importFrom utils read.csv
 #' @importFrom utils tail
+#' @importFrom stats coefficients
+#' @importFrom stats .lm.fit
 ## usethis namespace: end
 NULL

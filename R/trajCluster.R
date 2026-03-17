@@ -42,7 +42,6 @@
 #' @export
 #'
 #' @useDynLib openair, .registration = TRUE
-#' @import cluster
 #'
 #' @return an [openair][openair-package] object. The `data` component contains
 #'   both `traj` (the original data appended with its cluster) and `results`

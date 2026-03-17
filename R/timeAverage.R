@@ -144,7 +144,6 @@
 #'
 #' @param ... Additional arguments for other functions calling [timeAverage()].
 #'
-#' @import dplyr
 #' @export
 #' @return Returns a data frame with date in class `POSIXct`.
 #' @author David Carslaw
