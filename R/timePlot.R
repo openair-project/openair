@@ -101,6 +101,21 @@
 #'   This option works best where there are not too many data to ensure
 #'   over-plotting does not become a problem.
 #'
+#' @param fill Controls area fill below the line. `NULL` (default) draws no
+#'   fill. Otherwise a list with the following components:
+#'
+#'   - `col`: Colour(s) for the fill. `NULL` (default) inherits the line
+#'   colour. For `gradient` mode, passed to [openColours()] as a scheme name
+#'   (e.g. `"Blues"`). For `breaks` mode, either a vector of colours (one per
+#'   band) or an [openColours()] scheme name.
+#'   - `alpha`: Transparency of fill, `0`--`1`. Default `0.4`.
+#'   - `below`: Baseline y-value from which the fill rises. Default `0`.
+#'   - `breaks`: A numeric vector of break-points that divide the y-axis into
+#'   colour bands (categorical mode). For example `breaks = c(50, 100)` creates
+#'   three bands: below 50, 50--100, and above 100.
+#'   - `gradient`: Logical. If `TRUE` (and `breaks` is `NULL`), the fill
+#'   colour varies continuously with y-value using a colour gradient.
+#'
 #' @param smooth Should a smooth line be applied to the data? The default is
 #'   `FALSE`.
 #'
@@ -248,6 +263,7 @@ timePlot <- function(
   cols = "brewer1",
   log = FALSE,
   windflow = NULL,
+  fill = NULL,
   smooth = FALSE,
   ci = TRUE,
   x.relation = "same",
@@ -439,30 +455,67 @@ timePlot <- function(
       }
     )
 
-  # built plot
+  # which fill strategy is active — drives scale and legend handling below
+  fill_mode <- if (is.null(fill)) {
+    "none"
+  } else if (!is.null(fill$breaks)) {
+    "categorical"
+  } else if (isTRUE(fill$gradient)) {
+    "gradient"
+  } else {
+    "simple"
+  }
+  # categorical/gradient fill use their own scale_fill_* returned by the
+  # helper; simple fill piggybacks on the variable colour scale
+  fill_uses_own_scale <- fill_mode %in% c("categorical", "gradient")
+
+  # show legend when there are multiple pollutants OR when fill has its own
+  # dedicated scale (i.e. there is something worth labelling)
+  show_legend <- npol > 1 || fill_uses_own_scale
+
+  # built plot — omit fill from global aes for categorical/gradient modes so
+  # their dedicated scale_fill_* from the helper does not conflict with a
+  # discrete fill mapping
   thePlot <-
     ggplot2::ggplot(
       mydata,
-      ggplot2::aes(
-        x = .data$date,
-        y = .data$value,
-        color = .data$variable,
-        fill = .data$variable,
-        linetype = .data$variable
-      )
-    ) +
+      if (fill_uses_own_scale) {
+        ggplot2::aes(
+          x        = .data$date,
+          y        = .data$value,
+          color    = .data$variable,
+          linetype = .data$variable
+        )
+      } else {
+        ggplot2::aes(
+          x        = .data$date,
+          y        = .data$value,
+          color    = .data$variable,
+          fill     = .data$variable,
+          linetype = .data$variable
+        )
+      }
+    )
+
+  # fill layers must sit below the line
+  if (!is.null(fill)) {
+    thePlot <- thePlot + make_timeplot_fill(mydata, fill, key.position)
+  }
+
+  thePlot <- thePlot +
     ggplot2::geom_line(
       ggplot2::aes(linewidth = .data$variable),
       show.legend = TRUE
     ) +
     gg_ref_x(ref.x) +
     gg_ref_y(ref.y) +
-    theme_openair(key.position = ifelse(npol == 1, "none", key.position)) +
+    theme_openair(key.position = if (!show_legend) "none" else key.position) +
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
       title = extra.args$main,
-      fill = NULL,
+      # let categorical/gradient scale names come through; suppress for others
+      fill = if (fill_uses_own_scale) ggplot2::waiver() else NULL,
       colour = NULL,
       linetype = NULL,
       linewidth = NULL
@@ -496,7 +549,9 @@ timePlot <- function(
       values = openColours(scheme = cols, n = npol),
       drop = FALSE,
       label = \(x) label_openair(x, auto_text = auto.text),
-      aesthetics = c("fill", "colour")
+      # categorical/gradient fill use a dedicated scale_fill_* from the helper;
+      # including "fill" here would create a conflicting second fill scale
+      aesthetics = if (fill_uses_own_scale) "colour" else c("fill", "colour")
     ) +
     ggplot2::scale_linetype_manual(
       values = extra.args$lty,
@@ -509,10 +564,12 @@ timePlot <- function(
       label = \(x) label_openair(x, auto_text = auto.text)
     ) +
     ggplot2::guides(
-      fill = theGuide,
-      color = theGuide,
-      linetype = theGuide,
-      linewidth = theGuide
+      # for cat/gradient, the guide is defined inside the helper's scale_fill_*;
+      # waiver() means "use whatever the scale specifies" rather than suppressing
+      fill      = if (fill_uses_own_scale) ggplot2::waiver() else theGuide,
+      color     = if (npol > 1) theGuide else "none",
+      linetype  = if (npol > 1) theGuide else "none",
+      linewidth = if (npol > 1) theGuide else "none"
     )
 
   if (stack) {
@@ -749,3 +806,285 @@ normalise_timeplot_data <-
     # return input data
     return(mydata)
   }
+
+# ---- fill helpers -----------------------------------------------------------
+
+#' Dispatch to the correct fill layer builder
+#' @noRd
+make_timeplot_fill <- function(mydata, fill, key.position = "bottom") {
+  if (!is.null(fill$breaks)) {
+    timeplot_fill_categorical(mydata, fill)
+  } else if (isTRUE(fill$gradient)) {
+    timeplot_fill_gradient(mydata, fill, key.position)
+  } else {
+    timeplot_fill_simple(mydata, fill)
+  }
+}
+
+#' Simple solid fill below the line
+#'
+#' When `fill$col` is NULL the fill colour inherits from the mapped
+#' `fill = variable` aesthetic (so multi-pollutant panels each get their own
+#' colour automatically).
+#' @noRd
+timeplot_fill_simple <- function(mydata, fill) {
+  below <- fill$below %||% 0
+  alpha <- fill$alpha %||% 0.4
+
+  fill_data <- dplyr::mutate(mydata, .fill_baseline = below)
+
+  # build argument list so we only pass `fill` constant when the user set one;
+  # omitting it lets the aes(fill = variable) mapping (and its scale) take over
+  ribbon_args <- list(
+    data        = fill_data,
+    mapping     = ggplot2::aes(
+      x    = .data$date,
+      ymin = .data$.fill_baseline,
+      ymax = .data$value,
+      fill = .data$variable
+    ),
+    alpha       = alpha,
+    colour      = NA,
+    na.rm       = TRUE,
+    inherit.aes = FALSE,
+    show.legend = FALSE
+  )
+  if (!is.null(fill$col)) {
+    ribbon_args$fill <- fill$col
+  }
+
+  do.call(ggplot2::geom_ribbon, ribbon_args)
+}
+
+#' Insert interpolated rows at band-boundary crossings
+#'
+#' When a line segment crosses a break value, the pmin/pmax clamping of a
+#' stacked ribbon produces a ymax that diverges from the actual line between
+#' data points. Inserting an interpolated point exactly at each crossing
+#' ensures the ribbon always tracks the line.
+#'
+#' Groups by all factor/character columns (variable + any type columns) so
+#' that lead/lag is never computed across different panels or series.
+#' @noRd
+add_band_crossings <- function(data, breaks) {
+  if (length(breaks) == 0L) return(data)
+
+  group_cols <- names(data)[
+    vapply(data, \(x) is.factor(x) || is.character(x), logical(1L))
+  ]
+
+  data_lead <- data |>
+    dplyr::arrange(dplyr::across(c(dplyr::all_of(group_cols), "date"))) |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(group_cols))) |>
+    dplyr::mutate(
+      .ndate = dplyr::lead(.data$date),
+      .nval  = dplyr::lead(.data$value)
+    ) |>
+    dplyr::ungroup()
+
+  new_rows <- purrr::map(breaks, \(b) {
+    data_lead |>
+      dplyr::filter(
+        !is.na(.data$value),
+        !is.na(.data$.nval),
+        (.data$value < b & .data$.nval > b) |
+          (.data$value > b & .data$.nval < b)
+      ) |>
+      dplyr::mutate(
+        .frac = (b - .data$value) / (.data$.nval - .data$value),
+        date  = .data$date + (.data$.ndate - .data$date) * .data$.frac,
+        value = b
+      ) |>
+      dplyr::select(-".ndate", -".nval", -".frac")
+  }) |>
+    purrr::list_rbind()
+
+  dplyr::bind_rows(data, new_rows) |>
+    dplyr::arrange(dplyr::across(c(dplyr::all_of(group_cols), "date")))
+}
+
+#' Categorical colour bands below the line, one per break interval
+#' @noRd
+timeplot_fill_categorical <- function(mydata, fill) {
+  breaks  <- sort(fill$breaks)
+  below   <- fill$below %||% 0
+  lowers  <- c(below, breaks)
+  uppers  <- c(breaks, Inf)
+  alpha   <- fill$alpha %||% 0.5
+  n_bands <- length(lowers)
+
+  # resolve colours: explicit vector (one per band) or openColours scheme
+  cols <- if (!is.null(fill$col) && length(fill$col) == n_bands) {
+    fill$col
+  } else {
+    openColours(fill$col %||% "Blues", n = n_bands)
+  }
+
+  # band labels: "lo\u2013hi" for finite bands, "> lo" for the top band
+  band_labels <- purrr::map2_chr(lowers, uppers, \(lo, hi) {
+    if (!is.finite(hi)) paste0("> ", lo) else paste0(lo, " - ", hi)
+  })
+
+  # insert interpolated crossing points so ribbon clamping tracks the line
+  mydata <- add_band_crossings(mydata, breaks)
+
+  ribbon_layers <- purrr::map(seq_len(n_bands), \(i) {
+    lo <- lowers[i]
+    hi <- uppers[i]
+
+    band_data <- dplyr::mutate(
+      mydata,
+      .band_ymin = lo,
+      .band_ymax = pmax(pmin(.data$value, hi), lo)
+    )
+
+    ggplot2::geom_ribbon(
+      data        = band_data,
+      ggplot2::aes(
+        x    = .data$date,
+        ymin = .data$.band_ymin,
+        ymax = .data$.band_ymax
+      ),
+      fill        = cols[i],
+      alpha       = alpha,
+      colour      = NA,
+      na.rm       = TRUE,
+      inherit.aes = FALSE,
+      show.legend = FALSE
+    )
+  })
+
+  # dummy invisible points — zero size so invisible in the panel, but they
+  # carry the fill aesthetic mapping that drives the legend
+  ref_date <- mydata$date[which(!is.na(mydata$value))[1L]]
+  legend_df <- tibble::tibble(
+    date   = rep(ref_date, n_bands),
+    value  = rep(0, n_bands),
+    .label = factor(band_labels, levels = rev(band_labels))
+  )
+
+  legend_layers <- list(
+    ggplot2::geom_point(
+      data        = legend_df,
+      ggplot2::aes(
+        x    = .data$date,
+        y    = .data$value,
+        fill = .data$.label
+      ),
+      shape       = 22,
+      size        = 0,
+      colour      = NA,
+      na.rm       = TRUE,
+      inherit.aes = FALSE,
+      show.legend = TRUE
+    ),
+    ggplot2::scale_fill_manual(
+      values = setNames(cols, band_labels),
+      name   = fill$legend_title %||% "",
+      guide  = ggplot2::guide_legend(
+        reverse      = TRUE,
+        override.aes = list(size = 4, shape = 22, colour = NA, alpha = alpha)
+      )
+    )
+  )
+
+  c(ribbon_layers, legend_layers)
+}
+
+#' Continuous gradient fill: stacked horizontal ribbon bands coloured by
+#' y-position.
+#'
+#' Divides the y-range into `n_steps` thin bands, each drawn as a
+#' geom_ribbon clamped to [lo, hi] and filled with a constant colour derived
+#' from its position in the palette. Colour therefore varies along the y-axis,
+#' not the x-axis. Uses only constant fill colours so there is no conflict
+#' with the discrete fill scale in the parent plot.
+#' @noRd
+timeplot_fill_gradient <- function(mydata, fill, key.position = "bottom") {
+  below   <- fill$below %||% 0
+  alpha   <- fill$alpha %||% 0.8
+  n_steps <- fill$n_steps %||% 50L
+
+  y_max    <- max(mydata$value, na.rm = TRUE)
+  y_breaks <- seq(below, y_max, length.out = n_steps + 1L)
+  lowers   <- y_breaks[-length(y_breaks)]
+  uppers   <- y_breaks[-1L]
+  cols     <- openColours(fill$col %||% "Blues", n = n_steps)
+
+  # insert crossing points at every band boundary so clamping tracks the line
+  mydata <- add_band_crossings(mydata, y_breaks)
+
+  ribbon_layers <- purrr::map(seq_len(n_steps), \(i) {
+    lo <- lowers[i]
+    hi <- uppers[i]
+
+    band_data <- dplyr::mutate(
+      mydata,
+      .band_ymin = lo,
+      .band_ymax = pmax(pmin(.data$value, hi), lo)
+    )
+
+    ggplot2::geom_ribbon(
+      data        = band_data,
+      ggplot2::aes(
+        x    = .data$date,
+        ymin = .data$.band_ymin,
+        ymax = .data$.band_ymax
+      ),
+      fill        = cols[i],
+      alpha       = alpha,
+      colour      = NA,
+      na.rm       = TRUE,
+      inherit.aes = FALSE,
+      show.legend = FALSE
+    )
+  })
+
+  # dummy points spanning the y-range to drive the continuous fill scale and
+  # thus the colourbar legend; size = 0 makes them invisible in the panel
+  ref_date  <- mydata$date[which(!is.na(mydata$value))[1L]]
+  legend_df <- tibble::tibble(
+    date    = rep(ref_date, n_steps),
+    value   = seq(below, y_max, length.out = n_steps),
+    .fill_v = seq(below, y_max, length.out = n_steps)
+  )
+
+  legend_layers <- list(
+    ggplot2::geom_point(
+      data        = legend_df,
+      ggplot2::aes(
+        x    = .data$date,
+        y    = .data$value,
+        fill = .data$.fill_v
+      ),
+      shape       = 22,
+      size        = 0,
+      colour      = NA,
+      na.rm       = TRUE,
+      inherit.aes = FALSE,
+      show.legend = TRUE
+    ),
+    ggplot2::scale_fill_gradientn(
+      colours = cols,
+      limits  = c(below, y_max),
+      name    = fill$legend_title %||% "",
+      guide   = ggplot2::guide_colourbar(
+        direction = if (key.position %in% c("bottom", "top")) "horizontal" else "vertical",
+        theme = ggplot2::theme(
+          legend.key.width  = if (key.position %in% c("bottom", "top")) {
+            ggplot2::unit(8, "lines")
+          } else {
+            ggplot2::unit(0.5, "lines")
+          },
+          legend.key.height = if (key.position %in% c("bottom", "top")) {
+            ggplot2::unit(0.5, "lines")
+          } else {
+            ggplot2::unit(5, "lines")
+          }
+        )
+      )
+    )
+  )
+
+  c(ribbon_layers, legend_layers)
+}
