@@ -518,7 +518,7 @@ polarPlot <-
       key.header <- "NWR"
     }
     if (key.header == "weighted_mean") {
-      key.header <- "weighted\nmean"
+      key.header <- "weighted mean"
     }
     if (key.header == "percentile") {
       key.header <- c(paste0(percentile, "th"), "percentile")
@@ -825,9 +825,13 @@ polarPlot <-
 
     ## normalise by divining by mean conditioning value if needed
     if (normalise) {
-      res <- mutate(res, z = z / mean(z, na.rm = TRUE))
+      res <- mutate(
+        res,
+        z = z / mean(z, na.rm = TRUE),
+        .by = dplyr::all_of(type)
+      )
 
-      if (missing(key.footer)) key.footer <- "normalised\nlevel"
+      if (missing(key.footer)) key.footer <- "normalised level"
     }
 
     # correlation notation
@@ -854,31 +858,31 @@ polarPlot <-
 
     # Labels for correlation and regression, keep lower case like other labels
     if (statistic %in% c("r", "Pearson")) {
-      key.header <- expression(italic("Pearson\ncorrelation"))
+      key.header <- expression(italic("Pearson correlation"))
     }
 
     if (statistic == "Spearman") {
-      key.header <- expression(italic("Spearman\ncorrelation"))
+      key.header <- expression(italic("Spearman correlation"))
     }
 
     if (statistic == "robust_slope") {
-      key.header <- "robust\nslope"
+      key.header <- "robust slope"
     }
 
     if (statistic == "robust_intercept") {
-      key.header <- "robust\nintercept"
+      key.header <- "robust intercept"
     }
 
     if (statistic == "york_slope") {
-      key.header <- "York regression\nslope"
+      key.header <- "York regression slope"
     }
 
     if (statistic == "quantile_slope") {
-      key.header <- paste0("quantile slope\n(tau: ", tau, ")")
+      key.header <- paste0("quantile slope (tau: ", tau, ")")
     }
 
     if (statistic == "quantile_intercept") {
-      key.header <- paste0("quantile intercept\n(tau: ", tau, ")")
+      key.header <- paste0("quantile intercept (tau: ", tau, ")")
     }
 
     ## special handling of layout for uncertainty
