@@ -48,6 +48,7 @@ Suggests:
     KernSmooth,
     knitr,
     legendry (>= 0.2.4),
+    maps,
     quantreg,
     rmarkdown,
     sf,

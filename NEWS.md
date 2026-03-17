@@ -8,7 +8,7 @@
 
 - `openair` no longer imports `lattice`, `latticeExtra`, `hexbin` or `mapproj`.
 
-- `openair` no longer imports `mapproj` or suggests `maps` or `mapdata`.
+- `openair` no longer imports `mapproj` or suggests `mapdata`.
 
 ## Breaking Changes
 

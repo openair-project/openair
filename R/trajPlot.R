@@ -193,7 +193,7 @@ trajPlot <- function(
   plot = TRUE,
   ...
 ) {
-  rlang::check_installed("sf")
+  rlang::check_installed(c("sf", "maps"))
 
   if (rlang::is_logical(key) && !key) {
     key.position <- "none"

@@ -197,7 +197,7 @@ trajLevel <- function(
   plot = TRUE,
   ...
 ) {
-  rlang::check_installed("sf")
+  rlang::check_installed(c("sf", "maps"))
 
   # checks
   statistic <- tolower(statistic)
