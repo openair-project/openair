@@ -340,7 +340,8 @@ polarCluster <-
         strip.position = extra.args$strip.position %||% "top"
       ) +
       ggplot2::guides(
-        fill = ggplot2::guide_colorbar(
+        colour = ggplot2::guide_legend(
+          override.aes = list(size = 5),
           theme = ggplot2::theme(
             legend.title.position = ifelse(
               key.position %in% c("left", "right"),
