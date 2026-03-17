@@ -1,7 +1,19 @@
 # generic theme that makes a ggplot2 look like the old lattice plots
 theme_openair <- function(key.position) {
   if (user_has_set_theme()) {
-    return(list())
+    return(
+      ggplot2::theme(
+        legend.position = key.position,
+        legend.ticks.length = structure(
+          if (key.position %in% c("bottom", "right")) {
+            c(-0.2, 0)
+          } else {
+            c(0, -0.2)
+          },
+          class = "rel"
+        )
+      )
+    )
   }
 
   ggplot2::theme_bw() +
@@ -32,7 +44,7 @@ theme_openair <- function(key.position) {
 # theme for radial plots
 theme_openair_radial <- function(key.position, panel.ontop = FALSE) {
   if (user_has_set_theme()) {
-    return(list())
+    return(theme_openair(key.position))
   }
 
   list(
@@ -71,7 +83,7 @@ theme_openair_radial <- function(key.position, panel.ontop = FALSE) {
 # adapted theme_openair with a (by default) blue dashed gridline
 theme_openair_sf <- function(key.position, grid.col) {
   if (user_has_set_theme()) {
-    return(list())
+    return(theme_openair(key.position))
   }
 
   list(
