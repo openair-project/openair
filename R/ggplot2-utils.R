@@ -1,5 +1,9 @@
 # generic theme that makes a ggplot2 look like the old lattice plots
 theme_openair <- function(key.position) {
+  if (user_has_set_theme()) {
+    return(list())
+  }
+
   ggplot2::theme_bw() +
     ggplot2::theme(
       strip.background = ggplot2::element_rect(fill = "white"),
@@ -27,6 +31,10 @@ theme_openair <- function(key.position) {
 
 # theme for radial plots
 theme_openair_radial <- function(key.position, panel.ontop = FALSE) {
+  if (user_has_set_theme()) {
+    return(list())
+  }
+
   list(
     theme_openair(key.position),
     ggplot2::theme(
@@ -62,6 +70,10 @@ theme_openair_radial <- function(key.position, panel.ontop = FALSE) {
 
 # adapted theme_openair with a (by default) blue dashed gridline
 theme_openair_sf <- function(key.position, grid.col) {
+  if (user_has_set_theme()) {
+    return(list())
+  }
+
   list(
     theme_openair(key.position),
     ggplot2::theme(
@@ -76,6 +88,10 @@ theme_openair_sf <- function(key.position, grid.col) {
       panel.background = ggplot2::element_blank()
     )
   )
+}
+
+user_has_set_theme <- function() {
+  !identical(ggplot2::get_theme(), ggplot2::theme_gray())
 }
 
 # take the extra.args and set a different global fontsize, if present
