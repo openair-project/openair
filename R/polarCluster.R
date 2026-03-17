@@ -265,66 +265,31 @@ polarCluster <-
       results.grid$u.id <- findInterval(results.grid$u, uv.id)
       results.grid$v.id <- findInterval(results.grid$v, uv.id)
 
-      mydata <- na.omit(mydata)
+      # build cluster lookup matrix once (some cells missing due to exclude.missing in polarPlot)
+      mat.dim <- max(results.grid[, c("u.id", "v.id")])
+      clust_mat <- matrix(NA, ncol = mat.dim, nrow = mat.dim)
+      clust_mat[cbind(results.grid$u.id, results.grid$v.id)] <- results.grid$cluster
 
-      mydata <- transform(
-        mydata,
-        u = get(x) * sin(wd * pi / 180),
-        v = get(x) * cos(wd * pi / 180)
-      )
-      mydata$u.id <- findInterval(mydata$u, uv.id, all.inside = TRUE)
-      mydata$v.id <- findInterval(mydata$v, uv.id, all.inside = TRUE)
-
-      # convert to matrix for direct lookup
-      # need to do this because some data are missing due to exclude.missing in polarPlot
-      mat.dim <-
-        max(results.grid[, c("u.id", "v.id")]) # size of lookup matrix
-      temp <- matrix(NA, ncol = mat.dim, nrow = mat.dim)
-
-      # matrix of clusters by u.id, v.id with missings
-      temp[cbind(results.grid$u.id, results.grid$v.id)] <-
-        results.grid$cluster
-
-      # match u.id, v.id in mydata to cluster
-      mydata$cluster <-
-        as.factor(temp[cbind(mydata$u.id, mydata$v.id)])
-
-      mydata <-
-        select(mydata, date, cluster, .id) # just need date/cluster
-      mydata <- left_join(data.orig, mydata, by = c(".id", "date"))
-      results <- mydata
-      myform <- formula("cluster ~ u * v")
-
-      # also find clusters in after data if there is any
-      if (is.data.frame((after))) {
-        after <- na.omit(after)
-
-        after <- transform(
-          after,
+      # map a data frame's observations to clusters via u-v grid lookup
+      map_to_clusters <- function(df) {
+        df <- na.omit(df)
+        df <- transform(
+          df,
           u = get(x) * sin(wd * pi / 180),
           v = get(x) * cos(wd * pi / 180)
         )
-        after$u.id <- findInterval(after$u, uv.id, all.inside = TRUE)
-        after$v.id <- findInterval(after$v, uv.id, all.inside = TRUE)
+        df$u.id <- findInterval(df$u, uv.id, all.inside = TRUE)
+        df$v.id <- findInterval(df$v, uv.id, all.inside = TRUE)
+        df$cluster <- as.factor(clust_mat[cbind(df$u.id, df$v.id)])
+        select(df, date, cluster, .id)
+      }
 
-        # convert to matrix for direct lookup
-        # need to do this because some data are missing due to exclude.missing in polarPlot
-        mat.dim <-
-          max(results.grid[, c("u.id", "v.id")]) # size of lookup matrix
-        temp <- matrix(NA, ncol = mat.dim, nrow = mat.dim)
+      mydata <- na.omit(mydata)
+      results <- left_join(data.orig, map_to_clusters(mydata), by = c(".id", "date"))
+      myform <- formula("cluster ~ u * v")
 
-        # matrix of clusters by u.id, v.id with missings
-        temp[cbind(results.grid$u.id, results.grid$v.id)] <-
-          results.grid$cluster
-
-        # match u.id, v.id in after to cluster
-        after$cluster <-
-          as.factor(temp[cbind(after$u.id, after$v.id)])
-
-        after <-
-          select(after, date, cluster, .id) # just need date/cluster
-        after <-
-          left_join(data.orig.after, after, by = c(".id", "date"))
+      if (is.data.frame(after)) {
+        after <- left_join(data.orig.after, map_to_clusters(after), by = c(".id", "date"))
       }
     }
 
@@ -400,8 +365,13 @@ polarCluster <-
 
     # change cluster output to C1, C2 etc
     if ("cluster" %in% names(out_data)) {
-      out_data$cluster <- paste("C", out_data$cluster, sep = "")
+      out_data$cluster <- paste0("C", out_data$cluster)
       out_data$cluster[out_data$cluster == "CNA"] <- NA_character_
+    }
+
+    if (is.data.frame(after) && "cluster" %in% names(after)) {
+      after$cluster <- paste0("C", after$cluster)
+      after$cluster[after$cluster == "CNA"] <- NA_character_
     }
 
     # print the stats but only for cluster of length 1
