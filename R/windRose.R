@@ -900,8 +900,6 @@ windRose <- function(
         0.016^0.25,
         length.out = dplyr::n_distinct(levels(plot_data$name))
       )^4
-      box.widths <- box.widths * max.freq * angle / 5
-      
       thePlot <-
         thePlot +
         geom_stroked_path(
@@ -921,7 +919,7 @@ windRose <- function(
           stroke_colour = border
         ) +
         ggplot2::scale_linewidth_manual(
-          values = 3 * width * box.widths
+          values = 5 * width * box.widths
         ) +
         ggplot2::labs(
           linewidth = key_label,

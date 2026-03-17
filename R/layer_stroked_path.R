@@ -53,9 +53,9 @@ makeContent.stroked_path_grob <- function(x) {
       next
     }
 
-    # Width in mm at draw time
+    # Width in mm at draw time — linewidth stored as NPC fraction so it scales
     w <- grid::convertWidth(
-      grid::unit(x$linewidth[which(rows)[1]], "pt"),
+      grid::unit(x$linewidth[which(rows)[1]], "npc"),
       "mm",
       valueOnly = TRUE
     )
@@ -94,6 +94,22 @@ GeomStrokedPath <- ggplot2::ggproto(
     stroke_width = 0.25
   ),
 
+  draw_key = function(data, params, size) {
+    fill_col <- if (is.na(data$alpha)) data$colour else scales::alpha(data$colour, data$alpha)
+    stroke_col <- data$stroke_colour
+    # linewidth is an NPC fraction; scale to key rect height using a ~100mm reference panel
+    h_mm <- min(data$linewidth * 100, size[2] * 0.9)
+    grid::rectGrob(
+      width = grid::unit(0.6, "npc"),
+      height = grid::unit(h_mm, "mm"),
+      gp = grid::gpar(
+        fill = fill_col,
+        col = if (is.na(stroke_col)) NA else stroke_col,
+        lwd = data$stroke_width * ggplot2::.pt
+      )
+    )
+  },
+
   draw_panel = function(
     self,
     data,
@@ -126,7 +142,7 @@ GeomStrokedPath <- ggplot2::ggproto(
         x = grid::unit(gdata$x, "native"),
         y = grid::unit(gdata$y, "native"),
         id = rep(1L, nrow(gdata)),
-        linewidth = gdata$linewidth * ggplot2::.pt,
+        linewidth = gdata$linewidth,
         gp = grid::gpar(
           col = first$stroke_colour,
           fill = fill_col,
