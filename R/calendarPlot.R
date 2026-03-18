@@ -272,6 +272,10 @@ calendarPlot <-
       ) |>
         dplyr::mutate(date = lubridate::as_date(.data$date))
 
+      if (type == "default") {
+        mydata <- cutData(mydata, type)
+      }
+
       # replace with parallel max
       mydata <- dplyr::left_join(
         dplyr::select(mydata, !dplyr::any_of(c("ws", "wd"))),
@@ -302,6 +306,10 @@ calendarPlot <-
           by = c("date", type)
         )
     } else {
+      if (type == "default") {
+        mydata <- cutData(mydata, "default")
+      }
+
       mydata <-
         dplyr::left_join(
           data.frame(date = all_dates) |>
