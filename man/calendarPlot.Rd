@@ -9,6 +9,7 @@ calendarPlot(
   pollutant = "nox",
   year = NULL,
   month = NULL,
+  type = "default",
   annotate = "date",
   statistic = "mean",
   data.thresh = 0,
@@ -54,6 +55,12 @@ available years.}
 \item{month}{If only certain month are required. By default the function will
 plot an entire year even if months are missing. To only plot certain months
 use the \code{month} option where month is a numeric 1:12 e.g. \code{month = c(1, 12)} to only plot January and December.}
+
+\item{type}{\code{type} determines how the data are split, i.e., conditioned, and
+then plotted. Only one type can be used with this function, as one faceting
+'direction' is reserved by the month of the year. \code{type = "year"} is a
+special case for \code{\link[=calendarPlot]{calendarPlot()}} and will automatically prevent a single
+year from being selected and set \code{show.year} to \code{FALSE}.}
 
 \item{annotate}{This option controls what appears on each day of the
 calendar. Can be:
