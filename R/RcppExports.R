@@ -29,6 +29,25 @@ rolling_average_cpp <- function(x, width, alignment, threshold, statistic = "mea
     .Call(`_openair_rolling_average_cpp`, x, width, alignment, threshold, statistic, probs)
 }
 
+#' C++ kernel for SQTBA computation
+#'
+#' Accumulates Gaussian-weighted Q and Q_c sums over (trajectory, grid) pairs.
+#' The grid vectors **must** be sorted by latitude ascending so that binary
+#' search can skip irrelevant latitude bands and `break` past them.
+#'
+#' @param traj_lat  Trajectory point latitudes (degrees).
+#' @param traj_lon  Trajectory point longitudes (degrees).
+#' @param traj_sigma  Per-point sigma (km) = sigma_base * |hour.inc|.
+#' @param traj_pollutant  Pollutant concentrations at trajectory points.
+#' @param traj_weight  Per-point weight (1 / n_steps for each date group).
+#' @param grid_lat  Grid cell latitudes (degrees), sorted ascending.
+#' @param grid_lon  Grid cell longitudes (degrees), same order as grid_lat.
+#' @return Named list with `Q` and `Q_c`, each a numeric vector of length n_grid.
+#' @keywords internal
+calc_sqtba_cpp <- function(traj_lat, traj_lon, traj_sigma, traj_pollutant, traj_weight, grid_lat, grid_lon) {
+    .Call(`_openair_calc_sqtba_cpp`, traj_lat, traj_lon, traj_sigma, traj_pollutant, traj_weight, grid_lat, grid_lon)
+}
+
 dateAggregate <- function(df, date_col = "date", statistic = "mean", threshold = 0.0, probs = 0.5) {
     .Call(`_openair_dateAggregate`, df, date_col, statistic, threshold, probs)
 }

@@ -855,120 +855,54 @@ trajLevel <- function(
   invisible(output)
 }
 
-# SQTBA functions
+# SQTBA functions -------------------------------------------------------
+
+# R wrapper around the C++ kernel (calc_sqtba_cpp in src/sqtba.cpp).
+# mydata must already have:
+#   - sigma column = sigma_base * |hour.inc|  (set in trajLevel before calling)
+#   - no NAs in pollutant                     (drop_na applied in trajLevel)
 calc_sqtba <- function(mydata, r_grid, pollutant, min.bin) {
-  # PREPARE GRID
-  # Convert matrix to tibble, add IDs, and pre-calc radians
-  grid_df <- dplyr::as_tibble(r_grid) |>
-    dplyr::mutate(
-      grid_id = row_number(),
-      g_lat_rad = .data$lat * pi / 180,
-      g_lon_rad = .data$lon * pi / 180,
-      # Create integer "buckets" for joining
-      lat_rnd = round(.data$lat),
-      lon_rnd = round(.data$lon)
-    )
-
-  # PREPARE TRAJECTORIES
-  # Filter valid hours, calc weights, and pre-calc radians
+  # Prepare trajectory data: filter hour.inc, compute per-date weights
   traj_df <- mydata |>
-    # Original logic: points 2 to max(hour.inc)
     dplyr::filter(abs(.data$hour.inc) > 1) |>
-    dplyr::mutate(
-      weight = 1 / dplyr::n(),
-      t_lat_rad = .data$lat * pi / 180,
-      t_lon_rad = .data$lon * pi / 180,
-      # Create integer "buckets"
-      lat_base = round(.data$lat),
-      lon_base = round(.data$lon),
-      .by = "date"
-    )
+    dplyr::mutate(weight = 1 / dplyr::n(), .by = "date")
 
-  # 3. CREATE NEIGHBORHOOD LOOKUP (The Magic Step)
-  # Instead of checking the whole grid, we look at the 9x9 integer square around a point.
-  # We create offsets (-4 to +4) to bridge the gap between buckets.
-  offsets <- tidyr::crossing(
-    lat_off = -4:4,
-    lon_off = -4:4
+  # Grid sorted by lat ascending — required for binary-search skipping in C++
+  grid_df <- dplyr::as_tibble(r_grid) |>
+    dplyr::arrange(.data$lat, .data$lon)
+
+  # C++ kernel: for every (trajectory point, grid cell) pair within the
+  # per-point 5-sigma bounding box, accumulate Gaussian-weighted Q and Q_c
+  res <- calc_sqtba_cpp(
+    traj_lat       = traj_df$lat,
+    traj_lon       = traj_df$lon,
+    traj_sigma     = traj_df$sigma,
+    traj_pollutant = traj_df[[pollutant]],
+    traj_weight    = traj_df$weight,
+    grid_lat       = grid_df$lat,
+    grid_lon       = grid_df$lon
   )
 
-  # Expand trajectories: Duplicate rows for every potential neighbor bucket
-  # (This temporarily increases row count but makes the join fast)
-  traj_expanded <- traj_df |>
-    dplyr::cross_join(offsets) |>
+  # Compute SQTBA = Q_c / Q per grid cell; 0 where no contributions
+  grid_result <- grid_df |>
     dplyr::mutate(
-      search_lat = .data$lat_base + .data$lat_off,
-      search_lon = .data$lon_base + .data$lon_off
-    )
-
-  # JOIN & FILTER
-  # Join trajectory buckets to grid buckets
-  pairs <- traj_expanded |>
-    dplyr::inner_join(
-      grid_df,
-      by = c("search_lat" = "lat_rnd", "search_lon" = "lon_rnd")
-    ) |>
-    # Now strictly filter the exact window (original logic: +/- 4 degrees)
-    dplyr::filter(
-      .data$lat.y > .data$lat.x - 4,
-      .data$lat.y < .data$lat.x + 4,
-      .data$lon.y > .data$lon.x - 4,
-      .data$lon.y < .data$lon.x + 4
-    )
-
-  # VECTORIZED MATHS
-  # Calculate distance and Q for all pairs at once
-  results <- pairs |>
-    dplyr::mutate(
-      # Vectorized Haversine/ACos distance
-      dist_km = (acos(
-        sin(.data$t_lat_rad) *
-          sin(.data$g_lat_rad) +
-          cos(.data$t_lat_rad) *
-            cos(.data$g_lat_rad) *
-            cos(.data$g_lon_rad - .data$t_lon_rad) -
-          1e-7
-      ) *
-        6378.137),
-
-      # Gaussian Plume
-      Q_val = (1 / sigma^2) * exp(-0.5 * (.data$dist_km / sigma)^2),
-
-      # Apply trajectory weight immediately
-      Q_weighted = .data$Q_val * .data$weight,
-      Qc_weighted = .data$Q_val * .data[[pollutant]] * .data$weight
-    ) |>
-    # Aggregate by Grid Cell
-    dplyr::summarise(
-      Q = sum(.data$Q_weighted, na.rm = TRUE),
-      Q_c = sum(.data$Qc_weighted, na.rm = TRUE),
-      .by = dplyr::all_of(c("grid_id", "lat.y", "lon.y"))
-    ) |>
-    dplyr::mutate(SQTBA = .data$Q_c / .data$Q) |>
-    dplyr::rename(lat = "lat.y", lon = "lon.y")
-
-  # MERGE BACK TO FULL GRID & FILTER
-  # Ensure all original grid points exist (even if 0)
-  final_output <- grid_df |>
-    dplyr::select("lat", "lon") |>
-    dplyr::left_join(results, by = c("lat", "lon")) |>
-    dplyr::mutate(
-      SQTBA = dplyr::coalesce(.data$SQTBA, 0),
+      Q       = res$Q,
+      Q_c     = res$Q_c,
+      SQTBA   = dplyr::if_else(.data$Q > 0, .data$Q_c / .data$Q, 0),
       lat_rnd = round(.data$lat),
       lon_rnd = round(.data$lon)
     )
 
-  # MIN.BIN FILTER
+  # min.bin filter: drop grid cells with fewer than min.bin trajectory points
+  # in the same integer-degree bucket
   grid_counts <- mydata |>
     dplyr::mutate(lat_rnd = round(.data$lat), lon_rnd = round(.data$lon)) |>
     dplyr::count(.data$lat_rnd, .data$lon_rnd) |>
     dplyr::filter(.data$n >= min.bin)
 
-  final_data <- final_output |>
+  grid_result |>
     dplyr::inner_join(grid_counts, by = c("lat_rnd", "lon_rnd")) |>
     dplyr::rename(xgrid = "lon", ygrid = "lat")
-
-  return(final_data)
 }
 
 smooth_trajgrid <- function(mydata, z, k = 50, dist = 0.05) {

@@ -63,6 +63,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// calc_sqtba_cpp
+List calc_sqtba_cpp(NumericVector traj_lat, NumericVector traj_lon, NumericVector traj_sigma, NumericVector traj_pollutant, NumericVector traj_weight, NumericVector grid_lat, NumericVector grid_lon);
+RcppExport SEXP _openair_calc_sqtba_cpp(SEXP traj_latSEXP, SEXP traj_lonSEXP, SEXP traj_sigmaSEXP, SEXP traj_pollutantSEXP, SEXP traj_weightSEXP, SEXP grid_latSEXP, SEXP grid_lonSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type traj_lat(traj_latSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type traj_lon(traj_lonSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type traj_sigma(traj_sigmaSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type traj_pollutant(traj_pollutantSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type traj_weight(traj_weightSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type grid_lat(grid_latSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type grid_lon(grid_lonSEXP);
+    rcpp_result_gen = Rcpp::wrap(calc_sqtba_cpp(traj_lat, traj_lon, traj_sigma, traj_pollutant, traj_weight, grid_lat, grid_lon));
+    return rcpp_result_gen;
+END_RCPP
+}
 // dateAggregate
 DataFrame dateAggregate(DataFrame df, std::string date_col, std::string statistic, double threshold, double probs);
 RcppExport SEXP _openair_dateAggregate(SEXP dfSEXP, SEXP date_colSEXP, SEXP statisticSEXP, SEXP thresholdSEXP, SEXP probsSEXP) {
@@ -113,6 +130,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_openair_distEuclid", (DL_FUNC) &_openair_distEuclid, 2},
     {"_openair_distAngle", (DL_FUNC) &_openair_distAngle, 2},
     {"_openair_rolling_average_cpp", (DL_FUNC) &_openair_rolling_average_cpp, 6},
+    {"_openair_calc_sqtba_cpp", (DL_FUNC) &_openair_calc_sqtba_cpp, 7},
     {"_openair_dateAggregate", (DL_FUNC) &_openair_dateAggregate, 5},
     {"_openair_whittaker_baseline", (DL_FUNC) &_openair_whittaker_baseline, 6},
     {"_openair_whittaker_smooth", (DL_FUNC) &_openair_whittaker_smooth, 3},
