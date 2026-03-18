@@ -382,8 +382,8 @@ timeVariation <- function(
   }
 
   output <- list(
-    plot = plots,
-    data = datum,
+    plot = append(plots, list(subsets = panels)),
+    data = append(datum, list(subsets = panels)),
     call = match.call(),
     main.plot = thePlot
   )

@@ -126,13 +126,13 @@ plot.openair <- function(x, subset = "all", silent = TRUE, ...) {
   if (!is.openair(x)) {
     return(invisible(NULL))
   }
-
   if (!silent) {
     message("\nopenair object created by: \n\t", deparse(x$call), "\n")
   }
 
   test <- x$plot$subsets
 
+  # No subsets — just print the main plot
   if (is.null(test)) {
     if (!is.null(subset) && subset != "all") {
       warning(
@@ -144,62 +144,43 @@ plot.openair <- function(x, subset = "all", silent = TRUE, ...) {
     return(plot(x$plot, ...))
   }
 
+  # "all" or NULL — print the assembled patchwork object
   if (is.null(subset) || subset == "all") {
-    test <- x$main.plot
-    if (is.null(test)) {
-      message("")
+    if (is.null(x$main.plot)) {
       stop(
         "In plot(...): bad openair object structure",
         "\n\t[please contact openair admin if valid]",
         call. = FALSE
       )
     }
-    return(x$main.plot())
+    return(plot(x$main.plot, ...))
   }
 
-  # only plot 1, 1st valid
+  # Subset requested — validate and resolve to a single subset
   temp <- subset[subset %in% test]
   if (length(temp) < 1) {
-    message("")
     stop(
       "In plot(...): requested subset not found",
       "\n\t[suggest one of: ",
-      paste(test, collapse = ", ", sep = ", "),
+      paste(test, collapse = ", "),
       "]",
       call. = FALSE
     )
   }
-
   if (length(temp) < length(subset)) {
     warning(
       "In plot(...): multiple subsets requested and some not found, using first valid",
       call. = FALSE
     )
-  } else {
-    if (length(temp) > 1) {
-      warning(
-        "In plot(...): multiple subsets requested, using first valid",
-        call. = FALSE
-      )
-    }
+  } else if (length(temp) > 1) {
+    warning(
+      "In plot(...): multiple subsets requested, using first valid",
+      call. = FALSE
+    )
   }
 
-  temp <- temp[1]
-  # own plot style
-  test <- x[[paste(temp, "plot", sep = ".")]]
-  if (!is.null(test)) {
-    return(test(x$plot[[temp]], ...))
-  }
-  # ind plot handling
-  test <- x$ind.plot
-  if (!is.null(test)) {
-    return(x$ind.plot(x$plot[[temp]], ...))
-  }
-  # staight plot
-  return(x$plot[[temp]])
-}
-
-#' @method print openair
+  return(plot(x$plot[[temp[1]]], ...))
+} #' @method print openair
 #' @author Karl Ropkins
 #' @export
 print.openair <- function(x, silent = FALSE, plot = TRUE, ...) {
