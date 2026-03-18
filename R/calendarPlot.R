@@ -51,9 +51,14 @@
 #'   - `"value"` --- shows the daily mean value
 #' @param type `type` determines how the data are split, i.e., conditioned, and
 #'   then plotted. Only one type can be used with this function, as one faceting
-#'   'direction' is reserved by the month of the year. `type = "year"` is a
-#'   special case for [calendarPlot()] and will automatically prevent a single
-#'   year from being selected and set `show.year` to `FALSE`.
+#'   'direction' is reserved by the month of the year. If a single `type` is
+#'   given, it will form the "rows" of the resulting grid. Alternatively,
+#'   `c("month", type)` can be used can be specified for `type` to be used as
+#'   the "columns" instead.
+#'
+#'   `type = "year"` is a special case for [calendarPlot()] and will
+#'   automatically prevent a single year from being selected (unless specified
+#'   using the `year` argument) and set `show.year` to `FALSE`.
 #' @param statistic Statistic passed to [timeAverage()]. Note that if `statistic
 #'   %in% c("max", "min")` and `annotate` is "ws" or "wd", the hour
 #'   corresponding to the maximum/minimum concentration of `polluant` is used to
@@ -160,7 +165,7 @@ calendarPlot <-
     pollutant = "nox",
     year = NULL,
     month = NULL,
-    type = "default",
+    type = "month",
     annotate = "date",
     statistic = "mean",
     data.thresh = 0,
@@ -190,6 +195,30 @@ calendarPlot <-
     plot = TRUE,
     ...
   ) {
+    # can't have three types
+    if (length(type) >= 3L) {
+      cli::cli_abort("{.arg type} must be length 1 or 2.")
+    }
+
+    # if 2 types provided, one must be "month", and use that to work out the
+    # rows/cols assignment
+    if (length(type) == 2L) {
+      if (!"month" %in% type) {
+        cli::cli_abort(
+          "In {.fun openair::calendarPlot}, at least one {.arg type} must be 'month'."
+        )
+      }
+
+      months_as_rows <- which(type == "month") == 1
+
+      type <- unique(type[type != "month"])
+    } else {
+      # if one type, replace "month" with default and assume months as rows
+      type[type == "month"] <- "default"
+      type <- unique(type)
+      months_as_rows <- FALSE
+    }
+
     if (rlang::is_logical(key) && !key) {
       key.position <- "none"
     }
@@ -358,7 +387,11 @@ calendarPlot <-
     }
 
     # type is always "cuts"
-    type <- c(type[type != "default"], "cuts")
+    if (months_as_rows) {
+      type <- c("cuts", type[type != "default"])
+    } else {
+      type <- c(type[type != "default"], "cuts")
+    }
 
     # drop empty months?
     if (remove.empty) {
