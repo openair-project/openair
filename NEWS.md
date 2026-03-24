@@ -90,6 +90,10 @@
     
     - Added arguments `key`, `key.position` and `key.header` for adding and refining a plot legend.
 
+- `TaylorDiagram()` refinements:
+
+    - Added the `pos.cor` argument which controls whether the negative correlation quadrant is shown.
+
 - New function `WhittakerSmooth()` to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.
 
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
