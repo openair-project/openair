@@ -83,7 +83,11 @@ readUKAQData <-
         "temp"
       )
 
-      thedata <- select(thedata, any_of(theNames), matches("_qc"))
+      thedata <- dplyr::select(
+        thedata,
+        dplyr::any_of(theNames),
+        dplyr::matches("_qc")
+      )
     } else {
       thedata <- dplyr::relocate(
         thedata,
@@ -93,7 +97,7 @@ readUKAQData <-
 
     # rename "temp" to "air_temp" if appropriate
     if ("temp" %in% names(thedata)) {
-      thedata <- rename(thedata, air_temp = temp)
+      thedata <- dplyr::rename(thedata, air_temp = temp)
     }
 
     # if particular pollutants have been selected
@@ -143,7 +147,7 @@ readUKAQData <-
     thedata <-
       dplyr::mutate(thedata, source = source, .before = dplyr::everything())
 
-    as_tibble(thedata)
+    dplyr::as_tibble(thedata)
   }
 
 #' Define downloading and loading function
@@ -183,12 +187,12 @@ loadData <- function(x, verbose, url_data, data_type) {
       # if there are two daily data frames to combine
       if (data_type == "daily" & exists(x2)) {
         dat2 <- get(x2)
-        dat <- left_join(dat, dat2, by = c("date", "site", "code"))
+        dat <- dplyr::left_join(dat, dat2, by = c("date", "site", "code"))
 
         lookup <- c(gr_pm2.5 = "GR2.5", gr_pm10 = "GR10")
 
         dat <- dat |>
-          rename(any_of(lookup))
+          dplyr::rename(dplyr::any_of(lookup))
       }
 
       # make sure class is correct for lubridate
@@ -233,7 +237,7 @@ readSummaryData <-
 
     if (!hc) {
       thedata <- thedata |>
-        select(any_of(
+        dplyr::select(dplyr::any_of(
           c(
             "date",
             "uka_code",
@@ -281,23 +285,26 @@ readSummaryData <-
     }
 
     if (data_type == "monthly") {
-      thedata <- mutate(thedata, date = lubridate::ymd(date, tz = "UTC"))
+      thedata <- dplyr::mutate(thedata, date = lubridate::ymd(date, tz = "UTC"))
     }
 
     if (data_type == "annual") {
-      thedata <- rename(thedata, date = year) |>
+      thedata <- dplyr::rename(thedata, date = year) |>
         tidyr::drop_na(date) |>
-        mutate(date = lubridate::ymd(paste0(date, "-01-01"), tz = "UTC"))
+        dplyr::mutate(date = lubridate::ymd(paste0(date, "-01-01"), tz = "UTC"))
     }
 
     if (to_narrow) {
       # make sure numbers are numbers
-      values <- select(thedata, !contains("capture")) |>
-        select(!matches("uka_code"))
+      values <- dplyr::select(thedata, !dplyr::contains("capture")) |>
+        dplyr::select(!dplyr::matches("uka_code"))
 
       capture <-
-        select(thedata, contains("capture") | c(code, date, site)) |>
-        select(!matches("uka_code"))
+        dplyr::select(
+          thedata,
+          dplyr::contains("capture") | c(code, date, site)
+        ) |>
+        dplyr::select(!dplyr::matches("uka_code"))
 
       values <- tidyr::pivot_longer(
         values,
@@ -315,7 +322,7 @@ readSummaryData <-
 
       capture$species <- gsub("_capture", "", capture$species)
 
-      thedata <- full_join(
+      thedata <- dplyr::full_join(
         values,
         capture,
         by = c("date", "code", "site", "species")
@@ -323,11 +330,11 @@ readSummaryData <-
     }
 
     thedata <- thedata |>
-      mutate(
+      dplyr::mutate(
         site = as.character(site),
         code = as.character(code)
       ) |>
-      mutate(
+      dplyr::mutate(
         source = source,
         .before = dplyr::everything()
       )
@@ -350,16 +357,16 @@ readDAQI <- function(files, year, source) {
   }
 
   thedata <- thedata |>
-    mutate(
+    dplyr::mutate(
       code = as.character(code),
       site = as.character(site),
       pollutant = as.character(pollutant),
       date = lubridate::ymd(Date, tz = "GMT"),
       measurement_period = as.character(measurement_period)
     ) |>
-    select(-Date) |>
-    relocate(date, .after = pollutant) |>
-    mutate(
+    dplyr::select(-Date) |>
+    dplyr::relocate(date, .after = pollutant) |>
+    dplyr::mutate(
       source = source,
       .before = dplyr::everything()
     )
@@ -379,10 +386,14 @@ add_meta <- function(source, columns, aq_data) {
       duplicate = TRUE
     )
 
-  meta_data <- distinct(meta_data, source, site, .keep_all = TRUE) |>
-    select(source, site, code, dplyr::all_of(columns))
+  meta_data <- dplyr::distinct(meta_data, source, site, .keep_all = TRUE) |>
+    dplyr::select(source, site, code, dplyr::all_of(columns))
 
-  aq_data <- left_join(aq_data, meta_data, by = c("source", "code", "site"))
+  aq_data <- dplyr::left_join(
+    aq_data,
+    meta_data,
+    by = c("source", "code", "site")
+  )
 
   return(aq_data)
 }
@@ -524,7 +535,7 @@ guess_source <- function(site) {
       dplyr::anti_join(
         source_tbl_all,
         source_tbl,
-        by = join_by(
+        by = dplyr::join_by(
           "code",
           "source",
           "site",

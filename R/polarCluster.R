@@ -144,10 +144,10 @@ polarCluster <-
     u <- v <- z <- strip <- strip.left <- NULL
 
     # add id for later merging
-    mydata <- mutate(mydata, .id = seq_len(nrow(mydata)))
+    mydata <- dplyr::mutate(mydata, .id = seq_len(nrow(mydata)))
 
     if (is.data.frame(after)) {
-      after <- mutate(after, .id = seq_len(nrow(after)))
+      after <- dplyr::mutate(after, .id = seq_len(nrow(after)))
       data.orig.after <- after
     }
 
@@ -284,11 +284,11 @@ polarCluster <-
         df$u.id <- findInterval(df$u, uv.id, all.inside = TRUE)
         df$v.id <- findInterval(df$v, uv.id, all.inside = TRUE)
         df$cluster <- as.factor(clust_mat[cbind(df$u.id, df$v.id)])
-        select(df, date, cluster, .id)
+        dplyr::select(df, date, cluster, .id)
       }
 
       mydata <- na.omit(mydata)
-      results <- left_join(
+      results <- dplyr::left_join(
         data.orig,
         map_to_clusters(mydata),
         by = c(".id", "date")
@@ -296,7 +296,7 @@ polarCluster <-
       myform <- formula("cluster ~ u * v")
 
       if (is.data.frame(after)) {
-        after <- left_join(
+        after <- dplyr::left_join(
           data.orig.after,
           map_to_clusters(after),
           by = c(".id", "date")
@@ -401,8 +401,8 @@ polarCluster <-
         ) |>
         na.omit() |>
         dplyr::mutate(
-          n_mean = n * .data[[var_mean]],
-          n_percent = round(100 * n / sum(n), 1),
+          n_mean = .data$n * .data[[var_mean]],
+          n_percent = round(100 * .data$n / sum(.data$n), 1),
           {{ var_percent }} := round(100 * n_mean / sum(n_mean), 1)
         ) |>
         dplyr::ungroup() |>

@@ -238,7 +238,7 @@ bootMeanDiff <- function(
       stringsAsFactors = FALSE
     )
 
-    res <- bind_rows(res1, res2, res)
+    res <- dplyr::bind_rows(res1, res2, res)
     res$variable <- factor(res$variable)
     return(res)
   }
@@ -288,7 +288,7 @@ bootMeanDiff <- function(
     stringsAsFactors = FALSE
   )
 
-  res <- bind_rows(res1, res2, res)
+  res <- dplyr::bind_rows(res1, res2, res)
   res$variable <- factor(res$variable)
   res
 }

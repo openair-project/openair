@@ -162,7 +162,7 @@ timeProp <- function(
     ) |>
     # weighted mean, with cumulative sum for bar heights
     dplyr::mutate(
-      weighted_mean = .data[[pollutant]] * n / sum(n),
+      weighted_mean = .data[[pollutant]] * .data$n / sum(.data$n),
       Var1 = tidyr::replace_na(.data$weighted_mean, 0),
       var2 = cumsum(.data$Var1),
       var2lag = dplyr::lag(.data$var2, default = 0),

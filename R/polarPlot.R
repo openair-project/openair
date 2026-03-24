@@ -825,7 +825,7 @@ polarPlot <-
 
     ## normalise by divining by mean conditioning value if needed
     if (normalise) {
-      res <- mutate(
+      res <- dplyr::mutate(
         res,
         z = z / mean(z, na.rm = TRUE),
         .by = dplyr::all_of(type)
@@ -1117,7 +1117,7 @@ polar_prepare_grid <- function(
     )
 
     binned <- mydata |>
-      mutate(
+      dplyr::mutate(
         wd_bin = cut(
           wd.int * ceiling(.data[[wd_col]] / wd.int - 0.5),
           breaks = seq(0, 360, wd.int),
@@ -1129,7 +1129,7 @@ polar_prepare_grid <- function(
           include.lowest = TRUE
         )
       ) |>
-      summarise(
+      dplyr::summarise(
         value = stat_fn(.data[[pollutant]]),
         .by = c(wd_bin, x_bin)
       ) |>
@@ -1234,12 +1234,12 @@ polar_prepare_grid <- function(
 
     int <- 201
     lower_uncer <- interp_grid(input.data, z = Lower, n = int) |>
-      mutate(uncertainty = "lower uncertainty")
+      dplyr::mutate(uncertainty = "lower uncertainty")
     upper_uncer <- interp_grid(input.data, z = Upper, n = int) |>
-      mutate(uncertainty = "upper uncertainty")
+      dplyr::mutate(uncertainty = "upper uncertainty")
     prediction <- interp_grid(input.data, z = pred, n = int) |>
-      mutate(uncertainty = "prediction")
-    results <- bind_rows(prediction, lower_uncer, upper_uncer)
+      dplyr::mutate(uncertainty = "prediction")
+    results <- dplyr::bind_rows(prediction, lower_uncer, upper_uncer)
   }
 
   ## Remove predictions that are too far from the original data

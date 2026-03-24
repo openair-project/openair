@@ -91,19 +91,6 @@
 #' @keywords internal
 "_PACKAGE"
 ## usethis namespace: start
-#' @import dplyr
-#' @importFrom lubridate as_date
-#' @importFrom lubridate ceiling_date
-#' @importFrom lubridate day
-#' @importFrom lubridate dmy
-#' @importFrom lubridate dst
-#' @importFrom lubridate floor_date
-#' @importFrom lubridate force_tz
-#' @importFrom lubridate hour
-#' @importFrom lubridate month
-#' @importFrom lubridate parse_date_time
-#' @importFrom lubridate round_date
-#' @importFrom lubridate wday
 #' @importFrom lubridate year
 #' @importFrom methods is
 #' @importFrom Rcpp evalCpp

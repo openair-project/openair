@@ -394,7 +394,7 @@ importUKAQ <-
         pcodes <-
           importMeta("local", all = TRUE) |>
           dplyr::distinct(.data$site, .keep_all = TRUE) |>
-          select("code", "pcode")
+          dplyr::select("code", "pcode")
 
         # get sites and pcodes
         site_info <-
@@ -470,7 +470,7 @@ importUKAQ <-
     # check to see if met data needed
     if (!meteo) {
       aq_data <- aq_data |>
-        select(-any_of(c("ws", "wd", "air_temp")))
+        dplyr::select(-dplyr::any_of(c("ws", "wd", "air_temp")))
     }
 
     # add meta data?
@@ -483,7 +483,7 @@ importUKAQ <-
     aq_data <- dplyr::arrange(aq_data, "source", "site")
 
     # return data
-    return(as_tibble(aq_data))
+    return(dplyr::as_tibble(aq_data))
   }
 
 #' Import data from individual UK Air Pollution Networks

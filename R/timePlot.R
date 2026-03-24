@@ -725,7 +725,7 @@ normalise_timeplot_data <-
       # find nearest values to each date
       target_date_values <-
         tidyr::drop_na(mydata) |>
-        slice_min(
+        dplyr::slice_min(
           abs(.data$date - target_date),
           n = 1L,
           with_ties = FALSE,

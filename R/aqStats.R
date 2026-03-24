@@ -285,7 +285,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
     # We reuse the mydata_roll8 calculated in Step 2
     o3_rolling_targets <- mydata_roll8 |>
       dplyr::mutate(day = lubridate::floor_date(date, "day")) |>
-      dplyr::group_by(year, day) |>
+      dplyr::group_by(.data$year, .data$day) |>
       dplyr::summarise(
         max_roll8 = suppressWarnings(max(roll8, na.rm = TRUE)),
         .groups = "drop_last"
@@ -361,7 +361,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
     dplyr::mutate(
       dplyr::across(
         dplyr::all_of(cols_to_mask),
-        ~ if_else(dat.cap < data.thresh, NA_real_, .)
+        ~ dplyr::if_else(dat.cap < data.thresh, NA_real_, .)
       )
     )
 

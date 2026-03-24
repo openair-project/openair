@@ -213,9 +213,9 @@ conditionalEval <- function(
         dplyr::group_by(.data[["pred.cut"]], .data[[statistic]]) |>
         dplyr::summarise(n = dplyr::n(), .groups = "drop") |>
         dplyr::group_by(.data[["pred.cut"]]) |>
-        dplyr::mutate(Freq = n / sum(n)) |>
+        dplyr::mutate(Freq = .data$n / sum(.data$n)) |>
         dplyr::ungroup() |>
-        dplyr::select(-n)
+        dplyr::select(-"n")
     }
 
     other_results <- mydata |>

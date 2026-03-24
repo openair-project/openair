@@ -713,9 +713,9 @@ importADMSMop <- function(
   # add stability
 
   ans <- ans |>
-    mutate(
+    dplyr::mutate(
       H_LMO = process.recip.lmo * process.h,
-      stability = case_when(
+      stability = dplyr::case_when(
         H_LMO > 2 ~ "Stable",
         H_LMO < -0.6 ~ "Unstable",
         is.na(H_LMO) ~ NA,
@@ -723,7 +723,7 @@ importADMSMop <- function(
       ),
       stability = factor(stability, levels = c("Stable", "Neutral", "Unstable"))
     ) |>
-    rename(
+    dplyr::rename(
       air_temp = temp,
       recip_lmo = process.recip.lmo,
       H = process.h
@@ -734,7 +734,7 @@ importADMSMop <- function(
   } else {
     # select variables only
     ans <- ans |>
-      select(any_of(c(
+      dplyr::select(dplyr::any_of(c(
         "date",
         "ws",
         "wd",

@@ -126,7 +126,7 @@ datePad <- function(
       #    This ensures 10:15 gets 10:00's value (5), and 11:15 gets 11:00's value (NA)
       df_out <- df_expanded |>
         dplyr::left_join(
-          select(df_native, -date),
+          dplyr::select(df_native, -date),
           by = dplyr::join_by(.block_id == .block_id)
         ) |>
         dplyr::select(-.block_id)

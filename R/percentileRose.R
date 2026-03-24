@@ -258,7 +258,7 @@ percentileRose <- function(
     if (length(ids) > 0) {
       zero.wd <- mydata[ids, ]
       zero.wd[, wd] <- 0
-      mydata <- bind_rows(mydata, zero.wd)
+      mydata <- dplyr::bind_rows(mydata, zero.wd)
     }
 
     mod.percentiles <- function(i, mydata, overall.lower, overall.upper) {
@@ -306,7 +306,7 @@ percentileRose <- function(
 
     if (method == "default") {
       ## calculate percentiles
-      percentiles <- group_by(mydata, wd) |>
+      percentiles <- dplyr::group_by(mydata, wd) |>
         dplyr::reframe(
           {{ pollutant }} := quantile(
             .data[[pollutant]],
@@ -314,22 +314,22 @@ percentileRose <- function(
             na.rm = TRUE
           )
         ) |>
-        group_by(wd) |>
-        mutate(percentile = percentile)
+        dplyr::group_by(wd) |>
+        dplyr::mutate(percentile = percentile)
     }
 
     if (tolower(method) == "cpf") {
-      percentiles1 <- group_by(mydata, wd) |>
-        summarise(across(
-          where(is.numeric),
+      percentiles1 <- dplyr::group_by(mydata, wd) |>
+        dplyr::summarise(dplyr::across(
+          dplyr::where(is.numeric),
           ~ length(which(.x < overall.lower)) / length(.x)
         ))
 
       percentiles1$percentile <- min(percentile)
 
-      percentiles2 <- group_by(mydata, wd) |>
-        summarise(across(
-          where(is.numeric),
+      percentiles2 <- dplyr::group_by(mydata, wd) |>
+        dplyr::summarise(dplyr::across(
+          dplyr::where(is.numeric),
           ~ length(which(.x > upper)) / length(.x)
         ))
 
@@ -362,8 +362,11 @@ percentileRose <- function(
 
     ## calculate mean; assume a percentile of 999 to flag it later
 
-    percentiles <- group_by(mydata, wd) |>
-      summarise(across(where(is.numeric), ~ mean(.x, na.rm = TRUE)))
+    percentiles <- dplyr::group_by(mydata, wd) |>
+      dplyr::summarise(dplyr::across(
+        dplyr::where(is.numeric),
+        ~ mean(.x, na.rm = TRUE)
+      ))
 
     percentiles$percentile <- 999
 
@@ -383,8 +386,8 @@ percentileRose <- function(
   # pollutant specific
   if (npol > 1) {
     mydata <- mydata |>
-      group_by(variable) |>
-      mutate(
+      dplyr::group_by(variable) |>
+      dplyr::mutate(
         lower = quantile(
           .data[[pollutant]],
           probs = min(percentile) / 100,
@@ -396,9 +399,9 @@ percentileRose <- function(
           na.rm = TRUE
         )
       ) |>
-      ungroup()
+      dplyr::ungroup()
   } else {
-    mydata <- mutate(
+    mydata <- dplyr::mutate(
       mydata,
       lower = quantile(
         .data[[pollutant]],
@@ -450,7 +453,7 @@ percentileRose <- function(
     Mean <- dplyr::filter(all_grid_results, .data$stat_type == "mean") |>
       dplyr::select(-"stat_type")
 
-    results.grid <- bind_rows(results.grid, Mean)
+    results.grid <- dplyr::bind_rows(results.grid, Mean)
   }
 
   # labels for factor levels

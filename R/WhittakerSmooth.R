@@ -114,7 +114,9 @@ WhittakerSmooth <- function(
 
   # replace NaN with NA to avoid issues in C++ code
   mydata <- mydata |>
-    mutate(across(where(is.numeric), \(x) ifelse(is.nan(x), NA, x)))
+    dplyr::mutate(dplyr::across(dplyr::where(is.numeric), \(x) {
+      ifelse(is.nan(x), NA, x)
+    }))
 
   # function to perform rolling / baseline
   calc.rolling <- function(mydata) {

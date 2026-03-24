@@ -237,7 +237,7 @@ trajPlot <- function(
   }
 
   # remove any rows with missing lat/lon
-  mydata <- filter(mydata, !is.na(lat), !is.na(lon))
+  mydata <- dplyr::filter(mydata, !is.na(lat), !is.na(lon))
 
   # slect only full length trajectories
   mydata <- mydata[order(mydata$date, mydata$hour.inc), ]

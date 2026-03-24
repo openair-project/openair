@@ -144,7 +144,7 @@ checkPrep <- function(
       mydata$date <- as.POSIXct(mydata$date, "GMT")
     }
 
-    mydata <- arrange(mydata, date)
+    mydata <- dplyr::arrange(mydata, date)
 
     # make sure date is the first field
     if (names(mydata)[1] != "date") {
@@ -162,7 +162,7 @@ checkPrep <- function(
     }
 
     # daylight saving time can cause terrible problems - best avoided!!
-    if (any(dst(mydata$date))) {
+    if (any(lubridate::dst(mydata$date))) {
       message("Detected data with Daylight Saving Time.")
     }
   }

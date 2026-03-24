@@ -164,7 +164,10 @@ trajCluster <- function(
 
   newdata <- traj |>
     dplyr::select(dplyr::all_of(vars)) |>
-    summarise(across(everything(), mean), .by = dplyr::all_of(vars2))
+    dplyr::summarise(
+      dplyr::across(dplyr::everything(), mean),
+      .by = dplyr::all_of(vars2)
+    )
 
   # count observations in each cluster/type
   clusters <- dplyr::count(

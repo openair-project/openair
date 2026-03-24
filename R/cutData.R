@@ -245,7 +245,7 @@ cutData <- function(
           sep = ""
         ))
         ## order the data by date
-        x <- arrange(x, date)
+        x <- dplyr::arrange(x, date)
       } else {
         x[[name]] <- factor("all data")
       }
