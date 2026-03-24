@@ -91,7 +91,6 @@
 #' @keywords internal
 "_PACKAGE"
 ## usethis namespace: start
-#' @import grid
 #' @import dplyr
 #' @importFrom lubridate as_date
 #' @importFrom lubridate ceiling_date

@@ -34,7 +34,7 @@ stroked_path_grob <- function(x, y, id, linewidth, gp) {
   )
 }
 
-#' @export
+#' @exportS3Method grid::makeContent
 makeContent.stroked_path_grob <- function(x) {
   # Convert x/y from native to mm — this runs at draw time so viewport is live
   x_mm <- grid::convertX(x$x, "mm", valueOnly = TRUE)
@@ -95,7 +95,11 @@ GeomStrokedPath <- ggplot2::ggproto(
   ),
 
   draw_key = function(data, params, size) {
-    fill_col <- if (is.na(data$alpha)) data$colour else scales::alpha(data$colour, data$alpha)
+    fill_col <- if (is.na(data$alpha)) {
+      data$colour
+    } else {
+      scales::alpha(data$colour, data$alpha)
+    }
     stroke_col <- data$stroke_colour
     # linewidth is an NPC fraction; scale to key rect height using a ~100mm reference panel
     h_mm <- min(data$linewidth * 100, size[2] * 0.9)
