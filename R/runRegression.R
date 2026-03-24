@@ -151,10 +151,10 @@ runRegression <- function(
   # 7. Final Coordinates (Delta/Line Points)
   results <- results |>
     dplyr::mutate(
-      y1 = slope * x1 + intercept,
-      y2 = slope * x2 + intercept,
-      delta_x = x2 - x1,
-      delta_y = y2 - y1
+      y1 = .data$slope * .data$x1 + .data$intercept,
+      y2 = .data$slope * .data$x2 + .data$intercept,
+      delta_x = .data$x2 - .data$x1,
+      delta_y = .data$y2 - .data$y1
     )
 
   # Dynamic renaming to match original output

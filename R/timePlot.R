@@ -738,7 +738,7 @@ normalise_timeplot_data <-
         mydata |>
         dplyr::left_join(
           target_date_values,
-          by = dplyr::join_by(variable)
+          by = dplyr::join_by(.data$variable)
         ) |>
         dplyr::mutate(
           value = 100 * (.data$value / .data$target_value)

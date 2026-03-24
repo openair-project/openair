@@ -269,7 +269,7 @@ trajLevel <- function(
 
   # location of receptor for map projection, used to show location on maps
   sf_origins <- mydata |>
-    dplyr::filter(hour.inc == 0) |>
+    dplyr::filter(.data$hour.inc == 0) |>
     dplyr::slice_head(n = 1, by = c("lat", "lon", type)) |>
     sf::st_as_sf(coords = c("lon", "lat"), crs = 4326)
 
@@ -452,7 +452,7 @@ trajLevel <- function(
   if (tolower(statistic) == "sqtba") {
     # calculate sigma
     mydata <- mydata |>
-      dplyr::mutate(sigma = sigma * abs(hour.inc)) |>
+      dplyr::mutate(sigma = .data$sigma * abs(.data$hour.inc)) |>
       tidyr::drop_na({{ pollutant }})
 
     # receptor grid
@@ -474,21 +474,21 @@ trajLevel <- function(
     # just run
     if (is.null(.combine)) {
       mydata <- calc_sqtba(mydata, r_grid, pollutant, min.bin) |>
-        dplyr::rename({{ pollutant }} := SQTBA)
+        dplyr::rename({{ pollutant }} := "SQTBA")
     } else {
       # process by site, normalise contributions by default
       mydata <- mydata |>
         dplyr::group_by(dplyr::across(.combine)) |>
         dplyr::group_modify(~ calc_sqtba(.x, r_grid, pollutant, min.bin)) |>
-        dplyr::mutate(SQTBA_norm = SQTBA / mean(SQTBA)) |>
-        dplyr::group_by(ygrid, xgrid) |>
+        dplyr::mutate(SQTBA_norm = .data$SQTBA / mean(.data$SQTBA)) |>
+        dplyr::group_by(.data$ygrid, .data$xgrid) |>
         dplyr::summarise(
-          SQTBA = mean(SQTBA),
-          SQTBA_norm = mean(SQTBA_norm)
+          SQTBA = mean(.data$SQTBA),
+          SQTBA_norm = mean(.data$SQTBA_norm)
         ) |>
         dplyr::ungroup() |>
-        dplyr::mutate(SQTBA_norm = SQTBA_norm * mean(SQTBA)) |>
-        dplyr::rename({{ pollutant }} := SQTBA_norm)
+        dplyr::mutate(SQTBA_norm = .data$SQTBA_norm * mean(.data$SQTBA)) |>
+        dplyr::rename({{ pollutant }} := "SQTBA_norm")
     }
 
     # prep output data

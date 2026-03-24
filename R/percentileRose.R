@@ -223,7 +223,12 @@ percentileRose <- function(
     }
     ## use pollutants as conditioning variables
 
-    mydata <- tidyr::gather(mydata, key = variable, value = value, pollutant)
+    mydata <- tidyr::gather(
+      mydata,
+      key = "variable",
+      value = "value",
+      pollutant
+    )
     ## now set pollutant to "value"
     pollutant <- "value"
     if (type == "default") {
@@ -386,7 +391,7 @@ percentileRose <- function(
   # pollutant specific
   if (npol > 1) {
     mydata <- mydata |>
-      dplyr::group_by(variable) |>
+      dplyr::group_by(.data$variable) |>
       dplyr::mutate(
         lower = stats::quantile(
           .data[[pollutant]],

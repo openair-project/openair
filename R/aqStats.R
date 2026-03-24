@@ -143,7 +143,7 @@ aqStats <- function(
     results <-
       results |>
       tidyr::pivot_longer(-dplyr::all_of(c(vars, "date"))) |>
-      tidyr::unite(site_pol, dplyr::all_of(unite_vars)) |>
+      tidyr::unite("site_pol", dplyr::all_of(unite_vars)) |>
       tidyr::pivot_wider(names_from = "site_pol") |>
       dplyr::rename_with(function(x) {
         gsub("_", " ", x)
@@ -186,17 +186,17 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       date = min(date, na.rm = TRUE),
 
       # Data Capture
-      dat.cap = sum(!is.na(value)) / dplyr::n() * 100,
+      dat.cap = sum(!is.na(.data$value)) / dplyr::n() * 100,
 
       # Basic Stats
-      mean = mean(value, na.rm = TRUE),
-      min = suppressWarnings(min(value, na.rm = TRUE)),
-      max = suppressWarnings(max(value, na.rm = TRUE)),
-      median = stats::median(value, na.rm = TRUE),
+      mean = mean(.data$value, na.rm = TRUE),
+      min = suppressWarnings(min(.data$value, na.rm = TRUE)),
+      max = suppressWarnings(max(.data$value, na.rm = TRUE)),
+      median = stats::median(.data$value, na.rm = TRUE),
 
       # Percentiles (returns a dataframe column we unpack later)
       pct_vals = list(stats::quantile(
-        value,
+        .data$value,
         probs = percentile / 100,
         na.rm = TRUE,
         type = 7
@@ -204,14 +204,14 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
 
       # Pollutant Specific: NO2 Hours > 200
       hours = if (grepl("no2", .data$pollutant[1], ignore.case = TRUE)) {
-        sum(value > 200, na.rm = TRUE)
+        sum(.data$value > 200, na.rm = TRUE)
       } else {
         NA_real_
       },
 
       .groups = "drop"
     ) |>
-    tidyr::unnest_wider(pct_vals, names_sep = "") |>
+    tidyr::unnest_wider("pct_vals", names_sep = "") |>
     dplyr::rename_with(~p_names, dplyr::starts_with("pct_vals"))
 
   # --- 2. Rolling Means (8h and 24h) ---
@@ -246,8 +246,8 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
   ) |>
     dplyr::group_by(.data$year) |>
     dplyr::summarise(
-      roll_8_max = suppressWarnings(max(roll8_val, na.rm = TRUE)),
-      roll_24_max = suppressWarnings(max(roll24_val, na.rm = TRUE)),
+      roll_8_max = suppressWarnings(max(.data$roll8_val, na.rm = TRUE)),
+      roll_24_max = suppressWarnings(max(.data$roll24_val, na.rm = TRUE)),
       .groups = "drop"
     )
 
@@ -265,13 +265,13 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
     dplyr::mutate(year = lubridate::year(date)) |>
     dplyr::group_by(.data$year) |>
     dplyr::summarise(
-      max_daily = suppressWarnings(max(value, na.rm = TRUE)),
+      max_daily = suppressWarnings(max(.data$value, na.rm = TRUE)),
 
       # Pollutant Specific: PM10 Days > 50
       days = if (
         length(grep("pm10", mydata$pollutant[1], ignore.case = TRUE)) == 1
       ) {
-        sum(value > 50, na.rm = TRUE)
+        sum(.data$value > 50, na.rm = TRUE)
       } else {
         NA_real_
       },
@@ -287,12 +287,12 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       dplyr::mutate(day = lubridate::floor_date(date, "day")) |>
       dplyr::group_by(.data$year, .data$day) |>
       dplyr::summarise(
-        max_roll8 = suppressWarnings(max(roll8, na.rm = TRUE)),
+        max_roll8 = suppressWarnings(max(.data$roll8, na.rm = TRUE)),
         .groups = "drop_last"
       ) |>
       dplyr::summarise(
-        roll.8.O3.gt.100 = sum(max_roll8 > 100, na.rm = TRUE),
-        roll.8.O3.gt.120 = sum(max_roll8 > 120, na.rm = TRUE),
+        roll.8.O3.gt.100 = sum(.data$max_roll8 > 100, na.rm = TRUE),
+        roll.8.O3.gt.120 = sum(.data$max_roll8 > 120, na.rm = TRUE),
         .groups = "drop"
       )
 
@@ -305,10 +305,10 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       mydata_aot <- cutData(mydata_aot, "daylight", ...)
 
       aot_calc <- mydata_aot |>
-        dplyr::filter(daylight == "daylight") |>
+        dplyr::filter(.data$daylight == "daylight") |>
         dplyr::group_by(.data$year) |>
         dplyr::summarise(
-          AOT40 = sum(pmax(value - 80, 0), na.rm = TRUE) * 0.50, # 0.5 conversion for ppb
+          AOT40 = sum(pmax(.data$value - 80, 0), na.rm = TRUE) * 0.50, # 0.5 conversion for ppb
           .groups = "drop"
         )
 

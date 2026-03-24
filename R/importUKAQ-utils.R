@@ -97,7 +97,7 @@ readUKAQData <-
 
     # rename "temp" to "air_temp" if appropriate
     if ("temp" %in% names(thedata)) {
-      thedata <- dplyr::rename(thedata, air_temp = temp)
+      thedata <- dplyr::rename(thedata, air_temp = "temp")
     }
 
     # if particular pollutants have been selected
@@ -140,7 +140,7 @@ readUKAQData <-
       # clean tidied data before returning
       thedata <- thedata |>
         dplyr::relocate(dplyr::any_of(the_vars)) |>
-        dplyr::arrange(site, code, pollutant, date)
+        dplyr::arrange(.data$site, .data$code, .data$pollutant, .data$date)
     }
 
     # add source to output
@@ -302,20 +302,20 @@ readSummaryData <-
       capture <-
         dplyr::select(
           thedata,
-          dplyr::contains("capture") | c(code, date, site)
+          dplyr::contains("capture") | c("code", "date", "site")
         ) |>
         dplyr::select(!dplyr::matches("uka_code"))
 
       values <- tidyr::pivot_longer(
         values,
-        -c(date, code, site),
+        -c("date", "code", "site"),
         values_to = "value",
         names_to = "species"
       )
 
       capture <- tidyr::pivot_longer(
         capture,
-        -c(date, code, site),
+        -c("date", "code", "site"),
         values_to = "data_capture",
         names_to = "species"
       )
@@ -331,8 +331,8 @@ readSummaryData <-
 
     thedata <- thedata |>
       dplyr::mutate(
-        site = as.character(site),
-        code = as.character(code)
+        site = as.character(.data$site),
+        code = as.character(.data$code)
       ) |>
       dplyr::mutate(
         source = source,
@@ -358,14 +358,14 @@ readDAQI <- function(files, year, source) {
 
   thedata <- thedata |>
     dplyr::mutate(
-      code = as.character(code),
-      site = as.character(site),
-      pollutant = as.character(pollutant),
-      date = lubridate::ymd(Date, tz = "GMT"),
-      measurement_period = as.character(measurement_period)
+      code = as.character(.data$code),
+      site = as.character(.data$site),
+      pollutant = as.character(.data$pollutant),
+      date = lubridate::ymd(.data$Date, tz = "GMT"),
+      measurement_period = as.character(.data$measurement_period)
     ) |>
-    dplyr::select(-Date) |>
-    dplyr::relocate(date, .after = pollutant) |>
+    dplyr::select(-"Date") |>
+    dplyr::relocate("date", .after = "pollutant") |>
     dplyr::mutate(
       source = source,
       .before = dplyr::everything()
@@ -386,8 +386,13 @@ add_meta <- function(source, columns, aq_data) {
       duplicate = TRUE
     )
 
-  meta_data <- dplyr::distinct(meta_data, source, site, .keep_all = TRUE) |>
-    dplyr::select(source, site, code, dplyr::all_of(columns))
+  meta_data <- dplyr::distinct(
+    meta_data,
+    .data[["source"]],
+    .data[["site"]],
+    .keep_all = TRUE
+  ) |>
+    dplyr::select("source", "site", "code", dplyr::all_of(columns))
 
   aq_data <- dplyr::left_join(
     aq_data,
@@ -404,8 +409,8 @@ add_ratified <- function(aq_data, source, to_narrow) {
   meta <-
     importMeta(unique(source), all = TRUE) |>
     dplyr::filter(
-      code %in% aq_data$code,
-      !variable %in%
+      .data$code %in% aq_data$code,
+      !.data$variable %in%
         c(
           "V10",
           "NV10",
@@ -416,35 +421,39 @@ add_ratified <- function(aq_data, source, to_narrow) {
           "temp"
         )
     ) |>
-    dplyr::select(source, code, variable, ratified_to) |>
-    dplyr::mutate(variable = tolower(variable))
+    dplyr::select("source", "code", "variable", "ratified_to") |>
+    dplyr::mutate(variable = tolower(.data$variable))
 
   if (to_narrow) {
     meta <-
-      dplyr::rename(meta, "pollutant" = variable, "qc" = ratified_to) |>
-      dplyr::filter(pollutant %in% tolower(aq_data$pollutant))
+      dplyr::rename(meta, "pollutant" = "variable", "qc" = "ratified_to") |>
+      dplyr::filter(.data$pollutant %in% tolower(aq_data$pollutant))
+
     aq_data <-
       aq_data |>
-      dplyr::left_join(meta, by = dplyr::join_by(source, code, pollutant)) |>
-      dplyr::mutate(qc = lubridate::floor_date(date, "day") <= .data$qc)
+      dplyr::left_join(
+        meta,
+        by = dplyr::join_by("source", "code", "pollutant")
+      ) |>
+      dplyr::mutate(qc = lubridate::floor_date(.data$date, "day") <= .data$qc)
 
     return(aq_data)
   }
 
   meta <-
     meta |>
-    dplyr::filter(variable %in% names(aq_data)) |>
+    dplyr::filter(.data$variable %in% names(aq_data)) |>
     tidyr::pivot_wider(
-      names_from = variable,
-      values_from = ratified_to,
+      names_from = "variable",
+      values_from = "ratified_to",
       names_glue = "{variable}_qc"
     )
 
   aq_data <-
     aq_data |>
-    dplyr::left_join(meta, by = dplyr::join_by(source, code)) |>
+    dplyr::left_join(meta, by = dplyr::join_by("source", "code")) |>
     dplyr::mutate(dplyr::across(dplyr::contains("_qc"), function(x) {
-      lubridate::floor_date(date, "day") <= x
+      lubridate::floor_date(.data$date, "day") <= x
     }))
 
   return(aq_data)

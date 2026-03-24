@@ -98,24 +98,24 @@ importEurope <- function(
   }
 
   # just hourly observations
-  df <- dplyr::filter(df, summary == 1)
+  df <- dplyr::filter(df, .data$summary == 1)
 
   if (!to_narrow) {
     df <- make_saq_observations_wider(df)
   } else {
-    df <- dplyr::select(df, -summary, -process, -validity)
+    df <- dplyr::select(df, -"summary", -"process", -"validity")
   }
 
   # don't need end date
-  df <- dplyr::select(df, -date_end) |>
-    dplyr::rename(code = site)
+  df <- dplyr::select(df, -"date_end") |>
+    dplyr::rename(code = "site")
 
   if (meta) {
     meta <- importMeta("europe")
     df <- dplyr::left_join(df, meta, by = "code")
   }
 
-  df <- dplyr::arrange(df, code, date)
+  df <- dplyr::arrange(df, .data$code, .data$date)
 
   return(df)
 }
@@ -129,7 +129,10 @@ get_saq_observations_worker <- function(file, tz) {
     return()
   }
 
-  df <- dplyr::filter(df, validity %in% c(1, 2, 3) | is.na(validity))
+  df <- dplyr::filter(
+    df,
+    .data$validity %in% c(1, 2, 3) | is.na(.data$validity)
+  )
 
   return(df)
 }
@@ -162,8 +165,8 @@ read_saq_observations <- function(file, tz = tz, verbose) {
       suppressWarnings(
         readr::read_csv(con, col_types = col_types, progress = FALSE) |>
           dplyr::mutate(
-            date = lubridate::ymd_hms(date, tz = tz, quiet = TRUE),
-            date_end = lubridate::ymd_hms(date_end, tz = tz, quiet = TRUE)
+            date = lubridate::ymd_hms(.data$date, tz = tz, quiet = TRUE),
+            date_end = lubridate::ymd_hms(.data$date_end, tz = tz, quiet = TRUE)
           )
       )
     },
@@ -187,13 +190,13 @@ make_saq_observations_wider <- function(df) {
     {
       df |>
         dplyr::select(
-          date,
-          date_end,
-          site,
-          variable,
-          value
+          "date",
+          "date_end",
+          "site",
+          "variable",
+          "value"
         ) |>
-        tidyr::spread(variable, value)
+        tidyr::spread("variable", "value")
     },
     error = function(e) {
       warning(
@@ -203,14 +206,14 @@ make_saq_observations_wider <- function(df) {
 
       df |>
         dplyr::select(
-          date,
-          date_end,
-          site,
-          variable,
-          value
+          "date",
+          "date_end",
+          "site",
+          "variable",
+          "value"
         ) |>
-        dplyr::distinct(date, site, variable, .keep_all = TRUE) |>
-        tidyr::spread(variable, value)
+        dplyr::distinct("date", "site", "variable", .keep_all = TRUE) |>
+        tidyr::spread("variable", "value")
     }
   )
 }

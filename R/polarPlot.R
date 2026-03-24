@@ -615,8 +615,8 @@ polarPlot <-
       ## use pollutants as conditioning variables
       mydata <- tidyr::gather(
         mydata,
-        key = variable,
-        value = value,
+        key = "variable",
+        value = "value",
         pollutant,
         factor_key = TRUE
       )
@@ -827,7 +827,7 @@ polarPlot <-
     if (normalise) {
       res <- dplyr::mutate(
         res,
-        z = z / mean(z, na.rm = TRUE),
+        z = .data$z / mean(.data$z, na.rm = TRUE),
         .by = dplyr::all_of(type)
       )
 
@@ -1133,12 +1133,12 @@ polar_prepare_grid <- function(
       ) |>
       dplyr::summarise(
         value = stat_fn(.data[[pollutant]]),
-        .by = c(wd_bin, x_bin)
+        .by = c("wd_bin", "x_bin")
       ) |>
       # expand.grid(x = ws.seq, wd = wd.seq) has x_bin varying fastest, wd_bin slowest
-      tidyr::complete(wd_bin, x_bin) |>
-      dplyr::arrange(wd_bin, x_bin) |>
-      dplyr::pull(value) |>
+      tidyr::complete(.data$wd_bin, .data$x_bin) |>
+      dplyr::arrange(.data$wd_bin, .data$x_bin) |>
+      dplyr::pull(.data$value) |>
       unname()
   } else if (toupper(statistic) == "NWR") {
     ## Non-parametric Wind Regression: fully vectorised over all grid points.

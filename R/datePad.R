@@ -118,18 +118,18 @@ datePad <- function(
 
       # 2. Expand to TARGET resolution
       df_expanded <- df_native |>
-        dplyr::select(date, .block_id) |> # Keep only ID and Date for structure
+        dplyr::select("date", ".block_id") |> # Keep only ID and Date for structure
         tidyr::complete(date = seq(s_date, e_date, by = target_interval)) |>
-        tidyr::fill(.block_id, .direction = "down") # Carry the ID down (ID 1 covers 10:00, 10:15...)
+        tidyr::fill(".block_id", .direction = "down") # Carry the ID down (ID 1 covers 10:00, 10:15...)
 
       # 3. Join original values back using the Block ID
       #    This ensures 10:15 gets 10:00's value (5), and 11:15 gets 11:00's value (NA)
       df_out <- df_expanded |>
         dplyr::left_join(
-          dplyr::select(df_native, -date),
-          by = dplyr::join_by(.block_id == .block_id)
+          dplyr::select(df_native, -"date"),
+          by = ".block_id"
         ) |>
-        dplyr::select(-.block_id)
+        dplyr::select(-".block_id")
 
       return(df_out)
     } else {
