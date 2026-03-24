@@ -283,20 +283,20 @@ importImperial <-
     ## rename PM volatile/non volatile components if present
 
     if ("pmfr" %in% names(thedata)) {
-      thedata <- dplyr::rename(thedata, v10 = pmfr)
+      thedata <- dplyr::rename(thedata, v10 = "pmfr")
       thedata <- transform(thedata, v10 = -1 * v10)
     }
 
     if ("p2fr" %in% names(thedata)) {
-      thedata <- dplyr::rename(thedata, v2.5 = p2fr)
+      thedata <- dplyr::rename(thedata, v2.5 = "p2fr")
       thedata <- transform(thedata, v2.5 = -1 * v2.5)
     }
 
     if ("pmfb" %in% names(thedata)) {
-      thedata <- dplyr::rename(thedata, nv10 = pmfb)
+      thedata <- dplyr::rename(thedata, nv10 = "pmfb")
     }
     if ("p2fb" %in% names(thedata)) {
-      thedata <- dplyr::rename(thedata, nv2.5 = p2fb)
+      thedata <- dplyr::rename(thedata, nv2.5 = "p2fb")
     }
 
     if (units != "mass") {
@@ -383,18 +383,18 @@ importImperial <-
         thedata <-
           tidyr::pivot_longer(
             thedata,
-            -c(date, site, code, latitude, longitude, site.type),
+            -c("date", "site", "code", "latitude", "longitude", "site.type"),
             names_to = "pollutant"
           ) |>
-          dplyr::arrange(site, code, pollutant, date)
+          dplyr::arrange(.data$site, .data$code, .data$pollutant, .data$date)
       } else {
         thedata <-
           tidyr::pivot_longer(
             thedata,
-            -c(date, site, code),
+            -c("date", "site", "code"),
             names_to = "pollutant"
           ) |>
-          dplyr::arrange(site, code, pollutant, date)
+          dplyr::arrange(.data$site, .data$code, .data$pollutant, .data$date)
       }
     }
 

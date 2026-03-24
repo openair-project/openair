@@ -280,8 +280,8 @@ polarAnnulus <-
     if (length(pollutant) > 1) {
       mydata <- tidyr::gather(
         mydata,
-        key = variable,
-        value = value,
+        key = "variable",
+        value = "value",
         pollutant,
         factor_key = TRUE
       )
@@ -291,7 +291,7 @@ polarAnnulus <-
     }
 
     # add extra wds - reduces discontinuity at 0/360
-    zero.wd <- subset(mydata, wd == 360)
+    zero.wd <- dplyr::filter(mydata, .data$wd == 360)
 
     if (nrow(zero.wd) > 0) {
       zero.wd$wd <- 0

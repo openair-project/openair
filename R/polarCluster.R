@@ -284,7 +284,7 @@ polarCluster <-
         df$u.id <- findInterval(df$u, uv.id, all.inside = TRUE)
         df$v.id <- findInterval(df$v, uv.id, all.inside = TRUE)
         df$cluster <- as.factor(clust_mat[cbind(df$u.id, df$v.id)])
-        dplyr::select(df, date, cluster, .id)
+        dplyr::select(df, "date", "cluster", ".id")
       }
 
       mydata <- stats::na.omit(mydata)
@@ -394,7 +394,7 @@ polarCluster <-
     if (length(n.clusters) == 1L && length(pollutant) == 1L) {
       clust_stats <-
         out_data |>
-        dplyr::group_by(cluster) |>
+        dplyr::group_by(.data$cluster) |>
         dplyr::summarise(
           {{ var_mean }} := mean(.data[[pollutant]], na.rm = TRUE),
           n = dplyr::n()
@@ -403,10 +403,10 @@ polarCluster <-
         dplyr::mutate(
           n_mean = .data$n * .data[[var_mean]],
           n_percent = round(100 * .data$n / sum(.data$n), 1),
-          {{ var_percent }} := round(100 * n_mean / sum(n_mean), 1)
+          {{ var_percent }} := round(100 * .data$n_mean / sum(.data$n_mean), 1)
         ) |>
         dplyr::ungroup() |>
-        dplyr::select(-n_mean)
+        dplyr::select(-"n_mean")
     } else {
       clust_stats <- NULL
     }

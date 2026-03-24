@@ -163,7 +163,9 @@ conditionalEval <- function(
 
   if (statistic[1] == "cluster") {
     vars <- c(vars, "cluster")
-    if ("hour.inc" %in% names(mydata)) mydata <- subset(mydata, hour.inc == 0)
+    if ("hour.inc" %in% names(mydata)) {
+      mydata <- dplyr::filter(mydata, .data$hour.inc == 0)
+    }
   }
 
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
@@ -221,8 +223,11 @@ conditionalEval <- function(
     other_results <- mydata |>
       dplyr::group_by(dplyr::across(dplyr::all_of(type))) |>
       dplyr::group_nest() |>
-      dplyr::mutate(res = purrr::map(data, compute_other), .keep = "unused") |>
-      tidyr::unnest(res)
+      dplyr::mutate(
+        res = purrr::map(.data$data, compute_other),
+        .keep = "unused"
+      ) |>
+      tidyr::unnest(.data$res)
 
     stat_levels <- levels(other_results[[statistic]])
     cols <- openColours(col.var, length(stat_levels))
@@ -312,7 +317,7 @@ conditionalEval <- function(
       dplyr::group_by(dplyr::across(dplyr::all_of(type))) |>
       dplyr::group_nest() |>
       dplyr::mutate(
-        res = purrr::map(data, \(df) {
+        res = purrr::map(.data$data, \(df) {
           purrr::pmap(combs, \(var_obs, stat, var_mod) {
             compute_stat(df, stat, var_obs, var_mod)
           }) |>
@@ -320,7 +325,7 @@ conditionalEval <- function(
         }),
         .keep = "unused"
       ) |>
-      tidyr::unnest(res)
+      tidyr::unnest(.data$res)
 
     # Replace infinite values with NA
     results <- dplyr::mutate(

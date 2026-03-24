@@ -714,19 +714,22 @@ importADMSMop <- function(
 
   ans <- ans |>
     dplyr::mutate(
-      H_LMO = process.recip.lmo * process.h,
+      H_LMO = .data$process.recip.lmo * .data$process.h,
       stability = dplyr::case_when(
         H_LMO > 2 ~ "Stable",
         H_LMO < -0.6 ~ "Unstable",
         is.na(H_LMO) ~ NA,
         .default = "Neutral"
       ),
-      stability = factor(stability, levels = c("Stable", "Neutral", "Unstable"))
+      stability = factor(
+        .data$stability,
+        levels = c("Stable", "Neutral", "Unstable")
+      )
     ) |>
     dplyr::rename(
-      air_temp = temp,
-      recip_lmo = process.recip.lmo,
-      H = process.h
+      air_temp = "temp",
+      recip_lmo = "process.recip.lmo",
+      H = "process.h"
     )
 
   if (all) {

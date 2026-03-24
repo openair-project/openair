@@ -187,8 +187,8 @@ importMeta <-
           meta <-
             dplyr::filter(
               meta,
-              start_year <= min(year) &
-                end_year >= max(year)
+              .data$start_year <= min(year) &
+                .data$end_year >= max(year)
             )
         }
       }
@@ -240,8 +240,8 @@ importMeta <-
           meta <-
             dplyr::filter(
               meta,
-              start_year <= min(year) &
-                end_year >= max(year)
+              .data$start_year <= min(year) &
+                .data$end_year >= max(year)
             )
         }
 
@@ -358,8 +358,8 @@ clean_ricardo_meta <- function(url, all, year) {
     meta <-
       dplyr::filter(
         meta,
-        start_year <= min(year) &
-          end_year >= max(year)
+        .data$start_year <= min(year) &
+          .data$end_year >= max(year)
       )
   }
 

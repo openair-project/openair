@@ -97,15 +97,15 @@ polarDiff <- function(
         out <-
           polar_plt$data |>
           tidyr::pivot_wider(
-            id_cols = u:v,
-            names_from = period,
-            values_from = z
+            id_cols = "u":"v",
+            names_from = "period",
+            values_from = "z"
           ) |>
           dplyr::mutate(
-            {{ pollutant_name }} := after - before,
-            {{ x }} := (u^2 + v^2)^0.5,
-            wd = 180 * atan2(u, v) / pi,
-            wd = ifelse(wd < 0, wd + 360, wd)
+            {{ pollutant_name }} := .data$after - .data$before,
+            {{ x }} := (.data$u^2 + .data$v^2)^0.5,
+            wd = 180 * atan2(.data$u, .data$v) / pi,
+            wd = ifelse(.data$wd < 0, .data$wd + 360, .data$wd)
           )
 
         out[[type]] <- theData[[type]][1]

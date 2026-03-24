@@ -412,12 +412,12 @@ TheilSen <- function(
     tidyr::nest() |>
     dplyr::mutate(
       data = purrr::map(
-        data,
+        .data$data,
         process.cond,
         .progress = "Taking Bootstrap Samples"
       )
     ) |>
-    tidyr::unnest(cols = c(data)) |>
+    tidyr::unnest(cols = c("data")) |>
     dplyr::ungroup()
 
   if (nrow(split.data) < 2) {
