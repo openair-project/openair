@@ -154,7 +154,7 @@
 #'   Defaults to `TRUE`.
 #'
 #' @export
-#' @return a [tibble][tibble::tibble-package]
+#' @return a `tibble`
 #' @author David Carslaw, Trevor Davies, and Jack Davison
 #' @family import functions
 #' @examples
@@ -249,7 +249,7 @@ importUKAQ <-
     }
 
     # obtain correct URL info for the source
-    url_domain <- dplyr::case_match(
+    url_domain <- dplyr::recode_values(
       source,
       "aurn" ~ "https://uk-air.defra.gov.uk/openair/R_data/",
       "aqe" ~ "https://airqualityengland.co.uk/assets/openair/R_data/",
@@ -260,7 +260,7 @@ importUKAQ <-
       "local" ~ "https://uk-air.defra.gov.uk/openair/LMAM/R_data/"
     )
 
-    url_abbr <- dplyr::case_match(
+    url_abbr <- dplyr::recode_values(
       source,
       "aurn" ~ "_AURN_",
       "aqe" ~ "_AQE_",

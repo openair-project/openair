@@ -134,7 +134,7 @@ runRegression <- function(
 
   # 6. Construct Final Table
   # We subset the regression vectors using valid_indices to match the 'embed' size
-  results <- tibble::tibble(
+  results <- dplyr::tibble(
     date = d_median,
     date_start = d_start,
     date_end = d_end,
@@ -146,7 +146,7 @@ runRegression <- function(
   )
 
   # Remove rows that had any NAs in input (calculated stats will be NA)
-  results <- results[complete.cases(results), ]
+  results <- results[stats::complete.cases(results), ]
 
   # 7. Final Coordinates (Delta/Line Points)
   results <- results |>

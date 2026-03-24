@@ -167,7 +167,7 @@ conditionalEval <- function(
   }
 
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-  mydata <- na.omit(mydata)
+  mydata <- stats::na.omit(mydata)
 
   lo <- min(mydata[, c(mod, obs)])
   hi <- max(mydata[, c(mod, obs)])
@@ -293,8 +293,8 @@ conditionalEval <- function(
           val <- boots[[stat]]
           data.frame(
             mean = mean(val, na.rm = TRUE),
-            lower = quantile(val, 0.025, na.rm = TRUE),
-            upper = quantile(val, 0.975, na.rm = TRUE)
+            lower = stats::quantile(val, 0.025, na.rm = TRUE),
+            upper = stats::quantile(val, 0.975, na.rm = TRUE)
           )
         }) |>
         dplyr::ungroup() |>

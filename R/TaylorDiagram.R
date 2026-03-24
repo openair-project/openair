@@ -395,13 +395,13 @@ TaylorDiagram <- function(
   mydata <- check_numeric(mydata, vars = c(obs, mod))
 
   # remove missing data
-  mydata <- na.omit(mydata)
+  mydata <- stats::na.omit(mydata)
 
   # function to calculate stats for TD
   calcStats <- function(mydata, obs = obs, mod = mod) {
-    R <- cor(mydata[[obs]], mydata[[mod]], use = "pairwise")
-    sd.obs <- sd(mydata[[obs]])
-    sd.mod <- sd(mydata[[mod]])
+    R <- stats::cor(mydata[[obs]], mydata[[mod]], use = "pairwise")
+    sd.obs <- stats::sd(mydata[[obs]])
+    sd.mod <- stats::sd(mydata[[mod]])
     if (normalise) {
       sd.mod <- sd.mod / sd.obs
       sd.obs <- 1

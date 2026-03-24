@@ -602,7 +602,7 @@ windRose <- function(
   prepare.grid <- function(mydata) {
     # these are all calms...
     if (all(is.na(mydata$x))) {
-      weights <- tibble(
+      weights <- dplyr::tibble(
         Interval1 = NA,
         wd = NA,
         calm = 100,
@@ -738,7 +738,7 @@ windRose <- function(
     # original frequencies, so we can plot the wind frequency line
     results$freq <- results[[max(vars)]]
 
-    results$freq <- ave(
+    results$freq <- stats::ave(
       results$freq,
       results[type],
       FUN = function(x) x / sum(x)
@@ -1138,7 +1138,7 @@ pollutionRose <- function(
     breaks <- unique(pretty(
       c(
         min(mydata[[pollutant]], na.rm = TRUE),
-        quantile(mydata[[pollutant]], probs = 0.9, na.rm = TRUE)
+        stats::quantile(mydata[[pollutant]], probs = 0.9, na.rm = TRUE)
       ),
       breaks
     ))

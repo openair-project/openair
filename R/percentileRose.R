@@ -269,7 +269,7 @@ percentileRose <- function(
         min.dat <- min(thedata)
 
         ## fit a spline through the data; making sure it goes through each wd value
-        spline.res <- spline(
+        spline.res <- stats::spline(
           x = thedata[[wd]],
           y = thedata[[pollutant]],
           n = 361,
@@ -308,7 +308,7 @@ percentileRose <- function(
       ## calculate percentiles
       percentiles <- dplyr::group_by(mydata, wd) |>
         dplyr::reframe(
-          {{ pollutant }} := quantile(
+          {{ pollutant }} := stats::quantile(
             .data[[pollutant]],
             probs = percentile / 100,
             na.rm = TRUE
@@ -388,12 +388,12 @@ percentileRose <- function(
     mydata <- mydata |>
       dplyr::group_by(variable) |>
       dplyr::mutate(
-        lower = quantile(
+        lower = stats::quantile(
           .data[[pollutant]],
           probs = min(percentile) / 100,
           na.rm = TRUE
         ),
-        upper = quantile(
+        upper = stats::quantile(
           .data[[pollutant]],
           probs = max(percentile) / 100,
           na.rm = TRUE
@@ -403,12 +403,12 @@ percentileRose <- function(
   } else {
     mydata <- dplyr::mutate(
       mydata,
-      lower = quantile(
+      lower = stats::quantile(
         .data[[pollutant]],
         probs = min(percentile) / 100,
         na.rm = TRUE
       ),
-      upper = quantile(
+      upper = stats::quantile(
         .data[[pollutant]],
         probs = max(percentile) / 100,
         na.rm = TRUE
@@ -438,7 +438,7 @@ percentileRose <- function(
       max(percentile),
       "th percentile (=",
       round(
-        max(quantile(
+        max(stats::quantile(
           mydata[[pollutant]],
           probs = percentile / 100,
           na.rm = TRUE

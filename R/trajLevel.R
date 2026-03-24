@@ -310,7 +310,7 @@ trajLevel <- function(
       dplyr::group_by(dplyr::across(vars)) |>
       dplyr::summarise(
         N = length(date),
-        date = head(date, 1),
+        date = utils::head(date, 1),
         count = mean(.data[[pollutant]], na.rm = TRUE)
       )
 
@@ -398,14 +398,18 @@ trajLevel <- function(
   ## Poential Source Contribution Function
   if (statistic == "pscf") {
     ## high percentile
-    Q90 <- quantile(mydata[[pollutant]], probs = percentile / 100, na.rm = TRUE)
+    Q90 <- stats::quantile(
+      mydata[[pollutant]],
+      probs = percentile / 100,
+      na.rm = TRUE
+    )
 
     ## calculate the proportion of points in cell with value > Q90
     mydata <- mydata |>
       dplyr::group_by(dplyr::across(vars)) |>
       dplyr::summarise(
         N = length(date),
-        date = head(date, 1),
+        date = utils::head(date, 1),
         count = length(which(.data[[pollutant]] > Q90)) / N
       )
 
@@ -455,13 +459,13 @@ trajLevel <- function(
     # use trajectory data to determine grid size - don't go to extremes
     r_grid <- tidyr::expand_grid(
       lat = seq(
-        round(quantile(mydata$lat, probs = 0.002)),
-        round(quantile(mydata$lat, probs = 0.998)),
+        round(stats::quantile(mydata$lat, probs = 0.002)),
+        round(stats::quantile(mydata$lat, probs = 0.998)),
         by = lat.inc
       ),
       lon = seq(
-        round(quantile(mydata$lon, probs = 0.002)),
-        round(quantile(mydata$lon, probs = 0.998)),
+        round(stats::quantile(mydata$lon, probs = 0.002)),
+        round(stats::quantile(mydata$lon, probs = 0.998)),
         by = lon.inc
       )
     ) |>
@@ -521,19 +525,23 @@ trajLevel <- function(
 
     base <- mydata |>
       dplyr::group_by(dplyr::across(vars)) |>
-      dplyr::summarise(count = length(date), date = head(date, 1))
+      dplyr::summarise(count = length(date), date = utils::head(date, 1))
 
     base[[pollutant]] <- 100 * base$count / max(base$count)
 
     ## high percentile
-    Q90 <- quantile(mydata[[pollutant]], probs = percentile / 100, na.rm = TRUE)
+    Q90 <- stats::quantile(
+      mydata[[pollutant]],
+      probs = percentile / 100,
+      na.rm = TRUE
+    )
 
     ## calculate percentage of points for high data
     high <- mydata |>
       dplyr::group_by(dplyr::across(vars)) |>
       dplyr::summarise(
         N = length(date),
-        date = head(date, 1),
+        date = utils::head(date, 1),
         count = length(which(.data[[pollutant]] > Q90))
       )
 

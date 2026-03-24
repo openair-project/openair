@@ -103,7 +103,7 @@ be returned.}
 Defaults to \code{TRUE}.}
 }
 \value{
-a \link[tibble:tibble-package]{tibble}
+a \code{tibble}
 }
 \description{
 Functions for importing air pollution data from a range of UK networks

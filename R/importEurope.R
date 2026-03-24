@@ -20,7 +20,7 @@
 #' @param progress Show a progress bar when many sites/years are being imported?
 #'   Defaults to `TRUE`.
 #'
-#' @return a [tibble][tibble::tibble-package]
+#' @return a `tibble`
 #' @family import functions
 #' @export
 #'
@@ -170,7 +170,7 @@ read_saq_observations <- function(file, tz = tz, verbose) {
     error = function(e) {
       # Close the connection on error
       close.connection(con)
-      tibble()
+      dplyr::tibble()
     }
   )
 

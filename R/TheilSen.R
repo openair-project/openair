@@ -329,7 +329,7 @@ TheilSen <- function(
 
       # can't deseason less than 2 years of data
       if (deseason && nrow(mydata) > 24) {
-        myts <- ts(
+        myts <- stats::ts(
           mydata[[pollutant]],
           start = c(start.year, start.month),
           end = c(end.year, end.month),
@@ -339,7 +339,9 @@ TheilSen <- function(
         # fill any missing data using a Kalman filter
 
         if (anyNA(myts)) {
-          fit <- ts(rowSums(tsSmooth(StructTS(myts))[, -2]))
+          fit <- stats::ts(rowSums(stats::tsSmooth(stats::StructTS(myts))[,
+            -2
+          ]))
           id <- which(is.na(myts))
 
           myts[id] <- fit[id]
@@ -349,7 +351,7 @@ TheilSen <- function(
         # s.window should not be "periodic"; set quite high to avoid
         # overly fitted seasonal cycle
         # robustness also makes sense for sometimes noisy data
-        ssd <- stl(myts, s.window = 11, robust = TRUE, s.degree = 1)
+        ssd <- stats::stl(myts, s.window = 11, robust = TRUE, s.degree = 1)
 
         deseas <- ssd$time.series[, "trend"] + ssd$time.series[, "remainder"]
 

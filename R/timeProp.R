@@ -126,7 +126,8 @@ timeProp <- function(
       cutData(type = "seasonyear") |>
       dplyr::mutate(xleft = min(.data$date), .by = c("seasonyear", type)) |>
       dplyr::mutate(
-        xright = .data$xleft + median(diff(.data$xleft)[diff(.data$xleft) != 0])
+        xright = .data$xleft +
+          stats::median(diff(.data$xleft)[diff(.data$xleft) != 0])
       ) |>
       dplyr::select(-dplyr::any_of("seasonyear"))
   } else {
@@ -134,7 +135,8 @@ timeProp <- function(
       dplyr::mutate(
         mydata,
         xleft = as.POSIXct(cut(.data$date, avg.time), tz = tzone),
-        xright = .data$xleft + median(diff(.data$xleft)[diff(.data$xleft) != 0])
+        xright = .data$xleft +
+          stats::median(diff(.data$xleft)[diff(.data$xleft) != 0])
       )
   }
 

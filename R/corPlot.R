@@ -296,10 +296,13 @@ corPlot <- function(
           cor_matrix <-
             df |>
             dplyr::select(dplyr::all_of(vars)) |>
-            cor(use = use, method = method)
+            stats::cor(use = use, method = method)
 
           # cluster the matrix
-          hc <- hclust(as.dist(1 - cor_matrix), method = "complete")
+          hc <- stats::hclust(
+            stats::as.dist(1 - cor_matrix),
+            method = "complete"
+          )
 
           # get a new variable order
           var_order <- hc$labels[hc$order]
@@ -618,7 +621,7 @@ ellipse <- function(
   scale = c(1, 1),
   centre = c(0, 0),
   level = 0.95,
-  t = sqrt(qchisq(level, 2)),
+  t = sqrt(stats::qchisq(level, 2)),
   which = c(1, 2),
   npoints = 100,
   ...

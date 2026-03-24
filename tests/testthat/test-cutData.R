@@ -122,7 +122,8 @@ test_that("cutData works", {
     dropopts <- cutData(
       testdat[!is.na(testdat$wd), ],
       type = conds,
-      drop = drop
+      drop = drop,
+      local.tz = "GMT"
     )
     expect_s3_class(dropopts$wd, "ordered")
     expect_s3_class(dropopts$year, "ordered")

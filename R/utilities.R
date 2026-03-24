@@ -206,13 +206,13 @@ get_labels_from_breaks <- function(breaks, labels = NULL, sep = " - ") {
   if (is.null(labels) || anyNA(labels)) {
     labels <- paste(
       format(
-        head(breaks, -1),
+        utils::head(breaks, -1),
         scientific = FALSE,
         trim = TRUE,
         drop0trailing = TRUE
       ),
       format(
-        tail(breaks, -1),
+        utils::tail(breaks, -1),
         scientific = FALSE,
         trim = TRUE,
         drop0trailing = TRUE

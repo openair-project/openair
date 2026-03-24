@@ -1,5 +1,5 @@
 test_that("aqstats works", {
-  testdat <- head(mydata, n = 100)
+  testdat <- utils::head(mydata, n = 100)
 
   stats <- aqStats(testdat, c("no2", "o3", "pm10", "so2"))
 

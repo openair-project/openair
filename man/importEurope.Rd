@@ -32,7 +32,7 @@ narrow format with a column identifying the pollutant name.}
 Defaults to \code{TRUE}.}
 }
 \value{
-a \link[tibble:tibble-package]{tibble}
+a \code{tibble}
 }
 \description{
 This function is a simplified version of the \code{saqgetr} package (see
