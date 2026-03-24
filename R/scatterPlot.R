@@ -308,6 +308,7 @@ scatterPlot <- function(
   extra.args$lwd <- extra.args$lwd %||% 1
   extra.args$lty <- extra.args$lty %||% 1
   extra.args$alpha <- extra.args$alpha %||% NA
+  extra.args$border <- extra.args$border %||% NA
 
   ## validate
   if (is.na(z) && method == "level") {
@@ -390,6 +391,7 @@ scatterPlot <- function(
       group = group,
       type = type,
       cols = cols,
+      border = extra.args$border,
       linear = linear,
       ci = ci,
       mod.line = mod.line,
@@ -908,6 +910,7 @@ scatter_hexbin <- function(
   group,
   type,
   cols,
+  border,
   linear,
   ci,
   mod.line,
@@ -942,7 +945,7 @@ scatter_hexbin <- function(
   }
 
   plt <- ggplot2::ggplot(mydata, ggplot2::aes(x = .data[[x]], y = .data[[y]])) +
-    ggplot2::geom_hex(bins = extra.args$bins %||% 30) +
+    ggplot2::geom_hex(bins = extra.args$bins %||% 30, colour = border) +
     ggplot2::scale_fill_gradientn(
       colors = myColors,
       transform = hex_transform,
