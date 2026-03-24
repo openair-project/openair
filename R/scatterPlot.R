@@ -1390,7 +1390,7 @@ scatter_density <- function(
   if (log.x) {
     ggplot2::scale_x_continuous(
       transform = "log10",
-      expand = ggplot2::expansion(mult = c(0.05, 0.05))
+      expand = ggplot2::expansion(mult = c(0.02, 0.02))
     )
   } else {
     x_vals <- mydata[[x_col]]
@@ -1399,17 +1399,17 @@ scatter_density <- function(
       if (inherits(x_vals, "Date")) {
         ggplot2::scale_x_date(
           labels = extra.args$date.format %||% ggplot2::waiver(),
-          expand = ggplot2::expansion(mult = c(0.025, 0.025))
+          expand = ggplot2::expansion(mult = c(0.02, 0.02))
         )
       } else {
         ggplot2::scale_x_datetime(
           date_labels = extra.args$date.format %||% ggplot2::waiver(),
-          expand = ggplot2::expansion(mult = c(0.025, 0.025))
+          expand = ggplot2::expansion(mult = c(0.02, 0.02))
         )
       }
     } else {
       ggplot2::scale_x_continuous(
-        expand = ggplot2::expansion(mult = c(0.05, 0.05))
+        expand = ggplot2::expansion(mult = c(0.02, 0.02))
       )
     }
   }
@@ -1421,11 +1421,11 @@ scatter_density <- function(
   if (log.y) {
     ggplot2::scale_y_continuous(
       transform = "log10",
-      expand = ggplot2::expansion(mult = c(0.05, 0.05))
+      expand = ggplot2::expansion(mult = c(0.02, 0.02))
     )
   } else {
     ggplot2::scale_y_continuous(
-      expand = ggplot2::expansion(mult = c(0.05, 0.05))
+      expand = ggplot2::expansion(mult = c(0.02, 0.02))
     )
   }
 }
