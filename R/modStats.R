@@ -312,16 +312,16 @@ rankModels <- function(mydata, rank.name = "group") {
 
 ## number of valid readings
 N <- function(x, mod = "mod", obs = "obs") {
-  x <- na.omit(x[, c(mod, obs)])
+  x <- stats::na.omit(x[, c(mod, obs)])
   res <- nrow(x)
   data.frame(n = res)
 }
 
 ## fraction within a factor of two
 FAC2 <- function(x, mod = "mod", obs = "obs") {
-  x <- na.omit(x[, c(mod, obs)])
+  x <- stats::na.omit(x[, c(mod, obs)])
   ratio <- x[[mod]] / x[[obs]]
-  ratio <- na.omit(ratio)
+  ratio <- stats::na.omit(ratio)
   len <- length(ratio)
   if (len > 0) {
     res <- length(which(ratio >= 0.5 & ratio <= 2)) / len
@@ -333,35 +333,35 @@ FAC2 <- function(x, mod = "mod", obs = "obs") {
 
 ## mean bias
 MB <- function(x, mod = "mod", obs = "obs") {
-  x <- na.omit(x[, c(mod, obs)])
+  x <- stats::na.omit(x[, c(mod, obs)])
   res <- mean(x[[mod]] - x[[obs]])
   data.frame(MB = res)
 }
 
 ## mean gross error
 MGE <- function(x, mod = "mod", obs = "obs") {
-  x <- na.omit(x[, c(mod, obs)])
+  x <- stats::na.omit(x[, c(mod, obs)])
   res <- mean(abs(x[[mod]] - x[[obs]]))
   data.frame(MGE = res)
 }
 
 ## normalised mean bias
 NMB <- function(x, mod = "mod", obs = "obs") {
-  x <- na.omit(x[, c(mod, obs)])
+  x <- stats::na.omit(x[, c(mod, obs)])
   res <- sum(x[[mod]] - x[[obs]]) / sum(x[[obs]])
   data.frame(NMB = res)
 }
 
 ## normalised mean gross error
 NMGE <- function(x, mod = "mod", obs = "obs") {
-  x <- na.omit(x[, c(mod, obs)])
+  x <- stats::na.omit(x[, c(mod, obs)])
   res <- sum(abs(x[[mod]] - x[[obs]])) / sum(x[[obs]])
   data.frame(NMGE = res)
 }
 
 ## root mean square error
 RMSE <- function(x, mod = "mod", obs = "obs") {
-  x <- na.omit(x[, c(mod, obs)])
+  x <- stats::na.omit(x[, c(mod, obs)])
   res <- mean((x[[mod]] - x[[obs]])^2)^0.5
   data.frame(RMSE = res)
 }
@@ -369,7 +369,7 @@ RMSE <- function(x, mod = "mod", obs = "obs") {
 ## correlation coefficient
 # when SD=0; will return(NA)
 r <- function(x, mod = "mod", obs = "obs", ...) {
-  x <- na.omit(x[, c(mod, obs)])
+  x <- stats::na.omit(x[, c(mod, obs)])
   res <- suppressWarnings(stats::cor.test(x[[mod]], x[[obs]], ...))
 
   data.frame(r = res$estimate, P = res$p.value)
@@ -377,7 +377,7 @@ r <- function(x, mod = "mod", obs = "obs", ...) {
 
 ##  Coefficient of Efficiency
 COE <- function(x, mod = "mod", obs = "obs") {
-  x <- na.omit(x[, c(mod, obs)])
+  x <- stats::na.omit(x[, c(mod, obs)])
 
   res <- 1 - sum(abs(x[[mod]] - x[[obs]])) / sum(abs(x[[obs]] - mean(x[[obs]])))
 
@@ -386,7 +386,7 @@ COE <- function(x, mod = "mod", obs = "obs") {
 
 ##  Index of Agreement
 IOA <- function(x, mod = "mod", obs = "obs") {
-  x <- na.omit(x[, c(mod, obs)])
+  x <- stats::na.omit(x[, c(mod, obs)])
 
   LHS <- sum(abs(x[[mod]] - x[[obs]]))
   RHS <- 2 * sum(abs(x[[obs]] - mean(x[[obs]])))

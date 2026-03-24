@@ -310,7 +310,7 @@ trajLevel <- function(
       dplyr::group_by(dplyr::across(vars)) |>
       dplyr::summarise(
         N = length(date),
-        date = head(date, 1),
+        date = utils::head(date, 1),
         count = mean(.data[[pollutant]], na.rm = TRUE)
       )
 
@@ -356,7 +356,7 @@ trajLevel <- function(
     # count % of times a cell contains a trajectory point
     # need date for later use of type
     mydata <- mydata |>
-      summarise(
+      dplyr::summarise(
         count = length(.data$date),
         date = dplyr::first(.data$date),
         .by = dplyr::all_of(vars)
@@ -398,14 +398,18 @@ trajLevel <- function(
   ## Poential Source Contribution Function
   if (statistic == "pscf") {
     ## high percentile
-    Q90 <- quantile(mydata[[pollutant]], probs = percentile / 100, na.rm = TRUE)
+    Q90 <- stats::quantile(
+      mydata[[pollutant]],
+      probs = percentile / 100,
+      na.rm = TRUE
+    )
 
     ## calculate the proportion of points in cell with value > Q90
     mydata <- mydata |>
-      group_by(across(vars)) |>
-      summarise(
+      dplyr::group_by(dplyr::across(vars)) |>
+      dplyr::summarise(
         N = length(date),
-        date = head(date, 1),
+        date = utils::head(date, 1),
         count = length(which(.data[[pollutant]] > Q90)) / N
       )
 
@@ -448,20 +452,20 @@ trajLevel <- function(
   if (tolower(statistic) == "sqtba") {
     # calculate sigma
     mydata <- mydata |>
-      mutate(sigma = sigma * abs(hour.inc)) |>
+      dplyr::mutate(sigma = sigma * abs(hour.inc)) |>
       tidyr::drop_na({{ pollutant }})
 
     # receptor grid
     # use trajectory data to determine grid size - don't go to extremes
     r_grid <- tidyr::expand_grid(
       lat = seq(
-        round(quantile(mydata$lat, probs = 0.002)),
-        round(quantile(mydata$lat, probs = 0.998)),
+        round(stats::quantile(mydata$lat, probs = 0.002)),
+        round(stats::quantile(mydata$lat, probs = 0.998)),
         by = lat.inc
       ),
       lon = seq(
-        round(quantile(mydata$lon, probs = 0.002)),
-        round(quantile(mydata$lon, probs = 0.998)),
+        round(stats::quantile(mydata$lon, probs = 0.002)),
+        round(stats::quantile(mydata$lon, probs = 0.998)),
         by = lon.inc
       )
     ) |>
@@ -470,21 +474,21 @@ trajLevel <- function(
     # just run
     if (is.null(.combine)) {
       mydata <- calc_sqtba(mydata, r_grid, pollutant, min.bin) |>
-        rename({{ pollutant }} := SQTBA)
+        dplyr::rename({{ pollutant }} := SQTBA)
     } else {
       # process by site, normalise contributions by default
       mydata <- mydata |>
-        group_by(across(.combine)) |>
-        group_modify(~ calc_sqtba(.x, r_grid, pollutant, min.bin)) |>
-        mutate(SQTBA_norm = SQTBA / mean(SQTBA)) |>
-        group_by(ygrid, xgrid) |>
-        summarise(
+        dplyr::group_by(dplyr::across(.combine)) |>
+        dplyr::group_modify(~ calc_sqtba(.x, r_grid, pollutant, min.bin)) |>
+        dplyr::mutate(SQTBA_norm = SQTBA / mean(SQTBA)) |>
+        dplyr::group_by(ygrid, xgrid) |>
+        dplyr::summarise(
           SQTBA = mean(SQTBA),
           SQTBA_norm = mean(SQTBA_norm)
         ) |>
-        ungroup() |>
-        mutate(SQTBA_norm = SQTBA_norm * mean(SQTBA)) |>
-        rename({{ pollutant }} := SQTBA_norm)
+        dplyr::ungroup() |>
+        dplyr::mutate(SQTBA_norm = SQTBA_norm * mean(SQTBA)) |>
+        dplyr::rename({{ pollutant }} := SQTBA_norm)
     }
 
     # prep output data
@@ -520,20 +524,24 @@ trajLevel <- function(
     ## calculate percentage of points for all data
 
     base <- mydata |>
-      group_by(across(vars)) |>
-      summarise(count = length(date), date = head(date, 1))
+      dplyr::group_by(dplyr::across(vars)) |>
+      dplyr::summarise(count = length(date), date = utils::head(date, 1))
 
     base[[pollutant]] <- 100 * base$count / max(base$count)
 
     ## high percentile
-    Q90 <- quantile(mydata[[pollutant]], probs = percentile / 100, na.rm = TRUE)
+    Q90 <- stats::quantile(
+      mydata[[pollutant]],
+      probs = percentile / 100,
+      na.rm = TRUE
+    )
 
     ## calculate percentage of points for high data
     high <- mydata |>
-      group_by(across(vars)) |>
-      summarise(
+      dplyr::group_by(dplyr::across(vars)) |>
+      dplyr::summarise(
         N = length(date),
-        date = head(date, 1),
+        date = utils::head(date, 1),
         count = length(which(.data[[pollutant]] > Q90))
       )
 
@@ -573,7 +581,7 @@ trajLevel <- function(
       )
 
     ## select only if > min.bin points in grid cell
-    mydata <- subset(mydata, count >= min.bin)
+    mydata <- dplyr::filter(mydata, .data$count >= min.bin)
 
     # prep output data
     out_data <- dplyr::ungroup(mydata) |>
@@ -874,21 +882,21 @@ calc_sqtba <- function(mydata, r_grid, pollutant, min.bin) {
   # C++ kernel: for every (trajectory point, grid cell) pair within the
   # per-point 5-sigma bounding box, accumulate Gaussian-weighted Q and Q_c
   res <- calc_sqtba_cpp(
-    traj_lat       = traj_df$lat,
-    traj_lon       = traj_df$lon,
-    traj_sigma     = traj_df$sigma,
+    traj_lat = traj_df$lat,
+    traj_lon = traj_df$lon,
+    traj_sigma = traj_df$sigma,
     traj_pollutant = traj_df[[pollutant]],
-    traj_weight    = traj_df$weight,
-    grid_lat       = grid_df$lat,
-    grid_lon       = grid_df$lon
+    traj_weight = traj_df$weight,
+    grid_lat = grid_df$lat,
+    grid_lon = grid_df$lon
   )
 
   # Compute SQTBA = Q_c / Q per grid cell; 0 where no contributions
   grid_result <- grid_df |>
     dplyr::mutate(
-      Q       = res$Q,
-      Q_c     = res$Q_c,
-      SQTBA   = dplyr::if_else(.data$Q > 0, .data$Q_c / .data$Q, 0),
+      Q = res$Q,
+      Q_c = res$Q_c,
+      SQTBA = dplyr::if_else(.data$Q > 0, .data$Q_c / .data$Q, 0),
       lat_rnd = round(.data$lat),
       lon_rnd = round(.data$lon)
     )

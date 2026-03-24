@@ -180,7 +180,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
   p_names <- paste0("percentile.", percentile)
 
   main_stats <- mydata |>
-    dplyr::group_by(year) |>
+    dplyr::group_by(.data$year) |>
     dplyr::summarise(
       # Representative date for the year (start of year)
       date = min(date, na.rm = TRUE),
@@ -192,10 +192,10 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
       mean = mean(value, na.rm = TRUE),
       min = suppressWarnings(min(value, na.rm = TRUE)),
       max = suppressWarnings(max(value, na.rm = TRUE)),
-      median = median(value, na.rm = TRUE),
+      median = stats::median(value, na.rm = TRUE),
 
       # Percentiles (returns a dataframe column we unpack later)
-      pct_vals = list(quantile(
+      pct_vals = list(stats::quantile(
         value,
         probs = percentile / 100,
         na.rm = TRUE,
@@ -244,7 +244,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
     roll8_val = mydata_roll8$roll8,
     roll24_val = mydata_roll24$roll24
   ) |>
-    dplyr::group_by(year) |>
+    dplyr::group_by(.data$year) |>
     dplyr::summarise(
       roll_8_max = suppressWarnings(max(roll8_val, na.rm = TRUE)),
       roll_24_max = suppressWarnings(max(roll24_val, na.rm = TRUE)),
@@ -263,7 +263,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
 
   max_daily <- daily_stats |>
     dplyr::mutate(year = lubridate::year(date)) |>
-    dplyr::group_by(year) |>
+    dplyr::group_by(.data$year) |>
     dplyr::summarise(
       max_daily = suppressWarnings(max(value, na.rm = TRUE)),
 
@@ -285,7 +285,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
     # We reuse the mydata_roll8 calculated in Step 2
     o3_rolling_targets <- mydata_roll8 |>
       dplyr::mutate(day = lubridate::floor_date(date, "day")) |>
-      dplyr::group_by(year, day) |>
+      dplyr::group_by(.data$year, .data$day) |>
       dplyr::summarise(
         max_roll8 = suppressWarnings(max(roll8, na.rm = TRUE)),
         .groups = "drop_last"
@@ -306,7 +306,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
 
       aot_calc <- mydata_aot |>
         dplyr::filter(daylight == "daylight") |>
-        dplyr::group_by(year) |>
+        dplyr::group_by(.data$year) |>
         dplyr::summarise(
           AOT40 = sum(pmax(value - 80, 0), na.rm = TRUE) * 0.50, # 0.5 conversion for ppb
           .groups = "drop"
@@ -361,7 +361,7 @@ calcStats <- function(mydata, data.thresh, percentile, ...) {
     dplyr::mutate(
       dplyr::across(
         dplyr::all_of(cols_to_mask),
-        ~ if_else(dat.cap < data.thresh, NA_real_, .)
+        ~ dplyr::if_else(dat.cap < data.thresh, NA_real_, .)
       )
     )
 

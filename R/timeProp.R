@@ -126,7 +126,8 @@ timeProp <- function(
       cutData(type = "seasonyear") |>
       dplyr::mutate(xleft = min(.data$date), .by = c("seasonyear", type)) |>
       dplyr::mutate(
-        xright = .data$xleft + median(diff(.data$xleft)[diff(.data$xleft) != 0])
+        xright = .data$xleft +
+          stats::median(diff(.data$xleft)[diff(.data$xleft) != 0])
       ) |>
       dplyr::select(-dplyr::any_of("seasonyear"))
   } else {
@@ -134,7 +135,8 @@ timeProp <- function(
       dplyr::mutate(
         mydata,
         xleft = as.POSIXct(cut(.data$date, avg.time), tz = tzone),
-        xright = .data$xleft + median(diff(.data$xleft)[diff(.data$xleft) != 0])
+        xright = .data$xleft +
+          stats::median(diff(.data$xleft)[diff(.data$xleft) != 0])
       )
   }
 
@@ -162,7 +164,7 @@ timeProp <- function(
     ) |>
     # weighted mean, with cumulative sum for bar heights
     dplyr::mutate(
-      weighted_mean = .data[[pollutant]] * n / sum(n),
+      weighted_mean = .data[[pollutant]] * .data$n / sum(.data$n),
       Var1 = tidyr::replace_na(.data$weighted_mean, 0),
       var2 = cumsum(.data$Var1),
       var2lag = dplyr::lag(.data$var2, default = 0),

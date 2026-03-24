@@ -245,7 +245,7 @@ cutData <- function(
           sep = ""
         ))
         ## order the data by date
-        x <- arrange(x, date)
+        x <- dplyr::arrange(x, date)
       } else {
         x[[name]] <- factor("all data")
       }
@@ -343,7 +343,7 @@ cutVecNumeric <- function(x, type, n.levels, is.axis) {
   temp.levels <-
     levels(cut(
       x,
-      unique(quantile(
+      unique(stats::quantile(
         x,
         probs = seq(0, 1, length = n.levels + 1),
         na.rm = TRUE
@@ -353,7 +353,7 @@ cutVecNumeric <- function(x, type, n.levels, is.axis) {
 
   x <- cut(
     x,
-    unique(quantile(
+    unique(stats::quantile(
       x,
       probs = seq(0, 1, length = n.levels + 1),
       na.rm = TRUE
@@ -419,7 +419,7 @@ cutVecWeek <- function(x, drop) {
 # Cut a date vector into weekday/weekend
 cutVecWeekend <- function(x, drop) {
   wdays <- lubridate::wday(x, week_start = 1L)
-  x <- dplyr::case_match(wdays, 1:5 ~ "weekday", 6:7 ~ "weekend")
+  x <- dplyr::recode_values(wdays, 1:5 ~ "weekday", 6:7 ~ "weekend")
   unique_vals <- unique(x)
   if (drop %in% c("default", "none")) {
     levels <- c("weekday", "weekend")
@@ -596,7 +596,7 @@ cutVecDST <- function(x, local.tz, drop) {
     )
   }
 
-  x <- dplyr::case_match(isdst, 0 ~ "Non-DST", 1 ~ "DST")
+  x <- dplyr::recode_values(isdst, 0 ~ "Non-DST", 1 ~ "DST")
 
   if (drop %in% c("default", "empty", "outside")) {
     x <- factor(x, levels = unique(x))
@@ -830,7 +830,7 @@ cutVecSeason <- function(
   month_ids <- lubridate::month(x)
 
   if (hemisphere == "northern") {
-    x_str <- dplyr::case_match(
+    x_str <- dplyr::recode_values(
       month_ids,
       c(12, 1, 2) ~ season_map[["winter"]],
       c(3, 4, 5) ~ season_map[["spring"]],
@@ -838,7 +838,7 @@ cutVecSeason <- function(
       c(9, 10, 11) ~ season_map[["autumn"]]
     )
   } else {
-    x_str <- dplyr::case_match(
+    x_str <- dplyr::recode_values(
       month_ids,
       c(12, 1, 2) ~ season_map[["summer"]],
       c(3, 4, 5) ~ season_map[["autumn"]],

@@ -371,9 +371,9 @@ variationPlot <- function(
 
             dplyr::summarise(
               mydata,
-              mid = quantile(.data$value, 0.5, na.rm = TRUE),
-              max = quantile(.data$value, qs[1], na.rm = TRUE),
-              min = quantile(.data$value, qs[2], na.rm = TRUE),
+              mid = stats::quantile(.data$value, 0.5, na.rm = TRUE),
+              max = stats::quantile(.data$value, qs[1], na.rm = TRUE),
+              min = stats::quantile(.data$value, qs[2], na.rm = TRUE),
               .by = dplyr::all_of(c("x", type_cols, "group"))
             ) |>
               dplyr::mutate(
@@ -411,9 +411,9 @@ variationPlot <- function(
 
             dplyr::summarise(
               mydata,
-              mid = quantile(.data$value, 0.5, na.rm = TRUE),
-              max = quantile(.data$value, qs[1], na.rm = TRUE),
-              min = quantile(.data$value, qs[2], na.rm = TRUE),
+              mid = stats::quantile(.data$value, 0.5, na.rm = TRUE),
+              max = stats::quantile(.data$value, qs[1], na.rm = TRUE),
+              min = stats::quantile(.data$value, qs[2], na.rm = TRUE),
               .by = dplyr::all_of(c("x", type_cols, "group"))
             ) |>
               dplyr::mutate(

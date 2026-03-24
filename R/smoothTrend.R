@@ -192,11 +192,11 @@ smoothTrend <- function(
 
   # better interval, most common interval in a year
   interval <-
-    dplyr::case_match(
+    dplyr::recode_values(
       days,
       31 ~ "month",
       c(365, 366) ~ "year",
-      .default = interval
+      default = interval
     )
 
   # prepare data
@@ -479,7 +479,7 @@ deseason_smoothtrend_data <- function(mydata, deseason) {
   }
 
   if (deseason) {
-    myts <- ts(
+    myts <- stats::ts(
       mydata[["value"]],
       start = c(start.year, start.month),
       end = c(end.year, end.month),
@@ -490,13 +490,13 @@ deseason_smoothtrend_data <- function(mydata, deseason) {
 
     if (anyNA(myts)) {
       # use forecast package to get best arima
-      fit <- ts(rowSums(tsSmooth(StructTS(myts))[, -2]))
+      fit <- stats::ts(rowSums(stats::tsSmooth(stats::StructTS(myts))[, -2]))
       id <- which(is.na(myts))
 
       myts[id] <- fit[id]
     }
 
-    ssd <- stl(myts, s.window = 11, robust = TRUE, s.degree = 1)
+    ssd <- stats::stl(myts, s.window = 11, robust = TRUE, s.degree = 1)
 
     deseas <- ssd$time.series[, "trend"] + ssd$time.series[, "remainder"]
     deseas <- as.vector(deseas)
@@ -575,9 +575,9 @@ fit_smoothtrend_gam <- function(
         )
 
         ## for uncertainties
-        std <- qnorm(level / 2 + 0.5)
+        std <- stats::qnorm(level / 2 + 0.5)
 
-        pred <- predict(mod, data.frame(x = xseq), se = se)
+        pred <- stats::predict(mod, data.frame(x = xseq), se = se)
 
         results <- data.frame(
           date = xseq,
@@ -613,9 +613,9 @@ fit_smoothtrend_gam <- function(
           mod <- mgcv::gam(y ~ s(x, k = k), data = thedata, ...)
         }
 
-        residuals <- residuals(mod) ## residuals of the model
+        residuals <- stats::residuals(mod) ## residuals of the model
 
-        pred.input <- predict(mod, thedata)
+        pred.input <- stats::predict(mod, thedata)
 
         for (i in 1:n.sim) {
           new.data <- data.frame(
@@ -625,7 +625,7 @@ fit_smoothtrend_gam <- function(
 
           mod <- mgcv::gam(y ~ s(x), data = new.data, ...)
 
-          pred <- predict(mod, data.frame(x = xseq))
+          pred <- stats::predict(mod, data.frame(x = xseq))
 
           boot.pred[, i] <- as.vector(pred)
         }
@@ -634,7 +634,7 @@ fit_smoothtrend_gam <- function(
         percentiles <- apply(
           boot.pred,
           1,
-          function(x) quantile(x, probs = c(0.025, 0.975))
+          function(x) stats::quantile(x, probs = c(0.025, 0.975))
         )
 
         results <- as.data.frame(cbind(

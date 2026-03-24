@@ -1,15 +1,13 @@
-#' @author Karl Ropkins
 #' @noRd
 openair <- function(x) {
   class(x) <- "openair"
   x
 }
 
-#' @author Karl Ropkins
 #' @noRd
 is.openair <- function(x, full.test = TRUE, ...) {
   # standard test
-  output <- is(x)[1] == "openair"
+  output <- methods::is(x)[1] == "openair"
   # full.test
   if (full.test & output == TRUE) {
     output <- all(c("plot", "data", "call") %in% names(x))
@@ -18,7 +16,6 @@ is.openair <- function(x, full.test = TRUE, ...) {
   output
 }
 
-#' @author Karl Ropkins
 #' @noRd
 openairApply <- function(
   object,
@@ -92,9 +89,7 @@ openairApply <- function(
   return(invisible(ans))
 }
 
-#' @method summary openair
-#' @author Karl Ropkins
-#' @export
+#' @exportS3Method base::summary
 summary.openair <- function(object, subset = "all", ...) {
   openairApply(
     object,
@@ -105,23 +100,17 @@ summary.openair <- function(object, subset = "all", ...) {
   )
 }
 
-#' @method head openair
-#' @author Karl Ropkins
-#' @export
+#' @exportS3Method utils::head
 head.openair <- function(x, subset = "all", ...) {
-  openairApply(x, fun = head, subset = subset, ..., fun.name = "head")
+  openairApply(x, fun = utils::head, subset = subset, ..., fun.name = "head")
 }
 
-#' @method tail openair
-#' @author Karl Ropkins
-#' @export
+#' @exportS3Method utils::tail
 tail.openair <- function(x, subset = "all", ...) {
-  openairApply(x, fun = tail, subset = subset, ..., fun.name = "tail")
+  openairApply(x, fun = utils::tail, subset = subset, ..., fun.name = "tail")
 }
 
-#' @method plot openair
-#' @author Karl Ropkins
-#' @export
+#' @exportS3Method graphics::plot
 plot.openair <- function(x, subset = "all", silent = TRUE, ...) {
   if (!is.openair(x)) {
     return(invisible(NULL))
@@ -180,9 +169,9 @@ plot.openair <- function(x, subset = "all", silent = TRUE, ...) {
   }
 
   return(plot(x$plot[[temp[1]]], ...))
-} #' @method print openair
-#' @author Karl Ropkins
-#' @export
+}
+
+#' @exportS3Method base::print
 print.openair <- function(x, silent = FALSE, plot = TRUE, ...) {
   if (!is.openair(x)) {
     return(invisible(NULL))
@@ -249,9 +238,7 @@ print.openair <- function(x, silent = FALSE, plot = TRUE, ...) {
   }
 }
 
-#' @method names openair
-#' @author Karl Ropkins
-#' @export
+#' @exportS3Method base::names
 names.openair <- function(x, ...) {
   # stuff we own up to...
   vis.elements <- c("data", "plot", "call", "clust", "clust_stats")

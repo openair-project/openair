@@ -24,7 +24,7 @@ Depends:
 Imports:
     cli,
     cluster,
-    dplyr (>= 1.1),
+    dplyr (>= 1.2),
     ggplot2 (>= 4.0.0),
     graphics,
     grDevices,
@@ -40,7 +40,6 @@ Imports:
     rlang,
     scales,
     stats,
-    tibble,
     tidyr,
     utils
 Suggests:

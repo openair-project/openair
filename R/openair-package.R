@@ -91,73 +91,9 @@
 #' @keywords internal
 "_PACKAGE"
 ## usethis namespace: start
-#' @import grid
-#' @import cluster
-#' @import dplyr
-#' @import mgcv
-#' @importFrom lubridate as_date
-#' @importFrom lubridate ceiling_date
-#' @importFrom lubridate day
-#' @importFrom lubridate dmy
-#' @importFrom lubridate dst
-#' @importFrom lubridate floor_date
-#' @importFrom lubridate force_tz
-#' @importFrom lubridate hour
-#' @importFrom lubridate month
-#' @importFrom lubridate parse_date_time
-#' @importFrom lubridate round_date
-#' @importFrom lubridate wday
-#' @importFrom lubridate year
-#' @importFrom methods is
 #' @importFrom Rcpp evalCpp
 #' @importFrom rlang %||%
 #' @importFrom rlang .data
 #' @importFrom rlang :=
-#' @importFrom stats aggregate
-#' @importFrom stats approx
-#' @importFrom stats arima
-#' @importFrom stats as.dendrogram
-#' @importFrom stats as.dist
-#' @importFrom stats as.ts
-#' @importFrom stats ave
-#' @importFrom stats coef
-#' @importFrom stats complete.cases
-#' @importFrom stats cor
-#' @importFrom stats dist
-#' @importFrom stats fitted
-#' @importFrom stats formula
-#' @importFrom stats frequency
-#' @importFrom stats hclust
-#' @importFrom stats KalmanRun
-#' @importFrom stats lm
-#' @importFrom stats median
-#' @importFrom stats na.omit
-#' @importFrom stats optimize
-#' @importFrom stats order.dendrogram
-#' @importFrom stats predict
-#' @importFrom stats qchisq
-#' @importFrom stats qnorm
-#' @importFrom stats qt
-#' @importFrom stats quantile
-#' @importFrom stats reshape
-#' @importFrom stats residuals
-#' @importFrom stats sd
-#' @importFrom stats smooth.spline
-#' @importFrom stats spline
-#' @importFrom stats stl
-#' @importFrom stats StructTS
-#' @importFrom stats ts
-#' @importFrom stats tsp
-#' @importFrom stats tsSmooth
-#' @importFrom stats update
-#' @importFrom stats var
-#' @importFrom tibble tibble
-#' @importFrom utils compareVersion
-#' @importFrom utils head
-#' @importFrom utils modifyList
-#' @importFrom utils read.csv
-#' @importFrom utils tail
-#' @importFrom stats coefficients
-#' @importFrom stats .lm.fit
 ## usethis namespace: end
 NULL

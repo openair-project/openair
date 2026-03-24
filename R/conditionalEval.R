@@ -167,7 +167,7 @@ conditionalEval <- function(
   }
 
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-  mydata <- na.omit(mydata)
+  mydata <- stats::na.omit(mydata)
 
   lo <- min(mydata[, c(mod, obs)])
   hi <- max(mydata[, c(mod, obs)])
@@ -213,9 +213,9 @@ conditionalEval <- function(
         dplyr::group_by(.data[["pred.cut"]], .data[[statistic]]) |>
         dplyr::summarise(n = dplyr::n(), .groups = "drop") |>
         dplyr::group_by(.data[["pred.cut"]]) |>
-        dplyr::mutate(Freq = n / sum(n)) |>
+        dplyr::mutate(Freq = .data$n / sum(.data$n)) |>
         dplyr::ungroup() |>
-        dplyr::select(-n)
+        dplyr::select(-"n")
     }
 
     other_results <- mydata |>
@@ -293,8 +293,8 @@ conditionalEval <- function(
           val <- boots[[stat]]
           data.frame(
             mean = mean(val, na.rm = TRUE),
-            lower = quantile(val, 0.025, na.rm = TRUE),
-            upper = quantile(val, 0.975, na.rm = TRUE)
+            lower = stats::quantile(val, 0.025, na.rm = TRUE),
+            upper = stats::quantile(val, 0.975, na.rm = TRUE)
           )
         }) |>
         dplyr::ungroup() |>

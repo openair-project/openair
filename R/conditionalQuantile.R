@@ -181,7 +181,7 @@ conditionalQuantile <- function(
   }
 
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-  mydata <- na.omit(mydata)
+  mydata <- stats::na.omit(mydata)
   mydata <- cutData(mydata, type)
 
   lo <- min(mydata[c(mod, obs)])
@@ -237,11 +237,11 @@ conditionalQuantile <- function(
     list(
       quant = data.frame(
         x = labs,
-        med = safe_stat(median),
-        q1 = safe_stat(quantile, probs = 0.25, min_n = min.bin[1]),
-        q2 = safe_stat(quantile, probs = 0.75, min_n = min.bin[1]),
-        q3 = safe_stat(quantile, probs = 0.10, min_n = min.bin[2]),
-        q4 = safe_stat(quantile, probs = 0.90, min_n = min.bin[2])
+        med = safe_stat(stats::median),
+        q1 = safe_stat(stats::quantile, probs = 0.25, min_n = min.bin[1]),
+        q2 = safe_stat(stats::quantile, probs = 0.75, min_n = min.bin[1]),
+        q3 = safe_stat(stats::quantile, probs = 0.10, min_n = min.bin[2]),
+        q4 = safe_stat(stats::quantile, probs = 0.90, min_n = min.bin[2])
       ),
       hist = data.frame(
         x = rep(labs, 2),

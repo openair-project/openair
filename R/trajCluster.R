@@ -132,8 +132,8 @@ trajCluster <- function(
 
     res[is.na(res)] <- 0 ## possible for some to be NA if trajectory does not move between two hours?
 
-    dist.res <- as.dist(res)
-    clusters <- pam(dist.res, n.cluster)
+    dist.res <- stats::as.dist(res)
+    clusters <- cluster::pam(dist.res, n.cluster)
     cluster <- rep(clusters$clustering, each = n)
     traj$cluster <- as.character(paste("C", cluster, sep = ""))
     traj
@@ -164,7 +164,10 @@ trajCluster <- function(
 
   newdata <- traj |>
     dplyr::select(dplyr::all_of(vars)) |>
-    summarise(across(everything(), mean), .by = dplyr::all_of(vars2))
+    dplyr::summarise(
+      dplyr::across(dplyr::everything(), mean),
+      .by = dplyr::all_of(vars2)
+    )
 
   # count observations in each cluster/type
   clusters <- dplyr::count(

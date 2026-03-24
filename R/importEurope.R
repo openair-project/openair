@@ -20,7 +20,7 @@
 #' @param progress Show a progress bar when many sites/years are being imported?
 #'   Defaults to `TRUE`.
 #'
-#' @return a [tibble][tibble::tibble-package]
+#' @return a `tibble`
 #' @family import functions
 #' @export
 #'
@@ -62,11 +62,11 @@ importEurope <- function(
     site = site,
     year = year
   ) |>
-    arrange(
+    dplyr::arrange(
       site,
       year
     ) |>
-    mutate(
+    dplyr::mutate(
       file_remote = paste0(
         remote_path,
         "/",
@@ -79,7 +79,7 @@ importEurope <- function(
         ".csv.gz"
       )
     ) |>
-    pull(file_remote)
+    dplyr::pull(file_remote)
 
   # Load files
   if (progress) {
@@ -98,24 +98,24 @@ importEurope <- function(
   }
 
   # just hourly observations
-  df <- filter(df, summary == 1)
+  df <- dplyr::filter(df, summary == 1)
 
   if (!to_narrow) {
     df <- make_saq_observations_wider(df)
   } else {
-    df <- select(df, -summary, -process, -validity)
+    df <- dplyr::select(df, -summary, -process, -validity)
   }
 
   # don't need end date
-  df <- select(df, -date_end) |>
-    rename(code = site)
+  df <- dplyr::select(df, -date_end) |>
+    dplyr::rename(code = site)
 
   if (meta) {
     meta <- importMeta("europe")
-    df <- left_join(df, meta, by = "code")
+    df <- dplyr::left_join(df, meta, by = "code")
   }
 
-  df <- arrange(df, code, date)
+  df <- dplyr::arrange(df, code, date)
 
   return(df)
 }
@@ -129,7 +129,7 @@ get_saq_observations_worker <- function(file, tz) {
     return()
   }
 
-  df <- filter(df, validity %in% c(1, 2, 3) | is.na(validity))
+  df <- dplyr::filter(df, validity %in% c(1, 2, 3) | is.na(validity))
 
   return(df)
 }
@@ -161,7 +161,7 @@ read_saq_observations <- function(file, tz = tz, verbose) {
       # warning supression is for when url does not exist
       suppressWarnings(
         readr::read_csv(con, col_types = col_types, progress = FALSE) |>
-          mutate(
+          dplyr::mutate(
             date = lubridate::ymd_hms(date, tz = tz, quiet = TRUE),
             date_end = lubridate::ymd_hms(date_end, tz = tz, quiet = TRUE)
           )
@@ -170,7 +170,7 @@ read_saq_observations <- function(file, tz = tz, verbose) {
     error = function(e) {
       # Close the connection on error
       close.connection(con)
-      tibble()
+      dplyr::tibble()
     }
   )
 
@@ -186,7 +186,7 @@ make_saq_observations_wider <- function(df) {
   tryCatch(
     {
       df |>
-        select(
+        dplyr::select(
           date,
           date_end,
           site,
@@ -202,14 +202,14 @@ make_saq_observations_wider <- function(df) {
       )
 
       df |>
-        select(
+        dplyr::select(
           date,
           date_end,
           site,
           variable,
           value
         ) |>
-        distinct(date, site, variable, .keep_all = TRUE) |>
+        dplyr::distinct(date, site, variable, .keep_all = TRUE) |>
         tidyr::spread(variable, value)
     }
   )

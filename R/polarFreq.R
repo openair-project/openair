@@ -210,7 +210,7 @@ polarFreq <- function(
   mydata$ws[ids] <- mydata$ws[ids] + 0.0001
 
   # remove all NAs
-  mydata <- na.omit(mydata)
+  mydata <- stats::na.omit(mydata)
 
   mydata <- cutData(mydata, type, ...)
 
@@ -249,7 +249,9 @@ polarFreq <- function(
 
     if (statistic == "frequency") {
       # case with only ws and wd
-      weights <- tapply(mydata$ws, list(wd, ws), function(x) length(na.omit(x)))
+      weights <- tapply(mydata$ws, list(wd, ws), function(x) {
+        length(stats::na.omit(x))
+      })
     }
 
     if (statistic == "mean") {
@@ -264,7 +266,7 @@ polarFreq <- function(
       weights <- tapply(
         mydata[[pollutant]],
         list(wd, ws),
-        function(x) median(x, na.rm = TRUE)
+        function(x) stats::median(x, na.rm = TRUE)
       )
     }
 
@@ -280,7 +282,7 @@ polarFreq <- function(
       weights <- tapply(
         mydata[[pollutant]],
         list(wd, ws),
-        function(x) sd(x, na.rm = TRUE)
+        function(x) stats::sd(x, na.rm = TRUE)
       )
     }
 
@@ -298,7 +300,9 @@ polarFreq <- function(
     weights <- as.vector(t(weights))
 
     # frequency - remove points with freq < min.bin
-    bin.len <- tapply(mydata$ws, list(wd, ws), function(x) length(na.omit(x)))
+    bin.len <- tapply(mydata$ws, list(wd, ws), function(x) {
+      length(stats::na.omit(x))
+    })
     binned.len <- as.vector(t(bin.len))
     ids <- which(binned.len < min.bin)
     weights[ids] <- NA
@@ -320,7 +324,7 @@ polarFreq <- function(
       .include_default = TRUE
     )
 
-  results.grid <- na.omit(results.grid)
+  results.grid <- stats::na.omit(results.grid)
 
   # for pollution data
   results.grid$weights[results.grid$weights == "NaN"] <- 0

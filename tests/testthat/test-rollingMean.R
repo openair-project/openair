@@ -1,5 +1,5 @@
 test_that("rollingMean works", {
-  testdat <- head(mydata, n = 20)
+  testdat <- utils::head(mydata, n = 20)
 
   # check C works
   expect_no_error(rollingMean(testdat))

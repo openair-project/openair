@@ -144,10 +144,10 @@ polarCluster <-
     u <- v <- z <- strip <- strip.left <- NULL
 
     # add id for later merging
-    mydata <- mutate(mydata, .id = seq_len(nrow(mydata)))
+    mydata <- dplyr::mutate(mydata, .id = seq_len(nrow(mydata)))
 
     if (is.data.frame(after)) {
-      after <- mutate(after, .id = seq_len(nrow(after)))
+      after <- dplyr::mutate(after, .id = seq_len(nrow(after)))
       data.orig.after <- after
     }
 
@@ -219,7 +219,7 @@ polarCluster <-
 
     # remove missing because we don't want to find clusters for those points
     # saves a lot on computation
-    results.grid <- na.omit(results.grid)
+    results.grid <- stats::na.omit(results.grid)
     cols_to_keep <- c("u", "v", "z", "x", wd)
     results.grid <- dplyr::select(
       results.grid,
@@ -232,7 +232,7 @@ polarCluster <-
     make.clust <- function(i, results.grid) {
       i <- n.clusters[i]
       dat.orig <- results.grid
-      clusters <- pam(results.grid, i, stand = TRUE, pamonce = 3)
+      clusters <- cluster::pam(results.grid, i, stand = TRUE, pamonce = 3)
       dat.orig$cluster <- clusters$clustering
       dat.orig$nclust <- paste(i, "clusters")
       dat.orig
@@ -257,7 +257,7 @@ polarCluster <-
     col <- openColours(cols, (nlev2 - 1))
     col.scale <- breaks
 
-    myform <- formula("cluster ~ u * v | nclust")
+    myform <- stats::formula("cluster ~ u * v | nclust")
 
     # find ids of u and v if only one cluster used
     if (length(n.clusters) == 1L) {
@@ -268,11 +268,14 @@ polarCluster <-
       # build cluster lookup matrix once (some cells missing due to exclude.missing in polarPlot)
       mat.dim <- max(results.grid[, c("u.id", "v.id")])
       clust_mat <- matrix(NA, ncol = mat.dim, nrow = mat.dim)
-      clust_mat[cbind(results.grid$u.id, results.grid$v.id)] <- results.grid$cluster
+      clust_mat[cbind(
+        results.grid$u.id,
+        results.grid$v.id
+      )] <- results.grid$cluster
 
       # map a data frame's observations to clusters via u-v grid lookup
       map_to_clusters <- function(df) {
-        df <- na.omit(df)
+        df <- stats::na.omit(df)
         df <- transform(
           df,
           u = get(x) * sin(wd * pi / 180),
@@ -281,15 +284,23 @@ polarCluster <-
         df$u.id <- findInterval(df$u, uv.id, all.inside = TRUE)
         df$v.id <- findInterval(df$v, uv.id, all.inside = TRUE)
         df$cluster <- as.factor(clust_mat[cbind(df$u.id, df$v.id)])
-        select(df, date, cluster, .id)
+        dplyr::select(df, date, cluster, .id)
       }
 
-      mydata <- na.omit(mydata)
-      results <- left_join(data.orig, map_to_clusters(mydata), by = c(".id", "date"))
-      myform <- formula("cluster ~ u * v")
+      mydata <- stats::na.omit(mydata)
+      results <- dplyr::left_join(
+        data.orig,
+        map_to_clusters(mydata),
+        by = c(".id", "date")
+      )
+      myform <- stats::formula("cluster ~ u * v")
 
       if (is.data.frame(after)) {
-        after <- left_join(data.orig.after, map_to_clusters(after), by = c(".id", "date"))
+        after <- dplyr::left_join(
+          data.orig.after,
+          map_to_clusters(after),
+          by = c(".id", "date")
+        )
       }
     }
 
@@ -388,10 +399,10 @@ polarCluster <-
           {{ var_mean }} := mean(.data[[pollutant]], na.rm = TRUE),
           n = dplyr::n()
         ) |>
-        na.omit() |>
+        stats::na.omit() |>
         dplyr::mutate(
-          n_mean = n * .data[[var_mean]],
-          n_percent = round(100 * n / sum(n), 1),
+          n_mean = .data$n * .data[[var_mean]],
+          n_percent = round(100 * .data$n / sum(.data$n), 1),
           {{ var_percent }} := round(100 * n_mean / sum(n_mean), 1)
         ) |>
         dplyr::ungroup() |>

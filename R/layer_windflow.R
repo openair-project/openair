@@ -110,7 +110,7 @@ StatWindflow <- ggplot2::ggproto(
   }
 )
 
-#' @export
+#' @exportS3Method grid::makeContent
 makeContent.windflow <- function(x) {
   # Convert to mm units for calculations
   x_mm <- grid::convertX(grid::unit(x$x, "npc"), "mm", valueOnly = TRUE)

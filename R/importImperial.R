@@ -202,7 +202,7 @@ importImperial <-
           if (x$date[1] != start) {
             ## add first row
             x1 <- data.frame(date = start, site = x$site[1])
-            x <- bind_rows(x1, x)
+            x <- dplyr::bind_rows(x1, x)
           }
 
           x <- datePad(x, type = "site") ## pad out missing dates
@@ -283,20 +283,20 @@ importImperial <-
     ## rename PM volatile/non volatile components if present
 
     if ("pmfr" %in% names(thedata)) {
-      thedata <- rename(thedata, v10 = pmfr)
+      thedata <- dplyr::rename(thedata, v10 = pmfr)
       thedata <- transform(thedata, v10 = -1 * v10)
     }
 
     if ("p2fr" %in% names(thedata)) {
-      thedata <- rename(thedata, v2.5 = p2fr)
+      thedata <- dplyr::rename(thedata, v2.5 = p2fr)
       thedata <- transform(thedata, v2.5 = -1 * v2.5)
     }
 
     if ("pmfb" %in% names(thedata)) {
-      thedata <- rename(thedata, nv10 = pmfb)
+      thedata <- dplyr::rename(thedata, nv10 = pmfb)
     }
     if ("p2fb" %in% names(thedata)) {
-      thedata <- rename(thedata, nv2.5 = p2fb)
+      thedata <- dplyr::rename(thedata, nv2.5 = p2fb)
     }
 
     if (units != "mass") {
@@ -371,7 +371,11 @@ importImperial <-
       meta_data <- importMeta(source = "imperial")
       # suppress warnings about factors
       thedata <-
-        suppressWarnings(inner_join(thedata, meta_data, by = c("code", "site")))
+        suppressWarnings(dplyr::inner_join(
+          thedata,
+          meta_data,
+          by = c("code", "site")
+        ))
     }
 
     if (to_narrow) {
@@ -382,7 +386,7 @@ importImperial <-
             -c(date, site, code, latitude, longitude, site.type),
             names_to = "pollutant"
           ) |>
-          arrange(site, code, pollutant, date)
+          dplyr::arrange(site, code, pollutant, date)
       } else {
         thedata <-
           tidyr::pivot_longer(
@@ -390,13 +394,13 @@ importImperial <-
             -c(date, site, code),
             names_to = "pollutant"
           ) |>
-          arrange(site, code, pollutant, date)
+          dplyr::arrange(site, code, pollutant, date)
       }
     }
 
     cli::cli_inform(msg)
 
-    return(as_tibble(thedata))
+    return(dplyr::as_tibble(thedata))
   }
 
 #' @rdname importImperial

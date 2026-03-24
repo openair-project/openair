@@ -140,7 +140,7 @@ bootMeanDF <- function(x, conf.int = 0.95, B = 1000) {
     mean = res[1],
     min = res[2],
     max = res[3],
-    n = length(na.omit(x))
+    n = length(stats::na.omit(x))
   )
   return(res)
 }
@@ -168,8 +168,8 @@ bootMean <- function(
   if (n >= switch_point) {
     # Fast CLT path for large samples
     sample_mean <- mean(x)
-    sem <- sd(x) / sqrt(n)
-    t_score <- qt(1 - ((1 - conf.int) / 2), df = n - 1)
+    sem <- stats::sd(x) / sqrt(n)
+    t_score <- stats::qt(1 - ((1 - conf.int) / 2), df = n - 1)
     margin <- t_score * sem
 
     return(c(
@@ -185,7 +185,7 @@ bootMean <- function(
       ncol = B
     )
     boot_means <- colMeans(boot_matrix)
-    ci <- quantile(
+    ci <- stats::quantile(
       boot_means,
       probs = c((1 - conf.int) / 2, 1 - ((1 - conf.int) / 2)),
       names = FALSE
@@ -209,8 +209,8 @@ bootMeanDiff <- function(
   ## assumes y - x
   x.name <- x
   y.name <- y
-  x <- na.omit(mydata[[x]])
-  y <- na.omit(mydata[[y]])
+  x <- stats::na.omit(mydata[[x]])
+  y <- stats::na.omit(mydata[[y]])
   Mean <- mean(y) - mean(x)
 
   if (nrow(mydata) < 2 | is.na(Mean)) {
@@ -238,24 +238,24 @@ bootMeanDiff <- function(
       stringsAsFactors = FALSE
     )
 
-    res <- bind_rows(res1, res2, res)
+    res <- dplyr::bind_rows(res1, res2, res)
     res$variable <- factor(res$variable)
     return(res)
   }
 
   x <- bootMean(x, B = B)
   y <- bootMean(y, B = B)
-  quant1 <- quantile(
+  quant1 <- stats::quantile(
     x,
     c((1 - conf.int) / 2, (1 + conf.int) / 2),
     na.rm = na.rm
   )
-  quant2 <- quantile(
+  quant2 <- stats::quantile(
     y,
     c((1 - conf.int) / 2, (1 + conf.int) / 2),
     na.rm = na.rm
   )
-  quant <- quantile(
+  quant <- stats::quantile(
     y - x,
     c((1 - conf.int) / 2, (1 + conf.int) / 2),
     na.rm = na.rm
@@ -288,7 +288,7 @@ bootMeanDiff <- function(
     stringsAsFactors = FALSE
   )
 
-  res <- bind_rows(res1, res2, res)
+  res <- dplyr::bind_rows(res1, res2, res)
   res$variable <- factor(res$variable)
   res
 }

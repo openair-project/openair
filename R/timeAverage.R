@@ -309,7 +309,7 @@ timeAverage <- function(
       threshold = data.thresh,
       probs = percentile
     ) |>
-      mutate(date = lubridate::as_datetime(date, tz = TZ)) |>
+      dplyr::mutate(date = lubridate::as_datetime(date, tz = TZ)) |>
       dplyr::as_tibble()
 
     # need to add season back in if used - FIX ME
@@ -341,7 +341,7 @@ timeAverage <- function(
     }
 
     ## fill missing gaps - but only for non-dst data
-    if (avg.time != "season" && !any(dst(avmet$date))) {
+    if (avg.time != "season" && !any(lubridate::dst(avmet$date))) {
       avmet <- pad_dates_timeavg(avmet, type = type, interval = avg.time)
     }
 
@@ -435,13 +435,13 @@ bind_start_and_end_dates <- function(mydata, type, start.date, end.date, TZ) {
   if (!is.na(start.date)) {
     firstLine <- data.frame(date = as.POSIXct(start.date, tz = TZ))
     firstLine[type] <- mydata[1, type]
-    mydata <- bind_rows(firstLine, mydata)
+    mydata <- dplyr::bind_rows(firstLine, mydata)
   }
 
   if (!is.na(end.date)) {
     lastLine <- data.frame(date = as.POSIXct(end.date, tz = TZ))
     lastLine[type] <- mydata[1, type]
-    mydata <- bind_rows(mydata, lastLine)
+    mydata <- dplyr::bind_rows(mydata, lastLine)
   }
 
   # check this is necessary
@@ -470,7 +470,7 @@ pad_dates_timeavg <- function(mydata, type = NULL, interval = "month") {
   }
 
   all.dates <- data.frame(date = seq(start.date, end.date, by = interval))
-  mydata <- mydata |> full_join(all.dates, by = "date")
+  mydata <- dplyr::full_join(mydata, all.dates, by = "date")
 
   # add in missing types if gaps are made
   if (!is.null(type)) {
@@ -478,7 +478,7 @@ pad_dates_timeavg <- function(mydata, type = NULL, interval = "month") {
   }
 
   # make sure order is correct
-  mydata <- arrange(mydata, date)
+  mydata <- dplyr::arrange(mydata, date)
 
   return(mydata)
 }

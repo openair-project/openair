@@ -602,7 +602,7 @@ windRose <- function(
   prepare.grid <- function(mydata) {
     # these are all calms...
     if (all(is.na(mydata$x))) {
-      weights <- tibble(
+      weights <- dplyr::tibble(
         Interval1 = NA,
         wd = NA,
         calm = 100,
@@ -666,9 +666,9 @@ windRose <- function(
         if (mean.wd > 180) mean.wd <- mean.wd - 360
       }
 
-      weights <- bind_cols(
-        as_tibble(weights),
-        tibble(
+      weights <- dplyr::bind_cols(
+        dplyr::as_tibble(weights),
+        dplyr::tibble(
           wd = as.numeric(row.names(weights)),
           calm = calm,
           panel.fun = panel.fun,
@@ -697,7 +697,7 @@ windRose <- function(
   corr_bias <- function(results) {
     # check to see if data for this type combination are rounded to 10 degrees
     # round wd so that tiny differences between integer a numeric do not arise
-    wd_select <- inner_join(mydata_orig, results[1, type], by = type)
+    wd_select <- dplyr::inner_join(mydata_orig, results[1, type], by = type)
     if (!all(round(wd_select[[wd]]) %% 10 == 0, na.rm = TRUE)) {
       return(results)
     }
@@ -712,7 +712,7 @@ windRose <- function(
     vars <- grep("Interval[1-9]", names(results)) # the frequencies, without any calms
 
     # number of rows in data where wd != -999
-    n_data <- nrow(filter(results, wd != -999))
+    n_data <- nrow(dplyr::filter(results, wd != -999))
 
     if (n_data > 0) {
       results[results[["wd"]] != -999, vars] <-
@@ -738,7 +738,7 @@ windRose <- function(
     # original frequencies, so we can plot the wind frequency line
     results$freq <- results[[max(vars)]]
 
-    results$freq <- ave(
+    results$freq <- stats::ave(
       results$freq,
       results[type],
       FUN = function(x) x / sum(x)
@@ -1010,7 +1010,7 @@ windRose <- function(
   }
 
   # give informative labels
-  newdata <- as_tibble(results)
+  newdata <- dplyr::as_tibble(results)
   attr(newdata, "intervals") <- get_labels_from_breaks(breaks, sep = " to ")
 
   # output
@@ -1138,7 +1138,7 @@ pollutionRose <- function(
     breaks <- unique(pretty(
       c(
         min(mydata[[pollutant]], na.rm = TRUE),
-        quantile(mydata[[pollutant]], probs = 0.9, na.rm = TRUE)
+        stats::quantile(mydata[[pollutant]], probs = 0.9, na.rm = TRUE)
       ),
       breaks
     ))

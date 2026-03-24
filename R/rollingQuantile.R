@@ -111,7 +111,7 @@ rollingQuantile <- function(
     results <- as.data.frame(results)
     names(results)[seq_along(probs)] <- paste0("q_", pollutant, "_", probs)
 
-    mydata <- bind_cols(mydata, results)
+    mydata <- dplyr::bind_cols(mydata, results)
 
     # return what was put in; avoids adding missing data e.g. for factors
     if (length(dates) != nrow(mydata)) {

@@ -311,7 +311,7 @@ trendLevel <- function(
           if (all(is.na(x))) {
             NA
           } else {
-            length(na.omit(x))
+            length(stats::na.omit(x))
           }
         }
         stat.args <- NULL
@@ -328,12 +328,12 @@ trendLevel <- function(
         stat.args <- list(na.rm = TRUE)
 
         lastnum <- substr(percentile, nchar(percentile), nchar(percentile))
-        numend <- dplyr::case_match(
+        numend <- dplyr::recode_values(
           lastnum,
           "1" ~ "st",
           "2" ~ "nd",
           "3" ~ "rd",
-          .default = "th"
+          default = "th"
         )
 
         stat.name <- paste0(percentile, numend, " Perc.")

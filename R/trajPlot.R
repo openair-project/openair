@@ -237,13 +237,13 @@ trajPlot <- function(
   }
 
   # remove any rows with missing lat/lon
-  mydata <- filter(mydata, !is.na(lat), !is.na(lon))
+  mydata <- dplyr::filter(mydata, !is.na(lat), !is.na(lon))
 
   # slect only full length trajectories
   mydata <- mydata[order(mydata$date, mydata$hour.inc), ]
 
   # length of back mydataectories
-  mydata$len <- ave(mydata$lat, mydata$date, FUN = length)
+  mydata$len <- stats::ave(mydata$lat, mydata$date, FUN = length)
 
   # find length of back trajectories, choose most frequent
   # so that partial trajectories are not plotted
@@ -310,7 +310,7 @@ trajPlot <- function(
 
   # if plot.type is points, remove lines
   if (extra.args$plot.type == "p") {
-    sf_lines <- head(sf_lines, n = 0)
+    sf_lines <- utils::head(sf_lines, n = 0)
   }
 
   # to allow for basemaps to be multicoloured, we need to work out the number of

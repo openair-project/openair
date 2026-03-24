@@ -580,7 +580,7 @@ polarPlot <-
 
     mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
 
-    mydata <- na.omit(mydata)
+    mydata <- stats::na.omit(mydata)
 
     # check to see if a high proportion of the data is negative
     if (
@@ -695,7 +695,7 @@ polarPlot <-
           if (percentile[3] < 0) {
             Pval <- percentile[1:2]
           } else {
-            Pval <- quantile(
+            Pval <- stats::quantile(
               subset(
                 mydata[[pollutant]],
                 mydata[[pollutant]] >=
@@ -707,7 +707,7 @@ polarPlot <-
             )
           }
         } else {
-          Pval <- quantile(
+          Pval <- stats::quantile(
             mydata[[pollutant]],
             probs = percentile / 100,
             na.rm = TRUE
@@ -722,7 +722,7 @@ polarPlot <-
           ")"
         )
       } else {
-        Pval <- quantile(
+        Pval <- stats::quantile(
           mydata[[pollutant]],
           probs = percentile / 100,
           na.rm = TRUE
@@ -825,7 +825,7 @@ polarPlot <-
 
     ## normalise by divining by mean conditioning value if needed
     if (normalise) {
-      res <- mutate(
+      res <- dplyr::mutate(
         res,
         z = z / mean(z, na.rm = TRUE),
         .by = dplyr::all_of(type)
@@ -1105,19 +1105,21 @@ polar_prepare_grid <- function(
     ## Simple binned statistics
     stat_fn <- switch(
       statistic,
-      frequency = \(x) length(na.omit(x)),
+      frequency = \(x) length(stats::na.omit(x)),
       mean = \(x) mean(x, na.rm = TRUE),
-      median = \(x) median(x, na.rm = TRUE),
+      median = \(x) stats::median(x, na.rm = TRUE),
       max = \(x) max(x, na.rm = TRUE),
-      stdev = \(x) sd(x, na.rm = TRUE),
+      stdev = \(x) stats::sd(x, na.rm = TRUE),
       cpf = \(x) length(which(x > Pval)) / length(x),
       cpfi = \(x) length(which(x > Pval[1] & x <= Pval[2])) / length(x),
       weighted_mean = \(x) mean(x) * length(x) / nrow(mydata),
-      percentile = \(x) quantile(x, probs = percentile / 100, na.rm = TRUE)
+      percentile = \(x) {
+        stats::quantile(x, probs = percentile / 100, na.rm = TRUE)
+      }
     )
 
     binned <- mydata |>
-      mutate(
+      dplyr::mutate(
         wd_bin = cut(
           wd.int * ceiling(.data[[wd_col]] / wd.int - 0.5),
           breaks = seq(0, 360, wd.int),
@@ -1129,7 +1131,7 @@ polar_prepare_grid <- function(
           include.lowest = TRUE
         )
       ) |>
-      summarise(
+      dplyr::summarise(
         value = stat_fn(.data[[pollutant]]),
         .by = c(wd_bin, x_bin)
       ) |>
@@ -1199,7 +1201,7 @@ polar_prepare_grid <- function(
     Mgam <- try(mgcv::gam(binned^n ~ s(u, v, k = k), weights = W), TRUE)
 
     if (!inherits(Mgam, "try-error")) {
-      pred <- as.vector(predict.gam(Mgam, input.data))^(1 / n)
+      pred <- as.vector(mgcv::predict.gam(Mgam, input.data))^(1 / n)
 
       if (cluster) {
         results <- interp_grid(input.data, z = pred, n = 101)
@@ -1222,24 +1224,24 @@ polar_prepare_grid <- function(
   } else {
     ## Surface fit with 95% confidence intervals
     Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k), weights = binned.len)
-    pred_se <- predict.gam(Mgam, input.data, se.fit = TRUE)
+    pred_se <- mgcv::predict.gam(Mgam, input.data, se.fit = TRUE)
     uncer <- 2 * as.vector(pred_se[[2]]) ## approx 95% CI half-width
 
     ## Unweighted central prediction
     Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k))
-    pred <- as.vector(predict.gam(Mgam, input.data))
+    pred <- as.vector(mgcv::predict.gam(Mgam, input.data))
     Lower <- (pred - uncer)^(1 / n)
     Upper <- (pred + uncer)^(1 / n)
     pred <- pred^(1 / n)
 
     int <- 201
     lower_uncer <- interp_grid(input.data, z = Lower, n = int) |>
-      mutate(uncertainty = "lower uncertainty")
+      dplyr::mutate(uncertainty = "lower uncertainty")
     upper_uncer <- interp_grid(input.data, z = Upper, n = int) |>
-      mutate(uncertainty = "upper uncertainty")
+      dplyr::mutate(uncertainty = "upper uncertainty")
     prediction <- interp_grid(input.data, z = pred, n = int) |>
-      mutate(uncertainty = "prediction")
-    results <- bind_rows(prediction, lower_uncer, upper_uncer)
+      dplyr::mutate(uncertainty = "prediction")
+    results <- dplyr::bind_rows(prediction, lower_uncer, upper_uncer)
   }
 
   ## Remove predictions that are too far from the original data
@@ -1248,8 +1250,8 @@ polar_prepare_grid <- function(
     wsp <- rep(x, int)
     wdp <- rep(x, rep(int, int))
 
-    all.data <- na.omit(data.frame(u, v, binned.len))
-    ind <- with(all.data, exclude.too.far(wsp, wdp, u, v, dist = 0.05))
+    all.data <- stats::na.omit(data.frame(u, v, binned.len))
+    ind <- with(all.data, mgcv::exclude.too.far(wsp, wdp, u, v, dist = 0.05))
     results$z[ind] <- NA
     results
   }
@@ -1352,7 +1354,7 @@ calc_corr_stat <- function(thedata, pol_1, pol_2, statistic) {
 # Weighted OLS slope or intercept
 calc_lm_stat <- function(thedata, pol_1, pol_2, statistic) {
   thedata <- data.frame(thedata)
-  fit <- lm(
+  fit <- stats::lm(
     thedata[, pol_1] ~ thedata[, pol_2],
     weights = thedata[, "weight"]
   )
@@ -1506,8 +1508,8 @@ YorkFit <- function(
   tol <- 1e-7 # need to refine
 
   # b0 initial guess at slope for OLR
-  form <- formula(paste(Y, "~", X))
-  mod <- lm(form, data = input_data)
+  form <- stats::formula(paste(Y, "~", X))
+  mod <- stats::lm(form, data = input_data)
   b0 <- mod$coefficients[2]
 
   X <- input_data[[X]]
@@ -1562,7 +1564,7 @@ YorkFit <- function(
 
     # zero or problematic data
     if (anyNA(b, b.old)) {
-      return(tibble(
+      return(dplyr::tibble(
         Intercept = NA,
         Slope = NA,
         Int_error = NA,
@@ -1596,7 +1598,7 @@ YorkFit <- function(
   sumSint <- sum(wSint, na.rm = TRUE)
   wYorkGOF <- c(sumSint / (lgth - 2), sqrt(2 / (lgth - 2))) # GOF (should equal 1 if assumptions are valid), #standard error in GOF
 
-  ans <- tibble(
+  ans <- dplyr::tibble(
     Intercept = a,
     Slope = b,
     Int_error = a.err,
@@ -1621,8 +1623,8 @@ interp_surface <- function(obj, loc) {
   ny <- length(y)
   # this clever idea for finding the intermediate coordinates at the new points
   # is from J-O Irisson
-  lx <- approx(x, 1:nx, loc[, 1])$y
-  ly <- approx(y, 1:ny, loc[, 2])$y
+  lx <- stats::approx(x, 1:nx, loc[, 1])$y
+  ly <- stats::approx(y, 1:ny, loc[, 2])$y
   lx1 <- floor(lx)
   ly1 <- floor(ly)
   # x and y distances between each new point and the closest grid point in the lower left hand corner.

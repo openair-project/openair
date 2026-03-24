@@ -238,12 +238,12 @@ polarAnnulus <-
     }
     if (key.header[1] == "percentile") {
       lastnum <- substr(percentile, nchar(percentile), nchar(percentile))
-      numend <- dplyr::case_match(
+      numend <- dplyr::recode_values(
         lastnum,
         "1" ~ "st",
         "2" ~ "nd",
         "3" ~ "rd",
-        .default = "th"
+        default = "th"
       )
 
       key.header <- paste(paste0(percentile, numend), "percentile")
@@ -299,7 +299,7 @@ polarAnnulus <-
     }
 
     # remove NAs
-    mydata <- na.omit(mydata)
+    mydata <- stats::na.omit(mydata)
     mydata <- cutData(mydata, type, ...)
 
     # convert to local time
@@ -321,7 +321,7 @@ polarAnnulus <-
     len.int <- 20 / int + 1 # number of x and y points to make up surfacexb
 
     # for CPF
-    Pval <- quantile(
+    Pval <- stats::quantile(
       mydata[[pollutant]],
       probs = percentile / 100,
       na.rm = TRUE
@@ -426,7 +426,7 @@ polarAnnulus <-
           mydata[, pollutant],
           list(time.cut, wd.cut),
           function(x) {
-            length(na.omit(x))
+            length(stats::na.omit(x))
           }
         ),
         mean = tapply(mydata[, pollutant], list(time.cut, wd.cut), function(x) {
@@ -436,7 +436,7 @@ polarAnnulus <-
           mydata[, pollutant],
           list(time.cut, wd.cut),
           function(x) {
-            median(x, na.rm = TRUE)
+            stats::median(x, na.rm = TRUE)
           }
         ),
         max = tapply(mydata[, pollutant], list(time.cut, wd.cut), function(x) {
@@ -446,7 +446,7 @@ polarAnnulus <-
           mydata[, pollutant],
           list(time.cut, wd.cut),
           function(x) {
-            sd(x, na.rm = TRUE)
+            stats::sd(x, na.rm = TRUE)
           }
         ),
         cpf = tapply(
@@ -463,7 +463,7 @@ polarAnnulus <-
           mydata[, pollutant],
           list(time.cut, wd.cut),
           function(x) {
-            quantile(x, probs = percentile / 100, na.rm = TRUE)
+            stats::quantile(x, probs = percentile / 100, na.rm = TRUE)
           }
         )
       )
@@ -502,7 +502,7 @@ polarAnnulus <-
         data = input
       )
 
-      pred <- predict.gam(Mgam, input.data)
+      pred <- mgcv::predict.gam(Mgam, input.data)
       pred <- pred^(1 / n)
 
       input.data <- cbind(input.data, pred)
@@ -516,14 +516,14 @@ polarAnnulus <-
         wdp <- rep(y, rep(res, res))
 
         # data with gaps caused by min.bin
-        all.data <- na.omit(data.frame(
+        all.data <- stats::na.omit(data.frame(
           time.seq = ws.wd$time.seq,
           wd = ws.wd$wd,
           binned
         ))
         ind <- with(
           all.data,
-          exclude.too.far(wsp, wdp, time.seq, wd, dist = 0.03)
+          mgcv::exclude.too.far(wsp, wdp, time.seq, wd, dist = 0.03)
         )
 
         input.data$pred[ind] <- NA

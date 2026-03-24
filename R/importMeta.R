@@ -220,7 +220,7 @@ importMeta <-
         # Read data and parse dates
         meta <-
           readr::read_csv(file, col_types = col_types, progress = FALSE) |>
-          mutate(
+          dplyr::mutate(
             date_start = lubridate::ymd_hms(.data$date_start, tz = "UTC"),
             date_end = lubridate::ymd_hms(.data$date_end, tz = "UTC")
           )
@@ -245,7 +245,7 @@ importMeta <-
             )
         }
 
-        meta <- rename(meta, code = "site", site = "site_name")
+        meta <- dplyr::rename(meta, code = "site", site = "site_name")
       }
 
       # return data source
@@ -309,7 +309,7 @@ importMeta <-
       }
     }
 
-    as_tibble(meta)
+    dplyr::as_tibble(meta)
   }
 
 #' Clean data from Ricardo (not KCL or Europe)

@@ -91,7 +91,7 @@ regci <- function(
     }
     regci[i, 1] <- bsort[ilow]
     regci[i, 2] <- bsort[ihi]
-    se[i] <- sqrt(var(bvec[i, ]))
+    se[i] <- sqrt(stats::var(bvec[i, ]))
   }
   estit <- regfun(x, y)$coef
   regci[, 3] <- estit
@@ -187,7 +187,7 @@ tsreg <- function(
       temp[p] <- tsp1reg(x[, p], y)$coef[2]
     }
     res <- y - x %*% temp
-    alpha <- median(res)
+    alpha <- stats::median(res)
     r <- matrix(NA, ncol = ncol(x), nrow = nrow(x))
     tempold <- temp
     for (it in 1:iter) {
@@ -195,7 +195,7 @@ tsreg <- function(
         r[, p] <- y - x %*% temp - alpha + temp[p] * x[, p]
         temp[p] <- tsp1reg(x[, p], r[, p], plotit = FALSE)$coef[2]
       }
-      alpha <- median(y - x %*% temp)
+      alpha <- stats::median(y - x %*% temp)
       tempold <- temp
     }
     coef <- c(alpha, temp)
@@ -232,8 +232,8 @@ tsp1reg <- function(x, y, plotit = FALSE) {
   vec2 <- outer(xs, xs, "-")
   v1 <- vec1[vec2 > 0]
   v2 <- vec2[vec2 > 0]
-  slope <- median(v1 / v2)
-  coef <- median(y) - slope * median(x)
+  slope <- stats::median(v1 / v2)
+  coef <- stats::median(y) - slope * stats::median(x)
   names(coef) <- "Intercept"
   coef <- c(coef, slope)
   if (plotit) {
