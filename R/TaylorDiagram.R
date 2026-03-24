@@ -619,6 +619,7 @@ TaylorDiagram <- function(
       ),
       breaks = x_breaks,
       labels = x_breaks,
+      limits = thetalim,
       guide = ggplot2::guide_axis_theta(angle = 90),
       expand = ggplot2::expansion()
     ) +
