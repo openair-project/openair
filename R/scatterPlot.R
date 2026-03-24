@@ -1200,6 +1200,64 @@ smooth_level_grid <- function(mydata, z, k, dist) {
 
 # Density method ----------------------------------------------------------
 
+#' Compute 2-D kernel density grid for one facet group
+#' @noRd
+#'
+# Copied from grDevices (GPL-2), with attribution
+.smoothScatterCalcDensity <- function(x, nbin, bandwidth, range.x) {
+  if (length(nbin) == 1) {
+    nbin <- c(nbin, nbin)
+  }
+  if (!is.numeric(nbin) || length(nbin) != 2) {
+    stop("'nbin' must be numeric of length 1 or 2")
+  }
+  if (missing(bandwidth)) {
+    bandwidth <- diff(apply(
+      x,
+      2,
+      stats::quantile,
+      probs = c(0.05, 0.95),
+      na.rm = TRUE,
+      names = FALSE
+    )) /
+      25
+    bandwidth[bandwidth == 0] <- 1
+  } else {
+    if (!is.numeric(bandwidth)) {
+      stop("'bandwidth' must be numeric")
+    }
+    if (any(bandwidth <= 0)) {
+      stop("'bandwidth' must be positive")
+    }
+  }
+
+  rv <- KernSmooth::bkde2D(
+    x,
+    bandwidth = bandwidth,
+    gridsize = nbin,
+    range.x = range.x
+  )
+
+  rv$bandwidth <- bandwidth
+  rv
+}
+
+.density_kde_grid <- function(subdata, x, y) {
+  xv <- subdata[[x]]
+  yv <- subdata[[y]]
+  xy <- grDevices::xy.coords(xv, yv)
+  mat <- cbind(xy$x, xy$y)
+  mat <- mat[is.finite(mat[, 1L]) & is.finite(mat[, 2L]), , drop = FALSE]
+  n <- nrow(mat)
+
+  Map <- .smoothScatterCalcDensity(mat, nbin = 256L)
+  grid <- expand.grid(x = Map$x1, y = Map$x2)
+  grid$z <- as.vector(Map$fhat) * n
+  ## suppress near-zero KDE bleed — anything below 1 % of peak → transparent
+  grid$z[grid$z < max(grid$z) * 0.001] <- NA_real_
+  grid
+}
+
 #' Build ggplot for method = "density"
 #' @noRd
 scatter_density <- function(
@@ -1229,18 +1287,24 @@ scatter_density <- function(
     cols <- "default"
   }
 
-  ## number of fill levels for density — use 9 discrete bands
-  n_bands <- 9L
-  fill_vals <- c("transparent", openColours(cols, n_bands - 1L))
+  grid_data <- map_type(
+    mydata,
+    type = type,
+    fun = function(df) .density_kde_grid(df, x, y),
+    .include_default = TRUE
+  )
 
-  plt <- ggplot2::ggplot(mydata, ggplot2::aes(x = .data[[x]], y = .data[[y]])) +
-    ggplot2::stat_density_2d_filled(
-      contour_var = "ndensity",
-      bins = n_bands
-    ) +
-    ggplot2::scale_fill_manual(
-      values = fill_vals,
-      guide = ggplot2::guide_colorsteps(
+  myColors <- openColours(cols, 200)
+
+  plt <- ggplot2::ggplot(
+    grid_data,
+    ggplot2::aes(x = .data$x, y = .data$y, fill = .data$z)
+  ) +
+    ggplot2::geom_raster(interpolate = TRUE) +
+    ggplot2::scale_fill_gradientn(
+      colors = myColors,
+      na.value = "transparent",
+      guide = ggplot2::guide_colorbar(
         title = "intensity",
         position = key.position
       )
@@ -1253,8 +1317,8 @@ scatter_density <- function(
   plt <- plt +
     gg_ref_x(ref.x) +
     gg_ref_y(ref.y) +
-    .scatter_x_scale(log.x, x, mydata, extra.args) +
-    .scatter_y_scale(log.y, y, mydata, extra.args) +
+    .scatter_x_scale(log.x, "x", grid_data, extra.args) +
+    .scatter_y_scale(log.y, "y", grid_data, extra.args) +
     gg_coord_limits(extra.args) +
     get_facet(
       type,
