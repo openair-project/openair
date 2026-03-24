@@ -93,7 +93,6 @@
 ## usethis namespace: start
 #' @import grid
 #' @import dplyr
-#' @import mgcv
 #' @importFrom lubridate as_date
 #' @importFrom lubridate ceiling_date
 #' @importFrom lubridate day

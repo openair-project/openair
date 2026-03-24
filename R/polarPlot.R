@@ -1199,7 +1199,7 @@ polar_prepare_grid <- function(
     Mgam <- try(mgcv::gam(binned^n ~ s(u, v, k = k), weights = W), TRUE)
 
     if (!inherits(Mgam, "try-error")) {
-      pred <- as.vector(predict.gam(Mgam, input.data))^(1 / n)
+      pred <- as.vector(mgcv::predict.gam(Mgam, input.data))^(1 / n)
 
       if (cluster) {
         results <- interp_grid(input.data, z = pred, n = 101)
@@ -1222,12 +1222,12 @@ polar_prepare_grid <- function(
   } else {
     ## Surface fit with 95% confidence intervals
     Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k), weights = binned.len)
-    pred_se <- predict.gam(Mgam, input.data, se.fit = TRUE)
+    pred_se <- mgcv::predict.gam(Mgam, input.data, se.fit = TRUE)
     uncer <- 2 * as.vector(pred_se[[2]]) ## approx 95% CI half-width
 
     ## Unweighted central prediction
     Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k))
-    pred <- as.vector(predict.gam(Mgam, input.data))
+    pred <- as.vector(mgcv::predict.gam(Mgam, input.data))
     Lower <- (pred - uncer)^(1 / n)
     Upper <- (pred + uncer)^(1 / n)
     pred <- pred^(1 / n)

@@ -502,7 +502,7 @@ polarAnnulus <-
         data = input
       )
 
-      pred <- predict.gam(Mgam, input.data)
+      pred <- mgcv::predict.gam(Mgam, input.data)
       pred <- pred^(1 / n)
 
       input.data <- cbind(input.data, pred)
