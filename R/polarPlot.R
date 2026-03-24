@@ -1102,45 +1102,42 @@ polar_prepare_grid <- function(
   )
 
   if (!statistic %in% c(correlation_stats, "nwr")) {
-    ## Simple binned statistics computed via tapply
-    binned <- switch(
+    ## Simple binned statistics
+    stat_fn <- switch(
       statistic,
-      frequency = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-        length(na.omit(x))
-      }),
-      mean = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-        mean(x, na.rm = TRUE)
-      }),
-      median = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-        median(x, na.rm = TRUE)
-      }),
-      max = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-        max(x, na.rm = TRUE)
-      }),
-      stdev = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-        sd(x, na.rm = TRUE)
-      }),
-      cpf = tapply(
-        mydata[[pollutant]],
-        list(wd, x),
-        function(x) length(which(x > Pval)) / length(x)
-      ),
-      cpfi = tapply(
-        mydata[[pollutant]],
-        list(wd, x),
-        function(x) length(which(x > Pval[1] & x <= Pval[2])) / length(x)
-      ),
-      weighted_mean = tapply(
-        mydata[[pollutant]],
-        list(wd, x),
-        function(x) mean(x) * length(x) / nrow(mydata)
-      ),
-      percentile = tapply(mydata[[pollutant]], list(wd, x), function(x) {
-        quantile(x, probs = percentile / 100, na.rm = TRUE)
-      })
+      frequency = \(x) length(na.omit(x)),
+      mean = \(x) mean(x, na.rm = TRUE),
+      median = \(x) median(x, na.rm = TRUE),
+      max = \(x) max(x, na.rm = TRUE),
+      stdev = \(x) sd(x, na.rm = TRUE),
+      cpf = \(x) length(which(x > Pval)) / length(x),
+      cpfi = \(x) length(which(x > Pval[1] & x <= Pval[2])) / length(x),
+      weighted_mean = \(x) mean(x) * length(x) / nrow(mydata),
+      percentile = \(x) quantile(x, probs = percentile / 100, na.rm = TRUE)
     )
 
-    binned <- as.vector(t(binned))
+    binned <- mydata |>
+      mutate(
+        wd_bin = cut(
+          wd.int * ceiling(.data[[wd_col]] / wd.int - 0.5),
+          breaks = seq(0, 360, wd.int),
+          include.lowest = TRUE
+        ),
+        x_bin = cut(
+          .data[[x_col]],
+          breaks = seq(0, max.ws, length = ws_bins + 1),
+          include.lowest = TRUE
+        )
+      ) |>
+      summarise(
+        value = stat_fn(.data[[pollutant]]),
+        .by = c(wd_bin, x_bin)
+      ) |>
+      # expand.grid(x = ws.seq, wd = wd.seq) has x_bin varying fastest, wd_bin slowest
+      tidyr::complete(wd_bin, x_bin) |>
+      dplyr::arrange(wd_bin, x_bin) |>
+      dplyr::pull(value) |>
+      unname()
   } else if (toupper(statistic) == "NWR") {
     ## Non-parametric Wind Regression: fully vectorised over all grid points.
     ##

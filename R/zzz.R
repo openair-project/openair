@@ -100,6 +100,8 @@
     "lon_off",
     "t_lat_rad",
     "t_lon_rad",
-    "weight"
+    "weight",
+    "wd_bin",
+    "x_bin"
   ))
 }
