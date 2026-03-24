@@ -1303,7 +1303,7 @@ scatter_density <- function(
     grid_data,
     ggplot2::aes(x = .data$x, y = .data$y, fill = .data$z)
   ) +
-    ggplot2::geom_raster(interpolate = TRUE) +
+    ggplot2::geom_tile() +
     ggplot2::scale_fill_gradientn(
       colors = myColors,
       na.value = "transparent",
