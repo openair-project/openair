@@ -161,7 +161,7 @@ importUKAQ(
 
 ## Value
 
-a [tibble](https://tibble.tidyverse.org/reference/tibble-package.html)
+a `tibble`
 
 ## Importing UK Air Pollution Data
 
