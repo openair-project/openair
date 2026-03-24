@@ -133,7 +133,7 @@ trajCluster <- function(
     res[is.na(res)] <- 0 ## possible for some to be NA if trajectory does not move between two hours?
 
     dist.res <- as.dist(res)
-    clusters <- pam(dist.res, n.cluster)
+    clusters <- cluster::pam(dist.res, n.cluster)
     cluster <- rep(clusters$clustering, each = n)
     traj$cluster <- as.character(paste("C", cluster, sep = ""))
     traj

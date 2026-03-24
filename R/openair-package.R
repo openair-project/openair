@@ -92,7 +92,6 @@
 "_PACKAGE"
 ## usethis namespace: start
 #' @import grid
-#' @import cluster
 #' @import dplyr
 #' @import mgcv
 #' @importFrom lubridate as_date

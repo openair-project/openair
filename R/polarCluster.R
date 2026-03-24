@@ -232,7 +232,7 @@ polarCluster <-
     make.clust <- function(i, results.grid) {
       i <- n.clusters[i]
       dat.orig <- results.grid
-      clusters <- pam(results.grid, i, stand = TRUE, pamonce = 3)
+      clusters <- cluster::pam(results.grid, i, stand = TRUE, pamonce = 3)
       dat.orig$cluster <- clusters$clustering
       dat.orig$nclust <- paste(i, "clusters")
       dat.orig
@@ -268,7 +268,10 @@ polarCluster <-
       # build cluster lookup matrix once (some cells missing due to exclude.missing in polarPlot)
       mat.dim <- max(results.grid[, c("u.id", "v.id")])
       clust_mat <- matrix(NA, ncol = mat.dim, nrow = mat.dim)
-      clust_mat[cbind(results.grid$u.id, results.grid$v.id)] <- results.grid$cluster
+      clust_mat[cbind(
+        results.grid$u.id,
+        results.grid$v.id
+      )] <- results.grid$cluster
 
       # map a data frame's observations to clusters via u-v grid lookup
       map_to_clusters <- function(df) {
@@ -285,11 +288,19 @@ polarCluster <-
       }
 
       mydata <- na.omit(mydata)
-      results <- left_join(data.orig, map_to_clusters(mydata), by = c(".id", "date"))
+      results <- left_join(
+        data.orig,
+        map_to_clusters(mydata),
+        by = c(".id", "date")
+      )
       myform <- formula("cluster ~ u * v")
 
       if (is.data.frame(after)) {
-        after <- left_join(data.orig.after, map_to_clusters(after), by = c(".id", "date"))
+        after <- left_join(
+          data.orig.after,
+          map_to_clusters(after),
+          by = c(".id", "date")
+        )
       }
     }
 
