@@ -14,6 +14,7 @@ TaylorDiagram(
   group = NULL,
   type = "default",
   normalise = FALSE,
+  pos.cor = NULL,
   cols = "brewer1",
   rms.col = "darkgoldenrod",
   cor.col = "black",
@@ -104,6 +105,14 @@ TaylorDiagram(
   to plot statistics for different species (maybe with different units)
   on the same plot. The normalisation is done by each `group`/`type`
   combination.
+
+- pos.cor:
+
+  Show only positive correlations (`TRUE`) or include negative
+  correlations (`FALSE`). If negative correlations are shown, the Taylor
+  Diagram will show two quadrants. The default, `NULL`, will use two
+  quadrants if any negative correlations are present in the data and one
+  quadrant if all correlations are positive.
 
 - cols:
 

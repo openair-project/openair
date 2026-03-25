@@ -178,6 +178,12 @@
   - Added arguments `key`, `key.position` and `key.header` for adding
     and refining a plot legend.
 
+- [`TaylorDiagram()`](https://openair-project.github.io/openair/reference/TaylorDiagram.md)
+  refinements:
+
+  - Added the `pos.cor` argument which controls whether the negative
+    correlation quadrant is shown.
+
 - New function
   [`WhittakerSmooth()`](https://openair-project.github.io/openair/reference/WhittakerSmooth.md)
   to do Whittaker-Eilers Smoothing. This is a fast and general smoothing
