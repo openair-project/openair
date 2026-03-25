@@ -13,6 +13,7 @@ calendarPlot(
   pollutant = "nox",
   year = NULL,
   month = NULL,
+  type = "month",
   annotate = "date",
   statistic = "mean",
   data.thresh = 0,
@@ -69,6 +70,19 @@ calendarPlot(
   an entire year even if months are missing. To only plot certain months
   use the `month` option where month is a numeric 1:12 e.g.
   `month = c(1, 12)` to only plot January and December.
+
+- type:
+
+  `type` determines how the data are split, i.e., conditioned, and then
+  plotted. Only one type can be used with this function, as one faceting
+  'direction' is reserved by the month of the year. If a single `type`
+  is given, it will form the "rows" of the resulting grid.
+  Alternatively, `c("month", type)` can be used can be specified for
+  `type` to be used as the "columns" instead.
+
+  `type = "year"` is a special case for `calendarPlot()` and will
+  automatically prevent a single year from being selected (unless
+  specified using the `year` argument) and set `show.year` to `FALSE`.
 
 - annotate:
 

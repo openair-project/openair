@@ -126,6 +126,10 @@
 - [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md)
   refinements:
 
+  - Gained the `type` argument. This can take one `type` and creates a
+    2D matrix using month & whatever the user has selected.
+    `type = "year"` has special handling.
+
   - Gained the `percentile` argument, passed on to
     [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md).
 
