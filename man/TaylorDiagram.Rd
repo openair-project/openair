@@ -11,6 +11,7 @@ TaylorDiagram(
   group = NULL,
   type = "default",
   normalise = FALSE,
+  pos.cor = NULL,
   cols = "brewer1",
   rms.col = "darkgoldenrod",
   cor.col = "black",
@@ -82,6 +83,12 @@ deviation of the \code{mod} values by the standard deviation of the observations
 at unit distance from the origin. This makes it possible to plot statistics
 for different species (maybe with different units) on the same plot. The
 normalisation is done by each \code{group}/\code{type} combination.}
+
+\item{pos.cor}{Show only positive correlations (\code{TRUE}) or include negative
+correlations (\code{FALSE}). If negative correlations are shown, the Taylor
+Diagram will show two quadrants. The default, \code{NULL}, will use two
+quadrants if any negative correlations are present in the data and one
+quadrant if all correlations are positive.}
 
 \item{cols}{Colours to be used for plotting. Useful options for categorical
 data are available from \code{RColorBrewer} colours --- see the \code{openair}
