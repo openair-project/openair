@@ -47,6 +47,15 @@
 #'   supplied, only the first three are used.
 #' @param limits The colour scale range to use when generating the
 #'   [trendLevel()] plot.
+#' @param min.bin The minimum number of records required in a bin to show a
+#'   value. Bins with fewer than `min.bin` records are set to `NA`. The default
+#'   is 1, i.e., all bins with no records are set to `NA`. Setting `min.bin` to
+#'   a value greater than 1 can be useful to exclude bins with very few records
+#'   that might produce unreliable statistic values.
+#' @param windflow This option calculates the vector average of wind speed and
+#'   direction and shows the result as an arrow. The option is a list, e.g.,
+#'   `windflow = list(col = "grey", lwd = 2, scale = 0.1)`. This option requires
+#'   wind speed (`ws`) and wind direction (`wd`) to be available.
 #' @param cols The colour set to use to colour the [trendLevel()] surface.
 #'   `cols` is passed to [openColours()] for evaluation.
 #' @param auto.text Automatic routine text formatting. `auto.text = TRUE` passes
@@ -150,7 +159,9 @@ trendLevel <- function(
   type = "year",
   rotate.axis = c(90, 0),
   n.levels = c(10, 10, 4),
+  windflow = NULL,
   limits = NULL,
+  min.bin = 1,
   cols = "default",
   auto.text = TRUE,
   key = TRUE,
@@ -368,12 +379,27 @@ trendLevel <- function(
 
   # checkPrep
   temp <- c(pollutant)
-  if ("date" %in% names(mydata)) {
-    temp <- c("date", pollutant)
+  if (x %in% dateTypes || y %in% dateTypes || any(type %in% dateTypes)) {
+    temp <- c(temp, "date")
+  }
+  if (!is.null(windflow)) {
+    temp <- c(temp, "ws", "wd")
   }
 
   # all of x, y, temp need to be handled as type here
   mydata <- checkPrep(mydata, temp, type = c(x, y, type), remove.calm = FALSE)
+
+  # if using windflow, need the u & v components of wind
+  if (!is.null(windflow)) {
+    mydata <- mydata |>
+      dplyr::mutate(
+        wind_u = -1 * .data$ws * sin(.data$wd * pi / 180),
+        wind_v = -1 * .data$ws * cos(.data$wd * pi / 180)
+      ) |>
+      dplyr::select(
+        -c("ws", "wd")
+      )
+  }
 
   # cutData
   # different n.levels for axis and type, axes get `is.axis = TRUE`
@@ -385,18 +411,64 @@ trendLevel <- function(
     tidyr::complete(!!!rlang::syms(c(x, y, type)))
 
   # select only pollutant and axis/facet columns
-  newdata <- newdata[c(pollutant, x, y, type)]
+  newdata <- dplyr::select(
+    newdata,
+    dplyr::any_of(c(pollutant, x, y, type, "wind_u", "wind_v"))
+  )
 
+  # apply statistic
   calc_stat <- function(x) {
     args <- append(stat.args, list(x = x))
     rlang::exec(stat.fun, !!!args)
   }
-  newdata <-
+
+  # NB: don't overwrite `pollutant` initially so that `n` is still valid
+  newdata_poll <-
     newdata |>
     dplyr::summarise(
-      {{ pollutant }} := calc_stat(.data[[pollutant]]),
+      poll_avg = calc_stat(.data[[pollutant]]),
+      n = length(stats::na.omit(.data[[pollutant]])),
       .by = dplyr::all_of(c(x, y, type))
     )
+  names(newdata_poll)[names(newdata_poll) == "poll_avg"] <- pollutant
+
+  # if using windflow, calculate mean wind_u and wind_v for each bin
+  if (!is.null(windflow)) {
+    newdata_met <- newdata |>
+      dplyr::summarise(
+        wind_u := mean(.data[["wind_u"]], na.rm = TRUE),
+        wind_v := mean(.data[["wind_v"]], na.rm = TRUE),
+        .by = dplyr::all_of(c(x, y, type))
+      )
+
+    newdata <-
+      dplyr::left_join(
+        newdata_poll,
+        newdata_met,
+        by = c(x, y, type)
+      )
+  } else {
+    newdata <- newdata_poll
+  }
+
+  # if using windflow, convert wind_u and wind_v back into ws & wd
+  if (!is.null(windflow)) {
+    newdata <- newdata |>
+      dplyr::mutate(
+        ws = sqrt(.data$wind_u^2 + .data$wind_v^2),
+        wd = (atan2(-.data$wind_u, -.data$wind_v) * 180 / pi) %% 360
+      ) |>
+      dplyr::select(-c("wind_u", "wind_v"))
+  }
+
+  # remove bins with fewer than min.bin records
+  newdata <- dplyr::mutate(
+    newdata,
+    dplyr::across(
+      dplyr::any_of(c(pollutant, "ws", "wd")),
+      \(x) ifelse(.data$n < min.bin, NA, x)
+    )
+  )
 
   # key.header, footer stat.name recovery
   if (!is.null(key.header)) {
@@ -533,6 +605,26 @@ trendLevel <- function(
             legend.text.position = key.position
           )
         )
+      )
+  }
+
+  if (!is.null(windflow)) {
+    if (rlang::is_logical(windflow)) {
+      windflow <- list()
+    }
+    thePlot <- thePlot +
+      layer_windflow(
+        data = newdata,
+        ggplot2::aes(ws = .data$ws, wd = .data$wd),
+        arrow = grid::arrow(
+          angle = windflow$angle %||% 15,
+          length = windflow$length %||% grid::unit(0.5, "lines"),
+          ends = windflow$ends %||% "last",
+          type = windflow$type %||% "closed"
+        ),
+        colour = windflow$col %||% "grey25",
+        linewidth = (windflow$lwd %||% 1) / 2,
+        range = c(0, 0.5)
       )
   }
 

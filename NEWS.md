@@ -92,6 +92,12 @@
     
     - Added arguments `key`, `key.position` and `key.header` for adding and refining a plot legend.
 
+- `trendLevel()` refinements:
+
+    - Added `windflow` and `min.bin` arguments, in line with similar functions.
+
+    - Two `type` values are now supported.
+
 - `TaylorDiagram()` refinements:
 
     - Added the `pos.cor` argument which controls whether the negative correlation quadrant is shown.
@@ -105,8 +111,6 @@
 - `timeAverage()` is much faster with the bulk of the calculations made using C++.
 
 - `runRegression()` is now much faster with a new algorithm.
-
-- `trendLevel()` now supports 2 values being passed to `type`.
 
 ## Bug Fixes
 

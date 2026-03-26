@@ -12,7 +12,9 @@ trendLevel(
   type = "year",
   rotate.axis = c(90, 0),
   n.levels = c(10, 10, 4),
+  windflow = NULL,
   limits = NULL,
+  min.bin = 1,
   cols = "default",
   auto.text = TRUE,
   key = TRUE,
@@ -57,8 +59,19 @@ for date conditioning and factors. If less than three values are supplied,
 three values are determined by recursion; if more than three values are
 supplied, only the first three are used.}
 
+\item{windflow}{This option calculates the vector average of wind speed and
+direction and shows the result as an arrow. The option is a list, e.g.,
+\code{windflow = list(col = "grey", lwd = 2, scale = 0.1)}. This option requires
+wind speed (\code{ws}) and wind direction (\code{wd}) to be available.}
+
 \item{limits}{The colour scale range to use when generating the
 \code{\link[=trendLevel]{trendLevel()}} plot.}
+
+\item{min.bin}{The minimum number of records required in a bin to show a
+value. Bins with fewer than \code{min.bin} records are set to \code{NA}. The default
+is 1, i.e., all bins with no records are set to \code{NA}. Setting \code{min.bin} to
+a value greater than 1 can be useful to exclude bins with very few records
+that might produce unreliable statistic values.}
 
 \item{cols}{The colour set to use to colour the \code{\link[=trendLevel]{trendLevel()}} surface.
 \code{cols} is passed to \code{\link[=openColours]{openColours()}} for evaluation.}
