@@ -64,6 +64,8 @@
 
 - `calendarPlot()` refinements:
 
+    - Gained the `type` argument. This can take one `type` and creates a 2D matrix using month & whatever the user has selected. `type = "year"` has special handling.
+
     - Gained the `percentile` argument, passed on to `timeAverage()`.
     
     - Gained the `show.year` argument, defaulting to `TRUE`. When `FALSE` and only one year of data is given, the strip titles will only read, e.g., "January" instead of "January-2000". This can create cleaner plots, as well as being useful for certain edge cases (e.g., if the calendarPlot is showing day-of-year averages over multiple years).
@@ -95,6 +97,10 @@
     - Added `windflow` and `min.bin` arguments, in line with similar functions.
 
     - Two `type` values are now supported.
+
+- `TaylorDiagram()` refinements:
+
+    - Added the `pos.cor` argument which controls whether the negative correlation quadrant is shown.
 
 - New function `WhittakerSmooth()` to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.
 

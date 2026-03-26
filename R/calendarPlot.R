@@ -49,6 +49,16 @@
 #'   - `"wd"` --- shows vector-averaged wind direction
 #'   - `"ws"` --- shows vector-averaged wind direction scaled by wind speed
 #'   - `"value"` --- shows the daily mean value
+#' @param type `type` determines how the data are split, i.e., conditioned, and
+#'   then plotted. Only one type can be used with this function, as one faceting
+#'   'direction' is reserved by the month of the year. If a single `type` is
+#'   given, it will form the "rows" of the resulting grid. Alternatively,
+#'   `c("month", type)` can be used can be specified for `type` to be used as
+#'   the "columns" instead.
+#'
+#'   `type = "year"` is a special case for [calendarPlot()] and will
+#'   automatically prevent a single year from being selected (unless specified
+#'   using the `year` argument) and set `show.year` to `FALSE`.
 #' @param statistic Statistic passed to [timeAverage()]. Note that if `statistic
 #'   %in% c("max", "min")` and `annotate` is "ws" or "wd", the hour
 #'   corresponding to the maximum/minimum concentration of `polluant` is used to
@@ -155,6 +165,7 @@ calendarPlot <-
     pollutant = "nox",
     year = NULL,
     month = NULL,
+    type = "month",
     annotate = "date",
     statistic = "mean",
     data.thresh = 0,
@@ -184,6 +195,30 @@ calendarPlot <-
     plot = TRUE,
     ...
   ) {
+    # can't have three types
+    if (length(type) >= 3L) {
+      cli::cli_abort("{.arg type} must be length 1 or 2.")
+    }
+
+    # if 2 types provided, one must be "month", and use that to work out the
+    # rows/cols assignment
+    if (length(type) == 2L) {
+      if (!"month" %in% type) {
+        cli::cli_abort(
+          "In {.fun openair::calendarPlot}, at least one {.arg type} must be 'month'."
+        )
+      }
+
+      months_as_rows <- which(type == "month") == 1
+
+      type <- unique(type[type != "month"])
+    } else {
+      # if one type, replace "month" with default and assume months as rows
+      type[type == "month"] <- "default"
+      type <- unique(type)
+      months_as_rows <- FALSE
+    }
+
     if (rlang::is_logical(key) && !key) {
       key.position <- "none"
     }
@@ -202,7 +237,7 @@ calendarPlot <-
     extra.args$main <- quickText(extra.args$main %||% NULL, auto.text)
 
     # check a single year
-    if (missing(year)) {
+    if (missing(year) && type != "year") {
       unique_years <- unique(lubridate::year(mydata$date))
       if (dplyr::n_distinct(unique_years) > 1) {
         year <- unique_years[1]
@@ -215,13 +250,20 @@ calendarPlot <-
       }
     }
 
+    # if type is year, don't show years
+    if (type == "year") {
+      show.year <- FALSE
+    }
+
     # filter and check data
     mydata <- prepare_calendar_data(
       mydata,
       year = year,
       month = month,
       pollutant = pollutant,
-      annotate = annotate
+      type = type,
+      annotate = annotate,
+      ...
     )
 
     # all the days in the period - to be bound later
@@ -244,29 +286,37 @@ calendarPlot <-
       # max ws/wd for hour with max pollutant value
       maxes <- mydata |>
         dplyr::mutate(date = lubridate::as_date(.data$date)) |>
-        dplyr::group_by(date) |>
-        dplyr::slice(which.fun(.data[[pollutant]]))
+        dplyr::slice(
+          which.fun(.data[[pollutant]]),
+          .by = dplyr::all_of(c("date", type))
+        )
 
       # averaged data, make sure Date format (max returns POSIXct)
       mydata <- timeAverage(
         mydata,
         "day",
+        type = type,
         statistic = statistic,
         data.thresh = data.thresh
       ) |>
         dplyr::mutate(date = lubridate::as_date(.data$date))
 
+      if (type == "default") {
+        mydata <- cutData(mydata, type)
+      }
+
       # replace with parallel max
       mydata <- dplyr::left_join(
         dplyr::select(mydata, !dplyr::any_of(c("ws", "wd"))),
         dplyr::select(maxes, !.data[[pollutant]]),
-        by = dplyr::join_by(date)
+        by = c("date", type)
       )
     } else {
       # calculate daily means
       mydata <- timeAverage(
         mydata,
         "day",
+        type = type,
         statistic = statistic,
         data.thresh = data.thresh,
         percentile = percentile
@@ -276,8 +326,27 @@ calendarPlot <-
     }
 
     # make sure all days are available
-    mydata <-
-      dplyr::left_join(data.frame(date = all_dates), mydata, by = "date")
+    if (type == "year") {
+      mydata <-
+        dplyr::left_join(
+          data.frame(date = all_dates) |>
+            cutData("year"),
+          mydata,
+          by = c("date", type)
+        )
+    } else {
+      if (type == "default") {
+        mydata <- cutData(mydata, "default")
+      }
+
+      mydata <-
+        dplyr::left_join(
+          data.frame(date = all_dates) |>
+            tidyr::crossing(dplyr::distinct(mydata, .data[[type]])),
+          mydata,
+          by = c("date", type)
+        )
+    }
 
     # split by year-month, and set 'type' to this
     if (show.year) {
@@ -303,8 +372,9 @@ calendarPlot <-
 
       # if any duplicates, set show.year = TRUE
       if (
-        any(verify_duplicates$month_counts > 1L) ||
-          dplyr::n_distinct(verify_duplicates$years) > 1L
+        (any(verify_duplicates$month_counts > 1L) ||
+          dplyr::n_distinct(verify_duplicates$years) > 1L) &&
+          type != "year"
       ) {
         mydata <- dplyr::mutate(
           mydata,
@@ -317,7 +387,11 @@ calendarPlot <-
     }
 
     # type is always "cuts"
-    type <- "cuts"
+    if (months_as_rows) {
+      type <- c("cuts", type[type != "default"])
+    } else {
+      type <- c(type[type != "default"], "cuts")
+    }
 
     # drop empty months?
     if (remove.empty) {
@@ -592,7 +666,15 @@ calendarPlot <-
   }
 
 #' @noRd
-prepare_calendar_data <- function(mydata, year, month, pollutant, annotate) {
+prepare_calendar_data <- function(
+  mydata,
+  year,
+  month,
+  pollutant,
+  type,
+  annotate,
+  ...
+) {
   # filter by year
   if (!is.null(year)) {
     mydata <- selectByDate(mydata, year = year)
@@ -615,16 +697,13 @@ prepare_calendar_data <- function(mydata, year, month, pollutant, annotate) {
   if (annotate %in% c("date", "value")) {
     vars <- c("date", pollutant)
   }
-  if (annotate == "wd") {
-    vars <- c("wd", "ws", "date", pollutant)
-  }
-  if (annotate == "ws") {
+  if (annotate %in% c("ws", "wd")) {
     vars <- c("wd", "ws", "date", pollutant)
   }
 
   # check input data
-  mydata <-
-    checkPrep(mydata, vars, "default", remove.calm = FALSE)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    cutData(type, ...)
 
   return(mydata)
 }
