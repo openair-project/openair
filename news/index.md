@@ -178,6 +178,14 @@
   - Added arguments `key`, `key.position` and `key.header` for adding
     and refining a plot legend.
 
+- [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
+  refinements:
+
+  - Added `windflow` and `min.bin` arguments, in line with similar
+    functions.
+
+  - Two `type` values are now supported.
+
 - [`TaylorDiagram()`](https://openair-project.github.io/openair/reference/TaylorDiagram.md)
   refinements:
 
@@ -208,9 +216,6 @@
 
 - [`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md)
   is now much faster with a new algorithm.
-
-- [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
-  now supports 2 values being passed to `type`.
 
 ### Bug Fixes
 
