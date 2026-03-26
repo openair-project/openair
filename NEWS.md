@@ -90,6 +90,12 @@
     
     - Added arguments `key`, `key.position` and `key.header` for adding and refining a plot legend.
 
+- `trendLevel()` refinements:
+
+    - Added `windflow` and `min.bin` arguments, in line with similar functions.
+
+    - Two `type` values are now supported.
+
 - New function `WhittakerSmooth()` to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.
 
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
@@ -99,8 +105,6 @@
 - `timeAverage()` is much faster with the bulk of the calculations made using C++.
 
 - `runRegression()` is now much faster with a new algorithm.
-
-- `trendLevel()` now supports 2 values being passed to `type`.
 
 ## Bug Fixes
 
