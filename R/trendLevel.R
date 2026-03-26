@@ -416,17 +416,21 @@ trendLevel <- function(
     dplyr::any_of(c(pollutant, x, y, type, "wind_u", "wind_v"))
   )
 
+  # apply statistic
   calc_stat <- function(x) {
     args <- append(stat.args, list(x = x))
     rlang::exec(stat.fun, !!!args)
   }
+
+  # NB: don't overwrite `pollutant` initially so that `n` is still valid
   newdata_poll <-
     newdata |>
     dplyr::summarise(
-      {{ pollutant }} := calc_stat(.data[[pollutant]]),
-      n = dplyr::n(),
+      poll_avg = calc_stat(.data[[pollutant]]),
+      n = length(stats::na.omit(.data[[pollutant]])),
       .by = dplyr::all_of(c(x, y, type))
     )
+  names(newdata_poll)[names(newdata_poll) == "poll_avg"] <- pollutant
 
   # if using windflow, calculate mean wind_u and wind_v for each bin
   if (!is.null(windflow)) {
