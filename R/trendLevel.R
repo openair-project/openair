@@ -379,7 +379,7 @@ trendLevel <- function(
 
   # checkPrep
   temp <- c(pollutant)
-  if ("date" %in% names(mydata)) {
+  if (x %in% dateTypes || y %in% dateTypes || any(type %in% dateTypes)) {
     temp <- c(temp, "date")
   }
   if (!is.null(windflow)) {
