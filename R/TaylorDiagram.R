@@ -113,6 +113,12 @@
 #'   see the full list). An example would be `cols = c("yellow", "green",
 #'   "blue")`.
 #'
+#' @param pos.cor Show only positive correlations (`TRUE`) or include negative
+#'   correlations (`FALSE`). If negative correlations are shown, the Taylor
+#'   Diagram will show two quadrants. The default, `NULL`, will use two
+#'   quadrants if any negative correlations are present in the data and one
+#'   quadrant if all correlations are positive.
+#'
 #' @param rms.col Colour for centred-RMS lines and text.
 #'
 #' @param cor.col Colour for correlation coefficient lines and text.
@@ -271,6 +277,7 @@ TaylorDiagram <- function(
   group = NULL,
   type = "default",
   normalise = FALSE,
+  pos.cor = NULL,
   cols = "brewer1",
   rms.col = "darkgoldenrod",
   cor.col = "black",
@@ -293,7 +300,7 @@ TaylorDiagram <- function(
   # extra.args setup
   extra.args <- list(...)
 
-  # label controls (some local xlab, ylab management in code)
+  # label controls
   extra.args$xlab <- quickText(
     extra.args$xlab %||%
       ifelse(
@@ -421,6 +428,9 @@ TaylorDiagram <- function(
       .include_default = TRUE
     )
 
+  # handle quadrants
+  positive_only <- pos.cor %||% !any(sign(results$R) == -1)
+
   # if two sets of model data are present, then calculate the stats for the
   # second set and combine with the first. This will allow us to show the change
   # in model performance from the first to the second.
@@ -465,10 +475,16 @@ TaylorDiagram <- function(
 
         nicerange <- pretty(c(results$sd.obs, results$sd.mod))
 
+        if (positive_only) {
+          cor <- seq(0, 1, 0.01)
+        } else {
+          cor <- seq(-1, 1, 0.01)
+        }
+
         crmse_grid <-
           expand.grid(
             m = pretty(c(0, nicerange), n = 50),
-            cor = seq(0, 1, 0.01)
+            cor = cor
           ) |>
           dplyr::mutate(crmse = crmse(o = df$sd.obs[1], .data$m, .data$cor))
 
@@ -489,10 +505,6 @@ TaylorDiagram <- function(
     )
     contour_fun <- ggplot2::geom_contour
   }
-
-  # future proofing in case we want negative R values in future
-  x_breaks <- c(seq(0.1, 0.9, 0.1), 0.95, 0.99)
-  x_labels <- x_breaks
 
   # restore original groups
   if (group == "newgrp") {
@@ -519,6 +531,24 @@ TaylorDiagram <- function(
   }
   shapes <- shapes[1:nlevels(results[[group]])]
 
+  # plot configuration based on quadrants
+  if (positive_only) {
+    x_breaks <- c(seq(0.1, 0.9, 0.1), 0.95, 0.99)
+    thetalim <- c(0, 1)
+    radial_start <- 0
+    cor_x <- I(0.7)
+    cor_y <- I(0.7)
+    cor_angle <- -45
+  } else {
+    x_breaks <- c(-0.99, -0.95, seq(-0.9, 0.9, 0.1), 0.95, 0.99)
+    thetalim <- c(-1, 1)
+    radial_start <- -90 * pi / 180
+    cor_x <- I(0.5)
+    cor_y <- I(0.95)
+    cor_angle <- 0
+  }
+
+  # guides
   legend_guide <-
     ggplot2::guide_legend(
       ncol = if (missing(key.columns)) NULL else key.columns
@@ -530,6 +560,7 @@ TaylorDiagram <- function(
       results,
       ggplot2::aes(x = .data$R, y = .data$sd.mod)
     ) +
+    ggplot2::geom_vline(xintercept = 0) +
     contour_fun(
       data = crmse_grid,
       inherit.aes = FALSE,
@@ -553,15 +584,6 @@ TaylorDiagram <- function(
       ),
       size = extra.args$cex * 2
     ) +
-    ggplot2::geom_point(
-      ggplot2::aes(
-        y = .data$sd.obs,
-        x = 0,
-        colour = text.obs,
-        shape = text.obs
-      ),
-      size = extra.args$cex * 2
-    ) +
     ggplot2::annotate(
       geom = "text",
       y = I(0.9),
@@ -573,18 +595,18 @@ TaylorDiagram <- function(
       size = extra.args$fontsize / 3
     ) +
     ggplot2::annotate(
-      x = I(0.7),
-      y = I(0.7),
+      x = cor_x,
+      y = cor_y,
+      angle = cor_angle,
       geom = "text",
       label = "correlation",
-      angle = -45,
       color = cor.col,
       size = extra.args$fontsize / 3
     ) +
     ggplot2::coord_radial(
-      thetalim = c(0, 1),
+      thetalim = thetalim,
       rlim = c(0, NA),
-      start = 0,
+      start = radial_start,
       end = 90 * pi / 180,
       reverse = "theta"
     ) +
@@ -596,7 +618,8 @@ TaylorDiagram <- function(
         domain = c(0, 1)
       ),
       breaks = x_breaks,
-      labels = x_labels,
+      labels = x_breaks,
+      limits = thetalim,
       guide = ggplot2::guide_axis_theta(angle = 90),
       expand = ggplot2::expansion()
     ) +
@@ -618,7 +641,7 @@ TaylorDiagram <- function(
     set_extra_fontsize(extra.args) +
     ggplot2::labs(
       x = extra.args$xlab,
-      y = extra.args$ylab,
+      y = if (!positive_only) NULL else extra.args$ylab,
       title = extra.args$main,
       color = quickText(key.title, auto.text = auto.text),
       shape = quickText(key.title, auto.text = auto.text)
