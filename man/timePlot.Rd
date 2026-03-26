@@ -21,6 +21,7 @@ timePlot(
   log = FALSE,
   windflow = NULL,
   smooth = FALSE,
+  smooth_k = NULL,
   ci = TRUE,
   x.relation = "same",
   y.relation = "same",
@@ -143,6 +144,14 @@ over-plotting does not become a problem.}
 
 \item{smooth}{Should a smooth line be applied to the data? The default is
 \code{FALSE}.}
+
+\item{smooth_k}{An integer controlling the number of basis functions used in
+the GAM smooth. In a GAM, \code{k} sets the maximum degrees of freedom for the
+smooth term: larger values allow more flexibility and can capture finer
+structure in the data, while smaller values produce smoother, less wiggly
+fits. The default (\code{NULL}) lets \code{ggplot2} choose automatically (typically
+\code{k = 10}). Increase \code{k} if the smooth appears too rigid; decrease it to
+avoid over-fitting.}
 
 \item{ci}{If a smooth fit line is applied, then \code{ci} determines whether the
 95 percent confidence intervals are shown.}
