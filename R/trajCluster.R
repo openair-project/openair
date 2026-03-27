@@ -239,12 +239,18 @@ trajCluster <- function(
       label = scales::label_percent(accuracy = 0.1, scale = 1)(.data$freq)
     )
 
+  # extract coordinates to avoid st_point_on_surface warning in geom_sf_text
+  line_ends_coords <-
+    line_ends |>
+    dplyr::bind_cols(sf::st_coordinates(line_ends) |> tibble::as_tibble()) |>
+    sf::st_drop_geometry()
+
   # add to plot
   thePlot <-
     thePlot +
-    ggplot2::geom_sf_text(
-      data = line_ends,
-      ggplot2::aes(label = .data$label),
+    ggplot2::geom_text(
+      data = line_ends_coords,
+      ggplot2::aes(x = .data$X, y = .data$Y, label = .data$label),
       nudge_y = 1
     )
 
