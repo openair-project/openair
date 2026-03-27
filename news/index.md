@@ -7,12 +7,11 @@
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe
   (`|>`).
 
-- `openair` now imports `ggplot2` and `scales` and suggests `sf`.
+- `openair` now imports `ggplot2` and `scales` and suggests `sf`,
+  `geomtextpath` and `legendry`.
 
 - `openair` no longer imports `lattice`, `latticeExtra`, `hexbin` or
-  `mapproj`.
-
-- `openair` no longer imports `mapproj` or suggests `mapdata`.
+  `mapproj` nor suggests `mapdata`.
 
 ### Breaking Changes
 
