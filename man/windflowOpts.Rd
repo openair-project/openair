@@ -7,13 +7,15 @@
 windflowOpts(
   limits = c(NA, NA),
   range = c(0.1, 1),
-  arrow = ggplot2::arrow(angle = 15, length = ggplot2::unit(0.5, "lines"), ends = "last",
-    type = "closed"),
+  arrow.angle = 15,
+  arrow.length = ggplot2::unit(0.5, "lines"),
+  arrow.ends = "last",
+  arrow.type = "closed",
   lineend = "butt",
   alpha = 1,
   colour = "black",
   linetype = 1,
-  linewidth = 1,
+  linewidth = 0.5,
   color = NULL,
   windflow = TRUE
 )
@@ -28,8 +30,9 @@ sizes of the windflow arrows. The default is broadly appropriate throughout
 \code{openair}, but if plots are beings saved at different resolutions it may be
 appropriate to to tweak this.}
 
-\item{arrow}{A \code{\link[grid:arrow]{grid::arrow()}} object specifying the appearance of the
-arrows.}
+\item{arrow.angle, arrow.length, arrow.ends, arrow.type}{Passed to the
+respective arguments of \code{\link[grid:arrow]{grid::arrow()}}; used to control various arrow
+styling options.}
 
 \item{lineend}{The style of line endings. Options include \code{"butt"},
 \code{"round"}, and \code{"square"}. Default is \code{"butt"}.}
@@ -45,10 +48,13 @@ are given.}
 dashed) or a string (e.g., "solid", "dashed"). Default is 1 (solid).}
 
 \item{linewidth}{Numeric value specifying the width of the lines. Default is
-1.}
+0.5.}
 
 \item{windflow}{Logical value indicating whether to include the \code{windflow}
 layer. Default is \code{TRUE}. Used internally by \code{openair} functions.}
+
+\item{arrow}{A \code{\link[grid:arrow]{grid::arrow()}} object specifying the appearance of the
+arrows.}
 }
 \value{
 A list of options that can be passed to the \code{windflow} argument of

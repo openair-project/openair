@@ -14,6 +14,10 @@
 #'   `openair`, but if plots are beings saved at different resolutions it may be
 #'   appropriate to to tweak this.
 #'
+#' @param arrow.angle,arrow.length,arrow.ends,arrow.type Passed to the
+#'   respective arguments of [grid::arrow()]; used to control various arrow
+#'   styling options.
+#'
 #' @param arrow A [grid::arrow()] object specifying the appearance of the
 #'   arrows.
 #'
@@ -61,12 +65,10 @@
 windflowOpts <- function(
   limits = c(NA, NA),
   range = c(0.1, 1),
-  arrow = ggplot2::arrow(
-    angle = 15,
-    length = ggplot2::unit(0.5, "lines"),
-    ends = "last",
-    type = "closed"
-  ),
+  arrow.angle = 15,
+  arrow.length = ggplot2::unit(0.5, "lines"),
+  arrow.ends = "last",
+  arrow.type = "closed",
   lineend = "butt",
   alpha = 1,
   colour = "black",
@@ -82,7 +84,10 @@ windflowOpts <- function(
   list(
     limits = limits,
     range = range,
-    arrow = arrow,
+    arrow.angle = arrow.angle,
+    arrow.length = arrow.length,
+    arrow.ends = arrow.ends,
+    arrow.type = arrow.type,
     lineend = lineend,
     alpha = alpha,
     colour = colour,
@@ -143,7 +148,10 @@ resolve_windflow_opts <- function(x, ...) {
     windflowOpts(
       limits = x$limits %||% default_opts$limits,
       range = x$range %||% default_opts$range,
-      arrow = x$arrow %||% default_opts$arrow,
+      arrow.angle = x$arrow.angle %||% default_opts$arrow.angle,
+      arrow.length = x$arrow.length %||% default_opts$arrow.length,
+      arrow.ends = x$arrow.ends %||% default_opts$arrow.ends,
+      arrow.type = x$arrow.type %||% default_opts$arrow.type,
       lineend = x$lineend %||% default_opts$lineend,
       alpha = x$alpha %||% default_opts$alpha,
       colour = x$colour %||% x$col %||% default_opts$colour,
@@ -162,7 +170,12 @@ layer_windflow_opts <- function(data, windflow_opts) {
     ggplot2::aes(ws = .data$ws, wd = .data$wd),
     limits = windflow_opts$limits,
     range = windflow_opts$range,
-    arrow = windflow_opts$arrow,
+    arrow = ggplot2::arrow(
+      angle = windflow_opts$arrow.angle,
+      length = windflow_opts$arrow.length,
+      ends = windflow_opts$arrow.ends,
+      type = windflow_opts$arrow.type
+    ),
     lineend = windflow_opts$lineend,
     alpha = windflow_opts$alpha,
     colour = windflow_opts$colour,
