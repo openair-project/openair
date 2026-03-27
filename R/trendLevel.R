@@ -440,8 +440,8 @@ trendLevel <- function(
   if (windflow$windflow) {
     newdata_met <- newdata |>
       dplyr::summarise(
-        wind_u := mean(.data[["wind_u"]], na.rm = TRUE),
-        wind_v := mean(.data[["wind_v"]], na.rm = TRUE),
+        wind_u = mean(.data[["wind_u"]], na.rm = TRUE),
+        wind_v = mean(.data[["wind_v"]], na.rm = TRUE),
         .by = dplyr::all_of(c(x, y, type))
       )
 

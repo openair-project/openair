@@ -19,7 +19,6 @@ calendarPlot(
   limits = NULL,
   lim = NULL,
   col.lim = c("grey30", "black"),
-  col.arrow = "black",
   col.na = "white",
   font.lim = c(1, 2),
   cex.lim = c(0.6, 0.9),
