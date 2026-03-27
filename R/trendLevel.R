@@ -200,7 +200,7 @@ trendLevel <- function(
     x <- x[1]
     cli::cli_warn(
       c(
-        "!" = "{.fun trendLevel} does not allow multiple {.field x} values.",
+        "!" = "{.fun openair::trendLevel} does not allow multiple {.field x} values.",
         "i" = "Setting {.field x} to '{x}'."
       )
     )
@@ -211,7 +211,7 @@ trendLevel <- function(
     y <- y[1]
     cli::cli_warn(
       c(
-        "!" = "{.fun trendLevel} does not allow multiple {.field y} values.",
+        "!" = "{.fun openair::trendLevel} does not allow multiple {.field y} values.",
         "i" = "Setting {.field y} to '{y}'."
       )
     )
@@ -222,7 +222,7 @@ trendLevel <- function(
     type <- type[1:2]
     cli::cli_warn(
       c(
-        "!" = "{.fun trendLevel} does not allow more than two {.field type} values.",
+        "!" = "{.fun openair::trendLevel} does not allow more than two {.field type} values.",
         "i" = "Setting {.field type} to '{type}'."
       )
     )
@@ -233,7 +233,7 @@ trendLevel <- function(
   if (length(vars) != length(unique(vars))) {
     cli::cli_abort(
       c(
-        "x" = "{.fun trendLevel} could not rationalise plot structure.",
+        "x" = "{.fun openair::trendLevel} could not rationalise plot structure.",
         "i" = "Duplicate term(s) in {.field pollutant} ('{pollutant}'), {.field x} ('{x}'), {.field y} ('{y}'), and {.field type} ('{type}')."
       )
     )
@@ -243,12 +243,24 @@ trendLevel <- function(
   # lower the default range - good for heatmap plots
   windflow <- resolve_windflow_opts(windflow, range = c(0.01, 0.5))
 
+  if (
+    windflow$windflow &&
+      (x %in%
+        c("ws", "wd") ||
+        y %in% c("ws", "wd") ||
+        any(type %in% c("ws", "wd")))
+  ) {
+    cli::cli_abort(
+      "In {.fun openair::trendLevel}, cannot use {.arg windflow} and have {.arg x}, {.arg y} and/or {.arg type} be 'ws' or 'wd'."
+    )
+  }
+
   # number vector handling
   ls.check.fun <- function(vector, vector.name, len) {
     if (!is.numeric(vector)) {
       cli::cli_warn(
         c(
-          "!" = "{.fun trendLevel} ignored unrecognised {.field vector.name} option.",
+          "!" = "{.fun openair::trendLevel} ignored unrecognised {.field vector.name} option.",
           "i" = "See {.fun openair::trendLevel} for more information."
         ),
         call. = FALSE
@@ -374,7 +386,7 @@ trendLevel <- function(
     # early end for bad stats
     cli::cli_abort(
       c(
-        "x" = "{.fun trendLevel} could not apply given {.field statistic} option.",
+        "x" = "{.fun openair::trendLevel} could not apply given {.field statistic} option.",
         "i" = "Please provide a valid function or character vector.",
         "i" = "Valid character vectors: {.emph {eval(formals(trendLevel)$statistic)}}"
       )
@@ -466,10 +478,14 @@ trendLevel <- function(
   }
 
   # remove bins with fewer than min.bin records
+  vars <- c(pollutant)
+  if (windflow$windflow) {
+    vars <- c(vars, "ws", "wd")
+  }
   newdata <- dplyr::mutate(
     newdata,
     dplyr::across(
-      dplyr::any_of(c(pollutant, "ws", "wd")),
+      dplyr::any_of(vars),
       \(x) ifelse(.data$n < min.bin, NA, x)
     )
   )
