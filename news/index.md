@@ -129,6 +129,9 @@
     2D matrix using month & whatever the user has selected.
     `type = "year"` has special handling.
 
+  - Gained the `windflow` argument, which deprecates passing `"ws"` or
+    `"wd"` to `annotate`.
+
   - Gained the `percentile` argument, passed on to
     [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md).
 
@@ -198,6 +201,11 @@
   be used to flexibly smooth and interpolate missing data. Additionally,
   the function can flexibly define a baseline (and hence increment) for
   a time series.
+
+- New function
+  [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md)
+  which can be passed to the `windflow` argument of various `openair`
+  functions to thoroughly customise the “windflow” arrows.
 
 - [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md)
   and

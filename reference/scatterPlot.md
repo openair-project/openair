@@ -241,10 +241,12 @@ scatterPlot(
 
 - windflow:
 
-  This option allows a scatter plot to show the wind speed/direction
-  shows as an arrow. The option is a list e.g.
-  `windflow = list(col = "grey", lwd = 2, scale = 0.1)`. This option
-  requires wind speed (`ws`) and wind direction (`wd`) to be available.
+  If `TRUE`, the vector-averaged wind speed and direction will be
+  plotted using arrows. Alternatively, can be a list of arguments to
+  control the appearance of the arrows (colour, linewidth, alpha value,
+  etc.). See
+  [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md)
+  for details.
 
 - y.relation:
 

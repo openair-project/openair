@@ -73,15 +73,15 @@ if wind speed and direction are available.</p>
 <span>  year <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  month <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"month"</span>,</span>
-<span>  annotate <span class="op">=</span> <span class="st">"date"</span>,</span>
 <span>  statistic <span class="op">=</span> <span class="st">"mean"</span>,</span>
 <span>  data.thresh <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  percentile <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  annotate <span class="op">=</span> <span class="st">"date"</span>,</span>
+<span>  windflow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"heat"</span>,</span>
 <span>  limits <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lim <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  col.lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey30"</span>, <span class="st">"black"</span><span class="op">)</span>,</span>
-<span>  col.arrow <span class="op">=</span> <span class="st">"black"</span>,</span>
 <span>  col.na <span class="op">=</span> <span class="st">"white"</span>,</span>
 <span>  font.lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  cex.lim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.9</span><span class="op">)</span>,</span>
@@ -115,7 +115,7 @@ least one variable to plot.</p></dd>
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
 <dd><p>Mandatory. A pollutant name corresponding to a variable in a
-data frame should be supplied e.g. <code>pollutant = "nox". </code></p></dd>
+data frame should be supplied e.g. <code>pollutant = "nox"</code>.</p></dd>
 
 
 <dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
@@ -143,15 +143,6 @@ automatically prevent a single year from being selected (unless specified
 using the <code>year</code> argument) and set <code>show.year</code> to <code>FALSE</code>.</p></dd>
 
 
-<dt id="arg-annotate">annotate<a class="anchor" aria-label="anchor" href="#arg-annotate"></a></dt>
-<dd><p>This option controls what appears on each day of the
-calendar. Can be:</p><ul><li><p><code>"date"</code> — shows day of the month</p></li>
-<li><p><code>"wd"</code> — shows vector-averaged wind direction</p></li>
-<li><p><code>"ws"</code> — shows vector-averaged wind direction scaled by wind speed</p></li>
-<li><p><code>"value"</code> — shows the daily mean value</p></li>
-</ul></dd>
-
-
 <dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
 <dd><p>Statistic passed to <code><a href="timeAverage.html">timeAverage()</a></code>. Note that if <code>statistic %in% c("max", "min")</code> and <code>annotate</code> is "ws" or "wd", the hour
 corresponding to the maximum/minimum concentration of <code>polluant</code> is used to
@@ -171,6 +162,21 @@ and <code>end.date</code> to see whether it is advisable to set these other opti
 <dt id="arg-percentile">percentile<a class="anchor" aria-label="anchor" href="#arg-percentile"></a></dt>
 <dd><p>The percentile level in percent used when <code>statistic = "percentile"</code> and when aggregating the data with <code>avg.time</code>. More than one
 percentile level is allowed for <code>type = "default"</code> e.g. <code>percentile = c(50, 95)</code>. Not used if <code>avg.time = "default"</code>.</p></dd>
+
+
+<dt id="arg-annotate">annotate<a class="anchor" aria-label="anchor" href="#arg-annotate"></a></dt>
+<dd><p>This option controls what appears on each day of the
+calendar. Can be:</p><ul><li><p><code>"date"</code> — shows day of the month</p></li>
+<li><p><code>"value"</code> — shows the daily mean value</p></li>
+<li><p><code>"none"</code> — shows no label</p></li>
+</ul></dd>
+
+
+<dt id="arg-windflow">windflow<a class="anchor" aria-label="anchor" href="#arg-windflow"></a></dt>
+<dd><p>If <code>TRUE</code>, the vector-averaged wind speed and direction will
+be plotted using arrows. Alternatively, can be a list of arguments to
+control the appearance of the arrows (colour, linewidth, alpha value,
+etc.). See <code><a href="windflowOpts.html">windflowOpts()</a></code> for details.</p></dd>
 
 
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
@@ -196,11 +202,6 @@ control over the labels used.</p></dd>
 <dd><p>For the annotation of concentration labels on each day. The
 first sets the colour of the text below <code>lim</code> and the second sets the
 colour of the text above <code>lim</code>.</p></dd>
-
-
-<dt id="arg-col-arrow">col.arrow<a class="anchor" aria-label="anchor" href="#arg-col-arrow"></a></dt>
-<dd><p>The colour of the annotated wind direction / wind speed
-arrows.</p></dd>
 
 
 <dt id="arg-col-na">col.na<a class="anchor" aria-label="anchor" href="#arg-col-na"></a></dt>
@@ -357,8 +358,10 @@ maximum daily 8-hour mean concentrations.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># show wind vectors</span></span></span>
 <span class="r-in"><span><span class="fu">calendarPlot</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"o3"</span>, year <span class="op">=</span> <span class="fl">2003</span>, annotate <span class="op">=</span> <span class="st">"wd"</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 139 rows containing non-finite outside the scale range</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> (`stat_windflow()`).</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span><span style="color: #BBBB00;">!</span> `annotate` in `openair::calendarPlot()` no longer supports `'ws'` or `'wd'`.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use the `windflow` argument instead for more thorough control over the</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span>   apperance of the 'windflow' arrow.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Setting `windflow` to TRUE.</span>
 <span class="r-plt img"><img src="calendarPlot-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span><span class="co"># show wind vectors scaled by wind speed and different colours</span></span></span>

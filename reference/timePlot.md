@@ -175,18 +175,12 @@ timePlot(
 
 - windflow:
 
-  This option allows a scatter plot to show the wind speed/direction as
-  an arrow. The option is a list e.g.
-  `windflow = list(col = "grey", lwd = 2)`. This option requires wind
-  speed (`ws`) and wind direction (`wd`) to be available.
-
-  Any of the arguments in
-  [`ggplot2::arrow()`](https://ggplot2.tidyverse.org/reference/reexports.html)
-  can be passed as a list, as well as `col` which controls the arrow's
-  colour and `lwd` which controls the line width.
-
-  This option works best where there are not too many data to ensure
-  over-plotting does not become a problem.
+  If `TRUE`, the vector-averaged wind speed and direction will be
+  plotted using arrows. Alternatively, can be a list of arguments to
+  control the appearance of the arrows (colour, linewidth, alpha value,
+  etc.). See
+  [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md)
+  for details.
 
 - smooth:
 

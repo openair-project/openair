@@ -247,8 +247,14 @@ Tools for refining openair plots.
 
 - [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
   : Pre-defined openair colours and definition of user-defined colours
+
 - [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
   : Automatic text formatting for openair
+
+- [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md)
+  :
+
+  Define `windflow` options for `openair` plots
 
 ### Smoothing Functions
 

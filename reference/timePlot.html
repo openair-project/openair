@@ -221,14 +221,10 @@ scales. It is therefore useful to use <code>log = TRUE</code> together with <cod
 
 
 <dt id="arg-windflow">windflow<a class="anchor" aria-label="anchor" href="#arg-windflow"></a></dt>
-<dd><p>This option allows a scatter plot to show the wind
-speed/direction as an arrow. The option is a list e.g. <code>windflow = list(col = "grey", lwd = 2)</code>. This option requires wind speed (<code>ws</code>) and wind
-direction (<code>wd</code>) to be available.</p>
-<p>Any of the arguments in <code><a href="https://ggplot2.tidyverse.org/reference/reexports.html" class="external-link">ggplot2::arrow()</a></code> can be passed as a list, as well
-as <code>col</code> which controls the arrow's colour and <code>lwd</code> which controls the
-line width.</p>
-<p>This option works best where there are not too many data to ensure
-over-plotting does not become a problem.</p></dd>
+<dd><p>If <code>TRUE</code>, the vector-averaged wind speed and direction will
+be plotted using arrows. Alternatively, can be a list of arguments to
+control the appearance of the arrows (colour, linewidth, alpha value,
+etc.). See <code><a href="windflowOpts.html">windflowOpts()</a></code> for details.</p></dd>
 
 
 <dt id="arg-smooth">smooth<a class="anchor" aria-label="anchor" href="#arg-smooth"></a></dt>

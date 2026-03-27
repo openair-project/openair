@@ -97,6 +97,7 @@
 <li>
 <p><code><a href="../reference/calendarPlot.html">calendarPlot()</a></code> refinements:</p>
 <ul><li><p>Gained the <code>type</code> argument. This can take one <code>type</code> and creates a 2D matrix using month &amp; whatever the user has selected. <code>type = "year"</code> has special handling.</p></li>
+<li><p>Gained the <code>windflow</code> argument, which deprecates passing <code>"ws"</code> or <code>"wd"</code> to <code>annotate</code>.</p></li>
 <li><p>Gained the <code>percentile</code> argument, passed on to <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
 <li><p>Gained the <code>show.year</code> argument, defaulting to <code>TRUE</code>. When <code>FALSE</code> and only one year of data is given, the strip titles will only read, e.g., “January” instead of “January-2000”. This can create cleaner plots, as well as being useful for certain edge cases (e.g., if the calendarPlot is showing day-of-year averages over multiple years).</p></li>
 <li><p>When <code>statistic == "min"</code> and <code>annotation %in% c("ws", "wd")</code>, the ws/wd returned will correspond to the minimum daily pollutant, rather than the minimum daily ws/wd.</p></li>
@@ -125,6 +126,7 @@
 <ul><li>Added the <code>pos.cor</code> argument which controls whether the negative correlation quadrant is shown.</li>
 </ul></li>
 <li><p>New function <code><a href="../reference/WhittakerSmooth.html">WhittakerSmooth()</a></code> to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.</p></li>
+<li><p>New function <code><a href="../reference/windflowOpts.html">windflowOpts()</a></code> which can be passed to the <code>windflow</code> argument of various <code>openair</code> functions to thoroughly customise the “windflow” arrows.</p></li>
 <li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> have gained the <code>grid.nx</code> and <code>grid.ny</code> arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.</p></li>
 <li><p><code><a href="../reference/quickText.html">quickText()</a></code> now converts <code>air_temp</code> (a common <code>worldmet</code> variable) into <code>"Temperature"</code>.</p></li>
 <li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> is much faster with the bulk of the calculations made using C++.</p></li>

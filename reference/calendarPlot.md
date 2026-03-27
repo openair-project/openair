@@ -14,15 +14,15 @@ calendarPlot(
   year = NULL,
   month = NULL,
   type = "month",
-  annotate = "date",
   statistic = "mean",
   data.thresh = 0,
   percentile = NA,
+  annotate = "date",
+  windflow = NULL,
   cols = "heat",
   limits = NULL,
   lim = NULL,
   col.lim = c("grey30", "black"),
-  col.arrow = "black",
   col.na = "white",
   font.lim = c(1, 2),
   cex.lim = c(0.6, 0.9),
@@ -55,7 +55,7 @@ calendarPlot(
 - pollutant:
 
   Mandatory. A pollutant name corresponding to a variable in a data
-  frame should be supplied e.g. `pollutant = "nox". `
+  frame should be supplied e.g. `pollutant = "nox"`.
 
 - year:
 
@@ -84,18 +84,6 @@ calendarPlot(
   automatically prevent a single year from being selected (unless
   specified using the `year` argument) and set `show.year` to `FALSE`.
 
-- annotate:
-
-  This option controls what appears on each day of the calendar. Can be:
-
-  - `"date"` — shows day of the month
-
-  - `"wd"` — shows vector-averaged wind direction
-
-  - `"ws"` — shows vector-averaged wind direction scaled by wind speed
-
-  - `"value"` — shows the daily mean value
-
 - statistic:
 
   Statistic passed to
@@ -121,6 +109,25 @@ calendarPlot(
   and when aggregating the data with `avg.time`. More than one
   percentile level is allowed for `type = "default"` e.g.
   `percentile = c(50, 95)`. Not used if `avg.time = "default"`.
+
+- annotate:
+
+  This option controls what appears on each day of the calendar. Can be:
+
+  - `"date"` — shows day of the month
+
+  - `"value"` — shows the daily mean value
+
+  - `"none"` — shows no label
+
+- windflow:
+
+  If `TRUE`, the vector-averaged wind speed and direction will be
+  plotted using arrows. Alternatively, can be a list of arguments to
+  control the appearance of the arrows (colour, linewidth, alpha value,
+  etc.). See
+  [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md)
+  for details.
 
 - cols:
 
@@ -149,10 +156,6 @@ calendarPlot(
   For the annotation of concentration labels on each day. The first sets
   the colour of the text below `lim` and the second sets the colour of
   the text above `lim`.
-
-- col.arrow:
-
-  The colour of the annotated wind direction / wind speed arrows.
 
 - col.na:
 
@@ -325,8 +328,10 @@ calendarPlot(mydata, pollutant = "o3", year = 2003)
 
 # show wind vectors
 calendarPlot(mydata, pollutant = "o3", year = 2003, annotate = "wd")
-#> Warning: Removed 139 rows containing non-finite outside the scale range
-#> (`stat_windflow()`).
+#> Warning: ! `annotate` in `openair::calendarPlot()` no longer supports `'ws'` or `'wd'`.
+#> ℹ Please use the `windflow` argument instead for more thorough control over the
+#>   apperance of the 'windflow' arrow.
+#> ℹ Setting `windflow` to TRUE.
 
 if (FALSE) { # \dontrun{
 # show wind vectors scaled by wind speed and different colours
