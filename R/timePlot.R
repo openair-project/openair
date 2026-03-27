@@ -33,10 +33,20 @@
 #'   plotted, in which case a form like `pollutant = c("nox", "co")` should be
 #'   used.
 #'
-#' @param group If more than one pollutant is chosen, should they all be plotted
-#'   on the same graph together? The default is `FALSE`, which means they are
-#'   plotted in separate panels with their own scaled. If `TRUE` then they are
-#'   plotted on the same plot with the same scale.
+#' @param group Controls how multiple lines/series are grouped. Three options
+#'   are available:
+#'
+#'   - `FALSE` (default): each pollutant is plotted in its own panel with its
+#'     own scale.
+#'   - `TRUE`: all pollutants are plotted together on the same panel and scale,
+#'     coloured by pollutant name.
+#'   - A character string giving the name of a column in `mydata` (e.g.
+#'     `group = "site"` or `group = "pollutant"`): lines are coloured by the
+#'     values in that column. With a single `pollutant` all groups appear in
+#'     one panel; with multiple `pollutant`s each pollutant gets its own panel
+#'     and lines within each panel are coloured by the group column. This is
+#'     particularly useful for long-format data where multiple species are
+#'     stored in one column.
 #'
 #' @param stack If `TRUE` the time series will be stacked by year. This option
 #'   can be useful if there are several years worth of data making it difficult
@@ -196,6 +206,13 @@
 #' # two pollutants in the same panel with the same scale
 #' timePlot(mydata, pollutant = c("nox", "no2"), group = TRUE)
 #'
+#' # group by a column (e.g. long-format data with a 'site' column)
+#' d <- rbind(
+#'   cbind(mydata[, c("date", "nox")], site = "London"),
+#'   cbind(transform(mydata[, c("date", "nox")], nox = nox * 1.5), site = "Manchester")
+#' )
+#' timePlot(d, pollutant = "nox", group = "site")
+#'
 #' # alternative by normalising concentrations and plotting on the same scale
 #' timePlot(
 #'   mydata,
@@ -281,6 +298,9 @@ timePlot <- function(
   # Args setup
   extra.args <- rlang::list2(...)
 
+  # detect if group is a column name rather than a boolean
+  group_is_col <- is.character(group) && length(group) == 1
+
   # warning messages and other checks
   if (length(percentile) > 1 && length(pollutant) > 1) {
     cli::cli_abort(
@@ -295,7 +315,7 @@ timePlot <- function(
   }
 
   if (
-    !group &&
+    isFALSE(group) &&
       length(type) > 1 &&
       (length(pollutant) > 1 || length(percentile) > 1)
   ) {
@@ -318,6 +338,22 @@ timePlot <- function(
   rlang::arg_match(x.relation, c("same", "free"))
   rlang::arg_match(y.relation, c("same", "free"))
 
+  if (group_is_col) {
+    if (!group %in% names(mydata)) {
+      cli::cli_abort("Column {.val {group}} not found in {.arg mydata}.")
+    }
+    if (group %in% type) {
+      cli::cli_abort(
+        "{.arg group} column {.val {group}} is also used in {.arg type}. Choose one or the other."
+      )
+    }
+    if (length(type) > 1 && length(pollutant) > 1) {
+      cli::cli_abort(
+        "Cannot combine multiple {.arg pollutant}s, multiple {.arg type}s, and a {.arg group} column simultaneously."
+      )
+    }
+  }
+
   # style controls
   extra.args$pch <- extra.args$pch %||% NA
   extra.args$layout <- extra.args$layout %||% NULL
@@ -330,6 +366,7 @@ timePlot <- function(
     avg.time = avg.time,
     date.pad = date.pad,
     windflow = windflow,
+    group = group,
     ...
   )
 
@@ -342,7 +379,8 @@ timePlot <- function(
     avg.time = avg.time,
     data.thresh = data.thresh,
     percentile = percentile,
-    windflow = windflow
+    windflow = windflow,
+    group = group
   )
   pollutant <- mydata$pollutant
   mydata <- mydata$data
@@ -392,30 +430,41 @@ timePlot <- function(
     x_scale_fun <- ggplot2::scale_x_datetime
   }
 
-  # number of pollutants
-  npol <- length(unique(mydata$variable)) # number of pollutants
+  # number of distinct pollutants (for panel layout / faceting)
+  npol <- length(unique(mydata$variable))
+
+  # number of groups used for colour/linetype/linewidth aesthetics
+  if (group_is_col) {
+    group_levels <- unique(as.character(mydata[[group]]))
+    mydata[[group]] <- factor(mydata[[group]], levels = group_levels)
+    n_groups <- length(group_levels)
+  } else {
+    n_groups <- npol
+  }
 
   extra.args$lty <- extra.args$lty %||% 1
-  while (length(extra.args$lty) < npol) {
+  while (length(extra.args$lty) < n_groups) {
     extra.args$lty <- c(extra.args$lty, extra.args$lty)
   }
-  extra.args$lty <- extra.args$lty[1:npol]
+  extra.args$lty <- extra.args$lty[1:n_groups]
 
   extra.args$lwd <- extra.args$lwd %||% 1
-  while (length(extra.args$lwd) < npol) {
+  while (length(extra.args$lwd) < n_groups) {
     extra.args$lwd <- c(extra.args$lwd, extra.args$lwd)
   }
-  extra.args$lwd <- extra.args$lwd[1:npol]
+  extra.args$lwd <- extra.args$lwd[1:n_groups]
 
   # layout - stack vertically
   if (
-    is.null(extra.args$layout) && !group && !stack && all(type == "default")
+    is.null(extra.args$layout) && !isTRUE(group) && !stack && all(type == "default")
   ) {
     extra.args$layout <- c(1, npol)
   }
 
   # deal with type
-  if (!group && npol > 1) {
+  # when group is a string, !isTRUE(group) is TRUE, so multiple pollutants
+  # still get their own panels (coloured by the group column within each)
+  if (!isTRUE(group) && npol > 1) {
     type <- c(type, "variable")
   }
 
@@ -441,12 +490,17 @@ timePlot <- function(
         if (key.position %in% c("left", "right")) {
           1
         } else {
-          npol
+          n_groups
         }
       } else {
         key.columns
       }
     )
+
+  # aesthetic column: group column name when group is a string, else "variable"
+  aes_col <- if (group_is_col) rlang::sym(group) else rlang::sym("variable")
+  # legend title: show group column name when group is a string, else no title
+  legend_title <- if (group_is_col) quickText(group, auto.text) else NULL
 
   # built plot
   thePlot <-
@@ -455,26 +509,26 @@ timePlot <- function(
       ggplot2::aes(
         x = .data$date,
         y = .data$value,
-        color = .data$variable,
-        fill = .data$variable,
-        linetype = .data$variable
+        color = !!aes_col,
+        fill = !!aes_col,
+        linetype = !!aes_col
       )
     ) +
     ggplot2::geom_line(
-      ggplot2::aes(linewidth = .data$variable),
+      ggplot2::aes(linewidth = !!aes_col),
       show.legend = TRUE
     ) +
     gg_ref_x(ref.x) +
     gg_ref_y(ref.y) +
-    theme_openair(key.position = ifelse(npol == 1, "none", key.position)) +
+    theme_openair(key.position = ifelse(n_groups == 1, "none", key.position)) +
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
       title = extra.args$main,
-      fill = NULL,
-      colour = NULL,
-      linetype = NULL,
-      linewidth = NULL
+      fill = legend_title,
+      colour = legend_title,
+      linetype = legend_title,
+      linewidth = legend_title
     ) +
     get_facet(
       type,
@@ -502,7 +556,7 @@ timePlot <- function(
       transform = ifelse(log, "log10", "identity")
     ) +
     ggplot2::scale_color_manual(
-      values = openColours(scheme = cols, n = npol),
+      values = openColours(scheme = cols, n = n_groups),
       drop = FALSE,
       label = \(x) label_openair(x, auto_text = auto.text),
       aesthetics = c("fill", "colour")
@@ -548,7 +602,7 @@ timePlot <- function(
         ggplot2::aes(
           ws = .data$ws,
           wd = .data$wd,
-          group = .data$variable
+          group = !!aes_col
         ),
         arrow = grid::arrow(
           angle = windflow$angle %||% 15,
@@ -581,12 +635,16 @@ prepare_timeplot_data <- function(
   avg.time,
   date.pad,
   windflow,
+  group = FALSE,
   ...
 ) {
   # determine necessary variables
   vars <- c("date", pollutant)
   if (!is.null(windflow)) {
     vars <- unique(c(vars, "wd", "ws"))
+  }
+  if (is.character(group)) {
+    vars <- unique(c(vars, group))
   }
 
   # standard data checks
@@ -601,8 +659,10 @@ prepare_timeplot_data <- function(
   mydata <- cutData(mydata, type, ...)
 
   # check for duplicates - can't really have duplicate data in a timeplot
+  # when group is a column, duplicate check must also split by that column
   if (avg.time == "default") {
-    check_duplicate_rows(mydata, type, fn = cli::cli_abort)
+    check_type <- if (is.character(group)) c(type, group) else type
+    check_duplicate_rows(mydata, check_type, fn = cli::cli_abort)
   }
 
   # return data
@@ -619,8 +679,12 @@ time_average_timeplot_data <- function(
   avg.time,
   data.thresh,
   percentile,
-  windflow
+  windflow,
+  group = FALSE
 ) {
+  # when group is a column name, average within each group separately
+  avg_type <- if (is.character(group)) c(type, group) else type
+
   # average the data if necessary (default does nothing)
   if (avg.time != "default") {
     # deal with multiple percentile values
@@ -631,7 +695,7 @@ time_average_timeplot_data <- function(
       mydata <-
         calcPercentile(
           mydata,
-          type = type,
+          type = avg_type,
           pollutant = pollutant,
           avg.time = avg.time,
           data.thresh = data.thresh,
@@ -644,7 +708,7 @@ time_average_timeplot_data <- function(
       mydata <- timeAverage(
         mydata,
         pollutant = pollutant,
-        type = type,
+        type = avg_type,
         statistic = statistic,
         avg.time = avg.time,
         data.thresh = data.thresh,
