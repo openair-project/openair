@@ -376,7 +376,8 @@ timePlot <- function(
     data.thresh = data.thresh,
     percentile = percentile,
     windflow = windflow,
-    group = group
+    group = group,
+    ...
   )
   pollutant <- mydata$pollutant
   mydata <- mydata$data
@@ -668,7 +669,8 @@ time_average_timeplot_data <- function(
   data.thresh,
   percentile,
   windflow,
-  group = FALSE
+  group = FALSE,
+  ...
 ) {
   # when group is a column name, average within each group separately
   avg_type <- if (is.character(group)) c(type, group) else type
@@ -688,7 +690,8 @@ time_average_timeplot_data <- function(
           avg.time = avg.time,
           data.thresh = data.thresh,
           percentile = percentile,
-          prefix = prefix
+          prefix = prefix,
+          ...
         )
 
       pollutant <- paste0(prefix, percentile)
@@ -700,9 +703,12 @@ time_average_timeplot_data <- function(
         statistic = statistic,
         avg.time = avg.time,
         data.thresh = data.thresh,
-        percentile = percentile
+        percentile = percentile,
+        ...
       )
     }
+  } else if (is.character(group)) {
+    mydata <- cutData(mydata, type = group, ...)
   }
 
   # timeAverage drops type if default
