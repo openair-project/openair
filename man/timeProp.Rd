@@ -153,8 +153,7 @@ Other time series and trend functions:
 \code{\link{calendarPlot}()},
 \code{\link{smoothTrend}()},
 \code{\link{timePlot}()},
-\code{\link{timeVariation}()},
-\code{\link{trendLevel}()}
+\code{\link{timeVariation}()}
 
 Other cluster analysis functions: 
 \code{\link{polarCluster}()},

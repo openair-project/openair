@@ -10,6 +10,7 @@ layer_windflow <- function(
     ends = "last",
     type = "closed"
   ),
+  lineend = "butt",
   limits = c(NA, NA),
   range = c(0.1, 1),
   na.rm = FALSE,
@@ -27,6 +28,7 @@ layer_windflow <- function(
       inherit.aes = inherit.aes,
       params = rlang::list2(
         arrow = arrow,
+        lineend = lineend,
         na.rm = na.rm,
         ...
       )
@@ -46,7 +48,7 @@ GeomWindflow <- ggplot2::ggproto(
   ggplot2::Geom,
   required_aes = c("x", "y", "ws", "wd"),
   default_aes = ggplot2::aes(
-    color = "black",
+    colour = "black",
     linewidth = 0.5,
     linetype = 1,
     alpha = NA
@@ -56,7 +58,8 @@ GeomWindflow <- ggplot2::ggproto(
     data,
     panel_scales,
     coord,
-    arrow = arrow
+    arrow,
+    lineend
   ) {
     # transform coords
     coords <- coord$transform(data, panel_scales)
@@ -79,7 +82,7 @@ GeomWindflow <- ggplot2::ggproto(
         alpha = ifelse(is.na(coords$alpha), 1, coords$alpha),
         lwd = coords$linewidth * ggplot2::.pt,
         lty = coords$linetype,
-        lineend = "butt"
+        lineend = lineend
       ),
       cl = "windflow"
     )

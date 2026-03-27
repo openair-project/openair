@@ -99,17 +99,10 @@
 #'   scales. It is therefore useful to use `log = TRUE` together with `group =
 #'   TRUE`.
 #'
-#' @param windflow This option allows a scatter plot to show the wind
-#'   speed/direction as an arrow. The option is a list e.g. `windflow = list(col
-#'   = "grey", lwd = 2)`. This option requires wind speed (`ws`) and wind
-#'   direction (`wd`) to be available.
-#'
-#'   Any of the arguments in [ggplot2::arrow()] can be passed as a list, as well
-#'   as `col` which controls the arrow's colour and `lwd` which controls the
-#'   line width.
-#'
-#'   This option works best where there are not too many data to ensure
-#'   over-plotting does not become a problem.
+#' @param windflow If `TRUE`, the vector-averaged wind speed and direction will
+#'   be plotted using arrows. Alternatively, can be a list of arguments to
+#'   control the appearance of the arrows (colour, linewidth, alpha value,
+#'   etc.). See [windflowOpts()] for details.
 #'
 #' @param smooth Should a smooth line be applied to the data? The default is
 #'   `FALSE`.
@@ -353,6 +346,9 @@ timePlot <- function(
       )
     }
   }
+  
+  # ensure windflow is a list
+  windflow <- resolve_windflow_opts(windflow)
 
   # style controls
   extra.args$pch <- extra.args$pch %||% NA
@@ -592,27 +588,14 @@ timePlot <- function(
     } else {
       y ~ s(x)
     }
-    thePlot <- thePlot + ggplot2::stat_smooth(method = "gam", formula = smooth_formula, se = ci)
+    thePlot <- thePlot +
+      ggplot2::stat_smooth(method = "gam", formula = smooth_formula, se = ci)
   }
 
-  if (!is.null(windflow)) {
+  if (windflow$windflow) {
     thePlot <-
       thePlot +
-      layer_windflow(
-        ggplot2::aes(
-          ws = .data$ws,
-          wd = .data$wd,
-          group = !!aes_col
-        ),
-        arrow = grid::arrow(
-          angle = windflow$angle %||% 15,
-          length = windflow$length %||% grid::unit(0.5, "lines"),
-          ends = windflow$ends %||% "last",
-          type = windflow$type %||% "closed"
-        ),
-        colour = windflow$col %||% "black",
-        linewidth = windflow$lwd %||% 1 / 2
-      )
+      layer_windflow_opts(data = NULL, windflow_opts = windflow)
   }
 
   # output
@@ -640,7 +623,7 @@ prepare_timeplot_data <- function(
 ) {
   # determine necessary variables
   vars <- c("date", pollutant)
-  if (!is.null(windflow)) {
+  if (windflow$windflow) {
     vars <- unique(c(vars, "wd", "ws"))
   }
   if (is.character(group)) {
@@ -723,7 +706,7 @@ time_average_timeplot_data <- function(
   }
 
   # need to flag if ws/wd are being plotted *and* used for windflow
-  flag_wind_pollutant <- !is.null(windflow) &&
+  flag_wind_pollutant <- windflow$windflow &&
     ("ws" %in% pollutant || "wd" %in% pollutant)
 
   # retain ws/wd if needed later

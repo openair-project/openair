@@ -1,12 +1,13 @@
-#' Plot heat map trends
+#' Plot heat maps of atmospheric composition data
 #'
 #' The [trendLevel()] function provides a way of rapidly showing a large amount
 #' of data in a condensed form. In one plot, the variation in the concentration
-#' of one pollutant can to shown as a function of three other categorical
-#' properties. The default version of the plot uses y = hour of day, x = month
-#' of year and type = year to provide information on trends, seasonal effects
-#' and diurnal variations. However, x, y and type and summarising statistics can
-#' all be modified to provide a range of other similar plots.
+#' of one pollutant can to shown as a function of between two and four
+#' categorical properties. The default arguments plot hour of day on the x-axis
+#' and month of year on the y-axis. However, `x`, `y` and `type` and summarising
+#' statistics can all be modified to provide a range of other similar plots, all
+#' being passed to [cutData()] for discretisation. The average wind speed and
+#' direction in each bin can also be plotted using the `windflow` argument.
 #'
 #' [trendLevel()] allows the use of third party summarising functions via the
 #' `statistic` option. Any additional function arguments not included within a
@@ -127,7 +128,6 @@
 #' @author Karl Ropkins
 #' @author David Carslaw
 #' @author Jack Davison
-#' @family time series and trend functions
 #' @examples
 #' # basic use
 #' # default statistic = "mean"
@@ -156,7 +156,7 @@ trendLevel <- function(
   pollutant = "nox",
   x = "month",
   y = "hour",
-  type = "year",
+  type = "default",
   rotate.axis = c(90, 0),
   n.levels = c(10, 10, 4),
   windflow = NULL,
@@ -238,6 +238,10 @@ trendLevel <- function(
       )
     )
   }
+
+  # make sure windflow is a list
+  # lower the default range - good for heatmap plots
+  windflow <- resolve_windflow_opts(windflow, range = c(0.01, 0.5))
 
   # number vector handling
   ls.check.fun <- function(vector, vector.name, len) {
@@ -382,7 +386,7 @@ trendLevel <- function(
   if (x %in% dateTypes || y %in% dateTypes || any(type %in% dateTypes)) {
     temp <- c(temp, "date")
   }
-  if (!is.null(windflow)) {
+  if (windflow$windflow) {
     temp <- c(temp, "ws", "wd")
   }
 
@@ -390,7 +394,7 @@ trendLevel <- function(
   mydata <- checkPrep(mydata, temp, type = c(x, y, type), remove.calm = FALSE)
 
   # if using windflow, need the u & v components of wind
-  if (!is.null(windflow)) {
+  if (windflow$windflow) {
     mydata <- mydata |>
       dplyr::mutate(
         wind_u = -1 * .data$ws * sin(.data$wd * pi / 180),
@@ -433,11 +437,11 @@ trendLevel <- function(
   names(newdata_poll)[names(newdata_poll) == "poll_avg"] <- pollutant
 
   # if using windflow, calculate mean wind_u and wind_v for each bin
-  if (!is.null(windflow)) {
+  if (windflow$windflow) {
     newdata_met <- newdata |>
       dplyr::summarise(
-        wind_u := mean(.data[["wind_u"]], na.rm = TRUE),
-        wind_v := mean(.data[["wind_v"]], na.rm = TRUE),
+        wind_u = mean(.data[["wind_u"]], na.rm = TRUE),
+        wind_v = mean(.data[["wind_v"]], na.rm = TRUE),
         .by = dplyr::all_of(c(x, y, type))
       )
 
@@ -452,7 +456,7 @@ trendLevel <- function(
   }
 
   # if using windflow, convert wind_u and wind_v back into ws & wd
-  if (!is.null(windflow)) {
+  if (windflow$windflow) {
     newdata <- newdata |>
       dplyr::mutate(
         ws = sqrt(.data$wind_u^2 + .data$wind_v^2),
@@ -608,24 +612,9 @@ trendLevel <- function(
       )
   }
 
-  if (!is.null(windflow)) {
-    if (rlang::is_logical(windflow)) {
-      windflow <- list()
-    }
+  if (windflow$windflow) {
     thePlot <- thePlot +
-      layer_windflow(
-        data = newdata,
-        ggplot2::aes(ws = .data$ws, wd = .data$wd),
-        arrow = grid::arrow(
-          angle = windflow$angle %||% 15,
-          length = windflow$length %||% grid::unit(0.5, "lines"),
-          ends = windflow$ends %||% "last",
-          type = windflow$type %||% "closed"
-        ),
-        colour = windflow$col %||% "grey25",
-        linewidth = (windflow$lwd %||% 1) / 2,
-        range = c(0, 0.5)
-      )
+      layer_windflow_opts(newdata, windflow)
   }
 
   if (plot) {

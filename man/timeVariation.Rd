@@ -287,8 +287,7 @@ Other time series and trend functions:
 \code{\link{calendarPlot}()},
 \code{\link{smoothTrend}()},
 \code{\link{timePlot}()},
-\code{\link{timeProp}()},
-\code{\link{trendLevel}()}
+\code{\link{timeProp}()}
 }
 \author{
 David Carslaw

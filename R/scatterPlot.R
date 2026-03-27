@@ -144,10 +144,10 @@
 #'   user will wish to set different ones. The limits are set in the form
 #'   `c(lower, upper)`, so `limits = c(0, 100)` would force the plot limits to
 #'   span 0-100.
-#' @param windflow This option allows a scatter plot to show the wind
-#'   speed/direction shows as an arrow. The option is a list e.g. `windflow =
-#'   list(col = "grey", lwd = 2, scale = 0.1)`. This option requires wind speed
-#'   (`ws`) and wind direction (`wd`) to be available.
+#' @param windflow If `TRUE`, the vector-averaged wind speed and direction will
+#'   be plotted using arrows. Alternatively, can be a list of arguments to
+#'   control the appearance of the arrows (colour, linewidth, alpha value,
+#'   etc.). See [windflowOpts()] for details.
 #' @param y.relation This determines how the y-axis scale is plotted.
 #'   \dQuote{same} ensures all panels use the same scale and \dQuote{free} will
 #'   use panel-specific scales. The latter is a useful setting when plotting
@@ -321,6 +321,9 @@ scatterPlot <- function(
   }
   rlang::arg_match(method, c("scatter", "hexbin", "level", "density"))
   rlang::arg_match(plot.type, c("p", "l", "b", "s", "S", "spline"))
+
+  ## handle windflow
+  windflow <- resolve_windflow_opts(windflow)
 
   ## axis labels / title
   xlab <- quickText(extra.args$xlab %||% x, auto.text)
@@ -533,7 +536,7 @@ prepare_scatter_data <- function(
     }
   }
 
-  if (!is.null(windflow)) {
+  if (windflow$windflow) {
     vars <- unique(c(vars, "wd", "ws"))
   }
   if (!is.na(z)) {
@@ -671,10 +674,12 @@ scatter_scatter <- function(
         oob = scales::oob_squish,
         labels = z_labs,
         guide = ggplot2::guide_colorbar(
-          title = quickText(z, auto.text),
           position = key.position
         ),
         aesthetics = c("colour", "fill")
+      ) +
+      ggplot2::labs(
+        color = quickText(z, auto.text)
       )
   } else if (has_group) {
     grp_aes <- ggplot2::aes(
@@ -701,7 +706,6 @@ scatter_scatter <- function(
     pol_name <- sapply(group_levels, function(x) quickText(x, auto.text))
 
     theGuide <- ggplot2::guide_legend(
-      title = quickText(key.title, auto.text),
       ncol = key.columns,
       theme = ggplot2::theme(
         legend.title.position = if (key.position %in% c("left", "right")) {
@@ -723,6 +727,10 @@ scatter_scatter <- function(
         values = pch_vals,
         labels = pol_name,
         guide = theGuide
+      ) +
+      ggplot2::labs(
+        color = quickText(key.title, auto.text),
+        shape = quickText(key.title, auto.text)
       )
   } else {
     ## single series — fixed colour, no legend
@@ -853,19 +861,9 @@ scatter_scatter <- function(
   }
 
   ## windflow arrows
-  if (!is.null(windflow)) {
+  if (windflow$windflow) {
     plt <- plt +
-      layer_windflow(
-        ggplot2::aes(ws = .data$ws, wd = .data$wd),
-        arrow = grid::arrow(
-          angle = windflow$angle %||% 15,
-          length = windflow$length %||% grid::unit(0.5, "lines"),
-          ends = windflow$ends %||% "last",
-          type = windflow$type %||% "closed"
-        ),
-        colour = windflow$col %||% "grey25",
-        linewidth = (windflow$lwd %||% 1) / 2
-      )
+      layer_windflow_opts(data = NULL, windflow_opts = windflow)
   }
 
   ## reference lines
@@ -951,9 +949,11 @@ scatter_hexbin <- function(
       transform = hex_transform,
       labels = scales::label_number(accuracy = 1),
       guide = ggplot2::guide_colorbar(
-        title = "count",
         position = key.position
       )
+    ) +
+    ggplot2::labs(
+      fill = "count"
     )
 
   if (mod.line) {
@@ -1134,9 +1134,11 @@ scatter_level <- function(
       labels = scale_labs,
       na.value = "transparent",
       guide = ggplot2::guide_colorbar(
-        title = quickText(z, auto.text),
         position = key.position
       )
+    ) +
+    ggplot2::labs(
+      fill = quickText(z, auto.text)
     )
 
   if (mod.line) {
@@ -1308,9 +1310,11 @@ scatter_density <- function(
       colors = myColors,
       na.value = "transparent",
       guide = ggplot2::guide_colorbar(
-        title = "intensity",
         position = key.position
       )
+    ) +
+    ggplot2::labs(
+      fill = "intensity"
     )
 
   if (mod.line) {
