@@ -311,8 +311,7 @@ Other time series and trend functions:
 [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md),
 [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md),
 [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md),
-[`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md),
-[`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
+[`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
 
 ## Author
 

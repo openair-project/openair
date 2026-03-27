@@ -1,13 +1,15 @@
-# Plot heat map trends
+# Plot heat maps of atmospheric composition data
 
 The `trendLevel()` function provides a way of rapidly showing a large
 amount of data in a condensed form. In one plot, the variation in the
-concentration of one pollutant can to shown as a function of three other
-categorical properties. The default version of the plot uses y = hour of
-day, x = month of year and type = year to provide information on trends,
-seasonal effects and diurnal variations. However, x, y and type and
-summarising statistics can all be modified to provide a range of other
-similar plots.
+concentration of one pollutant can to shown as a function of between two
+and four categorical properties. The default arguments plot hour of day
+on the x-axis and month of year on the y-axis. However, `x`, `y` and
+`type` and summarising statistics can all be modified to provide a range
+of other similar plots, all being passed to
+[`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+for discretisation. The average wind speed and direction in each bin can
+also be plotted using the `windflow` argument.
 
 ## Usage
 
@@ -17,7 +19,7 @@ trendLevel(
   pollutant = "nox",
   x = "month",
   y = "hour",
-  type = "year",
+  type = "default",
   rotate.axis = c(90, 0),
   n.levels = c(10, 10, 4),
   windflow = NULL,
@@ -246,16 +248,6 @@ without warning. If the function terminates with an error when it is
 sent an empty data series, the option `stat.safe.mode` should not be set
 to `FALSE` or `trendLevel()` may fail. Note: The `stat.safe.mode = TRUE`
 option returns an NA without warning for empty data series.
-
-## See also
-
-Other time series and trend functions:
-[`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md),
-[`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md),
-[`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md),
-[`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md),
-[`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md),
-[`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
 
 ## Author
 

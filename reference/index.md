@@ -89,8 +89,6 @@ Examine how pollutant concentrations change with time.
   : Time series plot with categories shown as a stacked bar chart
 - [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
   : Temporal variation plots with flexible panel control
-- [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
-  : Plot heat map trends
 
 ## Model Evaluation
 
@@ -110,6 +108,8 @@ Compare models against measurements and models against other models.
 
 Additional plotting functions for visualising air quality data.
 
+- [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
+  : Plot heat maps of atmospheric composition data
 - [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
   : Variation Plot
 - [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
