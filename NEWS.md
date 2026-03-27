@@ -4,11 +4,9 @@
 
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe (`|>`).
 
-- `openair` now imports `ggplot2` and `scales` and suggests `sf`.
+- `openair` now imports `ggplot2` and `scales` and suggests `sf`, `geomtextpath` and `legendry`.
 
-- `openair` no longer imports `lattice`, `latticeExtra`, `hexbin` or `mapproj`.
-
-- `openair` no longer imports `mapproj` or suggests `mapdata`.
+- `openair` no longer imports `lattice`, `latticeExtra`, `hexbin` or `mapproj` nor suggests `mapdata`.
 
 ## Breaking Changes
 
@@ -66,6 +64,8 @@
 
     - Gained the `type` argument. This can take one `type` and creates a 2D matrix using month & whatever the user has selected. `type = "year"` has special handling.
 
+    - Gained the `windflow` argument, which deprecates passing `"ws"` or `"wd"` to `annotate`.
+
     - Gained the `percentile` argument, passed on to `timeAverage()`.
     
     - Gained the `show.year` argument, defaulting to `TRUE`. When `FALSE` and only one year of data is given, the strip titles will only read, e.g., "January" instead of "January-2000". This can create cleaner plots, as well as being useful for certain edge cases (e.g., if the calendarPlot is showing day-of-year averages over multiple years).
@@ -105,6 +105,8 @@
     - Added the `pos.cor` argument which controls whether the negative correlation quadrant is shown.
 
 - New function `WhittakerSmooth()` to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.
+
+- New function `windflowOpts()` which can be passed to the `windflow` argument of various `openair` functions to thoroughly customise the "windflow" arrows.
 
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
 

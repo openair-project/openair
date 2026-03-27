@@ -131,16 +131,10 @@ If \code{TRUE} a well-formatted log10 scale is used. This can be useful for
 plotting data for several different pollutants that exist on very different
 scales. It is therefore useful to use \code{log = TRUE} together with \code{group = TRUE}.}
 
-\item{windflow}{This option allows a scatter plot to show the wind
-speed/direction as an arrow. The option is a list e.g. \code{windflow = list(col = "grey", lwd = 2)}. This option requires wind speed (\code{ws}) and wind
-direction (\code{wd}) to be available.
-
-Any of the arguments in \code{\link[ggplot2:reexports]{ggplot2::arrow()}} can be passed as a list, as well
-as \code{col} which controls the arrow's colour and \code{lwd} which controls the
-line width.
-
-This option works best where there are not too many data to ensure
-over-plotting does not become a problem.}
+\item{windflow}{If \code{TRUE}, the vector-averaged wind speed and direction will
+be plotted using arrows. Alternatively, can be a list of arguments to
+control the appearance of the arrows (colour, linewidth, alpha value,
+etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
 
 \item{smooth}{Should a smooth line be applied to the data? The default is
 \code{FALSE}.}

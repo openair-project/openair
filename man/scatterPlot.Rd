@@ -175,9 +175,10 @@ user will wish to set different ones. The limits are set in the form
 \code{c(lower, upper)}, so \code{limits = c(0, 100)} would force the plot limits to
 span 0-100.}
 
-\item{windflow}{This option allows a scatter plot to show the wind
-speed/direction shows as an arrow. The option is a list e.g. \code{windflow = list(col = "grey", lwd = 2, scale = 0.1)}. This option requires wind speed
-(\code{ws}) and wind direction (\code{wd}) to be available.}
+\item{windflow}{If \code{TRUE}, the vector-averaged wind speed and direction will
+be plotted using arrows. Alternatively, can be a list of arguments to
+control the appearance of the arrows (colour, linewidth, alpha value,
+etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
 
 \item{y.relation}{This determines how the y-axis scale is plotted.
 \dQuote{same} ensures all panels use the same scale and \dQuote{free} will
