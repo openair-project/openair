@@ -332,7 +332,7 @@ timePlot <- function(
   rlang::arg_match(y.relation, c("same", "free"))
 
   if (group_is_col) {
-    if (!group %in% names(mydata)) {
+    if (!group %in% names(mydata) && !group %in% dateTypes) {
       cli::cli_abort("Column {.val {group}} not found in {.arg mydata}.")
     }
     if (group %in% type) {
@@ -346,7 +346,7 @@ timePlot <- function(
       )
     }
   }
-  
+
   # ensure windflow is a list
   windflow <- resolve_windflow_opts(windflow)
 
@@ -452,7 +452,10 @@ timePlot <- function(
 
   # layout - stack vertically
   if (
-    is.null(extra.args$layout) && !isTRUE(group) && !stack && all(type == "default")
+    is.null(extra.args$layout) &&
+      !isTRUE(group) &&
+      !stack &&
+      all(type == "default")
   ) {
     extra.args$layout <- c(1, npol)
   }
@@ -494,7 +497,7 @@ timePlot <- function(
     )
 
   # aesthetic column: group column name when group is a string, else "variable"
-  aes_col <- if (group_is_col) rlang::sym(group) else rlang::sym("variable")
+  aes_col <- if (group_is_col) group else "variable"
   # legend title: show group column name when group is a string, else no title
   legend_title <- if (group_is_col) quickText(group, auto.text) else NULL
 
@@ -505,13 +508,13 @@ timePlot <- function(
       ggplot2::aes(
         x = .data$date,
         y = .data$value,
-        color = !!aes_col,
-        fill = !!aes_col,
-        linetype = !!aes_col
+        color = .data[[aes_col]],
+        fill = .data[[aes_col]],
+        linetype = .data[[aes_col]]
       )
     ) +
     ggplot2::geom_line(
-      ggplot2::aes(linewidth = !!aes_col),
+      ggplot2::aes(linewidth = .data[[aes_col]]),
       show.legend = TRUE
     ) +
     gg_ref_x(ref.x) +
@@ -627,7 +630,9 @@ prepare_timeplot_data <- function(
     vars <- unique(c(vars, "wd", "ws"))
   }
   if (is.character(group)) {
-    vars <- unique(c(vars, group))
+    if (!group %in% dateTypes) {
+      vars <- unique(c(vars, group))
+    }
   }
 
   # standard data checks
