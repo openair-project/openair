@@ -10,10 +10,11 @@ calendarPlot(
   year = NULL,
   month = NULL,
   type = "month",
-  annotate = "date",
   statistic = "mean",
   data.thresh = 0,
   percentile = NA,
+  annotate = "date",
+  windflow = NULL,
   cols = "heat",
   limits = NULL,
   lim = NULL,
@@ -45,7 +46,7 @@ calendarPlot(
 least one variable to plot.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
-data frame should be supplied e.g. \verb{pollutant = "nox". }}
+data frame should be supplied e.g. \code{pollutant = "nox"}.}
 
 \item{year}{Year to plot e.g. \code{year = 2003}. If not supplied and \code{mydata}
 contains more than one year, the first year of the data will be
@@ -67,15 +68,6 @@ the "columns" instead.
 automatically prevent a single year from being selected (unless specified
 using the \code{year} argument) and set \code{show.year} to \code{FALSE}.}
 
-\item{annotate}{This option controls what appears on each day of the
-calendar. Can be:
-\itemize{
-\item \code{"date"} --- shows day of the month
-\item \code{"wd"} --- shows vector-averaged wind direction
-\item \code{"ws"} --- shows vector-averaged wind direction scaled by wind speed
-\item \code{"value"} --- shows the daily mean value
-}}
-
 \item{statistic}{Statistic passed to \code{\link[=timeAverage]{timeAverage()}}. Note that if \code{statistic \%in\% c("max", "min")} and \code{annotate} is "ws" or "wd", the hour
 corresponding to the maximum/minimum concentration of \code{polluant} is used to
 provide the associated \code{ws} or \code{wd} and not the maximum/minimum daily \code{ws}
@@ -90,6 +82,19 @@ and \code{end.date} to see whether it is advisable to set these other options.}
 
 \item{percentile}{The percentile level in percent used when \code{statistic = "percentile"} and when aggregating the data with \code{avg.time}. More than one
 percentile level is allowed for \code{type = "default"} e.g. \code{percentile = c(50, 95)}. Not used if \code{avg.time = "default"}.}
+
+\item{annotate}{This option controls what appears on each day of the
+calendar. Can be:
+\itemize{
+\item \code{"date"} --- shows day of the month
+\item \code{"value"} --- shows the daily mean value
+\item \code{"none"} --- shows no label
+}}
+
+\item{windflow}{If \code{TRUE}, the vector-averaged wind speed and direction will
+be plotted using arrows. Alternatively, can be a list of arguments to
+control the appearance of the arrows (colour, linewidth, alpha value,
+etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
 
 \item{cols}{Colours to be used for plotting; see \code{\link[=openColours]{openColours()}} for details.}
 
@@ -107,9 +112,6 @@ control over the labels used.}
 \item{col.lim}{For the annotation of concentration labels on each day. The
 first sets the colour of the text below \code{lim} and the second sets the
 colour of the text above \code{lim}.}
-
-\item{col.arrow}{The colour of the annotated wind direction / wind speed
-arrows.}
 
 \item{col.na}{Colour to be used to show missing data.}
 

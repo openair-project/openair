@@ -34,21 +34,29 @@
 #' @inheritParams timePlot
 #'
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
-#'   data frame should be supplied e.g. `pollutant = "nox". `
+#'   data frame should be supplied e.g. `pollutant = "nox"`.
+#'
 #' @param year Year to plot e.g. `year = 2003`. If not supplied and `mydata`
 #'   contains more than one year, the first year of the data will be
 #'   automatically selected. Manually setting `year` to `NULL` will use all
 #'   available years.
+#'
 #' @param month If only certain month are required. By default the function will
 #'   plot an entire year even if months are missing. To only plot certain months
 #'   use the `month` option where month is a numeric 1:12 e.g. `month = c(1,
 #'   12)` to only plot January and December.
+#'
 #' @param annotate This option controls what appears on each day of the
 #'   calendar. Can be:
 #'   - `"date"` --- shows day of the month
-#'   - `"wd"` --- shows vector-averaged wind direction
-#'   - `"ws"` --- shows vector-averaged wind direction scaled by wind speed
 #'   - `"value"` --- shows the daily mean value
+#'   - `"none"` --- shows no label
+#'
+#' @param windflow If `TRUE`, the vector-averaged wind speed and direction will
+#'   be plotted using arrows. Alternatively, can be a list of arguments to
+#'   control the appearance of the arrows (colour, linewidth, alpha value,
+#'   etc.). See [windflowOpts()] for details.
+#'
 #' @param type `type` determines how the data are split, i.e., conditioned, and
 #'   then plotted. Only one type can be used with this function, as one faceting
 #'   'direction' is reserved by the month of the year. If a single `type` is
@@ -59,70 +67,89 @@
 #'   `type = "year"` is a special case for [calendarPlot()] and will
 #'   automatically prevent a single year from being selected (unless specified
 #'   using the `year` argument) and set `show.year` to `FALSE`.
+#'
 #' @param statistic Statistic passed to [timeAverage()]. Note that if `statistic
 #'   %in% c("max", "min")` and `annotate` is "ws" or "wd", the hour
 #'   corresponding to the maximum/minimum concentration of `polluant` is used to
 #'   provide the associated `ws` or `wd` and not the maximum/minimum daily `ws`
 #'   or `wd`.
+#'
 #' @param limits Use this option to manually set the colour scale limits. This
 #'   is useful in the case when there is a need for two or more plots and a
 #'   consistent scale is needed on each. Set the limits to cover the maximum
 #'   range of the data for all plots of interest. For example, if one plot had
 #'   data covering 0--60 and another 0--100, then set `limits = c(0, 100)`. Note
 #'   that data will be ignored if outside the limits range.
+#'
 #' @param lim A threshold value to help differentiate values above and below
 #'   `lim`. It is used when `annotate = "value"`. See next few options for
 #'   control over the labels used.
+#'
 #' @param col.lim For the annotation of concentration labels on each day. The
 #'   first sets the colour of the text below `lim` and the second sets the
 #'   colour of the text above `lim`.
-#' @param col.arrow The colour of the annotated wind direction / wind speed
-#'   arrows.
+#'
 #' @param col.na Colour to be used to show missing data.
+#'
 #' @param font.lim For the annotation of concentration labels on each day. The
 #'   first sets the font of the text below `lim` and the second sets the font of
 #'   the text above `lim`. Note that font = 1 is normal text and font = 2 is
 #'   bold text.
+#'
 #' @param cex.lim For the annotation of concentration labels on each day. The
 #'   first sets the size of the text below `lim` and the second sets the size of
 #'   the text above `lim`.
+#'
 #' @param cex.date The base size of the annotation text for the date.
+#'
 #' @param digits The number of digits used to display concentration values when
 #'   `annotate = "value"`.
+#'
 #' @param breaks If a categorical scale is required then these breaks will be
 #'   used. For example, `breaks = c(0, 50, 100, 1000)`. In this case "good"
 #'   corresponds to values between 0 and 50 and so on. Users should set the
 #'   maximum value of `breaks` to exceed the maximum data value to ensure it is
 #'   within the maximum final range e.g. 100--1000 in this case.
+#'
 #' @param labels If a categorical scale is defined using `breaks`, then `labels`
 #'   can be used to override the default category labels, e.g., `labels =
 #'   c("good", "bad", "very bad")`. Note there is one less label than break.
+#'
 #' @param w.shift Controls the order of the days of the week. By default the
 #'   plot shows Saturday first (`w.shift = 0`). To change this so that it starts
 #'   on a Monday for example, set `w.shift = 2`, and so on.
+#'
 #' @param w.abbr.len The default (`1`) abbreviates the days of the week to a
 #'   single letter (e.g., in English, S/S/M/T/W/T/F). `w.abbr.len` defines the
 #'   number of letters to abbreviate until. For example, `w.abbr.len = 3` will
 #'   abbreviate "Monday" to "Mon".
+#'
 #' @param remove.empty Should months with no data present be removed? Default is
 #'   `TRUE`.
+#'
 #' @param show.year If only a single year is being plotted, should the calendar
 #'   labels include the year label? `TRUE` creates labels like "January-2000",
 #'   `FALSE` labels just as "January". If multiple years of data are detected,
 #'   this option is forced to be `TRUE`.
+#'
 #' @param key.header,key.footer Used to control the title of the plot key. By
 #'   default, `key.header` is the `statistic` and `key.footer` is the
 #'   `pollutant`. These are pasted together to form the key title.
+#'
 #' @param key.position Location where the scale key is to plotted. Allowed
 #'   arguments currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
+#'
 #' @param key Show a key?
+#'
 #' @param strip.position Location where the facet 'strips' are located when
 #'   using `type`. Can be one of `"left"`, `"right"`, `"bottom"` or `"top"`.
+#'
 #' @param ... The following additional arguments are available:
 #'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
 #'   - `fontsize` overrides the overall font size of the plot.
 #'   - `border` sets the border colour of each tile.
+#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
@@ -166,10 +193,11 @@ calendarPlot <-
     year = NULL,
     month = NULL,
     type = "month",
-    annotate = "date",
     statistic = "mean",
     data.thresh = 0,
     percentile = NA,
+    annotate = "date",
+    windflow = NULL,
     cols = "heat",
     limits = NULL,
     lim = NULL,
@@ -195,6 +223,19 @@ calendarPlot <-
     plot = TRUE,
     ...
   ) {
+    # correct use of annotate
+    if (annotate %in% c("ws", "wd")) {
+      cli::cli_warn(
+        c(
+          "!" = "{.arg annotate} in {.fun openair::calendarPlot} no longer supports {.arg 'ws'} or {.arg 'wd'}.",
+          "i" = "Please use the {.arg windflow} argument instead for more thorough control over the apperance of the 'windflow' arrow.",
+          "i" = "Setting {.arg windflow} to {TRUE}."
+        )
+      )
+      annotate <- "none"
+      windflow <- windflowOpts(range = c(0.01, 0.5), linewidth = 0.75)
+    }
+
     # can't have three types
     if (length(type) >= 3L) {
       cli::cli_abort("{.arg type} must be length 1 or 2.")
@@ -219,6 +260,20 @@ calendarPlot <-
       months_as_rows <- FALSE
     }
 
+    annotate <- rlang::arg_match(annotate, c("date", "value", "none"))
+
+    # resolve windflow
+    windflow <- resolve_windflow_opts(
+      windflow,
+      range = c(0.01, 0.5),
+      linewidth = 0.75
+    )
+    # can't annotate with windflow
+    if (windflow$windflow) {
+      annotate <- "none"
+    }
+
+    # key handling
     if (rlang::is_logical(key) && !key) {
       key.position <- "none"
     }
@@ -235,6 +290,17 @@ calendarPlot <-
     extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
     extra.args$ylab <- quickText(extra.args$ylab %||% NULL, auto.text)
     extra.args$main <- quickText(extra.args$main %||% NULL, auto.text)
+
+    if ("col.arrow" %in% names(extra.args)) {
+      cli::cli_warn(
+        c(
+          "!" = "The {.arg col.arrow} argument of {.fun openair::calendarPlot} has been deprecated.",
+          "i" = "Please use the {.arg windflow} argument with {.fun openair::windflowOpts} to control the appearance of the 'windflow' arrow."
+        )
+      )
+      windflow$colour <- extra.args$col.arrow
+      extra.args$col.arrow <- NULL
+    }
 
     # check a single year
     if (missing(year) && type != "year") {
@@ -262,7 +328,7 @@ calendarPlot <-
       month = month,
       pollutant = pollutant,
       type = type,
-      annotate = annotate,
+      windflow = windflow,
       ...
     )
 
@@ -456,11 +522,13 @@ calendarPlot <-
         newdata,
         ggplot2::aes(
           x = .data$x,
-          y = .data$y,
-          fill = .data[["conc.mat"]]
+          y = .data$y
         )
       ) +
       ggplot2::geom_tile(
+        ggplot2::aes(
+          fill = .data[["conc.mat"]]
+        ),
         colour = extra.args$border %||% "grey90",
         show.legend = TRUE
       ) +
@@ -613,40 +681,12 @@ calendarPlot <-
         )
     }
 
-    if (annotate == "ws") {
+    # windflow arrow
+    if (windflow$windflow) {
       thePlot <- thePlot +
-        layer_windflow(
-          data = newdata,
-          ggplot2::aes(
-            ws = .data$ws,
-            wd = .data$wd
-          ),
-          range = c(0, 0.5),
-          show.legend = FALSE,
-          color = col.arrow
-        )
-    }
-
-    if (annotate == "wd") {
-      # not using ws here, so create a dummy
-      wsdata <- newdata
-      wsdata$ws <- 1L
-      thePlot <- thePlot +
-        layer_windflow(
-          data = wsdata,
-          ggplot2::aes(
-            ws = .data$ws,
-            wd = .data$wd
-          ),
-          arrow = ggplot2::arrow(
-            angle = 15,
-            length = ggplot2::unit(0.3, "lines"),
-            ends = "last",
-            type = "closed"
-          ),
-          range = c(0, 0.5),
-          show.legend = FALSE,
-          color = col.arrow
+        layer_windflow_opts(
+          data = tidyr::drop_na(newdata, "ws", "wd"),
+          windflow_opts = windflow
         )
     }
 
@@ -672,7 +712,7 @@ prepare_calendar_data <- function(
   month,
   pollutant,
   type,
-  annotate,
+  windflow,
   ...
 ) {
   # filter by year
@@ -694,11 +734,9 @@ prepare_calendar_data <- function(
   }
 
   # extract variables of interest
-  if (annotate %in% c("date", "value")) {
-    vars <- c("date", pollutant)
-  }
-  if (annotate %in% c("ws", "wd")) {
-    vars <- c("wd", "ws", "date", pollutant)
+  vars <- c("date", pollutant)
+  if (windflow$windflow) {
+    vars <- c(vars, "wd", "ws")
   }
 
   # check input data

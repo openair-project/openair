@@ -41,6 +41,7 @@ reference:
   contents:
   - openColours
   - quickText
+  - windflowOpts
 - subtitle: Smoothing Functions
   desc: Tools for smoothing data for plotting or analysis
   contents:
