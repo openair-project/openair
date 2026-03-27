@@ -242,7 +242,7 @@ trajCluster <- function(
   # extract coordinates to avoid st_point_on_surface warning in geom_sf_text
   line_ends_coords <-
     line_ends |>
-    dplyr::bind_cols(sf::st_coordinates(line_ends) |> tibble::as_tibble()) |>
+    dplyr::bind_cols(sf::st_coordinates(line_ends) |> dplyr::as_tibble()) |>
     sf::st_drop_geometry()
 
   # add to plot
