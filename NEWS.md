@@ -50,7 +50,11 @@
 
 - `is.axis` now has an effect on `weekday`, `season`, `seasonyear` and `monthyear`.
 
-- `timePlot()` has gained the `x.relation` argument, allowing for different x ranges on different panels.
+- `timePlot()` refinements:
+    
+    - `group` can now take a character string, passed to [cutData()] via [timeAverage()]. This works similarly to `group` in `timeVariation()` in that it colours traces within the panel, rather than splitting them into multiple panels.
+    
+    - Gained the `x.relation` argument, allowing for different x ranges on different panels.
 
 - `smoothTrend()` refinements:
 
