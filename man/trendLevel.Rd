@@ -2,14 +2,14 @@
 % Please edit documentation in R/trendLevel.R
 \name{trendLevel}
 \alias{trendLevel}
-\title{Plot heat map trends}
+\title{Plot heat maps of atmospheric composition data}
 \usage{
 trendLevel(
   mydata,
   pollutant = "nox",
   x = "month",
   y = "hour",
-  type = "year",
+  type = "default",
   rotate.axis = c(90, 0),
   n.levels = c(10, 10, 4),
   windflow = NULL,
@@ -162,11 +162,12 @@ an \link[=openair-package]{openair} object.
 \description{
 The \code{\link[=trendLevel]{trendLevel()}} function provides a way of rapidly showing a large amount
 of data in a condensed form. In one plot, the variation in the concentration
-of one pollutant can to shown as a function of three other categorical
-properties. The default version of the plot uses y = hour of day, x = month
-of year and type = year to provide information on trends, seasonal effects
-and diurnal variations. However, x, y and type and summarising statistics can
-all be modified to provide a range of other similar plots.
+of one pollutant can to shown as a function of between two and four
+categorical properties. The default arguments plot hour of day on the x-axis
+and month of year on the y-axis. However, \code{x}, \code{y} and \code{type} and summarising
+statistics can all be modified to provide a range of other similar plots, all
+being passed to \code{\link[=cutData]{cutData()}} for discretisation. The average wind speed and
+direction in each bin can also be plotted using the \code{windflow} argument.
 }
 \details{
 \code{\link[=trendLevel]{trendLevel()}} allows the use of third party summarising functions via the
@@ -210,15 +211,6 @@ trendLevel(mydata,
 )
 }
 }
-\seealso{
-Other time series and trend functions: 
-\code{\link{TheilSen}()},
-\code{\link{calendarPlot}()},
-\code{\link{smoothTrend}()},
-\code{\link{timePlot}()},
-\code{\link{timeProp}()},
-\code{\link{timeVariation}()}
-}
 \author{
 Karl Ropkins
 
@@ -226,4 +218,3 @@ David Carslaw
 
 Jack Davison
 }
-\concept{time series and trend functions}

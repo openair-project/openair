@@ -94,8 +94,10 @@
 
 - `trendLevel()` refinements:
 
+    - (!) BREAKING: `type` now defaults to `"default"`, in line with other `openair` functions.
+    
     - Added `windflow` and `min.bin` arguments, in line with similar functions.
-
+    
     - Two `type` values are now supported.
 
 - `TaylorDiagram()` refinements:
