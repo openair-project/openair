@@ -104,8 +104,16 @@
   `monthyear`.
 
 - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
-  has gained the `x.relation` argument, allowing for different x ranges
-  on different panels.
+  refinements:
+
+  - `group` can now take a character string, passed to \[cutData()\] via
+    \[timeAverage()\]. This works similarly to `group` in
+    [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+    in that it colours traces within the panel, rather than splitting
+    them into multiple panels.
+
+  - Gained the `x.relation` argument, allowing for different x ranges on
+    different panels.
 
 - [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
   refinements:

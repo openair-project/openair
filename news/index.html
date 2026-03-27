@@ -87,7 +87,11 @@
 <li><p><code>drop = "default"</code> is the existing <code><a href="../reference/cutData.html">cutData()</a></code> behaviour - in the case of <code>type = "month"</code>, it is equivalent to <code>drop = "empty"</code>.</p></li>
 </ul></li>
 <li><p><code>is.axis</code> now has an effect on <code>weekday</code>, <code>season</code>, <code>seasonyear</code> and <code>monthyear</code>.</p></li>
-<li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> has gained the <code>x.relation</code> argument, allowing for different x ranges on different panels.</p></li>
+<li>
+<p><code><a href="../reference/timePlot.html">timePlot()</a></code> refinements:</p>
+<ul><li><p><code>group</code> can now take a character string, passed to [cutData()] via [timeAverage()]. This works similarly to <code>group</code> in <code><a href="../reference/timeVariation.html">timeVariation()</a></code> in that it colours traces within the panel, rather than splitting them into multiple panels.</p></li>
+<li><p>Gained the <code>x.relation</code> argument, allowing for different x ranges on different panels.</p></li>
+</ul></li>
 <li>
 <p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> refinements:</p>
 <ul><li><p>Gained the <code>x.relation</code>, <code>date.format</code>, <code>key</code> and <code>key.position</code> arguments, in line with <code><a href="../reference/timePlot.html">timePlot()</a></code>.</p></li>
