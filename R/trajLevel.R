@@ -270,7 +270,7 @@ trajLevel <- function(
   # location of receptor for map projection, used to show location on maps
   sf_origins <- mydata |>
     dplyr::filter(.data$hour.inc == 0) |>
-    dplyr::slice_head(n = 1, by = c("lat", "lon", type)) |>
+    dplyr::slice_head(n = 1, by = dplyr::all_of(c("lat", "lon", type))) |>
     sf::st_as_sf(coords = c("lon", "lat"), crs = 4326)
 
   # bin data
@@ -306,12 +306,13 @@ trajLevel <- function(
   # plot mean concentration - CWT method
   if (statistic == "cwt") {
     ## calculate the mean of points in each cell
-    mydata <- mydata |>
-      dplyr::group_by(dplyr::across(vars)) |>
+    mydata <-
       dplyr::summarise(
+        mydata,
         N = length(date),
         date = utils::head(date, 1),
-        count = mean(.data[[pollutant]], na.rm = TRUE)
+        count = mean(.data[[pollutant]], na.rm = TRUE),
+        .by = dplyr::all_of(vars)
       )
 
     mydata[[pollutant]] <- mydata$count
@@ -405,12 +406,13 @@ trajLevel <- function(
     )
 
     ## calculate the proportion of points in cell with value > Q90
-    mydata <- mydata |>
-      dplyr::group_by(dplyr::across(vars)) |>
+    mydata <-
       dplyr::summarise(
+        mydata,
         N = length(date),
         date = utils::head(date, 1),
-        count = length(which(.data[[pollutant]] > Q90)) / N
+        count = length(which(.data[[pollutant]] > Q90)) / N,
+        .by = dplyr::all_of(vars)
       )
 
     mydata[[pollutant]] <- mydata$count
@@ -523,9 +525,13 @@ trajLevel <- function(
   if (statistic == "difference") {
     ## calculate percentage of points for all data
 
-    base <- mydata |>
-      dplyr::group_by(dplyr::across(vars)) |>
-      dplyr::summarise(count = length(date), date = utils::head(date, 1))
+    base <-
+      dplyr::summarise(
+        mydata,
+        count = length(date),
+        date = utils::head(date, 1),
+        .by = dplyr::all_of(vars)
+      )
 
     base[[pollutant]] <- 100 * base$count / max(base$count)
 
@@ -537,13 +543,13 @@ trajLevel <- function(
     )
 
     ## calculate percentage of points for high data
-    high <- mydata |>
-      dplyr::group_by(dplyr::across(vars)) |>
-      dplyr::summarise(
-        N = length(date),
-        date = utils::head(date, 1),
-        count = length(which(.data[[pollutant]] > Q90))
-      )
+    high <- dplyr::summarise(
+      mydata,
+      N = length(date),
+      date = utils::head(date, 1),
+      count = length(which(.data[[pollutant]] > Q90)),
+      .by = dplyr::all_of(vars)
+    )
 
     high[[pollutant]] <- 100 * high$count / max(high$count)
 

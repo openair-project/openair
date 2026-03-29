@@ -266,13 +266,13 @@ corPlot <- function(
           dplyr::rowwise() |>
           # calculate correlation test scores
           dplyr::mutate(
-            test = list(stats::cor.test(
+            test = list(suppressWarnings(stats::cor.test(
               df[[.data$x]],
               df[[.data$y]],
               use = use,
               method = method,
               ...
-            )),
+            ))),
             cor = .data$test$estimate,
             pval = .data$test$p.value,
             psig = dplyr::if_else(

@@ -352,7 +352,7 @@ scatterPlot <- function(
   )
 
   ## dispatch to method
-  plt <- switch(
+  out <- switch(
     method,
     scatter = scatter_scatter(
       mydata = mydata,
@@ -464,13 +464,13 @@ scatterPlot <- function(
     )
   )
 
-  plt <- plt + set_extra_fontsize(extra.args)
+  plt <- out$plot + set_extra_fontsize(extra.args)
 
   if (plot) {
     print(plt)
   }
 
-  output <- list(plot = plt, data = mydata, call = match.call())
+  output <- list(plot = plt, data = out$data, call = match.call())
   class(output) <- "openair"
   invisible(output)
 }
@@ -893,7 +893,12 @@ scatter_scatter <- function(
     ggplot2::labs(x = xlab, y = ylab, title = main) +
     .strip_theme(strip)
 
-  plt
+  return(
+    list(
+      plot = plt,
+      data = mydata
+    )
+  )
 }
 
 
@@ -1015,7 +1020,12 @@ scatter_hexbin <- function(
     ggplot2::labs(x = xlab, y = ylab, title = main) +
     .strip_theme(strip)
 
-  plt
+  return(
+    list(
+      plot = plt,
+      data = mydata
+    )
+  )
 }
 
 
@@ -1162,7 +1172,12 @@ scatter_level <- function(
     ggplot2::labs(x = xlab, y = ylab, title = main) +
     .strip_theme(strip)
 
-  plt
+  return(
+    list(
+      plot = plt,
+      data = mydata
+    )
+  )
 }
 
 #' Fit smooth GAM surface for level plot
@@ -1338,7 +1353,12 @@ scatter_density <- function(
     ggplot2::labs(x = xlab, y = ylab, title = main) +
     .strip_theme(strip)
 
-  plt
+  return(
+    list(
+      plot = plt,
+      data = grid_data
+    )
+  )
 }
 
 

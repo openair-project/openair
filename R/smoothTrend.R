@@ -160,7 +160,7 @@ smoothTrend <- function(
   rlang::arg_match(y.relation, c("same", "free"))
 
   # set stat to percentile if user provides some
-  if (!missing(percentile)) {
+  if (!missing(percentile) && statistic != "percentile") {
     cli::cli_inform(
       "{.field percentiles} provided ({percentile}); setting {.field statistic} to 'percentile'."
     )
@@ -397,7 +397,7 @@ prepare_smoothtrend_data <- function(
   # like multiple pollutants
   mydata <- tidyr::pivot_longer(
     mydata,
-    cols = pollutant,
+    cols = dplyr::all_of(pollutant),
     names_to = "variable",
     values_to = "value",
     names_transform = list(

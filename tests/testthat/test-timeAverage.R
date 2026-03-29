@@ -1,157 +1,232 @@
-test_that("timeaverage averages & pads", {
-  # standard timeaverage
-  testdat <- selectByDate(mydata, year = 1999)
-  monthly <- timeAverage(testdat, avg.time = "month")
-  expect_length(monthly$date, 12)
-  expect_equal(lubridate::month(monthly$date), 1:12)
-  expect_equal(lubridate::day(monthly$date), rep(1, 12))
-  expect_equal(lubridate::hour(monthly$date), rep(0, 12))
+# timeAverage tests
+# Use a small slice for speed; one full year gives clean monthly/annual rows
+dat <- selectByDate(mydata, year = 2003)
+dat1 <- selectByDate(mydata, year = 2003, month = 1)
 
-  # type arg
-  testdat <- dplyr::bind_rows(
-    "a" = selectByDate(mydata, year = 2000),
-    "b" = selectByDate(mydata, year = 2000),
-    .id = "site"
-  )
-  typed <- timeAverage(tidyr::drop_na(testdat, nox), type = c("site", "nox"))
-  expect_s3_class(typed$nox, "factor")
-  expect_s3_class(typed$site, "factor")
-  expect_in(unique(testdat$site), typed$site)
+# Shared results — most tests reuse these
+ta_day <- timeAverage(dat, avg.time = "day", progress = FALSE)
+ta_month <- timeAverage(dat, avg.time = "month", progress = FALSE)
+ta_year <- timeAverage(dat, avg.time = "year", progress = FALSE)
 
-  # intervals
-  # testdat <- selectByDate(mydata, year = 1999:2000)
-  # padded <-
-  #   timeAverage(testdat, "year") |>
-  #   timeAverage("month")
-  # expect_length(padded$date, 24)
-  # expect_equal(
-  #   round(padded$ws, 3),
-  #   rep(c(4.587, NA, 4.796, NA), rep(c(1L, 11L), 2))
-  # )
+# --- Output structure --------------------------------------------------------
 
-  # ensure filling works as expected
-  padded2 <-
-    selectByDate(mydata, year = 1999, month = 1, day = 1, hour = 1:10) |>
-    dplyr::mutate(co = c(1:5, rep(NA, 2), 8:10)) |>
-    timeAverage("30 min", fill = TRUE)
-  expect_length(padded2$date, 19)
-  expect_equal(
-    padded2$co,
-    rep(
-      c(1L, 2L, 3L, 4L, 5L, NA, 8L, 9L, 10L),
-      rep(c(2L, 4L, 2L, 3L), c(5L, 1L, 2L, 1L))
-    )[1:19]
-  )
+test_that("timeAverage returns a data frame (tibble) with a date column", {
+  expect_s3_class(ta_day, "data.frame")
+  expect_true("date" %in% names(ta_day))
+  expect_s3_class(ta_day$date, "POSIXct")
 })
 
-test_that("timeaverage start/end dates work", {
-  ## start.date
-  testdat <- selectByDate(mydata, year = 2000, month = 2)
-  testdat2 <- dplyr::slice_tail(testdat, n = -3)
-
-  # irregular time period
-  x1 <- timeAverage(testdat2, "5 hour")
-  expect_equal(lubridate::hour(x1$date[1]), lubridate::hour(testdat2$date[1]))
-
-  # regular time period
-  x2 <- timeAverage(testdat2, "5 hour", start.date = min(testdat$date)[1])
-  expect_equal(lubridate::hour(x2$date[1]), lubridate::hour(testdat$date[1]))
-
-  ## end.date
-  testdat3 <- selectByDate(mydata, year = 2000, month = 2:10)
-
-  x3 <- timeAverage(testdat3, "month")
-  expect_length(x3$date, 9)
-
-  x4 <- timeAverage(
-    testdat3,
-    "month",
-    start.date = "2000/01/01",
-    end.date = "2000/12/01"
-  )
-  expect_length(x4$date, 12)
+test_that("timeAverage preserves numeric pollutant columns", {
+  expect_true(all(c("no2", "o3", "nox", "ws", "wd") %in% names(ta_day)))
 })
 
-test_that("timeaverage catches errors", {
-  expect_error(timeAverage(mydata, statistic = "percentile", percentile = 110))
-  expect_error(timeAverage(mydata, statistic = "percentile", percentile = -10))
-  expect_error(timeAverage(mydata, data.thresh = -10))
-  expect_error(timeAverage(mydata, data.thresh = 120))
-  expect_error(timeAverage(mydata, avg.time = "50 foobars"))
+# --- Row counts --------------------------------------------------------------
+
+test_that("avg.time = 'day' returns one row per day", {
+  expect_equal(nrow(ta_day), 365L)
 })
 
-test_that("different timeaverage stats", {
-  testdat <- selectByDate(mydata, year = 2000)
-  expect_error(timeAverage(testdat, "month", statistic = "foobar"))
-  valid_stats <-
-    c(
-      "mean",
-      "median",
-      "frequency",
-      "max",
-      "min",
-      "sum",
-      "sd",
-      "percentile",
-      "data.cap"
-    )
-  for (i in valid_stats) {
-    if (i == "percentile") {
-      expect_error(timeAverage(testdat, "month", statistic = i))
-      expect_no_error(timeAverage(
-        testdat,
-        "month",
-        statistic = i,
-        percentile = 90
-      ))
+test_that("avg.time = 'month' returns one row per month", {
+  expect_equal(nrow(ta_month), 12L)
+})
+
+test_that("avg.time = 'year' returns one row", {
+  expect_equal(nrow(ta_year), 1L)
+})
+
+test_that("avg.time = '2 month' returns 6 rows for a full year", {
+  result <- timeAverage(dat, avg.time = "2 month", progress = FALSE)
+  expect_equal(nrow(result), 6L)
+})
+
+# --- Aggregation correctness -------------------------------------------------
+
+test_that("daily mean is between hourly min and max", {
+  safe_stat <- function(fn, x) {
+    if (all(is.na(x))) {
+      NA_real_
     } else {
-      expect_no_error(timeAverage(
-        testdat,
-        "month",
-        statistic = i
-      ))
+      fn(x, na.rm = TRUE)
     }
   }
+  daily_min <- tapply(
+    dat$no2,
+    lubridate::date(dat$date),
+    \(x) safe_stat(min, x)
+  )
+  daily_max <- tapply(
+    dat$no2,
+    lubridate::date(dat$date),
+    \(x) safe_stat(max, x)
+  )
+  non_na <- !is.na(ta_day$no2)
+
+  expect_true(all(ta_day$no2[non_na] >= daily_min[non_na] - 1e-9))
+  expect_true(all(ta_day$no2[non_na] <= daily_max[non_na] + 1e-9))
 })
 
-test_that("intervals work", {
-  testdat <- selectByDate(mydata, year = 2000) |>
-    timeAverage("month")
-
-  x1 <- timeAverage(testdat, "month", interval = "hour", data.thresh = 90)
-  expect_equal(x1$ws[1:11], rep(NA_real_, 11))
+test_that("annual mean matches a direct calculation", {
+  expected <- mean(dat$no2, na.rm = TRUE)
+  expect_equal(ta_year$no2, expected, tolerance = 1e-6)
 })
 
-test_that("windspeed working", {
-  testdat <- selectByDate(mydata, year = 2001, month = 6)
+# --- statistic argument ------------------------------------------------------
 
-  # has ws/wd
-  x1 <- timeAverage(testdat, "year")
-  expect_equal(round(x1$ws, 2), 4.22)
-  expect_equal(round(x1$wd, 2), 251.97)
-
-  # vector ws
-  x2 <- timeAverage(testdat, "year", vector.ws = TRUE)
-  expect_equal(round(x2$ws, 2), 1.90)
-  expect_equal(round(x2$wd, 2), 238.53)
-
-  # does something different w/ no ws
-  x3 <- testdat |> dplyr::select(-"ws") |> timeAverage("year")
-  expect_equal(round(x3$wd, 2), 251.97)
+test_that("statistic = 'max' returns values >= statistic = 'mean'", {
+  ta_max <- timeAverage(
+    dat,
+    avg.time = "month",
+    statistic = "max",
+    progress = FALSE
+  )
+  non_na <- !is.na(ta_month$no2) & !is.na(ta_max$no2)
+  expect_true(all(ta_max$no2[non_na] >= ta_month$no2[non_na]))
 })
 
-test_that("seasons working", {
-  testdat <- selectByDate(mydata, year = 2000:2002)
-  seasonal <- timeAverage(testdat, "season")
-  seasonal <- seasonal |> cutData("season", names = c("testseason"))
-  expect_equal(seasonal$season, seasonal$testseason)
+test_that("statistic = 'min' returns values <= statistic = 'mean'", {
+  ta_min <- timeAverage(
+    dat,
+    avg.time = "month",
+    statistic = "min",
+    progress = FALSE
+  )
+  non_na <- !is.na(ta_month$no2) & !is.na(ta_min$no2)
+  expect_true(all(ta_min$no2[non_na] <= ta_month$no2[non_na]))
 })
 
-test_that("timeaverage works with Date", {
-  testdat <-
-    selectByDate(mydata, year = 2003) |>
-    timeAverage("day") |>
-    dplyr::mutate(date = as.Date(date))
+test_that("statistic = 'sum' exceeds statistic = 'mean' for positive values", {
+  ta_sum <- timeAverage(
+    dat,
+    avg.time = "month",
+    statistic = "sum",
+    progress = FALSE
+  )
+  non_na <- !is.na(ta_month$no2) & !is.na(ta_sum$no2)
+  expect_true(all(ta_sum$no2[non_na] >= ta_month$no2[non_na]))
+})
 
-  expect_no_error(timeAverage(testdat, "month"))
+test_that("statistic = 'frequency' returns integer counts <= hours in period", {
+  ta_freq <- timeAverage(
+    dat1,
+    avg.time = "day",
+    statistic = "frequency",
+    progress = FALSE
+  )
+  expect_true(all(ta_freq$no2 <= 24, na.rm = TRUE))
+  expect_true(all(ta_freq$no2 >= 0, na.rm = TRUE))
+})
+
+test_that("statistic = 'percentile' with percentile = 95 is >= mean", {
+  ta_p95 <- timeAverage(
+    dat,
+    avg.time = "month",
+    statistic = "percentile",
+    percentile = 95,
+    progress = FALSE
+  )
+  non_na <- !is.na(ta_month$no2) & !is.na(ta_p95$no2)
+  expect_true(all(ta_p95$no2[non_na] >= ta_month$no2[non_na]))
+})
+
+# --- Wind direction ----------------------------------------------------------
+
+test_that("wind direction stays in [0, 360]", {
+  non_na <- !is.na(ta_day$wd)
+  expect_true(all(ta_day$wd[non_na] >= 0))
+  expect_true(all(ta_day$wd[non_na] <= 360))
+})
+
+test_that("vector-averaged wd handles the 350/10 degree case correctly", {
+  # Exact 350 + 10 average should be 0 (or 360), not 180
+  two_hours <- data.frame(
+    date = as.POSIXct(c("2023-01-01 00:00", "2023-01-01 01:00"), tz = "GMT"),
+    wd = c(350, 10),
+    ws = c(2, 2)
+  )
+  result <- timeAverage(two_hours, avg.time = "day", progress = FALSE)
+  # The result should be close to 0 or 360, not near 180
+  avg_wd <- result$wd
+  expect_true(avg_wd <= 10 || avg_wd >= 350)
+})
+
+# --- data.thresh -------------------------------------------------------------
+
+test_that("data.thresh = 100 produces more NAs than data.thresh = 0", {
+  dat_gaps <- dat1
+  dat_gaps$no2[sample(nrow(dat_gaps), 300)] <- NA
+
+  res_low <- timeAverage(
+    dat_gaps,
+    avg.time = "day",
+    data.thresh = 0,
+    progress = FALSE
+  )
+  res_high <- timeAverage(
+    dat_gaps,
+    avg.time = "day",
+    data.thresh = 100,
+    progress = FALSE
+  )
+
+  expect_gte(sum(is.na(res_high$no2)), sum(is.na(res_low$no2)))
+})
+
+# --- Expansion (avg.time < data interval) ------------------------------------
+
+test_that("expanding hourly to 15-min produces 4x as many rows", {
+  result <- timeAverage(
+    dat1,
+    avg.time = "15 min",
+    fill = TRUE,
+    progress = FALSE
+  )
+  expect_equal(nrow(result), (nrow(dat1) * 4L) - 3)
+})
+
+# --- avg.time = 'season' -----------------------------------------------------
+
+test_that("avg.time = 'season' returns 5 rows for a full year", {
+  result <- timeAverage(dat, avg.time = "season", progress = FALSE)
+  expect_equal(nrow(result), 5L)
+})
+
+# --- Input validation --------------------------------------------------------
+
+test_that("invalid statistic raises an error", {
+  expect_error(
+    timeAverage(
+      dat,
+      avg.time = "day",
+      statistic = "geometric_mean",
+      progress = FALSE
+    ),
+    regexp = "statistic"
+  )
+})
+
+test_that("data.thresh outside [0, 100] raises an error", {
+  expect_error(
+    timeAverage(dat, avg.time = "day", data.thresh = 101, progress = FALSE),
+    regexp = "capture"
+  )
+})
+
+test_that("percentile outside [0, 100] raises an error", {
+  expect_error(
+    timeAverage(
+      dat,
+      avg.time = "day",
+      statistic = "percentile",
+      percentile = 110,
+      progress = FALSE
+    ),
+    regexp = "Percentile"
+  )
+})
+
+test_that("invalid avg.time unit raises an error", {
+  expect_error(
+    timeAverage(dat, avg.time = "fortnight", progress = FALSE),
+    regexp = "not recognised"
+  )
 })

@@ -233,7 +233,7 @@ trajCluster <- function(
     line_ends |>
     dplyr::left_join(
       clusters,
-      by = dplyr::all_of(c(type, "cluster"))
+      by = c(type, "cluster")
     ) |>
     dplyr::mutate(
       label = scales::label_percent(accuracy = 0.1, scale = 1)(.data$freq)
