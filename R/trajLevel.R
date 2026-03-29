@@ -452,7 +452,7 @@ trajLevel <- function(
   if (tolower(statistic) == "sqtba") {
     # calculate sigma
     mydata <- mydata |>
-      dplyr::mutate(sigma = .data$sigma * abs(.data$hour.inc)) |>
+      dplyr::mutate(sigma = sigma * abs(.data$hour.inc)) |>
       tidyr::drop_na({{ pollutant }})
 
     # receptor grid
