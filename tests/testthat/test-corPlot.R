@@ -1,4 +1,6 @@
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 
 # Small, fixed slice — just enough rows for stable correlations, fast to run
 dat <- selectByDate(mydata, year = 2003, month = 1)

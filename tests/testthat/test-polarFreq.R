@@ -1,4 +1,6 @@
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 
 # polarFreq tests — plot = FALSE throughout
 # No GAM fitting here — just binning/tapply — so runs fast with one month

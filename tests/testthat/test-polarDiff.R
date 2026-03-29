@@ -1,6 +1,8 @@
 # polarDiff tests — plot = FALSE throughout
 # Two GAM surface fits (before + after) make this slow; skip on CRAN
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 
 # Use two short, non-overlapping periods as before/after
 before <- selectByDate(mydata, year = 2002, month = 1:2)

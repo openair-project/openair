@@ -1,6 +1,8 @@
 # polarAnnulus tests — plot = FALSE throughout
 # GAM fitting is slow; skip on CRAN
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 # The GAM fitting inside polarAnnulus is the slow step; limit data heavily.
 # Three months gives enough temporal range for all four periods without
 # being painfully slow.

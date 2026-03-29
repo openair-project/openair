@@ -1,4 +1,6 @@
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 
 # calcPercentile is a thin wrapper over timeAverage — fast even on a full year
 dat <- selectByDate(mydata, year = 2003)

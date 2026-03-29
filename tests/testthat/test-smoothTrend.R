@@ -1,6 +1,8 @@
 # smoothTrend tests — plot = FALSE throughout
 # GAM fitting is involved; skip on CRAN
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 
 # Three years gives enough monthly data for a stable GAM trend
 dat <- selectByDate(mydata, year = 2001:2003)

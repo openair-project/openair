@@ -1,6 +1,8 @@
 # polarCluster tests — plot = FALSE throughout
 # PAM clustering + underlying polarPlot GAM is slow; skip on CRAN
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 
 # Small slice — one month is enough; 2 clusters keeps PAM fast
 dat <- selectByDate(mydata, year = 2003, month = 1)

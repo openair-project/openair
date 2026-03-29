@@ -1,4 +1,6 @@
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 
 # percentileRose tests — plot = FALSE throughout
 # One month is enough; wd and a pollutant are all that's needed

@@ -1,6 +1,8 @@
 # polarPlot tests — plot = FALSE throughout
 # GAM fitting is slow; skip on CRAN
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 
 # Small slice — two months gives enough data for stable GAM fits
 dat <- selectByDate(mydata, year = 2003, month = 1:2)

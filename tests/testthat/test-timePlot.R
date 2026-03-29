@@ -115,7 +115,9 @@ test_that("type = 'weekend' adds a weekend column to $data", {
 # =============================================================================
 
 test_that("smooth = TRUE produces a valid ggplot without error", {
-  skip_on_cran()
+  if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+    return()
+  }
   expect_no_error(
     timePlot(dat, pollutant = "nox", smooth = TRUE, plot = FALSE)
   )

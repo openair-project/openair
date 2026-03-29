@@ -1,4 +1,6 @@
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 
 # One year is enough for all tests; two years only where multi-year is the point
 dat <- selectByDate(mydata, year = 2003)

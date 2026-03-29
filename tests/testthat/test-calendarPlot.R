@@ -1,4 +1,6 @@
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 
 # calendarPlot tests — plot = FALSE throughout to skip rendering
 # One year, one month subsample where possible for speed

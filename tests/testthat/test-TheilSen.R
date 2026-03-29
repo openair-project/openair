@@ -1,6 +1,8 @@
 # TheilSen tests — plot = FALSE throughout
 # Bootstrap simulations make this moderately slow; skip on CRAN
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 
 # Three years gives enough monthly data for stable Theil-Sen estimates
 dat <- selectByDate(mydata, year = 2001:2003)

@@ -1,4 +1,6 @@
-skip_on_cran()
+if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
+  return()
+}
 
 # scatterPlot tests — plot = FALSE throughout to skip rendering
 # Small slice; daily averages reduce point count further for level/hexbin
