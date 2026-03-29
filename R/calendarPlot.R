@@ -31,6 +31,7 @@
 #' passed to [calendarPlot()] and `statistic = "max"` chosen, which will plot
 #' maximum daily 8-hour mean concentrations.
 #'
+#' @inheritParams shared_openair_params
 #' @inheritParams timePlot
 #'
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
@@ -51,11 +52,6 @@
 #'   - `"date"` --- shows day of the month
 #'   - `"value"` --- shows the daily mean value
 #'   - `"none"` --- shows no label
-#'
-#' @param windflow If `TRUE`, the vector-averaged wind speed and direction will
-#'   be plotted using arrows. Alternatively, can be a list of arguments to
-#'   control the appearance of the arrows (colour, linewidth, alpha value,
-#'   etc.). See [windflowOpts()] for details.
 #'
 #' @param type `type` determines how the data are split, i.e., conditioned, and
 #'   then plotted. Only one type can be used with this function, as one faceting
@@ -105,16 +101,6 @@
 #' @param digits The number of digits used to display concentration values when
 #'   `annotate = "value"`.
 #'
-#' @param breaks If a categorical scale is required then these breaks will be
-#'   used. For example, `breaks = c(0, 50, 100, 1000)`. In this case "good"
-#'   corresponds to values between 0 and 50 and so on. Users should set the
-#'   maximum value of `breaks` to exceed the maximum data value to ensure it is
-#'   within the maximum final range e.g. 100--1000 in this case.
-#'
-#' @param labels If a categorical scale is defined using `breaks`, then `labels`
-#'   can be used to override the default category labels, e.g., `labels =
-#'   c("good", "bad", "very bad")`. Note there is one less label than break.
-#'
 #' @param w.shift Controls the order of the days of the week. By default the
 #'   plot shows Saturday first (`w.shift = 0`). To change this so that it starts
 #'   on a Monday for example, set `w.shift = 2`, and so on.
@@ -132,19 +118,8 @@
 #'   `FALSE` labels just as "January". If multiple years of data are detected,
 #'   this option is forced to be `TRUE`.
 #'
-#' @param key.header,key.footer Used to control the title of the plot key. By
-#'   default, `key.header` is the `statistic` and `key.footer` is the
-#'   `pollutant`. These are pasted together to form the key title.
-#'
-#' @param key.position Location where the scale key is to plotted. Allowed
-#'   arguments currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
-#'
-#' @param key Show a key?
-#'
-#' @param strip.position Location where the facet 'strips' are located when
-#'   using `type`. Can be one of `"left"`, `"right"`, `"bottom"` or `"top"`.
-#'
-#' @param ... The following additional arguments are available:
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
 #'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
 #'   - `fontsize` overrides the overall font size of the plot.
@@ -362,12 +337,13 @@ calendarPlot <-
         "day",
         type = type,
         statistic = statistic,
-        data.thresh = data.thresh
+        data.thresh = data.thresh,
+        ...
       ) |>
         dplyr::mutate(date = lubridate::as_date(.data$date))
 
       if (type == "default") {
-        mydata <- cutData(mydata, type)
+        mydata <- cutData(mydata, type, ...)
       }
 
       # replace with parallel max
@@ -384,7 +360,8 @@ calendarPlot <-
         type = type,
         statistic = statistic,
         data.thresh = data.thresh,
-        percentile = percentile
+        percentile = percentile,
+        ...
       )
 
       mydata$date <- lubridate::as_date(mydata$date)

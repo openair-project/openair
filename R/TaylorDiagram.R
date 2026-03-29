@@ -48,6 +48,8 @@
 #' specific standard deviation etc. If this is not the case then select a single
 #' site from the data first e.g. `subset(mydata, site == "Harwell")`.
 #'
+#' @inheritParams shared_openair_params
+#'
 #' @param mydata A data frame minimally containing a column of observations and
 #'   a column of predictions.
 #'
@@ -73,27 +75,6 @@
 #'   grouping variable. Because there will be different values of `obs` for each
 #'   group, `normalise = TRUE` should be used.
 #'
-#' @param type `type` determines how the data are split i.e. conditioned, and
-#'   then plotted. The default is will produce a single plot using the entire
-#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
-#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
-#'   `type = "season"` will produce four plots --- one for each season.
-#'
-#'   It is also possible to choose `type` as another variable in the data frame.
-#'   If that variable is numeric, then the data will be split into four
-#'   quantiles (if possible) and labelled accordingly. If type is an existing
-#'   character or factor variable, then those categories/levels will be used
-#'   directly. This offers great flexibility for understanding the variation of
-#'   different variables and how they depend on one another.
-#'
-#'   Type can be up length two e.g. `type = c("season", "weekday")` will produce
-#'   a 2x2 plot split by season and day of the week. Note, when two types are
-#'   provided the first forms the columns and the second the rows.
-#'
-#'   Note that often it will make sense to use `type = "site"` when multiple
-#'   sites are available. This will ensure that each panel contains data
-#'   specific to an individual site.
-#'
 #' @param normalise Should the data be normalised by dividing the standard
 #'   deviation of the observations? The statistics can be normalised (and
 #'   non-dimensionalised) by dividing both the RMS difference and the standard
@@ -102,16 +83,6 @@
 #'   at unit distance from the origin. This makes it possible to plot statistics
 #'   for different species (maybe with different units) on the same plot. The
 #'   normalisation is done by each `group`/`type` combination.
-#'
-#' @param cols Colours to be used for plotting. Useful options for categorical
-#'   data are available from `RColorBrewer` colours --- see the `openair`
-#'   `openColours` function for more details. Useful schemes include
-#'   \dQuote{Accent}, \dQuote{Dark2}, \dQuote{Paired}, \dQuote{Pastel1},
-#'   \dQuote{Pastel2}, \dQuote{Set1}, \dQuote{Set2}, \dQuote{Set3} --- but see
-#'   ?`brewer.pal` for the maximum useful colours in each. For user defined the
-#'   user can supply a list of colour names recognised by R (type `colours()` to
-#'   see the full list). An example would be `cols = c("yellow", "green",
-#'   "blue")`.
 #'
 #' @param pos.cor Show only positive correlations (`TRUE`) or include negative
 #'   correlations (`FALSE`). If negative correlations are shown, the Taylor
@@ -131,42 +102,12 @@
 #' @param text.obs The plot annotation for observed values; default is
 #'   "observed".
 #'
-#' @param key Should the key be shown?
-#'
-#' @param key.title Title for the key.
-#'
-#' @param key.columns Number of columns to be used in the key. With many
-#'   pollutants a single column can make to key too wide. The user can thus
-#'   choose to use several columns by setting `columns` to be less than the
-#'   number of pollutants.
-#'
-#' @param key.position Position of the key e.g. \dQuote{top}, \dQuote{bottom},
-#'   \dQuote{left} and \dQuote{right}.
-#'
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
-#'   axis labels will automatically try and format pollutant names and units
-#'   properly e.g.  by subscripting the `2' in NO2.
-#'
-#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
-#'   data to extract trend components and plotting them in other ways.
-#'
-#' @param strip.position Location where the facet 'strips' are located when
-#'   using `type`. When one `type` is provided, can be one of `"left"`,
-#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
-#'   argument defines whether the strips are "switched" and can take either
-#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
-#'   locations to the bottom of the plot.
-#'
-#' @param ... Other graphical parameters are passed onto `cutData` and other
-#'   functions. For example, `TaylorDiagram` passes the option `hemisphere =
-#'   "southern"` on to `cutData` to provide southern (rather than default
-#'   northern) hemisphere handling of `type = "season"`. Similarly, common
-#'   graphical parameters, such as `layout` for panel arrangement and `pch` and
-#'   `cex` for plot symbol type and size, are passed on to `xyplot`. Most are
-#'   passed unmodified, although there are some special cases where `openair`
-#'   may locally manage this process. For example, common axis and title
-#'   labelling options (such as `xlab`, `ylab`, `main`) are passed via
-#'   `quickText` to handle routine formatting.
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `fontsize` overrides the overall font size of the plot.
+#'   - `cex`, `lwd`, and `pch` control various graphical parameters.
 #'
 #' @export
 #'

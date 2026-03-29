@@ -27,6 +27,7 @@
 #' `polarFreq` also offers great flexibility with the scale used and the user
 #' has fine control over both the range, interval and colour.
 #'
+#' @inheritParams shared_openair_params
 #' @inheritParams polarPlot
 #'
 #' @param mydata A data frame minimally containing `ws`, `wd` and `date`.
@@ -58,16 +59,6 @@
 #'
 #' @param grid.line Radial spacing of grid lines.
 #'
-#' @param breaks,labels If a categorical colour scale is required then `breaks`
-#'   should be specified. These should be provided as a numeric vector, e.g.,
-#'   `breaks = c(0, 50, 100, 1000)`. Users should set the maximum value of
-#'   `breaks` to exceed the maximum data value to ensure it is within the
-#'   maximum final range, e.g., 100--1000 in this case. Labels will
-#'   automatically be generated, but can be customised by passing a character
-#'   vector to `labels`, e.g., `labels = c("good", "bad", "very bad")`. In this
-#'   example, `0 - 50` will be `"good"` and so on. Note there is one less label
-#'   than break.
-#'
 #' @param trans Should a transformation be applied? Sometimes when producing
 #'   plots of this kind they can be dominated by a few high points. The default
 #'   therefore is `TRUE` and a square-root transform is applied. This results in
@@ -78,27 +69,17 @@
 #'   ensuring a consistent scale between different plots. For example, to always
 #'   ensure that wind speeds are displayed between 1-10, set `ws.int = 10`.
 #'
-#' @param offset `offset` controls the size of the 'hole' in the middle and is
-#'   expressed on a scale of `0` to `100`, where `0` is no hole and `100` is a
-#'   hole that takes up the entire plotting area.
-#'
 #' @param border.col The colour of the boundary of each wind speed/direction
 #'   bin. The default is transparent. Another useful choice sometimes is
 #'   "white".
 #'
-#' @param strip.position Location where the facet 'strips' are located when
-#'   using `type`. When one `type` is provided, can be one of `"left"`,
-#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
-#'   argument defines whether the strips are "switched" and can take either
-#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
-#'   locations to the bottom of the plot.
-#'
-#' @param ... Passed to [cutData()]. The following additional arguments are also
-#'   available:
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
 #'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
 #'   - `fontsize` overrides the overall font size of the plot.
-#'   - `limits` sets the colour bar limits, if `breaks` is not being used.
+#'   - `annotate = FALSE` will not plot the N/E/S/W labels.
+#'   - `limits` sets the colour bar limits, if `breaks` is not used.
 #'
 #' @export
 #' @return an [openair][openair-package] object
@@ -431,7 +412,7 @@ polarFreq <- function(
         transform = ifelse(trans, "sqrt", "identity"),
         oob = scales::oob_squish,
         breaks = scales::pretty_breaks(6),
-        limits = extra.args$limit
+        limits = extra.args$limits
       ) +
       ggplot2::guides(
         fill = ggplot2::guide_colorbar(

@@ -27,7 +27,7 @@ scatterPlot(
   key.title = group,
   key.columns = 1,
   key.position = "right",
-  strip = TRUE,
+  strip.position = "top",
   log.x = FALSE,
   log.y = FALSE,
   x.inc = NULL,
@@ -70,47 +70,64 @@ character or factor, those categories or factor levels will be used
 directly. If set to a numeric variable, it will split that variable in to
 quantiles.}
 
-\item{avg.time}{This defines the time period to average to. Can be
-\dQuote{sec}, \dQuote{min}, \dQuote{hour}, \dQuote{day}, \dQuote{DSTday},
-\dQuote{week}, \dQuote{month}, \dQuote{quarter} or \dQuote{year}. For much
-increased flexibility a number can precede these options followed by a
-space. For example, a timeAverage of 2 months would be \code{period = "2 month"}. See function \code{timeAverage} for further details on this. This
-option se useful as one method by which the number of points plotted is
-reduced i.e. by choosing a longer averaging time.}
+\item{avg.time}{This defines the time period to average to. Can be \code{"sec"},
+\code{"min"}, \code{"hour"}, \code{"day"}, \code{"DSTday"}, \code{"week"}, \code{"month"}, \code{"quarter"} or
+\code{"year"}. For much increased flexibility a number can precede these options
+followed by a space. For example, an average of 2 months would be
+\code{avg.time = "2 month"}. In addition, \code{avg.time} can equal \code{"season"}, in
+which case 3-month seasonal values are calculated with spring defined as
+March, April, May and so on.
 
-\item{data.thresh}{The data capture threshold to use (\\%) when aggregating
-the data using \code{avg.time}. A value of zero means that all available data
-will be used in a particular period regardless if of the number of values
-available. Conversely, a value of 100 will mean that all data will need to
-be present for the average to be calculated, else it is recorded as \code{NA}.
-Not used if \code{avg.time = "default"}.}
+Note that \code{avg.time} can be \emph{less} than the time interval of the original
+series, in which case the series is expanded to the new time interval. This
+is useful, for example, for calculating a 15-minute time series from an
+hourly one where an hourly value is repeated for each new 15-minute period.
+Note that when expanding data in this way it is necessary to ensure that
+the time interval of the original series is an exact multiple of \code{avg.time}
+e.g. hour to 10 minutes, day to hour. Also, the input time series must have
+consistent time gaps between successive intervals so that \code{\link[=timeAverage]{timeAverage()}}
+can work out how much 'padding' to apply. To pad-out data in this way
+choose \code{fill = TRUE}.}
+
+\item{data.thresh}{The data capture threshold to use (\%). A value of zero
+means that all available data will be used in a particular period
+regardless if of the number of values available. Conversely, a value of 100
+will mean that all data will need to be present for the average to be
+calculated, else it is recorded as \code{NA}. See also \code{interval}, \code{start.date}
+and \code{end.date} to see whether it is advisable to set these other options.}
 
 \item{statistic}{The statistic to apply when aggregating the data; default is
-the mean. Can be one of "mean", "max", "min", "median", "frequency", "sd",
-"percentile". Note that "sd" is the standard deviation and "frequency" is
-the number (frequency) of valid records in the period. "percentile" is the
-percentile level (\\%) between 0-100, which can be set using the
-"percentile" option - see below. Not used if \code{avg.time = "default"}.}
+the mean. Can be one of \code{"mean"}, \code{"max"}, \code{"min"}, \code{"median"},
+\code{"frequency"}, \code{"sum"}, \code{"sd"}, \code{"percentile"}. Note that \code{"sd"} is the
+standard deviation, \code{"frequency"} is the number (frequency) of valid
+records in the period and \code{"data.cap"} is the percentage data capture.
+\code{"percentile"} is the percentile level (\%) between 0-100, which can be set
+using the \code{"percentile"} option --- see below. Not used if \code{avg.time = "default"}.}
 
-\item{percentile}{The percentile level in percent used when \code{statistic = "percentile"} and when aggregating the data with \code{avg.time}. The default is
-95. Not used if \code{avg.time = "default"}.}
+\item{percentile}{The percentile level used when \code{statistic = "percentile"}.
+The default is 95\%.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned, and
-then plotted. The default is will produce a single plot using the entire
-data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
-\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
-\code{type = "season"} will produce four plots --- one for each season.
+\item{type}{Character string(s) defining how data should be split/conditioned
+before plotting. \code{"default"} produces a single panel using the entire
+dataset. Any other options will split the plot into different panels - a
+roughly square grid of panels if one \code{type} is given, or a 2D matrix of
+panels if two \code{types} are given. \code{type} is always passed to \code{\link[=cutData]{cutData()}},
+and can therefore be any of:
+\itemize{
+\item A built-in type defined in \code{\link[=cutData]{cutData()}} (e.g., \code{"season"}, \code{"year"},
+\code{"weekday"}, etc.). For example, \code{type = "season"} will split the plot into
+four panels, one for each season.
+\item The name of a numeric column in \code{mydata}, which will be split into
+\code{n.levels} quantiles (defaulting to 4).
+\item The name of a character or factor column in \code{mydata}, which will be used
+as-is. Commonly this could be a variable like \code{"site"} to ensure data from
+different monitoring sites are handled and presented separately. It could
+equally be any arbitrary column created by the user (e.g., whether a nearby
+possible pollutant source is active or not).
+}
 
-It is also possible to choose \code{type} as another variable in the data frame.
-If that variable is numeric, then the data will be split into four
-quantiles (if possible) and labelled accordingly. If type is an existing
-character or factor variable, then those categories/levels will be used
-directly. This offers great flexibility for understanding the variation of
-different variables and how they depend on one another.
-
-Type can be up length two e.g. \code{type = c("season", "weekday")} will produce
-a 2x2 plot split by season and day of the week. Note, when two types are
-provided the first forms the columns and the second the rows.}
+Most \code{openair} plotting functions can take two \code{type} arguments. If two are
+given, the first is used for the rows and the second for the columns.}
 
 \item{smooth}{A smooth line is fitted to the data if \code{TRUE}; optionally with
 95 percent confidence intervals shown. For \code{method = "level"} a smooth
@@ -132,42 +149,41 @@ are dashed. Together these lines help show how close a group of points are
 to a 1:1 relationship and also show the points that are within a factor of
 two (FAC2).}
 
-\item{cols}{Colours to be used for plotting. Options include
-\dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-\code{RColorBrewer} colours --- see the \code{openair} \code{openColours} function for
-more details. For user defined the user can supply a list of colour names
-recognised by R (type \code{colours()} to see the full list). An example would
-be \code{cols = c("yellow", "green", "blue")}}
+\item{cols}{Colours to use for plotting. Can be a pre-set palette (e.g.,
+\code{"turbo"}, \code{"viridis"}, \code{"tol"}, \code{"Dark2"}, etc.) or a user-defined vector
+of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
+\code{\link[=colours]{colours()}} for a full list) or hex-codes (e.g., \code{c("#30123B", "#9CF649", "#7A0403")}). See \code{\link[=openColours]{openColours()}} for more details.}
 
 \item{plot.type}{Type of plot: \dQuote{p} (points, default), \dQuote{l}
 (lines) or \dQuote{b} (both points and lines).}
 
-\item{key}{Should a key be drawn? The default is \code{TRUE}.}
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 
-\item{key.title}{The title of the key (if used).}
+\item{key.title}{Used to set the title of the legend. The legend title is
+passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 
-\item{key.columns}{Number of columns to be used in the key. With many
-pollutants a single column can make to key too wide. The user can thus
-choose to use several columns by setting \code{columns} to be less than the
-number of pollutants.}
+\item{key.columns}{Number of columns to be used in a categorical legend. With
+many categories a single column can make to key too wide. The user can thus
+choose to use several columns by setting \code{key.columns} to be less than the
+number of categories.}
 
-\item{key.position}{Location where the scale key is to plotted.  Allowed
-arguments currently include \dQuote{top}, \dQuote{right}, \dQuote{bottom}
-and \dQuote{left}.}
+\item{key.position}{Location where the legend is to be placed. Allowed
+arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
+the last of which removes the legend entirely.}
 
-\item{strip}{Should a strip be drawn? The default is \code{TRUE}.}
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
-\item{log.x}{Should the x-axis appear on a log scale? The default is \code{FALSE}.
-If \code{TRUE} a well-formatted log10 scale is used. This can be useful for
-checking linearity once logged.}
+\item{log.x, log.y}{Should the x-axis/y-axis appear on a log scale? The
+default is \code{FALSE}. If \code{TRUE} a well-formatted log10 scale is used. This
+can be useful for checking linearity once logged.}
 
-\item{log.y}{Should the y-axis appear on a log scale? The default is \code{FALSE}.
-If \code{TRUE} a well-formatted log10 scale is used. This can be useful for
-checking linearity once logged.}
-
-\item{x.inc}{The x-interval to be used for binning data when \code{method = "level"}.}
-
-\item{y.inc}{The y-interval to be used for binning data when \code{method = "level"}.}
+\item{x.inc, y.inc}{The x/y-interval to be used for binning data when \code{method = "level"}.}
 
 \item{limits}{For \code{method = "level"} the function does its best to choose
 sensible limits automatically. However, there are circumstances when the
@@ -180,13 +196,8 @@ be plotted using arrows. Alternatively, can be a list of arguments to
 control the appearance of the arrows (colour, linewidth, alpha value,
 etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
 
-\item{y.relation}{This determines how the y-axis scale is plotted.
-\dQuote{same} ensures all panels use the same scale and \dQuote{free} will
-use panel-specific scales. The latter is a useful setting when plotting
-data with very different values.}
-
-\item{x.relation}{This determines how the x-axis scale is plotted.
-\dQuote{same} ensures all panels use the same scale and \dQuote{free} will
+\item{x.relation, y.relation}{This determines how the x- and y-axis scales are
+plotted. \code{"same"} ensures all panels use the same scale and \code{"free"} will
 use panel-specific scales. The latter is a useful setting when plotting
 data with very different values.}
 
@@ -203,18 +214,25 @@ first transformed to a unit square. Values should be between 0 and 1.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
-properly e.g.  by subscripting the \sQuote{2} in NO2.}
+properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
-data to extract plot components and plotting them in other ways.}
+\item{plot}{When \code{openair} plots are created they are automatically printed
+to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
+This may be useful when the plot \emph{data} is of more interest, or the plot is
+required to appear later (e.g., later in a Quarto document, or to be saved
+to a file).}
 
-\item{...}{Other graphical parameters passed onto \code{cutData} and ggplot2
-layers. For example, \code{scatterPlot} passes the option \code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than default
-northern) hemisphere handling of \code{type = "season"}. Common graphical
-parameters include \code{xlab}, \code{ylab}, \code{main}, \code{alpha}, \code{cex} (point size),
-\code{lwd} (line width) and \code{lty} (line type). For \code{method = "hexbin"} a
-log-scale fill is applied by default; pass \code{trans = NULL} to disable or
-provide custom \code{trans} and \code{inv} transform functions.}
+\item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
+Some additional arguments are also available:
+\itemize{
+\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
+\item \code{fontsize} overrides the overall font size of the plot.
+\item \code{cex}, \code{lwd}, \code{lty}, \code{alpha}, \code{pch} and \code{border} control various graphical parameters.
+\item For \code{method = "hexbin"} a log-scale fill is applied by default; pass \code{trans = NULL} to disable or
+provide custom \code{trans} and \code{inv} transform functions. \code{bins} controls the number of bins.
+\item \code{date.format} controls the format of date-time x-axes.
+}}
 }
 \value{
 an \link[=openair-package]{openair} object
@@ -252,12 +270,6 @@ The user has fine control over the choice of colours and symbol type used.
 Another way of reducing the number of points used in the plots which can
 sometimes be useful is to aggregate the data. For example, hourly data can be
 aggregated to daily data. See \code{\link[=timePlot]{timePlot()}} for examples here.
-
-By default plots are shown with a colour key at the bottom and in the case of
-conditioning, strips on the top of each plot. Sometimes this may be overkill
-and the user can opt to remove the key and/or the strip by setting \code{key}
-and/or \code{strip} to \code{FALSE}. One reason to do this is to maximise the plotting
-area and therefore the information shown.
 }
 \examples{
 # load openair data if not loaded already

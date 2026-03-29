@@ -27,65 +27,41 @@
 #' [trendLevel()] may fail. Note: The `stat.safe.mode = TRUE` option returns an
 #' NA without warning for empty data series.
 #'
+#' @inheritParams shared_openair_params
+#'
 #' @param mydata The openair data frame to use to generate the [trendLevel()]
 #'   plot.
+#'
 #' @param pollutant The name of the data series in `mydata` to sample to produce
 #'   the [trendLevel()] plot.
+#'
 #' @param x,y,type The name of the data series to use as the [trendLevel()]
 #'   x-axis, y-axis or conditioning variable, passed to [cutData()]. These are
 #'   used before applying `statistic`. [trendLevel()] does not allow duplication
 #'   in `x`, `y` and `type` options.
+#'
 #' @param rotate.axis The rotation to be applied to `trendLevel` `x` and `y`
 #'   axes. The default, `c(90, 0)`, rotates the x axis by 90 degrees but does
 #'   not rotate the y axis. If only one value is supplied, this is applied to
 #'   both axes; if more than two values are supplied, only the first two are
 #'   used.
+#'
 #' @param n.levels The number of levels to split `x`, `y` and `type` data into
 #'   if numeric. The default, `c(10, 10, 4)`, cuts numeric `x` and `y` data into
 #'   ten levels and numeric `type` data into four levels. This option is ignored
 #'   for date conditioning and factors. If less than three values are supplied,
 #'   three values are determined by recursion; if more than three values are
 #'   supplied, only the first three are used.
+#'
 #' @param limits The colour scale range to use when generating the
 #'   [trendLevel()] plot.
+#'
 #' @param min.bin The minimum number of records required in a bin to show a
 #'   value. Bins with fewer than `min.bin` records are set to `NA`. The default
 #'   is 1, i.e., all bins with no records are set to `NA`. Setting `min.bin` to
 #'   a value greater than 1 can be useful to exclude bins with very few records
 #'   that might produce unreliable statistic values.
-#' @param windflow This option calculates the vector average of wind speed and
-#'   direction and shows the result as an arrow. The option is a list, e.g.,
-#'   `windflow = list(col = "grey", lwd = 2, scale = 0.1)`. This option requires
-#'   wind speed (`ws`) and wind direction (`wd`) to be available.
-#' @param cols The colour set to use to colour the [trendLevel()] surface.
-#'   `cols` is passed to [openColours()] for evaluation.
-#' @param auto.text Automatic routine text formatting. `auto.text = TRUE` passes
-#'   axis labels, legend titles, and facet labels through [quickText()] to
-#'   provide common text formatting.  The alternative `auto.text = FALSE` turns
-#'   this option off and passes any supplied labels to the plot without
-#'   modification.
-#' @param key.header,key.footer `key.header` adds a title to the legend, passed
-#'   through [quickText()] if `quick.text = TRUE`. `key.footer` is no longer
-#'   directly supported, and is appended to the bottom of `key.header` to form
-#'   part of the legend title.
-#' @param key.position Location where the scale key should be plotted. Allowed
-#'   arguments currently include `"top"`, `"right"`, `"bottom"`, and `"left"`.
-#' @param key Show a key?
-#' @param strip.position Location where the facet 'strips' are located when
-#'   using `type`. When one `type` is provided, can be one of `"left"`,
-#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
-#'   argument defines whether the strips are "switched" and can take either
-#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
-#'   locations to the bottom of the plot.
-#' @param breaks,labels If a categorical colour scale is required then `breaks`
-#'   should be specified. These should be provided as a numeric vector, e.g.,
-#'   `breaks = c(0, 50, 100, 1000)`. Users should set the maximum value of
-#'   `breaks` to exceed the maximum data value to ensure it is within the
-#'   maximum final range, e.g., 100--1000 in this case. Labels will
-#'   automatically be generated, but can be customised by passing a character
-#'   vector to `labels`, e.g., `labels = c("good", "bad", "very bad")`. In this
-#'   example, `0 - 50` will be `"good"` and so on. Note there is one less label
-#'   than break.
+#'
 #' @param statistic The statistic to apply when aggregating the data; default is
 #'   the mean. Can be one of `"mean"`, `"max"`, `"min"`, `"median"`,
 #'   `"frequency"`, `"sum"`, `"sd"`, `"percentile"`. Note that `"sd"` is the
@@ -94,11 +70,14 @@
 #'   `"percentile"` is the percentile level (%) between 0-100, which can be set
 #'   using the `"percentile"` option. Functions can also be sent directly via
 #'   `statistic`; see 'Details' for more information.
+#'
 #' @param percentile The percentile level used when `statistic = "percentile"`.
 #'   The default is 95%.
+#'
 #' @param stat.args Additional options to be used with `statistic` if this is a
 #'   function. The extra options should be supplied as a list of named
 #'   parameters; see 'Details' for more information.
+#'
 #' @param stat.safe.mode An addition protection applied when using functions
 #'   directly with `statistic` that most users can ignore. This option returns
 #'   `NA` instead of running `statistic` on binned sub samples that are empty.
@@ -107,6 +86,7 @@
 #'   functions. For a very few cases, e.g., for a function that counted missing
 #'   entries, it might need to be set to `FALSE`; see 'Details' for more
 #'   information.
+#'
 #' @param drop.unused.types Hide unused/empty `type` conditioning cases. Some
 #'   conditioning options may generate empty cases for some data sets, e.g. a
 #'   hour of the day when no measurements were taken. Empty `x` and `y` cases
@@ -114,15 +94,16 @@
 #'   produce blank panels if plotted. Therefore, the default, `TRUE`, excludes
 #'   these empty panels from the plot. The alternative `FALSE` plots all `type`
 #'   panels.
+#'
 #' @param col.na Colour to be used to show missing data.
-#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
-#'   data to extract plot components and plotting them in other ways.
+#'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
 #'   Some additional arguments are also available:
 #'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
 #'   - `fontsize` overrides the overall font size of the plot.
 #'   - `border` sets the border colour of each tile.
+#'
 #' @export
 #' @return an [openair][openair-package] object.
 #' @author Karl Ropkins

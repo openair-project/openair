@@ -71,10 +71,6 @@
 #'   calculated. Can be more than length one e.g. `var.mod = c("nox.mod",
 #'   "ws.mod")`.
 #'
-#' @param type `type` determines how the data are split i.e. conditioned,
-#'   and then plotted. Only one type can be used with this function. The
-#'   default produces a single plot using the entire data.
-#'
 #' @param statistic Statistic(s) to be plotted. Can be \dQuote{MB},
 #'   \dQuote{NMB}, \dQuote{r}, \dQuote{COE}, \dQuote{MGE}, \dQuote{NMGE},
 #'   \dQuote{RMSE} and \dQuote{FAC2}. `statistic` can also be a variable

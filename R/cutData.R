@@ -70,6 +70,7 @@
 #' date-based types it will not be used.
 #'
 #' @param x A data frame containing a field `date`.
+#'
 #' @param type A string giving the way in which the data frame should be split.
 #'   Pre-defined values are: `"default"`, `"year"`, `"hour"`, `"month"`,
 #'   `"season"`, `"weekday"`, `"site"`, `"weekend"`, `"monthyear"`,
@@ -78,34 +79,44 @@
 #'   `type` can also be the name of a numeric or factor. If a numeric column
 #'   name is supplied [cutData()] will split the data into four quantiles.
 #'   Factors levels will be used to split the data without any adjustment.
+#'
 #' @param names By default, the columns created by [cutData()] are named after
 #'   their `type` option. Specifying `names` defines other names for the
 #'   columns, which map onto the `type` options in the same order they are
 #'   given. The length of `names` should therefore be equal to the length of
 #'   `type`.
+#'
 #' @param suffix If `name` is not specified, `suffix` will be appended to any
 #'   added columns that would otherwise overwrite existing columns. For example,
 #'   `cutData(mydata, "nox", suffix = "_cuts")` would append a `nox_cuts` column
 #'   rather than overwriting `nox`.
+#'
 #' @param hemisphere Can be `"northern"` or `"southern"`, used to split data
 #'   into seasons.
+#'
 #' @param n.levels Number of quantiles to split numeric data into.
+#'
 #' @param start.day What day of the week should the `type = "weekday"` start on?
 #'   The user can change the start day by supplying an integer between 0 and 6.
 #'   Sunday = 0, Monday = 1, ... For example to start the weekday plots on a
 #'   Saturday, choose `start.day = 6`.
+#'
 #' @param start.season What order should the season be. By default, the order is spring, summer, autumn, winter. `start.season = "winter"` would plot winter first.
+#'
 #' @param is.axis A logical (`TRUE`/`FALSE`), used to request shortened cut
 #'   labels for axes.
+#'
 #' @param local.tz Used for identifying whether a date has daylight savings time
 #'   (DST) applied or not. Examples include `local.tz = "Europe/London"`,
 #'   `local.tz = "America/New_York"`, i.e., time zones that assume DST.
 #'   <https://en.wikipedia.org/wiki/List_of_zoneinfo_time_zones> shows time
 #'   zones that should be valid for most systems. It is important that the
 #'   original data are in GMT (UTC) or a fixed offset from GMT.
+#'
 #' @param latitude,longitude The decimal latitude and longitudes used when `type
 #'   = "daylight"`. Note that locations west of Greenwich have negative
 #'   longitudes.
+#'
 #' @param drop How to handle empty factor levels. One of:
 #'
 #'  - `"default"`: Sensible defaults selected on a case-by-case basis for
@@ -124,13 +135,18 @@
 #'   Some of these options only apply to certain `type` options. For example,
 #'   for `type = "year"`, `"outside"` is equivalent to `"none"` as there is no
 #'   fixed range of years to use in the `"none"` case.
+#'
 #' @param ... All additional parameters are passed on to next function(s).
+#'
 #' @export
+#'
 #' @return Returns the data frame, `x`, with columns appended as defined by
 #'   `type` and `name`.
+#'
 #' @author David Carslaw
 #' @author Jack Davison
 #' @author Karl Ropkins (`"daylight"` option)
+#'
 #' @examples
 #' # split data by day of the week
 #' mydata <- cutData(mydata, type = "weekday")

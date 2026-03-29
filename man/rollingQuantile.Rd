@@ -42,7 +42,7 @@ means that the previous hours (including the current) are averaged.
 
 \item{date.pad}{Should missing dates be padded? Default is \code{FALSE}.}
 
-\item{...}{Additional parameters passed to \code{\link[=cutData]{cutData()}}. For use with \code{type}.}
+\item{...}{Passed to \code{\link[=cutData]{cutData()}} for use with \code{type}.}
 }
 \value{
 A tibble with new columns for the rolling quantile value and the number of valid values used.

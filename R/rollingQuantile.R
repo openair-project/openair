@@ -8,22 +8,31 @@
 #' @param mydata A data frame containing a `date` field. `mydata` must contain a
 #'   `date` field in `Date` or `POSIXct` format. The input time series must be
 #'   regular, e.g., hourly, daily.
+#'
 #' @param pollutant The name of a pollutant, e.g., `pollutant = "o3"`.
+#'
 #' @param width The averaging period (rolling window width) to use, e.g., `width
 #'   = 8` will generate 8-hour rolling mean values when hourly data are
 #'   analysed.
+#'
 #' @param type Used for splitting the data further. Passed to [cutData()].
+#'
 #' @param data.thresh The % data capture threshold. No values are calculated if
 #'   data capture over the period of interest is less than this value. For
 #'   example, with `width = 8` and `data.thresh = 75` at least 6 hours are
 #'   required to calculate the mean, else `NA` is returned.
+#'
 #' @param align Specifies how the moving window should be aligned. `"right"`
 #'   means that the previous hours (including the current) are averaged.
 #'   `"left"` means that the forward hours are averaged. `"centre"` (or
 #'   `"center"` - the default) centres the current hour in the window.
+#'
 #' @param probs Probability for quantile calculate. A number between 0 and 1. Can be more than length one e.g. `probs = c(0.05, 0.95)`.
+#'
 #' @param date.pad Should missing dates be padded? Default is `FALSE`.
-#' @param ... Additional parameters passed to [cutData()]. For use with `type`.
+#'
+#' @param ... Passed to [cutData()] for use with `type`.
+#'
 #' @export
 #' @return A tibble with new columns for the rolling quantile value and the number of valid values used.
 #' @author David Carslaw

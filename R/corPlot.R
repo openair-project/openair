@@ -30,15 +30,13 @@
 #' many flexible ways, although this may become difficult to visualise with too
 #' many panels.
 #'
+#' @inheritParams shared_openair_params
+#'
 #' @param mydata A data frame which should consist of some numeric columns.
 #'
 #' @param pollutants the names of data-series in `mydata` to be plotted by
 #'   `corPlot`. The default option `NULL` and the alternative `"all"` use all
 #'   available valid (numeric) data.
-#'
-#' @param type `type` determines how the data are split i.e. conditioned, and
-#'   then plotted. For example, `type = "season"` will produce four plots ---
-#'   one for each season. See [cutData()] for more information.
 #'
 #' @param cluster Should the data be ordered according to cluster analysis. If
 #'   `TRUE` hierarchical clustering is applied to the correlation matrices using
@@ -69,30 +67,12 @@
 #' @param triangle Which 'triangles' of the correlation plot should be shown?
 #'   Can be `"both"`, `"lower"` or `"upper"`. Defaults to `"both"`.
 #'
-#' @param cols Colours to be used for plotting. See [openColours()] for more
-#'   details.
-#'
 #' @param r.thresh Values of greater than `r.thresh` will be shown in bold type.
 #'   This helps to highlight high correlations.
 #'
 #' @param text.col The colour of the text used to show the correlation values.
 #'   The first value controls the colour of negative correlations and the second
 #'   positive.
-#'
-#' @param key.header Used to control the title of the plot key. Defaults to
-#'   `NULL`; no header.
-#'
-#' @param key.position Location where the scale key is to plotted. Allowed
-#'   arguments currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
-#'
-#' @param key Should a key be shown? In [corPlot()] this defaults to `FALSE`.
-#'
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
-#'   axis labels will automatically try and format pollutant names and units
-#'   properly, e.g., by subscripting the `2' in NO2.
-#'
-#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
-#'   data to extract corPlot components and plotting them in other ways.
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
 #'   Some additional arguments are also available:
@@ -142,9 +122,10 @@ corPlot <- function(
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
+  key = FALSE,
   key.header = NULL,
   key.position = "right",
-  key = FALSE,
+  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -454,7 +435,8 @@ corPlot <- function(
       type,
       extra.args,
       scales = "free",
-      auto.text = auto.text
+      auto.text = auto.text,
+      strip.position = strip.position
     ) +
     theme_openair(key.position) +
     ggplot2::theme(panel.grid = ggplot2::element_blank(), aspect.ratio = 1) +

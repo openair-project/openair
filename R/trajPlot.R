@@ -19,6 +19,7 @@
 #' Note that [trajPlot()] will plot only the full length trajectories. This
 #' should be remembered when selecting only part of a year to plot.
 #'
+#' @inheritParams shared_openair_params
 #' @inheritParams scatterPlot
 #'
 #' @param mydata Data frame, the result of importing a trajectory file using
@@ -28,25 +29,6 @@
 #'
 #' @param pollutant Pollutant (or any numeric column) to be plotted, if any.
 #'   Alternatively, use `group`.
-#'
-#' @param type `type` determines how the data are split, i.e., conditioned, and
-#'   then plotted. The default is will produce a single plot using the entire
-#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
-#'   "season", "year", "weekday" and so on. For example, `type = "season"` will
-#'   produce four plots --- one for each season.
-#'
-#'   It is also possible to choose `type` as another variable in the data frame.
-#'   If that variable is numeric, then the data will be split into four
-#'   quantiles (if possible) and labelled accordingly. If type is an existing
-#'   character or factor variable, then those categories/levels will be used
-#'   directly. This offers great flexibility for understanding the variation of
-#'   different variables and how they depend on one another.
-#'
-#'   `type` can be up length two e.g. `type = c("season", "weekday")` will
-#'   produce a 2x2 plot split by season and day of the week. Note, when two
-#'   types are provided the first forms the columns and the second the rows.
-#'
-#' @param cols Colours for plotting. Passed to [openColours()].
 #'
 #' @param crs The coordinate reference system to use for plotting. Defaults to
 #'   `4326`, which is the WGS84 geographic coordinate system, the standard,
@@ -68,6 +50,7 @@
 #'   Examples include `map.fill = "grey40"` and `map.fill =
 #'   openColours("default", 10)`. The latter colours the countries and can help
 #'   differentiate them.
+#'
 #' @param map.border The colour to use for the map outlines/borders. Defaults to
 #'   `"black"`.
 #'
@@ -100,25 +83,6 @@
 #'
 #' @param origin If true a filled circle dot is shown to mark the receptor
 #'   point.
-#'
-#' @param key.title The title of the key.
-#'
-#' @param key.position Location where the scale key should be plotted. Allowed
-#'   arguments currently include `"top"`, `"right"`, `"bottom"`, and `"left"`.
-#'
-#' @param key Should a key be drawn? Defaults to `TRUE`.
-#'
-#' @param key.columns Number of columns to be used in the key.
-#'
-#' @param strip.position Location where the facet 'strips' are located when
-#'   using `type`. When one `type` is provided, can be one of `"left"`,
-#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
-#'   argument defines whether the strips are "switched" and can take either
-#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
-#'   locations to the bottom of the plot.
-#'
-#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
-#'   data to extract plot components and plotting them in other ways.
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
 #'   Some additional arguments are also available:

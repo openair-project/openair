@@ -16,6 +16,7 @@
 #' `proportion`. The bars therefore show how the total value of `pollutant` is
 #' made up for any time interval.
 #'
+#' @inheritParams shared_openair_params
 #' @inheritParams timePlot
 #'
 #' @param mydata A data frame containing the fields `date`, `pollutant` and a
@@ -45,8 +46,6 @@
 #' @param normalise If `normalise = TRUE` then each time interval is scaled to
 #'   100. This is helpful to show the relative (percentage) contribution of the
 #'   proportions.
-#'
-#' @param key.title The title of the key.
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
 #'   Some additional arguments are also available:

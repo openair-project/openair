@@ -39,24 +39,6 @@
 #'   compare the shape of the diurnal trends for variables on very different
 #'   scales.
 #'
-#' @param type `type` determines how the data are split, i.e., conditioned, and
-#'   then plotted. The default is will produce a single plot using the entire
-#'   data. Type can be one of the built-in types as detailed in [cutData()],
-#'   e.g., `"season"`, `"year"`, `"weekday"` and so on. For example, `type =
-#'   "season"` will produce four plots --- one for each season.
-#'
-#'   It is also possible to choose `type` as another variable in the data frame.
-#'   If that variable is numeric, then the data will be split into four
-#'   quantiles (if possible) and labelled accordingly. If type is an existing
-#'   character or factor variable, then those categories/levels will be used
-#'   directly. This offers great flexibility for understanding the variation of
-#'   different variables and how they depend on one another.
-#'
-#'   Two `types` are allowed in [variationPlot()] and one `type` in
-#'   [timeVariation()]. For the latter, `type` is applied to each `panel` and
-#'   for additional splits use the `"x.type"` syntax in the `panels` argument
-#'   (e.g, `panels = c("hour.weekday")`).
-#'
 #' @param group This sets the grouping variable to be used. For example, if a
 #'   data frame had a column `site` setting `group = "site"` will plot all sites
 #'   together in each panel. Passed to [cutData()].
@@ -93,7 +75,13 @@
 #' @param alpha The alpha transparency used for plotting confidence intervals.
 #'   `0` is fully transparent and 1 is opaque. The default is `0.4`.
 #'
-#' @param ... Passed to [cutData()].
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `lwd` and `lty` control various graphical parameters.
+#'   - `fontsize` overrides the overall font size of the plot.
+#'   - `ylim` controls axis limits.
 #'
 #' @export
 #'

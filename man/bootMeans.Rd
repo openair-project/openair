@@ -43,8 +43,7 @@ Confidence Interval).}
 
 \item{B}{The number of bootstrap simulations.}
 
-\item{...}{Other parameters that are passed on to \code{\link[=cutData]{cutData()}}, for use with
-\code{type}.}
+\item{...}{Passed to \code{\link[=cutData]{cutData()}} for use with \code{type}.}
 
 \item{x}{A vector from which the mean and bootstrap confidence intervals in
 the mean are to be calculated}

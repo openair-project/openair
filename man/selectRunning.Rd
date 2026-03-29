@@ -46,7 +46,7 @@ default, the function appends a column flagging where the criteria was met.
 Alternatively, \code{"filter"} will filter \code{mydata} to only return rows where
 the criteria was met.}
 
-\item{...}{Additional parameters passed to \code{\link[=cutData]{cutData()}}. For use with \code{type}.}
+\item{...}{Passed to \code{\link[=cutData]{cutData()}} for use with \code{type}.}
 }
 \value{
 A data frame

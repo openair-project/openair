@@ -36,7 +36,7 @@ above. When \code{FALSE} just completes the sequence leaving \code{NA} values.}
 \item{print.int}{Logical; when \code{TRUE} prints detected/selected interval
 messages.}
 
-\item{...}{Passed to \code{\link[=cutData]{cutData()}}.}
+\item{...}{Passed to \code{\link[=cutData]{cutData()}} for use with \code{type}.}
 }
 \value{
 A dataframe expanded to the requested sequence with values filled

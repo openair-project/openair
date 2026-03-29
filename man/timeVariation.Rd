@@ -116,7 +116,10 @@ calculations by much.}
 Setting this to \code{FALSE} can be useful if multiple pollutants are chosen
 where over-lapping confidence intervals can over complicate plots.}
 
-\item{cols}{Colours to be used for plotting; see \code{\link[=openColours]{openColours()}} for details.}
+\item{cols}{Colours to use for plotting. Can be a pre-set palette (e.g.,
+\code{"turbo"}, \code{"viridis"}, \code{"tol"}, \code{"Dark2"}, etc.) or a user-defined vector
+of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
+\code{\link[=colours]{colours()}} for a full list) or hex-codes (e.g., \code{c("#30123B", "#9CF649", "#7A0403")}). See \code{\link[=openColours]{openColours()}} for more details.}
 
 \item{ref.y}{A list with details of the horizontal lines to be added
 representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
@@ -125,16 +128,17 @@ e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))
 \item{key}{By default \code{\link[=timeVariation]{timeVariation()}} produces four plots on one page.
 While it is useful to see these plots together, it is sometimes necessary
 just to use one for a report. If \code{key} is \code{TRUE}, a key is added to all
-plots allowing the extraction of a single plot \emph{with} key. See below for an
-example. If \code{key} is \code{FALSE}, no key is shown for any plot.}
+plots allowing the extraction of a single plot \emph{with} key. If \code{key} is
+\code{FALSE}, no key is shown for any plot.}
 
-\item{key.columns}{Number of columns to be used in the key. With many
-pollutants a single column can make to key too wide. The user can thus
-choose to use several columns by setting \code{columns} to be less than the
-number of pollutants.}
+\item{key.columns}{Number of columns to be used in a categorical legend. With
+many categories a single column can make to key too wide. The user can thus
+choose to use several columns by setting \code{key.columns} to be less than the
+number of categories.}
 
-\item{key.position}{Location where the scale key is to plotted. Can include
-\code{"top"}, \code{"bottom"}, \code{"right"} and \code{"left"}.}
+\item{key.position}{Location where the legend is to be placed. Allowed
+arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
+the last of which removes the legend entirely.}
 
 \item{strip.position}{Location where the facet 'strips' are located when
 using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
@@ -148,15 +152,26 @@ locations to the bottom of the plot.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
-properly, e.g., by subscripting the '2' in NO2.}
+properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
 
 \item{alpha}{The alpha transparency used for plotting confidence intervals.
 \code{0} is fully transparent and 1 is opaque. The default is \code{0.4}.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
-data to extract plot components and plotting them in other ways.}
+\item{plot}{When \code{openair} plots are created they are automatically printed
+to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
+This may be useful when the plot \emph{data} is of more interest, or the plot is
+required to appear later (e.g., later in a Quarto document, or to be saved
+to a file).}
 
-\item{...}{Passed to \code{\link[=cutData]{cutData()}}.}
+\item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
+Some additional arguments are also available:
+\itemize{
+\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
+\item \code{lwd} and \code{lty} control various graphical parameters.
+\item \code{fontsize} overrides the overall font size of the plot.
+\item \code{ylim} controls axis limits.
+}}
 }
 \value{
 an \link[=openair-package]{openair} object. The components of

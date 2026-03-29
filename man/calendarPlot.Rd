@@ -95,7 +95,10 @@ be plotted using arrows. Alternatively, can be a list of arguments to
 control the appearance of the arrows (colour, linewidth, alpha value,
 etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
 
-\item{cols}{Colours to be used for plotting; see \code{\link[=openColours]{openColours()}} for details.}
+\item{cols}{Colours to use for plotting. Can be a pre-set palette (e.g.,
+\code{"turbo"}, \code{"viridis"}, \code{"tol"}, \code{"Dark2"}, etc.) or a user-defined vector
+of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
+\code{\link[=colours]{colours()}} for a full list) or hex-codes (e.g., \code{c("#30123B", "#9CF649", "#7A0403")}). See \code{\link[=openColours]{openColours()}} for more details.}
 
 \item{limits}{Use this option to manually set the colour scale limits. This
 is useful in the case when there is a need for two or more plots and a
@@ -128,14 +131,15 @@ the text above \code{lim}.}
 \item{digits}{The number of digits used to display concentration values when
 \code{annotate = "value"}.}
 
-\item{labels}{If a categorical scale is defined using \code{breaks}, then \code{labels}
-can be used to override the default category labels, e.g., \code{labels = c("good", "bad", "very bad")}. Note there is one less label than break.}
-
-\item{breaks}{If a categorical scale is required then these breaks will be
-used. For example, \code{breaks = c(0, 50, 100, 1000)}. In this case "good"
-corresponds to values between 0 and 50 and so on. Users should set the
-maximum value of \code{breaks} to exceed the maximum data value to ensure it is
-within the maximum final range e.g. 100--1000 in this case.}
+\item{breaks, labels}{If a categorical colour scale is required then \code{breaks}
+should be specified. These should be provided as a numeric vector, e.g.,
+\code{breaks = c(0, 50, 100, 1000)}. Users should set the maximum value of
+\code{breaks} to exceed the maximum data value to ensure it is within the
+maximum final range, e.g., 100--1000 in this case. Labels will
+automatically be generated, but can be customised by passing a character
+vector to \code{labels}, e.g., \code{labels = c("good", "bad", "very bad")}. In this
+example, \code{0 - 50} will be \code{"good"} and so on. Note there is one less label
+than break.}
 
 \item{w.shift}{Controls the order of the days of the week. By default the
 plot shows Saturday first (\code{w.shift = 0}). To change this so that it starts
@@ -154,26 +158,42 @@ labels include the year label? \code{TRUE} creates labels like "January-2000",
 \code{FALSE} labels just as "January". If multiple years of data are detected,
 this option is forced to be \code{TRUE}.}
 
-\item{key}{Show a key?}
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 
-\item{key.header, key.footer}{Used to control the title of the plot key. By
-default, \code{key.header} is the \code{statistic} and \code{key.footer} is the
-\code{pollutant}. These are pasted together to form the key title.}
+\item{key.header}{Used to control the title of the legend. \code{key.header} and
+\code{key.footer} are now pasted together to form a single legend title. In
+future, they are likely to be deprecated and combined into a single
+argument.}
 
-\item{key.position}{Location where the scale key is to plotted. Allowed
-arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"} and \code{"left"}.}
+\item{key.footer}{Used to control the title of the legend. \code{key.header} and
+\code{key.footer} are now pasted together to form a single legend title. In
+future, they are likely to be deprecated and combined into a single
+argument.}
+
+\item{key.position}{Location where the legend is to be placed. Allowed
+arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
+the last of which removes the legend entirely.}
 
 \item{strip.position}{Location where the facet 'strips' are located when
-using \code{type}. Can be one of \code{"left"}, \code{"right"}, \code{"bottom"} or \code{"top"}.}
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
-properly, e.g., by subscripting the '2' in NO2.}
+properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
-data to extract plot components and plotting them in other ways.}
+\item{plot}{When \code{openair} plots are created they are automatically printed
+to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
+This may be useful when the plot \emph{data} is of more interest, or the plot is
+required to appear later (e.g., later in a Quarto document, or to be saved
+to a file).}
 
-\item{...}{The following additional arguments are available:
+\item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
+Some additional arguments are also available:
 \itemize{
 \item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
 \item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.

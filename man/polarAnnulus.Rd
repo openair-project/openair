@@ -70,27 +70,27 @@ to \code{FALSE} then GMT is used. Examples of usage include \code{local.tz = "Eu
 plot variation throughout the year, \dQuote{weekday} to plot day of the
 week variation and \dQuote{trend} to plot the trend by wind direction.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned, and
-then plotted. The default is will produce a single plot using the entire
-data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
-\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
-\code{type = "season"} will produce four plots --- one for each season.
+\item{type}{Character string(s) defining how data should be split/conditioned
+before plotting. \code{"default"} produces a single panel using the entire
+dataset. Any other options will split the plot into different panels - a
+roughly square grid of panels if one \code{type} is given, or a 2D matrix of
+panels if two \code{types} are given. \code{type} is always passed to \code{\link[=cutData]{cutData()}},
+and can therefore be any of:
+\itemize{
+\item A built-in type defined in \code{\link[=cutData]{cutData()}} (e.g., \code{"season"}, \code{"year"},
+\code{"weekday"}, etc.). For example, \code{type = "season"} will split the plot into
+four panels, one for each season.
+\item The name of a numeric column in \code{mydata}, which will be split into
+\code{n.levels} quantiles (defaulting to 4).
+\item The name of a character or factor column in \code{mydata}, which will be used
+as-is. Commonly this could be a variable like \code{"site"} to ensure data from
+different monitoring sites are handled and presented separately. It could
+equally be any arbitrary column created by the user (e.g., whether a nearby
+possible pollutant source is active or not).
+}
 
-It is also possible to choose \code{type} as another variable in the data frame.
-If that variable is numeric, then the data will be split into four
-quantiles (if possible) and labelled accordingly. If type is an existing
-character or factor variable, then those categories/levels will be used
-directly. This offers great flexibility for understanding the variation of
-different variables and how they depend on one another.
-
-Type can be up length two e.g. \code{type = c("season", "site")} will produce a
-2x2 plot split by season and site. The use of two types is mostly meant for
-situations where there are several sites. Note, when two types are provided
-the first forms the columns and the second the rows.
-
-Also note that for the \code{polarAnnulus} function some type/period
-combinations are forbidden or make little sense. For example, \code{type = "season"} and \code{period = "trend"} (which would result in a plot with too
-many gaps in it for sensible smoothing), or \code{type = "weekday"} and \code{period = "weekday"}.}
+Most \code{openair} plotting functions can take two \code{type} arguments. If two are
+given, the first is used for the rows and the second for the columns.}
 
 \item{statistic}{The statistic that should be applied to each wind
 speed/direction bin. Can be \dQuote{mean} (default), \dQuote{median},
@@ -118,14 +118,10 @@ set different ones. An example would be a series of plots showing each year
 of data separately. The limits are set in the form \code{c(lower, upper)}, so
 \code{limits = c(0, 100)} would force the plot limits to span 0-100.}
 
-\item{cols}{Colours to be used for plotting. Options include
-\dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-\code{RColorBrewer} colours --- see the \code{openair} \code{openColours} function for
-more details. For user defined the user can supply a list of colour names
-recognised by R (type \code{colours()} to see the full list). An example would
-be \code{cols = c("yellow", "green", "blue")}. \code{cols} can also take the values
-\code{"viridis"}, \code{"magma"}, \code{"inferno"}, or \code{"plasma"} which are the viridis
-colour maps ported from Python's Matplotlib library.}
+\item{cols}{Colours to use for plotting. Can be a pre-set palette (e.g.,
+\code{"turbo"}, \code{"viridis"}, \code{"tol"}, \code{"Dark2"}, etc.) or a user-defined vector
+of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
+\code{\link[=colours]{colours()}} for a full list) or hex-codes (e.g., \code{c("#30123B", "#9CF649", "#7A0403")}). See \code{\link[=openColours]{openColours()}} for more details.}
 
 \item{col.na}{Colour to be used to show missing data.}
 
@@ -133,10 +129,12 @@ colour maps ported from Python's Matplotlib library.}
 expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a
 hole that takes up the entire plotting area.}
 
-\item{angle.scale}{The scale is by default shown at a 315 degree angle.
-Sometimes the placement of the scale may interfere with an interesting
-feature. The user can therefore set \code{angle.scale} to another value (between
-0 and 360 degrees) to mitigate such problems. For example \code{angle.scale = 45} will draw the scale heading in a NE direction.}
+\item{angle.scale}{In radial plots (e.g., \code{\link[=polarPlot]{polarPlot()}}), the radial scale is
+drawn directly on the plot itself. While suitable defaults have been
+chosen, sometimes the placement of the scale may interfere with an
+interesting feature. \code{angle.scale} can take any value between \code{0} and \code{360}
+to place the scale at a different angle, or \code{FALSE} to move it to the side
+of the plots.}
 
 \item{min.bin}{The minimum number of points allowed in a wind speed/wind
 direction bin.  The default is 1. A value of two requires at least 2 valid
@@ -189,30 +187,41 @@ argument defines whether the strips are "switched" and can take either
 \code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
 locations to the bottom of the plot.}
 
-\item{key.header}{Adds additional text/labels to the scale key. For example,
-passing the options \verb{key.header = "header", key.footer = "footer1"} adds
-addition text above and below the scale key. These arguments are passed to
-\code{quickText}, applying the \code{auto.text} argument, to handle formatting.}
+\item{key.header}{Used to control the title of the legend. \code{key.header} and
+\code{key.footer} are now pasted together to form a single legend title. In
+future, they are likely to be deprecated and combined into a single
+argument.}
 
-\item{key.footer}{see \code{key.footer}.}
+\item{key.footer}{Used to control the title of the legend. \code{key.header} and
+\code{key.footer} are now pasted together to form a single legend title. In
+future, they are likely to be deprecated and combined into a single
+argument.}
 
-\item{key.position}{Location where the scale key is to plotted. Allowed
-arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"} and \code{"left"}.}
+\item{key.position}{Location where the legend is to be placed. Allowed
+arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
+the last of which removes the legend entirely.}
 
-\item{key}{Show a key?}
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
-properly e.g.  by subscripting the `2' in NO2.}
+properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
-data to extract plot components and plotting them in other ways.}
+\item{plot}{When \code{openair} plots are created they are automatically printed
+to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
+This may be useful when the plot \emph{data} is of more interest, or the plot is
+required to appear later (e.g., later in a Quarto document, or to be saved
+to a file).}
 
-\item{...}{Other graphical parameters passed onto \code{cutData} and other
-functions. For example, \code{polarAnnulus} passes the option \code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than default
-northern) hemisphere handling of \code{type = "season"}. Similarly, common axis
-and title labelling options (such as \code{xlab}, \code{ylab}, \code{main}) are passed to
-\code{levelplot} via \code{quickText} to handle routine formatting.}
+\item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
+Some additional arguments are also available:
+\itemize{
+\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
+\item \code{fontsize} overrides the overall font size of the plot.
+\item \code{annotate = FALSE} will not plot the N/E/S/W labels.
+}}
 }
 \value{
 an \link[=openair-package]{openair} object

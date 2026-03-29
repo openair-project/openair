@@ -59,10 +59,10 @@ for date conditioning and factors. If less than three values are supplied,
 three values are determined by recursion; if more than three values are
 supplied, only the first three are used.}
 
-\item{windflow}{This option calculates the vector average of wind speed and
-direction and shows the result as an arrow. The option is a list, e.g.,
-\code{windflow = list(col = "grey", lwd = 2, scale = 0.1)}. This option requires
-wind speed (\code{ws}) and wind direction (\code{wd}) to be available.}
+\item{windflow}{If \code{TRUE}, the vector-averaged wind speed and direction will
+be plotted using arrows. Alternatively, can be a list of arguments to
+control the appearance of the arrows (colour, linewidth, alpha value,
+etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
 
 \item{limits}{The colour scale range to use when generating the
 \code{\link[=trendLevel]{trendLevel()}} plot.}
@@ -73,24 +73,31 @@ is 1, i.e., all bins with no records are set to \code{NA}. Setting \code{min.bin
 a value greater than 1 can be useful to exclude bins with very few records
 that might produce unreliable statistic values.}
 
-\item{cols}{The colour set to use to colour the \code{\link[=trendLevel]{trendLevel()}} surface.
-\code{cols} is passed to \code{\link[=openColours]{openColours()}} for evaluation.}
+\item{cols}{Colours to use for plotting. Can be a pre-set palette (e.g.,
+\code{"turbo"}, \code{"viridis"}, \code{"tol"}, \code{"Dark2"}, etc.) or a user-defined vector
+of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
+\code{\link[=colours]{colours()}} for a full list) or hex-codes (e.g., \code{c("#30123B", "#9CF649", "#7A0403")}). See \code{\link[=openColours]{openColours()}} for more details.}
 
-\item{auto.text}{Automatic routine text formatting. \code{auto.text = TRUE} passes
-axis labels, legend titles, and facet labels through \code{\link[=quickText]{quickText()}} to
-provide common text formatting.  The alternative \code{auto.text = FALSE} turns
-this option off and passes any supplied labels to the plot without
-modification.}
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
 
-\item{key}{Show a key?}
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 
-\item{key.header, key.footer}{\code{key.header} adds a title to the legend, passed
-through \code{\link[=quickText]{quickText()}} if \code{quick.text = TRUE}. \code{key.footer} is no longer
-directly supported, and is appended to the bottom of \code{key.header} to form
-part of the legend title.}
+\item{key.header}{Used to control the title of the legend. \code{key.header} and
+\code{key.footer} are now pasted together to form a single legend title. In
+future, they are likely to be deprecated and combined into a single
+argument.}
 
-\item{key.position}{Location where the scale key should be plotted. Allowed
-arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"}, and \code{"left"}.}
+\item{key.footer}{Used to control the title of the legend. \code{key.header} and
+\code{key.footer} are now pasted together to form a single legend title. In
+future, they are likely to be deprecated and combined into a single
+argument.}
+
+\item{key.position}{Location where the legend is to be placed. Allowed
+arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
+the last of which removes the legend entirely.}
 
 \item{strip.position}{Location where the facet 'strips' are located when
 using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
@@ -144,8 +151,11 @@ panels.}
 
 \item{col.na}{Colour to be used to show missing data.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
-data to extract plot components and plotting them in other ways.}
+\item{plot}{When \code{openair} plots are created they are automatically printed
+to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
+This may be useful when the plot \emph{data} is of more interest, or the plot is
+required to appear later (e.g., later in a Quarto document, or to be saved
+to a file).}
 
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
 Some additional arguments are also available:

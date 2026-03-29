@@ -26,6 +26,7 @@
 #' `percentileRose` also offers great flexibility with the scale used and the
 #' user has fine control over both the range, interval and colour.
 #'
+#' @inheritParams shared_openair_params
 #' @inheritParams polarPlot
 #'
 #' @param mydata A data frame minimally containing `wd` and a numeric field to
@@ -60,32 +61,19 @@
 #'
 #' @param mean.col Line colour for mean line.
 #'
-#' @param offset `offset` controls the size of the 'hole' in the middle and is
-#'   expressed on a scale of `0` to `100`, where `0` is no hole and `100` is a
-#'   hole that takes up the entire plotting area.
-#'
 #' @param fill Should the percentile intervals be filled (default) or should
 #'   lines be drawn (`fill = FALSE`).
 #'
 #' @param intervals User-supplied intervals for the scale e.g. `intervals = c(0,
 #'   10, 30, 50)`.
 #'
-#' @param strip.position Location where the facet 'strips' are located when
-#'   using `type`. When one `type` is provided, can be one of `"left"`,
-#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
-#'   argument defines whether the strips are "switched" and can take either
-#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
-#'   locations to the bottom of the plot.
-#'
-#' @param ... Other graphical parameters are passed onto `cutData` and other
-#'   functions. For example, `percentileRose` passes the option `hemisphere =
-#'   "southern"` on to `cutData` to provide southern (rather than default
-#'   northern) hemisphere handling of `type = "season"`. Similarly, common
-#'   graphical arguments, such as `xlim` and `ylim` for plotting ranges and
-#'   `lwd` for line thickness when using `fill = FALSE`, are passed on `xyplot`,
-#'   although some local modifications may be applied by openair. For example,
-#'   axis and title labelling options (such as `xlab`, `ylab` and `main`) are
-#'   passed to `xyplot` via `quickText` to handle routine formatting.
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `fontsize` overrides the overall font size of the plot.
+#'   - `lwd` overrides the line width for percentile lines when `fill = FALSE`.
+#'   - `annotate = FALSE` will not plot the N/E/S/W labels.
 #'
 #' @export
 #' @return an [openair][openair-package] object

@@ -59,7 +59,7 @@
 #' together with upper and lower 95% confidence intervals, which take account of
 #' the frequency of measurements.
 #'
-#' Variants on `polarPlot` include [polarAnnulus()] and [polarFreq()].
+#' @inheritParams shared_openair_params
 #'
 #' @param mydata A data frame minimally containing `wd`, another variable to
 #'   plot in polar coordinates (the default is a column \dQuote{ws} --- wind
@@ -83,23 +83,6 @@
 #'   coordinates, the default is wind speed, \dQuote{ws}.
 #'
 #' @param wd Name of wind direction field.
-#'
-#' @param type `type` determines how the data are split i.e. conditioned, and
-#'   then plotted. The default is will produce a single plot using the entire
-#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
-#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
-#'   `type = "season"` will produce four plots --- one for each season.
-#'
-#'   It is also possible to choose `type` as another variable in the data frame.
-#'   If that variable is numeric, then the data will be split into four
-#'   quantiles (if possible) and labelled accordingly. If type is an existing
-#'   character or factor variable, then those categories/levels will be used
-#'   directly. This offers great flexibility for understanding the variation of
-#'   different variables and how they depend on one another.
-#'
-#'   Type can be up length two e.g. `type = c("season", "weekday")` will produce
-#'   a 2x2 plot split by season and day of the week. Note, when two types are
-#'   provided the first forms the columns and the second the rows.
 #'
 #' @param statistic The statistic that should be applied to each wind
 #'   speed/direction bin. Because of the smoothing involved, the colour scale
@@ -206,15 +189,6 @@
 #'   than zero the percentile range is interpreted as absolute concentration
 #'   values and subsetting is carried out directly.
 #'
-#' @param cols Colours to be used for plotting. Options include
-#'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-#'   `RColorBrewer` colours --- see the `openair` `openColours` function for
-#'   more details. For user defined the user can supply a list of colour names
-#'   recognised by R (type `colours()` to see the full list). An example would
-#'   be `cols = c("yellow", "green", "blue")`. `cols` can also take the values
-#'   `"viridis"`, `"magma"`, `"inferno"`, or `"plasma"` which are the viridis
-#'   colour maps ported from Python's Matplotlib library.
-#'
 #' @param weights At the edges of the plot there may only be a few data points
 #'   in each wind speed-direction interval, which could in some situations
 #'   distort the plot if the concentrations are high. `weights` applies a
@@ -241,11 +215,6 @@
 #' @param upper This sets the upper limit wind speed to be used. Often there are
 #'   only a relatively few data points at very high wind speeds and plotting all
 #'   of them can reduce the useful information in the plot.
-#'
-#' @param angle.scale Sometimes the placement of the scale may interfere with an
-#'   interesting feature. The user can therefore set `angle.scale` to any value
-#'   between 0 and 360 degrees to mitigate such problems. For example
-#'   `angle.scale = 45` will draw the scale heading in a NE direction.
 #'
 #' @param units The units shown on the polar axis scale.
 #'
@@ -279,22 +248,6 @@
 #'   for several pollutants on different scales e.g. NOx and CO. Often useful if
 #'   more than one `pollutant` is chosen.
 #'
-#' @param key.header Adds additional text/labels to the scale key. For example,
-#'   passing the options `key.header = "header", key.footer = "footer1"` adds
-#'   addition text above and below the scale key. These arguments are passed to
-#'   `quickText`, applying the `auto.text` argument, to handle formatting.
-#'
-#' @param key.footer see `key.footer`.
-#'
-#' @param key.position Location where the scale key is to plotted. Allowed
-#'   arguments currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
-#'
-#' @param key Show a key?
-#'
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
-#'   axis labels will automatically try and format pollutant names and units
-#'   properly e.g.  by subscripting the `2' in NO2.
-#'
 #' @param ws_spread The value of sigma used for Gaussian kernel weighting of
 #'   wind speed when `statistic = "nwr"` or when correlation and regression
 #'   statistics are used such as *r*. Default is `0.5`.
@@ -322,14 +275,12 @@
 #'   `"quantile.slope"`. Default is `0.5` which is equal to the median and will
 #'   be ignored if `"quantile.slope"` is not used.
 #'
-#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
-#'   data to extract plot components and plotting them in other ways.
-#'
-#' @param ... Other graphical parameters passed onto `cutData`. For example,
-#'   `polarPlot` passes the option `hemisphere = "southern"` on to `cutData` to
-#'   provide southern (rather than default northern) hemisphere handling of
-#'   `type = "season"`. The `main` argument is passed to `ggplot2::labs()` for
-#'   the plot title.
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `fontsize` overrides the overall font size of the plot.
+#'   - `annotate = FALSE` will not plot the N/E/S/W labels.
 #'
 #' @return an [openair][openair-package] object. `data` contains four set
 #'   columns: `cond`, conditioning based on `type`; `u` and `v`, the
@@ -431,10 +382,11 @@ polarPlot <-
     force.positive = TRUE,
     k = 100,
     normalise = FALSE,
+    key = TRUE,
     key.header = statistic,
     key.footer = pollutant,
     key.position = "right",
-    key = TRUE,
+    strip.position = "top",
     auto.text = TRUE,
     ws_spread = 1.5,
     wd_spread = 5,
@@ -1019,7 +971,8 @@ polarPlot <-
         type,
         extra.args = extra.args,
         scales = "fixed",
-        auto.text = auto.text
+        auto.text = auto.text,
+        strip.position = strip.position
       ) +
       ggplot2::guides(
         fill = ggplot2::guide_colorbar(

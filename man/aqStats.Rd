@@ -45,7 +45,7 @@ columns for each pollutant-type combination.}
 \item{progress}{Show a progress bar when many groups make up \code{type}? Defaults
 to \code{TRUE}.}
 
-\item{...}{Other arguments, currently unused.}
+\item{...}{Passed to \code{\link[=cutData]{cutData()}} for use with \code{type}.}
 }
 \description{
 This function calculates a range of common and air pollution-specific

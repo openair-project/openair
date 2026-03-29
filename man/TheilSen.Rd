@@ -47,22 +47,27 @@ function \code{stl} is used (seasonal trend decomposition using loess). Note
 that if \code{TRUE} missing data are first imputed using a Kalman filter and
 Kalman smooth.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned, and
-then plotted. The default is will produce a single plot using the entire
-data. Type can be one of the built-in types as detailed in \code{cutData} e.g.
-\dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
-\code{type = "season"} will produce four plots --- one for each season.
+\item{type}{Character string(s) defining how data should be split/conditioned
+before plotting. \code{"default"} produces a single panel using the entire
+dataset. Any other options will split the plot into different panels - a
+roughly square grid of panels if one \code{type} is given, or a 2D matrix of
+panels if two \code{types} are given. \code{type} is always passed to \code{\link[=cutData]{cutData()}},
+and can therefore be any of:
+\itemize{
+\item A built-in type defined in \code{\link[=cutData]{cutData()}} (e.g., \code{"season"}, \code{"year"},
+\code{"weekday"}, etc.). For example, \code{type = "season"} will split the plot into
+four panels, one for each season.
+\item The name of a numeric column in \code{mydata}, which will be split into
+\code{n.levels} quantiles (defaulting to 4).
+\item The name of a character or factor column in \code{mydata}, which will be used
+as-is. Commonly this could be a variable like \code{"site"} to ensure data from
+different monitoring sites are handled and presented separately. It could
+equally be any arbitrary column created by the user (e.g., whether a nearby
+possible pollutant source is active or not).
+}
 
-It is also possible to choose \code{type} as another variable in the data frame.
-If that variable is numeric, then the data will be split into four
-quantiles (if possible) and labelled accordingly. If type is an existing
-character or factor variable, then those categories/levels will be used
-directly. This offers great flexibility for understanding the variation of
-different variables and how they depend on one another.
-
-Type can be up length two e.g. \code{type = c("season", "weekday")} will produce
-a 2x2 plot split by season and day of the week. Note, when two types are
-provided the first forms the columns and the second the rows.}
+Most \code{openair} plotting functions can take two \code{type} arguments. If two are
+given, the first is used for the rows and the second for the columns.}
 
 \item{avg.time}{Can be \dQuote{month} (the default), \dQuote{season} or
 \dQuote{year}. Determines the time over which data should be averaged. Note
@@ -71,7 +76,7 @@ the data are split up into spring: March, April, May etc. Note that
 December is considered as belonging to winter of the following year.}
 
 \item{statistic}{Statistic used for calculating monthly values. Default is
-\dQuote{mean}, but can also be \dQuote{percentile}. See \code{timeAverage} for
+\dQuote{mean}, but can also be \dQuote{percentile}. See \code{\link[=timeAverage]{timeAverage()}} for
 more details.}
 
 \item{percentile}{Single percentile value to use if \code{statistic = "percentile"} is chosen.}
@@ -94,13 +99,8 @@ be printed at, default 0.99.}
 
 \item{lab.cex}{Size of text for trend information.}
 
-\item{x.relation}{This determines how the x-axis scale is plotted.
-\dQuote{same} ensures all panels use the same scale and \dQuote{free} will
-use panel-specific scales. The latter is a useful setting when plotting
-data with very different values.}
-
-\item{y.relation}{This determines how the y-axis scale is plotted.
-\dQuote{same} ensures all panels use the same scale and \dQuote{free} will
+\item{x.relation, y.relation}{This determines how the x- and y-axis scales are
+plotted. \code{"same"} ensures all panels use the same scale and \code{"free"} will
 use panel-specific scales. The latter is a useful setting when plotting
 data with very different values.}
 
@@ -119,7 +119,7 @@ line colour for the main trend line and confidence intervals respectively.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
-properly e.g.  by subscripting the \sQuote{2} in NO2.}
+properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
 
 \item{autocor}{Should autocorrelation be considered in the trend uncertainty
 estimates? The default is \code{FALSE}. Generally, accounting for
@@ -146,15 +146,13 @@ monthly or annual values are considered.}
 
 \item{date.breaks}{Number of major x-axis intervals to use. The function will
 try and choose a sensible number of dates/times as well as formatting the
-date/time appropriately to the range being considered. This does not always
-work as desired automatically. The user can therefore increase or decrease
-the number of intervals by adjusting the value of \code{date.breaks} up or down.}
+date/time appropriately to the range being considered. The user can
+override this behaviour by adjusting the value of \code{date.breaks} up or down.}
 
-\item{date.format}{This option controls the date format on the x-axis. While
-\code{TheilSen} generally sets the date format sensibly there can be some
-situations where the user wishes to have more control. For format types see
-\code{strptime}. For example, to format the date like \dQuote{Jan-2012} set
-\code{date.format = "\\\%b-\\\%Y"}.}
+\item{date.format}{This option controls the date format on the x-axis. A
+sensible format is chosen by default, but the user can set \code{date.format} to
+override this. For format types see \code{\link[=strptime]{strptime()}}. For example, to format
+the date like "Jan-2012" set \code{date.format = "\\\%b-\\\%Y"}.}
 
 \item{strip.position}{Location where the facet 'strips' are located when
 using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
@@ -163,17 +161,24 @@ argument defines whether the strips are "switched" and can take either
 \code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
 locations to the bottom of the plot.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
-data to extract trend components and plotting them in other ways.}
+\item{plot}{When \code{openair} plots are created they are automatically printed
+to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
+This may be useful when the plot \emph{data} is of more interest, or the plot is
+required to appear later (e.g., later in a Quarto document, or to be saved
+to a file).}
 
 \item{silent}{When \code{FALSE} the function will give updates on trend-fitting
 progress.}
 
-\item{...}{Other graphical parameters passed onto \code{cutData} and other
-functions. For example, \code{TheilSen} passes the option \code{hemisphere = "southern"} on to \code{cutData} to provide southern (rather than default
-northern) hemisphere handling of \code{type = "season"}. Similarly, common axis
-and title labelling options (such as \code{xlab}, \code{ylab}, \code{main}) are passed to
-\code{xyplot} via \code{quickText} to handle routine formatting.}
+\item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
+Some additional arguments are also available:
+\itemize{
+\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
+\item \code{fontsize} overrides the overall font size of the plot.
+\item \code{cex}, \code{lwd}, and \code{pch} control various graphical parameters.
+\item \code{ylim} and \code{xlim} control axis limits.
+}}
 }
 \value{
 an \link[=openair-package]{openair} object. The \code{data} component of the

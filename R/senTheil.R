@@ -65,7 +65,7 @@ regci <- function(
     block.length <- round(length(y)^(1 / 3))
   }
   ## need to transpose ...
-  data <- t(samp.boot.block(length(y), nboot, block.length))
+  data <- t(samp_boot_block(length(y), nboot, block.length))
 
   bvec <- apply(data, 1, regboot, x, y, regfun, ...)
 

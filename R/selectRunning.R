@@ -14,24 +14,33 @@
 #'
 #' @param mydata A data frame with a `date` field and at least one numeric
 #'   `pollutant` field to analyse.
+#'
 #' @param pollutant Name of variable to process.
+#'
 #' @param criterion Condition to select run lengths e.g. `">"` with select data
 #'   more than `threshold`.
+#'
 #' @param run.len Run length for extracting contiguous values of `pollutant`
 #'   meeting the `criterion` in relation to the `threshold`.
+#'
 #' @param threshold The threshold value for `pollutant` above which data should
 #'   be extracted.
+#'
 #' @param type Used for splitting the data further. Passed to [cutData()].
+#'
 #' @param name The name of the column to be appended to the data frame when
 #'   `mode = "flag"`.
+#'
 #' @param result A vector of length 2, defining how to label the run lengths
 #'   when `mode = "flag"`. The first object should be the label for the `TRUE`
 #'   label, and the second the `FALSE` label - e.g., `c("yes", "no")`.
+#'
 #' @param mode Changes how the function behaves. When `mode = "flag"`, the
 #'   default, the function appends a column flagging where the criteria was met.
 #'   Alternatively, `"filter"` will filter `mydata` to only return rows where
 #'   the criteria was met.
-#' @param ... Additional parameters passed to [cutData()]. For use with `type`.
+#'
+#' @param ... Passed to [cutData()] for use with `type`.
 #' @export
 #' @return A data frame
 #' @author David Carslaw

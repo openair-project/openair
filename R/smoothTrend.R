@@ -29,58 +29,44 @@
 #'   function `stl` is used (seasonal trend decomposition using loess). Note
 #'   that if `TRUE` missing data are first imputed using a Kalman filter and
 #'   Kalman smooth.
-#' @param type `type` determines how the data are split i.e. conditioned, and
-#'   then plotted. The default is will produce a single plot using the entire
-#'   data. Type can be one of the built-in types as detailed in [cutData()],
-#'   e.g., `"season"`, `"year"`, `"weekday"` and so on. For example, `type =
-#'   "season"` will produce four plots --- one for each season.
 #'
-#'   It is also possible to choose `type` as another variable in the data frame.
-#'   If that variable is numeric, then the data will be split into four
-#'   quantiles (if possible) and labelled accordingly. If type is an existing
-#'   character or factor variable, then those categories/levels will be used
-#'   directly. This offers great flexibility for understanding the variation of
-#'   different variables and how they depend on one another.
-#'
-#'   Type can be up length two e.g. `type = c("season", "weekday")` will produce
-#'   a 2x2 plot split by season and day of the week. Note, when two types are
-#'   provided the first forms the columns and the second the rows.
 #' @param statistic Statistic used for calculating monthly values. Default is
 #'   `"mean"`, but can also be `"percentile"`. See [timeAverage()] for more
 #'   details.
+#'
 #' @param percentile Percentile value(s) to use if `statistic = "percentile"` is
 #'   chosen. Can be a vector of numbers e.g. `percentile = c(5, 50, 95)` will
 #'   plot the 5th, 50th and 95th percentile values together on the same plot.
+#'
 #' @param simulate Should simulations be carried out to determine the
 #'   Mann-Kendall tau and p-value. The default is `FALSE`. If `TRUE`, bootstrap
 #'   simulations are undertaken, which also account for autocorrelation.
+#'
 #' @param n Number of bootstrap simulations if `simulate = TRUE`.
+#'
 #' @param autocor Should autocorrelation be considered in the trend uncertainty
 #'   estimates? The default is `FALSE`. Generally, accounting for
 #'   autocorrelation increases the uncertainty of the trend estimate sometimes
 #'   by a large amount.
-#' @param x.relation,y.relation This determines how the x- and y-axis scales are
-#'   plotted. `"same"` ensures all panels use the same scale and `"free"` will
-#'   use panel-specific scales. The latter is a useful setting when plotting
-#'   data with very different values.
+#'
 #' @param ci Should confidence intervals be plotted? The default is `TRUE`.
+#'
 #' @param alpha The alpha transparency of shaded confidence intervals - if
 #'   plotted. A value of 0 is fully transparent and 1 is fully opaque.
+#'
 #' @param k This is the smoothing parameter used by the [mgcv::gam()] function
 #'   in package `mgcv`. By default it is not used and the amount of smoothing is
 #'   optimised automatically. However, sometimes it is useful to set the
 #'   smoothing amount manually using `k`.
-#' @param ... Other graphical parameters are passed onto [cutData()] and other
-#'   functions. For example, [smoothTrend()] passes the option `hemisphere =
-#'   "southern"` on to [cutData()] to provide southern (rather than default
-#'   northern) hemisphere handling of `type = "season"`. Similarly, common
-#'   graphical arguments, such as `xlim` and `ylim` for plotting ranges and
-#'   `pch` and `cex` for plot symbol type and size are honoured, although some
-#'   local modifications may be applied by openair. For example, axis and title
-#'   labelling options (such as `xlab`, `ylab` and `main`) are passed to to
-#'   [quickText()] to handle routine formatting. One special case here is that
-#'   many graphical parameters can be vectors when used with `statistic =
-#'   "percentile"` and a vector of `percentile` values, see examples below.
+#'
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `ylim` and `xlim` control axis limits.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `fontsize` overrides the overall font size of the plot.
+#'   - `cex`, `lwd`, `lty`, `alpha`, and `pch` control various graphical parameters.
+#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
@@ -604,7 +590,7 @@ fit_smoothtrend_gam <- function(
         if (autocor) {
           block.length <- round(sam.size^(1 / 3))
         }
-        index <- samp.boot.block(sam.size, n.sim, block.length)
+        index <- samp_boot_block(sam.size, n.sim, block.length)
 
         ## predict first
         if (is.null(k)) {
