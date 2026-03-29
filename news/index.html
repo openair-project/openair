@@ -132,6 +132,7 @@
 </ul></li>
 <li><p>New function <code><a href="../reference/WhittakerSmooth.html">WhittakerSmooth()</a></code> to do Whittaker-Eilers Smoothing. This is a fast and general smoothing technique, well-suited to a wide range of problems. The function can be used to flexibly smooth and interpolate missing data. Additionally, the function can flexibly define a baseline (and hence increment) for a time series.</p></li>
 <li><p>New function <code><a href="../reference/windflowOpts.html">windflowOpts()</a></code> which can be passed to the <code>windflow</code> argument of various <code>openair</code> functions to thoroughly customise the “windflow” arrows.</p></li>
+<li><p>All <code>openair</code> plotting functions have gained <code>strip.position</code> to control the placement of the facet strip.</p></li>
 <li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> have gained the <code>grid.nx</code> and <code>grid.ny</code> arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.</p></li>
 <li><p><code><a href="../reference/quickText.html">quickText()</a></code> now converts <code>air_temp</code> (a common <code>worldmet</code> variable) into <code>"Temperature"</code>.</p></li>
 <li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> is much faster with the bulk of the calculations made using C++.</p></li>

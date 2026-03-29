@@ -218,6 +218,9 @@
   which can be passed to the `windflow` argument of various `openair`
   functions to thoroughly customise the “windflow” arrows.
 
+- All `openair` plotting functions have gained `strip.position` to
+  control the placement of the facet strip.
+
 - [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md)
   and
   [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md)
