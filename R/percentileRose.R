@@ -618,7 +618,11 @@ percentileRose <- function(
   # add compass points
   thePlot <- thePlot +
     annotate_compass_points(
-      size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
+      size = ifelse(
+        extra.args$annotate %||% TRUE,
+        if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
+        0
+      )
     )
 
   if (plot) {

@@ -334,7 +334,11 @@ polarCluster <-
       theme_openair_radial(key.position %||% "right", panel.ontop = TRUE) +
       set_extra_fontsize(extra.args) +
       annotate_compass_points(
-        size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
+        size = ifelse(
+          extra.args$annotate %||% TRUE,
+          if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
+          0
+        )
       ) +
       ggplot2::labs(
         color = "Cluster",
