@@ -242,8 +242,7 @@ polarCluster <-
       purrr::map(
         .x = seq_along(n.clusters),
         .f = make.clust,
-        results.grid = results.grid,
-        .progress = "Calculating Clusters"
+        results.grid = results.grid
       ) |>
       purrr::list_rbind()
 

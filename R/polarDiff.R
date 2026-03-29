@@ -177,12 +177,18 @@ polarDiff <- function(
         x = x,
         limits = resolved_limits,
         force.positive = FALSE,
-        plot = plot,
+        plot = FALSE,
         auto.text = auto.text
       ),
       plot_args
     )
   )
 
-  invisible(list(plot = plt$plot, data = polar_data, call = match.call()))
+  if (plot) {
+    plot(plt$plot)
+  }
+
+  out <- list(plot = plt$plot, data = polar_data, call = match.call())
+  class(out) <- "openair"
+  invisible(out)
 }

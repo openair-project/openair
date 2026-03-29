@@ -617,7 +617,7 @@ polarPlot <-
         mydata,
         key = "variable",
         value = "value",
-        pollutant,
+        dplyr::all_of(pollutant),
         factor_key = TRUE
       )
       ## now set pollutant to "value"

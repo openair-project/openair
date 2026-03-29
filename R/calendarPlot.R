@@ -373,7 +373,7 @@ calendarPlot <-
       # replace with parallel max
       mydata <- dplyr::left_join(
         dplyr::select(mydata, !dplyr::any_of(c("ws", "wd"))),
-        dplyr::select(maxes, !.data[[pollutant]]),
+        dplyr::select(maxes, !dplyr::any_of(pollutant)),
         by = c("date", type)
       )
     } else {

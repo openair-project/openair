@@ -1,3 +1,5 @@
+skip_on_cran()
+
 # calcPercentile is a thin wrapper over timeAverage — fast even on a full year
 dat <- selectByDate(mydata, year = 2003)
 

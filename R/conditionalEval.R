@@ -227,7 +227,7 @@ conditionalEval <- function(
         res = purrr::map(.data$data, compute_other),
         .keep = "unused"
       ) |>
-      tidyr::unnest(.data$res)
+      tidyr::unnest("res")
 
     stat_levels <- levels(other_results[[statistic]])
     cols <- openColours(col.var, length(stat_levels))
@@ -325,7 +325,7 @@ conditionalEval <- function(
         }),
         .keep = "unused"
       ) |>
-      tidyr::unnest(.data$res)
+      tidyr::unnest("res")
 
     # Replace infinite values with NA
     results <- dplyr::mutate(

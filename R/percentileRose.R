@@ -200,7 +200,9 @@ percentileRose <- function(
   if (length(ids) > 0 && !smooth) {
     extra <- mydata[rep(1, length(ids)), ]
     extra[[wd]] <- seq(angle, 360, by = angle)[ids]
-    extra[[pollutant]] <- NA
+    for (i in pollutant) {
+      extra[[i]] <- NA
+    }
     mydata <- rbind(mydata, extra)
   }
 
@@ -227,7 +229,7 @@ percentileRose <- function(
       mydata,
       key = "variable",
       value = "value",
-      pollutant
+      dplyr::all_of(pollutant)
     )
     ## now set pollutant to "value"
     pollutant <- "value"
