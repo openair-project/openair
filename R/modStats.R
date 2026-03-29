@@ -169,8 +169,7 @@ modStats <- function(
     mydata,
     vars,
     type,
-    remove.calm = FALSE,
-    strip.white = FALSE
+    remove.calm = FALSE
   )
 
   mydata <- cutData(mydata, type, ...)

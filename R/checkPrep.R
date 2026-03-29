@@ -4,11 +4,12 @@
 #' for further analysis & plotting.
 #'
 #' @param mydata Input data from parent function
+#'
 #' @param remove.calm If `TRUE`, sets "calm" (ws == 0) wd/ws cols to `NA`, and
 #'   rounds `wd` for plotting.
+#'
 #' @param remove.neg If `TRUE` sets negative wind speeds to NA.
-#' @param strip.white If `TRUE` sets facet strip to white; default for most
-#'   functions.
+#'
 #' @param wd Varname for wind direction.
 #'
 #' @author David Carslaw
@@ -19,38 +20,23 @@ checkPrep <- function(
   type,
   remove.calm = TRUE,
   remove.neg = TRUE,
-  strip.white = TRUE,
   wd = "wd"
 ) {
   # deal with conditioning variable if present, if user-defined, must exist in
   # data pre-defined types existing conditioning variables that only depend on
   # date (which is checked)
-  conds <- c(
-    "default",
-    "year",
-    "hour",
-    "month",
-    "season",
-    "weekday",
-    "week",
-    "weekend",
-    "monthyear",
-    "gmtbst",
-    "bstgmt",
-    "dst",
-    "daylight",
-    "yearseason",
-    "seasonyear"
-  )
-  all.vars <- unique(c(names(mydata), conds))
+  conds <- c("default", dateTypes)
+  all_vars <- unique(c(names(mydata), conds))
 
   # names we want to be there
-  varNames <- c(Names, type)
-  matching <- varNames %in% all.vars
+  var_names <- c(Names, type)
+  matching <- var_names %in% all_vars
 
   if (!all(matching)) {
-    # not all variables are present
-    stop(cat("Can't find the variable(s)", varNames[!matching], "\n"))
+    cli::cli_abort(
+      "Can't find the variable(s): {.field {var_names[!matching]}}.",
+      call = NULL
+    )
   }
 
   # add type to names if not in pre-defined list
@@ -92,7 +78,7 @@ checkPrep <- function(
       if (any(sign(mydata$ws[!is.na(mydata$ws)]) == -1)) {
         if (remove.neg) {
           # remove negative ws only if TRUE
-          warning("Wind speed <0; removing negative data")
+          cli::cli_warn("Wind speed < 0; removing negative data", call = NULL)
           mydata$ws[mydata$ws < 0] <- NA
         }
       }
@@ -112,7 +98,10 @@ checkPrep <- function(
             mydata[[wd]][!is.na(mydata[[wd]])] > 360
         )
       ) {
-        warning("Wind direction < 0 or > 360; removing these data")
+        cli::cli_warn(
+          "Wind direction < 0 or > 360; removing these data.",
+          call = NULL
+        )
         mydata[[wd]][mydata[[wd]] < 0] <- NA
         mydata[[wd]][mydata[[wd]] > 360] <- NA
       }
@@ -134,16 +123,18 @@ checkPrep <- function(
 
   # make sure date is ordered in time if present
   if ("date" %in% Names) {
-    if (inherits(mydata$date, "POSIXlt")) {
-      stop("date should be in POSIXct format not POSIXlt")
+    # check if date is Date or POSIXct
+    if (!inherits(mydata$date, "Date") && !inherits(mydata$date, "POSIXct")) {
+      cli::cli_abort(
+        c(
+          "x" = "{.field mydata$date} is {.type {mydata$date}}.",
+          "i" = "{.field mydata$date} must be {.type {as.Date(ISOdate(1,1,1))}} or {.type {ISOdate(1,1,1)}}."
+        ),
+        call = NULL
+      )
     }
 
-    # try and work with a factor date - but probably a problem in original data
-    if (is.factor(mydata$date)) {
-      warning("date field is a factor, check date format")
-      mydata$date <- as.POSIXct(mydata$date, "GMT")
-    }
-
+    # sort by date
     mydata <- dplyr::arrange(mydata, date)
 
     # make sure date is the first field
@@ -155,15 +146,18 @@ checkPrep <- function(
     ids <- which(is.na(mydata$date))
     if (length(ids) > 0) {
       mydata <- mydata[-ids, ]
-      warning(
-        paste("Missing dates detected, removing", length(ids), "lines"),
-        call. = FALSE
+      cli::cli_warn(
+        "Missing dates detected, removing {length(ids)} lines.",
+        call = NULL
       )
     }
 
     # daylight saving time can cause terrible problems - best avoided!!
     if (any(lubridate::dst(mydata$date))) {
-      message("Detected data with Daylight Saving Time.")
+      cli::cli_inform(
+        c("i" = "Detected data with Daylight Saving Time."),
+        call = NULL
+      )
     }
   }
 

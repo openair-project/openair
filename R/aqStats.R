@@ -101,8 +101,7 @@ aqStats <- function(
     mydata,
     vars,
     "default",
-    remove.calm = FALSE,
-    strip.white = FALSE
+    remove.calm = FALSE
   )
 
   # reorganise data

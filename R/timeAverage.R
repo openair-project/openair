@@ -221,8 +221,7 @@ timeAverage <- function(
     mydata,
     vars,
     type = "default",
-    remove.calm = FALSE,
-    strip.white = FALSE
+    remove.calm = FALSE
   )
 
   # time zone of data (replace missing w/ GMT)
