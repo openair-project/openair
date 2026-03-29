@@ -112,6 +112,8 @@
 
 - New function `windflowOpts()` which can be passed to the `windflow` argument of various `openair` functions to thoroughly customise the "windflow" arrows.
 
+- All `openair` plotting functions have gained `strip.position` to control the placement of the facet strip.
+
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
 
 - `quickText()` now converts `air_temp` (a common `worldmet` variable) into `"Temperature"`.
