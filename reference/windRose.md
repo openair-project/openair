@@ -29,10 +29,11 @@ windRose(
   normalise = FALSE,
   max.freq = NULL,
   paddle = TRUE,
+  key = TRUE,
   key.header = NULL,
   key.footer = "(m/s)",
   key.position = "bottom",
-  key = TRUE,
+  strip.position = "top",
   dig.lab = 5,
   include.lowest = FALSE,
   statistic = "prop.count",
@@ -79,24 +80,33 @@ windRose(
 
 - type:
 
-  `type` determines how the data are split i.e. conditioned, and then
-  plotted. The default is will produce a single plot using the entire
-  data. Type can be one of the built-in types as detailed in `cutData`
-  e.g. “season”, “year”, “weekday” and so on. For example,
-  `type = "season"` will produce four plots — one for each season.
+  Character string(s) defining how data should be split/conditioned
+  before plotting. `"default"` produces a single panel using the entire
+  dataset. Any other options will split the plot into different panels -
+  a roughly square grid of panels if one `type` is given, or a 2D matrix
+  of panels if two `types` are given. `type` is always passed to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md),
+  and can therefore be any of:
 
-  It is also possible to choose `type` as another variable in the data
-  frame. If that variable is numeric, then the data will be split into
-  four quantiles (if possible) and labelled accordingly. If type is an
-  existing character or factor variable, then those categories/levels
-  will be used directly. This offers great flexibility for understanding
-  the variation of different variables and how they depend on one
-  another.
+  - A built-in type defined in
+    [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+    (e.g., `"season"`, `"year"`, `"weekday"`, etc.). For example,
+    `type = "season"` will split the plot into four panels, one for each
+    season.
 
-  Type can be up length two e.g. `type = c("season", "weekday")` will
-  produce a 2x2 plot split by season and day of the week. Note, when two
-  types are provided the first forms the columns and the second the
-  rows.
+  - The name of a numeric column in `mydata`, which will be split into
+    `n.levels` quantiles (defaulting to 4).
+
+  - The name of a character or factor column in `mydata`, which will be
+    used as-is. Commonly this could be a variable like `"site"` to
+    ensure data from different monitoring sites are handled and
+    presented separately. It could equally be any arbitrary column
+    created by the user (e.g., whether a nearby possible pollutant
+    source is active or not).
+
+  Most `openair` plotting functions can take two `type` arguments. If
+  two are given, the first is used for the rows and the second for the
+  columns.
 
 - calm.thresh:
 
@@ -117,12 +127,13 @@ windRose(
 
 - cols:
 
-  Colours to be used for plotting. Options include “default”,
-  “increment”, “heat”, “jet”, “hue” and user defined. For user defined
-  the user can supply a list of colour names recognised by R (type
-  [`colours()`](https://rdrr.io/r/grDevices/colors.html) to see the full
-  list). An example would be
-  `cols = c("yellow", "green", "blue", "black")`.
+  Colours to use for plotting. Can be a pre-set palette (e.g.,
+  `"turbo"`, `"viridis"`, `"tol"`, `"Dark2"`, etc.) or a user-defined
+  vector of R colours (e.g., `c("yellow", "green", "blue", "black")` -
+  see [`colours()`](https://rdrr.io/r/grDevices/colors.html) for a full
+  list) or hex-codes (e.g., `c("#30123B", "#9CF649", "#7A0403")`). See
+  [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+  for more details.
 
 - grid.line:
 
@@ -147,7 +158,8 @@ windRose(
 
   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
   will automatically try and format pollutant names and units properly,
-  e.g., by subscripting the ‘2’ in NO2.
+  e.g., by subscripting the "2" in "NO2". Passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md).
 
 - breaks:
 
@@ -160,8 +172,9 @@ windRose(
 
 - offset:
 
-  The size of the 'hole' in the middle of the plot, expressed as a
-  percentage of the polar axis scale, default 10.
+  `offset` controls the size of the 'hole' in the middle and is
+  expressed on a scale of `0` to `100`, where `0` is no hole and `100`
+  is a hole that takes up the entire plotting area.
 
 - normalise:
 
@@ -182,27 +195,37 @@ windRose(
   Either `TRUE` or `FALSE`. If `TRUE` plots rose using 'paddle' style
   spokes. If `FALSE` plots rose using 'wedge' style spokes.
 
+- key:
+
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
+
 - key.header:
 
-  Adds additional text/labels above the scale key. For example, passing
-  `windRose(mydata, key.header = "ws")` adds the addition text as a
-  scale header. Note: This argument is passed to
-  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md),
-  applying the auto.text argument, to handle formatting.
+  Used to control the title of the legend. `key.header` and `key.footer`
+  are now pasted together to form a single legend title. In future, they
+  are likely to be deprecated and combined into a single argument.
 
 - key.footer:
 
-  Adds additional text/labels below the scale key. See `key.header` for
-  further information.
+  Used to control the title of the legend. `key.header` and `key.footer`
+  are now pasted together to form a single legend title. In future, they
+  are likely to be deprecated and combined into a single argument.
 
 - key.position:
 
-  Location where the scale key is to plotted. Allowed arguments
-  currently include “top”, “right”, “bottom” and “left”.
+  Location where the legend is to be placed. Allowed arguments include
+  `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`, the last of
+  which removes the legend entirely.
 
-- key:
+- strip.position:
 
-  Show a key?
+  Location where the facet 'strips' are located when using `type`. When
+  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
+  or `"top"`. When two `type`s are provided, this argument defines
+  whether the strips are "switched" and can take either `"x"`, `"y"`, or
+  `"both"`. For example, `"x"` will switch the 'top' strip locations to
+  the bottom of the plot.
 
 - dig.lab:
 
@@ -239,11 +262,13 @@ windRose(
 
 - angle.scale:
 
-  The scale is by default shown at a 315 degree angle. Sometimes the
-  placement of the scale may interfere with an interesting feature. The
-  user can therefore set `angle.scale` to another value (between 0 and
-  360 degrees) to mitigate such problems. For example `angle.scale = 45`
-  will draw the scale heading in a NE direction.
+  In radial plots (e.g.,
+  [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md)),
+  the radial scale is drawn directly on the plot itself. While suitable
+  defaults have been chosen, sometimes the placement of the scale may
+  interfere with an interesting feature. `angle.scale` can take any
+  value between `0` and `360` to place the scale at a different angle,
+  or `FALSE` to move it to the side of the plots.
 
 - border:
 
@@ -251,14 +276,25 @@ windRose(
 
 - plot:
 
-  Should a plot be produced? `FALSE` can be useful when analysing data
-  to extract plot components and plotting them in other ways.
+  When `openair` plots are created they are automatically printed to the
+  active graphics device. `plot = FALSE` deactivates this behaviour.
+  This may be useful when the plot *data* is of more interest, or the
+  plot is required to appear later (e.g., later in a Quarto document, or
+  to be saved to a file).
 
 - ...:
 
-  Other parameters that are passed on to `cutData` and other functions.
-  Axis and title labelling options (`xlab`, `ylab`, `main`) are passed
-  to `quickText` to handle routine formatting.
+  Addition options are passed on to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for `type` handling. Some additional arguments are also available:
+
+  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
+    and plot title.
+
+  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
+    2 columns and 5 rows.
+
+  - `fontsize` overrides the overall font size of the plot.
 
 ## Value
 

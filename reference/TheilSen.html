@@ -127,20 +127,23 @@ Kalman smooth.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p><code>type</code> determines how the data are split i.e. conditioned, and
-then plotted. The default is will produce a single plot using the entire
-data. Type can be one of the built-in types as detailed in <code>cutData</code> e.g.
-“season”, “year”, “weekday” and so on. For example,
-<code>type = "season"</code> will produce four plots — one for each season.</p>
-<p>It is also possible to choose <code>type</code> as another variable in the data frame.
-If that variable is numeric, then the data will be split into four
-quantiles (if possible) and labelled accordingly. If type is an existing
-character or factor variable, then those categories/levels will be used
-directly. This offers great flexibility for understanding the variation of
-different variables and how they depend on one another.</p>
-<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will produce
-a 2x2 plot split by season and day of the week. Note, when two types are
-provided the first forms the columns and the second the rows.</p></dd>
+<dd><p>Character string(s) defining how data should be split/conditioned
+before plotting. <code>"default"</code> produces a single panel using the entire
+dataset. Any other options will split the plot into different panels - a
+roughly square grid of panels if one <code>type</code> is given, or a 2D matrix of
+panels if two <code>types</code> are given. <code>type</code> is always passed to <code><a href="cutData.html">cutData()</a></code>,
+and can therefore be any of:</p><ul><li><p>A built-in type defined in <code><a href="cutData.html">cutData()</a></code> (e.g., <code>"season"</code>, <code>"year"</code>,
+<code>"weekday"</code>, etc.). For example, <code>type = "season"</code> will split the plot into
+four panels, one for each season.</p></li>
+<li><p>The name of a numeric column in <code>mydata</code>, which will be split into
+<code>n.levels</code> quantiles (defaulting to 4).</p></li>
+<li><p>The name of a character or factor column in <code>mydata</code>, which will be used
+as-is. Commonly this could be a variable like <code>"site"</code> to ensure data from
+different monitoring sites are handled and presented separately. It could
+equally be any arbitrary column created by the user (e.g., whether a nearby
+possible pollutant source is active or not).</p></li>
+</ul><p>Most <code>openair</code> plotting functions can take two <code>type</code> arguments. If two are
+given, the first is used for the rows and the second for the columns.</p></dd>
 
 
 <dt id="arg-avg-time">avg.time<a class="anchor" aria-label="anchor" href="#arg-avg-time"></a></dt>
@@ -153,7 +156,7 @@ December is considered as belonging to winter of the following year.</p></dd>
 
 <dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>
 <dd><p>Statistic used for calculating monthly values. Default is
-“mean”, but can also be “percentile”. See <code>timeAverage</code> for
+“mean”, but can also be “percentile”. See <code><a href="timeAverage.html">timeAverage()</a></code> for
 more details.</p></dd>
 
 
@@ -189,16 +192,9 @@ be printed at, default 0.99.</p></dd>
 <dd><p>Size of text for trend information.</p></dd>
 
 
-<dt id="arg-x-relation">x.relation<a class="anchor" aria-label="anchor" href="#arg-x-relation"></a></dt>
-<dd><p>This determines how the x-axis scale is plotted.
-“same” ensures all panels use the same scale and “free” will
-use panel-specific scales. The latter is a useful setting when plotting
-data with very different values.</p></dd>
-
-
-<dt id="arg-y-relation">y.relation<a class="anchor" aria-label="anchor" href="#arg-y-relation"></a></dt>
-<dd><p>This determines how the y-axis scale is plotted.
-“same” ensures all panels use the same scale and “free” will
+<dt id="arg-x-relation-y-relation">x.relation, y.relation<a class="anchor" aria-label="anchor" href="#arg-x-relation-y-relation"></a></dt>
+<dd><p>This determines how the x- and y-axis scales are
+plotted. <code>"same"</code> ensures all panels use the same scale and <code>"free"</code> will
 use panel-specific scales. The latter is a useful setting when plotting
 data with very different values.</p></dd>
 
@@ -229,7 +225,7 @@ line colour for the main trend line and confidence intervals respectively.</p></
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
 <dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
 axis labels will automatically try and format pollutant names and units
-properly e.g.  by subscripting the ‘2’ in NO2.</p></dd>
+properly, e.g., by subscripting the "2" in "NO2". Passed to <code><a href="quickText.html">quickText()</a></code>.</p></dd>
 
 
 <dt id="arg-autocor">autocor<a class="anchor" aria-label="anchor" href="#arg-autocor"></a></dt>
@@ -261,17 +257,15 @@ monthly or annual values are considered.</p></dd>
 <dt id="arg-date-breaks">date.breaks<a class="anchor" aria-label="anchor" href="#arg-date-breaks"></a></dt>
 <dd><p>Number of major x-axis intervals to use. The function will
 try and choose a sensible number of dates/times as well as formatting the
-date/time appropriately to the range being considered. This does not always
-work as desired automatically. The user can therefore increase or decrease
-the number of intervals by adjusting the value of <code>date.breaks</code> up or down.</p></dd>
+date/time appropriately to the range being considered. The user can
+override this behaviour by adjusting the value of <code>date.breaks</code> up or down.</p></dd>
 
 
 <dt id="arg-date-format">date.format<a class="anchor" aria-label="anchor" href="#arg-date-format"></a></dt>
-<dd><p>This option controls the date format on the x-axis. While
-<code>TheilSen</code> generally sets the date format sensibly there can be some
-situations where the user wishes to have more control. For format types see
-<code>strptime</code>. For example, to format the date like “Jan-2012” set
-<code>date.format = "\%b-\%Y"</code>.</p></dd>
+<dd><p>This option controls the date format on the x-axis. A
+sensible format is chosen by default, but the user can set <code>date.format</code> to
+override this. For format types see <code><a href="https://rdrr.io/r/base/strptime.html" class="external-link">strptime()</a></code>. For example, to format
+the date like "Jan-2012" set <code>date.format = "\%b-\%Y"</code>.</p></dd>
 
 
 <dt id="arg-strip-position">strip.position<a class="anchor" aria-label="anchor" href="#arg-strip-position"></a></dt>
@@ -284,8 +278,11 @@ locations to the bottom of the plot.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
-<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
-data to extract trend components and plotting them in other ways.</p></dd>
+<dd><p>When <code>openair</code> plots are created they are automatically printed
+to the active graphics device. <code>plot = FALSE</code> deactivates this behaviour.
+This may be useful when the plot <em>data</em> is of more interest, or the plot is
+required to appear later (e.g., later in a Quarto document, or to be saved
+to a file).</p></dd>
 
 
 <dt id="arg-silent">silent<a class="anchor" aria-label="anchor" href="#arg-silent"></a></dt>
@@ -294,11 +291,13 @@ progress.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other graphical parameters passed onto <code>cutData</code> and other
-functions. For example, <code>TheilSen</code> passes the option <code>hemisphere = "southern"</code> on to <code>cutData</code> to provide southern (rather than default
-northern) hemisphere handling of <code>type = "season"</code>. Similarly, common axis
-and title labelling options (such as <code>xlab</code>, <code>ylab</code>, <code>main</code>) are passed to
-<code>xyplot</code> via <code>quickText</code> to handle routine formatting.</p></dd>
+<dd><p>Addition options are passed on to <code><a href="cutData.html">cutData()</a></code> for <code>type</code> handling.
+Some additional arguments are also available:</p><ul><li><p><code>xlab</code>, <code>ylab</code> and <code>main</code> override the x-axis label, y-axis label, and plot title.</p></li>
+<li><p><code>layout</code> sets the layout of facets - e.g., <code>layout(2, 5)</code> will have 2 columns and 5 rows.</p></li>
+<li><p><code>fontsize</code> overrides the overall font size of the plot.</p></li>
+<li><p><code>cex</code>, <code>lwd</code>, and <code>pch</code> control various graphical parameters.</p></li>
+<li><p><code>ylim</code> and <code>xlim</code> control axis limits.</p></li>
+</ul></dd>
 
 </dl></div>
     <div class="section level2">

@@ -83,10 +83,12 @@ trendLevel(
 
 - windflow:
 
-  This option calculates the vector average of wind speed and direction
-  and shows the result as an arrow. The option is a list, e.g.,
-  `windflow = list(col = "grey", lwd = 2, scale = 0.1)`. This option
-  requires wind speed (`ws`) and wind direction (`wd`) to be available.
+  If `TRUE`, the vector-averaged wind speed and direction will be
+  plotted using arrows. Alternatively, can be a list of arguments to
+  control the appearance of the arrows (colour, linewidth, alpha value,
+  etc.). See
+  [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md)
+  for details.
 
 - limits:
 
@@ -102,36 +104,43 @@ trendLevel(
 
 - cols:
 
-  The colour set to use to colour the `trendLevel()` surface. `cols` is
-  passed to
+  Colours to use for plotting. Can be a pre-set palette (e.g.,
+  `"turbo"`, `"viridis"`, `"tol"`, `"Dark2"`, etc.) or a user-defined
+  vector of R colours (e.g., `c("yellow", "green", "blue", "black")` -
+  see [`colours()`](https://rdrr.io/r/grDevices/colors.html) for a full
+  list) or hex-codes (e.g., `c("#30123B", "#9CF649", "#7A0403")`). See
   [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
-  for evaluation.
+  for more details.
 
 - auto.text:
 
-  Automatic routine text formatting. `auto.text = TRUE` passes axis
-  labels, legend titles, and facet labels through
-  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
-  to provide common text formatting. The alternative `auto.text = FALSE`
-  turns this option off and passes any supplied labels to the plot
-  without modification.
+  Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
+  will automatically try and format pollutant names and units properly,
+  e.g., by subscripting the "2" in "NO2". Passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md).
 
 - key:
 
-  Show a key?
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
-- key.header, key.footer:
+- key.header:
 
-  `key.header` adds a title to the legend, passed through
-  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
-  if `quick.text = TRUE`. `key.footer` is no longer directly supported,
-  and is appended to the bottom of `key.header` to form part of the
-  legend title.
+  Used to control the title of the legend. `key.header` and `key.footer`
+  are now pasted together to form a single legend title. In future, they
+  are likely to be deprecated and combined into a single argument.
+
+- key.footer:
+
+  Used to control the title of the legend. `key.header` and `key.footer`
+  are now pasted together to form a single legend title. In future, they
+  are likely to be deprecated and combined into a single argument.
 
 - key.position:
 
-  Location where the scale key should be plotted. Allowed arguments
-  currently include `"top"`, `"right"`, `"bottom"`, and `"left"`.
+  Location where the legend is to be placed. Allowed arguments include
+  `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`, the last of
+  which removes the legend entirely.
 
 - strip.position:
 
@@ -203,8 +212,11 @@ trendLevel(
 
 - plot:
 
-  Should a plot be produced? `FALSE` can be useful when analysing data
-  to extract plot components and plotting them in other ways.
+  When `openair` plots are created they are automatically printed to the
+  active graphics device. `plot = FALSE` deactivates this behaviour.
+  This may be useful when the plot *data* is of more interest, or the
+  plot is required to appear later (e.g., later in a Quarto document, or
+  to be saved to a file).
 
 - ...:
 

@@ -131,9 +131,13 @@ calendarPlot(
 
 - cols:
 
-  Colours to be used for plotting; see
+  Colours to use for plotting. Can be a pre-set palette (e.g.,
+  `"turbo"`, `"viridis"`, `"tol"`, `"Dark2"`, etc.) or a user-defined
+  vector of R colours (e.g., `c("yellow", "green", "blue", "black")` -
+  see [`colours()`](https://rdrr.io/r/grDevices/colors.html) for a full
+  list) or hex-codes (e.g., `c("#30123B", "#9CF649", "#7A0403")`). See
   [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
-  for details.
+  for more details.
 
 - limits:
 
@@ -183,20 +187,17 @@ calendarPlot(
   The number of digits used to display concentration values when
   `annotate = "value"`.
 
-- labels:
+- breaks, labels:
 
-  If a categorical scale is defined using `breaks`, then `labels` can be
-  used to override the default category labels, e.g.,
-  `labels = c("good", "bad", "very bad")`. Note there is one less label
-  than break.
-
-- breaks:
-
-  If a categorical scale is required then these breaks will be used. For
-  example, `breaks = c(0, 50, 100, 1000)`. In this case "good"
-  corresponds to values between 0 and 50 and so on. Users should set the
-  maximum value of `breaks` to exceed the maximum data value to ensure
-  it is within the maximum final range e.g. 100–1000 in this case.
+  If a categorical colour scale is required then `breaks` should be
+  specified. These should be provided as a numeric vector, e.g.,
+  `breaks = c(0, 50, 100, 1000)`. Users should set the maximum value of
+  `breaks` to exceed the maximum data value to ensure it is within the
+  maximum final range, e.g., 100–1000 in this case. Labels will
+  automatically be generated, but can be customised by passing a
+  character vector to `labels`, e.g.,
+  `labels = c("good", "bad", "very bad")`. In this example, `0 - 50`
+  will be `"good"` and so on. Note there is one less label than break.
 
 - w.shift:
 
@@ -224,38 +225,56 @@ calendarPlot(
 
 - key:
 
-  Show a key?
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
-- key.header, key.footer:
+- key.header:
 
-  Used to control the title of the plot key. By default, `key.header` is
-  the `statistic` and `key.footer` is the `pollutant`. These are pasted
-  together to form the key title.
+  Used to control the title of the legend. `key.header` and `key.footer`
+  are now pasted together to form a single legend title. In future, they
+  are likely to be deprecated and combined into a single argument.
+
+- key.footer:
+
+  Used to control the title of the legend. `key.header` and `key.footer`
+  are now pasted together to form a single legend title. In future, they
+  are likely to be deprecated and combined into a single argument.
 
 - key.position:
 
-  Location where the scale key is to plotted. Allowed arguments
-  currently include `"top"`, `"right"`, `"bottom"` and `"left"`.
+  Location where the legend is to be placed. Allowed arguments include
+  `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`, the last of
+  which removes the legend entirely.
 
 - strip.position:
 
-  Location where the facet 'strips' are located when using `type`. Can
-  be one of `"left"`, `"right"`, `"bottom"` or `"top"`.
+  Location where the facet 'strips' are located when using `type`. When
+  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
+  or `"top"`. When two `type`s are provided, this argument defines
+  whether the strips are "switched" and can take either `"x"`, `"y"`, or
+  `"both"`. For example, `"x"` will switch the 'top' strip locations to
+  the bottom of the plot.
 
 - auto.text:
 
   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
   will automatically try and format pollutant names and units properly,
-  e.g., by subscripting the '2' in NO2.
+  e.g., by subscripting the "2" in "NO2". Passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md).
 
 - plot:
 
-  Should a plot be produced? `FALSE` can be useful when analysing data
-  to extract plot components and plotting them in other ways.
+  When `openair` plots are created they are automatically printed to the
+  active graphics device. `plot = FALSE` deactivates this behaviour.
+  This may be useful when the plot *data* is of more interest, or the
+  plot is required to appear later (e.g., later in a Quarto document, or
+  to be saved to a file).
 
 - ...:
 
-  The following additional arguments are available:
+  Addition options are passed on to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for `type` handling. Some additional arguments are also available:
 
   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
     and plot title.

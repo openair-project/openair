@@ -71,28 +71,33 @@ TaylorDiagram(
 
 - type:
 
-  `type` determines how the data are split i.e. conditioned, and then
-  plotted. The default is will produce a single plot using the entire
-  data. Type can be one of the built-in types as detailed in `cutData`
-  e.g. “season”, “year”, “weekday” and so on. For example,
-  `type = "season"` will produce four plots — one for each season.
+  Character string(s) defining how data should be split/conditioned
+  before plotting. `"default"` produces a single panel using the entire
+  dataset. Any other options will split the plot into different panels -
+  a roughly square grid of panels if one `type` is given, or a 2D matrix
+  of panels if two `types` are given. `type` is always passed to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md),
+  and can therefore be any of:
 
-  It is also possible to choose `type` as another variable in the data
-  frame. If that variable is numeric, then the data will be split into
-  four quantiles (if possible) and labelled accordingly. If type is an
-  existing character or factor variable, then those categories/levels
-  will be used directly. This offers great flexibility for understanding
-  the variation of different variables and how they depend on one
-  another.
+  - A built-in type defined in
+    [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+    (e.g., `"season"`, `"year"`, `"weekday"`, etc.). For example,
+    `type = "season"` will split the plot into four panels, one for each
+    season.
 
-  Type can be up length two e.g. `type = c("season", "weekday")` will
-  produce a 2x2 plot split by season and day of the week. Note, when two
-  types are provided the first forms the columns and the second the
-  rows.
+  - The name of a numeric column in `mydata`, which will be split into
+    `n.levels` quantiles (defaulting to 4).
 
-  Note that often it will make sense to use `type = "site"` when
-  multiple sites are available. This will ensure that each panel
-  contains data specific to an individual site.
+  - The name of a character or factor column in `mydata`, which will be
+    used as-is. Commonly this could be a variable like `"site"` to
+    ensure data from different monitoring sites are handled and
+    presented separately. It could equally be any arbitrary column
+    created by the user (e.g., whether a nearby possible pollutant
+    source is active or not).
+
+  Most `openair` plotting functions can take two `type` arguments. If
+  two are given, the first is used for the rows and the second for the
+  columns.
 
 - normalise:
 
@@ -116,15 +121,13 @@ TaylorDiagram(
 
 - cols:
 
-  Colours to be used for plotting. Useful options for categorical data
-  are available from `RColorBrewer` colours — see the `openair`
-  `openColours` function for more details. Useful schemes include
-  “Accent”, “Dark2”, “Paired”, “Pastel1”, “Pastel2”, “Set1”, “Set2”,
-  “Set3” — but see ?`brewer.pal` for the maximum useful colours in each.
-  For user defined the user can supply a list of colour names recognised
-  by R (type [`colours()`](https://rdrr.io/r/grDevices/colors.html) to
-  see the full list). An example would be
-  `cols = c("yellow", "green", "blue")`.
+  Colours to use for plotting. Can be a pre-set palette (e.g.,
+  `"turbo"`, `"viridis"`, `"tol"`, `"Dark2"`, etc.) or a user-defined
+  vector of R colours (e.g., `c("yellow", "green", "blue", "black")` -
+  see [`colours()`](https://rdrr.io/r/grDevices/colors.html) for a full
+  list) or hex-codes (e.g., `c("#30123B", "#9CF649", "#7A0403")`). See
+  [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+  for more details.
 
 - rms.col:
 
@@ -148,22 +151,27 @@ TaylorDiagram(
 
 - key:
 
-  Should the key be shown?
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
 - key.title:
 
-  Title for the key.
+  Used to set the title of the legend. The legend title is passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+  if `auto.text = TRUE`.
 
 - key.columns:
 
-  Number of columns to be used in the key. With many pollutants a single
-  column can make to key too wide. The user can thus choose to use
-  several columns by setting `columns` to be less than the number of
-  pollutants.
+  Number of columns to be used in a categorical legend. With many
+  categories a single column can make to key too wide. The user can thus
+  choose to use several columns by setting `key.columns` to be less than
+  the number of categories.
 
 - key.position:
 
-  Position of the key e.g. “top”, “bottom”, “left” and “right”.
+  Location where the legend is to be placed. Allowed arguments include
+  `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`, the last of
+  which removes the legend entirely.
 
 - strip.position:
 
@@ -177,27 +185,33 @@ TaylorDiagram(
 - auto.text:
 
   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
-  will automatically try and format pollutant names and units properly
-  e.g. by subscripting the \`2' in NO2.
+  will automatically try and format pollutant names and units properly,
+  e.g., by subscripting the "2" in "NO2". Passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md).
 
 - plot:
 
-  Should a plot be produced? `FALSE` can be useful when analysing data
-  to extract trend components and plotting them in other ways.
+  When `openair` plots are created they are automatically printed to the
+  active graphics device. `plot = FALSE` deactivates this behaviour.
+  This may be useful when the plot *data* is of more interest, or the
+  plot is required to appear later (e.g., later in a Quarto document, or
+  to be saved to a file).
 
 - ...:
 
-  Other graphical parameters are passed onto `cutData` and other
-  functions. For example, `TaylorDiagram` passes the option
-  `hemisphere = "southern"` on to `cutData` to provide southern (rather
-  than default northern) hemisphere handling of `type = "season"`.
-  Similarly, common graphical parameters, such as `layout` for panel
-  arrangement and `pch` and `cex` for plot symbol type and size, are
-  passed on to `xyplot`. Most are passed unmodified, although there are
-  some special cases where `openair` may locally manage this process.
-  For example, common axis and title labelling options (such as `xlab`,
-  `ylab`, `main`) are passed via `quickText` to handle routine
-  formatting.
+  Addition options are passed on to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for `type` handling. Some additional arguments are also available:
+
+  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
+    and plot title.
+
+  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
+    2 columns and 5 rows.
+
+  - `fontsize` overrides the overall font size of the plot.
+
+  - `cex`, `lwd`, and `pch` control various graphical parameters.
 
 ## Value
 

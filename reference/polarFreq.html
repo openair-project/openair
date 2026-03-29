@@ -147,14 +147,10 @@ than break.</p></dd>
 
 
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
-<dd><p>Colours to be used for plotting. Options include
-“default”, “increment”, “heat”, “jet” and
-<code>RColorBrewer</code> colours — see the <code>openair</code> <code>openColours</code> function for
-more details. For user defined the user can supply a list of colour names
-recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list). An example would
-be <code>cols = c("yellow", "green", "blue")</code>. <code>cols</code> can also take the values
-<code>"viridis"</code>, <code>"magma"</code>, <code>"inferno"</code>, or <code>"plasma"</code> which are the viridis
-colour maps ported from Python's Matplotlib library.</p></dd>
+<dd><p>Colours to use for plotting. Can be a pre-set palette (e.g.,
+<code>"turbo"</code>, <code>"viridis"</code>, <code>"tol"</code>, <code>"Dark2"</code>, etc.) or a user-defined vector
+of R colours (e.g., <code>c("yellow", "green", "blue", "black")</code> - see
+<code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> for a full list) or hex-codes (e.g., <code>c("#30123B", "#9CF649", "#7A0403")</code>). See <code><a href="openColours.html">openColours()</a></code> for more details.</p></dd>
 
 
 <dt id="arg-trans">trans<a class="anchor" aria-label="anchor" href="#arg-trans"></a></dt>
@@ -166,20 +162,23 @@ distribution. If set to <code>FALSE</code> a linear scale is used.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p><code>type</code> determines how the data are split i.e. conditioned, and
-then plotted. The default is will produce a single plot using the entire
-data. Type can be one of the built-in types as detailed in <code>cutData</code> e.g.
-“season”, “year”, “weekday” and so on. For example,
-<code>type = "season"</code> will produce four plots — one for each season.</p>
-<p>It is also possible to choose <code>type</code> as another variable in the data frame.
-If that variable is numeric, then the data will be split into four
-quantiles (if possible) and labelled accordingly. If type is an existing
-character or factor variable, then those categories/levels will be used
-directly. This offers great flexibility for understanding the variation of
-different variables and how they depend on one another.</p>
-<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will produce
-a 2x2 plot split by season and day of the week. Note, when two types are
-provided the first forms the columns and the second the rows.</p></dd>
+<dd><p>Character string(s) defining how data should be split/conditioned
+before plotting. <code>"default"</code> produces a single panel using the entire
+dataset. Any other options will split the plot into different panels - a
+roughly square grid of panels if one <code>type</code> is given, or a 2D matrix of
+panels if two <code>types</code> are given. <code>type</code> is always passed to <code><a href="cutData.html">cutData()</a></code>,
+and can therefore be any of:</p><ul><li><p>A built-in type defined in <code><a href="cutData.html">cutData()</a></code> (e.g., <code>"season"</code>, <code>"year"</code>,
+<code>"weekday"</code>, etc.). For example, <code>type = "season"</code> will split the plot into
+four panels, one for each season.</p></li>
+<li><p>The name of a numeric column in <code>mydata</code>, which will be split into
+<code>n.levels</code> quantiles (defaulting to 4).</p></li>
+<li><p>The name of a character or factor column in <code>mydata</code>, which will be used
+as-is. Commonly this could be a variable like <code>"site"</code> to ensure data from
+different monitoring sites are handled and presented separately. It could
+equally be any arbitrary column created by the user (e.g., whether a nearby
+possible pollutant source is active or not).</p></li>
+</ul><p>Most <code>openair</code> plotting functions can take two <code>type</code> arguments. If two are
+given, the first is used for the rows and the second for the columns.</p></dd>
 
 
 <dt id="arg-min-bin">min.bin<a class="anchor" aria-label="anchor" href="#arg-min-bin"></a></dt>
@@ -210,23 +209,28 @@ bin. The default is transparent. Another useful choice sometimes is
 
 
 <dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>Show a key?</p></dd>
+<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
+<code>key.position</code> to <code>"none"</code>.</p></dd>
 
 
 <dt id="arg-key-header">key.header<a class="anchor" aria-label="anchor" href="#arg-key-header"></a></dt>
-<dd><p>Adds additional text/labels to the scale key. For example,
-passing the options <code>key.header = "header", key.footer = "footer1"</code> adds
-addition text above and below the scale key. These arguments are passed to
-<code>quickText</code>, applying the <code>auto.text</code> argument, to handle formatting.</p></dd>
+<dd><p>Used to control the title of the legend. <code>key.header</code> and
+<code>key.footer</code> are now pasted together to form a single legend title. In
+future, they are likely to be deprecated and combined into a single
+argument.</p></dd>
 
 
 <dt id="arg-key-footer">key.footer<a class="anchor" aria-label="anchor" href="#arg-key-footer"></a></dt>
-<dd><p>see <code>key.footer</code>.</p></dd>
+<dd><p>Used to control the title of the legend. <code>key.header</code> and
+<code>key.footer</code> are now pasted together to form a single legend title. In
+future, they are likely to be deprecated and combined into a single
+argument.</p></dd>
 
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
-<dd><p>Location where the scale key is to plotted. Allowed
-arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code> and <code>"left"</code>.</p></dd>
+<dd><p>Location where the legend is to be placed. Allowed
+arguments include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"left"</code> and <code>"none"</code>,
+the last of which removes the legend entirely.</p></dd>
 
 
 <dt id="arg-strip-position">strip.position<a class="anchor" aria-label="anchor" href="#arg-strip-position"></a></dt>
@@ -241,20 +245,24 @@ locations to the bottom of the plot.</p></dd>
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
 <dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
 axis labels will automatically try and format pollutant names and units
-properly e.g.  by subscripting the `2' in NO2.</p></dd>
+properly, e.g., by subscripting the "2" in "NO2". Passed to <code><a href="quickText.html">quickText()</a></code>.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
-<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
-data to extract plot components and plotting them in other ways.</p></dd>
+<dd><p>When <code>openair</code> plots are created they are automatically printed
+to the active graphics device. <code>plot = FALSE</code> deactivates this behaviour.
+This may be useful when the plot <em>data</em> is of more interest, or the plot is
+required to appear later (e.g., later in a Quarto document, or to be saved
+to a file).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Passed to <code><a href="cutData.html">cutData()</a></code>. The following additional arguments are also
-available:</p><ul><li><p><code>xlab</code>, <code>ylab</code> and <code>main</code> override the x-axis label, y-axis label, and plot title.</p></li>
+<dd><p>Addition options are passed on to <code><a href="cutData.html">cutData()</a></code> for <code>type</code> handling.
+Some additional arguments are also available:</p><ul><li><p><code>xlab</code>, <code>ylab</code> and <code>main</code> override the x-axis label, y-axis label, and plot title.</p></li>
 <li><p><code>layout</code> sets the layout of facets - e.g., <code>layout(2, 5)</code> will have 2 columns and 5 rows.</p></li>
 <li><p><code>fontsize</code> overrides the overall font size of the plot.</p></li>
-<li><p><code>limits</code> sets the colour bar limits, if <code>breaks</code> is not being used.</p></li>
+<li><p><code>annotate = FALSE</code> will not plot the N/E/S/W labels.</p></li>
+<li><p><code>limits</code> sets the colour bar limits, if <code>breaks</code> is not used.</p></li>
 </ul></dd>
 
 </dl></div>

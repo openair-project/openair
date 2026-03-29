@@ -64,24 +64,33 @@ TheilSen(
 
 - type:
 
-  `type` determines how the data are split i.e. conditioned, and then
-  plotted. The default is will produce a single plot using the entire
-  data. Type can be one of the built-in types as detailed in `cutData`
-  e.g. “season”, “year”, “weekday” and so on. For example,
-  `type = "season"` will produce four plots — one for each season.
+  Character string(s) defining how data should be split/conditioned
+  before plotting. `"default"` produces a single panel using the entire
+  dataset. Any other options will split the plot into different panels -
+  a roughly square grid of panels if one `type` is given, or a 2D matrix
+  of panels if two `types` are given. `type` is always passed to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md),
+  and can therefore be any of:
 
-  It is also possible to choose `type` as another variable in the data
-  frame. If that variable is numeric, then the data will be split into
-  four quantiles (if possible) and labelled accordingly. If type is an
-  existing character or factor variable, then those categories/levels
-  will be used directly. This offers great flexibility for understanding
-  the variation of different variables and how they depend on one
-  another.
+  - A built-in type defined in
+    [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+    (e.g., `"season"`, `"year"`, `"weekday"`, etc.). For example,
+    `type = "season"` will split the plot into four panels, one for each
+    season.
 
-  Type can be up length two e.g. `type = c("season", "weekday")` will
-  produce a 2x2 plot split by season and day of the week. Note, when two
-  types are provided the first forms the columns and the second the
-  rows.
+  - The name of a numeric column in `mydata`, which will be split into
+    `n.levels` quantiles (defaulting to 4).
+
+  - The name of a character or factor column in `mydata`, which will be
+    used as-is. Commonly this could be a variable like `"site"` to
+    ensure data from different monitoring sites are handled and
+    presented separately. It could equally be any arbitrary column
+    created by the user (e.g., whether a nearby possible pollutant
+    source is active or not).
+
+  Most `openair` plotting functions can take two `type` arguments. If
+  two are given, the first is used for the rows and the second for the
+  columns.
 
 - avg.time:
 
@@ -94,7 +103,9 @@ TheilSen(
 - statistic:
 
   Statistic used for calculating monthly values. Default is “mean”, but
-  can also be “percentile”. See `timeAverage` for more details.
+  can also be “percentile”. See
+  [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
+  for more details.
 
 - percentile:
 
@@ -129,19 +140,12 @@ TheilSen(
 
   Size of text for trend information.
 
-- x.relation:
+- x.relation, y.relation:
 
-  This determines how the x-axis scale is plotted. “same” ensures all
-  panels use the same scale and “free” will use panel-specific scales.
-  The latter is a useful setting when plotting data with very different
-  values.
-
-- y.relation:
-
-  This determines how the y-axis scale is plotted. “same” ensures all
-  panels use the same scale and “free” will use panel-specific scales.
-  The latter is a useful setting when plotting data with very different
-  values.
+  This determines how the x- and y-axis scales are plotted. `"same"`
+  ensures all panels use the same scale and `"free"` will use
+  panel-specific scales. The latter is a useful setting when plotting
+  data with very different values.
 
 - data.col:
 
@@ -167,8 +171,9 @@ TheilSen(
 - auto.text:
 
   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
-  will automatically try and format pollutant names and units properly
-  e.g. by subscripting the ‘2’ in NO2.
+  will automatically try and format pollutant names and units properly,
+  e.g., by subscripting the "2" in "NO2". Passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md).
 
 - autocor:
 
@@ -202,18 +207,17 @@ TheilSen(
 
   Number of major x-axis intervals to use. The function will try and
   choose a sensible number of dates/times as well as formatting the
-  date/time appropriately to the range being considered. This does not
-  always work as desired automatically. The user can therefore increase
-  or decrease the number of intervals by adjusting the value of
-  `date.breaks` up or down.
+  date/time appropriately to the range being considered. The user can
+  override this behaviour by adjusting the value of `date.breaks` up or
+  down.
 
 - date.format:
 
-  This option controls the date format on the x-axis. While `TheilSen`
-  generally sets the date format sensibly there can be some situations
-  where the user wishes to have more control. For format types see
-  `strptime`. For example, to format the date like “Jan-2012” set
-  `date.format = "\%b-\%Y"`.
+  This option controls the date format on the x-axis. A sensible format
+  is chosen by default, but the user can set `date.format` to override
+  this. For format types see
+  [`strptime()`](https://rdrr.io/r/base/strptime.html). For example, to
+  format the date like "Jan-2012" set `date.format = "\%b-\%Y"`.
 
 - strip.position:
 
@@ -226,8 +230,11 @@ TheilSen(
 
 - plot:
 
-  Should a plot be produced? `FALSE` can be useful when analysing data
-  to extract trend components and plotting them in other ways.
+  When `openair` plots are created they are automatically printed to the
+  active graphics device. `plot = FALSE` deactivates this behaviour.
+  This may be useful when the plot *data* is of more interest, or the
+  plot is required to appear later (e.g., later in a Quarto document, or
+  to be saved to a file).
 
 - silent:
 
@@ -235,12 +242,21 @@ TheilSen(
 
 - ...:
 
-  Other graphical parameters passed onto `cutData` and other functions.
-  For example, `TheilSen` passes the option `hemisphere = "southern"` on
-  to `cutData` to provide southern (rather than default northern)
-  hemisphere handling of `type = "season"`. Similarly, common axis and
-  title labelling options (such as `xlab`, `ylab`, `main`) are passed to
-  `xyplot` via `quickText` to handle routine formatting.
+  Addition options are passed on to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for `type` handling. Some additional arguments are also available:
+
+  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
+    and plot title.
+
+  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
+    2 columns and 5 rows.
+
+  - `fontsize` overrides the overall font size of the plot.
+
+  - `cex`, `lwd`, and `pch` control various graphical parameters.
+
+  - `ylim` and `xlim` control axis limits.
 
 ## Value
 

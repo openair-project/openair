@@ -71,8 +71,8 @@ bootMeanDF(x, conf.int = 0.95, B = 1000)
 
 - ...:
 
-  Other parameters that are passed on to
-  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md),
+  Passed to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
   for use with `type`.
 
 - x:

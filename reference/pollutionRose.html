@@ -96,18 +96,21 @@ data frame should be supplied e.g. <code>pollutant = "nox"</code>.</p></dd>
 
 
 <dt id="arg-key-footer">key.footer<a class="anchor" aria-label="anchor" href="#arg-key-footer"></a></dt>
-<dd><p>Adds additional text/labels below the scale key. See
-<code>key.header</code> for further information.</p></dd>
+<dd><p>Used to control the title of the legend. <code>key.header</code> and
+<code>key.footer</code> are now pasted together to form a single legend title. In
+future, they are likely to be deprecated and combined into a single
+argument.</p></dd>
 
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
-<dd><p>Location where the scale key is to plotted. Allowed
-arguments currently include “top”, “right”, “bottom”
-and “left”.</p></dd>
+<dd><p>Location where the legend is to be placed. Allowed
+arguments include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"left"</code> and <code>"none"</code>,
+the last of which removes the legend entirely.</p></dd>
 
 
 <dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>Show a key?</p></dd>
+<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
+<code>key.position</code> to <code>"none"</code>.</p></dd>
 
 
 <dt id="arg-breaks">breaks<a class="anchor" aria-label="anchor" href="#arg-breaks"></a></dt>
@@ -135,8 +138,11 @@ wind directions is from a particular wind sector is also shown.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
-<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
-data to extract plot components and plotting them in other ways.</p></dd>
+<dd><p>When <code>openair</code> plots are created they are automatically printed
+to the active graphics device. <code>plot = FALSE</code> deactivates this behaviour.
+This may be useful when the plot <em>data</em> is of more interest, or the plot is
+required to appear later (e.g., later in a Quarto document, or to be saved
+to a file).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -160,22 +166,6 @@ with low mean wind speeds a value of 1 or 0.5 m/s may be better.</p></dd>
 angles are 45 and 10. Note that the width of the wind speed interval may
 need adjusting using <code>width</code>.</p></dd>
 
-    <dt><code>type</code></dt>
-<dd><p><code>type</code> determines how the data are split i.e. conditioned, and
-then plotted. The default is will produce a single plot using the entire
-data. Type can be one of the built-in types as detailed in <code>cutData</code> e.g.
-“season”, “year”, “weekday” and so on. For example,
-<code>type = "season"</code> will produce four plots — one for each season.</p>
-<p>It is also possible to choose <code>type</code> as another variable in the data frame.
-If that variable is numeric, then the data will be split into four
-quantiles (if possible) and labelled accordingly. If type is an existing
-character or factor variable, then those categories/levels will be used
-directly. This offers great flexibility for understanding the variation of
-different variables and how they depend on one another.</p>
-<p>Type can be up length two e.g. <code>type = c("season", "weekday")</code> will produce
-a 2x2 plot split by season and day of the week. Note, when two types are
-provided the first forms the columns and the second the rows.</p></dd>
-
     <dt><code>calm.thresh</code></dt>
 <dd><p>By default, conditions are considered to be calm when the
 wind speed is zero. The user can set a different threshold for calms be
@@ -191,13 +181,6 @@ will be two. A bias correction can made to correct for this problem. A
 simple method according to Applequist (2012) is used to adjust the
 frequencies.</p></dd>
 
-    <dt><code>cols</code></dt>
-<dd><p>Colours to be used for plotting. Options include
-“default”, “increment”, “heat”, “jet”,
-“hue” and user defined. For user defined the user can supply a list
-of colour names recognised by R (type <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> to see the full list). An
-example would be <code>cols = c("yellow", "green", "blue", "black")</code>.</p></dd>
-
     <dt><code>grid.line</code></dt>
 <dd><p>Grid line interval to use. If <code>NULL</code>, as in default, this is
 assigned based on the available data range. However, it can also be forced
@@ -209,25 +192,10 @@ to control the interval, line type and colour. For example <code>grid.line = lis
 intervals. For example, width = 1.5 will make the paddle width 1.5 times
 wider.</p></dd>
 
-    <dt><code>auto.text</code></dt>
-<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
-axis labels will automatically try and format pollutant names and units
-properly, e.g., by subscripting the ‘2’ in NO2.</p></dd>
-
-    <dt><code>offset</code></dt>
-<dd><p>The size of the 'hole' in the middle of the plot, expressed as
-a percentage of the polar axis scale, default 10.</p></dd>
-
     <dt><code>max.freq</code></dt>
 <dd><p>Controls the scaling used by setting the maximum value for
 the radial limits. This is useful to ensure several plots use the same
 radial limits.</p></dd>
-
-    <dt><code>key.header</code></dt>
-<dd><p>Adds additional text/labels above the scale key. For
-example, passing <code>windRose(mydata, key.header = "ws")</code> adds the addition
-text as a scale header. Note: This argument is passed to <code><a href="quickText.html">quickText()</a></code>,
-applying the auto.text argument, to handle formatting.</p></dd>
 
     <dt><code>dig.lab</code></dt>
 <dd><p>The number of significant figures at which scientific number
@@ -253,14 +221,65 @@ each bin.</p></dd>
 printed in each panel together with a description of the statistic below
 the plot. If <code>FALSE</code> then only the statistic will be printed.</p></dd>
 
-    <dt><code>angle.scale</code></dt>
-<dd><p>The scale is by default shown at a 315 degree angle.
-Sometimes the placement of the scale may interfere with an interesting
-feature. The user can therefore set <code>angle.scale</code> to another value (between
-0 and 360 degrees) to mitigate such problems. For example <code>angle.scale = 45</code> will draw the scale heading in a NE direction.</p></dd>
-
     <dt><code>border</code></dt>
 <dd><p>Border colour for shaded areas. Default is no border.</p></dd>
+
+    <dt><code>type</code></dt>
+<dd><p>Character string(s) defining how data should be split/conditioned
+before plotting. <code>"default"</code> produces a single panel using the entire
+dataset. Any other options will split the plot into different panels - a
+roughly square grid of panels if one <code>type</code> is given, or a 2D matrix of
+panels if two <code>types</code> are given. <code>type</code> is always passed to <code><a href="cutData.html">cutData()</a></code>,
+and can therefore be any of:</p><ul><li><p>A built-in type defined in <code><a href="cutData.html">cutData()</a></code> (e.g., <code>"season"</code>, <code>"year"</code>,
+<code>"weekday"</code>, etc.). For example, <code>type = "season"</code> will split the plot into
+four panels, one for each season.</p></li>
+<li><p>The name of a numeric column in <code>mydata</code>, which will be split into
+<code>n.levels</code> quantiles (defaulting to 4).</p></li>
+<li><p>The name of a character or factor column in <code>mydata</code>, which will be used
+as-is. Commonly this could be a variable like <code>"site"</code> to ensure data from
+different monitoring sites are handled and presented separately. It could
+equally be any arbitrary column created by the user (e.g., whether a nearby
+possible pollutant source is active or not).</p></li>
+</ul><p>Most <code>openair</code> plotting functions can take two <code>type</code> arguments. If two are
+given, the first is used for the rows and the second for the columns.</p></dd>
+
+    <dt><code>cols</code></dt>
+<dd><p>Colours to use for plotting. Can be a pre-set palette (e.g.,
+<code>"turbo"</code>, <code>"viridis"</code>, <code>"tol"</code>, <code>"Dark2"</code>, etc.) or a user-defined vector
+of R colours (e.g., <code>c("yellow", "green", "blue", "black")</code> - see
+<code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> for a full list) or hex-codes (e.g., <code>c("#30123B", "#9CF649", "#7A0403")</code>). See <code><a href="openColours.html">openColours()</a></code> for more details.</p></dd>
+
+    <dt><code>angle.scale</code></dt>
+<dd><p>In radial plots (e.g., <code><a href="polarPlot.html">polarPlot()</a></code>), the radial scale is
+drawn directly on the plot itself. While suitable defaults have been
+chosen, sometimes the placement of the scale may interfere with an
+interesting feature. <code>angle.scale</code> can take any value between <code>0</code> and <code>360</code>
+to place the scale at a different angle, or <code>FALSE</code> to move it to the side
+of the plots.</p></dd>
+
+    <dt><code>offset</code></dt>
+<dd><p><code>offset</code> controls the size of the 'hole' in the middle and is
+expressed on a scale of <code>0</code> to <code>100</code>, where <code>0</code> is no hole and <code>100</code> is a
+hole that takes up the entire plotting area.</p></dd>
+
+    <dt><code>key.header</code></dt>
+<dd><p>Used to control the title of the legend. <code>key.header</code> and
+<code>key.footer</code> are now pasted together to form a single legend title. In
+future, they are likely to be deprecated and combined into a single
+argument.</p></dd>
+
+    <dt><code>strip.position</code></dt>
+<dd><p>Location where the facet 'strips' are located when
+using <code>type</code>. When one <code>type</code> is provided, can be one of <code>"left"</code>,
+<code>"right"</code>, <code>"bottom"</code> or <code>"top"</code>. When two <code>type</code>s are provided, this
+argument defines whether the strips are "switched" and can take either
+<code>"x"</code>, <code>"y"</code>, or <code>"both"</code>. For example, <code>"x"</code> will switch the 'top' strip
+locations to the bottom of the plot.</p></dd>
+
+    <dt><code>auto.text</code></dt>
+<dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
+axis labels will automatically try and format pollutant names and units
+properly, e.g., by subscripting the "2" in "NO2". Passed to <code><a href="quickText.html">quickText()</a></code>.</p></dd>
 
 
 </dl></dd>

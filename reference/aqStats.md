@@ -74,7 +74,9 @@ aqStats(
 
 - ...:
 
-  Other arguments, currently unused.
+  Passed to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for use with `type`.
 
 ## Details
 

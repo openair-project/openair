@@ -117,20 +117,23 @@ Alternatively, use <code>group</code>.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
-<dd><p><code>type</code> determines how the data are split, i.e., conditioned, and
-then plotted. The default is will produce a single plot using the entire
-data. Type can be one of the built-in types as detailed in <code>cutData</code> e.g.
-"season", "year", "weekday" and so on. For example, <code>type = "season"</code> will
-produce four plots — one for each season.</p>
-<p>It is also possible to choose <code>type</code> as another variable in the data frame.
-If that variable is numeric, then the data will be split into four
-quantiles (if possible) and labelled accordingly. If type is an existing
-character or factor variable, then those categories/levels will be used
-directly. This offers great flexibility for understanding the variation of
-different variables and how they depend on one another.</p>
-<p><code>type</code> can be up length two e.g. <code>type = c("season", "weekday")</code> will
-produce a 2x2 plot split by season and day of the week. Note, when two
-types are provided the first forms the columns and the second the rows.</p></dd>
+<dd><p>Character string(s) defining how data should be split/conditioned
+before plotting. <code>"default"</code> produces a single panel using the entire
+dataset. Any other options will split the plot into different panels - a
+roughly square grid of panels if one <code>type</code> is given, or a 2D matrix of
+panels if two <code>types</code> are given. <code>type</code> is always passed to <code><a href="cutData.html">cutData()</a></code>,
+and can therefore be any of:</p><ul><li><p>A built-in type defined in <code><a href="cutData.html">cutData()</a></code> (e.g., <code>"season"</code>, <code>"year"</code>,
+<code>"weekday"</code>, etc.). For example, <code>type = "season"</code> will split the plot into
+four panels, one for each season.</p></li>
+<li><p>The name of a numeric column in <code>mydata</code>, which will be split into
+<code>n.levels</code> quantiles (defaulting to 4).</p></li>
+<li><p>The name of a character or factor column in <code>mydata</code>, which will be used
+as-is. Commonly this could be a variable like <code>"site"</code> to ensure data from
+different monitoring sites are handled and presented separately. It could
+equally be any arbitrary column created by the user (e.g., whether a nearby
+possible pollutant source is active or not).</p></li>
+</ul><p>Most <code>openair</code> plotting functions can take two <code>type</code> arguments. If two are
+given, the first is used for the rows and the second for the columns.</p></dd>
 
 
 <dt id="arg-smooth">smooth<a class="anchor" aria-label="anchor" href="#arg-smooth"></a></dt>
@@ -190,7 +193,10 @@ much noise.</p></dd>
 
 
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
-<dd><p>Colours for plotting. Passed to <code><a href="openColours.html">openColours()</a></code>.</p></dd>
+<dd><p>Colours to use for plotting. Can be a pre-set palette (e.g.,
+<code>"turbo"</code>, <code>"viridis"</code>, <code>"tol"</code>, <code>"Dark2"</code>, etc.) or a user-defined vector
+of R colours (e.g., <code>c("yellow", "green", "blue", "black")</code> - see
+<code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> for a full list) or hex-codes (e.g., <code>c("#30123B", "#9CF649", "#7A0403")</code>). See <code><a href="openColours.html">openColours()</a></code> for more details.</p></dd>
 
 
 <dt id="arg-crs">crs<a class="anchor" aria-label="anchor" href="#arg-crs"></a></dt>
@@ -259,16 +265,21 @@ point.</p></dd>
 
 
 <dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>Should a key be drawn? Defaults to <code>TRUE</code>.</p></dd>
+<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
+<code>key.position</code> to <code>"none"</code>.</p></dd>
 
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
-<dd><p>Location where the scale key should be plotted. Allowed
-arguments currently include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>, and <code>"left"</code>.</p></dd>
+<dd><p>Location where the legend is to be placed. Allowed
+arguments include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"left"</code> and <code>"none"</code>,
+the last of which removes the legend entirely.</p></dd>
 
 
 <dt id="arg-key-columns">key.columns<a class="anchor" aria-label="anchor" href="#arg-key-columns"></a></dt>
-<dd><p>Number of columns to be used in the key.</p></dd>
+<dd><p>Number of columns to be used in a categorical legend. With
+many categories a single column can make to key too wide. The user can thus
+choose to use several columns by setting <code>key.columns</code> to be less than the
+number of categories.</p></dd>
 
 
 <dt id="arg-strip-position">strip.position<a class="anchor" aria-label="anchor" href="#arg-strip-position"></a></dt>
@@ -283,12 +294,15 @@ locations to the bottom of the plot.</p></dd>
 <dt id="arg-auto-text">auto.text<a class="anchor" aria-label="anchor" href="#arg-auto-text"></a></dt>
 <dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
 axis labels will automatically try and format pollutant names and units
-properly e.g.  by subscripting the ‘2’ in NO2.</p></dd>
+properly, e.g., by subscripting the "2" in "NO2". Passed to <code><a href="quickText.html">quickText()</a></code>.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
-<dd><p>Should a plot be produced? <code>FALSE</code> can be useful when analysing
-data to extract plot components and plotting them in other ways.</p></dd>
+<dd><p>When <code>openair</code> plots are created they are automatically printed
+to the active graphics device. <code>plot = FALSE</code> deactivates this behaviour.
+This may be useful when the plot <em>data</em> is of more interest, or the plot is
+required to appear later (e.g., later in a Quarto document, or to be saved
+to a file).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -346,10 +360,6 @@ approach has been shown to yield similar results to the PSCF approach. The
 openair manual has more details and examples of these approaches.</p>
 <p>A further useful refinement is to smooth the resulting surface, which is
 possible by setting <code>smooth = TRUE</code>.</p>
-    </div>
-    <div class="section level2">
-    <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
-    <p>This function is under active development and is likely to change</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

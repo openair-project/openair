@@ -62,7 +62,8 @@ datePad(
 - ...:
 
   Passed to
-  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for use with `type`.
 
 ## Value
 

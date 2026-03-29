@@ -72,9 +72,9 @@ rollingMean(
 
 - ...:
 
-  Additional parameters passed to
-  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
-  For use with `type`.
+  Passed to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for use with `type`.
 
 ## Value
 

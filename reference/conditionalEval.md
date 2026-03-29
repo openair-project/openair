@@ -60,9 +60,33 @@ conditionalEval(
 
 - type:
 
-  `type` determines how the data are split i.e. conditioned, and then
-  plotted. Only one type can be used with this function. The default
-  produces a single plot using the entire data.
+  Character string(s) defining how data should be split/conditioned
+  before plotting. `"default"` produces a single panel using the entire
+  dataset. Any other options will split the plot into different panels -
+  a roughly square grid of panels if one `type` is given, or a 2D matrix
+  of panels if two `types` are given. `type` is always passed to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md),
+  and can therefore be any of:
+
+  - A built-in type defined in
+    [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+    (e.g., `"season"`, `"year"`, `"weekday"`, etc.). For example,
+    `type = "season"` will split the plot into four panels, one for each
+    season.
+
+  - The name of a numeric column in `mydata`, which will be split into
+    `n.levels` quantiles (defaulting to 4).
+
+  - The name of a character or factor column in `mydata`, which will be
+    used as-is. Commonly this could be a variable like `"site"` to
+    ensure data from different monitoring sites are handled and
+    presented separately. It could equally be any arbitrary column
+    created by the user (e.g., whether a nearby possible pollutant
+    source is active or not).
+
+  Most `openair` plotting functions can take two `type` arguments. If
+  two are given, the first is used for the rows and the second for the
+  columns.
 
 - bins:
 
@@ -79,9 +103,13 @@ conditionalEval(
 
 - cols:
 
-  Passed to
+  Colours to use for plotting. Can be a pre-set palette (e.g.,
+  `"turbo"`, `"viridis"`, `"tol"`, `"Dark2"`, etc.) or a user-defined
+  vector of R colours (e.g., `c("yellow", "green", "blue", "black")` -
+  see [`colours()`](https://rdrr.io/r/grDevices/colors.html) for a full
+  list) or hex-codes (e.g., `c("#30123B", "#9CF649", "#7A0403")`). See
   [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
-  with `n = 3`.
+  for more details.
 
 - col.var:
 
@@ -95,13 +123,17 @@ conditionalEval(
 - auto.text:
 
   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
-  etc. will automatically try and format pollutant names and units
-  properly e.g. by subscripting the \`2' in NO2.
+  will automatically try and format pollutant names and units properly,
+  e.g., by subscripting the "2" in "NO2". Passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md).
 
 - plot:
 
-  Should a plot be produced? `FALSE` can be useful when analysing data
-  in other ways.
+  When `openair` plots are created they are automatically printed to the
+  active graphics device. `plot = FALSE` deactivates this behaviour.
+  This may be useful when the plot *data* is of more interest, or the
+  plot is required to appear later (e.g., later in a Quarto document, or
+  to be saved to a file).
 
 - ...:
 

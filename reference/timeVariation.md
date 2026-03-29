@@ -167,9 +167,13 @@ timeVariation(
 
 - cols:
 
-  Colours to be used for plotting; see
+  Colours to use for plotting. Can be a pre-set palette (e.g.,
+  `"turbo"`, `"viridis"`, `"tol"`, `"Dark2"`, etc.) or a user-defined
+  vector of R colours (e.g., `c("yellow", "green", "blue", "black")` -
+  see [`colours()`](https://rdrr.io/r/grDevices/colors.html) for a full
+  list) or hex-codes (e.g., `c("#30123B", "#9CF649", "#7A0403")`). See
   [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
-  for details.
+  for more details.
 
 - ref.y:
 
@@ -183,20 +187,21 @@ timeVariation(
   By default `timeVariation()` produces four plots on one page. While it
   is useful to see these plots together, it is sometimes necessary just
   to use one for a report. If `key` is `TRUE`, a key is added to all
-  plots allowing the extraction of a single plot *with* key. See below
-  for an example. If `key` is `FALSE`, no key is shown for any plot.
+  plots allowing the extraction of a single plot *with* key. If `key` is
+  `FALSE`, no key is shown for any plot.
 
 - key.columns:
 
-  Number of columns to be used in the key. With many pollutants a single
-  column can make to key too wide. The user can thus choose to use
-  several columns by setting `columns` to be less than the number of
-  pollutants.
+  Number of columns to be used in a categorical legend. With many
+  categories a single column can make to key too wide. The user can thus
+  choose to use several columns by setting `key.columns` to be less than
+  the number of categories.
 
 - key.position:
 
-  Location where the scale key is to plotted. Can include `"top"`,
-  `"bottom"`, `"right"` and `"left"`.
+  Location where the legend is to be placed. Allowed arguments include
+  `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`, the last of
+  which removes the legend entirely.
 
 - strip.position:
 
@@ -216,7 +221,8 @@ timeVariation(
 
   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
   will automatically try and format pollutant names and units properly,
-  e.g., by subscripting the '2' in NO2.
+  e.g., by subscripting the "2" in "NO2". Passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md).
 
 - alpha:
 
@@ -225,13 +231,29 @@ timeVariation(
 
 - plot:
 
-  Should a plot be produced? `FALSE` can be useful when analysing data
-  to extract plot components and plotting them in other ways.
+  When `openair` plots are created they are automatically printed to the
+  active graphics device. `plot = FALSE` deactivates this behaviour.
+  This may be useful when the plot *data* is of more interest, or the
+  plot is required to appear later (e.g., later in a Quarto document, or
+  to be saved to a file).
 
 - ...:
 
-  Passed to
-  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
+  Addition options are passed on to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for `type` handling. Some additional arguments are also available:
+
+  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
+    and plot title.
+
+  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
+    2 columns and 5 rows.
+
+  - `lwd` and `lty` control various graphical parameters.
+
+  - `fontsize` overrides the overall font size of the plot.
+
+  - `ylim` controls axis limits.
 
 ## Value
 
