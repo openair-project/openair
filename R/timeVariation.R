@@ -26,6 +26,7 @@
 #' whether the temporal variation of that feature differs from other features
 #' --- and help with source identification.
 #'
+#' @inheritParams shared_openair_params
 #' @inheritParams variationPlot
 #' @inheritParams timePlot
 #'
@@ -60,8 +61,8 @@
 #' @param key By default [timeVariation()] produces four plots on one page.
 #'   While it is useful to see these plots together, it is sometimes necessary
 #'   just to use one for a report. If `key` is `TRUE`, a key is added to all
-#'   plots allowing the extraction of a single plot *with* key. See below for an
-#'   example. If `key` is `FALSE`, no key is shown for any plot.
+#'   plots allowing the extraction of a single plot *with* key. If `key` is
+#'   `FALSE`, no key is shown for any plot.
 #'
 #' @param panel.gap The gap between panels in any split panel (e.g., the default
 #'   `"hour.weekday"` panel).

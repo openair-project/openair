@@ -24,6 +24,7 @@
 #' [timePlot()] works very well with [selectByDate()], which is used for
 #' selecting particular date ranges quickly and easily. See examples below.
 #'
+#' @inheritParams shared_openair_params
 #' @inheritParams timeAverage
 #'
 #' @param mydata A data frame of time series. Must include a `date` field and at
@@ -37,16 +38,16 @@
 #'   are available:
 #'
 #'   - `FALSE` (default): each pollutant is plotted in its own panel with its
-#'     own scale.
+#'   own scale.
 #'   - `TRUE`: all pollutants are plotted together on the same panel and scale,
-#'     coloured by pollutant name.
+#'   coloured by pollutant name.
 #'   - A character string giving the name of a column in `mydata` (e.g.
-#'     `group = "site"` or `group = "pollutant"`): lines are coloured by the
-#'     values in that column. With a single `pollutant` all groups appear in
-#'     one panel; with multiple `pollutant`s each pollutant gets its own panel
-#'     and lines within each panel are coloured by the group column. This is
-#'     particularly useful for long-format data where multiple species are
-#'     stored in one column.
+#'   `group = "site"` or `group = "pollutant"`): lines are coloured by the
+#'   values in that column. With a single `pollutant` all groups appear in one
+#'   panel; with multiple `pollutant`s each pollutant gets its own panel and
+#'   lines within each panel are coloured by the group column. This is
+#'   particularly useful for long-format data where multiple species are stored
+#'   in one column.
 #'
 #' @param stack If `TRUE` the time series will be stacked by year. This option
 #'   can be useful if there are several years worth of data making it difficult
@@ -74,35 +75,11 @@
 #'   irregular data, set to `FALSE`. Note, this should not be set for `type`
 #'   other than `default`.
 #'
-#' @param type `type` determines how the data are split i.e. conditioned, and
-#'   then plotted. The default is will produce a single plot using the entire
-#'   data. Type can be one of the built-in types as detailed in [cutData()],
-#'   e.g., `"season"`, `"year"`, `"weekday"` and so on. For example, `type =
-#'   "season"` will produce four plots --- one for each season.
-#'
-#'   It is also possible to choose `type` as another variable in the data frame.
-#'   If that variable is numeric, then the data will be split into four
-#'   quantiles (if possible) and labelled accordingly. If type is an existing
-#'   character or factor variable, then those categories/levels will be used
-#'   directly. This offers great flexibility for understanding the variation of
-#'   different variables and how they depend on one another.
-#'
-#'   `type` must be of length one.
-#'
-#' @param cols Colours to be used for plotting; see [openColours()] for details.
-#'
-#' @param key Should a key be drawn? The default is `TRUE`.
-#'
 #' @param log Should the y-axis appear on a log scale? The default is `FALSE`.
 #'   If `TRUE` a well-formatted log10 scale is used. This can be useful for
 #'   plotting data for several different pollutants that exist on very different
 #'   scales. It is therefore useful to use `log = TRUE` together with `group =
 #'   TRUE`.
-#'
-#' @param windflow If `TRUE`, the vector-averaged wind speed and direction will
-#'   be plotted using arrows. Alternatively, can be a list of arguments to
-#'   control the appearance of the arrows (colour, linewidth, alpha value,
-#'   etc.). See [windflowOpts()] for details.
 #'
 #' @param smooth Should a smooth line be applied to the data? The default is
 #'   `FALSE`.
@@ -118,11 +95,6 @@
 #' @param ci If a smooth fit line is applied, then `ci` determines whether the
 #'   95 percent confidence intervals are shown.
 #'
-#' @param x.relation,y.relation This determines how the x- or y-axis scale is
-#'   plotted. `"same"` ensures all panels use the same scale and `"free"` will
-#'   use panel-specific scales. The latter is a useful setting when plotting
-#'   data with very different values.
-#'
 #' @param ref.x See `ref.y` for details. In this case the correct date format
 #'   should be used for a vertical line e.g. `ref.x = list(v =
 #'   as.POSIXct("2000-06-15"), lty = 5)`.
@@ -133,21 +105,6 @@
 #'   e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
 #'   "blue"))`.
 #'
-#' @param key.columns Number of columns to be used in the key. With many
-#'   pollutants a single column can make to key too wide. The user can thus
-#'   choose to use several columns by setting `columns` to be less than the
-#'   number of pollutants.
-#'
-#' @param key.position Location where the scale key is to plotted. Can include
-#'   `"top"`, `"bottom"`, `"right"` and `"left"`.
-#'
-#' @param strip.position Location where the facet 'strips' are located when
-#'   using `type`. When one `type` is provided, can be one of `"left"`,
-#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
-#'   argument defines whether the strips are "switched" and can take either
-#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
-#'   locations to the bottom of the plot.
-#'
 #' @param name.pol This option can be used to give alternative names for the
 #'   variables plotted. Instead of taking the column headings as names, the user
 #'   can supply replacements. For example, if a column had the name "nox" and
@@ -155,34 +112,15 @@
 #'   before change"` can be used. If more than one pollutant is plotted then use
 #'   `c` e.g. `name.pol = c("nox here", "o3 there")`.
 #'
-#' @param date.breaks Number of major x-axis intervals to use. The function will
-#'   try and choose a sensible number of dates/times as well as formatting the
-#'   date/time appropriately to the range being considered. This does not always
-#'   work as desired automatically. The user can therefore increase or decrease
-#'   the number of intervals by adjusting the value of `date.breaks` up or down.
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `lwd`, `lty`, and `pch` control various graphical parameters.
+#'   - `fontsize` overrides the overall font size of the plot.
+#'   - `border` sets the border colour of each tile.
+#'   - `ylim` and `xlim` control axis limits.
 #'
-#' @param date.format This option controls the date format on the x-axis. While
-#'   [timePlot()] generally sets the date format sensibly there can be some
-#'   situations where the user wishes to have more control. For format types see
-#'   [strptime()]. For example, to format the date like "Jan-2012" set
-#'   `date.format = "\%b-\%Y"`.
-#'
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
-#'   axis labels will automatically try and format pollutant names and units
-#'   properly, e.g., by subscripting the '2' in NO2.
-#'
-#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
-#'   data to extract plot components and plotting them in other ways.
-#'
-#' @param ... Other graphical parameters are passed onto [cutData()] and other
-#'   functions. For example, [timePlot()] passes the option `hemisphere =
-#'   "southern"` on to [cutData()] to provide southern (rather than default
-#'   northern) hemisphere handling of `type = "season"`. Similarly, most common
-#'   plotting parameters, such as `layout` for panel arrangement and `pch` and
-#'   `cex` for plot symbol type and size and `lty` and `lwd` for line type and
-#'   width, although some maybe locally managed by `openair` on route, e.g.,
-#'   axis and title labelling options (such as `xlab`, `ylab`, `main`) are
-#'   passed via [quickText()] to handle routine formatting. See examples below.
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw

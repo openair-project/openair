@@ -24,12 +24,6 @@
 #'   trajectories. There are two methods available: \dQuote{Euclid} and
 #'   \dQuote{Angle}.
 #' @param n.cluster Number of clusters to calculate.
-#' @param type `type` determines how the data are split i.e. conditioned, and
-#'   then plotted. The default is will produce a single plot using the entire
-#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
-#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
-#'   `type = "season"` will produce four plots --- one for each season. Note
-#'   that the cluster calculations are separately made of each level of "type".
 #' @param split.after For `type` other than \dQuote{default} e.g.
 #'   \dQuote{season}, the trajectories can either be calculated for each level
 #'   of `type` independently or extracted after the cluster calculations have

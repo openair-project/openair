@@ -29,11 +29,12 @@
 #' specific periods in more detail. Full flexibility is given through the
 #' smoothing parameter `k`.
 #'
+#' @inheritParams shared_openair_params
 #' @inheritParams polarPlot
-
+#'
 #' @param mydata A data frame minimally containing `date`, `wd` and a
 #'   pollutant.
-
+#'
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
 #'   data frame should be supplied e.g. `pollutant = "nox"`. There can also be
 #'   more than one pollutant specified e.g. `pollutant = c("nox", "no2")`. The
@@ -43,17 +44,6 @@
 #'   directly. A typical use would be `pollutant = c("obs", "mod")` to compare
 #'   two columns \dQuote{obs} (the observations) and \dQuote{mod} (modelled
 #'   values).
-#'
-#' @param offset `offset` controls the size of the 'hole' in the middle and is
-#'   expressed on a scale of `0` to `100`, where `0` is no hole and `100` is a
-#'   hole that takes up the entire plotting area.
-#'
-#' @param strip.position Location where the facet 'strips' are located when
-#'   using `type`. When one `type` is provided, can be one of `"left"`,
-#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
-#'   argument defines whether the strips are "switched" and can take either
-#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
-#'   locations to the bottom of the plot.
 #'
 #' @param resolution Two plot resolutions can be set: \dQuote{normal} and
 #'   \dQuote{fine} (the default).
@@ -79,30 +69,6 @@
 #'   week variation and \dQuote{trend} to plot the trend by wind direction.
 #'
 #' @param col.na Colour to be used to show missing data.
-#'
-#' @param type `type` determines how the data are split i.e. conditioned, and
-#'   then plotted. The default is will produce a single plot using the entire
-#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
-#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
-#'   `type = "season"` will produce four plots --- one for each season.
-#'
-#'   It is also possible to choose `type` as another variable in the data frame.
-#'   If that variable is numeric, then the data will be split into four
-#'   quantiles (if possible) and labelled accordingly. If type is an existing
-#'   character or factor variable, then those categories/levels will be used
-#'   directly. This offers great flexibility for understanding the variation of
-#'   different variables and how they depend on one another.
-#'
-#'   Type can be up length two e.g. `type = c("season", "site")` will produce a
-#'   2x2 plot split by season and site. The use of two types is mostly meant for
-#'   situations where there are several sites. Note, when two types are provided
-#'   the first forms the columns and the second the rows.
-#'
-#'   Also note that for the `polarAnnulus` function some type/period
-#'   combinations are forbidden or make little sense. For example, `type =
-#'   "season"` and `period = "trend"` (which would result in a plot with too
-#'   many gaps in it for sensible smoothing), or `type = "weekday"` and `period
-#'   = "weekday"`.
 #'
 #' @param statistic The statistic that should be applied to each wind
 #'   speed/direction bin. Can be \dQuote{mean} (default), \dQuote{median},
@@ -136,18 +102,12 @@
 #'   too noisy and affected more by outliers. Choosing a lower value of `k` (say
 #'   10) may help produce a better plot.
 #'
-#' @param angle.scale The scale is by default shown at a 315 degree angle.
-#'   Sometimes the placement of the scale may interfere with an interesting
-#'   feature. The user can therefore set `angle.scale` to another value (between
-#'   0 and 360 degrees) to mitigate such problems. For example `angle.scale =
-#'   45` will draw the scale heading in a NE direction.
-#'
-#' @param ... Other graphical parameters passed onto `cutData` and other
-#'   functions. For example, `polarAnnulus` passes the option `hemisphere =
-#'   "southern"` on to `cutData` to provide southern (rather than default
-#'   northern) hemisphere handling of `type = "season"`. Similarly, common axis
-#'   and title labelling options (such as `xlab`, `ylab`, `main`) are passed to
-#'   `levelplot` via `quickText` to handle routine formatting.
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `fontsize` overrides the overall font size of the plot.
+#'   - `annotate = FALSE` will not plot the N/E/S/W labels.
 #'
 #' @export
 #' @return an [openair][openair-package] object

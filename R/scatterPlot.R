@@ -33,153 +33,94 @@
 #' sometimes be useful is to aggregate the data. For example, hourly data can be
 #' aggregated to daily data. See [timePlot()] for examples here.
 #'
-#' By default plots are shown with a colour key at the bottom and in the case of
-#' conditioning, strips on the top of each plot. Sometimes this may be overkill
-#' and the user can opt to remove the key and/or the strip by setting `key`
-#' and/or `strip` to `FALSE`. One reason to do this is to maximise the plotting
-#' area and therefore the information shown.
+#' @inheritParams shared_openair_params
+#' @inheritParams timeAverage
+#'
 #' @param mydata A data frame containing at least two numeric variables to plot.
+#'
 #' @param x Name of the x-variable to plot. Note that x can be a date field or a
 #'   factor. For example, `x` can be one of the `openair` built in types such as
 #'   `"year"` or `"season"`.
+#'
 #' @param y Name of the numeric y-variable to plot.
+#'
 #' @param z Name of the numeric z-variable to plot for `method = "scatter"` or
 #'   `method = "level"`. Note that for `method = "scatter"` points will be
 #'   coloured according to a continuous colour scale, whereas for `method =
 #'   "level"` the surface is coloured.
+#'
 #' @param method Methods include \dQuote{scatter} (conventional scatter plot),
 #'   \dQuote{hexbin} (hexagonal binning using the `hexbin` package).
 #'   \dQuote{level} for a binned or smooth surface plot and \dQuote{density} (2D
 #'   kernel density estimates).
+#'
 #' @param group The grouping variable to use, if any. Setting this to a variable
 #'   in the data frame has the effect of plotting several series in the same
 #'   panel using different symbols/colours etc. If set to a variable that is a
 #'   character or factor, those categories or factor levels will be used
 #'   directly. If set to a numeric variable, it will split that variable in to
 #'   quantiles.
-#' @param avg.time This defines the time period to average to. Can be
-#'   \dQuote{sec}, \dQuote{min}, \dQuote{hour}, \dQuote{day}, \dQuote{DSTday},
-#'   \dQuote{week}, \dQuote{month}, \dQuote{quarter} or \dQuote{year}. For much
-#'   increased flexibility a number can precede these options followed by a
-#'   space. For example, a timeAverage of 2 months would be `period = "2
-#'   month"`. See function `timeAverage` for further details on this. This
-#'   option se useful as one method by which the number of points plotted is
-#'   reduced i.e. by choosing a longer averaging time.
-#' @param data.thresh The data capture threshold to use (\%) when aggregating
-#'   the data using `avg.time`. A value of zero means that all available data
-#'   will be used in a particular period regardless if of the number of values
-#'   available. Conversely, a value of 100 will mean that all data will need to
-#'   be present for the average to be calculated, else it is recorded as `NA`.
-#'   Not used if `avg.time = "default"`.
-#' @param statistic The statistic to apply when aggregating the data; default is
-#'   the mean. Can be one of "mean", "max", "min", "median", "frequency", "sd",
-#'   "percentile". Note that "sd" is the standard deviation and "frequency" is
-#'   the number (frequency) of valid records in the period. "percentile" is the
-#'   percentile level (\%) between 0-100, which can be set using the
-#'   "percentile" option - see below. Not used if `avg.time = "default"`.
-#' @param percentile The percentile level in percent used when `statistic =
-#'   "percentile"` and when aggregating the data with `avg.time`. The default is
-#'   95. Not used if `avg.time = "default"`.
-#' @param type `type` determines how the data are split i.e. conditioned, and
-#'   then plotted. The default is will produce a single plot using the entire
-#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
-#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
-#'   `type = "season"` will produce four plots --- one for each season.
 #'
-#'   It is also possible to choose `type` as another variable in the data frame.
-#'   If that variable is numeric, then the data will be split into four
-#'   quantiles (if possible) and labelled accordingly. If type is an existing
-#'   character or factor variable, then those categories/levels will be used
-#'   directly. This offers great flexibility for understanding the variation of
-#'   different variables and how they depend on one another.
-#'
-#'   Type can be up length two e.g. `type = c("season", "weekday")` will produce
-#'   a 2x2 plot split by season and day of the week. Note, when two types are
-#'   provided the first forms the columns and the second the rows.
 #' @param smooth A smooth line is fitted to the data if `TRUE`; optionally with
 #'   95 percent confidence intervals shown. For `method = "level"` a smooth
 #'   surface will be fitted to binned data.
+#'
 #' @param spline A smooth spline is fitted to the data if `TRUE`. This is
 #'   particularly useful when there are fewer data points or when a connection
 #'   line between a sequence of points is required.
+#'
 #' @param linear A linear model is fitted to the data if `TRUE`; optionally with
 #'   95 percent confidence intervals shown. The equation of the line and R2
 #'   value is also shown.
+#'
 #' @param ci Should the confidence intervals for the smooth/linear fit be shown?
+#'
 #' @param mod.line If `TRUE` three lines are added to the scatter plot to help
 #'   inform model evaluation. The 1:1 line is solid and the 1:0.5 and 1:2 lines
 #'   are dashed. Together these lines help show how close a group of points are
 #'   to a 1:1 relationship and also show the points that are within a factor of
 #'   two (FAC2).
-#' @param cols Colours to be used for plotting. Options include
-#'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet} and
-#'   `RColorBrewer` colours --- see the `openair` `openColours` function for
-#'   more details. For user defined the user can supply a list of colour names
-#'   recognised by R (type `colours()` to see the full list). An example would
-#'   be `cols = c("yellow", "green", "blue")`
+#'
 #' @param plot.type Type of plot: \dQuote{p} (points, default), \dQuote{l}
 #'   (lines) or \dQuote{b} (both points and lines).
-#' @param key Should a key be drawn? The default is `TRUE`.
-#' @param key.title The title of the key (if used).
-#' @param key.columns Number of columns to be used in the key. With many
-#'   pollutants a single column can make to key too wide. The user can thus
-#'   choose to use several columns by setting `columns` to be less than the
-#'   number of pollutants.
-#' @param key.position Location where the scale key is to plotted.  Allowed
-#'   arguments currently include \dQuote{top}, \dQuote{right}, \dQuote{bottom}
-#'   and \dQuote{left}.
-#' @param strip Should a strip be drawn? The default is `TRUE`.
-#' @param log.x Should the x-axis appear on a log scale? The default is `FALSE`.
-#'   If `TRUE` a well-formatted log10 scale is used. This can be useful for
-#'   checking linearity once logged.
-#' @param log.y Should the y-axis appear on a log scale? The default is `FALSE`.
-#'   If `TRUE` a well-formatted log10 scale is used. This can be useful for
-#'   checking linearity once logged.
-#' @param x.inc The x-interval to be used for binning data when `method =
-#'   "level"`.
-#' @param y.inc The y-interval to be used for binning data when `method =
-#'   "level"`.
+#'
+#' @param log.x,log.y Should the x-axis/y-axis appear on a log scale? The
+#'   default is `FALSE`. If `TRUE` a well-formatted log10 scale is used. This
+#'   can be useful for checking linearity once logged.
+#'
+#' @param x.inc,y.inc The x/y-interval to be used for binning data when `method
+#'   = "level"`.
+#'
 #' @param limits For `method = "level"` the function does its best to choose
 #'   sensible limits automatically. However, there are circumstances when the
 #'   user will wish to set different ones. The limits are set in the form
 #'   `c(lower, upper)`, so `limits = c(0, 100)` would force the plot limits to
 #'   span 0-100.
-#' @param windflow If `TRUE`, the vector-averaged wind speed and direction will
-#'   be plotted using arrows. Alternatively, can be a list of arguments to
-#'   control the appearance of the arrows (colour, linewidth, alpha value,
-#'   etc.). See [windflowOpts()] for details.
-#' @param y.relation This determines how the y-axis scale is plotted.
-#'   \dQuote{same} ensures all panels use the same scale and \dQuote{free} will
-#'   use panel-specific scales. The latter is a useful setting when plotting
-#'   data with very different values.
-#' @param x.relation This determines how the x-axis scale is plotted.
-#'   \dQuote{same} ensures all panels use the same scale and \dQuote{free} will
-#'   use panel-specific scales. The latter is a useful setting when plotting
-#'   data with very different values.
+#'
 #' @param ref.x,ref.y A list with details of the horizontal or vertical lines to
 #'   be added representing reference line(s). For example, `ref.y = list(h = 50,
 #'   lty = 5)` will add a dashed horizontal line at 50. Several lines can be
 #'   plotted e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
 #'   "blue"))`.
+#'
 #' @param k Smoothing parameter supplied to `gam` for fitting a smooth surface
 #'   when `method = "level"`.
+#'
 #' @param dist When plotting smooth surfaces (`method = "level"` and `smooth =
 #'   TRUE`), `dist` controls how far from the original data the predictions
 #'   should be made. See `exclude.too.far` from the `mgcv` package. Data are
 #'   first transformed to a unit square. Values should be between 0 and 1.
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
-#'   axis labels will automatically try and format pollutant names and units
-#'   properly e.g.  by subscripting the \sQuote{2} in NO2.
-#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
-#'   data to extract plot components and plotting them in other ways.
-#' @param ... Other graphical parameters passed onto `cutData` and ggplot2
-#'   layers. For example, `scatterPlot` passes the option `hemisphere =
-#'   "southern"` on to `cutData` to provide southern (rather than default
-#'   northern) hemisphere handling of `type = "season"`. Common graphical
-#'   parameters include `xlab`, `ylab`, `main`, `alpha`, `cex` (point size),
-#'   `lwd` (line width) and `lty` (line type). For `method = "hexbin"` a
-#'   log-scale fill is applied by default; pass `trans = NULL` to disable or
-#'   provide custom `trans` and `inv` transform functions.
+#'
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `fontsize` overrides the overall font size of the plot.
+#'   - `cex`, `lwd`, `lty`, `alpha`, `pch` and `border` control various graphical parameters.
+#'   - For `method = "hexbin"` a log-scale fill is applied by default; pass `trans = NULL` to disable or
+#'   provide custom `trans` and `inv` transform functions. `bins` controls the number of bins.
+#'   - `date.format` controls the format of date-time x-axes.
+#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
@@ -279,7 +220,7 @@ scatterPlot <- function(
   key.title = group,
   key.columns = 1,
   key.position = "right",
-  strip = TRUE,
+  strip.position = "top",
   log.x = FALSE,
   log.y = FALSE,
   x.inc = NULL,
@@ -378,7 +319,7 @@ scatterPlot <- function(
       key.position = key.position,
       key.title = key.title,
       key.columns = key.columns,
-      strip = strip,
+      strip.position = strip.position,
       limits = limits,
       k = k,
       auto.text = auto.text,
@@ -405,7 +346,7 @@ scatterPlot <- function(
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
-      strip = strip,
+      strip.position = strip.position,
       auto.text = auto.text,
       xlab = xlab,
       ylab = ylab,
@@ -432,7 +373,7 @@ scatterPlot <- function(
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
-      strip = strip,
+      strip.position = strip.position,
       k = k,
       dist = dist,
       auto.text = auto.text,
@@ -455,7 +396,7 @@ scatterPlot <- function(
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
-      strip = strip,
+      strip.position = strip.position,
       auto.text = auto.text,
       xlab = xlab,
       ylab = ylab,
@@ -585,7 +526,7 @@ scatter_scatter <- function(
   key.position,
   key.title,
   key.columns,
-  strip,
+  strip.position,
   limits,
   k,
   auto.text,
@@ -882,6 +823,7 @@ scatter_scatter <- function(
       extra.args,
       scales = facet_scales,
       auto.text = auto.text,
+      strip.position = strip.position,
       drop = FALSE
     )
 
@@ -890,8 +832,7 @@ scatter_scatter <- function(
     theme_openair(
       key.position = if (n_groups == 1L && !has_z) "none" else key.position
     ) +
-    ggplot2::labs(x = xlab, y = ylab, title = main) +
-    .strip_theme(strip)
+    ggplot2::labs(x = xlab, y = ylab, title = main)
 
   return(
     list(
@@ -924,7 +865,7 @@ scatter_hexbin <- function(
   ref.x,
   ref.y,
   key.position,
-  strip,
+  strip.position,
   auto.text,
   xlab,
   ylab,
@@ -1014,11 +955,11 @@ scatter_hexbin <- function(
       extra.args,
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
+      strip.position = strip.position,
       drop = FALSE
     ) +
     theme_openair(key.position = key.position) +
-    ggplot2::labs(x = xlab, y = ylab, title = main) +
-    .strip_theme(strip)
+    ggplot2::labs(x = xlab, y = ylab, title = main)
 
   return(
     list(
@@ -1053,7 +994,7 @@ scatter_level <- function(
   ref.x,
   ref.y,
   key.position,
-  strip,
+  strip.position,
   k,
   dist,
   auto.text,
@@ -1166,11 +1107,11 @@ scatter_level <- function(
       extra.args,
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
+      strip.position = strip.position,
       drop = FALSE
     ) +
     theme_openair(key.position = key.position) +
-    ggplot2::labs(x = xlab, y = ylab, title = main) +
-    .strip_theme(strip)
+    ggplot2::labs(x = xlab, y = ylab, title = main)
 
   return(
     list(
@@ -1294,7 +1235,7 @@ scatter_density <- function(
   ref.x,
   ref.y,
   key.position,
-  strip,
+  strip.position,
   auto.text,
   xlab,
   ylab,
@@ -1347,11 +1288,11 @@ scatter_density <- function(
       extra.args,
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
+      strip.position = strip.position,
       drop = FALSE
     ) +
     theme_openair(key.position = key.position) +
-    ggplot2::labs(x = xlab, y = ylab, title = main) +
-    .strip_theme(strip)
+    ggplot2::labs(x = xlab, y = ylab, title = main)
 
   return(
     list(
@@ -1478,19 +1419,6 @@ gg_coord_limits <- function(extra.args) {
       labs[which.min(breaks)] <- paste("<", labs[which.min(breaks)])
     }
     labs
-  }
-}
-
-#' Add strip theme override
-#' @noRd
-.strip_theme <- function(strip) {
-  if (!strip) {
-    ggplot2::theme(
-      strip.text = ggplot2::element_blank(),
-      strip.background = ggplot2::element_blank()
-    )
-  } else {
-    list()
   }
 }
 

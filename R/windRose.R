@@ -22,37 +22,30 @@
 #' contribution of each bin to the panel mean, and is intended for use with
 #' `pollutionRose`.
 #'
+#' @inheritParams shared_openair_params
+#'
 #' @param mydata A data frame containing fields `ws` and `wd`
+#'
 #' @param ws Name of the column representing wind speed.
+#'
 #' @param wd Name of the column representing wind direction.
+#'
 #' @param ws2,wd2 The user can supply a second set of wind speed and wind
 #'   direction values with which the first can be compared. See
 #'   [pollutionRose()] for more details.
+#'
 #' @param ws.int The Wind speed interval. Default is 2 m/s but for low met masts
 #'   with low mean wind speeds a value of 1 or 0.5 m/s may be better.
+#'
 #' @param angle Default angle of \dQuote{spokes} is 30. Other potentially useful
 #'   angles are 45 and 10. Note that the width of the wind speed interval may
 #'   need adjusting using `width`.
-#' @param type `type` determines how the data are split i.e. conditioned, and
-#'   then plotted. The default is will produce a single plot using the entire
-#'   data. Type can be one of the built-in types as detailed in `cutData` e.g.
-#'   \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so on. For example,
-#'   `type = "season"` will produce four plots --- one for each season.
 #'
-#'   It is also possible to choose `type` as another variable in the data frame.
-#'   If that variable is numeric, then the data will be split into four
-#'   quantiles (if possible) and labelled accordingly. If type is an existing
-#'   character or factor variable, then those categories/levels will be used
-#'   directly. This offers great flexibility for understanding the variation of
-#'   different variables and how they depend on one another.
-#'
-#'   Type can be up length two e.g. `type = c("season", "weekday")` will produce
-#'   a 2x2 plot split by season and day of the week. Note, when two types are
-#'   provided the first forms the columns and the second the rows.
 #' @param calm.thresh By default, conditions are considered to be calm when the
 #'   wind speed is zero. The user can set a different threshold for calms be
 #'   setting `calm.thresh` to a higher value. For example, `calm.thresh = 0.5`
 #'   will identify wind speeds **below** 0.5 as calm.
+#'
 #' @param bias.corr When `angle` does not divide exactly into 360 a bias is
 #'   introduced in the frequencies when the wind direction is already supplied
 #'   rounded to the nearest 10 degrees, as is often the case. For example, if
@@ -60,57 +53,47 @@
 #'   will be two. A bias correction can made to correct for this problem. A
 #'   simple method according to Applequist (2012) is used to adjust the
 #'   frequencies.
-#' @param cols Colours to be used for plotting. Options include
-#'   \dQuote{default}, \dQuote{increment}, \dQuote{heat}, \dQuote{jet},
-#'   \dQuote{hue} and user defined. For user defined the user can supply a list
-#'   of colour names recognised by R (type `colours()` to see the full list). An
-#'   example would be `cols = c("yellow", "green", "blue", "black")`.
+#'
 #' @param grid.line Grid line interval to use. If `NULL`, as in default, this is
 #'   assigned based on the available data range. However, it can also be forced
 #'   to a specific value, e.g. `grid.line = 10`. `grid.line` can also be a list
 #'   to control the interval, line type and colour. For example `grid.line =
 #'   list(value = 10, lty = 5, col = "purple")`.
+#'
 #' @param width For paddle = TRUE, the adjustment factor for width of wind speed
 #'   intervals. For example, width = 1.5 will make the paddle width 1.5 times
 #'   wider.
+#'
 #' @param seg `seg` determines with width of the segments. For example, `seg =
 #'   0.5` will produce segments 0.5 * `angle`.
+#'
 #' @param paddle Either `TRUE` or `FALSE`. If `TRUE` plots rose using 'paddle'
 #'   style spokes. If `FALSE` plots rose using 'wedge' style spokes.
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
-#'   axis labels will automatically try and format pollutant names and units
-#'   properly, e.g., by subscripting the \sQuote{2} in NO2.
+#'
 #' @param breaks Most commonly, the number of break points for wind speed. With
 #'   the `ws.int` default of 2 m/s, the `breaks` default, 4, generates the break
 #'   points 2, 4, 6, 8 m/s. However, `breaks` can also be used to set specific
 #'   break points. For example, the argument `breaks = c(0, 1, 10, 100)` breaks
 #'   the data into segments <1, 1-10, 10-100, >100.
-#' @param offset The size of the 'hole' in the middle of the plot, expressed as
-#'   a percentage of the polar axis scale, default 10.
+#'
 #' @param normalise If `TRUE` each wind direction segment is normalised to equal
 #'   one. This is useful for showing how the concentrations (or other
 #'   parameters) contribute to each wind sector when the proportion of time the
 #'   wind is from that direction is low. A line showing the probability that the
 #'   wind directions is from a particular wind sector is also shown.
+#'
 #' @param max.freq Controls the scaling used by setting the maximum value for
 #'   the radial limits. This is useful to ensure several plots use the same
 #'   radial limits.
-#' @param key.header Adds additional text/labels above the scale key. For
-#'   example, passing `windRose(mydata, key.header = "ws")` adds the addition
-#'   text as a scale header. Note: This argument is passed to [quickText()],
-#'   applying the auto.text argument, to handle formatting.
-#' @param key.footer Adds additional text/labels below the scale key. See
-#'   `key.header` for further information.
-#' @param key.position Location where the scale key is to plotted. Allowed
-#'   arguments currently include \dQuote{top}, \dQuote{right}, \dQuote{bottom}
-#'   and \dQuote{left}.
-#' @param key Show a key?
+#'
 #' @param dig.lab The number of significant figures at which scientific number
 #'   formatting is used in break point and key labelling. Default 5.
+#'
 #' @param include.lowest Logical. If `FALSE` (the default), the first interval
 #'   will be left exclusive and right inclusive. If `TRUE`, the first interval
 #'   will be left and right inclusive. Passed to the `include.lowest` argument
 #'   of [cut()].
+#'
 #' @param statistic The `statistic` to be applied to each data bin in the plot.
 #'   Options currently include \dQuote{prop.count}, \dQuote{prop.mean} and
 #'   \dQuote{abs.count}. The default \dQuote{prop.count} sizes bins according to
@@ -118,23 +101,22 @@
 #'   \dQuote{prop.mean} sizes bins according to their relative contribution to
 #'   the mean. \dQuote{abs.count} provides the absolute count of measurements in
 #'   each bin.
+#'
 #' @param pollutant Alternative data series to be sampled instead of wind speed.
 #'   The [windRose()] default NULL is equivalent to `pollutant = "ws"`. Use in
 #'   [pollutionRose()].
+#'
 #' @param annotate If `TRUE` then the percentage calm and mean values are
 #'   printed in each panel together with a description of the statistic below
 #'   the plot. If `FALSE` then only the statistic will be printed.
-#' @param angle.scale The scale is by default shown at a 315 degree angle.
-#'   Sometimes the placement of the scale may interfere with an interesting
-#'   feature. The user can therefore set `angle.scale` to another value (between
-#'   0 and 360 degrees) to mitigate such problems. For example `angle.scale =
-#'   45` will draw the scale heading in a NE direction.
+#'
 #' @param border Border colour for shaded areas. Default is no border.
-#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
-#'   data to extract plot components and plotting them in other ways.
-#' @param ... Other parameters that are passed on to `cutData` and other
-#'   functions. Axis and title labelling options (`xlab`, `ylab`, `main`) are
-#'   passed to `quickText` to handle routine formatting.
+#'
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `fontsize` overrides the overall font size of the plot.
 #'
 #' @export
 #' @return an [openair][openair-package] object. Summarised proportions can be
@@ -190,10 +172,11 @@ windRose <- function(
   normalise = FALSE,
   max.freq = NULL,
   paddle = TRUE,
+  key = TRUE,
   key.header = NULL,
   key.footer = "(m/s)",
   key.position = "bottom",
-  key = TRUE,
+  strip.position = "top",
   dig.lab = 5,
   include.lowest = FALSE,
   statistic = "prop.count",
@@ -524,6 +507,7 @@ windRose <- function(
         extra.args,
         scales = "fixed",
         auto.text = auto.text,
+        strip.position = strip.position,
         drop = FALSE
       )
 
@@ -869,6 +853,7 @@ windRose <- function(
       extra.args,
       scales = "fixed",
       auto.text = auto.text,
+      strip.position = strip.position,
       drop = FALSE
     )
 

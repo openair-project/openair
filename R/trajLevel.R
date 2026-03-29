@@ -49,9 +49,9 @@
 #' A further useful refinement is to smooth the resulting surface, which is
 #' possible by setting `smooth = TRUE`.
 #'
-#' @note This function is under active development and is likely to change
-#'
+#' @inheritParams shared_openair_params
 #' @inheritParams trajPlot
+#'
 #' @param smooth Should the trajectory surface be smoothed?
 #' @param statistic One of:
 #'   - `"frequency"` (the default) shows trajectory frequencies.
@@ -97,9 +97,6 @@
 #'   literature suggest 5.4 km after one hour. However, testing suggests lower
 #'   values reveal source regions more effectively while not introducing too
 #'   much noise.
-#'
-#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
-#'   data to extract plot components and plotting them in other ways.
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
 #'   Some additional arguments are also available:

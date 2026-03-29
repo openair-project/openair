@@ -7,8 +7,8 @@
 #' Conditional quantiles are a very useful way of considering model performance
 #' against observations for continuous measurements (Wilks, 2005). The
 #' conditional quantile plot splits the data into evenly spaced bins. For each
-#' predicted value bin e.g. from 0 to 10~ppb the *corresponding* values of
-#' the observations are identified and the median, 25/75th and 10/90 percentile
+#' predicted value bin e.g. from 0 to 10~ppb the *corresponding* values of the
+#' observations are identified and the median, 25/75th and 10/90 percentile
 #' (quantile) calculated for that bin. The data are plotted to show how these
 #' values vary across all bins. For a time series of observations and
 #' predictions that agree precisely the median value of the predictions will
@@ -31,49 +31,32 @@
 #' observations and can help reveal many useful characteristics of how well
 #' model predictions agree with observations --- across the full distribution of
 #' values. A single plot can therefore convey a considerable amount of
-#' information concerning model performance. The `conditionalQuantile`
-#' function in openair allows conditional quantiles to be considered in a
-#' flexible way e.g. by considering how they vary by season.
+#' information concerning model performance. The `conditionalQuantile` function
+#' in openair allows conditional quantiles to be considered in a flexible way
+#' e.g. by considering how they vary by season.
 #'
 #' The function requires a data frame consisting of a column of observations and
-#' a column of predictions. The observations are split up into `bins`
-#' according to values of the predictions. The median prediction line together
-#' with the 25/75th and 10/90th quantile values are plotted together with a line
-#' showing a \dQuote{perfect} model. Also shown is a histogram of predicted
-#' values (shaded grey) and a histogram of observed values (shown as a blue
-#' outline).
+#' a column of predictions. The observations are split up into `bins` according
+#' to values of the predictions. The median prediction line together with the
+#' 25/75th and 10/90th quantile values are plotted together with a line showing
+#' a \dQuote{perfect} model. Also shown is a histogram of predicted values
+#' (shaded grey) and a histogram of observed values (shown as a blue outline).
 #'
 #' Far more insight can be gained into model performance through conditioning
-#' using `type`. For example, `type = "season"` will plot conditional
-#' quantiles by each season. `type` can also be a factor or character field
-#' e.g. representing different models used.
+#' using `type`. For example, `type = "season"` will plot conditional quantiles
+#' by each season. `type` can also be a factor or character field e.g.
+#' representing different models used.
 #'
 #' See Wilks (2005) for more details and the examples below.
 #'
-#' @param mydata A data frame containing the field `obs` and `mod`
-#'   representing observed and modelled values.
+#' @inheritParams shared_openair_params
+#'
+#' @param mydata A data frame containing the field `obs` and `mod` representing
+#'   observed and modelled values.
 #'
 #' @param obs The name of the observations in `mydata`.
 #'
 #' @param mod The name of the predictions (modelled values) in `mydata`.
-#'
-#' @param type `type` determines how the data are split i.e. conditioned,
-#'   and then plotted. The default is will produce a single plot using the
-#'   entire data. Type can be one of the built-in types as detailed in
-#'   `cutData` e.g. \dQuote{season}, \dQuote{year}, \dQuote{weekday} and so
-#'   on. For example, `type = "season"` will produce four plots --- one for
-#'   each season.
-#'
-#'   It is also possible to choose `type` as another variable in the data
-#'   frame. If that variable is numeric, then the data will be split into four
-#'   quantiles (if possible) and labelled accordingly. If type is an existing
-#'   character or factor variable, then those categories/levels will be used
-#'   directly. This offers great flexibility for understanding the variation of
-#'   different variables and how they depend on one another.
-#'
-#'   Type can be up length two e.g. `type = c("season", "weekday")` will
-#'   produce a 2x2 plot split by season and day of the week. Note, when two
-#'   types are provided the first forms the rows and the second the columns.
 #'
 #' @param bins Number of bins to be used in calculating the different quantile
 #'   levels.
@@ -81,33 +64,11 @@
 #' @param min.bin The minimum number of points required for the estimates of the
 #'   25/75th and 10/90th percentiles.
 #'
-#' @param cols Passed to `openColours()` with `n = 3`.
-#'
-#' @param key.columns Number of columns to be used in the key.
-#'
-#' @param key.position Location of the key e.g. \dQuote{top}, \dQuote{bottom},
-#'   \dQuote{right}, \dQuote{left}.
-#'
-#' @param key Should a key be shown? Defaults to `TRUE`.
-#'
-#' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE`
-#'   titles and axis labels etc. will automatically try and format pollutant
-#'   names and units properly e.g.  by subscripting the `2' in NO2.
-#'
-#' @param strip.position Location where the facet 'strips' are located when
-#'   using `type`. When one `type` is provided, can be one of `"left"`,
-#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
-#'   argument defines whether the strips are "switched" and can take either
-#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
-#'   locations to the bottom of the plot.
-#'
-#' @param plot Should a plot be produced? `FALSE` can be useful when analysing
-#'   data in other ways.
-#'
-#' @param \dots Other graphical parameters passed onto `cutData` and
-#'   `ggplot2`. For example, `conditionalQuantile` passes the option
-#'   `hemisphere = "southern"` on to `cutData` to provide southern
-#'   (rather than default northern) hemisphere handling of `type = "season"`.
+#' @param ... Addition options are passed on to [cutData()] for `type` handling.
+#'   Some additional arguments are also available:
+#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
+#'   - `fontsize` overrides the overall font size of the plot.
 #'
 #' @export
 #'
@@ -115,8 +76,8 @@
 #' @author Jack Davison
 #'
 #' @family model evaluation functions
-#' @seealso The `verification` package for comprehensive functions for
-#'   forecast verification.
+#' @seealso The `verification` package for comprehensive functions for forecast
+#'   verification.
 #'
 #' @references
 #'

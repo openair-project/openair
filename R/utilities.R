@@ -234,3 +234,17 @@ pad_string <- function(y, n = NULL) {
   }
   y
 }
+
+#' Simple block bootstrap, overlapping blocks, no wrap-around,
+#' no matching of ends
+#' @param n length of data
+#' @param b bootstrap replicates
+#' @noRd
+samp_boot_block <- function(n, b, block_length = 20) {
+  nblocks <- ceiling(n / block_length)
+  x <- sample.int((n - block_length + 1), b * nblocks, replace = TRUE)
+  dim(x) <- c(nblocks, b)
+  apply(x, 2, function(y, L) (0:(L - 1)) + rep(y, each = L), L = block_length)[
+    1:n,
+  ]
+}

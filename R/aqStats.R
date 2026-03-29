@@ -69,7 +69,7 @@
 #' @param transpose The default is to return a data frame with columns
 #'   representing the statistics. If `transpose = TRUE` then the results have
 #'   columns for each pollutant-type combination.
-#' @param ... Other arguments, currently unused.
+#' @param ... Passed to [cutData()] for use with `type`.
 #' @export
 #' @author David Carslaw
 #' @examples

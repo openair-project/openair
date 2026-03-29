@@ -25,8 +25,7 @@
 #' @param conf.int The confidence interval, defaulting to `0.95` (i.e., the 95%
 #'   Confidence Interval).
 #' @param B The number of bootstrap simulations.
-#' @param ... Other parameters that are passed on to [cutData()], for use with
-#'   `type`.
+#' @param ... Passed to [cutData()] for use with `type`.
 #'
 #' @return Returns a summarised data frame with new columns for the mean and
 #'   upper / lower confidence intervals in the mean.

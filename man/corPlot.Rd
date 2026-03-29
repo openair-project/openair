@@ -18,9 +18,10 @@ corPlot(
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
+  key = FALSE,
   key.header = NULL,
   key.position = "right",
-  key = FALSE,
+  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -33,9 +34,27 @@ corPlot(
 \code{corPlot}. The default option \code{NULL} and the alternative \code{"all"} use all
 available valid (numeric) data.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned, and
-then plotted. For example, \code{type = "season"} will produce four plots ---
-one for each season. See \code{\link[=cutData]{cutData()}} for more information.}
+\item{type}{Character string(s) defining how data should be split/conditioned
+before plotting. \code{"default"} produces a single panel using the entire
+dataset. Any other options will split the plot into different panels - a
+roughly square grid of panels if one \code{type} is given, or a 2D matrix of
+panels if two \code{types} are given. \code{type} is always passed to \code{\link[=cutData]{cutData()}},
+and can therefore be any of:
+\itemize{
+\item A built-in type defined in \code{\link[=cutData]{cutData()}} (e.g., \code{"season"}, \code{"year"},
+\code{"weekday"}, etc.). For example, \code{type = "season"} will split the plot into
+four panels, one for each season.
+\item The name of a numeric column in \code{mydata}, which will be split into
+\code{n.levels} quantiles (defaulting to 4).
+\item The name of a character or factor column in \code{mydata}, which will be used
+as-is. Commonly this could be a variable like \code{"site"} to ensure data from
+different monitoring sites are handled and presented separately. It could
+equally be any arbitrary column created by the user (e.g., whether a nearby
+possible pollutant source is active or not).
+}
+
+Most \code{openair} plotting functions can take two \code{type} arguments. If two are
+given, the first is used for the rows and the second for the columns.}
 
 \item{cluster}{Should the data be ordered according to cluster analysis. If
 \code{TRUE} hierarchical clustering is applied to the correlation matrices using
@@ -68,8 +87,10 @@ Can be \code{"both"}, \code{"lower"} or \code{"upper"}. Defaults to \code{"both"
 diagonal of a correlation matrix is axiomatically always \code{1} as it
 represents correlating a variable with itself. Defaults to \code{TRUE}.}
 
-\item{cols}{Colours to be used for plotting. See \code{\link[=openColours]{openColours()}} for more
-details.}
+\item{cols}{Colours to use for plotting. Can be a pre-set palette (e.g.,
+\code{"turbo"}, \code{"viridis"}, \code{"tol"}, \code{"Dark2"}, etc.) or a user-defined vector
+of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
+\code{\link[=colours]{colours()}} for a full list) or hex-codes (e.g., \code{c("#30123B", "#9CF649", "#7A0403")}). See \code{\link[=openColours]{openColours()}} for more details.}
 
 \item{r.thresh}{Values of greater than \code{r.thresh} will be shown in bold type.
 This helps to highlight high correlations.}
@@ -78,20 +99,34 @@ This helps to highlight high correlations.}
 The first value controls the colour of negative correlations and the second
 positive.}
 
-\item{key.header}{Used to control the title of the plot key. Defaults to
-\code{NULL}; no header.}
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 
-\item{key.position}{Location where the scale key is to plotted. Allowed
-arguments currently include \code{"top"}, \code{"right"}, \code{"bottom"} and \code{"left"}.}
+\item{key.header}{Used to control the title of the legend. \code{key.header} and
+\code{key.footer} are now pasted together to form a single legend title. In
+future, they are likely to be deprecated and combined into a single
+argument.}
 
-\item{key}{Should a key be shown? In \code{\link[=corPlot]{corPlot()}} this defaults to \code{FALSE}.}
+\item{key.position}{Location where the legend is to be placed. Allowed
+arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
+the last of which removes the legend entirely.}
+
+\item{strip.position}{Location where the facet 'strips' are located when
+using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
+\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
+argument defines whether the strips are "switched" and can take either
+\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
+locations to the bottom of the plot.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
-properly, e.g., by subscripting the `2' in NO2.}
+properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
-data to extract corPlot components and plotting them in other ways.}
+\item{plot}{When \code{openair} plots are created they are automatically printed
+to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
+This may be useful when the plot \emph{data} is of more interest, or the plot is
+required to appear later (e.g., later in a Quarto document, or to be saved
+to a file).}
 
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
 Some additional arguments are also available:

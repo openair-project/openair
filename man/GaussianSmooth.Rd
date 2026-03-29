@@ -35,7 +35,7 @@ used.}
 
 \item{date.pad}{Should missing dates be padded? Default is \code{FALSE}.}
 
-\item{...}{Additional parameters passed to \code{\link[=cutData]{cutData()}}. For use with \code{type}.}
+\item{...}{Passed to \code{\link[=cutData]{cutData()}} for use with \code{type}.}
 }
 \value{
 A tibble with two new columns for the Gaussian smooth value.

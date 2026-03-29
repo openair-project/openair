@@ -9,16 +9,24 @@
 #' @param mydata A data frame containing a `date` field. `mydata` must contain a
 #'   `date` field in `Date` or `POSIXct` format. The input time series must be
 #'   regular, e.g., hourly, daily.
+#'
 #' @param pollutant The name of a pollutant, e.g., `pollutant = "o3"`. More than one pollutant can be supplied as a vector, e.g., `pollutant = c("o3", "nox")`.
+#'
 #' @param sigma The value of `sigma` to use in the Gaussian.
+#'
 #' @param type Used for splitting the data further. Passed to [cutData()].
+#'
 #' @param data.thresh The % data capture threshold. No values are calculated if
 #'   data capture over the period of interest is less than this value.
+#'
 #' @param new.name The name given to the new column(s). If not supplied it will
 #'   create a name based on the name of the pollutant and the averaging period
 #'   used.
+#'
 #' @param date.pad Should missing dates be padded? Default is `FALSE`.
-#' @param ... Additional parameters passed to [cutData()]. For use with `type`.
+#'
+#' @param ... Passed to [cutData()] for use with `type`.
+#'
 #' @export
 #' @return A tibble with two new columns for the Gaussian smooth value.
 #' @author David Carslaw

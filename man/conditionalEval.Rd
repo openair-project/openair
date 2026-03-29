@@ -22,8 +22,8 @@ conditionalEval(
 )
 }
 \arguments{
-\item{mydata}{A data frame containing the field \code{obs} and \code{mod}
-representing observed and modelled values.}
+\item{mydata}{A data frame containing the field \code{obs} and \code{mod} representing
+observed and modelled values.}
 
 \item{obs}{The name of the observations in \code{mydata}.}
 
@@ -35,9 +35,27 @@ calculated. Can be more than length one e.g. \code{var.obs = c("nox.obs", "ws.ob
 \item{var.mod}{Other variable predictions for which statistics should be
 calculated. Can be more than length one e.g. \code{var.mod = c("nox.mod", "ws.mod")}.}
 
-\item{type}{\code{type} determines how the data are split i.e. conditioned,
-and then plotted. Only one type can be used with this function. The
-default produces a single plot using the entire data.}
+\item{type}{Character string(s) defining how data should be split/conditioned
+before plotting. \code{"default"} produces a single panel using the entire
+dataset. Any other options will split the plot into different panels - a
+roughly square grid of panels if one \code{type} is given, or a 2D matrix of
+panels if two \code{types} are given. \code{type} is always passed to \code{\link[=cutData]{cutData()}},
+and can therefore be any of:
+\itemize{
+\item A built-in type defined in \code{\link[=cutData]{cutData()}} (e.g., \code{"season"}, \code{"year"},
+\code{"weekday"}, etc.). For example, \code{type = "season"} will split the plot into
+four panels, one for each season.
+\item The name of a numeric column in \code{mydata}, which will be split into
+\code{n.levels} quantiles (defaulting to 4).
+\item The name of a character or factor column in \code{mydata}, which will be used
+as-is. Commonly this could be a variable like \code{"site"} to ensure data from
+different monitoring sites are handled and presented separately. It could
+equally be any arbitrary column created by the user (e.g., whether a nearby
+possible pollutant source is active or not).
+}
+
+Most \code{openair} plotting functions can take two \code{type} arguments. If two are
+given, the first is used for the rows and the second for the columns.}
 
 \item{bins}{Number of bins to be used in calculating the different quantile
 levels.}
@@ -49,7 +67,10 @@ name in the data frame or a date-based type (e.g. \dQuote{season}), in
 which case the plot shows the proportions of that variable across the
 prediction intervals. A special case is \dQuote{cluster}.}
 
-\item{cols}{Passed to \code{openColours()} with \code{n = 3}.}
+\item{cols}{Colours to use for plotting. Can be a pre-set palette (e.g.,
+\code{"turbo"}, \code{"viridis"}, \code{"tol"}, \code{"Dark2"}, etc.) or a user-defined vector
+of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
+\code{\link[=colours]{colours()}} for a full list) or hex-codes (e.g., \code{c("#30123B", "#9CF649", "#7A0403")}). See \code{\link[=openColours]{openColours()}} for more details.}
 
 \item{col.var}{Colours for the additional variables. See \code{openColours}
 for more details.}
@@ -57,12 +78,15 @@ for more details.}
 \item{var.names}{Variable names to be shown in the legend for \code{var.obs}
 and \code{var.mod}.}
 
-\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE}
-titles and axis labels etc. will automatically try and format pollutant
-names and units properly e.g.  by subscripting the `2' in NO2.}
+\item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
+axis labels will automatically try and format pollutant names and units
+properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
 
-\item{plot}{Should a plot be produced? \code{FALSE} can be useful when analysing
-data in other ways.}
+\item{plot}{When \code{openair} plots are created they are automatically printed
+to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
+This may be useful when the plot \emph{data} is of more interest, or the plot is
+required to appear later (e.g., later in a Quarto document, or to be saved
+to a file).}
 
 \item{...}{Other graphical parameters passed onto \code{\link[=conditionalQuantile]{conditionalQuantile()}}
 and \code{\link[=cutData]{cutData()}}.}

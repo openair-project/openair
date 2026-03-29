@@ -33,7 +33,7 @@
 #' @param print.int Logical; when `TRUE` prints detected/selected interval
 #'   messages.
 #'
-#' @param ... Passed to [cutData()].
+#' @param ... Passed to [cutData()] for use with `type`.
 #'
 #' @return A dataframe expanded to the requested sequence with values filled
 #'   according to 'fill'. The returned object preserves the 'date' column type
