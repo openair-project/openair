@@ -193,7 +193,7 @@ test_that("timeVariation$plot is a list named after panels", {
 test_that("timeVariation$data is a list of tibbles named after panels", {
   default_panels <- c("hour.weekday", "hour", "month", "weekday")
   expect_true(all(default_panels %in% names(tv$data)))
-  expect_true(all(purrr::map_lgl(tv$data[default_panels], tibble::is_tibble)))
+  expect_true(all(purrr::map_lgl(tv$data[default_panels], is.data.frame)))
 })
 
 test_that("timeVariation$main.plot is a patchwork object", {
