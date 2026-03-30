@@ -57,7 +57,7 @@
 #'   then plotted. Only one type can be used with this function, as one faceting
 #'   'direction' is reserved by the month of the year. If a single `type` is
 #'   given, it will form the "rows" of the resulting grid. Alternatively,
-#'   `c("month", type)` can be used can be specified for `type` to be used as
+#'   `c(type, "month")` can be used can be specified for `type` to be used as
 #'   the "columns" instead.
 #'
 #'   `type = "year"` is a special case for [calendarPlot()] and will

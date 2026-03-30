@@ -60,7 +60,7 @@ use the \code{month} option where month is a numeric 1:12 e.g. \code{month = c(1
 then plotted. Only one type can be used with this function, as one faceting
 'direction' is reserved by the month of the year. If a single \code{type} is
 given, it will form the "rows" of the resulting grid. Alternatively,
-\code{c("month", type)} can be used can be specified for \code{type} to be used as
+\code{c(type, "month")} can be used can be specified for \code{type} to be used as
 the "columns" instead.
 
 \code{type = "year"} is a special case for \code{\link[=calendarPlot]{calendarPlot()}} and will

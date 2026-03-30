@@ -292,7 +292,7 @@ timeVariation <- function(
     purrr::map(
       .x = seq_along(panels),
       .f = \(i) {
-        types <- c(type[type != "default"], panels_facet[[i]])
+        types <- c(panels_facet[[i]], type[type != "default"])
         if (length(types) == 0) {
           types <- "default"
         }

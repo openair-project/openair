@@ -263,7 +263,7 @@ possible pollutant source is active or not).
 }
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
-given, the first is used for the rows and the second for the columns.}
+given, the first is used for the columns and the second for the rows.}
     \item{\code{key}}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
 \code{key.position} to \code{"none"}.}
     \item{\code{key.position}}{Location where the legend is to be placed. Allowed

@@ -53,7 +53,7 @@ possible pollutant source is active or not).
 }
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
-given, the first is used for the rows and the second for the columns.}
+given, the first is used for the columns and the second for the rows.}
 
 \item{x}{Name of variable to plot against wind direction in polar
 coordinates, the default is wind speed, \dQuote{ws}.}

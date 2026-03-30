@@ -74,7 +74,7 @@ possible pollutant source is active or not).
 }
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
-given, the first is used for the rows and the second for the columns.}
+given, the first is used for the columns and the second for the rows.}
 
 \item{normalise}{Should the data be normalised by dividing the standard
 deviation of the observations? The statistics can be normalised (and

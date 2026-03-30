@@ -47,7 +47,7 @@ possible pollutant source is active or not).
 }
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
-given, the first is used for the rows and the second for the columns.}
+given, the first is used for the columns and the second for the rows.}
 
 \item{split.after}{For \code{type} other than \dQuote{default} e.g.
 \dQuote{season}, the trajectories can either be calculated for each level

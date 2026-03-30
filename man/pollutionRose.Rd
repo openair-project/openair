@@ -129,7 +129,7 @@ possible pollutant source is active or not).
 }
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
-given, the first is used for the rows and the second for the columns.}
+given, the first is used for the columns and the second for the rows.}
     \item{\code{cols}}{Colours to use for plotting. Can be a pre-set palette (e.g.,
 \code{"turbo"}, \code{"viridis"}, \code{"tol"}, \code{"Dark2"}, etc.) or a user-defined vector
 of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see

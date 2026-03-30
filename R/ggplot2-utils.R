@@ -171,8 +171,8 @@ get_facet <- function(
       fun <-
         ggplot2::facet_grid(
           drop = drop,
-          rows = ggplot2::vars(.data[[type[1]]]),
-          cols = ggplot2::vars(.data[[type[2]]]),
+          cols = ggplot2::vars(.data[[type[1]]]),
+          rows = ggplot2::vars(.data[[type[2]]]),
           labeller = labeller_openair(auto_text = auto.text),
           scales = scales,
           switch = strip.position,

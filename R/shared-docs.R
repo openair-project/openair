@@ -24,7 +24,7 @@
 #'   possible pollutant source is active or not).
 #'
 #'   Most `openair` plotting functions can take two `type` arguments. If two are
-#'   given, the first is used for the rows and the second for the columns.
+#'   given, the first is used for the columns and the second for the rows.
 #'
 #' @param cols Colours to use for plotting. Can be a pre-set palette (e.g.,
 #'   `"turbo"`, `"viridis"`, `"tol"`, `"Dark2"`, etc.) or a user-defined vector

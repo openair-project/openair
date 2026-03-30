@@ -63,7 +63,7 @@ possible pollutant source is active or not).
 }
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
-given, the first is used for the rows and the second for the columns.}
+given, the first is used for the columns and the second for the rows.}
 
 \item{percentile}{The percentile value(s) to plot. Must be between 0--100. If
 \code{percentile = NA} then only a mean line will be shown.}

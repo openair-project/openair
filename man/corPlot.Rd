@@ -54,7 +54,7 @@ possible pollutant source is active or not).
 }
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
-given, the first is used for the rows and the second for the columns.}
+given, the first is used for the columns and the second for the rows.}
 
 \item{cluster}{Should the data be ordered according to cluster analysis. If
 \code{TRUE} hierarchical clustering is applied to the correlation matrices using

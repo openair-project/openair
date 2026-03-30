@@ -90,7 +90,7 @@ possible pollutant source is active or not).
 }
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
-given, the first is used for the rows and the second for the columns.}
+given, the first is used for the columns and the second for the rows.}
 
 \item{statistic}{The statistic that should be applied to each wind
 speed/direction bin. Can be \dQuote{mean} (default), \dQuote{median},

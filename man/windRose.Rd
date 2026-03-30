@@ -79,7 +79,7 @@ possible pollutant source is active or not).
 }
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
-given, the first is used for the rows and the second for the columns.}
+given, the first is used for the columns and the second for the rows.}
 
 \item{calm.thresh}{By default, conditions are considered to be calm when the
 wind speed is zero. The user can set a different threshold for calms be

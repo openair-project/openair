@@ -64,7 +64,7 @@ possible pollutant source is active or not).
 }
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
-given, the first is used for the rows and the second for the columns.}
+given, the first is used for the columns and the second for the rows.}
 
 \item{map}{Should a base map be drawn? If \code{TRUE} the world base map provided
 by \code{\link[ggplot2:map_data]{ggplot2::map_data()}} will be used.}
