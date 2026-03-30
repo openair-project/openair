@@ -179,8 +179,8 @@ timePlot(
     source is active or not).
 
   Most `openair` plotting functions can take two `type` arguments. If
-  two are given, the first is used for the rows and the second for the
-  columns.
+  two are given, the first is used for the columns and the second for
+  the rows.
 
 - cols:
 
