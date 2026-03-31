@@ -21,6 +21,7 @@ theme_openair <- function(key.position) {
       strip.background = ggplot2::element_rect(fill = "white"),
       panel.spacing = ggplot2::rel(2.5),
       legend.position = key.position,
+      legend.background = ggplot2::element_blank(),
       plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
       plot.subtitle = ggplot2::element_text(hjust = 0.5),
       plot.caption = ggplot2::element_text(hjust = 0.5, face = "bold"),
