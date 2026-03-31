@@ -245,20 +245,18 @@ Adapted from the approach taken by Sarkar (2007)
 ## Examples
 
 ``` r
-# basic corrgram plot
+# basic plot
 corPlot(mydata)
 
 
+if (FALSE) { # \dontrun{
 # plot by season
 corPlot(mydata, type = "season")
-
 
 # recover dendrogram when cluster = TRUE and plot it
 res <- corPlot(mydata, plot = FALSE)
 plot(res$clust)
 
-
-if (FALSE) { # \dontrun{
 # a more interesting are hydrocarbon measurements
 hc <- importAURN(site = "my1", year = 2005, hc = TRUE)
 
