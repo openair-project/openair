@@ -173,9 +173,10 @@ many flexible ways, although this may become difficult to visualise with too
 many panels.
 }
 \examples{
-# basic corrgram plot
+# basic plot
 corPlot(mydata)
 
+\dontrun{
 # plot by season
 corPlot(mydata, type = "season")
 
@@ -183,7 +184,6 @@ corPlot(mydata, type = "season")
 res <- corPlot(mydata, plot = FALSE)
 plot(res$clust)
 
-\dontrun{
 # a more interesting are hydrocarbon measurements
 hc <- importAURN(site = "my1", year = 2005, hc = TRUE)
 
