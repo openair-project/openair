@@ -19,7 +19,7 @@ corPlot(
   r.thresh = 0.8,
   text.col = c("black", "black"),
   key = FALSE,
-  key.header = NULL,
+  key.title = NULL,
   key.position = "right",
   strip.position = "top",
   auto.text = TRUE,
@@ -102,10 +102,8 @@ positive.}
 \item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
 \code{key.position} to \code{"none"}.}
 
-\item{key.header}{Used to control the title of the legend. \code{key.header} and
-\code{key.footer} are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.}
+\item{key.title}{Used to set the title of the legend. The legend title is
+passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},

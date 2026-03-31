@@ -187,6 +187,7 @@ trajLevel <- function(
   grid.ny = grid.nx,
   origin = TRUE,
   key = TRUE,
+  key.title = NULL,
   key.position = "right",
   key.columns = NULL,
   strip.position = "top",
@@ -238,7 +239,7 @@ trajLevel <- function(
     }
   }
 
-  if (!"key.header" %in% names(extra.args)) {
+  if (missing(key.title)) {
     header <- switch(
       statistic,
       "frequency" = "% trajectories",
@@ -258,7 +259,10 @@ trajLevel <- function(
       header <- paste0("SQTBA \n(Normalised)\n", pollutant)
     }
 
-    extra.args$key.header <- header
+    key.title <- header
+
+    # check if key.header / key.footer are being used
+    key.title <- check_key_header(key.title, extra.args)
   }
 
   # cut data by type
@@ -661,14 +665,7 @@ trajLevel <- function(
       x = quickText(extra.args$xlab, auto.text),
       y = quickText(extra.args$ylab, auto.text),
       title = quickText(extra.args$main, auto.text),
-      fill = quickText(
-        paste(
-          extra.args$key.header,
-          extra.args$key.footer,
-          sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
-        ),
-        auto.text = auto.text
-      )
+      fill = quickText(key.title, auto.text = auto.text)
     )
 
   # add map if requested

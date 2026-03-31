@@ -82,16 +82,6 @@ the last of which removes the legend entirely.}
 \item{key.title}{Used to set the title of the legend. The legend title is
 passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 
-\item{key.header}{Used to control the title of the legend. \code{key.header} and
-\code{key.footer} are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.}
-
-\item{key.footer}{Used to control the title of the legend. \code{key.header} and
-\code{key.footer} are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.}
-
 \item{key.columns}{Number of columns to be used in a categorical legend. With
 many categories a single column can make to key too wide. The user can thus
 choose to use several columns by setting \code{key.columns} to be less than the

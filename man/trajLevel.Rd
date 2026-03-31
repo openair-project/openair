@@ -32,6 +32,7 @@ trajLevel(
   grid.ny = grid.nx,
   origin = TRUE,
   key = TRUE,
+  key.title = NULL,
   key.position = "right",
   key.columns = NULL,
   strip.position = "top",
@@ -165,6 +166,9 @@ point.}
 
 \item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
 \code{key.position} to \code{"none"}.}
+
+\item{key.title}{Used to set the title of the legend. The legend title is
+passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},

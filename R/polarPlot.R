@@ -383,8 +383,7 @@ polarPlot <-
     k = 100,
     normalise = FALSE,
     key = TRUE,
-    key.header = statistic,
-    key.footer = pollutant,
+    key.title = paste(statistic, pollutant, sep = "\n"),
     key.position = "right",
     strip.position = "top",
     auto.text = TRUE,
@@ -466,20 +465,6 @@ polarPlot <-
       stop("weights should be of length 3.")
     }
 
-    if (key.header == "nwr") {
-      key.header <- "NWR"
-    }
-    if (key.header == "weighted_mean") {
-      key.header <- "weighted mean"
-    }
-    if (key.header == "percentile") {
-      key.header <- c(paste0(percentile, "th"), "percentile")
-    }
-
-    if ("cpf" %in% key.header) {
-      key.header <- c("CPF", "probability")
-    }
-
     ## key handling
     if (!key) {
       key.position <- "none"
@@ -513,6 +498,10 @@ polarPlot <-
     } else {
       FALSE
     }
+
+    ## need to initialise key_header & key_footer for later combination
+    key_header <- statistic
+    key_footer <- paste(pollutant, collapse = ", ")
 
     ## layout default
     if (!"layout" %in% names(extra.args)) {
@@ -783,14 +772,12 @@ polarPlot <-
         .by = dplyr::all_of(type)
       )
 
-      if (missing(key.footer)) key.footer <- "normalised level"
+      key_footer <- "normalised level"
     }
 
     # correlation notation
     if (statistic %in% c("r", "Pearson", "Spearman")) {
-      if (missing(key.footer)) {
-        key.footer <- paste0("corr(", pollutant[1], ", ", pollutant[2], ")")
-      }
+      key_footer <- paste0("corr(", pollutant[1], ", ", pollutant[2], ")")
 
       # make sure smoothing does not results in r>1 or <-1
       # sometimes happens with little data at edges
@@ -803,38 +790,54 @@ polarPlot <-
       if (length(id) > 0) res$z[id] <- -1
     }
 
-    # if regression, set key.footer to 'm' (slope)
+    # if regression, set key_footer to 'm' (slope)
     if (grepl("slope|intercept", statistic) && length(pollutant) == 2) {
-      key.footer <- "m"
+      key_footer <- "m"
     }
 
     # Labels for correlation and regression, keep lower case like other labels
-    if (statistic %in% c("r", "Pearson")) {
-      key.header <- expression(italic("Pearson correlation"))
-    }
+    if (missing(key.title)) {
+      if (key_header == "nwr") {
+        key_header <- "NWR"
+      }
+      if (key_header == "weighted_mean") {
+        key_header <- "weighted mean"
+      }
+      if (key_header == "percentile") {
+        key_header <- c(paste0(percentile, "th"), "percentile")
+      }
 
-    if (statistic == "Spearman") {
-      key.header <- expression(italic("Spearman correlation"))
-    }
+      if ("cpf" %in% key_header) {
+        key_header <- c("CPF probability")
+      }
 
-    if (statistic == "robust_slope") {
-      key.header <- "robust slope"
-    }
+      if (statistic %in% c("r", "Pearson")) {
+        key_header <- ("Pearson correlation")
+      }
 
-    if (statistic == "robust_intercept") {
-      key.header <- "robust intercept"
-    }
+      if (statistic == "Spearman") {
+        key_header <- "Spearman correlation"
+      }
 
-    if (statistic == "york_slope") {
-      key.header <- "York regression slope"
-    }
+      if (statistic == "robust_slope") {
+        key_header <- "robust slope"
+      }
 
-    if (statistic == "quantile_slope") {
-      key.header <- paste0("quantile slope (tau: ", tau, ")")
-    }
+      if (statistic == "robust_intercept") {
+        key_header <- "robust intercept"
+      }
 
-    if (statistic == "quantile_intercept") {
-      key.header <- paste0("quantile intercept (tau: ", tau, ")")
+      if (statistic == "york_slope") {
+        key_header <- "York regression slope"
+      }
+
+      if (statistic == "quantile_slope") {
+        key_header <- paste0("quantile slope (tau: ", tau, ")")
+      }
+
+      if (statistic == "quantile_intercept") {
+        key_header <- paste0("quantile intercept (tau: ", tau, ")")
+      }
     }
 
     ## special handling of layout for uncertainty
@@ -847,23 +850,16 @@ polarPlot <-
       type <- "uncertainty"
     }
 
-    ## Format legend title (key.header may be an expression)
-    if (is.expression(key.header)) {
-      header_str <- tryCatch(
-        as.character(key.header[[1]][[2]]),
-        error = function(e) deparse(key.header)
-      )
-    } else {
-      header_str <- paste(key.header, collapse = "\n")
+    # Format legend title
+    if (missing(key.title)) {
+      key.title <- paste(key_header, key_footer, sep = "\n")
     }
-    footer_str <- paste(key.footer, collapse = "\n")
-    title_sep <- if (key.position %in% c("top", "bottom")) " " else "\n"
-    title_parts <- c(header_str, footer_str)
-    title_parts <- title_parts[nzchar(trimws(title_parts))]
-    legend_title <- quickText(
-      paste(title_parts, collapse = title_sep),
-      auto.text
-    )
+
+    # check if key.header / key.footer are being used
+    key.title <- check_key_header(key.title, extra.args)
+
+    # run through
+    legend_title <- quickText(key.title, auto.text)
 
     # restore to polar coordinates
     plot_data <-

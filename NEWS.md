@@ -22,6 +22,8 @@
 
 - `summaryPlot()` has been removed from `openair`. This function was very old and inconsistent with the rest of `openair`. It is planned to be replaced in the future with new summary functions.
 
+- `key.header` and `key.footer` have been replaced with a single `key.title`. This is due to `ggplot2` not supporting a separate "header" and "footer" for guides.
+
 - Argument names have been standardised throughout `openair`. For example, instances of `col` have been replaced with `cols`. This may cause some existing code to break, but will ensure each function behaves more similarly going into the future.
 
 ## New Features
@@ -94,7 +96,7 @@
 
     - Added two new arguments `triangle` and `diagonal` for controlling the plot appearance.
     
-    - Added arguments `key`, `key.position` and `key.header` for adding and refining a plot legend.
+    - Added arguments `key` and `key.title` for adding and refining a plot legend.
 
 - `trendLevel()` refinements:
 
@@ -222,7 +224,7 @@
     
     - `openColours()` will now check whether the provided `scheme` is either a known scheme name *or* a vector of valid R colours, and provide an informative error if this is not the case.
 
-- `polarDiff()` has gained the `type` argument, and correctly responds to `main`, `key.footer` and `key.header` via the `...` options.
+- `polarDiff()` has gained the `type` argument, and correctly responds to `main` and `key.title` via the `...` options.
 
 - `trendLevel()` has gained new `statistic` types to match `timeAverage()`, including `"mean"`, `"median"`, `"min"`, `"max"`, `"sd"`, `"sum"`, `"frequency"` and `"percentile"`.
 

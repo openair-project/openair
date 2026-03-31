@@ -83,16 +83,6 @@
 #' @param key.title Used to set the title of the legend. The legend title is
 #'   passed to [quickText()] if `auto.text = TRUE`.
 #'
-#' @param key.header Used to control the title of the legend. `key.header` and
-#'   `key.footer` are now pasted together to form a single legend title. In
-#'   future, they are likely to be deprecated and combined into a single
-#'   argument.
-#'
-#' @param key.footer Used to control the title of the legend. `key.header` and
-#'   `key.footer` are now pasted together to form a single legend title. In
-#'   future, they are likely to be deprecated and combined into a single
-#'   argument.
-#'
 #' @param key.columns Number of columns to be used in a categorical legend. With
 #'   many categories a single column can make to key too wide. The user can thus
 #'   choose to use several columns by setting `key.columns` to be less than the

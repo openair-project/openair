@@ -25,10 +25,9 @@ polarAnnulus(
   k = c(20, 10),
   normalise = FALSE,
   strip.position = "top",
-  key.header = statistic,
-  key.footer = pollutant,
-  key.position = "right",
   key = TRUE,
+  key.title = paste(statistic, pollutant, sep = "\\n"),
+  key.position = "right",
   auto.text = TRUE,
   plot = TRUE,
   ...
@@ -187,22 +186,15 @@ argument defines whether the strips are "switched" and can take either
 \code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
 locations to the bottom of the plot.}
 
-\item{key.header}{Used to control the title of the legend. \code{key.header} and
-\code{key.footer} are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.}
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 
-\item{key.footer}{Used to control the title of the legend. \code{key.header} and
-\code{key.footer} are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.}
+\item{key.title}{Used to set the title of the legend. The legend title is
+passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}
-
-\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
-\code{key.position} to \code{"none"}.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units

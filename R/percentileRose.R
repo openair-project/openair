@@ -131,8 +131,7 @@ percentileRose <- function(
   offset = 0,
   auto.text = TRUE,
   key = TRUE,
-  key.header = NULL,
-  key.footer = "percentile",
+  key.title = NULL,
   key.position = "bottom",
   strip.position = "top",
   plot = TRUE,
@@ -237,6 +236,9 @@ percentileRose <- function(
   extra.args$main <- quickText(extra.args$main, auto.text)
 
   extra.args$lwd <- extra.args$lwd %||% 2
+
+  # check if key.header / key.footer are being used
+  key.title <- check_key_header(key.title, extra.args)
 
   id <- which(is.na(mydata[, wd]))
   if (length(id) > 0) {
@@ -528,14 +530,7 @@ percentileRose <- function(
         mean.col
       ),
       breaks = fct_labels,
-      name = quickText(
-        paste(
-          key.header,
-          key.footer,
-          sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
-        ),
-        auto.text = auto.text
-      ),
+      name = quickText(key.title, auto.text = auto.text),
       aesthetics = c("colour", "fill")
     ) +
     ggplot2::guides(

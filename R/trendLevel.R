@@ -146,8 +146,7 @@ trendLevel <- function(
   cols = "default",
   auto.text = TRUE,
   key = TRUE,
-  key.header = "use.stat.name",
-  key.footer = pollutant,
+  key.title = paste("use.stat.name", pollutant, sep = "\n"),
   key.position = "right",
   strip.position = "top",
   labels = NULL,
@@ -471,17 +470,11 @@ trendLevel <- function(
     )
   )
 
-  # key.header, footer stat.name recovery
-  if (!is.null(key.header)) {
-    if (is.character(key.header)) {
-      key.header <- gsub("use.stat.name", stat.name, key.header)
-    }
-  }
-  if (!is.null(key.footer)) {
-    if (is.character(key.footer)) {
-      key.footer <- gsub("use.stat.name", stat.name, key.footer)
-    }
-  }
+  # sub out 'use.stat.name' with stat.name
+  key.title <- gsub("use.stat.name", stat.name, key.title)
+
+  # check if key.header / key.footer are being used
+  key.title <- check_key_header(key.title, extra.args)
 
   # categorical colour scale or not?
   categorical <- FALSE
@@ -521,14 +514,7 @@ trendLevel <- function(
       x = quickText(extra.args$xlab %||% x, auto.text = auto.text),
       y = quickText(extra.args$ylab %||% y, auto.text = auto.text),
       title = quickText(extra.args$main %||% "", auto.text = auto.text),
-      fill = quickText(
-        paste(
-          key.header,
-          key.footer,
-          sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
-        ),
-        auto.text = auto.text
-      )
+      fill = quickText(key.title, auto.text = auto.text)
     ) +
     ggplot2::guides(
       x = ggplot2::guide_axis(check.overlap = TRUE, angle = rotate.axis[1]),

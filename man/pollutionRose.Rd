@@ -7,7 +7,7 @@
 pollutionRose(
   mydata,
   pollutant = "nox",
-  key.footer = pollutant,
+  key.title = pollutant,
   key.position = "right",
   key = TRUE,
   breaks = 6,
@@ -24,10 +24,8 @@ pollutionRose(
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \code{pollutant = "nox"}.}
 
-\item{key.footer}{Used to control the title of the legend. \code{key.header} and
-\code{key.footer} are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.}
+\item{key.title}{Used to set the title of the legend. The legend title is
+passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
@@ -143,10 +141,6 @@ of the plots.}
     \item{\code{offset}}{\code{offset} controls the size of the 'hole' in the middle and is
 expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a
 hole that takes up the entire plotting area.}
-    \item{\code{key.header}}{Used to control the title of the legend. \code{key.header} and
-\code{key.footer} are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.}
     \item{\code{strip.position}}{Location where the facet 'strips' are located when
 using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
 \code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
