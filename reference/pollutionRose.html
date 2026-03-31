@@ -70,14 +70,14 @@ wind speed.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pollutionRose</span><span class="op">(</span></span>
 <span>  <span class="va">mydata</span>,</span>
 <span>  pollutant <span class="op">=</span> <span class="st">"nox"</span>,</span>
-<span>  key.footer <span class="op">=</span> <span class="va">pollutant</span>,</span>
+<span>  key.title <span class="op">=</span> <span class="va">pollutant</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
-<span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  breaks <span class="op">=</span> <span class="fl">6</span>,</span>
 <span>  paddle <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  seg <span class="op">=</span> <span class="fl">0.9</span>,</span>
 <span>  normalise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -95,22 +95,15 @@ wind speed.</p>
 data frame should be supplied e.g. <code>pollutant = "nox"</code>.</p></dd>
 
 
-<dt id="arg-key-footer">key.footer<a class="anchor" aria-label="anchor" href="#arg-key-footer"></a></dt>
-<dd><p>Used to control the title of the legend. <code>key.header</code> and
-<code>key.footer</code> are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.</p></dd>
+<dt id="arg-key-title">key.title<a class="anchor" aria-label="anchor" href="#arg-key-title"></a></dt>
+<dd><p>Used to set the title of the legend. The legend title is
+passed to <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></dd>
 
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
 <dd><p>Location where the legend is to be placed. Allowed
 arguments include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"left"</code> and <code>"none"</code>,
 the last of which removes the legend entirely.</p></dd>
-
-
-<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
-<code>key.position</code> to <code>"none"</code>.</p></dd>
 
 
 <dt id="arg-breaks">breaks<a class="anchor" aria-label="anchor" href="#arg-breaks"></a></dt>
@@ -143,6 +136,11 @@ to the active graphics device. <code>plot = FALSE</code> deactivates this behavi
 This may be useful when the plot <em>data</em> is of more interest, or the plot is
 required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).</p></dd>
+
+
+<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
+<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
+<code>key.position</code> to <code>"none"</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -261,12 +259,6 @@ of the plots.</p></dd>
 <dd><p><code>offset</code> controls the size of the 'hole' in the middle and is
 expressed on a scale of <code>0</code> to <code>100</code>, where <code>0</code> is no hole and <code>100</code> is a
 hole that takes up the entire plotting area.</p></dd>
-
-    <dt><code>key.header</code></dt>
-<dd><p>Used to control the title of the legend. <code>key.header</code> and
-<code>key.footer</code> are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.</p></dd>
 
     <dt><code>strip.position</code></dt>
 <dd><p>Location where the facet 'strips' are located when

@@ -375,26 +375,14 @@ possible pollutant source is active or not).</p></li>
 </ul><p>Most <code>openair</code> plotting functions can take two <code>type</code> arguments. If two are
 given, the first is used for the columns and the second for the rows.</p></dd>
 
-    <dt><code>key</code></dt>
-<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
-<code>key.position</code> to <code>"none"</code>.</p></dd>
-
     <dt><code>key.position</code></dt>
 <dd><p>Location where the legend is to be placed. Allowed
 arguments include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"left"</code> and <code>"none"</code>,
 the last of which removes the legend entirely.</p></dd>
 
-    <dt><code>key.header</code></dt>
-<dd><p>Used to control the title of the legend. <code>key.header</code> and
-<code>key.footer</code> are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.</p></dd>
-
-    <dt><code>key.footer</code></dt>
-<dd><p>Used to control the title of the legend. <code>key.header</code> and
-<code>key.footer</code> are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.</p></dd>
+    <dt><code>key.title</code></dt>
+<dd><p>Used to set the title of the legend. The legend title is
+passed to <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></dd>
 
     <dt><code>strip.position</code></dt>
 <dd><p>Location where the facet 'strips' are located when
@@ -403,6 +391,10 @@ using <code>type</code>. When one <code>type</code> is provided, can be one of <
 argument defines whether the strips are "switched" and can take either
 <code>"x"</code>, <code>"y"</code>, or <code>"both"</code>. For example, <code>"x"</code> will switch the 'top' strip
 locations to the bottom of the plot.</p></dd>
+
+    <dt><code>key</code></dt>
+<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
+<code>key.position</code> to <code>"none"</code>.</p></dd>
 
 
 </dl></dd>

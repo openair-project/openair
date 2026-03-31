@@ -29,13 +29,13 @@ trajPlot(
   grid.ny = grid.nx,
   npoints = 12,
   origin = TRUE,
-  key = TRUE,
   key.title = group,
   key.position = "right",
   key.columns = 1,
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 ```
@@ -177,11 +177,6 @@ trajPlot(
 
   If true a filled circle dot is shown to mark the receptor point.
 
-- key:
-
-  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
-  to `"none"`.
-
 - key.title:
 
   Used to set the title of the legend. The legend title is passed to
@@ -224,6 +219,11 @@ trajPlot(
   This may be useful when the plot *data* is of more interest, or the
   plot is required to appear later (e.g., later in a Quarto document, or
   to be saved to a file).
+
+- key:
+
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
 - ...:
 

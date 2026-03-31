@@ -24,7 +24,6 @@ timeProp(
   normalise = FALSE,
   x.relation = "same",
   y.relation = "same",
-  key = TRUE,
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
@@ -33,6 +32,7 @@ timeProp(
   date.format = NULL,
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 ```
@@ -128,11 +128,6 @@ timeProp(
   panel-specific scales. The latter is a useful setting when plotting
   data with very different values.
 
-- key:
-
-  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
-  to `"none"`.
-
 - key.columns:
 
   Number of columns to be used in a categorical legend. With many
@@ -191,6 +186,11 @@ timeProp(
   This may be useful when the plot *data* is of more interest, or the
   plot is required to appear later (e.g., later in a Quarto document, or
   to be saved to a file).
+
+- key:
+
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
 - ...:
 

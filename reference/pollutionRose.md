@@ -11,14 +11,14 @@ time series, for wind speed.
 pollutionRose(
   mydata,
   pollutant = "nox",
-  key.footer = pollutant,
+  key.title = pollutant,
   key.position = "right",
-  key = TRUE,
   breaks = 6,
   paddle = FALSE,
   seg = 0.9,
   normalise = FALSE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 ```
@@ -34,22 +34,17 @@ pollutionRose(
   Mandatory. A pollutant name corresponding to a variable in a data
   frame should be supplied e.g. `pollutant = "nox"`.
 
-- key.footer:
+- key.title:
 
-  Used to control the title of the legend. `key.header` and `key.footer`
-  are now pasted together to form a single legend title. In future, they
-  are likely to be deprecated and combined into a single argument.
+  Used to set the title of the legend. The legend title is passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+  if `auto.text = TRUE`.
 
 - key.position:
 
   Location where the legend is to be placed. Allowed arguments include
   `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`, the last of
   which removes the legend entirely.
-
-- key:
-
-  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
-  to `"none"`.
 
 - breaks:
 
@@ -85,6 +80,11 @@ pollutionRose(
   This may be useful when the plot *data* is of more interest, or the
   plot is required to appear later (e.g., later in a Quarto document, or
   to be saved to a file).
+
+- key:
+
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
 - ...:
 
@@ -245,13 +245,6 @@ pollutionRose(
   :   `offset` controls the size of the 'hole' in the middle and is
       expressed on a scale of `0` to `100`, where `0` is no hole and
       `100` is a hole that takes up the entire plotting area.
-
-  `key.header`
-
-  :   Used to control the title of the legend. `key.header` and
-      `key.footer` are now pasted together to form a single legend
-      title. In future, they are likely to be deprecated and combined
-      into a single argument.
 
   `strip.position`
 

@@ -27,7 +27,6 @@ scatterPlot(
   mod.line = FALSE,
   cols = "hue",
   plot.type = "p",
-  key = TRUE,
   key.title = group,
   key.columns = 1,
   key.position = "right",
@@ -46,6 +45,7 @@ scatterPlot(
   dist = 0.02,
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 ```
@@ -212,11 +212,6 @@ scatterPlot(
   Type of plot: “p” (points, default), “l” (lines) or “b” (both points
   and lines).
 
-- key:
-
-  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
-  to `"none"`.
-
 - key.title:
 
   Used to set the title of the legend. The legend title is passed to
@@ -315,6 +310,11 @@ scatterPlot(
   plot is required to appear later (e.g., later in a Quarto document, or
   to be saved to a file).
 
+- key:
+
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
+
 - ...:
 
   Addition options are passed on to
@@ -412,6 +412,8 @@ scatterPlot(dat2004,
   x = "nox", y = "no2", type = "weekday", key =
     FALSE
 )
+#> Warning: The `key` argument is deprecated. Please use `key.position = "none"` to remove
+#> a legend.
 #> Warning: Removed 20 rows containing missing values or values outside the scale range
 #> (`geom_point()`).
 

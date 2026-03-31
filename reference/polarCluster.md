@@ -386,30 +386,17 @@ polarCluster(
       If two are given, the first is used for the columns and the second
       for the rows.
 
-  `key`
-
-  :   Deprecated; please use `key.position`. If `FALSE`, sets
-      `key.position` to `"none"`.
-
   `key.position`
 
   :   Location where the legend is to be placed. Allowed arguments
       include `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`, the
       last of which removes the legend entirely.
 
-  `key.header`
+  `key.title`
 
-  :   Used to control the title of the legend. `key.header` and
-      `key.footer` are now pasted together to form a single legend
-      title. In future, they are likely to be deprecated and combined
-      into a single argument.
-
-  `key.footer`
-
-  :   Used to control the title of the legend. `key.header` and
-      `key.footer` are now pasted together to form a single legend
-      title. In future, they are likely to be deprecated and combined
-      into a single argument.
+  :   Used to set the title of the legend. The legend title is passed to
+      [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+      if `auto.text = TRUE`.
 
   `strip.position`
 
@@ -419,6 +406,11 @@ polarCluster(
       argument defines whether the strips are "switched" and can take
       either `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch
       the 'top' strip locations to the bottom of the plot.
+
+  `key`
+
+  :   Deprecated; please use `key.position`. If `FALSE`, sets
+      `key.position` to `"none"`.
 
 ## Value
 

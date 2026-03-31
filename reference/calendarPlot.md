@@ -34,13 +34,12 @@ calendarPlot(
   w.abbr.len = 1,
   remove.empty = TRUE,
   show.year = TRUE,
-  key = TRUE,
-  key.header = statistic,
-  key.footer = pollutant,
+  key.title = paste(statistic, pollutant, sep = " "),
   key.position = "right",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 ```
@@ -223,22 +222,11 @@ calendarPlot(
   `FALSE` labels just as "January". If multiple years of data are
   detected, this option is forced to be `TRUE`.
 
-- key:
+- key.title:
 
-  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
-  to `"none"`.
-
-- key.header:
-
-  Used to control the title of the legend. `key.header` and `key.footer`
-  are now pasted together to form a single legend title. In future, they
-  are likely to be deprecated and combined into a single argument.
-
-- key.footer:
-
-  Used to control the title of the legend. `key.header` and `key.footer`
-  are now pasted together to form a single legend title. In future, they
-  are likely to be deprecated and combined into a single argument.
+  Used to set the title of the legend. The legend title is passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+  if `auto.text = TRUE`.
 
 - key.position:
 
@@ -269,6 +257,11 @@ calendarPlot(
   This may be useful when the plot *data* is of more interest, or the
   plot is required to appear later (e.g., later in a Quarto document, or
   to be saved to a file).
+
+- key:
+
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
 - ...:
 
@@ -372,9 +365,15 @@ calendarPlot(mydata,
 
 # UK daily air quality index
 pm10.breaks <- c(0, 17, 34, 50, 59, 67, 75, 84, 92, 100, 1000)
-calendarPlot(mydata, "pm10",
-  year = 1999, breaks = pm10.breaks,
-  labels = c(1:10), cols = "daqi", statistic = "mean", key.header = "DAQI"
+calendarPlot(
+  mydata,
+  "pm10",
+  year = 1999,
+  breaks = pm10.breaks,
+  labels = c(1:10),
+  cols = "daqi",
+  statistic = "mean",
+  key.title = "PM10 DAQI"
 )
 } # }
 ```

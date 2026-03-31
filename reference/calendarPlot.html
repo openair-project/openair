@@ -93,13 +93,12 @@ if wind speed and direction are available.</p>
 <span>  w.abbr.len <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  remove.empty <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  show.year <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  key.header <span class="op">=</span> <span class="va">statistic</span>,</span>
-<span>  key.footer <span class="op">=</span> <span class="va">pollutant</span>,</span>
+<span>  key.title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">statistic</span>, <span class="va">pollutant</span>, sep <span class="op">=</span> <span class="st">" "</span><span class="op">)</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
 <span>  strip.position <span class="op">=</span> <span class="st">"top"</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -270,23 +269,9 @@ labels include the year label? <code>TRUE</code> creates labels like "January-20
 this option is forced to be <code>TRUE</code>.</p></dd>
 
 
-<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
-<code>key.position</code> to <code>"none"</code>.</p></dd>
-
-
-<dt id="arg-key-header">key.header<a class="anchor" aria-label="anchor" href="#arg-key-header"></a></dt>
-<dd><p>Used to control the title of the legend. <code>key.header</code> and
-<code>key.footer</code> are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.</p></dd>
-
-
-<dt id="arg-key-footer">key.footer<a class="anchor" aria-label="anchor" href="#arg-key-footer"></a></dt>
-<dd><p>Used to control the title of the legend. <code>key.header</code> and
-<code>key.footer</code> are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.</p></dd>
+<dt id="arg-key-title">key.title<a class="anchor" aria-label="anchor" href="#arg-key-title"></a></dt>
+<dd><p>Used to set the title of the legend. The legend title is
+passed to <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></dd>
 
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
@@ -316,6 +301,11 @@ to the active graphics device. <code>plot = FALSE</code> deactivates this behavi
 This may be useful when the plot <em>data</em> is of more interest, or the plot is
 required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).</p></dd>
+
+
+<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
+<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
+<code>key.position</code> to <code>"none"</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -403,9 +393,15 @@ maximum daily 8-hour mean concentrations.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># UK daily air quality index</span></span></span>
 <span class="r-in"><span><span class="va">pm10.breaks</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">17</span>, <span class="fl">34</span>, <span class="fl">50</span>, <span class="fl">59</span>, <span class="fl">67</span>, <span class="fl">75</span>, <span class="fl">84</span>, <span class="fl">92</span>, <span class="fl">100</span>, <span class="fl">1000</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">calendarPlot</span><span class="op">(</span><span class="va">mydata</span>, <span class="st">"pm10"</span>,</span></span>
-<span class="r-in"><span>  year <span class="op">=</span> <span class="fl">1999</span>, breaks <span class="op">=</span> <span class="va">pm10.breaks</span>,</span></span>
-<span class="r-in"><span>  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>, cols <span class="op">=</span> <span class="st">"daqi"</span>, statistic <span class="op">=</span> <span class="st">"mean"</span>, key.header <span class="op">=</span> <span class="st">"DAQI"</span></span></span>
+<span class="r-in"><span><span class="fu">calendarPlot</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"pm10"</span>,</span></span>
+<span class="r-in"><span>  year <span class="op">=</span> <span class="fl">1999</span>,</span></span>
+<span class="r-in"><span>  breaks <span class="op">=</span> <span class="va">pm10.breaks</span>,</span></span>
+<span class="r-in"><span>  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  cols <span class="op">=</span> <span class="st">"daqi"</span>,</span></span>
+<span class="r-in"><span>  statistic <span class="op">=</span> <span class="st">"mean"</span>,</span></span>
+<span class="r-in"><span>  key.title <span class="op">=</span> <span class="st">"PM10 DAQI"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>

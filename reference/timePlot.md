@@ -30,7 +30,6 @@ timePlot(
   y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
-  key = TRUE,
   key.columns = NULL,
   key.position = "bottom",
   strip.position = "top",
@@ -39,6 +38,7 @@ timePlot(
   date.format = NULL,
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 ```
@@ -248,11 +248,6 @@ timePlot(
   add a dashed horizontal line at 50. Several lines can be plotted e.g.
   `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))`.
 
-- key:
-
-  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
-  to `"none"`.
-
 - key.columns:
 
   Number of columns to be used in a categorical legend. With many
@@ -315,6 +310,11 @@ timePlot(
   This may be useful when the plot *data* is of more interest, or the
   plot is required to appear later (e.g., later in a Quarto document, or
   to be saved to a file).
+
+- key:
+
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
 - ...:
 

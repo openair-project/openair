@@ -21,12 +21,12 @@ corPlot(
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
-  key = FALSE,
-  key.header = NULL,
-  key.position = "right",
+  key.title = NULL,
+  key.position = "none",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 ```
@@ -142,16 +142,11 @@ corPlot(
   value controls the colour of negative correlations and the second
   positive.
 
-- key:
+- key.title:
 
-  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
-  to `"none"`.
-
-- key.header:
-
-  Used to control the title of the legend. `key.header` and `key.footer`
-  are now pasted together to form a single legend title. In future, they
-  are likely to be deprecated and combined into a single argument.
+  Used to set the title of the legend. The legend title is passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+  if `auto.text = TRUE`.
 
 - key.position:
 
@@ -182,6 +177,11 @@ corPlot(
   This may be useful when the plot *data* is of more interest, or the
   plot is required to appear later (e.g., later in a Quarto document, or
   to be saved to a file).
+
+- key:
+
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
 - ...:
 

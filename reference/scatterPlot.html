@@ -86,7 +86,6 @@ shown.</p>
 <span>  mod.line <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"hue"</span>,</span>
 <span>  plot.type <span class="op">=</span> <span class="st">"p"</span>,</span>
-<span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  key.title <span class="op">=</span> <span class="va">group</span>,</span>
 <span>  key.columns <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
@@ -105,6 +104,7 @@ shown.</p>
 <span>  dist <span class="op">=</span> <span class="fl">0.02</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -255,11 +255,6 @@ of R colours (e.g., <code>c("yellow", "green", "blue", "black")</code> - see
 (lines) or “b” (both points and lines).</p></dd>
 
 
-<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
-<code>key.position</code> to <code>"none"</code>.</p></dd>
-
-
 <dt id="arg-key-title">key.title<a class="anchor" aria-label="anchor" href="#arg-key-title"></a></dt>
 <dd><p>Used to set the title of the legend. The legend title is
 passed to <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></dd>
@@ -350,6 +345,11 @@ required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).</p></dd>
 
 
+<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
+<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
+<code>key.position</code> to <code>"none"</code>.</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Addition options are passed on to <code><a href="cutData.html">cutData()</a></code> for <code>type</code> handling.
 Some additional arguments are also available:</p><ul><li><p><code>xlab</code>, <code>ylab</code> and <code>main</code> override the x-axis label, y-axis label, and plot title.</p></li>
@@ -421,6 +421,8 @@ times and other statistics in a flexible way</p></div>
 <span class="r-in"><span>  x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, type <span class="op">=</span> <span class="st">"weekday"</span>, key <span class="op">=</span></span></span>
 <span class="r-in"><span>    <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The `key` argument is deprecated. Please use `key.position = "none"` to remove</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> a legend.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Removed 20 rows containing missing values or values outside the scale range</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> (`geom_point()`).</span>
 <span class="r-plt img"><img src="scatterPlot-2.png" alt="" width="700" height="433"></span>

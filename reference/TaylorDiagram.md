@@ -21,13 +21,13 @@ TaylorDiagram(
   arrow.lwd = 3,
   annotate = "centred\nRMS error",
   text.obs = "observed",
-  key = TRUE,
   key.title = group,
   key.columns = 1,
   key.position = "right",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 ```
@@ -149,11 +149,6 @@ TaylorDiagram(
 
   The plot annotation for observed values; default is "observed".
 
-- key:
-
-  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
-  to `"none"`.
-
 - key.title:
 
   Used to set the title of the legend. The legend title is passed to
@@ -196,6 +191,11 @@ TaylorDiagram(
   This may be useful when the plot *data* is of more interest, or the
   plot is required to appear later (e.g., later in a Quarto document, or
   to be saved to a file).
+
+- key:
+
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
 - ...:
 

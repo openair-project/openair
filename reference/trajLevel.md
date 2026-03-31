@@ -35,12 +35,13 @@ trajLevel(
   grid.nx = 9,
   grid.ny = grid.nx,
   origin = TRUE,
-  key = TRUE,
+  key.title = NULL,
   key.position = "right",
   key.columns = NULL,
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 ```
@@ -229,10 +230,11 @@ trajLevel(
 
   If true a filled circle dot is shown to mark the receptor point.
 
-- key:
+- key.title:
 
-  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
-  to `"none"`.
+  Used to set the title of the legend. The legend title is passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+  if `auto.text = TRUE`.
 
 - key.position:
 
@@ -270,6 +272,11 @@ trajLevel(
   This may be useful when the plot *data* is of more interest, or the
   plot is required to appear later (e.g., later in a Quarto document, or
   to be saved to a file).
+
+- key:
+
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
 - ...:
 

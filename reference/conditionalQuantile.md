@@ -16,12 +16,12 @@ conditionalQuantile(
   bins = 31,
   min.bin = c(10, 20),
   cols = "YlOrRd",
-  key = TRUE,
   key.columns = 2,
   key.position = "bottom",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 ```
@@ -91,11 +91,6 @@ conditionalQuantile(
   [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
   for more details.
 
-- key:
-
-  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
-  to `"none"`.
-
 - key.columns:
 
   Number of columns to be used in a categorical legend. With many
@@ -132,6 +127,11 @@ conditionalQuantile(
   This may be useful when the plot *data* is of more interest, or the
   plot is required to appear later (e.g., later in a Quarto document, or
   to be saved to a file).
+
+- key:
+
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
 - ...:
 

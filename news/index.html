@@ -67,6 +67,8 @@
 <li><p><code>drawOpenKey()</code> has been removed due to being <code>lattice</code>-specific.</p></li>
 <li><p><code>linearRelation()</code> and <code>calcFno2()</code> have been removed from <code>openair</code> due to using outdated methodology and assumptions.</p></li>
 <li><p><code>summaryPlot()</code> has been removed from <code>openair</code>. This function was very old and inconsistent with the rest of <code>openair</code>. It is planned to be replaced in the future with new summary functions.</p></li>
+<li><p><code>key.header</code> and <code>key.footer</code> have been replaced with a single <code>key.title</code>. This is due to <code>ggplot2</code> not supporting a separate “header” and “footer” for guides.</p></li>
+<li><p>The <code>key</code> argument has been deprecated, as it now only exists to overwrite <code>key.position</code> when it is <code>FALSE</code>. Please use <code>key.position = "none"</code> going forward.</p></li>
 <li><p>Argument names have been standardised throughout <code>openair</code>. For example, instances of <code>col</code> have been replaced with <code>cols</code>. This may cause some existing code to break, but will ensure each function behaves more similarly going into the future.</p></li>
 </ul></div>
 <div class="section level3">
@@ -94,7 +96,7 @@
 </ul></li>
 <li>
 <p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> refinements:</p>
-<ul><li><p>Gained the <code>x.relation</code>, <code>date.format</code>, <code>key</code> and <code>key.position</code> arguments, in line with <code><a href="../reference/timePlot.html">timePlot()</a></code>.</p></li>
+<ul><li><p>Gained the <code>x.relation</code>, <code>date.format</code>, and <code>key.position</code> arguments, in line with <code><a href="../reference/timePlot.html">timePlot()</a></code>.</p></li>
 <li><p>Gained the <code>progress</code> argument, passed to <code><a href="../reference/timeAverage.html">timeAverage()</a></code>.</p></li>
 <li><p><code>avg.time</code> is also no longer restricted to just three options (any <code><a href="../reference/timeAverage.html">timeAverage()</a></code> option is permitted), although too fine a time resolution may obscure the smooth trend for long running data.</p></li>
 </ul></li>
@@ -118,7 +120,7 @@
 <p><code><a href="../reference/corPlot.html">corPlot()</a></code> refinements:</p>
 <ul><li><p>Added the <code>annotate</code> argument which can change the correlation annotation to a p-value marker or stars, or remove it entirely.</p></li>
 <li><p>Added two new arguments <code>triangle</code> and <code>diagonal</code> for controlling the plot appearance.</p></li>
-<li><p>Added arguments <code>key</code>, <code>key.position</code> and <code>key.header</code> for adding and refining a plot legend.</p></li>
+<li><p>Added arguments <code>key</code> and <code>key.title</code> for adding and refining a plot legend.</p></li>
 </ul></li>
 <li>
 <p><code><a href="../reference/trendLevel.html">trendLevel()</a></code> refinements:</p>
@@ -214,7 +216,7 @@
 <li><p>When <code>n</code> isn’t defined for a qualitative palette (e.g., “Dark2”), the full qualitative palette will be returned. Previously this errored with the default of <code>100</code>.</p></li>
 <li><p><code><a href="../reference/openColours.html">openColours()</a></code> will now check whether the provided <code>scheme</code> is either a known scheme name <em>or</em> a vector of valid R colours, and provide an informative error if this is not the case.</p></li>
 </ul></li>
-<li><p><code><a href="../reference/polarDiff.html">polarDiff()</a></code> has gained the <code>type</code> argument, and correctly responds to <code>main</code>, <code>key.footer</code> and <code>key.header</code> via the <code>...</code> options.</p></li>
+<li><p><code><a href="../reference/polarDiff.html">polarDiff()</a></code> has gained the <code>type</code> argument, and correctly responds to <code>main</code> and <code>key.title</code> via the <code>...</code> options.</p></li>
 <li><p><code><a href="../reference/trendLevel.html">trendLevel()</a></code> has gained new <code>statistic</code> types to match <code><a href="../reference/timeAverage.html">timeAverage()</a></code>, including <code>"mean"</code>, <code>"median"</code>, <code>"min"</code>, <code>"max"</code>, <code>"sd"</code>, <code>"sum"</code>, <code>"frequency"</code> and <code>"percentile"</code>.</p></li>
 <li><p><code><a href="../reference/trendLevel.html">trendLevel()</a></code> will now automatically generate appropriate <code>labels</code> if <code>breaks</code> are provided. The <code>labels</code> argument can still be used to provide custom labels per break.</p></li>
 <li><p>The <code>formula.label</code> argument of <code><a href="../reference/polarPlot.html">polarPlot()</a></code> will now control whether concentration information is printed when <code>statistic = "cpf"</code>.</p></li>

@@ -29,9 +29,7 @@ windRose(
   normalise = FALSE,
   max.freq = NULL,
   paddle = TRUE,
-  key = TRUE,
-  key.header = NULL,
-  key.footer = "(m/s)",
+  key.title = "(m/s)",
   key.position = "bottom",
   strip.position = "top",
   dig.lab = 5,
@@ -42,6 +40,7 @@ windRose(
   angle.scale = 315,
   border = NA,
   plot = TRUE,
+  key = NULL,
   ...
 )
 ```
@@ -195,22 +194,11 @@ windRose(
   Either `TRUE` or `FALSE`. If `TRUE` plots rose using 'paddle' style
   spokes. If `FALSE` plots rose using 'wedge' style spokes.
 
-- key:
+- key.title:
 
-  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
-  to `"none"`.
-
-- key.header:
-
-  Used to control the title of the legend. `key.header` and `key.footer`
-  are now pasted together to form a single legend title. In future, they
-  are likely to be deprecated and combined into a single argument.
-
-- key.footer:
-
-  Used to control the title of the legend. `key.header` and `key.footer`
-  are now pasted together to form a single legend title. In future, they
-  are likely to be deprecated and combined into a single argument.
+  Used to set the title of the legend. The legend title is passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+  if `auto.text = TRUE`.
 
 - key.position:
 
@@ -281,6 +269,11 @@ windRose(
   This may be useful when the plot *data* is of more interest, or the
   plot is required to appear later (e.g., later in a Quarto document, or
   to be saved to a file).
+
+- key:
+
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
 - ...:
 

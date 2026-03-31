@@ -23,7 +23,6 @@ smoothTrend(
   y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
-  key = TRUE,
   key.columns = 1,
   key.position = "bottom",
   strip.position = "top",
@@ -33,8 +32,9 @@ smoothTrend(
   auto.text = TRUE,
   ci = TRUE,
   alpha = 0.2,
-  plot = TRUE,
   progress = TRUE,
+  plot = TRUE,
+  key = NULL,
   ...
 )
 ```
@@ -189,11 +189,6 @@ smoothTrend(
   add a dashed horizontal line at 50. Several lines can be plotted e.g.
   `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))`.
 
-- key:
-
-  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
-  to `"none"`.
-
 - key.columns:
 
   Number of columns to be used in a categorical legend. With many
@@ -258,6 +253,11 @@ smoothTrend(
   The alpha transparency of shaded confidence intervals - if plotted. A
   value of 0 is fully transparent and 1 is fully opaque.
 
+- progress:
+
+  Show a progress bar when many groups make up `type`? Defaults to
+  `TRUE`.
+
 - plot:
 
   When `openair` plots are created they are automatically printed to the
@@ -266,10 +266,10 @@ smoothTrend(
   plot is required to appear later (e.g., later in a Quarto document, or
   to be saved to a file).
 
-- progress:
+- key:
 
-  Show a progress bar when many groups make up `type`? Defaults to
-  `TRUE`.
+  Deprecated; please use `key.position`. If `FALSE`, sets `key.position`
+  to `"none"`.
 
 - ...:
 

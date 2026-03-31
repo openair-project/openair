@@ -82,13 +82,13 @@ imported using the <code><a href="importTraj.html">importTraj()</a></code> funct
 <span>  grid.ny <span class="op">=</span> <span class="va">grid.nx</span>,</span>
 <span>  npoints <span class="op">=</span> <span class="fl">12</span>,</span>
 <span>  origin <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  key <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  key.title <span class="op">=</span> <span class="va">group</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
 <span>  key.columns <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  strip.position <span class="op">=</span> <span class="st">"top"</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  key <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -217,11 +217,6 @@ moving air masses). If <code>npoints = NA</code> then no points are added.</p></
 point.</p></dd>
 
 
-<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
-<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
-<code>key.position</code> to <code>"none"</code>.</p></dd>
-
-
 <dt id="arg-key-title">key.title<a class="anchor" aria-label="anchor" href="#arg-key-title"></a></dt>
 <dd><p>Used to set the title of the legend. The legend title is
 passed to <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></dd>
@@ -261,6 +256,11 @@ to the active graphics device. <code>plot = FALSE</code> deactivates this behavi
 This may be useful when the plot <em>data</em> is of more interest, or the plot is
 required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).</p></dd>
+
+
+<dt id="arg-key">key<a class="anchor" aria-label="anchor" href="#arg-key"></a></dt>
+<dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
+<code>key.position</code> to <code>"none"</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

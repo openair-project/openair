@@ -43,6 +43,14 @@
   very old and inconsistent with the rest of `openair`. It is planned to
   be replaced in the future with new summary functions.
 
+- `key.header` and `key.footer` have been replaced with a single
+  `key.title`. This is due to `ggplot2` not supporting a separate
+  “header” and “footer” for guides.
+
+- The `key` argument has been deprecated, as it now only exists to
+  overwrite `key.position` when it is `FALSE`. Please use
+  `key.position = "none"` going forward.
+
 - Argument names have been standardised throughout `openair`. For
   example, instances of `col` have been replaced with `cols`. This may
   cause some existing code to break, but will ensure each function
@@ -118,7 +126,7 @@
 - [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
   refinements:
 
-  - Gained the `x.relation`, `date.format`, `key` and `key.position`
+  - Gained the `x.relation`, `date.format`, and `key.position`
     arguments, in line with
     [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md).
 
@@ -185,8 +193,8 @@
   - Added two new arguments `triangle` and `diagonal` for controlling
     the plot appearance.
 
-  - Added arguments `key`, `key.position` and `key.header` for adding
-    and refining a plot legend.
+  - Added arguments `key` and `key.title` for adding and refining a plot
+    legend.
 
 - [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
   refinements:
@@ -455,8 +463,8 @@ facilitate its use.
     informative error if this is not the case.
 
 - [`polarDiff()`](https://openair-project.github.io/openair/reference/polarDiff.md)
-  has gained the `type` argument, and correctly responds to `main`,
-  `key.footer` and `key.header` via the `...` options.
+  has gained the `type` argument, and correctly responds to `main` and
+  `key.title` via the `...` options.
 
 - [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
   has gained new `statistic` types to match
