@@ -73,25 +73,12 @@
 #'   expressed on a scale of `0` to `100`, where `0` is no hole and `100` is a
 #'   hole that takes up the entire plotting area.
 #'
-#' @param key Deprecated; please use `key.position`. If `FALSE`, sets
-#'   `key.position` to `"none"`.
-#'
 #' @param key.position Location where the legend is to be placed. Allowed
 #'   arguments include `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`,
 #'   the last of which removes the legend entirely.
 #'
 #' @param key.title Used to set the title of the legend. The legend title is
 #'   passed to [quickText()] if `auto.text = TRUE`.
-#'
-#' @param key.header Used to control the title of the legend. `key.header` and
-#'   `key.footer` are now pasted together to form a single legend title. In
-#'   future, they are likely to be deprecated and combined into a single
-#'   argument.
-#'
-#' @param key.footer Used to control the title of the legend. `key.header` and
-#'   `key.footer` are now pasted together to form a single legend title. In
-#'   future, they are likely to be deprecated and combined into a single
-#'   argument.
 #'
 #' @param key.columns Number of columns to be used in a categorical legend. With
 #'   many categories a single column can make to key too wide. The user can thus
@@ -114,6 +101,9 @@
 #'   This may be useful when the plot *data* is of more interest, or the plot is
 #'   required to appear later (e.g., later in a Quarto document, or to be saved
 #'   to a file).
+#'
+#' @param key Deprecated; please use `key.position`. If `FALSE`, sets
+#'   `key.position` to `"none"`.
 #'
 #' @aliases docs-shared-internal
 #' @keywords internal

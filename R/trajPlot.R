@@ -148,20 +148,19 @@ trajPlot <- function(
   grid.ny = grid.nx,
   npoints = 12,
   origin = TRUE,
-  key = TRUE,
   key.title = group,
   key.position = "right",
   key.columns = 1,
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
   rlang::check_installed(c("sf", "maps"))
 
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   # favour group over pollutant - set a flag to see if `cutData()` is needed
   group_is_pollutant <- !is.null(pollutant) && is.null(group)

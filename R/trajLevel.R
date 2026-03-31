@@ -186,15 +186,19 @@ trajLevel <- function(
   grid.nx = 9,
   grid.ny = grid.nx,
   origin = TRUE,
-  key = TRUE,
+  key.title = NULL,
   key.position = "right",
   key.columns = NULL,
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
   rlang::check_installed(c("sf", "maps"))
+
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   # checks
   statistic <- tolower(statistic)
@@ -226,7 +230,6 @@ trajLevel <- function(
   extra.args$xlab <- extra.args$xlab %||% ""
   extra.args$main <- extra.args$main %||% ""
   extra.args$border <- extra.args$border %||% NA
-  extra.args$key.footer <- extra.args$key.footer %||% NULL
 
   if ("method" %in% names(extra.args)) {
     cli::cli_warn(
@@ -238,7 +241,7 @@ trajLevel <- function(
     }
   }
 
-  if (!"key.header" %in% names(extra.args)) {
+  if (missing(key.title)) {
     header <- switch(
       statistic,
       "frequency" = "% trajectories",
@@ -258,7 +261,10 @@ trajLevel <- function(
       header <- paste0("SQTBA \n(Normalised)\n", pollutant)
     }
 
-    extra.args$key.header <- header
+    key.title <- header
+
+    # check if key.header / key.footer are being used
+    key.title <- check_key_header(key.title, extra.args)
   }
 
   # cut data by type
@@ -661,14 +667,7 @@ trajLevel <- function(
       x = quickText(extra.args$xlab, auto.text),
       y = quickText(extra.args$ylab, auto.text),
       title = quickText(extra.args$main, auto.text),
-      fill = quickText(
-        paste(
-          extra.args$key.header,
-          extra.args$key.footer,
-          sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
-        ),
-        auto.text = auto.text
-      )
+      fill = quickText(key.title, auto.text = auto.text)
     )
 
   # add map if requested

@@ -118,17 +118,16 @@ conditionalQuantile <- function(
   bins = 31,
   min.bin = c(10, 20),
   cols = "YlOrRd",
-  key = TRUE,
   key.columns = 2,
   key.position = "bottom",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   if (length(type) > 2) {
     cli::cli_abort("Only two types can be used with this function")

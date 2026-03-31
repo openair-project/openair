@@ -159,14 +159,16 @@ polarAnnulus <-
     k = c(20, 10),
     normalise = FALSE,
     strip.position = "top",
-    key.header = statistic,
-    key.footer = pollutant,
+    key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
-    key = TRUE,
     auto.text = TRUE,
     plot = TRUE,
+    key = NULL,
     ...
   ) {
+    # check key.position
+    key.position <- check_key_position(key.position, key)
+
     # check statistic value is valid
     statistic <- tolower(statistic)
     statistic <- rlang::arg_match(
@@ -191,25 +193,6 @@ polarAnnulus <-
     if (statistic == "percentile" && is.na(percentile & statistic != "cpf")) {
       cli::cli_warn("{.arg percentile} value missing,  using 50")
       percentile <- 50
-    }
-
-    if (key.header[1] == "weighted.mean") {
-      key.header <- c("weighted mean")
-    }
-    if (key.header[1] == "percentile") {
-      lastnum <- substr(percentile, nchar(percentile), nchar(percentile))
-      numend <- dplyr::recode_values(
-        lastnum,
-        "1" ~ "st",
-        "2" ~ "nd",
-        "3" ~ "rd",
-        default = "th"
-      )
-
-      key.header <- paste(paste0(percentile, numend), "percentile")
-    }
-    if (key.header[1] == "cpf") {
-      key.header <- c("CPF probability")
     }
 
     # extract variables of interest
@@ -525,8 +508,34 @@ polarAnnulus <-
           .by = dplyr::all_of(type)
         )
 
-      if (missing(key.footer)) key.footer <- "normalised level"
+      key_footer <- "normalised level"
+    } else {
+      key_footer <- paste(pollutant, collapse = ", ")
     }
+
+    # key.title handling
+    if (missing(key.title)) {
+      key_header <- statistic
+      key_header[key_header == "weighted.mean"] <- "weighted mean"
+      if (statistic == "percentile") {
+        lastnum <- substr(percentile, nchar(percentile), nchar(percentile))
+        numend <- dplyr::recode_values(
+          lastnum,
+          "1" ~ "st",
+          "2" ~ "nd",
+          "3" ~ "rd",
+          default = "th"
+        )
+        key_header <- paste(paste0(percentile, numend), "percentile")
+      }
+      if (statistic == "cpf") {
+        key_header <- c("CPF probability")
+      }
+      key.title <- paste(key_header, key_footer)
+    }
+
+    # check if key.header / key.footer are being used
+    key.title <- check_key_header(key.title, extra.args)
 
     # plotting
     thePlot <-
@@ -569,22 +578,8 @@ polarAnnulus <-
         y = extra.args$ylab,
         title = extra.args$main,
         caption = sub,
-        colour = quickText(
-          paste(
-            key.header,
-            key.footer,
-            sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
-          ),
-          auto.text = auto.text
-        ),
-        fill = quickText(
-          paste(
-            key.header,
-            key.footer,
-            sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
-          ),
-          auto.text = auto.text
-        )
+        colour = quickText(key.title, auto.text = auto.text),
+        fill = quickText(key.title, auto.text = auto.text)
       ) +
       annotate_compass_points(
         size = ifelse(

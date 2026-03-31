@@ -112,7 +112,6 @@ smoothTrend <- function(
   y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
-  key = TRUE,
   key.columns = 1,
   key.position = "bottom",
   strip.position = "top",
@@ -122,13 +121,13 @@ smoothTrend <- function(
   auto.text = TRUE,
   ci = TRUE,
   alpha = 0.2,
-  plot = TRUE,
   progress = TRUE,
+  plot = TRUE,
+  key = NULL,
   ...
 ) {
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   # extra.args setup
   extra.args <- list(...)

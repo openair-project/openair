@@ -216,7 +216,6 @@ scatterPlot <- function(
   mod.line = FALSE,
   cols = "hue",
   plot.type = "p",
-  key = TRUE,
   key.title = group,
   key.columns = 1,
   key.position = "right",
@@ -235,12 +234,11 @@ scatterPlot <- function(
   dist = 0.02,
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
-  ## handle key
-  if (isFALSE(key)) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   ## extra args
   extra.args <- rlang::list2(...)

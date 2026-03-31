@@ -264,25 +264,19 @@ possible pollutant source is active or not).
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
 given, the first is used for the columns and the second for the rows.}
-    \item{\code{key}}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
-\code{key.position} to \code{"none"}.}
     \item{\code{key.position}}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}
-    \item{\code{key.header}}{Used to control the title of the legend. \code{key.header} and
-\code{key.footer} are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.}
-    \item{\code{key.footer}}{Used to control the title of the legend. \code{key.header} and
-\code{key.footer} are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.}
+    \item{\code{key.title}}{Used to set the title of the legend. The legend title is
+passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
     \item{\code{strip.position}}{Location where the facet 'strips' are located when
 using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
 \code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
 argument defines whether the strips are "switched" and can take either
 \code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
 locations to the bottom of the plot.}
+    \item{\code{key}}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
   }}
 }
 \value{

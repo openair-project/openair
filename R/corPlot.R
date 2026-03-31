@@ -122,17 +122,16 @@ corPlot <- function(
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
-  key = FALSE,
-  key.header = NULL,
-  key.position = "right",
+  key.title = NULL,
+  key.position = "none",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   if (length(type) > 1) {
     cli::cli_abort(
@@ -142,6 +141,9 @@ corPlot <- function(
 
   # extra.args setup
   extra.args <- list(...)
+
+  # check if key.header / key.footer are being used
+  key.title <- check_key_header(key.title, extra.args)
 
   # deprecated lower arg
   if ("lower" %in% names(extra.args)) {
@@ -476,7 +478,7 @@ corPlot <- function(
       x = extra.args$xlab,
       y = extra.args$ylab,
       title = extra.args$main,
-      fill = key.header
+      fill = key.title
     )
 
   # if dendrogram, need to use legendry to switch dendro to the opposite side of

@@ -141,22 +141,20 @@ polarDiff <- function(
         "#AE4647",
         "#5F1415"
       ),
-      key = TRUE,
+      key.position = "none",
       par.settings = list(axis.line = list(col = "black")),
       alpha = 1,
-      key.header = "Difference",
-      key.footer = pollutant_name,
+      key.title = paste("Difference", pollutant_name, sep = " "),
       main = ""
     ),
     Args[intersect(
       names(Args),
       c(
         "cols",
-        "key",
+        "key.position",
         "par.settings",
         "alpha",
-        "key.header",
-        "key.footer",
+        "key.title",
         "main"
       )
     )]

@@ -172,9 +172,7 @@ windRose <- function(
   normalise = FALSE,
   max.freq = NULL,
   paddle = TRUE,
-  key = TRUE,
-  key.header = NULL,
-  key.footer = "(m/s)",
+  key.title = "(m/s)",
   key.position = "bottom",
   strip.position = "top",
   dig.lab = 5,
@@ -185,11 +183,11 @@ windRose <- function(
   angle.scale = 315,
   border = NA,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   # greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
@@ -426,6 +424,10 @@ windRose <- function(
       )
     }
 
+    if (missing(key.title)) {
+      key.title <- "ws bias\n(m/s)"
+    }
+
     thePlot <-
       ggplot2::ggplot(diff_results) +
       theme_openair_radial(key.position) +
@@ -489,7 +491,7 @@ windRose <- function(
         high = diff_colors[3],
         midpoint = 0,
         name = quickText(
-          paste(key.header, "ws bias\n(m/s)"),
+          key.title,
           auto.text = auto.text
         )
       ) +
@@ -778,7 +780,8 @@ windRose <- function(
       )
     )
 
-  key_label <- quickText(paste(key.header, key.footer), auto.text = auto.text)
+  key.title <- check_key_header(key.title, extra.args)
+  key_label <- quickText(key.title, auto.text = auto.text)
   key_guide <- ggplot2::guide_legend(
     reverse = key.position %in% c("left", "right"),
     theme = ggplot2::theme(
@@ -1039,7 +1042,7 @@ windRose <- function(
 #'   used to set specific break points. For example, the argument `breaks =
 #'   c(0, 1, 10, 100)` breaks the data into segments <1, 1-10, 10-100, >100.
 #'
-#' @inheritDotParams windRose -pollutant -key.footer -key.position -key -breaks
+#' @inheritDotParams windRose -pollutant -key.title -key.position -key -breaks
 #'   -seg -normalise -plot -paddle
 #' @export
 #' @return an [openair][openair-package] object. Summarised proportions can be
@@ -1093,18 +1096,21 @@ windRose <- function(
 pollutionRose <- function(
   mydata,
   pollutant = "nox",
-  key.footer = pollutant,
+  key.title = pollutant,
   key.position = "right",
-  key = TRUE,
   breaks = 6,
   paddle = FALSE,
   seg = 0.9,
   normalise = FALSE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
   # extra.args args setup
   extra.args <- list(...)
+
+  # check if key.header / key.footer are being used
+  key.title <- check_key_header(key.title, extra.args)
 
   # check to see if two met data sets are being compared.
   # if so, set pollutant to one of the names
@@ -1134,7 +1140,7 @@ pollutionRose <- function(
     pollutant = pollutant,
     seg = seg,
     key.position = key.position,
-    key.footer = key.footer,
+    key.title = key.title,
     key = key,
     breaks = breaks,
     normalise = normalise,

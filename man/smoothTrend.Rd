@@ -22,7 +22,6 @@ smoothTrend(
   y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
-  key = TRUE,
   key.columns = 1,
   key.position = "bottom",
   strip.position = "top",
@@ -32,8 +31,9 @@ smoothTrend(
   auto.text = TRUE,
   ci = TRUE,
   alpha = 0.2,
-  plot = TRUE,
   progress = TRUE,
+  plot = TRUE,
+  key = NULL,
   ...
 )
 }
@@ -139,9 +139,6 @@ should be used for a vertical line e.g. \code{ref.x = list(v = as.POSIXct("2000-
 representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be plotted
 e.g. \code{ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))}.}
 
-\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
-\code{key.position} to \code{"none"}.}
-
 \item{key.columns}{Number of columns to be used in a categorical legend. With
 many categories a single column can make to key too wide. The user can thus
 choose to use several columns by setting \code{key.columns} to be less than the
@@ -183,14 +180,17 @@ properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickTe
 \item{alpha}{The alpha transparency of shaded confidence intervals - if
 plotted. A value of 0 is fully transparent and 1 is fully opaque.}
 
+\item{progress}{Show a progress bar when many groups make up \code{type}? Defaults
+to \code{TRUE}.}
+
 \item{plot}{When \code{openair} plots are created they are automatically printed
 to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
 This may be useful when the plot \emph{data} is of more interest, or the plot is
 required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).}
 
-\item{progress}{Show a progress bar when many groups make up \code{type}? Defaults
-to \code{TRUE}.}
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
 Some additional arguments are also available:

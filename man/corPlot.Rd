@@ -18,12 +18,12 @@ corPlot(
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
-  key = FALSE,
-  key.header = NULL,
-  key.position = "right",
+  key.title = NULL,
+  key.position = "none",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 }
@@ -99,13 +99,8 @@ This helps to highlight high correlations.}
 The first value controls the colour of negative correlations and the second
 positive.}
 
-\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
-\code{key.position} to \code{"none"}.}
-
-\item{key.header}{Used to control the title of the legend. \code{key.header} and
-\code{key.footer} are now pasted together to form a single legend title. In
-future, they are likely to be deprecated and combined into a single
-argument.}
+\item{key.title}{Used to set the title of the legend. The legend title is
+passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
@@ -127,6 +122,9 @@ to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
 This may be useful when the plot \emph{data} is of more interest, or the plot is
 required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).}
+
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
 Some additional arguments are also available:

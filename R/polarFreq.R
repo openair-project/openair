@@ -149,18 +149,16 @@ polarFreq <- function(
   ws.upper = NA,
   offset = 10,
   border.col = "transparent",
-  key = TRUE,
-  key.header = statistic,
-  key.footer = pollutant,
+  key.title = paste(statistic, pollutant, sep = " "),
   key.position = "right",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   # extract necessary data
   vars <- c("wd", "ws")
@@ -212,13 +210,14 @@ polarFreq <- function(
     ))
   }
 
+  # over-ride transform if breaks supplied
   if (!(any(is.null(breaks)) || anyNA(breaks))) {
     trans <- FALSE
-  } # over-ride transform if breaks supplied
-
-  if (key.header == "weighted.mean") {
-    key.header <- c("contribution (%)")
   }
+
+  # replace weighted.mean with a nicer label
+  key.title <- check_key_header(key.title, extra.args)
+  key.title <- gsub("weighted.mean", "contribution (%)", key.title)
 
   # make sure wd data are rounded to nearest 10
   mydata$wd <- wd.int * ceiling(mydata$wd / wd.int - 0.5)
@@ -362,14 +361,7 @@ polarFreq <- function(
       y = extra.args$ylab,
       x = extra.args$xlab,
       title = extra.args$main,
-      fill = quickText(
-        paste(
-          key.header,
-          key.footer,
-          sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
-        ),
-        auto.text = auto.text
-      )
+      fill = quickText(key.title, auto.text = auto.text)
     ) +
     get_facet(
       type,

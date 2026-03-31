@@ -225,18 +225,17 @@ TaylorDiagram <- function(
   arrow.lwd = 3,
   annotate = "centred\nRMS error",
   text.obs = "observed",
-  key = TRUE,
   key.title = group,
   key.columns = 1,
   key.position = "right",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   # extra.args setup
   extra.args <- list(...)

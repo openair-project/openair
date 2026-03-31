@@ -156,9 +156,15 @@
 #'
 #' # UK daily air quality index
 #' pm10.breaks <- c(0, 17, 34, 50, 59, 67, 75, 84, 92, 100, 1000)
-#' calendarPlot(mydata, "pm10",
-#'   year = 1999, breaks = pm10.breaks,
-#'   labels = c(1:10), cols = "daqi", statistic = "mean", key.header = "DAQI"
+#' calendarPlot(
+#'   mydata,
+#'   "pm10",
+#'   year = 1999,
+#'   breaks = pm10.breaks,
+#'   labels = c(1:10),
+#'   cols = "daqi",
+#'   statistic = "mean",
+#'   key.title = "PM10 DAQI"
 #' )
 #' }
 calendarPlot <-
@@ -188,13 +194,12 @@ calendarPlot <-
     w.abbr.len = 1,
     remove.empty = TRUE,
     show.year = TRUE,
-    key = TRUE,
-    key.header = statistic,
-    key.footer = pollutant,
+    key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
     strip.position = "top",
     auto.text = TRUE,
     plot = TRUE,
+    key = NULL,
     ...
   ) {
     # correct use of annotate
@@ -247,10 +252,8 @@ calendarPlot <-
       annotate <- "none"
     }
 
-    # key handling
-    if (rlang::is_logical(key) && !key) {
-      key.position <- "none"
-    }
+    # check key.position
+    key.position <- check_key_position(key.position, key)
 
     # check w.shift
     if (w.shift < 0 || w.shift > 6) {
@@ -264,6 +267,9 @@ calendarPlot <-
     extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
     extra.args$ylab <- quickText(extra.args$ylab %||% NULL, auto.text)
     extra.args$main <- quickText(extra.args$main %||% NULL, auto.text)
+
+    # check if key.header / key.footer are being used
+    key.title <- check_key_header(key.title, extra.args)
 
     if ("col.arrow" %in% names(extra.args)) {
       cli::cli_warn(
@@ -538,14 +544,7 @@ calendarPlot <-
         y = extra.args$ylab,
         x = extra.args$xlab,
         title = extra.args$main,
-        fill = quickText(
-          paste(
-            key.header,
-            key.footer,
-            sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
-          ),
-          auto.text = auto.text
-        )
+        fill = quickText(key.title, auto.text = auto.text)
       ) +
       ggplot2::scale_x_continuous(
         labels = weekday.abb,

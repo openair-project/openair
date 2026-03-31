@@ -248,3 +248,37 @@ samp_boot_block <- function(n, b, block_length = 20) {
     1:n,
   ]
 }
+
+# check use of deprecated key.header and key.footer
+check_key_header <- function(key.title, extra.args) {
+  if (
+    "key.header" %in%
+      names(extra.args) ||
+      "key.footer" %in% names(extra.args)
+  ) {
+    cli::cli_warn(
+      "{.arg key.header} and {.arg key.footer} are deprecated. Please use {.arg key.title} to set a single legend name."
+    )
+    key.title <- paste(extra.args$key.header, extra.args$key.footer, sep = "\n")
+  }
+  key.title
+}
+
+# check use of deprecated key arg
+check_key_position <- function(key.position, key) {
+  if (!is.null(key)) {
+    cli::cli_warn(
+      'The {.arg key} argument is deprecated. Please use {.arg key.position = "none"} to remove a legend.'
+    )
+
+    if (isFALSE(key)) {
+      key.position <- "none"
+    }
+  }
+  key.position <- rlang::arg_match(
+    key.position,
+    c("top", "bottom", "left", "right", "none")
+  )
+
+  key.position
+}
