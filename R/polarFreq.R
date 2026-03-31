@@ -149,17 +149,16 @@ polarFreq <- function(
   ws.upper = NA,
   offset = 10,
   border.col = "transparent",
-  key = TRUE,
   key.title = paste(statistic, pollutant, sep = "\n"),
   key.position = "right",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   # extract necessary data
   vars <- c("wd", "ws")

@@ -72,9 +72,6 @@ etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
 expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a
 hole that takes up the entire plotting area.}
 
-\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
-\code{key.position} to \code{"none"}.}
-
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}
@@ -103,6 +100,9 @@ to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
 This may be useful when the plot \emph{data} is of more interest, or the plot is
 required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).}
+
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 }
 \description{
 This is a central place for describing common shared parameters.

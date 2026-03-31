@@ -186,16 +186,19 @@ trajLevel <- function(
   grid.nx = 9,
   grid.ny = grid.nx,
   origin = TRUE,
-  key = TRUE,
   key.title = NULL,
   key.position = "right",
   key.columns = NULL,
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
   rlang::check_installed(c("sf", "maps"))
+
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   # checks
   statistic <- tolower(statistic)

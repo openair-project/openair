@@ -25,11 +25,11 @@ polarAnnulus(
   k = c(20, 10),
   normalise = FALSE,
   strip.position = "top",
-  key = TRUE,
   key.title = paste(statistic, pollutant, sep = "\\n"),
   key.position = "right",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 }
@@ -186,9 +186,6 @@ argument defines whether the strips are "switched" and can take either
 \code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
 locations to the bottom of the plot.}
 
-\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
-\code{key.position} to \code{"none"}.}
-
 \item{key.title}{Used to set the title of the legend. The legend title is
 passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 
@@ -205,6 +202,9 @@ to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
 This may be useful when the plot \emph{data} is of more interest, or the plot is
 required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).}
+
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
 Some additional arguments are also available:

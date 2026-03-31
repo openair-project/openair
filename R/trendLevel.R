@@ -145,7 +145,6 @@ trendLevel <- function(
   min.bin = 1,
   cols = "default",
   auto.text = TRUE,
-  key = TRUE,
   key.title = paste("use.stat.name", pollutant, sep = "\n"),
   key.position = "right",
   strip.position = "top",
@@ -167,11 +166,11 @@ trendLevel <- function(
   drop.unused.types = TRUE,
   col.na = "white",
   plot = TRUE,
+  key = NULL,
   ...
 ) {
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   extra.args <- rlang::list2(...)
 

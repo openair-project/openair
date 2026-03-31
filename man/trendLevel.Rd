@@ -17,7 +17,6 @@ trendLevel(
   min.bin = 1,
   cols = "default",
   auto.text = TRUE,
-  key = TRUE,
   key.title = paste("use.stat.name", pollutant, sep = "\\n"),
   key.position = "right",
   strip.position = "top",
@@ -30,6 +29,7 @@ trendLevel(
   drop.unused.types = TRUE,
   col.na = "white",
   plot = TRUE,
+  key = NULL,
   ...
 )
 }
@@ -80,9 +80,6 @@ of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
 properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
-
-\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
-\code{key.position} to \code{"none"}.}
 
 \item{key.title}{Used to set the title of the legend. The legend title is
 passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
@@ -148,6 +145,9 @@ to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
 This may be useful when the plot \emph{data} is of more interest, or the plot is
 required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).}
+
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
 Some additional arguments are also available:

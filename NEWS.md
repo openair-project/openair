@@ -24,6 +24,8 @@
 
 - `key.header` and `key.footer` have been replaced with a single `key.title`. This is due to `ggplot2` not supporting a separate "header" and "footer" for guides.
 
+- The `key` argument has been deprecated, as it now only exists to overwrite `key.position` when it is `FALSE`. Please use `key.position = "none"` going forward.
+
 - Argument names have been standardised throughout `openair`. For example, instances of `col` have been replaced with `cols`. This may cause some existing code to break, but will ensure each function behaves more similarly going into the future.
 
 ## New Features
@@ -60,10 +62,10 @@
 
 - `smoothTrend()` refinements:
 
-    - Gained the `x.relation`, `date.format`, `key` and `key.position` arguments, in line with `timePlot()`. 
-    
+    - Gained the `x.relation`, `date.format`, and `key.position` arguments, in line with `timePlot()`. 
+
     - Gained the `progress` argument, passed to `timeAverage()`. 
-    
+
     - `avg.time` is also no longer restricted to just three options (any `timeAverage()` option is permitted), although too fine a time resolution may obscure the smooth trend for long running data.
 
 - `calendarPlot()` refinements:

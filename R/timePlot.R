@@ -211,7 +211,6 @@ timePlot <- function(
   y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
-  key = TRUE,
   key.columns = NULL,
   key.position = "bottom",
   strip.position = "top",
@@ -220,11 +219,11 @@ timePlot <- function(
   date.format = NULL,
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   # Args setup
   extra.args <- rlang::list2(...)

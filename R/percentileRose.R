@@ -130,16 +130,15 @@ percentileRose <- function(
   angle.scale = 45,
   offset = 0,
   auto.text = TRUE,
-  key = TRUE,
   key.title = NULL,
   key.position = "bottom",
   strip.position = "top",
   plot = TRUE,
+  key = NULL,
   ...
 ) {
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   # calculate percentiles or just show mean?
   if (is.na(percentile[1])) {

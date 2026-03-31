@@ -382,7 +382,6 @@ polarPlot <-
     force.positive = TRUE,
     k = 100,
     normalise = FALSE,
-    key = TRUE,
     key.title = paste(statistic, pollutant, sep = "\n"),
     key.position = "right",
     strip.position = "top",
@@ -395,6 +394,7 @@ polarPlot <-
     formula.label = TRUE,
     tau = 0.5,
     plot = TRUE,
+    key = NULL,
     ...
   ) {
     if (
@@ -465,10 +465,8 @@ polarPlot <-
       stop("weights should be of length 3.")
     }
 
-    ## key handling
-    if (!key) {
-      key.position <- "none"
-    }
+    # check key.position
+    key.position <- check_key_position(key.position, key)
 
     ## extra.args setup
     extra.args <- list(...)
@@ -852,7 +850,11 @@ polarPlot <-
 
     # Format legend title
     if (missing(key.title)) {
-      key.title <- paste(key_header, key_footer, sep = "\n")
+      key.title <- paste(
+        key_header,
+        key_footer,
+        sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
+      )
     }
 
     # check if key.header / key.footer are being used
@@ -971,7 +973,7 @@ polarPlot <-
         strip.position = strip.position
       ) +
       ggplot2::guides(
-        fill = ggplot2::guide_colorbar(
+        color = ggplot2::guide_colorbar(
           theme = ggplot2::theme(
             legend.title.position = ifelse(
               key.position %in% c("left", "right"),

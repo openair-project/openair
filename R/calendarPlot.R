@@ -194,12 +194,12 @@ calendarPlot <-
     w.abbr.len = 1,
     remove.empty = TRUE,
     show.year = TRUE,
-    key = TRUE,
     key.title = paste(statistic, pollutant, sep = "\n"),
     key.position = "right",
     strip.position = "top",
     auto.text = TRUE,
     plot = TRUE,
+    key = NULL,
     ...
   ) {
     # correct use of annotate
@@ -252,10 +252,8 @@ calendarPlot <-
       annotate <- "none"
     }
 
-    # key handling
-    if (rlang::is_logical(key) && !key) {
-      key.position <- "none"
-    }
+    # check key.position
+    key.position <- check_key_position(key.position, key)
 
     # check w.shift
     if (w.shift < 0 || w.shift > 6) {

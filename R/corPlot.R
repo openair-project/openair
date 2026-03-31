@@ -122,17 +122,16 @@ corPlot <- function(
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
-  key = FALSE,
   key.title = NULL,
-  key.position = "right",
+  key.position = "none",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   if (length(type) > 1) {
     cli::cli_abort(

@@ -12,12 +12,12 @@ conditionalQuantile(
   bins = 31,
   min.bin = c(10, 20),
   cols = "YlOrRd",
-  key = TRUE,
   key.columns = 2,
   key.position = "bottom",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 }
@@ -62,9 +62,6 @@ levels.}
 of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
 \code{\link[=colours]{colours()}} for a full list) or hex-codes (e.g., \code{c("#30123B", "#9CF649", "#7A0403")}). See \code{\link[=openColours]{openColours()}} for more details.}
 
-\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
-\code{key.position} to \code{"none"}.}
-
 \item{key.columns}{Number of columns to be used in a categorical legend. With
 many categories a single column can make to key too wide. The user can thus
 choose to use several columns by setting \code{key.columns} to be less than the
@@ -90,6 +87,9 @@ to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
 This may be useful when the plot \emph{data} is of more interest, or the plot is
 required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).}
+
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
 Some additional arguments are also available:

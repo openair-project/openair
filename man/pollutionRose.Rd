@@ -9,12 +9,12 @@ pollutionRose(
   pollutant = "nox",
   key.title = pollutant,
   key.position = "right",
-  key = TRUE,
   breaks = 6,
   paddle = FALSE,
   seg = 0.9,
   normalise = FALSE,
   plot = TRUE,
+  key = NULL,
   ...
 )
 }
@@ -30,9 +30,6 @@ passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}
-
-\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
-\code{key.position} to \code{"none"}.}
 
 \item{breaks}{Most commonly, the number of break points for pollutant
 concentrations. The default, 6, attempts to breaks the supplied data at
@@ -55,6 +52,9 @@ to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
 This may be useful when the plot \emph{data} is of more interest, or the plot is
 required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).}
+
+\item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
+\code{key.position} to \code{"none"}.}
 
 \item{...}{
   Arguments passed on to \code{\link[=windRose]{windRose}}

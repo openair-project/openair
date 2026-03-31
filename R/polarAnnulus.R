@@ -159,13 +159,16 @@ polarAnnulus <-
     k = c(20, 10),
     normalise = FALSE,
     strip.position = "top",
-    key = TRUE,
     key.title = paste(statistic, pollutant, sep = "\n"),
     key.position = "right",
     auto.text = TRUE,
     plot = TRUE,
+    key = NULL,
     ...
   ) {
+    # check key.position
+    key.position <- check_key_position(key.position, key)
+
     # check statistic value is valid
     statistic <- tolower(statistic)
     statistic <- rlang::arg_match(

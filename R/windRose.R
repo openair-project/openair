@@ -172,7 +172,6 @@ windRose <- function(
   normalise = FALSE,
   max.freq = NULL,
   paddle = TRUE,
-  key = TRUE,
   key.title = "(m/s)",
   key.position = "bottom",
   strip.position = "top",
@@ -184,11 +183,11 @@ windRose <- function(
   angle.scale = 315,
   border = NA,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
-  if (rlang::is_logical(key) && !key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   # greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
@@ -1099,12 +1098,12 @@ pollutionRose <- function(
   pollutant = "nox",
   key.title = pollutant,
   key.position = "right",
-  key = TRUE,
   breaks = 6,
   paddle = FALSE,
   seg = 0.9,
   normalise = FALSE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
   # extra.args args setup

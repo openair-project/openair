@@ -141,7 +141,7 @@ polarDiff <- function(
         "#AE4647",
         "#5F1415"
       ),
-      key = TRUE,
+      key.position = "none",
       par.settings = list(axis.line = list(col = "black")),
       alpha = 1,
       key.title = paste("Difference", pollutant_name, sep = "\n"),
@@ -151,7 +151,7 @@ polarDiff <- function(
       names(Args),
       c(
         "cols",
-        "key",
+        "key.position",
         "par.settings",
         "alpha",
         "key.title",

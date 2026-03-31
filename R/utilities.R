@@ -263,3 +263,22 @@ check_key_header <- function(key.title, extra.args) {
   }
   key.title
 }
+
+# check use of deprecated key arg
+check_key_position <- function(key.position, key) {
+  if (!is.null(key)) {
+    cli::cli_warn(
+      'The {.arg key} argument is deprecated. Please use {.arg key.position = "none"} to remove a legend.'
+    )
+
+    if (isFALSE(key)) {
+      key.position <- "none"
+    }
+  }
+  key.position <- rlang::arg_match(
+    key.position,
+    c("top", "bottom", "left", "right", "none")
+  )
+
+  key.position
+}

@@ -73,7 +73,6 @@ timeProp <- function(
   normalise = FALSE,
   x.relation = "same",
   y.relation = "same",
-  key = TRUE,
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
@@ -82,6 +81,7 @@ timeProp <- function(
   date.format = NULL,
   auto.text = TRUE,
   plot = TRUE,
+  key = NULL,
   ...
 ) {
   # extra.args setup
@@ -190,10 +190,8 @@ timeProp <- function(
   xlim <- extra.args$xlim %||% NULL
   ylim <- extra.args$ylim %||% NULL
 
-  # set up key, if required
-  if (!key) {
-    key.position <- "none"
-  }
+  # check key.position
+  key.position <- check_key_position(key.position, key)
 
   # x-axis scale function
   if (lubridate::is.Date(results$xleft)) {
