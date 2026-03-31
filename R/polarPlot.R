@@ -382,7 +382,7 @@ polarPlot <-
     force.positive = TRUE,
     k = 100,
     normalise = FALSE,
-    key.title = paste(statistic, pollutant, sep = "\n"),
+    key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
     strip.position = "top",
     auto.text = TRUE,

@@ -30,7 +30,7 @@ calendarPlot(
   w.abbr.len = 1,
   remove.empty = TRUE,
   show.year = TRUE,
-  key.title = paste(statistic, pollutant, sep = "\\n"),
+  key.title = paste(statistic, pollutant, sep = " "),
   key.position = "right",
   strip.position = "top",
   auto.text = TRUE,

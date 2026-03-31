@@ -25,7 +25,7 @@ polarAnnulus(
   k = c(20, 10),
   normalise = FALSE,
   strip.position = "top",
-  key.title = paste(statistic, pollutant, sep = "\\n"),
+  key.title = paste(statistic, pollutant, sep = " "),
   key.position = "right",
   auto.text = TRUE,
   plot = TRUE,

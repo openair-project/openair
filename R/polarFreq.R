@@ -149,7 +149,7 @@ polarFreq <- function(
   ws.upper = NA,
   offset = 10,
   border.col = "transparent",
-  key.title = paste(statistic, pollutant, sep = "\n"),
+  key.title = paste(statistic, pollutant, sep = " "),
   key.position = "right",
   strip.position = "top",
   auto.text = TRUE,

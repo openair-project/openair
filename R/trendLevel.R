@@ -145,7 +145,7 @@ trendLevel <- function(
   min.bin = 1,
   cols = "default",
   auto.text = TRUE,
-  key.title = paste("use.stat.name", pollutant, sep = "\n"),
+  key.title = paste("use.stat.name", pollutant, sep = " "),
   key.position = "right",
   strip.position = "top",
   labels = NULL,
