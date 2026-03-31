@@ -230,7 +230,6 @@ trajLevel <- function(
   extra.args$xlab <- extra.args$xlab %||% ""
   extra.args$main <- extra.args$main %||% ""
   extra.args$border <- extra.args$border %||% NA
-  extra.args$key.footer <- extra.args$key.footer %||% NULL
 
   if ("method" %in% names(extra.args)) {
     cli::cli_warn(
