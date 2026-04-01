@@ -349,7 +349,7 @@ windRose <- function(
   mydata[[wd]][mydata[, ws] < calm.thresh] <- -999 # set wd to flag where there are calms
   # do after rounding or -999 changes
 
-  # === COMPARISON PLOT BRANCH (early return — must be before break setup) ===
+  # COMPARISON PLOT BRANCH (early return — must be before break setup)
   if (diff) {
     group_vars <- if (all(type == "default")) character(0) else type
 
@@ -562,7 +562,6 @@ windRose <- function(
     class(output) <- "openair"
     return(invisible(output))
   }
-  # === END COMPARISON PLOT BRANCH ===
 
   if (length(breaks) == 1) {
     breaks <- 0:(breaks - 1) * ws.int
@@ -573,7 +572,7 @@ windRose <- function(
   }
 
   if (min(breaks) > min(mydata$x, na.rm = TRUE)) {
-    warning("Some values are below minimum break.")
+    cli::cli_warn("Some values are below minimum break.")
   }
 
   breaks <- unique(breaks)
@@ -614,12 +613,11 @@ windRose <- function(
         .by = c("wd", "x")
       ) |>
       tidyr::complete(
+        .data[["x"]],
         wd = wd_vals,
-        x = levels(mydata$x),
         fill = list(value = 0)
       ) |>
-      dplyr::rename(interval = "x") |>
-      dplyr::mutate(interval = factor(.data$interval, levels = interval_labels))
+      dplyr::rename(interval = "x")
 
     if (stat.scale == "all") {
       calm_n <- calm_n / all_n
@@ -912,52 +910,28 @@ windRose <- function(
   }
 
   if (annotate) {
-    if (diff) {
-      thePlot <-
-        thePlot +
-        ggplot2::geom_text(
-          ggplot2::aes(
-            label = paste0(
-              mean_ws = paste(
-                "mean ws = ",
-                round(as.numeric(.data$panel.fun), 1)
-              ),
-              "\n",
-              mean_wd = paste("mean wd = ", round(.data$mean.wd, 1))
-            )
-          ),
-          x = I(1),
-          y = I(0),
-          check_overlap = TRUE,
-          size = 3,
-          hjust = 1,
-          vjust = 0,
-          color = calm.col
-        )
-    } else {
-      thePlot <-
-        thePlot +
-        ggplot2::geom_text(
-          ggplot2::aes(
-            label = paste0(
-              stat.lab2,
-              " = ",
-              .data$panel.fun,
-              "\n",
-              "calm = ",
-              .data$calm,
-              stat.unit
-            )
-          ),
-          x = I(1),
-          y = I(0),
-          check_overlap = TRUE,
-          size = 3,
-          hjust = 1,
-          vjust = 0,
-          color = calm.col
-        )
-    }
+    thePlot <-
+      thePlot +
+      ggplot2::geom_text(
+        ggplot2::aes(
+          label = paste0(
+            stat.lab2,
+            " = ",
+            .data$panel.fun,
+            "\n",
+            "calm = ",
+            .data$calm,
+            stat.unit
+          )
+        ),
+        x = I(1),
+        y = I(0),
+        check_overlap = TRUE,
+        size = 3,
+        hjust = 1,
+        vjust = 0,
+        color = calm.col
+      )
   }
 
   # make key full width/height
