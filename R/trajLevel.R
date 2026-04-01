@@ -195,7 +195,7 @@ trajLevel <- function(
   key = NULL,
   ...
 ) {
-  rlang::check_installed(c("sf", "maps"))
+  rlang::check_installed(c("sf", "rnaturalearthdata"))
 
   # check key.position
   key.position <- check_key_position(key.position, key)

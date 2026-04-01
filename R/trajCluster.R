@@ -75,7 +75,7 @@ trajCluster <- function(
   plot = TRUE,
   ...
 ) {
-  rlang::check_installed(c("sf", "maps"))
+  rlang::check_installed(c("sf", "rnaturalearthdata"))
 
   if (tolower(method) == "euclid") {
     method <- "distEuclid"

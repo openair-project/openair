@@ -1,10 +1,9 @@
 # trajLevel tests — plot = FALSE throughout
-# Requires sf and maps; skip on CRAN
 if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
   return()
 }
 skip_if_not_installed("sf")
-skip_if_not_installed("maps")
+skip_if_not_installed("rnaturalearthdata")
 
 traj <- importTraj() |>
   selectByDate(month = 1)

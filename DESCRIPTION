@@ -47,9 +47,9 @@ Suggests:
     KernSmooth,
     knitr,
     legendry (>= 0.2.4),
-    maps,
     quantreg,
     rmarkdown,
+    rnaturalearthdata,
     sf,
     spelling,
     testthat (>= 3.0.0)

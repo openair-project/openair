@@ -157,7 +157,7 @@ trajPlot <- function(
   key = NULL,
   ...
 ) {
-  rlang::check_installed(c("sf", "maps"))
+  rlang::check_installed(c("sf", "rnaturalearthdata"))
 
   # check key.position
   key.position <- check_key_position(key.position, key)
@@ -461,7 +461,12 @@ layer_worldmap <- function(
   map.lwd,
   map.lty
 ) {
-  map_sf <- make_sf_world_map(crs)
+  map_sf <- rnaturalearthdata::countries50 |>
+    sf::st_wrap_dateline(
+      options = c("WRAPDATELINE=YES", "DATELINEOFFSET=180"),
+      quiet = TRUE
+    ) |>
+    sf::st_transform(crs = crs)
 
   if (!map.fill) {
     map.cols <- "transparent"
@@ -482,18 +487,4 @@ layer_worldmap <- function(
     linewidth = map.lwd / 10,
     linetype = map.lty
   )
-}
-
-# function to create a world map from ggplot2 map_data
-make_sf_world_map <- function(crs = 4326) {
-  ggplot2::map_data("world") |>
-    sf::st_as_sf(coords = c("long", "lat"), crs = 4326) |>
-    dplyr::group_by(dplyr::across(dplyr::all_of(c(
-      "region",
-      "subregion",
-      "group"
-    )))) |>
-    dplyr::summarise(do_union = FALSE) |>
-    sf::st_cast("POLYGON") |>
-    sf::st_transform(crs = crs)
 }
