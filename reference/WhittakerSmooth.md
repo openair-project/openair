@@ -45,7 +45,7 @@ WhittakerSmooth(
   the optimal value of `lambda` for each pollutant. This can be time
   consuming, so a fixed value of `lambda` is recommended for large
   datasets or multiple pollutants. Note that the value of `lambda` needs
-  to increase exponetially to smooth long time series data of several
+  to increase exponentially to smooth long time series data of several
   years e.g. `lambda = 10e9`.
 
 - d:
