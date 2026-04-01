@@ -8,10 +8,10 @@
   (`|>`).
 
 - `openair` now imports `ggplot2` and `scales` and suggests `sf`,
-  `geomtextpath` and `legendry`.
+  `geomtextpath`, `legendry` and `rnaturalearthdata`.
 
 - `openair` no longer imports `lattice`, `latticeExtra`, `hexbin` or
-  `mapproj` nor suggests `mapdata`.
+  `mapproj` nor suggests `mapdata` or `maps`.
 
 ### Breaking Changes
 
