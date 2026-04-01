@@ -30,31 +30,15 @@
 
 ## New Features
 
-- `timeVariation()` has been almost completely rewritten. It is now a thin wrapper around the new `variationPlot()`, which can take any arbitrary `x` value - passed to [cutData()] - to use for its x-axis.
-
-- `timeVariation()` has the following changes:
+- `timeVariation()` has been almost completely rewritten. It is now a thin wrapper around the new `variationPlot()`, which can take any arbitrary `x` value - passed to [cutData()] - to use for its x-axis. Furthermore, it has gained the following changes:
 
     - Gained the `panels` argument. This allows for panels other than "hour.weekday", "hour", "month", and "weekday" to be represented in the plot assembly.
-    
-    - `timeVariation()` will now change lines to points and polygons to rectangles for certain panel and `group` combinations: month-season, weekday-weekend, and hour-daylight.
 
     - When `key` is `FALSE`, no key is shown for any of the four `timeVariation()` plots. Previously, any value passed to `key` would cause all four plots to display a key.
 
     - (!) BREAKING: The order of `xlab` and `ylim` now matches the order of `panels`. `month.last` has also been deprecated; if used and `TRUE`, this will override `panels` with a warning. The output names `output$data` will now vary based on `panels`, and the `type` column will be named `{type}_type` (e.g., "hour_type").
 
-- `cutData()` now contains the `drop` argument. This allows for greater control over factor levels for appended columns. For example, consider a situation in which `data` only contains dates in March and May and `type = "month"` is used:
-
-    - `drop = "empty"` will ensure the resulting vector only has factor levels `"March"` and `"May"`. 
-    
-    - `drop = "none"` will ensure the vector has all twelve months (January, February, March, etc.).
-    
-    - `drop = "outside"` will retain 'inclusive' factor levels within the range of the data - in this case `"March"`, `"April"`, and `"May"`.
-    
-    - `drop = "default"` is the existing `cutData()` behaviour - in the case of `type = "month"`, it is equivalent to `drop = "empty"`.
-
-- `cutData()` also gains the `"quarter"` and `"quarteryear"`/`"yearquarter"` `type` options. These split a year cleanly into quarters, as an alternative to `"season"` and `"seasonyear"`/`"yearseason"`. While seasons better align with meteorology, quarters more cleanly fit into a single calendar year and may better align with other relevant periods (e.g., reporting schedules, ratification calendars, economic activity, etc.).
-
-- `is.axis` now has an effect on `weekday`, `season`, `seasonyear` and `monthyear`.
+    - (!) BREAKING: The names of the `plot` and `data` objects returned by `timeVariation()` are now named after `panels` and have a more consistent structure.
 
 - `timePlot()` refinements:
     
@@ -122,7 +106,21 @@
 
 - `trajPlot()` and `trajLevel()` have gained the `grid.nx` and `grid.ny` arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.
 
-- `quickText()` now converts `air_temp` (a common `worldmet` variable) into `"Temperature"`.
+- `cutData()` now contains the `drop` argument. This allows for greater control over factor levels for appended columns. For example, consider a situation in which `data` only contains dates in March and May and `type = "month"` is used:
+
+    - `drop = "empty"` will ensure the resulting vector only has factor levels `"March"` and `"May"`. 
+    
+    - `drop = "none"` will ensure the vector has all twelve months (January, February, March, etc.).
+    
+    - `drop = "outside"` will retain 'inclusive' factor levels within the range of the data - in this case `"March"`, `"April"`, and `"May"`.
+    
+    - `drop = "default"` is the existing `cutData()` behaviour - in the case of `type = "month"`, it is equivalent to `drop = "empty"`.
+
+- `cutData()` also gains the `"quarter"` and `"quarteryear"`/`"yearquarter"` `type` options. These split a year cleanly into quarters, as an alternative to `"season"` and `"seasonyear"`/`"yearseason"`. While seasons better align with meteorology, quarters more cleanly fit into a single calendar year and may better align with other relevant periods (e.g., reporting schedules, ratification calendars, economic activity, etc.).
+
+- `is.axis` now has an effect on `weekday`, `season`, `seasonyear` and `monthyear`.
+
+- `quickText()` now converts `air_temp` (a common `worldmet` variable) into `"temperature"`.
 
 - `timeAverage()` is much faster with the bulk of the calculations made using C++.
 
@@ -132,17 +130,17 @@
 
 - `timePlot()` now allows duplicate dates when `time.avg` is used. The user will still receive a warning from `timeAverage()`, which is used internally, but the plot will still be created.
 
-- `importUKAQ()` now closes its `url()` connections and generally fails more gracefully when `data_type %in% c("annual", "monthly", "daqi")`. This was already the case for other data types.
-
 - The `windflow` argument of `timePlot()` now works when `"ws"` and/or `"wd"` are in `pollutant`.
+
+- `importUKAQ()` now closes its `url()` connections and generally fails more gracefully when `data_type %in% c("annual", "monthly", "daqi")`. This was already the case for other data types.
 
 - `timeAverage()` will no longer leave `Uu` and `Vv` columns behind when `statistic = "data.cap"`.
 
 - `timeAverage()` now correctly passes `...` to `cutData()`.
 
-- `selectByDate()` now correctly handles the `end` date if supplied when in a date format e.g. dd/mm/yyyy and selects all hours in the day if present. 
+- `timeAverage()` now properly calculates wind speed and direction when `vector.ws = TRUE`.
 
-- `timeAverage()` did not properly calculate wind speed and direction correct when `vector.ws = TRUE`
+- `selectByDate()` now correctly handles the `end` date if supplied when in a date format (i.e., dd/mm/yyyy) and selects all hours in that day if present.
 
 # openair 2.19.0
 
