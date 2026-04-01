@@ -63,19 +63,11 @@
   the new
   [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md),
   which can take any arbitrary `x` value - passed to \[cutData()\] - to
-  use for its x-axis.
-
-- [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
-  has the following changes:
+  use for its x-axis. Furthermore, it has gained the following changes:
 
   - Gained the `panels` argument. This allows for panels other than
     “hour.weekday”, “hour”, “month”, and “weekday” to be represented in
     the plot assembly.
-
-  - [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
-    will now change lines to points and polygons to rectangles for
-    certain panel and `group` combinations: month-season,
-    weekday-weekend, and hour-daylight.
 
   - When `key` is `FALSE`, no key is shown for any of the four
     [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
@@ -88,36 +80,9 @@
     `output$data` will now vary based on `panels`, and the `type` column
     will be named `{type}_type` (e.g., “hour_type”).
 
-- [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-  now contains the `drop` argument. This allows for greater control over
-  factor levels for appended columns. For example, consider a situation
-  in which `data` only contains dates in March and May and
-  `type = "month"` is used:
-
-  - `drop = "empty"` will ensure the resulting vector only has factor
-    levels `"March"` and `"May"`.
-
-  - `drop = "none"` will ensure the vector has all twelve months
-    (January, February, March, etc.).
-
-  - `drop = "outside"` will retain ‘inclusive’ factor levels within the
-    range of the data - in this case `"March"`, `"April"`, and `"May"`.
-
-  - `drop = "default"` is the existing
-    [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-    behaviour - in the case of `type = "month"`, it is equivalent to
-    `drop = "empty"`.
-
-- [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-  also gains the `"quarter"` and `"quarteryear"`/`"yearquarter"` `type`
-  options. These split a year cleanly into quarters, as an alternative
-  to `"season"` and `"seasonyear"`/`"yearseason"`. While seasons better
-  align with meteorology, quarters more cleanly fit into a single
-  calendar year and may better align with other relevant periods (e.g.,
-  reporting schedules, ratification calendars, economic activity, etc.).
-
-- `is.axis` now has an effect on `weekday`, `season`, `seasonyear` and
-  `monthyear`.
+  - (!) BREAKING: The names of the `plot` and `data` objects returned by
+    [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+    are now named after `panels` and have a more consistent structure.
 
 - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
   refinements:
@@ -244,9 +209,40 @@
   control the number of ticks on the coordinate grid, or remove it
   altogether.
 
+- [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  now contains the `drop` argument. This allows for greater control over
+  factor levels for appended columns. For example, consider a situation
+  in which `data` only contains dates in March and May and
+  `type = "month"` is used:
+
+  - `drop = "empty"` will ensure the resulting vector only has factor
+    levels `"March"` and `"May"`.
+
+  - `drop = "none"` will ensure the vector has all twelve months
+    (January, February, March, etc.).
+
+  - `drop = "outside"` will retain ‘inclusive’ factor levels within the
+    range of the data - in this case `"March"`, `"April"`, and `"May"`.
+
+  - `drop = "default"` is the existing
+    [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+    behaviour - in the case of `type = "month"`, it is equivalent to
+    `drop = "empty"`.
+
+- [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  also gains the `"quarter"` and `"quarteryear"`/`"yearquarter"` `type`
+  options. These split a year cleanly into quarters, as an alternative
+  to `"season"` and `"seasonyear"`/`"yearseason"`. While seasons better
+  align with meteorology, quarters more cleanly fit into a single
+  calendar year and may better align with other relevant periods (e.g.,
+  reporting schedules, ratification calendars, economic activity, etc.).
+
+- `is.axis` now has an effect on `weekday`, `season`, `seasonyear` and
+  `monthyear`.
+
 - [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
   now converts `air_temp` (a common `worldmet` variable) into
-  `"Temperature"`.
+  `"temperature"`.
 
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
   is much faster with the bulk of the calculations made using C++.
@@ -262,15 +258,15 @@
   [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md),
   which is used internally, but the plot will still be created.
 
+- The `windflow` argument of
+  [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
+  now works when `"ws"` and/or `"wd"` are in `pollutant`.
+
 - [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md)
   now closes its [`url()`](https://rdrr.io/r/base/connections.html)
   connections and generally fails more gracefully when
   `data_type %in% c("annual", "monthly", "daqi")`. This was already the
   case for other data types.
-
-- The `windflow` argument of
-  [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
-  now works when `"ws"` and/or `"wd"` are in `pollutant`.
 
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
   will no longer leave `Uu` and `Vv` columns behind when
@@ -280,13 +276,13 @@
   now correctly passes `...` to
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
 
+- [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
+  now properly calculates wind speed and direction when
+  `vector.ws = TRUE`.
+
 - [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
   now correctly handles the `end` date if supplied when in a date format
-  e.g. dd/mm/yyyy and selects all hours in the day if present.
-
-- [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
-  did not properly calculate wind speed and direction correct when
-  `vector.ws = TRUE`
+  (i.e., dd/mm/yyyy) and selects all hours in that day if present.
 
 ## openair 2.19.0
 

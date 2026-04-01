@@ -73,23 +73,13 @@
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li><p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> has been almost completely rewritten. It is now a thin wrapper around the new <code><a href="../reference/variationPlot.html">variationPlot()</a></code>, which can take any arbitrary <code>x</code> value - passed to [cutData()] - to use for its x-axis.</p></li>
-<li>
-<p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> has the following changes:</p>
+<ul><li>
+<p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> has been almost completely rewritten. It is now a thin wrapper around the new <code><a href="../reference/variationPlot.html">variationPlot()</a></code>, which can take any arbitrary <code>x</code> value - passed to [cutData()] - to use for its x-axis. Furthermore, it has gained the following changes:</p>
 <ul><li><p>Gained the <code>panels</code> argument. This allows for panels other than “hour.weekday”, “hour”, “month”, and “weekday” to be represented in the plot assembly.</p></li>
-<li><p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> will now change lines to points and polygons to rectangles for certain panel and <code>group</code> combinations: month-season, weekday-weekend, and hour-daylight.</p></li>
 <li><p>When <code>key</code> is <code>FALSE</code>, no key is shown for any of the four <code><a href="../reference/timeVariation.html">timeVariation()</a></code> plots. Previously, any value passed to <code>key</code> would cause all four plots to display a key.</p></li>
 <li><p>(!) BREAKING: The order of <code>xlab</code> and <code>ylim</code> now matches the order of <code>panels</code>. <code>month.last</code> has also been deprecated; if used and <code>TRUE</code>, this will override <code>panels</code> with a warning. The output names <code>output$data</code> will now vary based on <code>panels</code>, and the <code>type</code> column will be named <code>{type}_type</code> (e.g., “hour_type”).</p></li>
+<li><p>(!) BREAKING: The names of the <code>plot</code> and <code>data</code> objects returned by <code><a href="../reference/timeVariation.html">timeVariation()</a></code> are now named after <code>panels</code> and have a more consistent structure.</p></li>
 </ul></li>
-<li>
-<p><code><a href="../reference/cutData.html">cutData()</a></code> now contains the <code>drop</code> argument. This allows for greater control over factor levels for appended columns. For example, consider a situation in which <code>data</code> only contains dates in March and May and <code>type = "month"</code> is used:</p>
-<ul><li><p><code>drop = "empty"</code> will ensure the resulting vector only has factor levels <code>"March"</code> and <code>"May"</code>.</p></li>
-<li><p><code>drop = "none"</code> will ensure the vector has all twelve months (January, February, March, etc.).</p></li>
-<li><p><code>drop = "outside"</code> will retain ‘inclusive’ factor levels within the range of the data - in this case <code>"March"</code>, <code>"April"</code>, and <code>"May"</code>.</p></li>
-<li><p><code>drop = "default"</code> is the existing <code><a href="../reference/cutData.html">cutData()</a></code> behaviour - in the case of <code>type = "month"</code>, it is equivalent to <code>drop = "empty"</code>.</p></li>
-</ul></li>
-<li><p><code><a href="../reference/cutData.html">cutData()</a></code> also gains the <code>"quarter"</code> and <code>"quarteryear"</code>/<code>"yearquarter"</code> <code>type</code> options. These split a year cleanly into quarters, as an alternative to <code>"season"</code> and <code>"seasonyear"</code>/<code>"yearseason"</code>. While seasons better align with meteorology, quarters more cleanly fit into a single calendar year and may better align with other relevant periods (e.g., reporting schedules, ratification calendars, economic activity, etc.).</p></li>
-<li><p><code>is.axis</code> now has an effect on <code>weekday</code>, <code>season</code>, <code>seasonyear</code> and <code>monthyear</code>.</p></li>
 <li>
 <p><code><a href="../reference/timePlot.html">timePlot()</a></code> refinements:</p>
 <ul><li><p><code>group</code> can now take a character string, passed to [cutData()] via [timeAverage()]. This works similarly to <code>group</code> in <code><a href="../reference/timeVariation.html">timeVariation()</a></code> in that it colours traces within the panel, rather than splitting them into multiple panels.</p></li>
@@ -137,19 +127,28 @@
 <li><p>New function <code><a href="../reference/windflowOpts.html">windflowOpts()</a></code> which can be passed to the <code>windflow</code> argument of various <code>openair</code> functions to thoroughly customise the “windflow” arrows.</p></li>
 <li><p>All <code>openair</code> plotting functions have gained <code>strip.position</code> to control the placement of the facet strip.</p></li>
 <li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> have gained the <code>grid.nx</code> and <code>grid.ny</code> arguments which can be used to control the number of ticks on the coordinate grid, or remove it altogether.</p></li>
-<li><p><code><a href="../reference/quickText.html">quickText()</a></code> now converts <code>air_temp</code> (a common <code>worldmet</code> variable) into <code>"Temperature"</code>.</p></li>
+<li>
+<p><code><a href="../reference/cutData.html">cutData()</a></code> now contains the <code>drop</code> argument. This allows for greater control over factor levels for appended columns. For example, consider a situation in which <code>data</code> only contains dates in March and May and <code>type = "month"</code> is used:</p>
+<ul><li><p><code>drop = "empty"</code> will ensure the resulting vector only has factor levels <code>"March"</code> and <code>"May"</code>.</p></li>
+<li><p><code>drop = "none"</code> will ensure the vector has all twelve months (January, February, March, etc.).</p></li>
+<li><p><code>drop = "outside"</code> will retain ‘inclusive’ factor levels within the range of the data - in this case <code>"March"</code>, <code>"April"</code>, and <code>"May"</code>.</p></li>
+<li><p><code>drop = "default"</code> is the existing <code><a href="../reference/cutData.html">cutData()</a></code> behaviour - in the case of <code>type = "month"</code>, it is equivalent to <code>drop = "empty"</code>.</p></li>
+</ul></li>
+<li><p><code><a href="../reference/cutData.html">cutData()</a></code> also gains the <code>"quarter"</code> and <code>"quarteryear"</code>/<code>"yearquarter"</code> <code>type</code> options. These split a year cleanly into quarters, as an alternative to <code>"season"</code> and <code>"seasonyear"</code>/<code>"yearseason"</code>. While seasons better align with meteorology, quarters more cleanly fit into a single calendar year and may better align with other relevant periods (e.g., reporting schedules, ratification calendars, economic activity, etc.).</p></li>
+<li><p><code>is.axis</code> now has an effect on <code>weekday</code>, <code>season</code>, <code>seasonyear</code> and <code>monthyear</code>.</p></li>
+<li><p><code><a href="../reference/quickText.html">quickText()</a></code> now converts <code>air_temp</code> (a common <code>worldmet</code> variable) into <code>"temperature"</code>.</p></li>
 <li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> is much faster with the bulk of the calculations made using C++.</p></li>
 <li><p><code><a href="../reference/runRegression.html">runRegression()</a></code> is now much faster with a new algorithm.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
 <ul><li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> now allows duplicate dates when <code>time.avg</code> is used. The user will still receive a warning from <code><a href="../reference/timeAverage.html">timeAverage()</a></code>, which is used internally, but the plot will still be created.</p></li>
-<li><p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> now closes its <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">url()</a></code> connections and generally fails more gracefully when <code>data_type %in% c("annual", "monthly", "daqi")</code>. This was already the case for other data types.</p></li>
 <li><p>The <code>windflow</code> argument of <code><a href="../reference/timePlot.html">timePlot()</a></code> now works when <code>"ws"</code> and/or <code>"wd"</code> are in <code>pollutant</code>.</p></li>
+<li><p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> now closes its <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">url()</a></code> connections and generally fails more gracefully when <code>data_type %in% c("annual", "monthly", "daqi")</code>. This was already the case for other data types.</p></li>
 <li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> will no longer leave <code>Uu</code> and <code>Vv</code> columns behind when <code>statistic = "data.cap"</code>.</p></li>
 <li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> now correctly passes <code>...</code> to <code><a href="../reference/cutData.html">cutData()</a></code>.</p></li>
-<li><p><code><a href="../reference/selectByDate.html">selectByDate()</a></code> now correctly handles the <code>end</code> date if supplied when in a date format e.g. dd/mm/yyyy and selects all hours in the day if present.</p></li>
-<li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> did not properly calculate wind speed and direction correct when <code>vector.ws = TRUE</code></p></li>
+<li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> now properly calculates wind speed and direction when <code>vector.ws = TRUE</code>.</p></li>
+<li><p><code><a href="../reference/selectByDate.html">selectByDate()</a></code> now correctly handles the <code>end</code> date if supplied when in a date format (i.e., dd/mm/yyyy) and selects all hours in that day if present.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
