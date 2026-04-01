@@ -612,12 +612,19 @@ windRose <- function(
         value = stat.fun(.data[[pollutant]]),
         .by = c("wd", "x")
       ) |>
+      # ensure all combinations of wd and interval are present, filling missing
+      # with 0
       tidyr::complete(
         .data[["x"]],
         wd = wd_vals,
         fill = list(value = 0)
       ) |>
-      dplyr::rename(interval = "x")
+      dplyr::rename(interval = "x") |>
+      # sometimes interval is NA (e.g., if breaks don't cover all of data - set
+      # value to 0 if so)
+      dplyr::mutate(
+        value = dplyr::replace_when(.data$value, is.na(.data$interval) ~ 0)
+      )
 
     if (stat.scale == "all") {
       calm_n <- calm_n / all_n
