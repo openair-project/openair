@@ -349,7 +349,7 @@ windRose <- function(
   mydata[[wd]][mydata[, ws] < calm.thresh] <- -999 # set wd to flag where there are calms
   # do after rounding or -999 changes
 
-  # === COMPARISON PLOT BRANCH (early return — must be before break setup) ===
+  # COMPARISON PLOT BRANCH (early return — must be before break setup)
   if (diff) {
     group_vars <- if (all(type == "default")) character(0) else type
 
@@ -562,7 +562,6 @@ windRose <- function(
     class(output) <- "openair"
     return(invisible(output))
   }
-  # === END COMPARISON PLOT BRANCH ===
 
   if (length(breaks) == 1) {
     breaks <- 0:(breaks - 1) * ws.int
@@ -573,181 +572,172 @@ windRose <- function(
   }
 
   if (min(breaks) > min(mydata$x, na.rm = TRUE)) {
-    warning("Some values are below minimum break.")
+    cli::cli_warn("Some values are below minimum break.")
   }
 
   breaks <- unique(breaks)
+  interval_labels <- get_labels_from_breaks(breaks, sep = " to ")
   mydata$x <- cut(
     mydata$x,
     breaks = breaks,
+    labels = interval_labels,
     include.lowest = include.lowest,
     dig.lab = dig.lab
   )
 
-  # statistic handling
-  prepare.grid <- function(mydata) {
-    # these are all calms...
+  # Build tidy summary: one row per (wd x interval) combination per panel
+  prepare_rose_data <- function(mydata) {
     if (all(is.na(mydata$x))) {
-      weights <- dplyr::tibble(
-        Interval1 = NA,
-        wd = NA,
+      return(dplyr::tibble(
+        wd = NA_real_,
+        interval = factor(NA_character_, levels = interval_labels),
+        value = NA_real_,
+        freqs = NA_integer_,
         calm = 100,
-        panel.fun = NA,
-        mean.wd = NA,
-        freqs = NA
-      )
-    } else {
-      levels(mydata$x) <- c(paste0(
-        "Interval",
-        seq_along(levels(mydata$x))
+        panel.fun = NA_character_,
+        mean.wd = NA_real_
       ))
-
-      all <- stat.fun(mydata[[wd]])
-      calm <- mydata[mydata[[wd]] == -999, ][[pollutant]]
-
-      calm <- stat.fun(calm)
-
-      weights <- tapply(
-        mydata[[pollutant]],
-        list(mydata[[wd]], mydata$x),
-        stat.fun
-      )
-
-      freqs <- tapply(mydata[[pollutant]], mydata[[wd]], length)
-
-      # scaling
-      if (stat.scale == "all") {
-        calm <- calm / all
-        weights <- weights / all
-      }
-
-      if (stat.scale == "panel") {
-        temp <- stat.fun(stat.fun(weights)) + calm
-        calm <- calm / temp
-        weights <- weights / temp
-      }
-
-      weights[is.na(weights)] <- 0
-      weights <- t(apply(weights, 1, cumsum))
-
-      if (stat.scale == "all" || stat.scale == "panel") {
-        weights <- weights * 100
-        calm <- calm * 100
-      }
-
-      panel.fun <- stat.fun2(mydata[[pollutant]])
-
-      # calculate mean wd - useful for cases comparing two met data sets
-      u <- mean(sin(2 * pi * mydata[[wd]] / 360), na.rm = TRUE)
-      v <- mean(cos(2 * pi * mydata[[wd]] / 360), na.rm = TRUE)
-      mean.wd <- atan2(u, v) * 360 / 2 / pi
-
-      if (all(is.na(mean.wd))) {
-        mean.wd <- NA
-      } else {
-        if (mean.wd < 0) {
-          mean.wd <- mean.wd + 360
-        }
-        # show as a negative (bias)
-        if (mean.wd > 180) mean.wd <- mean.wd - 360
-      }
-
-      weights <- dplyr::bind_cols(
-        dplyr::as_tibble(weights),
-        dplyr::tibble(
-          wd = as.numeric(row.names(weights)),
-          calm = calm,
-          panel.fun = panel.fun,
-          mean.wd = mean.wd,
-          freqs = freqs
-        )
-      )
     }
 
-    weights
+    all_n <- stat.fun(mydata[[wd]])
+    calm_n <- stat.fun(mydata[mydata[[wd]] == -999, ][[pollutant]])
+
+    # pre-compute to avoid data-masking ambiguity inside complete()
+    wd_vals <- sort(unique(mydata[[wd]][mydata[[wd]] != -999]))
+
+    result <- mydata |>
+      dplyr::filter(.data[[wd]] != -999) |>
+      dplyr::rename(wd = dplyr::all_of(wd)) |>
+      dplyr::summarise(
+        value = stat.fun(.data[[pollutant]]),
+        .by = c("wd", "x")
+      ) |>
+      tidyr::complete(
+        .data[["x"]],
+        wd = wd_vals,
+        fill = list(value = 0)
+      ) |>
+      dplyr::rename(interval = "x")
+
+    if (stat.scale == "all") {
+      calm_n <- calm_n / all_n
+      result <- dplyr::mutate(result, value = .data$value / all_n)
+    } else if (stat.scale == "panel") {
+      total <- stat.fun(result$value) + calm_n
+      calm_n <- calm_n / total
+      result <- dplyr::mutate(result, value = .data$value / total)
+    }
+
+    if (stat.scale %in% c("all", "panel")) {
+      result <- dplyr::mutate(result, value = .data$value * 100)
+      calm_n <- calm_n * 100
+    }
+
+    # Count per direction (retained for output compatibility)
+    freqs_df <- mydata |>
+      dplyr::filter(.data[[wd]] != -999) |>
+      dplyr::rename(wd = dplyr::all_of(wd)) |>
+      dplyr::count(.data$wd, name = "freqs")
+
+    # Circular mean wind direction
+    u <- mean(sin(2 * pi * mydata[[wd]] / 360), na.rm = TRUE)
+    v <- mean(cos(2 * pi * mydata[[wd]] / 360), na.rm = TRUE)
+    mean.wd <- atan2(u, v) * 360 / 2 / pi
+    if (!is.na(mean.wd)) {
+      if (mean.wd < 0) {
+        mean.wd <- mean.wd + 360
+      }
+      if (mean.wd > 180) mean.wd <- mean.wd - 360
+    }
+
+    result |>
+      dplyr::left_join(freqs_df, by = "wd") |>
+      dplyr::mutate(
+        calm = calm_n,
+        panel.fun = stat.fun2(mydata[[pollutant]]),
+        mean.wd = mean.wd
+      )
   }
 
-  # prepare grid for each type
+  # Build tidy results for each type panel
   results <- map_type(
     mydata,
-    fun = prepare.grid,
+    fun = prepare_rose_data,
     type = type,
     .include_default = TRUE
   )
 
-  # format
+  # format panel-level summaries
   results$calm <- stat.labcalm(results$calm)
   results$mean.wd <- stat.labcalm(results$mean.wd)
 
-  # function to correct bias
-  corr_bias <- function(results) {
-    # check to see if data for this type combination are rounded to 10 degrees
-    # round wd so that tiny differences between integer a numeric do not arise
-    wd_select <- dplyr::inner_join(mydata_orig, results[1, type], by = type)
+  # Bias correction: adjust frequencies when wd data is rounded to nearest 10 degrees
+  apply_bias_correction <- function(results) {
+    wd_select <- dplyr::inner_join(
+      mydata_orig,
+      dplyr::distinct(results[type]),
+      by = type
+    )
     if (!all(round(wd_select[[wd]]) %% 10 == 0, na.rm = TRUE)) {
       return(results)
     }
 
-    wds <- seq(10, 360, 10)
-    tmp <- angle * ceiling(wds / angle - 0.5)
-    id <- which(tmp == 0)
-    if (length(id) > 0) {
-      tmp[id] <- 360
-    }
-    tmp <- table(tmp) # number of sectors spanned
-    vars <- grep("Interval[1-9]", names(results)) # the frequencies, without any calms
+    bins <- angle * ceiling(seq(10, 360, 10) / angle - 0.5)
+    bins[bins == 0] <- 360
+    counts <- table(bins)
 
-    # number of rows in data where wd != -999
-    n_data <- nrow(dplyr::filter(results, wd != -999))
+    correction <- dplyr::tibble(
+      wd = as.numeric(names(counts)),
+      .cf = as.numeric(mean(counts) / counts)
+    )
 
-    if (n_data > 0) {
-      results[results[["wd"]] != -999, vars] <-
-        results[results[["wd"]] != -999, vars] * mean(tmp) / tmp
-    }
-
-    return(results)
+    dplyr::left_join(results, correction, by = "wd") |>
+      dplyr::mutate(value = .data$value * dplyr::coalesce(.data$.cf, 1)) |>
+      dplyr::select(-".cf")
   }
 
-  # correction for bias when angle does not divide exactly into 360
   if (bias.corr) {
     results <- map_type(
       results,
       type = type,
-      fun = corr_bias,
+      fun = apply_bias_correction,
       .include_default = TRUE
     )
   }
 
   if (normalise) {
-    vars <- grep("Interval[1-9]", names(results))
-
-    # original frequencies, so we can plot the wind frequency line
-    results$freq <- results[[max(vars)]]
-
-    results$freq <- stats::ave(
-      results$freq,
-      results[type],
-      FUN = function(x) x / sum(x)
-    )
-
-    # scale by maximum frequency
-    results$norm <- results$freq / max(results$freq)
-
-    # normalise
-    results[, vars] <- results[, vars] / results[[max(vars)]]
+    results <- results |>
+      dplyr::mutate(
+        .total = sum(.data$value),
+        .by = dplyr::all_of(c("wd", type))
+      ) |>
+      dplyr::mutate(
+        freq = .data$.total / sum(.data$.total),
+        .by = dplyr::all_of(type)
+      ) |>
+      dplyr::mutate(
+        norm = .data$freq / max(.data$freq, na.rm = TRUE),
+        value = dplyr::if_else(.data$.total > 0, .data$value / .data$.total, 0)
+      ) |>
+      dplyr::select(-".total")
 
     stat.lab <- "Normalised by wind sector"
     stat.unit <- ""
     seg <- 1
   } else {
-    results$norm <- NA
+    results <- dplyr::mutate(results, norm = NA_real_)
   }
 
   max.freq <- max.freq %||%
-    max(
-      results[results$wd != -999, grep("Interval", names(results))],
-      na.rm = TRUE
-    )
+    {
+      results |>
+        dplyr::summarise(
+          total = sum(.data$value, na.rm = TRUE),
+          .by = dplyr::all_of(c("wd", type))
+        ) |>
+        dplyr::pull(.data$total) |>
+        max(na.rm = TRUE)
+    }
 
   # check to see if grid.line is a list or not and set grid line properties
   if (is.list(grid.line)) {
@@ -760,24 +750,17 @@ windRose <- function(
     grid.col <- "grey85"
   }
 
-  plot_data <-
-    results |>
-    dplyr::filter(.data$wd != -999) |>
-    tidyr::pivot_longer(
-      dplyr::starts_with("Interval")
-    ) |>
+  # results is already tidy (long); add cumulative columns for paddle rendering
+  plot_data <- results |>
     dplyr::mutate(
-      lag_value = dplyr::lag(.data$value, default = 0),
-      value2 = .data$value - .data$lag_value,
-      lag_norm = dplyr::lag(.data$norm, default = 0),
-      norm2 = .data$norm - .data$lag_norm,
+      cum_value = cumsum(.data$value),
+      lag_value = dplyr::lag(.data$cum_value, default = 0),
+      norm2 = dplyr::if_else(
+        dplyr::row_number() == 1L,
+        dplyr::coalesce(.data$norm, 0),
+        0
+      ),
       .by = dplyr::all_of(c("wd", type))
-    ) |>
-    dplyr::mutate(
-      name = factor(
-        .data$name,
-        labels = get_labels_from_breaks(breaks, sep = " to ")
-      )
     )
 
   key.title <- check_key_header(key.title, extra.args)
@@ -800,7 +783,7 @@ windRose <- function(
     ggplot2::ggplot(
       ggplot2::aes(
         x = .data$wd,
-        y = .data$value2
+        y = .data$value
       )
     ) +
     theme_openair_radial(key.position, panel.ontop = normalise) +
@@ -834,11 +817,9 @@ windRose <- function(
     ) +
     scale_x_compass() +
     ggplot2::scale_fill_manual(
-      values = openColours(
-        scheme = cols,
-        n = dplyr::n_distinct(levels(mydata$x))
-      ),
-      aesthetics = c("colour", "fill")
+      values = openColours(scheme = cols, n = length(interval_labels)),
+      aesthetics = c("colour", "fill"),
+      na.translate = FALSE
     ) +
     ggplot2::labs(
       x = extra.args$xlab,
@@ -863,7 +844,7 @@ windRose <- function(
   if (normalise) {
     thePlot <- thePlot +
       ggplot2::geom_col(
-        ggplot2::aes(fill = .data$name),
+        ggplot2::aes(fill = .data$interval),
         position = ggplot2::position_stack(reverse = TRUE),
         width = seg * angle,
         color = border
@@ -885,7 +866,7 @@ windRose <- function(
       box.widths <- seq(
         0.002^0.25,
         0.016^0.25,
-        length.out = dplyr::n_distinct(levels(plot_data$name))
+        length.out = length(interval_labels)
       )^4
       thePlot <-
         thePlot +
@@ -893,15 +874,16 @@ windRose <- function(
           data = plot_data |>
             dplyr::mutate(id = dplyr::row_number()) |>
             tidyr::pivot_longer(
-              cols = c("value", "lag_value"),
-              names_to = "__name__"
+              cols = c("cum_value", "lag_value"),
+              names_to = "__name__",
+              values_to = "cum_y"
             ),
           ggplot2::aes(
             x = .data$wd,
-            y = .data$value,
+            y = .data$cum_y,
             group = .data$id,
-            color = .data$name,
-            linewidth = .data$name
+            color = .data$interval,
+            linewidth = .data$interval
           ),
           stroke_colour = border
         ) +
@@ -916,7 +898,7 @@ windRose <- function(
       thePlot <-
         thePlot +
         ggplot2::geom_col(
-          ggplot2::aes(fill = .data$name),
+          ggplot2::aes(fill = .data$interval),
           position = ggplot2::position_stack(reverse = TRUE),
           width = seg * angle,
           color = border
@@ -928,52 +910,28 @@ windRose <- function(
   }
 
   if (annotate) {
-    if (diff) {
-      thePlot <-
-        thePlot +
-        ggplot2::geom_text(
-          ggplot2::aes(
-            label = paste0(
-              mean_ws = paste(
-                "mean ws = ",
-                round(as.numeric(.data$panel.fun), 1)
-              ),
-              "\n",
-              mean_wd = paste("mean wd = ", round(.data$mean.wd, 1))
-            )
-          ),
-          x = I(1),
-          y = I(0),
-          check_overlap = TRUE,
-          size = 3,
-          hjust = 1,
-          vjust = 0,
-          color = calm.col
-        )
-    } else {
-      thePlot <-
-        thePlot +
-        ggplot2::geom_text(
-          ggplot2::aes(
-            label = paste0(
-              stat.lab2,
-              " = ",
-              .data$panel.fun,
-              "\n",
-              "calm = ",
-              .data$calm,
-              stat.unit
-            )
-          ),
-          x = I(1),
-          y = I(0),
-          check_overlap = TRUE,
-          size = 3,
-          hjust = 1,
-          vjust = 0,
-          color = calm.col
-        )
-    }
+    thePlot <-
+      thePlot +
+      ggplot2::geom_text(
+        ggplot2::aes(
+          label = paste0(
+            stat.lab2,
+            " = ",
+            .data$panel.fun,
+            "\n",
+            "calm = ",
+            .data$calm,
+            stat.unit
+          )
+        ),
+        x = I(1),
+        y = I(0),
+        check_overlap = TRUE,
+        size = 3,
+        hjust = 1,
+        vjust = 0,
+        color = calm.col
+      )
   }
 
   # make key full width/height
@@ -997,9 +955,25 @@ windRose <- function(
     plot(thePlot)
   }
 
-  # give informative labels
-  newdata <- dplyr::as_tibble(results)
-  attr(newdata, "intervals") <- get_labels_from_breaks(breaks, sep = " to ")
+  # Pivot back to wide format for output compatibility (Interval1, Interval2, ...)
+  newdata <- results |>
+    dplyr::filter(!is.na(.data$interval)) |>
+    dplyr::arrange(
+      dplyr::across(dplyr::all_of(type)),
+      .data$wd,
+      match(as.character(.data$interval), interval_labels)
+    ) |>
+    dplyr::mutate(
+      .iname = paste0(
+        "Interval",
+        match(as.character(.data$interval), interval_labels)
+      ),
+      cum_val = cumsum(.data$value),
+      .by = dplyr::all_of(c("wd", type))
+    ) |>
+    dplyr::select(-"interval", -"value") |>
+    tidyr::pivot_wider(names_from = ".iname", values_from = "cum_val")
+  attr(newdata, "intervals") <- interval_labels
 
   # output
   output <- list(plot = thePlot, data = newdata, call = match.call())
