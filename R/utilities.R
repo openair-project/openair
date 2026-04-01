@@ -2,18 +2,22 @@
 dateTypes <- c(
   "year",
   "hour",
-  "month",
-  "season",
   "weekday",
   "weekend",
-  "monthyear",
+  "week",
+  "dst",
   "gmtbst",
   "bstgmt",
-  "dst",
-  "daylight",
-  "week",
+  "month",
+  "monthyear",
+  "yearmonth",
+  "season",
   "seasonyear",
-  "yearseason"
+  "yearseason",
+  "quarter",
+  "quarteryear",
+  "yearquarter",
+  "daylight"
 )
 
 # get date components

@@ -16,10 +16,10 @@
 #'
 #'  - `"hour"` splits the data by hour of the day.
 #'
-#'  - `"monthyear"` splits the data by year and month. It differs from month in
-#' that a level is defined for each month of the data set. This is useful
-#' sometimes to show an ordered sequence of months if the data set starts half
-#' way through a year; rather than starting in January.
+#'  - `"monthyear"` (or `"yearmonth"`) splits the data by year and month. It
+#' differs from month in that a level is defined for each month of the data set.
+#' This is useful sometimes to show an ordered sequence of months if the data
+#' set starts half way through a year; rather than starting in January.
 #'
 #'  - `"weekend"` splits the data by weekday and weekend.
 #'
@@ -34,6 +34,16 @@
 #' 2010 is considered as part of winter 2011 (with January and February 2011).
 #' This makes it easier to consider contiguous seasons. In contrast, `type =
 #' "season"` will just split the data into four seasons regardless of the year.
+#'
+#' - `"quarter"` splits data up by quarter, where Q1 represents January,
+#' February, and March, Q2 represents April, May and June, and so on. While
+#' 'quarters' don't as elegantly reflect meteorology as seasons, they do fit
+#' more neatly into a single year and may better align with other relevant
+#' periods (e.g., data ratification calendars, or business/economic activity).
+#'
+#' - `"quarteryear"` (or `"yearquarter"`) will split the data into year-quarter
+#' intervals. This is perhaps easier to predict and interpret than `yearseason`
+#' which will assign December to the Winter *after* the year it is actually in.
 #'
 #'  - `"daylight"` splits the data relative to estimated sunrise and sunset to
 #' give either daylight or nighttime. The cut is made by `cutDaylight` but more
@@ -101,7 +111,9 @@
 #'   Sunday = 0, Monday = 1, ... For example to start the weekday plots on a
 #'   Saturday, choose `start.day = 6`.
 #'
-#' @param start.season What order should the season be. By default, the order is spring, summer, autumn, winter. `start.season = "winter"` would plot winter first.
+#' @param start.season What order should the season be. By default, the order is
+#'   spring, summer, autumn, winter. `start.season = "winter"` would plot winter
+#'   first.
 #'
 #' @param is.axis A logical (`TRUE`/`FALSE`), used to request shortened cut
 #'   labels for axes.
@@ -189,25 +201,7 @@ cutData <- function(
     }
 
     # reserved types
-    conds <- c(
-      "default",
-      "year",
-      "hour",
-      "month",
-      "season",
-      "week",
-      "weekday",
-      "wd",
-      "weekend",
-      "monthyear",
-      "yearmonth",
-      "bstgmt",
-      "gmtbst",
-      "dst",
-      "daylight",
-      "seasonyear",
-      "yearseason"
-    )
+    conds <- c("default", "wd", dateTypes)
 
     # if conditioning type already built in, is present in data frame and is a
     # factor
@@ -285,6 +279,14 @@ cutData <- function(
 
     if (type == "week") {
       x[[name]] <- cutVecWeek(x$date, drop = drop)
+    }
+
+    if (type == "quarter") {
+      x[[name]] <- cutVecQuarter(x$date, drop = drop, is.axis = is.axis)
+    }
+
+    if (type %in% c("quarteryear", "yearquarter")) {
+      x[[name]] <- cutVecQuarteryear(x$date, drop = drop, is.axis = is.axis)
     }
 
     if (type == "season") {
@@ -887,4 +889,56 @@ cutVecSeason <- function(
 
   # 5. Return ordered factor
   ordered(x_str, levels = levels)
+}
+
+# cut a vector into quarters
+cutVecQuarter <- function(x, drop, is.axis) {
+  x <- lubridate::quarter(x, with_year = FALSE)
+  if (drop %in% c("none")) {
+    x <- ordered(x, levels = 1:4)
+  } else if (drop == "outside") {
+    x_range <- range(unique(x), na.rm = TRUE)
+    levels <- seq(x_range[1], x_range[2], by = 1L)
+    x <- ordered(x, levels = levels)
+  } else if (drop %in% c("default", "empty")) {
+    x <- ordered(x)
+  }
+  prefix <- ifelse(is.axis, "Q", "Quarter ")
+  x <- factor(x, levels = levels(x), labels = paste0(prefix, levels(x)))
+  return(x)
+}
+
+# cut a vector into quarters and years
+cutVecQuarteryear <- function(x, drop, is.axis) {
+  # get quarters and years
+  quarters <- cutVecQuarter(x, drop = "none", is.axis = is.axis)
+  years <- cutVecYear(x, drop = "none")
+
+  # get combinations of years and quarters
+  levels <-
+    tidyr::crossing(
+      year = factor(levels(years), levels = levels(years)),
+      quarter = factor(levels(quarters), levels = levels(quarters))
+    ) |>
+    dplyr::mutate(
+      level = paste0(.data$quarter, " ", .data$year)
+    ) |>
+    dplyr::pull(.data$level)
+
+  # combine actual years and quarters
+  x <- paste0(quarters, " ", years)
+
+  # get the factor levels
+  if (drop %in% c("default", "empty")) {
+    levels <- unique(x)
+  } else if (drop == "none") {
+    levels <- levels
+  } else if (drop == "outside") {
+    level_ids <- range(which(levels %in% x))
+    levels <- levels[min(level_ids):max(level_ids)]
+  }
+
+  x <- ordered(x, levels = levels)
+
+  return(x)
 }

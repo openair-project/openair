@@ -54,7 +54,9 @@ The user can change the start day by supplying an integer between 0 and 6.
 Sunday = 0, Monday = 1, ... For example to start the weekday plots on a
 Saturday, choose \code{start.day = 6}.}
 
-\item{start.season}{What order should the season be. By default, the order is spring, summer, autumn, winter. \code{start.season = "winter"} would plot winter first.}
+\item{start.season}{What order should the season be. By default, the order is
+spring, summer, autumn, winter. \code{start.season = "winter"} would plot winter
+first.}
 
 \item{is.axis}{A logical (\code{TRUE}/\code{FALSE}), used to request shortened cut
 labels for axes.}
@@ -106,10 +108,10 @@ range in the format "day month year".
 \item \code{"year"} splits the data by each year.
 \item \code{"month"} splits the data by month of the year.
 \item \code{"hour"} splits the data by hour of the day.
-\item \code{"monthyear"} splits the data by year and month. It differs from month in
-that a level is defined for each month of the data set. This is useful
-sometimes to show an ordered sequence of months if the data set starts half
-way through a year; rather than starting in January.
+\item \code{"monthyear"} (or \code{"yearmonth"}) splits the data by year and month. It
+differs from month in that a level is defined for each month of the data set.
+This is useful sometimes to show an ordered sequence of months if the data
+set starts half way through a year; rather than starting in January.
 \item \code{"weekend"} splits the data by weekday and weekend.
 \item \code{"weekday"} splits the data by day of the week - ordered to start Monday.
 \item \code{"season"} splits data up by season. In the northern hemisphere winter =
@@ -119,6 +121,14 @@ definitions will change of \code{hemisphere = "southern"}.
 intervals, keeping the months of a season together. For example, December
 2010 is considered as part of winter 2011 (with January and February 2011).
 This makes it easier to consider contiguous seasons. In contrast, \code{type = "season"} will just split the data into four seasons regardless of the year.
+\item \code{"quarter"} splits data up by quarter, where Q1 represents January,
+February, and March, Q2 represents April, May and June, and so on. While
+'quarters' don't as elegantly reflect meteorology as seasons, they do fit
+more neatly into a single year and may better align with other relevant
+periods (e.g., data ratification calendars, or business/economic activity).
+\item \code{"quarteryear"} (or \code{"yearquarter"}) will split the data into year-quarter
+intervals. This is perhaps easier to predict and interpret than \code{yearseason}
+which will assign December to the Winter \emph{after} the year it is actually in.
 \item \code{"daylight"} splits the data relative to estimated sunrise and sunset to
 give either daylight or nighttime. The cut is made by \code{cutDaylight} but more
 conveniently accessed via \code{cutData}, e.g. \code{cutData(mydata, type = "daylight", latitude = my.latitude, longitude = my.longitude)}. The daylight estimation,

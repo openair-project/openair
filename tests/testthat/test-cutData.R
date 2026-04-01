@@ -116,6 +116,29 @@ test_that("type = 'monthyear' produces one level per unique year-month combinati
   expect_equal(nlevels(result$monthyear), 12L) # one year -> 12 combos
 })
 
+cd_quarter <- cutData(dat, type = "quarter")
+cd_quarteryear <- cutData(dat, type = "quarteryear")
+
+test_that("type = 'quarter' produces 4 ordered Q1-Q4 levels", {
+  expect_true(is.ordered(cd_quarter$quarter))
+  expect_setequal(
+    levels(cd_quarter$quarter),
+    c("Quarter 1", "Quarter 2", "Quarter 3", "Quarter 4")
+  )
+})
+
+test_that("type = 'quarteryear' levels are in chronological order", {
+  expect_equal(
+    levels(cd_quarteryear$quarteryear),
+    c("Quarter 1 2003", "Quarter 2 2003", "Quarter 3 2003", "Quarter 4 2003")
+  )
+})
+
+test_that("type = 'yearquarter' is an alias for 'quarteryear'", {
+  result <- cutData(dat, type = "yearquarter")
+  expect_equal(levels(result$yearquarter), levels(cd_quarteryear$quarteryear))
+})
+
 test_that("type = 'wd' produces 8 ordered compass-direction levels", {
   result <- cutData(dat[!is.na(dat$wd), ], type = "wd")
   expect_equal(nlevels(result$wd), 8L)
