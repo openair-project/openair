@@ -2,6 +2,17 @@
 
 We checked 15 reverse dependencies (14 from CRAN + 1 from Bioconductor), comparing R CMD check results across CRAN and dev versions of this package.
 
- * We saw 0 new problems
+ * We saw 2 new problems
  * We failed to check 0 packages
+
+Issues with CRAN packages are summarised below.
+
+### New problems
+(This reports the first line of each new failure)
+
+* openairmaps
+  checking Rd cross-references ... WARNING
+
+* ReturnCurves
+  checking for missing documentation entries ... WARNING
 
