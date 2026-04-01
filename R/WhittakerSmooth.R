@@ -26,7 +26,7 @@
 #'   `lambda = NA` Generalised Cross Validation (GCV) is used to select the
 #'   optimal value of `lambda` for each pollutant. This can be time consuming,
 #'   so a fixed value of `lambda` is recommended for large datasets or multiple
-#'   pollutants. Note that the value of `lambda` needs to increase exponetially
+#'   pollutants. Note that the value of `lambda` needs to increase exponentially
 #'   to smooth long time series data of several years e.g. `lambda = 10e9`.
 #' @param d The order used to penalise the roughness of the data. By default
 #'   this is set to 2, which penalises the second derivative of the data.

@@ -9,7 +9,7 @@
 #'   resolution format.
 #' @param dates A date or dates to split data by. Can be passed as R date(time)
 #'   objects or as characters. If passed as a character, [splitByDate()] expects
-#'   either "DD/MM/YYYY" or "YYYY/MM/DD" by default, but this can be chaned
+#'   either "DD/MM/YYYY" or "YYYY/MM/DD" by default, but this can be changed
 #'   using the `format` argument.
 #' @param labels Labels for each time partition. Should always be one more
 #'   `label` than there are `dates`; for example, if `dates = "2020/01/01`,

@@ -29,7 +29,7 @@ the amount of smoothing, with higher values leading to smoother results. If
 \code{lambda = NA} Generalised Cross Validation (GCV) is used to select the
 optimal value of \code{lambda} for each pollutant. This can be time consuming,
 so a fixed value of \code{lambda} is recommended for large datasets or multiple
-pollutants. Note that the value of \code{lambda} needs to increase exponetially
+pollutants. Note that the value of \code{lambda} needs to increase exponentially
 to smooth long time series data of several years e.g. \code{lambda = 10e9}.}
 
 \item{d}{The order used to penalise the roughness of the data. By default
