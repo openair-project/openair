@@ -132,7 +132,9 @@ Saturday, choose <code>start.day = 6</code>.</p></dd>
 
 
 <dt id="arg-start-season">start.season<a class="anchor" aria-label="anchor" href="#arg-start-season"></a></dt>
-<dd><p>What order should the season be. By default, the order is spring, summer, autumn, winter. <code>start.season = "winter"</code> would plot winter first.</p></dd>
+<dd><p>What order should the season be. By default, the order is
+spring, summer, autumn, winter. <code>start.season = "winter"</code> would plot winter
+first.</p></dd>
 
 
 <dt id="arg-is-axis">is.axis<a class="anchor" aria-label="anchor" href="#arg-is-axis"></a></dt>
@@ -186,10 +188,10 @@ range in the format "day month year".</p></li>
 <li><p><code>"year"</code> splits the data by each year.</p></li>
 <li><p><code>"month"</code> splits the data by month of the year.</p></li>
 <li><p><code>"hour"</code> splits the data by hour of the day.</p></li>
-<li><p><code>"monthyear"</code> splits the data by year and month. It differs from month in
-that a level is defined for each month of the data set. This is useful
-sometimes to show an ordered sequence of months if the data set starts half
-way through a year; rather than starting in January.</p></li>
+<li><p><code>"monthyear"</code> (or <code>"yearmonth"</code>) splits the data by year and month. It
+differs from month in that a level is defined for each month of the data set.
+This is useful sometimes to show an ordered sequence of months if the data
+set starts half way through a year; rather than starting in January.</p></li>
 <li><p><code>"weekend"</code> splits the data by weekday and weekend.</p></li>
 <li><p><code>"weekday"</code> splits the data by day of the week - ordered to start Monday.</p></li>
 <li><p><code>"season"</code> splits data up by season. In the northern hemisphere winter =
@@ -199,6 +201,14 @@ definitions will change of <code>hemisphere = "southern"</code>.</p></li>
 intervals, keeping the months of a season together. For example, December
 2010 is considered as part of winter 2011 (with January and February 2011).
 This makes it easier to consider contiguous seasons. In contrast, <code>type = "season"</code> will just split the data into four seasons regardless of the year.</p></li>
+<li><p><code>"quarter"</code> splits data up by quarter, where Q1 represents January,
+February, and March, Q2 represents April, May and June, and so on. While
+'quarters' don't as elegantly reflect meteorology as seasons, they do fit
+more neatly into a single year and may better align with other relevant
+periods (e.g., data ratification calendars, or business/economic activity).</p></li>
+<li><p><code>"quarteryear"</code> (or <code>"yearquarter"</code>) will split the data into year-quarter
+intervals. This is perhaps easier to predict and interpret than <code>yearseason</code>
+which will assign December to the Winter <em>after</em> the year it is actually in.</p></li>
 <li><p><code>"daylight"</code> splits the data relative to estimated sunrise and sunset to
 give either daylight or nighttime. The cut is made by <code>cutDaylight</code> but more
 conveniently accessed via <code>cutData</code>, e.g. <code>cutData(mydata, type = "daylight", latitude = my.latitude, longitude = my.longitude)</code>. The daylight estimation,

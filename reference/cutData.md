@@ -143,10 +143,11 @@ This section give a brief description of each of the define levels of
 
 - `"hour"` splits the data by hour of the day.
 
-- `"monthyear"` splits the data by year and month. It differs from month
-  in that a level is defined for each month of the data set. This is
-  useful sometimes to show an ordered sequence of months if the data set
-  starts half way through a year; rather than starting in January.
+- `"monthyear"` (or `"yearmonth"`) splits the data by year and month. It
+  differs from month in that a level is defined for each month of the
+  data set. This is useful sometimes to show an ordered sequence of
+  months if the data set starts half way through a year; rather than
+  starting in January.
 
 - `"weekend"` splits the data by weekday and weekend.
 
@@ -163,6 +164,18 @@ This section give a brief description of each of the define levels of
   January and February 2011). This makes it easier to consider
   contiguous seasons. In contrast, `type = "season"` will just split the
   data into four seasons regardless of the year.
+
+- `"quarter"` splits data up by quarter, where Q1 represents January,
+  February, and March, Q2 represents April, May and June, and so on.
+  While 'quarters' don't as elegantly reflect meteorology as seasons,
+  they do fit more neatly into a single year and may better align with
+  other relevant periods (e.g., data ratification calendars, or
+  business/economic activity).
+
+- `"quarteryear"` (or `"yearquarter"`) will split the data into
+  year-quarter intervals. This is perhaps easier to predict and
+  interpret than `yearseason` which will assign December to the Winter
+  *after* the year it is actually in.
 
 - `"daylight"` splits the data relative to estimated sunrise and sunset
   to give either daylight or nighttime. The cut is made by `cutDaylight`

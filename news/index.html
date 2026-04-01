@@ -88,6 +88,7 @@
 <li><p><code>drop = "outside"</code> will retain ‘inclusive’ factor levels within the range of the data - in this case <code>"March"</code>, <code>"April"</code>, and <code>"May"</code>.</p></li>
 <li><p><code>drop = "default"</code> is the existing <code><a href="../reference/cutData.html">cutData()</a></code> behaviour - in the case of <code>type = "month"</code>, it is equivalent to <code>drop = "empty"</code>.</p></li>
 </ul></li>
+<li><p><code><a href="../reference/cutData.html">cutData()</a></code> also gains the <code>"quarter"</code> and <code>"quarteryear"</code>/<code>"yearquarter"</code> <code>type</code> options. These split a year cleanly into quarters, as an alternative to <code>"season"</code> and <code>"seasonyear"</code>/<code>"yearseason"</code>. While seasons better align with meteorology, quarters more cleanly fit into a single calendar year and may better align with other relevant periods (e.g., reporting schedules, ratification calendars, economic activity, etc.).</p></li>
 <li><p><code>is.axis</code> now has an effect on <code>weekday</code>, <code>season</code>, <code>seasonyear</code> and <code>monthyear</code>.</p></li>
 <li>
 <p><code><a href="../reference/timePlot.html">timePlot()</a></code> refinements:</p>

@@ -108,6 +108,14 @@
     behaviour - in the case of `type = "month"`, it is equivalent to
     `drop = "empty"`.
 
+- [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  also gains the `"quarter"` and `"quarteryear"`/`"yearquarter"` `type`
+  options. These split a year cleanly into quarters, as an alternative
+  to `"season"` and `"seasonyear"`/`"yearseason"`. While seasons better
+  align with meteorology, quarters more cleanly fit into a single
+  calendar year and may better align with other relevant periods (e.g.,
+  reporting schedules, ratification calendars, economic activity, etc.).
+
 - `is.axis` now has an effect on `weekday`, `season`, `seasonyear` and
   `monthyear`.
 
