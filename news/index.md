@@ -1,5 +1,7 @@
 # Changelog
 
+## openair (development version)
+
 ## openair 3.0.0
 
 CRAN release: 2026-04-02
