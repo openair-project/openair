@@ -2,6 +2,8 @@
 
 ## openair 3.0.0
 
+CRAN release: 2026-04-02
+
 ### Dependency Changes
 
 - `openair` now depends on R v4.1 and, internally, uses the base R pipe
