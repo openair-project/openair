@@ -9,7 +9,7 @@ is.openair <- function(x, full.test = TRUE, ...) {
   # standard test
   output <- methods::is(x)[1] == "openair"
   # full.test
-  if (full.test & output == TRUE) {
+  if (full.test && output) {
     output <- all(c("plot", "data", "call") %in% names(x))
   }
   # output
@@ -27,7 +27,7 @@ openairApply <- function(
   if (!is.openair(object)) {
     return(invisible(NULL))
   }
-  fun.name <- if (grepl("[(]", fun.name) == TRUE) {
+  fun.name <- if (grepl("[(]", fun.name)) {
     "function"
   }
 
@@ -305,7 +305,7 @@ results.openair <- function(object, subset = "all", silent = FALSE, ...) {
       call. = FALSE
     )
   }
-  if (!silent & length(temp) < length(subset)) {
+  if (!silent && length(temp) < length(subset)) {
     warning(
       "In results(...): some requested subset(s) not found, so ignored",
       "\n\t[ignored subset(s): ",

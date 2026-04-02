@@ -788,7 +788,7 @@ trajLevel <- function(
         ggplot2::aes(
           x = .data$xgrid,
           y = .data$ygrid,
-          alpha = as.integer(!(ggplot2::after_stat(.data$count) < min.bin))
+          alpha = as.integer(ggplot2::after_stat(.data$count) >= min.bin)
         ),
         binwidth = min(c(lat.inc * 1.5, lon.inc * 1.5))
       )

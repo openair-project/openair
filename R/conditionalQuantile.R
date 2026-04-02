@@ -89,7 +89,7 @@
 #' 91, Second Edition (International Geophysics), 2nd Edition. Academic Press.
 #' @examples
 #' # make some dummy prediction data based on 'nox'
-#' mydata$mod <- mydata$nox * 1.1 + mydata$nox * runif(1:nrow(mydata))
+#' mydata$mod <- mydata$nox * 1.1 + mydata$nox * runif(seq_len(nrow(mydata)))
 #'
 #' # basic conditional quantile plot
 #' # A "perfect" model is shown by the blue line

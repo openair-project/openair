@@ -212,7 +212,7 @@ bootMeanDiff <- function(
   y <- stats::na.omit(mydata[[y]])
   Mean <- mean(y) - mean(x)
 
-  if (nrow(mydata) < 2 | is.na(Mean)) {
+  if (nrow(mydata) < 2 || is.na(Mean)) {
     res1 <- data.frame(
       variable = x.name,
       Mean = mean(x),

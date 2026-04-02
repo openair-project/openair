@@ -217,7 +217,7 @@ importUKAQ <-
 
     # guess sources
     if (is.null(source)) {
-      if (data_type %in% c("annual", "monthly", "daqi") & missing(site)) {
+      if (data_type %in% c("annual", "monthly", "daqi") && missing(site)) {
         cli::cli_abort(
           "Please provide a {.field source} when {.field data_type} is '{data_type}'."
         )
@@ -523,7 +523,7 @@ importAURN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) & data_type %in% c("annual", "monthly", "daqi")) {
+    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
 
@@ -561,7 +561,7 @@ importAQE <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) & data_type %in% c("annual", "monthly", "daqi")) {
+    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
 
@@ -598,7 +598,7 @@ importSAQN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) & data_type %in% c("annual", "monthly", "daqi")) {
+    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
 
@@ -635,7 +635,7 @@ importWAQN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) & data_type %in% c("annual", "monthly", "daqi")) {
+    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
 
@@ -672,7 +672,7 @@ importNI <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) & data_type %in% c("annual", "monthly", "daqi")) {
+    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
 
@@ -707,7 +707,7 @@ importLocal <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) & data_type %in% c("annual", "monthly", "daqi")) {
+    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
 

@@ -142,7 +142,7 @@ importADMS <- function(
 
   if (file.type == "unknown") {
     file.type <- tolower(substr(file, nchar(file) - 3, nchar(file)))
-    if (substr(file.type, 1, 1) == ".") {
+    if (startsWith(file.type, ".")) {
       file.type <- substr(file.type, 2, 4)
     } else {
       stop(
@@ -247,7 +247,7 @@ importADMSBgd <- function(
     loc.start <- loc.start[length(loc.start)]
   }
   no.var <- suppressWarnings(as.numeric(bgd[loc.start + 1]))[1]
-  if (test.file.structure & is.na(no.var)) {
+  if (test.file.structure && is.na(no.var)) {
     stop(
       "File not recognised ADMS.bgd structure\n       [please contact openair if valid]",
       call. = FALSE
@@ -267,7 +267,7 @@ importADMSBgd <- function(
     variables <- tolower(variables)
   }
 
-  units.start <- which(substr(bgd, 1, 6) == "UNITS:")
+  units.start <- which(startsWith(bgd, "UNITS:"))
   if (length(units.start) == 0) {
     warning(
       "Data units not extracted from ADMS.bgd\n       [please contact file structure if problems encountered]",
@@ -288,7 +288,7 @@ importADMSBgd <- function(
   } else {
     units <- paste("units: ", paste(units, sep = "", collapse = ", "), sep = "")
   }
-  data.start <- which(substr(bgd, 1, 5) == "DATA:")
+  data.start <- which(startsWith(bgd, "DATA:"))
   if (length(data.start) == 0) {
     stop(
       "Data start not not located ADMS.bgd\n       [please contact file structure if problems encountered]",
@@ -333,7 +333,7 @@ importADMSBgd <- function(
   }
 
   names(ans) <- c("date", "bgd.year", "bgd.day", "bgd.hour", variables)
-  if (drop.input.dates == TRUE) {
+  if (drop.input.dates) {
     ans <- ans[, c(1, 5:ncol(ans))]
   }
   if (keep.units) {
@@ -399,7 +399,7 @@ importADMSMet <- function(
     loc.start <- loc.start[length(loc.start)]
   }
   variables <- suppressWarnings(as.numeric(met[loc.start + 1]))[1]
-  if (test.file.structure & is.na(variables)) {
+  if (test.file.structure && is.na(variables)) {
     stop(
       "File not recognised ADMS.met structure\n       [please contact openair if valid]",
       call. = FALSE
@@ -571,7 +571,7 @@ importADMSMop <- function(
   check.names <- make.names(as.vector(apply(check.names, 1, as.character)))
   ## tidy () handling; renaming x(y) as x.y. is messy
   check.names <- ifelse(
-    substr(check.names, nchar(check.names), nchar(check.names)) == ".",
+    endsWith(check.names, "."),
     substr(check.names, 1, nchar(check.names) - 1),
     check.names
   )
@@ -583,7 +583,7 @@ importADMSMop <- function(
 
   if (test.file.structure) {
     # check for delim columns
-    if (length(x.1) == 0 | length(x.2) == 0) {
+    if (length(x.1) == 0 || length(x.2) == 0) {
       stop(
         "File not recognised ADMS.mop structure\n       [please contact openair if valid]",
         call. = FALSE
@@ -619,8 +619,8 @@ importADMSMop <- function(
   }
 
   ## restructure names and data according to arguments and put together
-  if (is.logical(add.prefixes) == TRUE) {
-    if (add.prefixes == TRUE) {
+  if (is.logical(add.prefixes)) {
+    if (add.prefixes) {
       check.names[(x.2[1] + 1):length(check.names)] <- paste(
         "PROCESS",
         check.names[(x.2[1] + 1):length(check.names)],
@@ -675,16 +675,16 @@ importADMSMop <- function(
 
   date <- paste(ans$TYEAR, ans$TDAY, ans$THOUR, sep = "-")
   date <- as.POSIXct(strptime(date, format = "%Y-%j-%H"), "GMT")
-  if (drop.input.dates == TRUE) {
+  if (drop.input.dates) {
     ans <- ans[, !names(ans) %in% c("TYEAR", "TDAY", "THOUR")]
   }
 
-  if (drop.delim == TRUE) {
+  if (drop.delim) {
     ans <- ans[, !names(ans) %in% c("PROCESSED_DATA", "INPUT_DATA")]
   }
   ans <- cbind(date = date, ans)
 
-  if (drop.case == TRUE) {
+  if (drop.case) {
     names(ans) <- tolower(names(ans))
   }
 
@@ -838,7 +838,7 @@ importADMSPst <- function(
   date <- paste(ans$Year, ans$Day, ans$Hour, sep = "-")
   date <- as.POSIXct(strptime(date, format = "%Y-%j-%H"), "GMT")
 
-  if (drop.input.dates == TRUE) {
+  if (drop.input.dates) {
     ans <- ans[, !names(ans) %in% c("Year", "Day", "Hour")]
   }
 
@@ -866,7 +866,7 @@ importADMSPst <- function(
 
   ans <- cbind(date = date, ans)
 
-  if (drop.case == TRUE) {
+  if (drop.case) {
     names(ans) <- tolower(names(ans))
   }
 

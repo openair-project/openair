@@ -289,7 +289,7 @@ importMeta <-
 
     # deal with duplicates
     if (!duplicate) {
-      if (all & "variable" %in% names(meta)) {
+      if (all && "variable" %in% names(meta)) {
         meta <- dplyr::distinct(
           meta,
           .data$code,

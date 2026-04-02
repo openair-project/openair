@@ -65,7 +65,8 @@ quickText <- function(text, auto.text = TRUE, ...) {
 
   ## #return if auto.text false
   if (!auto.text) {
-    return(ans <- text)
+    ans <- text
+    return(ans)
   }
 
   # are we going to actually parse this?
@@ -74,7 +75,8 @@ quickText <- function(text, auto.text = TRUE, ...) {
 
   ## #return if already expression
   if (is.expression(text)) {
-    return(ans <- text)
+    ans <- text
+    return(ans)
   }
 
   if (parse) {
@@ -230,7 +232,7 @@ quickText <- function(text, auto.text = TRUE, ...) {
   ## ########################
 
   if (parse) {
-    if (inherits(try(eval(parse(text = ans)), TRUE), "try-error") == FALSE) {
+    if (!inherits(try(eval(parse(text = ans)), TRUE), "try-error")) {
       ans <- eval(parse(text = ans))
     } else {
       ans <- text

@@ -40,8 +40,8 @@ checkPrep <- function(
   }
 
   # add type to names if not in pre-defined list
-  if (any(type %in% conds == FALSE)) {
-    ids <- which(type %in% conds == FALSE)
+  if (!all(type %in% conds)) {
+    ids <- which(!type %in% conds)
     Names <- c(Names, type[ids])
   }
 
@@ -73,7 +73,7 @@ checkPrep <- function(
   })
 
   if ("ws" %in% Names) {
-    if ("ws" %in% Names & is.numeric(mydata$ws)) {
+    if ("ws" %in% Names && is.numeric(mydata$ws)) {
       # check for negative wind speeds
       if (any(sign(mydata$ws[!is.na(mydata$ws)]) == -1)) {
         if (remove.neg) {
@@ -90,7 +90,7 @@ checkPrep <- function(
   # data not rounded will be rounded to nearest 10 degrees
   # assumes 10 is average of 5-15 etc
   if (wd %in% Names) {
-    if (wd %in% Names & is.numeric(mydata[, wd])) {
+    if (wd %in% Names && is.numeric(mydata[, wd])) {
       # check for wd <0 or > 360
       if (
         any(

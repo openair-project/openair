@@ -44,8 +44,8 @@ test_that("only full-length trajectories are retained", {
 })
 
 test_that("no rows have NA lat or lon", {
-  expect_false(any(is.na(tp$data$lat)))
-  expect_false(any(is.na(tp$data$lon)))
+  expect_false(anyNA(tp$data$lat))
+  expect_false(anyNA(tp$data$lon))
 })
 
 # =============================================================================

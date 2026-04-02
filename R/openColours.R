@@ -241,7 +241,7 @@ openColours <- function(scheme = "default", n = 100) {
     }
   }
 
-  if (any(scheme %in% schemes) & length(scheme) > 1L) {
+  if (any(scheme %in% schemes) && length(scheme) > 1L) {
     cli::cli_abort(
       c(
         "x" = "Please provide {.strong either} 1 {.fun openColours} palette {.emph or} a vector of valid R colours",
@@ -259,7 +259,7 @@ openColours <- function(scheme = "default", n = 100) {
 brewerPalette <- function(n, scheme, brewer.col, brewer.n) {
   n.brew <- brewer.n[scheme == brewer.col]
 
-  if (n >= 3 & n <= n.brew) {
+  if (n >= 3 && n <= n.brew) {
     brewer.pal(n, scheme)
   } else {
     thefun <-

@@ -185,7 +185,7 @@ loadData <- function(x, verbose, url_data, data_type) {
       dat <- get(x)
 
       # if there are two daily data frames to combine
-      if (data_type == "daily" & exists(x2)) {
+      if (data_type == "daily" && exists(x2)) {
         dat2 <- get(x2)
         dat <- dplyr::left_join(dat, dat2, by = c("date", "site", "code"))
 

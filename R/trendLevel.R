@@ -614,7 +614,7 @@ trendLevel <- function(
 
 num_convert <- function(x) {
   y <- utils::type.convert(x, as.is = TRUE)
-  if (is.numeric(y) || is.integer(y)) {
+  if (is.numeric(y)) {
     return(y)
   } else {
     return(x)
