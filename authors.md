@@ -12,7 +12,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/openair-project/openair/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/openair-project/openair/blob/v3.0.0/inst/CITATION)
 
 Carslaw, D. C. and K. Ropkins, (2012) openair --- an R package for air
 quality data analysis. Environmental Modelling & Software. Volume 27-28,
