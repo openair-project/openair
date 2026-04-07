@@ -233,7 +233,7 @@ tsp1reg <- function(x, y, plotit = FALSE) {
   v1 <- vec1[vec2 > 0]
   v2 <- vec2[vec2 > 0]
   slope <- stats::median(v1 / v2)
-  coef <- stats::median(y) - slope * stats::median(x)
+  coef <- stats::median(y - slope * x)
   names(coef) <- "Intercept"
   coef <- c(coef, slope)
   if (plotit) {
