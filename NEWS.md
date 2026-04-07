@@ -22,6 +22,13 @@
 
 - `calendarPlot()` now supports `type = "wd"`.
 
+- Fix intercept calculation in single-predictor Theil-Sen regression
+
+Updated the intercept formula in `tsp1reg` from `median(y) - slope * median(x)` 
+to `median(y - slope * x)`. This resolves a visual bug where trend lines 
+(especially annual aggregations with negative slopes) appeared horizontally 
+displaced due to inaccurate intercept estimates on sparse data.
+
 # openair 3.0.0
 
 ## Dependency Changes
