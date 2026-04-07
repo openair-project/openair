@@ -634,8 +634,34 @@ fit_smoothtrend_gam <- function(
       class(results[[x]]) <- class_x
       return(results)
     },
-    error = function(x) {
-      data.orig
+    error = function(e) {
+      if (nrow(thedata) >= 6) {
+        xseq <- seq(
+          min(thedata$x, na.rm = TRUE),
+          max(thedata$x, na.rm = TRUE),
+          length = n
+        )
+        mod_lo <- stats::loess(y ~ x, data = thedata)
+        pred_lo <- stats::predict(mod_lo, newdata = data.frame(x = xseq), se = TRUE)
+        std <- stats::qnorm(level / 2 + 0.5)
+        results <- data.frame(
+          tmp = xseq,
+          pred = pred_lo$fit,
+          lower = pred_lo$fit - std * pred_lo$se.fit,
+          upper = pred_lo$fit + std * pred_lo$se.fit
+        )
+      } else {
+        results <- data.frame(
+          tmp = thedata$x,
+          pred = NA_real_,
+          lower = NA_real_,
+          upper = NA_real_,
+          stringsAsFactors = FALSE
+        )
+      }
+      names(results)[1] <- x
+      class(results[[x]]) <- class_x
+      results
     }
   )
 }
