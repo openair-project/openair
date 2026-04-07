@@ -70,7 +70,9 @@
 <ul><li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> now has a more robust approach to multi-period averaging time such as “3 day”. Bin boundaries are at fixed periods of time, which should ensure consistency across data sets that start at different times. This also means there is less need to use the argument <code>start.date</code> unless there is a need to extend the start date of the data for some reason e.g. to the beginning of a year. THis change may result in slight differences in returned output but should not affect periods such as “day”, “hour” and “month”.</p></li>
 <li><p><code><a href="../reference/calendarPlot.html">calendarPlot()</a></code> will no longer duplicate <code>windflow</code> arrows when <code>type != "default"</code>.</p></li>
 <li><p><code><a href="../reference/calendarPlot.html">calendarPlot()</a></code> now supports <code>type = "wd"</code>.</p></li>
-</ul></div>
+<li><p>Fix intercept calculation in single-predictor Theil-Sen regression</p></li>
+</ul><p>Updated the intercept formula in <code>tsp1reg</code> from <code>median(y) - slope * median(x)</code> to <code>median(y - slope * x)</code>. This resolves a visual bug where trend lines (especially annual aggregations with negative slopes) appeared horizontally displaced due to inaccurate intercept estimates on sparse data.</p>
+</div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.0.0" id="openair-300">openair 3.0.0<a class="anchor" aria-label="anchor" href="#openair-300"></a></h2><p class="text-muted">CRAN release: 2026-04-02</p>
