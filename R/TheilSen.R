@@ -480,14 +480,9 @@ pct_per_year <- function(slope, intercept, date_start, date_end) {
 
 # Function to calculate Theil-Sen slope estimates, confidence intervals, and p values
 mk_stats <- function(x, y, alpha, autocor, silent) {
-  # 1. Median-center the time variable to decouple slope and intercept
-  x_num <- as.numeric(x)
-  x_median <- stats::median(x_num, na.rm = TRUE)
-  x_centered <- x_num - x_median
-
-  # 2. Run the bootstrap regression on the CENTERED data
+  # Run the bootstrap regression on the RAW uncentered data
   estimates <- regci(
-    x_centered,
+    as.numeric(x),
     y,
     alpha = alpha,
     autocor = autocor,
@@ -503,30 +498,14 @@ mk_stats <- function(x, y, alpha, autocor, silent) {
     .default = ""
   )
 
-  # 3. Extract the centered estimates (Cols: 1=Lower CI, 2=Upper CI, 3=Estimate)
-  # Because the data is centered, we can logically pair lower-with-lower and upper-with-upper!
-  a_cent <- estimates[1, 3]
-  a_cent_lower <- estimates[1, 1]
-  a_cent_upper <- estimates[1, 2]
-
-  b <- estimates[2, 3]
-  b_lower <- estimates[2, 1]
-  b_upper <- estimates[2, 2]
-
-  # 4. Back-calculate the uncentered intercepts for ggplot2's geom_abline (where x=0 is 1970)
-  # Formula: uncentered_intercept = centered_intercept - (slope * x_median)
-  a <- a_cent - (b * x_median)
-  lower.a <- a_cent_lower - (b_lower * x_median)
-  upper.a <- a_cent_upper - (b_upper * x_median)
-
   data.frame(
     date = x,
-    a = a,
-    b = b,
-    upper.a = upper.a,
-    upper.b = b_upper,
-    lower.a = lower.a,
-    lower.b = b_lower,
+    a = estimates[1, 3],
+    b = estimates[2, 3],
+    upper.a = estimates[1, 1], # Lower intercept paired with...
+    upper.b = estimates[2, 2], # Upper slope
+    lower.a = estimates[1, 2], # Upper intercept paired with...
+    lower.b = estimates[2, 1], # Lower slope
     p = p,
     p.stars = stars,
     stringsAsFactors = FALSE
