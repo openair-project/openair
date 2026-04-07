@@ -249,7 +249,13 @@ conditionalEval <- function(
         limits = c(0, 1),
         transform = scales::transform_reverse()
       ) +
-      get_facet(type, extra.args, "fixed", auto.text) +
+      get_facet(
+        type,
+        extra.args,
+        "fixed",
+        auto.text,
+        wd.res = extra.args$wd.res %||% 8
+      ) +
       theme_openair(key.position = "bottom") +
       set_extra_fontsize(extra.args) +
       ggplot2::guides(
@@ -369,7 +375,13 @@ conditionalEval <- function(
         labeller = labeller_openair(auto_text = auto.text)
       )
     } else if (multi_type) {
-      get_facet(type, extra.args, "fixed", auto.text)
+      get_facet(
+        type,
+        extra.args,
+        "fixed",
+        auto.text,
+        wd.res = extra.args$wd.res %||% 8
+      )
     } else {
       ggplot2::facet_wrap(
         ggplot2::vars(statistic),

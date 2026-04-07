@@ -7,7 +7,7 @@ facet_wd <- function(
   labeller = "label_value",
   axes = "margins",
   axis.labels = "all",
-  resolution = c("medium")
+  resolution = 8
 ) {
   # Process the scales parameter like facet_wrap does
   free <- list(
@@ -78,7 +78,7 @@ FacetWinddir <- ggplot2::ggproto(
     )
 
     # Assign each panel a location and scale
-    if (params$resolution == "low") {
+    if (params$resolution == 4) {
       layout <- data.frame(
         PANEL = 1:4,
         ROW = c(1, 2, 3, 2),
@@ -91,7 +91,7 @@ FacetWinddir <- ggplot2::ggproto(
       )
     }
 
-    if (params$resolution == "medium") {
+    if (params$resolution == 8) {
       layout <- data.frame(
         PANEL = 1:8,
         ROW = c(1, 1, 1, 2, 2, 3, 3, 3),
@@ -104,7 +104,7 @@ FacetWinddir <- ggplot2::ggproto(
       )
     }
 
-    if (params$resolution == "high") {
+    if (params$resolution == 16) {
       layout <- data.frame(
         PANEL = 1:16,
         ROW = c(1, 1, 2, 2, 3, 4, 4, 5, 5, 5, 4, 4, 3, 2, 2, 1),

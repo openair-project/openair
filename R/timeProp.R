@@ -269,7 +269,8 @@ timeProp <- function(
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text,
       drop = TRUE,
-      strip.position = strip.position
+      strip.position = strip.position,
+      wd.res = extra.args$wd.res %||% 8
     )
 
   # make key full width/height

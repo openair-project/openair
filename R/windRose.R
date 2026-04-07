@@ -510,7 +510,8 @@ windRose <- function(
         scales = "fixed",
         auto.text = auto.text,
         strip.position = strip.position,
-        drop = FALSE
+        drop = FALSE,
+        wd.res = extra.args$wd.res %||% 8
       )
 
     if (annotate) {
@@ -845,7 +846,8 @@ windRose <- function(
       scales = "fixed",
       auto.text = auto.text,
       strip.position = strip.position,
-      drop = FALSE
+      drop = FALSE,
+      wd.res = extra.args$wd.res %||% 8
     )
 
   if (normalise) {

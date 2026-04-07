@@ -488,7 +488,8 @@ timePlot <- function(
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
       drop = FALSE,
-      strip.position = strip.position
+      strip.position = strip.position,
+      wd.res = extra.args$wd.res %||% 8
     ) +
     ggplot2::coord_cartesian(
       xlim = extra.args$xlim,

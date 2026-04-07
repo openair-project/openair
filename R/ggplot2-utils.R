@@ -128,6 +128,7 @@ get_facet <- function(
   auto.text,
   drop = FALSE,
   strip.position = "top",
+  wd.res = 8,
   ...
 ) {
   fun <- NULL
@@ -144,6 +145,7 @@ get_facet <- function(
             labeller = labeller_openair(auto_text = auto.text),
             scales = scales,
             strip.position = strip.position,
+            resolution = wd.res,
             ...
           )
       } else {

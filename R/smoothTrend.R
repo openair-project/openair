@@ -322,7 +322,8 @@ smoothTrend <- function(
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
       strip.position = strip.position,
-      drop = TRUE
+      drop = TRUE,
+      wd.res = extra.args$wd.res %||% 8
     ) +
     ggplot2::labs(
       y = extra.args$ylab,
@@ -642,7 +643,11 @@ fit_smoothtrend_gam <- function(
           length = n
         )
         mod_lo <- stats::loess(y ~ x, data = thedata)
-        pred_lo <- stats::predict(mod_lo, newdata = data.frame(x = xseq), se = TRUE)
+        pred_lo <- stats::predict(
+          mod_lo,
+          newdata = data.frame(x = xseq),
+          se = TRUE
+        )
         std <- stats::qnorm(level / 2 + 0.5)
         results <- data.frame(
           tmp = xseq,

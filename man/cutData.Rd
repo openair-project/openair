@@ -11,6 +11,7 @@ cutData(
   suffix = NULL,
   hemisphere = "northern",
   n.levels = 4,
+  wd.res = 8,
   start.day = 1,
   start.season = "spring",
   is.axis = FALSE,
@@ -48,6 +49,9 @@ rather than overwriting \code{nox}.}
 into seasons.}
 
 \item{n.levels}{Number of quantiles to split numeric data into.}
+
+\item{wd.res}{The resolution of wind direction bins; one of \code{4}, \code{8}
+(the default) or \code{16}.}
 
 \item{start.day}{What day of the week should the \code{type = "weekday"} start on?
 The user can change the start day by supplying an integer between 0 and 6.

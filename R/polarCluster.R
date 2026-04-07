@@ -351,7 +351,8 @@ polarCluster <-
         extra.args = extra.args,
         scales = "fixed",
         auto.text = auto.text,
-        strip.position = extra.args$strip.position %||% "top"
+        strip.position = extra.args$strip.position %||% "top",
+        wd.res = extra.args$wd.res %||% 8
       ) +
       ggplot2::guides(
         colour = ggplot2::guide_legend(

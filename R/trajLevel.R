@@ -667,7 +667,8 @@ trajLevel <- function(
       scales = "fixed",
       drop = FALSE,
       auto.text = auto.text,
-      strip.position = strip.position
+      strip.position = strip.position,
+      wd.res = extra.args$wd.res %||% 8
     ) +
     ggplot2::labs(
       x = quickText(extra.args$xlab, auto.text),

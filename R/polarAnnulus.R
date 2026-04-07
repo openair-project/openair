@@ -594,7 +594,8 @@ polarAnnulus <-
         scales = "fixed",
         auto.text = auto.text,
         drop = FALSE,
-        strip.position = strip.position
+        strip.position = strip.position,
+        wd.res = extra.args$wd.res %||% 8
       ) +
       ggplot2::guides(
         r = ggplot2::guide_axis(check.overlap = TRUE)

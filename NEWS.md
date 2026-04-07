@@ -12,6 +12,8 @@
 
 - `trajPlot()` and `trajLevel()` regain the `map.res` argument. This is passed to `rnaturalearth::ne_countries()` so can take three different resolutions.
 
+- `cutData()` gains the `wd.res` argument, which can take one of `4`, `8`, or `16`, defaulting to `8`. `4` cuts the data into North, East, South and West. `16` cuts the data into N, NNE, NE, ENE, etc. All plotting function's `type` argument now responds to this, showing only four panels when `wd.res = 4` and a 5x5 grid of sixteen panels when `wd.res = 16`.
+
 ## Bug Fixes
 
 - `timeAverage()` now has a more robust approach to multi-period averaging time such as "3 day". Bin boundaries are at fixed periods of time, which should ensure consistency across data sets that start at different times. This also means there is less need to use the argument `start.date` unless there is a need to extend the start date of the data for some reason e.g. to the beginning of a year. THis change may result in slight differences in returned output but should not affect periods such as "day", "hour" and "month".

@@ -596,7 +596,8 @@ TaylorDiagram <- function(
       scales = "fixed",
       auto.text = auto.text,
       drop = FALSE,
-      strip.position = strip.position
+      strip.position = strip.position,
+      wd.res = extra.args$wd.res %||% 8
     )
 
   # if two sets of model data are present, then show the change in model

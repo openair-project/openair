@@ -525,7 +525,8 @@ trendLevel <- function(
       scales = "fixed",
       auto.text = auto.text,
       drop = drop.unused.types,
-      strip.position = strip.position
+      strip.position = strip.position,
+      wd.res = extra.args$wd.res %||% 8
     )
 
   # make key full width/height
