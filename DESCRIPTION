@@ -49,7 +49,7 @@ Suggests:
     legendry (>= 0.2.4),
     quantreg,
     rmarkdown,
-    rnaturalearthdata,
+    rnaturalearth,
     sf,
     spelling,
     testthat (>= 3.0.0)

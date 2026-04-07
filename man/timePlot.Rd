@@ -253,7 +253,7 @@ Some additional arguments are also available:
 \itemize{
 \item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
 \item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
-\item \code{lwd}, \code{lty}, and \code{pch} control various graphical parameters.
+\item \code{lwd}, \code{lty}, and \code{shape} control various graphical parameters. \code{pch} is accepted as an alias for \code{shape}.
 \item \code{fontsize} overrides the overall font size of the plot.
 \item \code{border} sets the border colour of each tile.
 \item \code{ylim} and \code{xlim} control axis limits.

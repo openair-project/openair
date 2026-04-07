@@ -43,6 +43,9 @@
 #'   alternative to `pollutant`, and used preferentially to `pollutant` if both
 #'   are set.
 #'
+#' @param map.res The scale of the map to use. One of `110`, `50`, `10` or
+#'   `small`, `medium`, `large`. Passed to [rnaturalearth::ne_countries()].
+#'
 #' @param map.fill Should the base map be a filled polygon? Default is to fill
 #'   countries.
 #'
@@ -133,10 +136,11 @@ trajPlot <- function(
   lat = "lat",
   pollutant = NULL,
   type = "default",
-  map = TRUE,
   group = NULL,
   cols = "default",
   crs = 4326,
+  map = TRUE,
+  map.res = "medium",
   map.fill = TRUE,
   map.cols = "grey40",
   map.border = "black",
@@ -157,7 +161,12 @@ trajPlot <- function(
   key = NULL,
   ...
 ) {
-  rlang::check_installed(c("sf", "rnaturalearthdata"))
+  rlang::check_installed(c("sf", "rnaturalearth"))
+  if (!map.res %in% c(10, 50, 110, "small", "medium", "large")) {
+    cli::cli_abort(
+      "{.arg map.res} must be one of {10}/'large', {50}/'medium' or {110}/'small'."
+    )
+  }
 
   # check key.position
   key.position <- check_key_position(key.position, key)
@@ -308,6 +317,7 @@ trajPlot <- function(
       layer_worldmap(
         crs,
         n_maps = n_types,
+        map.res = map.res,
         map.fill = map.fill,
         map.cols = map.cols,
         map.border = map.border,
@@ -454,6 +464,7 @@ trajPlot <- function(
 layer_worldmap <- function(
   crs,
   n_maps,
+  map.res,
   map.fill,
   map.cols,
   map.border,
@@ -461,11 +472,7 @@ layer_worldmap <- function(
   map.lwd,
   map.lty
 ) {
-  map_sf <- rnaturalearthdata::countries50 |>
-    sf::st_wrap_dateline(
-      options = c("WRAPDATELINE=YES", "DATELINEOFFSET=180"),
-      quiet = TRUE
-    ) |>
+  map_sf <- rnaturalearth::ne_countries(scale = map.res) |>
     sf::st_transform(crs = crs)
 
   if (!map.fill) {

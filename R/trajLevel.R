@@ -176,6 +176,7 @@ trajLevel <- function(
   cols = "default",
   crs = 4326,
   map = TRUE,
+  map.res = "medium",
   map.fill = TRUE,
   map.cols = "grey40",
   map.border = "black",
@@ -195,7 +196,12 @@ trajLevel <- function(
   key = NULL,
   ...
 ) {
-  rlang::check_installed(c("sf", "rnaturalearthdata"))
+  rlang::check_installed(c("sf", "rnaturalearth"))
+  if (!map.res %in% c(10, 50, 110, "small", "medium", "large")) {
+    cli::cli_abort(
+      "{.arg map.res} must be one of {10}/'large', {50}/'medium' or {110}/'small'."
+    )
+  }
 
   # check key.position
   key.position <- check_key_position(key.position, key)
@@ -676,6 +682,7 @@ trajLevel <- function(
       layer_worldmap(
         crs,
         n_maps = n_types,
+        map.res = map.res,
         map.fill = map.fill,
         map.cols = map.cols,
         map.border = map.border,
@@ -752,6 +759,7 @@ trajLevel <- function(
         layer_worldmap(
           crs,
           n_maps = n_types,
+          map.res = map.res,
           map.fill = FALSE,
           map.cols = map.cols,
           map.border = map.border,
@@ -798,6 +806,7 @@ trajLevel <- function(
         layer_worldmap(
           crs = 4326,
           n_maps = n_types,
+          map.res = map.res,
           map.fill = FALSE,
           map.cols = map.cols,
           map.border = map.border,

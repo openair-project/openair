@@ -21,6 +21,7 @@ trajLevel(
   cols = "default",
   crs = 4326,
   map = TRUE,
+  map.res = "medium",
   map.fill = TRUE,
   map.cols = "grey40",
   map.border = "black",
@@ -129,6 +130,9 @@ the the OSGB36/British National Grid.}
 
 \item{map}{Should a base map be drawn? If \code{TRUE} the world base map provided
 by \code{\link[ggplot2:map_data]{ggplot2::map_data()}} will be used.}
+
+\item{map.res}{The scale of the map to use. One of \code{110}, \code{50}, \code{10} or
+\code{small}, \code{medium}, \code{large}. Passed to \code{\link[rnaturalearth:ne_countries]{rnaturalearth::ne_countries()}}.}
 
 \item{map.fill}{Should the base map be a filled polygon? Default is to fill
 countries.}

@@ -10,10 +10,11 @@ trajPlot(
   lat = "lat",
   pollutant = NULL,
   type = "default",
-  map = TRUE,
   group = NULL,
   cols = "default",
   crs = 4326,
+  map = TRUE,
+  map.res = "medium",
   map.fill = TRUE,
   map.cols = "grey40",
   map.border = "black",
@@ -66,9 +67,6 @@ possible pollutant source is active or not).
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
 given, the first is used for the columns and the second for the rows.}
 
-\item{map}{Should a base map be drawn? If \code{TRUE} the world base map provided
-by \code{\link[ggplot2:map_data]{ggplot2::map_data()}} will be used.}
-
 \item{group}{A condition to colour the plot by, passed to \code{\link[=cutData]{cutData()}}. An
 alternative to \code{pollutant}, and used preferentially to \code{pollutant} if both
 are set.}
@@ -83,6 +81,12 @@ of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
 unprojected latitude/longitude system used in GPS, Google Earth, and GIS
 mapping. Other \code{crs} values are available - for example, \code{27700} will use
 the the OSGB36/British National Grid.}
+
+\item{map}{Should a base map be drawn? If \code{TRUE} the world base map provided
+by \code{\link[ggplot2:map_data]{ggplot2::map_data()}} will be used.}
+
+\item{map.res}{The scale of the map to use. One of \code{110}, \code{50}, \code{10} or
+\code{small}, \code{medium}, \code{large}. Passed to \code{\link[rnaturalearth:ne_countries]{rnaturalearth::ne_countries()}}.}
 
 \item{map.fill}{Should the base map be a filled polygon? Default is to fill
 countries.}

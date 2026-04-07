@@ -1,8 +1,20 @@
 # openair (development version)
 
+## Dependency Changes
+
+- `openair` now suggests `rnaturalearth` over `rnaturalearthdata`. `rnaturalearthdata` is still required for a medium map resolution and `rnaturalearthhires` for a high map resolution, but these are now managed by `rnaturalearth` directly.
+
+## New Features
+
+- `timePlot()` now takes `shape` (or `pch`) in `...`, which will create line charts with markers. Multiple shapes can be provided - e.g., `shape = c(1, 2, 3)` - which will be recycled in the same way as line type or width.
+
+- `smoothTrend()` will now use `loess` when it has insufficient data to fit a GAM.
+
+- `trajPlot()` and `trajLevel()` regain the `map.res` argument. This is passed to `rnaturalearth::ne_countries()` so can take three different resolutions.
+
 ## Bug Fixes
 
--  `timeAverage` now has a more robust approach to multi-period averaging time such as "3 day". Bin boundaries are at fixed periods of time, which should ensure consistency across data sets that start at different times. This also means there is less need to use the argument `start.date` unless there is a need to extend the start date of the data for some reason e.g. to the beginning of a year. THis change may result in slight differences in returned output but should not affect periods such as "day", "hour" and "month".
+- `timeAverage()` now has a more robust approach to multi-period averaging time such as "3 day". Bin boundaries are at fixed periods of time, which should ensure consistency across data sets that start at different times. This also means there is less need to use the argument `start.date` unless there is a need to extend the start date of the data for some reason e.g. to the beginning of a year. THis change may result in slight differences in returned output but should not affect periods such as "day", "hour" and "month".
 
 # openair 3.0.0
 
