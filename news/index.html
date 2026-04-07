@@ -53,6 +53,11 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="openair-development-version">openair (development version)<a class="anchor" aria-label="anchor" href="#openair-development-version"></a></h2>
+<div class="section level3">
+<h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<ul><li>
+<code>timeAverage</code> now has a more robust approach to multi-period averaging time such as “3 day”. Bin boundaries are at fixed periods of time, which should ensure consistency across data sets that start at different times. This also means there is less need to use the argument <code>start.date</code> unless there is a need to extend the start date of the data for some reason e.g. to the beginning of a year. THis change may result in slight differences in returned output but should not affect periods such as “day”, “hour” and “month”.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="3.0.0" id="openair-300">openair 3.0.0<a class="anchor" aria-label="anchor" href="#openair-300"></a></h2><p class="text-muted">CRAN release: 2026-04-02</p>

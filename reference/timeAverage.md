@@ -41,6 +41,27 @@ timeAverage(
   `"season"`, in which case 3-month seasonal values are calculated with
   spring defined as March, April, May and so on.
 
+  **Period boundary behaviour:** how bin boundaries are determined
+  depends on the type of period:
+
+  - *Single-unit periods* (`"hour"`, `"day"`, `"week"`, etc.) are
+    floored to the start of the enclosing unit in the data's timezone
+    (e.g. `"day"` floors to midnight).
+
+  - *Multi-unit fixed-length periods* (`"3 day"`, `"6 hour"`,
+    `"2 week"`, etc.) use epoch-aligned arithmetic: bin boundaries are
+    fixed multiples of the period length counted from 1970-01-01, so the
+    same calendar dates always fall in the same bin regardless of where
+    the data starts, and bins run continuously across month boundaries
+    without resetting at the start of each month. For example, with
+    `avg.time = "3 day"` a bin that begins on 29 January will end on 31
+    January, and the next bin begins on 1 February — the month boundary
+    does not start a new bin.
+
+  - *Calendar periods* (`"month"`, `"quarter"`, `"year"`) are floored to
+    the start of the enclosing calendar unit, so they correctly respect
+    variable month and year lengths.
+
   Note that `avg.time` can be *less* than the time interval of the
   original series, in which case the series is expanded to the new time
   interval. This is useful, for example, for calculating a 15-minute
@@ -93,16 +114,9 @@ timeAverage(
 - start.date:
 
   A string giving a start date to use. This is sometimes useful if a
-  time series starts between obvious intervals. For example, for a
-  1-minute time series that starts `2009-11-29 12:07:00` that needs to
-  be averaged up to 15-minute means, the intervals would be
-  `2009-11-29 12:07:00`, `2009-11-29 12:22:00`, etc. Often, however, it
-  is better to round down to a more obvious start point, e.g.,
-  `2009-11-29 12:00:00` such that the sequence is then
-  `2009-11-29 12:00:00`, `2009-11-29 12:15:00`, and so on. `start.date`
-  is therefore used to force this type of sequence. Note that this
-  option does not truncate a time series if it already starts earlier
-  than `start.date`; see
+  time series starts between obvious intervals. Input in the format
+  yyyy-mm-dd HH:MM. Note that this option does not truncate a time
+  series if it already starts earlier than `start.date`; see
   [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
   for that functionality.
 
