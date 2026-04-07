@@ -286,3 +286,85 @@ check_key_position <- function(key.position, key) {
 
   key.position
 }
+
+# function to get ... from plotting functions and remap parameters to ggplot2
+# parameter names, with warnings about any parameters that are being remapped or
+# ignored
+capture_dots <- function(...) {
+  extra.args <- rlang::list2(...)
+
+  lattice_map <- list(
+    pch = list(to = "shape", transform = NULL),
+    col = list(to = "colour", transform = NULL),
+    bg = list(to = "fill", transform = NULL),
+    cex = list(to = "size", transform = function(x) x * 5),
+    lty = list(to = "linetype", transform = NULL),
+    lwd = list(to = "linewidth", transform = NULL),
+    font = list(to = "fontface", transform = NULL),
+    fontfamily = list(to = "family", transform = NULL)
+  )
+
+  lattice_only <- c(
+    "fin",
+    "pin",
+    "adj",
+    "srt",
+    "mgp",
+    "mar",
+    "oma",
+    "xpd",
+    "las",
+    "tcl"
+  )
+
+  found_convertible <- names(extra.args)[
+    names(extra.args) %in% names(lattice_map)
+  ]
+  if (length(found_convertible) > 0) {
+    bullets <- vapply(
+      found_convertible,
+      function(p) {
+        cli::format_inline(
+          "{.arg {p}} {cli::symbol$arrow_right} {.arg {lattice_map[[p]]$to}}"
+        )
+      },
+      character(1)
+    )
+    names(bullets) <- rep("*", length(bullets))
+    cli::cli_warn(c(
+      "The following {.pkg lattice}/{.pkg base} graphical parameters will be converted to {.pkg ggplot2} equivalents:",
+      bullets
+    ))
+  }
+
+  found_no_equivalent <- names(extra.args)[names(extra.args) %in% lattice_only]
+  if (length(found_no_equivalent) > 0) {
+    cli::cli_warn(c(
+      "The following {.pkg lattice}/{.pkg base} graphical parameters have no {.pkg ggplot2} equivalent and will be ignored. Some of these parameters may have equivalents within {.fun ggplot2::theme}.",
+      purrr::map_vec(
+        found_no_equivalent,
+        \(p) {
+          cli::format_inline("{.arg {p}}")
+        }
+      ) |>
+        stats::setNames(rep("*", length(found_no_equivalent)))
+    ))
+  }
+
+  for (param in names(lattice_map)) {
+    if (param %in% names(extra.args)) {
+      mapping <- lattice_map[[param]]
+      value <- extra.args[[param]]
+      extra.args[[mapping$to]] <- if (!is.null(mapping$transform)) {
+        mapping$transform(value)
+      } else {
+        value
+      }
+      extra.args[[param]] <- NULL
+    }
+  }
+
+  extra.args[found_no_equivalent] <- NULL
+
+  return(extra.args)
+}
