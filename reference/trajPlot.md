@@ -14,10 +14,11 @@ trajPlot(
   lat = "lat",
   pollutant = NULL,
   type = "default",
-  map = TRUE,
   group = NULL,
   cols = "default",
   crs = 4326,
+  map = TRUE,
+  map.res = "medium",
   map.fill = TRUE,
   map.cols = "grey40",
   map.border = "black",
@@ -86,12 +87,6 @@ trajPlot(
   two are given, the first is used for the columns and the second for
   the rows.
 
-- map:
-
-  Should a base map be drawn? If `TRUE` the world base map provided by
-  [`ggplot2::map_data()`](https://ggplot2.tidyverse.org/reference/map_data.html)
-  will be used.
-
 - group:
 
   A condition to colour the plot by, passed to
@@ -116,6 +111,18 @@ trajPlot(
   unprojected latitude/longitude system used in GPS, Google Earth, and
   GIS mapping. Other `crs` values are available - for example, `27700`
   will use the the OSGB36/British National Grid.
+
+- map:
+
+  Should a base map be drawn? If `TRUE` the world base map provided by
+  [`ggplot2::map_data()`](https://ggplot2.tidyverse.org/reference/map_data.html)
+  will be used.
+
+- map.res:
+
+  The scale of the map to use. One of `110`, `50`, `10` or `small`,
+  `medium`, `large`. Passed to
+  [`rnaturalearth::ne_countries()`](https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html).
 
 - map.fill:
 

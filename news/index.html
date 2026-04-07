@@ -54,9 +54,20 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="openair-development-version">openair (development version)<a class="anchor" aria-label="anchor" href="#openair-development-version"></a></h2>
 <div class="section level3">
+<h3 id="dependency-changes-development-version">Dependency Changes<a class="anchor" aria-label="anchor" href="#dependency-changes-development-version"></a></h3>
+<ul><li>
+<code>openair</code> now suggests <code>rnaturalearth</code> over <code>rnaturalearthdata</code>. <code>rnaturalearthdata</code> is still required for a medium map resolution and <code>rnaturalearthhires</code> for a high map resolution, but these are now managed by <code>rnaturalearth</code> directly.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<ul><li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> now takes <code>shape</code> (or <code>pch</code>) in <code>...</code>, which will create line charts with markers. Multiple shapes can be provided - e.g., <code>shape = c(1, 2, 3)</code> - which will be recycled in the same way as line type or width.</p></li>
+<li><p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> will now use <code>loess</code> when it has insufficient data to fit a GAM.</p></li>
+<li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> regain the <code>map.res</code> argument. This is passed to <code><a href="https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html" class="external-link">rnaturalearth::ne_countries()</a></code> so can take three different resolutions.</p></li>
+</ul></div>
+<div class="section level3">
 <h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
 <ul><li>
-<code>timeAverage</code> now has a more robust approach to multi-period averaging time such as “3 day”. Bin boundaries are at fixed periods of time, which should ensure consistency across data sets that start at different times. This also means there is less need to use the argument <code>start.date</code> unless there is a need to extend the start date of the data for some reason e.g. to the beginning of a year. THis change may result in slight differences in returned output but should not affect periods such as “day”, “hour” and “month”.</li>
+<code><a href="../reference/timeAverage.html">timeAverage()</a></code> now has a more robust approach to multi-period averaging time such as “3 day”. Bin boundaries are at fixed periods of time, which should ensure consistency across data sets that start at different times. This also means there is less need to use the argument <code>start.date</code> unless there is a need to extend the start date of the data for some reason e.g. to the beginning of a year. THis change may result in slight differences in returned output but should not affect periods such as “day”, “hour” and “month”.</li>
 </ul></div>
 </div>
     <div class="section level2">

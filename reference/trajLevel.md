@@ -25,6 +25,7 @@ trajLevel(
   cols = "default",
   crs = 4326,
   map = TRUE,
+  map.res = "medium",
   map.fill = TRUE,
   map.cols = "grey40",
   map.border = "black",
@@ -177,6 +178,12 @@ trajLevel(
   Should a base map be drawn? If `TRUE` the world base map provided by
   [`ggplot2::map_data()`](https://ggplot2.tidyverse.org/reference/map_data.html)
   will be used.
+
+- map.res:
+
+  The scale of the map to use. One of `110`, `50`, `10` or `small`,
+  `medium`, `large`. Passed to
+  [`rnaturalearth::ne_countries()`](https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html).
 
 - map.fill:
 

@@ -349,7 +349,8 @@ timePlot(
   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
     2 columns and 5 rows.
 
-  - `lwd`, `lty`, and `pch` control various graphical parameters.
+  - `lwd`, `lty`, and `shape` control various graphical parameters.
+    `pch` is accepted as an alias for `shape`.
 
   - `fontsize` overrides the overall font size of the plot.
 
