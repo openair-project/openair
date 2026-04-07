@@ -111,6 +111,11 @@ modStats(
       summer, autumn, winter. `start.season = "winter"` would plot
       winter first.
 
+  `wd.res`
+
+  :   The resolution of wind direction bins; one of `4`, `8` (the
+      default) or `16`.
+
   `is.axis`
 
   :   A logical (`TRUE`/`FALSE`), used to request shortened cut labels

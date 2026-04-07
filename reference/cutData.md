@@ -14,6 +14,7 @@ cutData(
   suffix = NULL,
   hemisphere = "northern",
   n.levels = 4,
+  wd.res = 8,
   start.day = 1,
   start.season = "spring",
   is.axis = FALSE,
@@ -65,6 +66,11 @@ cutData(
 - n.levels:
 
   Number of quantiles to split numeric data into.
+
+- wd.res:
+
+  The resolution of wind direction bins; one of `4`, `8` (the default)
+  or `16`.
 
 - start.day:
 
