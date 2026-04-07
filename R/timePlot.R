@@ -116,7 +116,7 @@
 #'   Some additional arguments are also available:
 #'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `lwd`, `lty`, and `pch` control various graphical parameters.
+#'   - `lwd`, `lty`, and `shape` control various graphical parameters. `pch` is accepted as an alias for `shape`.
 #'   - `fontsize` overrides the overall font size of the plot.
 #'   - `border` sets the border colour of each tile.
 #'   - `ylim` and `xlim` control axis limits.
@@ -288,7 +288,8 @@ timePlot <- function(
   windflow <- resolve_windflow_opts(windflow)
 
   # style controls
-  extra.args$pch <- extra.args$pch %||% NA
+  extra.args$shape <- extra.args$shape %||% extra.args$pch %||% NA
+  extra.args$pch <- NULL
   extra.args$layout <- extra.args$layout %||% NULL
 
   # check & cut data
@@ -388,6 +389,14 @@ timePlot <- function(
   }
   extra.args$lwd <- extra.args$lwd[1:n_groups]
 
+  use_shape <- !all(is.na(extra.args$shape))
+  if (use_shape) {
+    while (length(extra.args$shape) < n_groups) {
+      extra.args$shape <- c(extra.args$shape, extra.args$shape)
+    }
+    extra.args$shape <- extra.args$shape[1:n_groups]
+  }
+
   # layout - stack vertically
   if (
     is.null(extra.args$layout) &&
@@ -455,6 +464,11 @@ timePlot <- function(
       ggplot2::aes(linewidth = .data[[aes_col]]),
       show.legend = TRUE
     ) +
+    {
+      if (use_shape) {
+        ggplot2::geom_point(ggplot2::aes(shape = .data[[aes_col]]))
+      }
+    } +
     gg_ref_x(ref.x) +
     gg_ref_y(ref.y) +
     theme_openair(key.position = ifelse(n_groups == 1, "none", key.position)) +
@@ -465,7 +479,8 @@ timePlot <- function(
       fill = legend_title,
       colour = legend_title,
       linetype = legend_title,
-      linewidth = legend_title
+      linewidth = legend_title,
+      shape = legend_title
     ) +
     get_facet(
       type,
@@ -508,11 +523,21 @@ timePlot <- function(
       drop = FALSE,
       label = \(x) label_openair(x, auto_text = auto.text)
     ) +
+    {
+      if (use_shape) {
+        ggplot2::scale_shape_manual(
+          values = extra.args$shape,
+          drop = FALSE,
+          label = \(x) label_openair(x, auto_text = auto.text)
+        )
+      }
+    } +
     ggplot2::guides(
       fill = theGuide,
       color = theGuide,
       linetype = theGuide,
-      linewidth = theGuide
+      linewidth = theGuide,
+      shape = if (use_shape) theGuide else "none"
     )
 
   if (stack) {
