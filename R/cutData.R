@@ -580,13 +580,10 @@ cutVecSeasonyear <- function(x, hemisphere, is.axis, drop) {
 # Cut wind direction into bins
 cutVecWinddir <- function(x, drop, bins = 8) {
   check_bins <- as.character(bins)
-  rlang::arg_match(check_bins, as.character(c(4, 8, 16)))
-
+  rlang::arg_match(check_bins, as.character(c(4, 8, 16, 32)))
   bin_width <- 360 / bins
   half <- bin_width / 2
-
   breaks <- seq(half, 360 + half, by = bin_width)
-
   labels_all <- list(
     `4` = c("E", "S", "W", "N"),
     `8` = c("NE", "E", "SE", "S", "SW", "W", "NW", "N"),
@@ -607,21 +604,51 @@ cutVecWinddir <- function(x, drop, bins = 8) {
       "NW",
       "NNW",
       "N"
+    ),
+    `32` = c(
+      "NbE",
+      "NNE",
+      "NEbN",
+      "NE",
+      "NEbE",
+      "ENE",
+      "EbN",
+      "E",
+      "EbS",
+      "ESE",
+      "SEbE",
+      "SE",
+      "SEbS",
+      "SSE",
+      "SbE",
+      "S",
+      "SbW",
+      "SSW",
+      "SWbS",
+      "SW",
+      "SWbW",
+      "WSW",
+      "WbS",
+      "W",
+      "WbN",
+      "WNW",
+      "NWbW",
+      "NW",
+      "NWbN",
+      "NNW",
+      "NbW",
+      "N"
     )
   )
-
   labels <- labels_all[[as.character(bins)]]
   levels <- c("N", labels[labels != "N"])
-
   x <- cut(x, breaks = breaks, labels = labels)
   x[is.na(x)] <- "N"
-
   if (drop %in% c("default", "none", "outside")) {
     levels <- levels
   } else if (drop == "empty") {
     levels <- levels[levels %in% x]
   }
-
   x <- ordered(x, levels = levels)
   return(x)
 }

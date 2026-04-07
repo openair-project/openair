@@ -312,6 +312,11 @@ calendarPlot <-
       ...
     )
 
+    # need to replace type if "wd" to retain "wd" col
+    if (type == "wd") {
+      type <- "wd_cuts"
+    }
+
     # all the days in the period - to be bound later
     all_dates <- seq(
       lubridate::as_date(lubridate::floor_date(min(mydata$date), "month")),
@@ -486,8 +491,11 @@ calendarPlot <-
     newdata <-
       dplyr::left_join(
         mydata,
-        dplyr::select(original_data, dplyr::any_of(c("date", "ws", "wd"))),
-        by = "date"
+        dplyr::select(
+          original_data,
+          dplyr::any_of(c("date", "ws", "wd", type[type != "cuts"]))
+        ),
+        by = c("date", type[type != "cuts"])
       )
 
     # get weekday abbreviation for axis
@@ -714,9 +722,15 @@ prepare_calendar_data <- function(
     vars <- c(vars, "wd", "ws")
   }
 
+  # need to extract wd if using for cuts
+  cut_names <- NULL
+  if (type == "wd") {
+    cut_names <- "wd_cuts"
+  }
+
   # check input data
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
-    cutData(type, ...)
+    cutData(type, names = cut_names, ...)
 
   return(mydata)
 }
