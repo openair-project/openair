@@ -822,7 +822,8 @@ scatter_scatter <- function(
       scales = facet_scales,
       auto.text = auto.text,
       strip.position = strip.position,
-      drop = FALSE
+      drop = FALSE,
+      wd.res = extra.args$wd.res %||% 8
     )
 
   ## theme + labels + strip control
@@ -954,7 +955,8 @@ scatter_hexbin <- function(
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
       strip.position = strip.position,
-      drop = FALSE
+      drop = FALSE,
+      wd.res = extra.args$wd.res %||% 8
     ) +
     theme_openair(key.position = key.position) +
     ggplot2::labs(x = xlab, y = ylab, title = main)
@@ -1106,7 +1108,8 @@ scatter_level <- function(
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
       strip.position = strip.position,
-      drop = FALSE
+      drop = FALSE,
+      wd.res = extra.args$wd.res %||% 8
     ) +
     theme_openair(key.position = key.position) +
     ggplot2::labs(x = xlab, y = ylab, title = main)
@@ -1287,7 +1290,8 @@ scatter_density <- function(
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
       strip.position = strip.position,
-      drop = FALSE
+      drop = FALSE,
+      wd.res = extra.args$wd.res %||% 8
     ) +
     theme_openair(key.position = key.position) +
     ggplot2::labs(x = xlab, y = ylab, title = main)

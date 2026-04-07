@@ -560,7 +560,8 @@ TheilSen <- function(
       scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
       drop = FALSE,
-      strip.position = strip.position
+      strip.position = strip.position,
+      wd.res = extra.args$wd.res %||% 8
     ) +
     x_scale_fun(
       breaks = scales::breaks_pretty(date.breaks),

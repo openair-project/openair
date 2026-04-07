@@ -368,7 +368,8 @@ polarFreq <- function(
       extra.args,
       scales = "fixed",
       auto.text = auto.text,
-      strip.position = strip.position
+      strip.position = strip.position,
+      wd.res = extra.args$wd.res %||% 8
     )
 
   if (categorical) {

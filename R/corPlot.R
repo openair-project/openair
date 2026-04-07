@@ -438,7 +438,8 @@ corPlot <- function(
       extra.args,
       scales = "free",
       auto.text = auto.text,
-      strip.position = strip.position
+      strip.position = strip.position,
+      wd.res = extra.args$wd.res %||% 8
     ) +
     theme_openair(key.position) +
     ggplot2::theme(panel.grid = ggplot2::element_blank(), aspect.ratio = 1) +

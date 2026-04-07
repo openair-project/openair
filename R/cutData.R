@@ -115,6 +115,9 @@
 #'   spring, summer, autumn, winter. `start.season = "winter"` would plot winter
 #'   first.
 #'
+#' @param wd.res The number of wind direction bins; one of `4` (N/E/S/W), `8`
+#'   (N/NE/E/SE/etc., the default) or `16` (N/NNE/NE/ENE/etc.).
+#'
 #' @param is.axis A logical (`TRUE`/`FALSE`), used to request shortened cut
 #'   labels for axes.
 #'
@@ -171,6 +174,7 @@ cutData <- function(
   suffix = NULL,
   hemisphere = "northern",
   n.levels = 4,
+  wd.res = 8,
   start.day = 1,
   start.season = "spring",
   is.axis = FALSE,
@@ -323,7 +327,7 @@ cutData <- function(
 
     if (type == "wd") {
       x <- dropNAbyType(x, "wd")
-      x[[name]] <- cutVecWinddir(x$wd, drop = drop)
+      x[[name]] <- cutVecWinddir(x$wd, drop = drop, bins = wd.res)
     }
 
     if (type %in% c("dst", "bstgmt", "gmtbst")) {
@@ -574,25 +578,78 @@ cutVecSeasonyear <- function(x, hemisphere, is.axis, drop) {
 }
 
 # Cut wind direction into bins
-cutVecWinddir <- function(x, drop) {
-  x <- cut(
-    x,
-    breaks = seq(22.5, 382.5, 45),
-    labels = c("NE", "E", "SE", "S", "SW", "W", "NW", "N")
+cutVecWinddir <- function(x, drop, bins = 8) {
+  check_bins <- as.character(bins)
+  rlang::arg_match(check_bins, as.character(c(4, 8, 16, 32)))
+  bin_width <- 360 / bins
+  half <- bin_width / 2
+  breaks <- seq(half, 360 + half, by = bin_width)
+  labels_all <- list(
+    `4` = c("E", "S", "W", "N"),
+    `8` = c("NE", "E", "SE", "S", "SW", "W", "NW", "N"),
+    `16` = c(
+      "NNE",
+      "NE",
+      "ENE",
+      "E",
+      "ESE",
+      "SE",
+      "SSE",
+      "S",
+      "SSW",
+      "SW",
+      "WSW",
+      "W",
+      "WNW",
+      "NW",
+      "NNW",
+      "N"
+    ),
+    `32` = c(
+      "NbE",
+      "NNE",
+      "NEbN",
+      "NE",
+      "NEbE",
+      "ENE",
+      "EbN",
+      "E",
+      "EbS",
+      "ESE",
+      "SEbE",
+      "SE",
+      "SEbS",
+      "SSE",
+      "SbE",
+      "S",
+      "SbW",
+      "SSW",
+      "SWbS",
+      "SW",
+      "SWbW",
+      "WSW",
+      "WbS",
+      "W",
+      "WbN",
+      "WNW",
+      "NWbW",
+      "NW",
+      "NWbN",
+      "NNW",
+      "NbW",
+      "N"
+    )
   )
-
-  x[is.na(x)] <- "N" # for wd < 22.5
-
-  levels <- c("N", "NE", "E", "SE", "S", "SW", "W", "NW")
-
+  labels <- labels_all[[as.character(bins)]]
+  levels <- c("N", labels[labels != "N"])
+  x <- cut(x, breaks = breaks, labels = labels)
+  x[is.na(x)] <- "N"
   if (drop %in% c("default", "none", "outside")) {
     levels <- levels
   } else if (drop == "empty") {
     levels <- levels[levels %in% x]
   }
-
   x <- ordered(x, levels = levels)
-
   return(x)
 }
 
