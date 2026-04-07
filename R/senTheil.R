@@ -217,29 +217,35 @@ tsreg <- function(
 }
 
 tsp1reg <- function(x, y, plotit = FALSE) {
-  #
-  # Compute the Theil-Sen regression estimator.
-  # Only a single predictor is allowed in this version
-  #
-  temp <- matrix(c(x, y), ncol = 2)
-  temp <- elimna(temp) # Remove any pairs with missing values
-  x <- temp[, 1]
-  y <- temp[, 2]
-  ord <- order(x)
-  xs <- x[ord]
-  ys <- y[ord]
-  vec1 <- outer(ys, ys, "-")
-  vec2 <- outer(xs, xs, "-")
-  v1 <- vec1[vec2 > 0]
-  v2 <- vec2[vec2 > 0]
-  slope <- stats::median(v1 / v2)
-  coef <- stats::median(y - slope * x)
-  names(coef) <- "Intercept"
-  coef <- c(coef, slope)
+  # 1. Handle missing values natively (much faster than matrix conversion)
+  valid <- stats::complete.cases(x, y)
+  x <- x[valid]
+  y <- y[valid]
+
+  # 2. Calculate pairwise differences
+  # We do not need to sort the data first. The condition `dx > 0` naturally
+  # selects exactly one of the two symmetric pairs (j>i) and automatically
+  # removes ties in x, preventing division-by-zero.
+  dx <- outer(x, x, "-")
+  keep <- dx > 0
+
+  # 3. Calculate slopes and extract the median
+  slopes <- outer(y, y, "-")[keep] / dx[keep]
+  slope <- stats::median(slopes)
+
+  # 4. Calculate intercept and format coefficients
+  intercept <- stats::median(y - slope * x)
+  coef <- c("Intercept" = intercept, "slope" = slope)
+
+  # 5. Optional Plotting
   if (plotit) {
-    plot(x, y, xlab = "X", ylab = "Y")
-    graphics::abline(coef)
+    plot(x, y, xlab = "X", ylab = "Y", pch = 16, col = "darkgray")
+    graphics::abline(coef, col = "red", lwd = 2)
   }
-  res <- y - slope * x - coef[1]
-  list(coef = coef, residuals = res)
+
+  # 6. Return structured list
+  list(
+    coef = coef,
+    residuals = y - (slope * x + intercept)
+  )
 }
