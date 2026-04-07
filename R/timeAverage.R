@@ -50,6 +50,26 @@
 #'   which case 3-month seasonal values are calculated with spring defined as
 #'   March, April, May and so on.
 #'
+#'   **Period boundary behaviour:** how bin boundaries are determined depends on
+#'   the type of period:
+#'
+#'   - *Single-unit periods* (`"hour"`, `"day"`, `"week"`, etc.) are floored to
+#'   the start of the enclosing unit in the data's timezone (e.g. `"day"`
+#'   floors to midnight).
+#'
+#'   - *Multi-unit fixed-length periods* (`"3 day"`, `"6 hour"`, `"2 week"`,
+#'   etc.) use epoch-aligned arithmetic: bin boundaries are fixed multiples of
+#'   the period length counted from 1970-01-01, so the same calendar dates
+#'   always fall in the same bin regardless of where the data starts, and bins
+#'   run continuously across month boundaries without resetting at the start of
+#'   each month. For example, with `avg.time = "3 day"` a bin that begins on
+#'   29 January will end on 31 January, and the next bin begins on 1 February
+#'   — the month boundary does not start a new bin.
+#'
+#'   - *Calendar periods* (`"month"`, `"quarter"`, `"year"`) are floored to the
+#'   start of the enclosing calendar unit, so they correctly respect variable
+#'   month and year lengths.
+#'
 #'   Note that `avg.time` can be *less* than the time interval of the original
 #'   series, in which case the series is expanded to the new time interval. This
 #'   is useful, for example, for calculating a 15-minute time series from an
@@ -89,13 +109,8 @@
 #'   The default is 95%.
 #'
 #' @param start.date A string giving a start date to use. This is sometimes
-#'   useful if a time series starts between obvious intervals. For example, for
-#'   a 1-minute time series that starts `2009-11-29 12:07:00` that needs to be
-#'   averaged up to 15-minute means, the intervals would be `2009-11-29
-#'   12:07:00`, `2009-11-29 12:22:00`, etc. Often, however, it is better to
-#'   round down to a more obvious start point, e.g., `2009-11-29 12:00:00` such
-#'   that the sequence is then `2009-11-29 12:00:00`, `2009-11-29 12:15:00`, and
-#'   so on. `start.date` is therefore used to force this type of sequence. Note
+#'   useful if a time series starts between obvious intervals. Input in the format
+#'   yyyy-mm-dd HH:MM. Note
 #'   that this option does not truncate a time series if it already starts
 #'   earlier than `start.date`; see [selectByDate()] for that functionality.
 #'
@@ -280,24 +295,35 @@ timeAverage <- function(
       mydata <- datePad(mydata, type = type)
     }
 
-    # handle 'season' as special case
-    if (avg.time == "season") {
-      mydata <- handle_season_avgtime(mydata, type = type, ...)
-    }
-
     ## variables to split by
     vars <- c(type, "date")
-    if (avg.time == "season") {
-      vars <- unique(c(vars, "season"))
-    }
 
-    # cut date column into bins unless season (dealt w/ earlier)
-    if (avg.time != "season") {
-      mydata$date <-
-        lubridate::as_datetime(
-          as.character(cut(mydata$date, avg.time)),
-          tz = TZ
-        )
+    # bin date column into periods
+
+    by2 <- strsplit(avg.time, " ", fixed = TRUE)[[1]]
+    n_units <- if (length(by2) > 1L) as.numeric(by2[1L]) else 1L
+    unit_name <- by2[length(by2)]
+    secs_per_unit <- switch(
+      unit_name,
+      "sec" = 1,
+      "min" = 60,
+      "hour" = 3600,
+      "day" = 86400,
+      "DSTday" = 86400,
+      "week" = 604800,
+      NULL
+    )
+    if (!is.null(secs_per_unit) && n_units > 1L) {
+      # Multi-unit fixed-length period: use epoch-aligned arithmetic so bins
+      # run continuously across month boundaries (floor_date resets monthly)
+      period_secs <- n_units * secs_per_unit
+      mydata$date <- lubridate::as_datetime(
+        floor(as.numeric(mydata$date) / period_secs) * period_secs,
+        tz = TZ
+      )
+    } else {
+      # Single-unit or calendar period (month, quarter, year): floor_date is correct
+      mydata$date <- lubridate::floor_date(mydata$date, unit = avg.time)
     }
 
     # cpp version
@@ -313,9 +339,9 @@ timeAverage <- function(
 
     # need to add season back in if used - FIX ME
 
-    if (avg.time == "season") {
-      avmet <- cutData(avmet, type = "season")
-    }
+    #  if (avg.time == "season") {
+    #   avmet <- cutData(avmet, type = "season")
+    #  }
 
     if ("wd" %in% names(mydata)) {
       # vector avergaing is only need for some statistics
@@ -325,9 +351,7 @@ timeAverage <- function(
           avmet <-
             avmet |>
             dplyr::mutate(
-              wd = as.vector(atan2(.data$Uu, .data$Vv) * 360 / 2 / pi),
-              # correct negative wind directions
-              wd = dplyr::if_else(.data$wd < 0, .data$wd + 360, .data$wd)
+              wd = (atan2(.data$Uu, .data$Vv) * 180 / pi) %% 360
             )
 
           ## vector average ws
@@ -568,34 +592,4 @@ calculate_wind_components <- function(mydata, vector.ws) {
   }
 
   return(mydata)
-}
-
-#' Function to handle getting a mean date in year-season by shifting
-#' December into next year
-#' @noRd
-handle_season_avgtime <- function(mydata, type, ...) {
-  # don't cut again if type = "season"
-  if (!"season" %in% type) {
-    mydata <- cutData(mydata, type = "season", ...)
-  }
-
-  mydata |>
-    # drop missing seasons
-    dplyr::filter(!is.na(.data$season)) |>
-    # extract year/month
-    dplyr::mutate(
-      year = lubridate::year(.data$date),
-      month = lubridate::month(.data$date)
-    ) |>
-    # nudge December into next month
-    dplyr::mutate(
-      year = dplyr::if_else(.data$month == 12, .data$year + 1, .data$year)
-    ) |>
-    # get average date per year-season
-    dplyr::mutate(
-      date = mean(date, na.rm = TRUE),
-      .by = c("year", "season")
-    ) |>
-    # drop year/month cols
-    dplyr::select(-"year", -"month")
 }

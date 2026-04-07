@@ -39,6 +39,13 @@ test_that("avg.time = '2 month' returns 6 rows for a full year", {
   expect_equal(nrow(result), 6L)
 })
 
+test_that("avg.time = '3 day' produces uniformly-spaced dates across month boundaries", {
+  result <- timeAverage(dat, avg.time = "3 day", progress = FALSE)
+  gaps <- as.numeric(diff(result$date), units = "days")
+  # every gap should be exactly 3 days (NA rows from pad will show as 3 too)
+  expect_true(all(gaps == 3))
+})
+
 # --- Aggregation correctness -------------------------------------------------
 
 test_that("daily mean is between hourly min and max", {

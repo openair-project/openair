@@ -31,6 +31,25 @@ followed by a space. For example, an average of 2 months would be
 which case 3-month seasonal values are calculated with spring defined as
 March, April, May and so on.
 
+\strong{Period boundary behaviour:} how bin boundaries are determined depends on
+the type of period:
+\itemize{
+\item \emph{Single-unit periods} (\code{"hour"}, \code{"day"}, \code{"week"}, etc.) are floored to
+the start of the enclosing unit in the data's timezone (e.g. \code{"day"}
+floors to midnight).
+\item \emph{Multi-unit fixed-length periods} (\code{"3 day"}, \code{"6 hour"}, \code{"2 week"},
+etc.) use epoch-aligned arithmetic: bin boundaries are fixed multiples of
+the period length counted from 1970-01-01, so the same calendar dates
+always fall in the same bin regardless of where the data starts, and bins
+run continuously across month boundaries without resetting at the start of
+each month. For example, with \code{avg.time = "3 day"} a bin that begins on
+29 January will end on 31 January, and the next bin begins on 1 February
+— the month boundary does not start a new bin.
+\item \emph{Calendar periods} (\code{"month"}, \code{"quarter"}, \code{"year"}) are floored to the
+start of the enclosing calendar unit, so they correctly respect variable
+month and year lengths.
+}
+
 Note that \code{avg.time} can be \emph{less} than the time interval of the original
 series, in which case the series is expanded to the new time interval. This
 is useful, for example, for calculating a 15-minute time series from an
@@ -61,12 +80,8 @@ calculated, else it is recorded as \code{NA}. See also \code{interval}, \code{st
 and \code{end.date} to see whether it is advisable to set these other options.}
 
 \item{start.date}{A string giving a start date to use. This is sometimes
-useful if a time series starts between obvious intervals. For example, for
-a 1-minute time series that starts \verb{2009-11-29 12:07:00} that needs to be
-averaged up to 15-minute means, the intervals would be \verb{2009-11-29 12:07:00}, \verb{2009-11-29 12:22:00}, etc. Often, however, it is better to
-round down to a more obvious start point, e.g., \verb{2009-11-29 12:00:00} such
-that the sequence is then \verb{2009-11-29 12:00:00}, \verb{2009-11-29 12:15:00}, and
-so on. \code{start.date} is therefore used to force this type of sequence. Note
+useful if a time series starts between obvious intervals. Input in the format
+yyyy-mm-dd HH:MM. Note
 that this option does not truncate a time series if it already starts
 earlier than \code{start.date}; see \code{\link[=selectByDate]{selectByDate()}} for that functionality.}
 
