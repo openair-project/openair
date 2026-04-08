@@ -71,6 +71,7 @@
 <li><p><code><a href="../reference/calendarPlot.html">calendarPlot()</a></code> will no longer duplicate <code>windflow</code> arrows when <code>type != "default"</code>.</p></li>
 <li><p><code><a href="../reference/calendarPlot.html">calendarPlot()</a></code> now supports <code>type = "wd"</code>.</p></li>
 <li><p>Fix intercept calculation in single-predictor Theil-Sen regression Updated the intercept formula in <code>tsp1reg</code> from <code>median(y) - slope * median(x)</code> to <code>median(y - slope * x)</code>. This resolves a visual bug where trend lines (especially annual aggregations with negative slopes) appeared horizontally displaced due to inaccurate intercept estimates on sparse data. This fix affects the visual display of the trend lines but not the calculated slopes or uncertainties.</p></li>
+<li><p><code><a href="../reference/quickText.html">quickText()</a></code> is once again tolerant of apostrophes.</p></li>
 </ul></div>
 </div>
     <div class="section level2">

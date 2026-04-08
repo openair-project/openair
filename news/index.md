@@ -61,6 +61,9 @@
   visual display of the trend lines but not the calculated slopes or
   uncertainties.
 
+- [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+  is once again tolerant of apostrophes.
+
 ## openair 3.0.0
 
 CRAN release: 2026-04-02
