@@ -275,13 +275,6 @@
 #'   `"quantile.slope"`. Default is `0.5` which is equal to the median and will
 #'   be ignored if `"quantile.slope"` is not used.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `annotate = FALSE` will not plot the N/E/S/W labels.
-#'
 #' @return an [openair][openair-package] object. `data` contains four set
 #'   columns: `cond`, conditioning based on `type`; `u` and `v`, the
 #'   translational vectors based on `ws` and `wd`; and the local `pollutant`
@@ -335,7 +328,7 @@
 #' \dontrun{
 #'
 #' # polarPlots by year on same scale
-#' polarPlot(mydata, pollutant = "so2", type = "year", main = "polarPlot of so2")
+#' polarPlot(mydata, pollutant = "so2", type = "year", title = "polarPlot of so2")
 #'
 #' # set minimum number of bins to be used to see if pattern remains similar
 #' polarPlot(mydata, pollutant = "nox", min.bin = 3)
@@ -469,25 +462,17 @@ polarPlot <-
     key.position <- check_key_position(key.position, key)
 
     ## extra.args setup
-    extra.args <- list(...)
+    extra.args <- capture_dots(...)
 
     ## label controls
-    extra.args$xlab <- if ("xlab" %in% names(extra.args)) {
-      quickText(extra.args$xlab, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
+    extra.args$xlab <- quickText(extra.args$xlab, auto.text)
+    extra.args$ylab <- quickText(extra.args$ylab, auto.text)
+    extra.args$title <- quickText(extra.args$title, auto.text)
+    extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
 
-    extra.args$ylab <- if ("ylab" %in% names(extra.args)) {
-      quickText(extra.args$ylab, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
-
-    extra.args$main <- if ("main" %in% names(extra.args)) {
-      quickText(extra.args$main, auto.text)
-    } else {
-      quickText("", auto.text)
+    # separate handling for being overwritten
+    if ("caption" %in% names(extra.args)) {
+      extra.args$caption <- quickText(extra.args$caption, auto.text)
     }
 
     # if clustering, return lower resolution plot
@@ -500,11 +485,6 @@ polarPlot <-
     ## need to initialise key_header & key_footer for later combination
     key_header <- statistic
     key_footer <- paste(pollutant, collapse = ", ")
-
-    ## layout default
-    if (!"layout" %in% names(extra.args)) {
-      extra.args$layout <- NULL
-    }
 
     ## extract variables of interest
     vars <- c(wd, x, pollutant)
@@ -838,9 +818,10 @@ polarPlot <-
       }
     }
 
-    ## special handling of layout for uncertainty
-    if (uncertainty && is.null(extra.args$layout)) {
-      extra.args$layout <- c(3, 1)
+    ## special handling of nrow/ncol for uncertainty
+    if (uncertainty && is.null(extra.args$nrow) && is.null(extra.args$ncol)) {
+      extra.args$ncol <- 3L
+      extra.args$nrow <- 1L
     }
 
     # if uncertainty = TRUE, change type for plotting (3 panels)
@@ -934,20 +915,21 @@ polarPlot <-
         color = legend_title,
         x = extra.args$xlab,
         y = extra.args$ylab,
-        title = extra.args$main,
-        subtitle = sub,
-        caption = if (
-          formula.label &&
-            grepl("slope|intercept", statistic) &&
-            length(pollutant) == 2
-        ) {
-          quickText(
-            paste0("Formula: ", pollutant[1], " = m.", pollutant[2], " + c"),
-            auto.text
-          )
-        } else {
-          NULL
-        }
+        title = extra.args$title,
+        subtitle = extra.args$subtitle %||% sub,
+        caption = extra.args$caption %||%
+          if (
+            formula.label &&
+              grepl("slope|intercept", statistic) &&
+              length(pollutant) == 2
+          ) {
+            quickText(
+              paste0("Formula: ", pollutant[1], " = m.", pollutant[2], " + c"),
+              auto.text
+            )
+          } else {
+            NULL
+          }
       ) +
       {
         if (key.position %in% c("left", "right")) {

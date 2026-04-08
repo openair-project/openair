@@ -87,7 +87,7 @@ windRose(mydata)
 However, the real flexibility comes from being able to use the type option.
 
 ```{r windrose2, fig.height=7}
-windRose(mydata, type = "year", layout = c(4, 2), width = 0.4)
+windRose(mydata, type = "year", ncol = 4, nrow = 2, width = 0.4)
 ```
 
 Wind roses summarising the wind conditions at a monitoring station per year, demonstrating the `{openair}` type option.

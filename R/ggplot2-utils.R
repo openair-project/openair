@@ -149,17 +149,16 @@ get_facet <- function(
             ...
           )
       } else {
-        lay <- extra.args$layout
         fun <-
           ggplot2::facet_wrap(
             drop = drop,
             facets = ggplot2::vars(.data[[type]]),
             labeller = labeller_openair(auto_text = auto.text),
-            ncol = if (!is.null(lay) && !is.na(lay[1])) lay[1] else NULL,
-            nrow = if (!is.null(lay) && length(lay) > 1 && !is.na(lay[2])) {
-              lay[2]
-            } else {
-              NULL
+            ncol = if (rlang::is_integerish(extra.args$ncol, finite = TRUE)) {
+              extra.args$ncol
+            },
+            nrow = if (rlang::is_integerish(extra.args$nrow, finite = TRUE)) {
+              extra.args$nrow
             },
             scales = scales,
             strip.position = strip.position,
@@ -260,16 +259,24 @@ annotate_compass_points <- function(size, labels = c("N", "E", "S", "W")) {
 }
 
 # Recycle helper similar to lattice behaviour
-recycle_to_length <- function(x, n) {
+recycle_to_length <- function(x, n, expect1 = FALSE) {
   if (length(x) == n) {
     return(x)
   }
   if (length(x) == 1) {
     return(rep(x, n))
   }
-  cli::cli_abort(
-    "Length mismatch: argument must be length 1 or same length as 'h'/'v'"
-  )
+
+  if (expect1) {
+    cli::cli_abort(
+      "Length mismatch: argument must be length 1 or same length as 'h'/'v'"
+    )
+  } else {
+    while (length(x) < n) {
+      x <- c(x, x)
+    }
+    x <- x[seq_len(x)]
+  }
 }
 
 # Convert lattice-style ref.y list to ggplot2 geom_hline layers

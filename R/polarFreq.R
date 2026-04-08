@@ -52,6 +52,8 @@
 #'   Note that for options other than `"frequency"`, it is necessary to also
 #'   provide the name of a `pollutant`.
 #'
+#' @param limits The limits of the colour bar (e.g., `c(0, 100)`).
+#'
 #' @param ws.int Wind speed interval assumed. In some cases e.g. a low met mast,
 #'   an interval of 0.5 may be more appropriate.
 #'
@@ -72,14 +74,6 @@
 #' @param border.col The colour of the boundary of each wind speed/direction
 #'   bin. The default is transparent. Another useful choice sometimes is
 #'   "white".
-#'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `annotate = FALSE` will not plot the N/E/S/W labels.
-#'   - `limits` sets the colour bar limits, if `breaks` is not used.
 #'
 #' @export
 #' @return an [openair][openair-package] object
@@ -140,6 +134,7 @@ polarFreq <- function(
   ws.int = 1,
   wd.nint = 36,
   grid.line = 5,
+  limits = NULL,
   breaks = NULL,
   labels = NULL,
   cols = "default",
@@ -170,12 +165,14 @@ polarFreq <- function(
   wd.int <- 360 / round(wd.nint)
 
   # extra.args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # label controls
   extra.args$xlab <- quickText(extra.args$xlab, auto.text)
   extra.args$ylab <- quickText(extra.args$ylab, auto.text)
-  extra.args$main <- quickText(extra.args$main, auto.text)
+  extra.args$title <- quickText(extra.args$title, auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+  extra.args$caption <- quickText(extra.args$caption, auto.text)
 
   if (!is.null(pollutant)) {
     vars <- c(vars, pollutant)
@@ -360,7 +357,9 @@ polarFreq <- function(
     ggplot2::labs(
       y = extra.args$ylab,
       x = extra.args$xlab,
-      title = extra.args$main,
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption,
       fill = quickText(key.title, auto.text = auto.text)
     ) +
     get_facet(
@@ -405,7 +404,7 @@ polarFreq <- function(
         transform = ifelse(trans, "sqrt", "identity"),
         oob = scales::oob_squish,
         breaks = scales::pretty_breaks(6),
-        limits = extra.args$limits
+        limits = limits
       ) +
       ggplot2::guides(
         fill = ggplot2::guide_colorbar(

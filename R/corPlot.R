@@ -74,13 +74,6 @@
 #'   The first value controls the colour of negative correlations and the second
 #'   positive.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `border` sets the border colour of each ellipse.
-#'
 #' @author David Carslaw
 #' @author Jack Davison
 #' @author Adapted from the approach taken by Sarkar (2007)
@@ -140,7 +133,7 @@ corPlot <- function(
   }
 
   # extra.args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # check if key.header / key.footer are being used
   key.title <- check_key_header(key.title, extra.args)
@@ -159,7 +152,9 @@ corPlot <- function(
   # label controls
   extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
   extra.args$ylab <- quickText(extra.args$ylab %||% NULL, auto.text)
-  extra.args$main <- quickText(extra.args$main %||% NULL, auto.text)
+  extra.args$title <- quickText(extra.args$title %||% NULL, auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+  extra.args$caption <- quickText(extra.args$caption, auto.text)
 
   # check triangle is set properly
   triangle <- rlang::arg_match(triangle)
@@ -478,7 +473,9 @@ corPlot <- function(
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
-      title = extra.args$main,
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption,
       fill = key.title
     )
 

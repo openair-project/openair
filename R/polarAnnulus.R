@@ -102,13 +102,6 @@
 #'   too noisy and affected more by outliers. Choosing a lower value of `k` (say
 #'   10) may help produce a better plot.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `annotate = FALSE` will not plot the N/E/S/W labels.
-#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
@@ -119,7 +112,7 @@
 #' \dontrun{
 #' polarAnnulus(mydata,
 #'   pollutant = "pm10",
-#'   main = "diurnal variation in pm10 at Marylebone Road"
+#'   title = "diurnal variation in pm10 at Marylebone Road"
 #' )
 #' }
 #'
@@ -134,7 +127,7 @@
 #' \dontrun{
 #' polarAnnulus(mydata,
 #'   poll = "pmc", period = "trend",
-#'   main = "trend in pmc at Marylebone Road"
+#'   title = "trend in pmc at Marylebone Road"
 #' )
 #' }
 polarAnnulus <-
@@ -208,12 +201,18 @@ polarAnnulus <-
     }
 
     # extra.args setup
-    extra.args <- list(...)
+    extra.args <- capture_dots(...)
 
     # label controls
     extra.args$xlab <- quickText(extra.args$xlab, auto.text)
     extra.args$ylab <- quickText(extra.args$ylab, auto.text)
-    extra.args$main <- quickText(extra.args$main, auto.text)
+    extra.args$title <- quickText(extra.args$title, auto.text)
+    extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+
+    # separate handling for being overwritten
+    if ("caption" %in% names(extra.args)) {
+      extra.args$caption <- quickText(extra.args$caption, auto.text)
+    }
 
     # check data
     mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
@@ -576,8 +575,9 @@ polarAnnulus <-
       ggplot2::labs(
         x = extra.args$xlab,
         y = extra.args$ylab,
-        title = extra.args$main,
-        caption = sub,
+        title = extra.args$title,
+        subtitle = extra.args$subtitle,
+        caption = extra.args$caption %||% sub,
         colour = quickText(key.title, auto.text = auto.text),
         fill = quickText(key.title, auto.text = auto.text)
       ) +

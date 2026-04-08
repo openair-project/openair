@@ -50,11 +50,11 @@ polarDiff <- function(
   ...
 ) {
   # extra args setup
-  Args <- list(...)
+  extra.args <- capture_dots(...)
 
   # variables needed, check for York regression where x and y error needed
-  vars <- if (all(c("x_error", "y_error") %in% names(Args))) {
-    c(x, "wd", pollutant, Args$x_error, Args$y_error)
+  vars <- if (all(c("x_error", "y_error") %in% names(extra.args))) {
+    c(x, "wd", pollutant, extra.args$x_error, extra.args$y_error)
   } else {
     c(x, "wd", pollutant)
   }
@@ -145,17 +145,17 @@ polarDiff <- function(
       par.settings = list(axis.line = list(col = "black")),
       alpha = 1,
       key.title = paste("Difference", pollutant_name, sep = " "),
-      main = ""
+      title = ""
     ),
-    Args[intersect(
-      names(Args),
+    extra.args[intersect(
+      names(extra.args),
       c(
         "cols",
         "key.position",
         "par.settings",
         "alpha",
         "key.title",
-        "main"
+        "title"
       )
     )]
   )

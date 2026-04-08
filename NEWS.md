@@ -2,11 +2,31 @@
 
 ## Dependency Changes
 
-- `openair` now suggests `rnaturalearth` over `rnaturalearthdata`. `rnaturalearthdata` is still required for a medium map resolution and `rnaturalearthhires` for a high map resolution, but these are now managed by `rnaturalearth` directly.
+- `{openair}` now suggests `{rnaturalearth}` over `{rnaturalearthdata}`. `{rnaturalearthdata}` is still required for a medium map resolution and `{rnaturalearthhires}` for a high map resolution, but these are now managed by `{rnaturalearth}` directly.
 
 ## New Features
 
-- `timePlot()` now takes `shape` (or `pch`) in `...`, which will create line charts with markers. Multiple shapes can be provided - e.g., `shape = c(1, 2, 3)` - which will be recycled in the same way as line type or width.
+- Refinements to how parameters are passed via `...` to plotting functions:
+
+    - Graphical parameters are now defined using `ggplot2` conventions (e.g., `shape` over `pch`).
+    
+    - `base`/`lattice` paramters are automatically remapped to their `ggplot2` equivalent with a warning.
+    
+    - `nrow` and `ncol` can now be provided to control facet layout. As above, `layout` is automatically unpacked into `ncol` and `nrow` with a warning.
+
+    - `title`, `subtitle` and `caption` can be used throughout `openair` (`title` replacing `main` and `caption` replacing `sub`). All are passed through `quickText()` if `auto.text = TRUE`.
+    
+    - `lineend`, `linejoin` and `linemitre` tweak the appearance of line plots; see `ggplot2::geom_line()` for more information.
+
+- Additional interaction between `...` parameters and various plots:
+
+    - `timePlot()` now takes `shape` to add markers to the line chart. This can be a vector to vary with pollutant/group.
+    
+    - `timeProp()` now takes `linewidth` and `linetype` to control `border` style.
+    
+    - `TheilSen()` now takes `linewidth`, `linetype`, `shape` and `alpha`.
+    
+    - `smoothTrend()` now takes `linetype`, `linewidth`, `shape` and `size`. These can be vectors to vary based on pollutant. The linewidth of the data will always be half of that of the model.
 
 - `smoothTrend()` will now use `loess` when it has insufficient data to fit a GAM.
 
@@ -58,7 +78,7 @@
 
 ## New Features
 
-- `timeVariation()` has been almost completely rewritten. It is now a thin wrapper around the new `variationPlot()`, which can take any arbitrary `x` value - passed to [cutData()] - to use for its x-axis. Furthermore, it has gained the following changes:
+- `timeVariation()` has been almost completely rewritten. It is now a thin wrapper around the new `variationPlot()`, which can take any arbitrary `x` value - passed to `cutData()` - to use for its x-axis. Furthermore, it has gained the following changes:
 
     - Gained the `panels` argument. This allows for panels other than "hour.weekday", "hour", "month", and "weekday" to be represented in the plot assembly.
 
@@ -70,7 +90,7 @@
 
 - `timePlot()` refinements:
     
-    - `group` can now take a character string, passed to [cutData()] via [timeAverage()]. This works similarly to `group` in `timeVariation()` in that it colours traces within the panel, rather than splitting them into multiple panels.
+    - `group` can now take a character string, passed to `cutData()` via `timeAverage()`. This works similarly to `group` in `timeVariation()` in that it colours traces within the panel, rather than splitting them into multiple panels.
     
     - Gained the `x.relation` argument, allowing for different x ranges on different panels.
 

@@ -118,13 +118,6 @@
 #'   `FALSE` labels just as "January". If multiple years of data are detected,
 #'   this option is forced to be `TRUE`.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `border` sets the border colour of each tile.
-#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
@@ -261,12 +254,14 @@ calendarPlot <-
     }
 
     # extra args
-    extra.args <- list(...)
+    extra.args <- capture_dots(...)
 
     # label controls
     extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
     extra.args$ylab <- quickText(extra.args$ylab %||% NULL, auto.text)
-    extra.args$main <- quickText(extra.args$main %||% NULL, auto.text)
+    extra.args$title <- quickText(extra.args$title %||% NULL, auto.text)
+    extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+    extra.args$caption <- quickText(extra.args$caption, auto.text)
 
     # check if key.header / key.footer are being used
     key.title <- check_key_header(key.title, extra.args)
@@ -551,7 +546,9 @@ calendarPlot <-
       ggplot2::labs(
         y = extra.args$ylab,
         x = extra.args$xlab,
-        title = extra.args$main,
+        title = extra.args$title,
+        subtitle = extra.args$subtitle,
+        caption = extra.args$caption,
         fill = quickText(key.title, auto.text = auto.text)
       ) +
       ggplot2::scale_x_continuous(

@@ -64,12 +64,6 @@
 #' @param min.bin The minimum number of points required for the estimates of the
 #'   25/75th and 10/90th percentiles.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'
 #' @export
 #'
 #' @author David Carslaw
@@ -133,7 +127,7 @@ conditionalQuantile <- function(
     cli::cli_abort("Only two types can be used with this function")
   }
 
-  extra.args <- rlang::list2(...)
+  extra.args <- capture_dots(...)
 
   vars <- c(mod, obs)
   if (any(type %in% dateTypes)) {
@@ -329,7 +323,10 @@ conditionalQuantile <- function(
     ggplot2::geom_line(
       ggplot2::aes(y = .data$med, color = "median"),
       linewidth = 1,
-      na.rm = TRUE
+      na.rm = TRUE,
+      lineend = extra.args$lineend %||% "butt",
+      linejoin = extra.args$linejoin %||% "round",
+      linemitre = extra.args$linemitre %||% 10
     ) +
     ggplot2::geom_segment(
       data = obs_range_data,
@@ -394,12 +391,11 @@ conditionalQuantile <- function(
       color = NULL,
       fill = NULL,
       x = quickText(extra.args$xlab %||% "predicted value", auto.text),
-      y = quickText(extra.args$ylab %||% "observed value", auto.text)
+      y = quickText(extra.args$ylab %||% "observed value", auto.text),
+      title = quickText(extra.args$title, auto.text),
+      subtitle = quickText(extra.args$subtitle, auto.text),
+      caption = quickText(extra.args$caption, auto.text)
     )
-
-  if ("main" %in% names(extra.args)) {
-    plt <- plt + ggplot2::labs(title = quickText(extra.args$main, auto.text))
-  }
 
   if (plot) {
     plot(plt)

@@ -117,7 +117,7 @@ conditionalEval <- function(
     cli::cli_abort("Only one type can be used with this function")
   }
 
-  extra.args <- rlang::list2(...)
+  extra.args <- capture_dots(...)
 
   # Determine mode: "other" (variable/date) or model-eval statistic
   other <- FALSE
@@ -413,7 +413,10 @@ conditionalEval <- function(
       ggplot2::geom_line(
         ggplot2::aes(y = mean, color = .data[["group"]]),
         linewidth = 1,
-        na.rm = TRUE
+        na.rm = TRUE,
+        lineend = extra.args$lineend %||% "butt",
+        linejoin = extra.args$linejoin %||% "round",
+        linemitre = extra.args$linemitre %||% 10
       ) +
       ggplot2::scale_color_manual(
         values = stats::setNames(myColors, var.obs),
@@ -440,8 +443,8 @@ conditionalEval <- function(
     return_data <- results
   }
 
-  if ("main" %in% names(extra.args)) {
-    title <- quickText(extra.args$main, auto.text)
+  if ("title" %in% names(extra.args)) {
+    title <- quickText(extra.args$title, auto.text)
     cq_plt <- cq_plt + ggplot2::labs(title = title)
     right_plt <- right_plt + ggplot2::labs(title = title)
   }

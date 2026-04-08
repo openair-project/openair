@@ -75,14 +75,6 @@
 #' @param alpha The alpha transparency used for plotting confidence intervals.
 #'   `0` is fully transparent and 1 is opaque. The default is `0.4`.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `lwd` and `lty` control various graphical parameters.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `ylim` controls axis limits.
-#'
 #' @export
 #'
 #' @seealso [timeVariation()], which conveniently assembles many time-related
@@ -144,7 +136,7 @@ variationPlot <- function(
   )
 
   # extra.args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # labels
   extra.args$ylab <- quickText(
@@ -153,12 +145,15 @@ variationPlot <- function(
     auto.text
   )
   extra.args$xlab <- quickText(extra.args$x %||% x, auto.text)
-  extra.args$main <- quickText(extra.args$main %||% "", auto.text)
-  extra.args$sub <- quickText(
-    extra.args$sub %||% create_varplot_sub_text(statistic, conf.int),
+  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
+  extra.args$caption <- quickText(
+    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int),
     auto.text
   )
-  extra.args$lty <- extra.args$lty %||% 1
+  extra.args$linetype <- extra.args$linetype %||% 1
+  extra.args$linewidth <- extra.args$linewidth %||% 0.75
+  extra.args$shape <- extra.args$shape %||% 16
 
   drop <- extra.args$drop %||% "none"
   extra.args$drop <- NULL
@@ -473,11 +468,9 @@ variationPlot <- function(
   poll_labels <- name.pol %||% levels(mydata$group)
 
   # linetypes
-  ltys <- extra.args$lty
-  while (length(ltys) < nlevels(mydata$group)) {
-    ltys <- c(ltys, ltys)
-  }
-  ltys <- ltys[1:nlevels(mydata$group)]
+  ltys <- recycle_to_length(extra.args$linetype, nlevels(mydata$group))
+  lwds <- recycle_to_length(extra.args$linewidth, nlevels(mydata$group))
+  shps <- recycle_to_length(extra.args$shape, nlevels(mydata$group))
 
   # construct plot
   thePlot <-
@@ -499,8 +492,11 @@ variationPlot <- function(
       color = NULL,
       fill = NULL,
       linetype = NULL,
-      title = extra.args$main,
-      caption = extra.args$sub
+      linewidth = NULL,
+      shape = NULL,
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption
     ) +
     ggplot2::coord_cartesian(
       ylim = extra.args$ylim
@@ -527,6 +523,24 @@ variationPlot <- function(
       guide = ggplot2::guide_legend(ncol = key.columns),
       drop = FALSE
     ) +
+    ggplot2::scale_linewidth_manual(
+      values = lwds,
+      labels = stats::setNames(
+        label_openair(poll_labels, auto_text = auto.text),
+        levels(mydata$group)
+      ),
+      guide = ggplot2::guide_legend(ncol = key.columns),
+      drop = FALSE
+    ) +
+    ggplot2::scale_shape_manual(
+      values = shps,
+      labels = stats::setNames(
+        label_openair(poll_labels, auto_text = auto.text),
+        levels(mydata$group)
+      ),
+      guide = ggplot2::guide_legend(ncol = key.columns),
+      drop = FALSE
+    ) +
     ggplot2::guides(
       x = ggplot2::guide_axis(check.overlap = TRUE)
     )
@@ -535,7 +549,7 @@ variationPlot <- function(
   if (difference) {
     thePlot <-
       thePlot +
-      ggplot2::geom_hline(yintercept = 0, lty = 2)
+      ggplot2::geom_hline(yintercept = 0, linetype = 2)
   }
 
   # add geometries
@@ -558,6 +572,7 @@ variationPlot <- function(
           ),
           show.legend = FALSE,
           na.rm = TRUE,
+          color = extra.args$border %||% "transparent",
           alpha = alpha / dplyr::n_distinct(mydata$ci)
         )
     }
@@ -568,11 +583,15 @@ variationPlot <- function(
         ggplot2::aes(
           y = .data$mid,
           colour = .data$group,
-          linetype = .data$group
+          linetype = .data$group,
+          linewidth = .data$group
         ),
         show.legend = TRUE,
         na.rm = TRUE,
-        key_glyph = "point"
+        key_glyph = "point",
+        lineend = extra.args$lineend %||% "butt",
+        linejoin = extra.args$linejoin %||% "round",
+        linemitre = extra.args$linemitre %||% 10
       ) +
       ggplot2::scale_x_continuous(
         breaks = xbreaks,
@@ -597,7 +616,7 @@ variationPlot <- function(
               group = interaction(.data$group, .data$ci)
             ),
             show.legend = FALSE,
-            color = NA,
+            color = extra.args$border %||% "transparent",
             alpha = alpha / dplyr::n_distinct(mydata$ci),
             width = widths[[i]],
             na.rm = TRUE
@@ -625,11 +644,15 @@ variationPlot <- function(
             y = .data$mid,
             colour = .data$group,
             group = .data$group,
-            linetype = .data$group
+            linetype = .data$group,
+            linewidth = .data$group
           ),
           show.legend = TRUE,
           na.rm = TRUE,
-          key_glyph = "point"
+          key_glyph = "point",
+          lineend = extra.args$lineend %||% "butt",
+          linejoin = extra.args$linejoin %||% "round",
+          linemitre = extra.args$linemitre %||% 10
         )
     } else {
       thePlot <-
@@ -638,7 +661,8 @@ variationPlot <- function(
           ggplot2::aes(
             y = .data$mid,
             colour = .data$group,
-            group = .data$group
+            group = .data$group,
+            shape = .data$group
           ),
           show.legend = TRUE,
           key_glyph = "point",

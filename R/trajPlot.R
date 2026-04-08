@@ -87,13 +87,6 @@
 #' @param origin If true a filled circle dot is shown to mark the receptor
 #'   point.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'    - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'    - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'    - `fontsize` overrides the overall font size of the plot.
-#'    - `border` sets the border colour of each bar.
-#'
 #' @export
 #' @family trajectory analysis functions
 #' @author David Carslaw
@@ -126,8 +119,8 @@
 #'   cols = "turbo",
 #'   key.position = "right",
 #'   key.columns = 1,
-#'   lwd = 2,
-#'   cex = 4
+#'   linewidth = 2,
+#'   size = 4
 #' )
 #' }
 trajPlot <- function(
@@ -238,16 +231,18 @@ trajPlot <- function(
   }
 
   # extra.args
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
-  # aspect, cex
+  # aspect, size
   extra.args$plot.type <- extra.args$plot.type %||% "l"
-  extra.args$cex <- extra.args$cex %||% 1
-  extra.args$lty <- extra.args$lty %||% 1
-  extra.args$lwd <- extra.args$lwd %||% 1
+  extra.args$size <- extra.args$size %||% 1
+  extra.args$linetype <- extra.args$linetype %||% 1
+  extra.args$linewidth <- extra.args$linewidth %||% 1
   extra.args$ylab <- extra.args$ylab %||% ""
   extra.args$xlab <- extra.args$xlab %||% ""
-  extra.args$main <- extra.args$main %||% NULL
+  extra.args$title <- extra.args$title %||% NULL
+  extra.args$subtitle <- extra.args$subtitle %||% NULL
+  extra.args$caption <- extra.args$caption %||% NULL
   extra.args$alpha <- extra.args$alpha %||% 1
 
   # convert traj data to simple features
@@ -308,7 +303,9 @@ trajPlot <- function(
     ggplot2::labs(
       x = quickText(extra.args$xlab, auto.text),
       y = quickText(extra.args$ylab, auto.text),
-      title = quickText(extra.args$main, auto.text),
+      title = quickText(extra.args$title, auto.text),
+      subtitle = quickText(extra.args$subtitle, auto.text),
+      caption = quickText(extra.args$caption, auto.text),
       colour = quickText(key.title, auto.text)
     )
 
@@ -334,14 +331,14 @@ trajPlot <- function(
       ggplot2::geom_sf(
         data = sf_lines[sf_lines$date == i, ],
         ggplot2::aes(color = .data[[group]]),
-        linetype = extra.args$lty,
-        linewidth = extra.args$lwd / 1.5,
+        linetype = extra.args$linetype,
+        linewidth = extra.args$linewidth / 1.5,
         alpha = extra.args$alpha
       ) +
       ggplot2::geom_sf(
         data = sf_points[sf_points$date == i, ],
         ggplot2::aes(color = .data[[group]]),
-        size = extra.args$cex,
+        size = extra.args$size,
         alpha = extra.args$alpha
       )
   }

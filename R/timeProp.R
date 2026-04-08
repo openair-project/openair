@@ -47,13 +47,6 @@
 #'   100. This is helpful to show the relative (percentage) contribution of the
 #'   proportions.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `border` sets the border colour of each bar.
-#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
@@ -85,17 +78,21 @@ timeProp <- function(
   ...
 ) {
   # extra.args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # label controls
-  main <- quickText(extra.args$main %||% "", auto.text)
-  xlab <- quickText(extra.args$xlab %||% "date", auto.text)
-  ylab <- quickText(
+  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
+  extra.args$subtitle <- quickText(
+    extra.args$subtitle %||% "contribution weighted by mean",
+    auto.text
+  )
+  extra.args$caption <- quickText(extra.args$caption %||% "", auto.text)
+  extra.args$xlab <- quickText(extra.args$xlab %||% "date", auto.text)
+  extra.args$ylab <- quickText(
     extra.args$ylab %||%
       ifelse(normalise, paste("% contribution to", pollutant), pollutant),
     auto.text
   )
-  sub <- extra.args$sub %||% "contribution weighted by mean"
 
   # variables needed
   vars <- c("date", pollutant)
@@ -214,7 +211,9 @@ timeProp <- function(
     ) +
     ggplot2::geom_rect(
       show.legend = TRUE,
-      colour = extra.args$border %||% "transparent"
+      colour = extra.args$border[1] %||% "transparent",
+      linewidth = extra.args$linewidth[1] %||% 0.25,
+      linetype = extra.args$linetype[1] %||% 1
     ) +
     ggplot2::scale_fill_manual(
       values = openColours(cols, dplyr::n_distinct(results[[proportion]])),
@@ -255,10 +254,11 @@ timeProp <- function(
       expand = ggplot2::expansion(if (normalise) c(0, 0) else c(0, 0.1))
     ) +
     ggplot2::labs(
-      x = xlab,
-      y = ylab,
-      title = main,
-      caption = sub,
+      x = extra.args$xlab,
+      y = extra.args$ylab,
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption,
       fill = quickText(key.title, auto.text = auto.text)
     ) +
     theme_openair(key.position) +

@@ -242,14 +242,27 @@ to a file).}
 \code{key.position} to \code{"none"}.}
 
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
-Some additional arguments are also available:
+Some additional arguments are also available, varying somewhat in different
+plotting functions:
 \itemize{
-\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
-\item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
-\item \code{fontsize} overrides the overall font size of the plot.
-\item \code{cex}, \code{lwd}, \code{lty}, \code{alpha}, \code{pch} and \code{border} control various graphical parameters.
-\item For \code{method = "hexbin"} a log-scale fill is applied by default; pass \code{trans = NULL} to disable or
-provide custom \code{trans} and \code{inv} transform functions. \code{bins} controls the number of bins.
+\item \code{title}, \code{subtitle}, \code{caption}, \code{xlab} and \code{ylab} control the plot
+title, subtitle, caption, x-axis label and y-axis label. All of these are
+passed through to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.
+\item \code{xlim}, \code{ylim} and \code{limits} control the limits of the x-axis, y-axis and
+colorbar scales.
+\item \code{ncol} and \code{nrow} set the number of columns and rows in a faceted plot.
+\item \code{fontsize} overrides the overall font size of the plot by setting the
+\code{text} argument of \code{\link[ggplot2:theme]{ggplot2::theme()}}. It may also be applied
+proportionately to any \code{openair} annotations (e.g., N/E/S/W labels on polar
+coordinate plots).
+\item Various graphical parameters are also supported: \code{linewidth},
+\code{linetype},\code{ shape}, \code{size}, \code{border}, and \code{alpha}. Not all parameters
+apply to all plots. These can take a single value, or a vector of multiple
+values - e.g., \code{shape = c(1, 2)} - which will be recycled to the length of
+values needed.
+\item For \code{method = "hexbin"} a log-scale fill is applied by default;
+pass \code{trans = NULL} to disable or provide custom \code{trans} and \code{inv}
+transform functions. \code{bins} controls the number of bins.
 \item \code{date.format} controls the format of date-time x-axes.
 }}
 }
@@ -310,11 +323,11 @@ scatterPlot(dat2004,
 
 # example of the use of continuous where colour is used to show
 # different levels of a third (numeric) variable
-# plot daily averages and choose a filled plot symbol (pch = 16)
+# plot daily averages and choose a filled plot symbol (shape = 16)
 # select only 2004
 \dontrun{
 
-scatterPlot(dat2004, x = "nox", y = "no2", z = "co", avg.time = "day", pch = 16)
+scatterPlot(dat2004, x = "nox", y = "no2", z = "co", avg.time = "day", shape = 16)
 
 # show linear fit, by year
 scatterPlot(mydata,

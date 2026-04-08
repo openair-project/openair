@@ -51,21 +51,10 @@
 #'
 #' @param ci Should confidence intervals be plotted? The default is `TRUE`.
 #'
-#' @param alpha The alpha transparency of shaded confidence intervals - if
-#'   plotted. A value of 0 is fully transparent and 1 is fully opaque.
-#'
 #' @param k This is the smoothing parameter used by the [mgcv::gam()] function
 #'   in package `mgcv`. By default it is not used and the amount of smoothing is
 #'   optimised automatically. However, sometimes it is useful to set the
 #'   smoothing amount manually using `k`.
-#'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `ylim` and `xlim` control axis limits.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `cex`, `lwd`, `lty`, `alpha`, and `pch` control various graphical parameters.
 #'
 #' @export
 #' @return an [openair][openair-package] object
@@ -80,7 +69,7 @@
 #' smoothTrend(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
 #'
 #' # several pollutants, no plotting symbol
-#' smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), pch = NA)
+#' smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), shape = NA)
 #'
 #' # percentiles
 #' smoothTrend(mydata,
@@ -91,7 +80,7 @@
 #' # several percentiles with control over lines used
 #' smoothTrend(mydata,
 #'   pollutant = "o3", statistic = "percentile",
-#'   percentile = c(5, 50, 95), lwd = c(1, 2, 1), lty = c(5, 1, 5)
+#'   percentile = c(5, 50, 95), linewidth = c(1, 2, 1), linetype = c(5, 1, 5)
 #' )
 #' }
 smoothTrend <- function(
@@ -120,7 +109,6 @@ smoothTrend <- function(
   date.format = NULL,
   auto.text = TRUE,
   ci = TRUE,
-  alpha = 0.2,
   progress = TRUE,
   plot = TRUE,
   key = NULL,
@@ -130,7 +118,7 @@ smoothTrend <- function(
   key.position <- check_key_position(key.position, key)
 
   # extra.args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # validation checks
   if (length(pollutant) > 1 && length(percentile) > 1) {
@@ -153,14 +141,15 @@ smoothTrend <- function(
   }
 
   # Style controls w/ defaults
-  extra.args$lty <- extra.args$lty %||% 1L
-  extra.args$lwd <- extra.args$lwd %||% 1L
-  extra.args$pch <- extra.args$pch %||% 1L
-  extra.args$cex <- extra.args$cex %||% 1L
-  extra.args$layout <- extra.args$layout %||% NULL
+  extra.args$linetype <- extra.args$linetype %||% 1L
+  extra.args$linewidth <- extra.args$linewidth %||% 1L
+  extra.args$shape <- extra.args$shape %||% 1L
+  extra.args$size <- extra.args$size %||% 5L
 
   # label controls
-  extra.args$main <- quickText(extra.args$main %||% "", auto.text)
+  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
+  extra.args$caption <- quickText(extra.args$caption %||% "", auto.text)
   extra.args$ylab <- quickText(
     extra.args$ylab %||% paste(pollutant, collapse = ", "),
     auto.text
@@ -265,16 +254,28 @@ smoothTrend <- function(
     ggplot2::ggplot(mapping = ggplot2::aes(x = .data$date)) +
     ggplot2::geom_line(
       data = newdata,
-      ggplot2::aes(color = .data$variable, y = .data$conc),
-      linewidth = extra.args$lwd / 2,
-      linetype = extra.args$lty,
-      show.legend = FALSE
+      ggplot2::aes(
+        color = .data$variable,
+        linetype = .data$variable,
+        linewidth = ggplot2::stage(
+          .data$variable,
+          after_scale = linewidth * 1 / 2
+        ),
+        y = .data$conc
+      ),
+      show.legend = FALSE,
+      lineend = extra.args$lineend %||% "butt",
+      linejoin = extra.args$linejoin %||% "round",
+      linemitre = extra.args$linemitre %||% 10
     ) +
     ggplot2::geom_point(
       data = newdata,
-      ggplot2::aes(color = .data$variable, y = .data$conc),
-      size = extra.args$cex * 3,
-      shape = extra.args$pch,
+      ggplot2::aes(
+        color = .data$variable,
+        shape = .data$variable,
+        size = .data$variable,
+        y = .data$conc
+      ),
       show.legend = dplyr::n_distinct(levels(newdata$variable)) > 1
     ) +
     ggplot2::geom_ribbon(
@@ -284,15 +285,21 @@ smoothTrend <- function(
         ymax = .data$upper,
         ymin = .data$lower
       ),
-      linewidth = extra.args$lwd,
-      alpha = ifelse(ci, alpha, 0),
+      alpha = ifelse(ci, extra.args$alpha %||% 1 / 3, 0),
       show.legend = FALSE
     ) +
     ggplot2::geom_line(
       data = fit,
-      ggplot2::aes(color = .data$variable, y = .data$pred),
-      linewidth = extra.args$lwd,
-      show.legend = FALSE
+      ggplot2::aes(
+        color = .data$variable,
+        y = .data$pred,
+        linewidth = .data$variable,
+        linetype = .data$variable
+      ),
+      show.legend = FALSE,
+      lineend = extra.args$lineend %||% "butt",
+      linejoin = extra.args$linejoin %||% "round",
+      linemitre = extra.args$linemitre %||% 10
     ) +
     gg_ref_x(ref.x = ref.x) +
     gg_ref_y(ref.y = ref.y) +
@@ -306,6 +313,50 @@ smoothTrend <- function(
       }),
       drop = FALSE,
       aesthetics = c("colour", "fill")
+    ) +
+    ggplot2::scale_shape_manual(
+      values = recycle_to_length(
+        extra.args$shape,
+        dplyr::n_distinct(levels(newdata$variable))
+      ),
+      breaks = levels(newdata$variable),
+      labels = lapply(name.pol %||% levels(newdata$variable), \(x) {
+        label_openair(x, auto_text = auto.text)
+      }),
+      drop = FALSE
+    ) +
+    ggplot2::scale_size_manual(
+      values = recycle_to_length(
+        extra.args$size,
+        dplyr::n_distinct(levels(newdata$variable))
+      ),
+      breaks = levels(newdata$variable),
+      labels = lapply(name.pol %||% levels(newdata$variable), \(x) {
+        label_openair(x, auto_text = auto.text)
+      }),
+      drop = FALSE
+    ) +
+    ggplot2::scale_linewidth_manual(
+      values = recycle_to_length(
+        extra.args$linewidth,
+        dplyr::n_distinct(levels(newdata$variable))
+      ),
+      breaks = levels(newdata$variable),
+      labels = lapply(name.pol %||% levels(newdata$variable), \(x) {
+        label_openair(x, auto_text = auto.text)
+      }),
+      drop = FALSE
+    ) +
+    ggplot2::scale_linetype_manual(
+      values = recycle_to_length(
+        extra.args$linetype,
+        dplyr::n_distinct(levels(newdata$variable))
+      ),
+      breaks = levels(newdata$variable),
+      labels = lapply(name.pol %||% levels(newdata$variable), \(x) {
+        label_openair(x, auto_text = auto.text)
+      }),
+      drop = FALSE
     ) +
     ggplot2::scale_x_datetime(
       breaks = scales::breaks_pretty(date.breaks),
@@ -328,13 +379,23 @@ smoothTrend <- function(
     ggplot2::labs(
       y = extra.args$ylab,
       x = extra.args$xlab,
-      title = extra.args$main,
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption,
       color = NULL,
-      fill = NULL
+      fill = NULL,
+      shape = NULL,
+      linetype = NULL,
+      linewidth = NULL,
+      size = NULL
     ) +
     ggplot2::guides(
       fill = color_guide,
-      color = color_guide
+      color = color_guide,
+      linetype = color_guide,
+      linewidth = color_guide,
+      shape = color_guide,
+      size = color_guide
     )
 
   # plot

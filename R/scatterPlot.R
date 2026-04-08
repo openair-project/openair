@@ -112,13 +112,33 @@
 #'   first transformed to a unit square. Values should be between 0 and 1.
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `cex`, `lwd`, `lty`, `alpha`, `pch` and `border` control various graphical parameters.
-#'   - For `method = "hexbin"` a log-scale fill is applied by default; pass `trans = NULL` to disable or
-#'   provide custom `trans` and `inv` transform functions. `bins` controls the number of bins.
+#'   Some additional arguments are also available, varying somewhat in different
+#'   plotting functions:
+#'
+#'   - `title`, `subtitle`, `caption`, `xlab` and `ylab` control the plot
+#'   title, subtitle, caption, x-axis label and y-axis label. All of these are
+#'   passed through to [quickText()] if `auto.text = TRUE`.
+#'
+#'   - `xlim`, `ylim` and `limits` control the limits of the x-axis, y-axis and
+#'   colorbar scales.
+#'
+#'   - `ncol` and `nrow` set the number of columns and rows in a faceted plot.
+#'
+#'   - `fontsize` overrides the overall font size of the plot by setting the
+#'   `text` argument of [ggplot2::theme()]. It may also be applied
+#'   proportionately to any `openair` annotations (e.g., N/E/S/W labels on polar
+#'   coordinate plots).
+#'
+#'   - Various graphical parameters are also supported: `linewidth`,
+#'   `linetype`,` shape`, `size`, `border`, and `alpha`. Not all parameters
+#'   apply to all plots. These can take a single value, or a vector of multiple
+#'   values - e.g., `shape = c(1, 2)` - which will be recycled to the length of
+#'   values needed.
+#'
+#'   - For `method = "hexbin"` a log-scale fill is applied by default;
+#'   pass `trans = NULL` to disable or provide custom `trans` and `inv`
+#'   transform functions. `bins` controls the number of bins.
+#'
 #'   - `date.format` controls the format of date-time x-axes.
 #'
 #' @export
@@ -146,11 +166,11 @@
 #'
 #' # example of the use of continuous where colour is used to show
 #' # different levels of a third (numeric) variable
-#' # plot daily averages and choose a filled plot symbol (pch = 16)
+#' # plot daily averages and choose a filled plot symbol (shape = 16)
 #' # select only 2004
 #' \dontrun{
 #'
-#' scatterPlot(dat2004, x = "nox", y = "no2", z = "co", avg.time = "day", pch = 16)
+#' scatterPlot(dat2004, x = "nox", y = "no2", z = "co", avg.time = "day", shape = 16)
 #'
 #' # show linear fit, by year
 #' scatterPlot(mydata,
@@ -241,11 +261,10 @@ scatterPlot <- function(
   key.position <- check_key_position(key.position, key)
 
   ## extra args
-  extra.args <- rlang::list2(...)
-  extra.args$layout <- extra.args$layout %||% NULL
-  extra.args$cex <- extra.args$cex %||% 1
-  extra.args$lwd <- extra.args$lwd %||% 1
-  extra.args$lty <- extra.args$lty %||% 1
+  extra.args <- capture_dots(...)
+  extra.args$size <- extra.args$size %||% 1
+  extra.args$linewidth <- extra.args$linewidth %||% 1
+  extra.args$linetype <- extra.args$linetype %||% 1
   extra.args$alpha <- extra.args$alpha %||% NA
   extra.args$border <- extra.args$border %||% NA
 
@@ -267,10 +286,9 @@ scatterPlot <- function(
   ## axis labels / title
   xlab <- quickText(extra.args$xlab %||% x, auto.text)
   ylab <- quickText(extra.args$ylab %||% y, auto.text)
-  main <- quickText(
-    extra.args$main,
-    auto.text
-  )
+  title <- quickText(extra.args$title, auto.text)
+  subtitle <- quickText(extra.args$subtitle, auto.text)
+  caption <- quickText(extra.args$caption, auto.text)
 
   ## prepare data
   mydata <- prepare_scatter_data(
@@ -323,7 +341,9 @@ scatterPlot <- function(
       auto.text = auto.text,
       xlab = xlab,
       ylab = ylab,
-      main = main,
+      title = title,
+      subtitle = subtitle,
+      caption = caption,
       extra.args = extra.args
     ),
     hexbin = scatter_hexbin(
@@ -348,7 +368,9 @@ scatterPlot <- function(
       auto.text = auto.text,
       xlab = xlab,
       ylab = ylab,
-      main = main,
+      title = title,
+      subtitle = subtitle,
+      caption = caption,
       extra.args = extra.args
     ),
     level = scatter_level(
@@ -377,7 +399,9 @@ scatterPlot <- function(
       auto.text = auto.text,
       xlab = xlab,
       ylab = ylab,
-      main = main,
+      title = title,
+      subtitle = subtitle,
+      caption = caption,
       extra.args = extra.args
     ),
     density = scatter_density(
@@ -398,7 +422,9 @@ scatterPlot <- function(
       auto.text = auto.text,
       xlab = xlab,
       ylab = ylab,
-      main = main,
+      title = title,
+      subtitle = subtitle,
+      caption = caption,
       extra.args = extra.args
     )
   )
@@ -530,7 +556,9 @@ scatter_scatter <- function(
   auto.text,
   xlab,
   ylab,
-  main,
+  title = title,
+  subtitle = subtitle,
+  caption = caption,
   extra.args
 ) {
   has_z <- !is.na(z)
@@ -568,9 +596,9 @@ scatter_scatter <- function(
   facet_scales <- relation_to_facet_scales(x.relation, y.relation)
 
   ## point size / alpha
-  pt_size <- extra.args$cex %||% 1
+  pt_size <- extra.args$size %||% 1
   pt_alpha <- extra.args$alpha %||% NA
-  pt_shape <- extra.args$pch %||%
+  pt_shape <- extra.args$shape %||%
     (if (has_z) {
       16L
     } else if (has_group) {
@@ -578,8 +606,8 @@ scatter_scatter <- function(
     } else {
       16L
     })
-  ln_width <- (extra.args$lwd %||% 1) / 2
-  ln_type <- extra.args$lty %||% 1
+  ln_width <- extra.args$linewidth %||% 1
+  ln_type <- extra.args$linetype %||% 1
 
   ## base plot
   plt <- ggplot2::ggplot(mydata, ggplot2::aes(x = .data[[x]], y = .data[[y]]))
@@ -595,7 +623,8 @@ scatter_scatter <- function(
         pt_alpha,
         pt_shape,
         ln_width,
-        ln_type
+        ln_type,
+        extra.args = extra.args
       )
 
     ## continuous colour scale for z
@@ -633,10 +662,11 @@ scatter_scatter <- function(
         pt_alpha,
         NULL,
         ln_width,
-        ln_type
+        ln_type,
+        extra.args = extra.args
       )
 
-    pch_vals <- if (!is.null(pt_shape)) {
+    shape_vals <- if (!is.null(pt_shape)) {
       rep_len(pt_shape, n_groups)
     } else {
       seq_len(n_groups) %% 25 + 1L
@@ -663,7 +693,7 @@ scatter_scatter <- function(
         aesthetics = c("colour", "fill")
       ) +
       ggplot2::scale_shape_manual(
-        values = pch_vals,
+        values = shape_vals,
         labels = pol_name,
         guide = theGuide
       ) +
@@ -682,7 +712,8 @@ scatter_scatter <- function(
         pt_shape %||% 16L,
         ln_width,
         ln_type,
-        fixed_color = myColors[1L]
+        fixed_color = myColors[1L],
+        extra.args = extra.args
       )
   }
 
@@ -831,7 +862,13 @@ scatter_scatter <- function(
     theme_openair(
       key.position = if (n_groups == 1L && !has_z) "none" else key.position
     ) +
-    ggplot2::labs(x = xlab, y = ylab, title = main)
+    ggplot2::labs(
+      x = xlab,
+      y = ylab,
+      title = title,
+      subtitle = subtitle,
+      caption = caption
+    )
 
   return(
     list(
@@ -868,7 +905,9 @@ scatter_hexbin <- function(
   auto.text,
   xlab,
   ylab,
-  main,
+  title = title,
+  subtitle = subtitle,
+  caption = caption,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
@@ -959,7 +998,13 @@ scatter_hexbin <- function(
       wd.res = extra.args$wd.res %||% 8
     ) +
     theme_openair(key.position = key.position) +
-    ggplot2::labs(x = xlab, y = ylab, title = main)
+    ggplot2::labs(
+      x = xlab,
+      y = ylab,
+      title = title,
+      subtitle = subtitle,
+      caption = caption
+    )
 
   return(
     list(
@@ -1000,7 +1045,9 @@ scatter_level <- function(
   auto.text,
   xlab,
   ylab,
-  main,
+  title = title,
+  subtitle = subtitle,
+  caption = caption,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
@@ -1112,7 +1159,13 @@ scatter_level <- function(
       wd.res = extra.args$wd.res %||% 8
     ) +
     theme_openair(key.position = key.position) +
-    ggplot2::labs(x = xlab, y = ylab, title = main)
+    ggplot2::labs(
+      x = xlab,
+      y = ylab,
+      title = title,
+      subtitle = subtitle,
+      caption = caption
+    )
 
   return(
     list(
@@ -1240,7 +1293,9 @@ scatter_density <- function(
   auto.text,
   xlab,
   ylab,
-  main,
+  title,
+  subtitle,
+  caption,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
@@ -1294,7 +1349,13 @@ scatter_density <- function(
       wd.res = extra.args$wd.res %||% 8
     ) +
     theme_openair(key.position = key.position) +
-    ggplot2::labs(x = xlab, y = ylab, title = main)
+    ggplot2::labs(
+      x = xlab,
+      y = ylab,
+      title = title,
+      subtitle = subtitle,
+      caption = caption
+    )
 
   return(
     list(
@@ -1315,9 +1376,10 @@ scatter_density <- function(
   size,
   alpha,
   shape,
-  lwd,
-  lty,
-  fixed_color = NULL
+  linewidth,
+  linetype,
+  fixed_color = NULL,
+  extra.args
 ) {
   alpha_val <- if (is.na(alpha)) 1 else alpha
   pt_args <- list(mapping = mapping, size = size, alpha = alpha_val)
@@ -1330,9 +1392,12 @@ scatter_density <- function(
 
   ln_args <- list(
     mapping = mapping,
-    linewidth = lwd,
-    linetype = lty,
-    alpha = alpha_val
+    linewidth = linewidth,
+    linetype = linetype,
+    alpha = alpha_val,
+    lineend = extra.args$lineend %||% "butt",
+    linejoin = extra.args$linejoin %||% "round",
+    linemitre = extra.args$linemitre %||% 10
   )
   if (!is.null(fixed_color)) {
     ln_args$color <- fixed_color

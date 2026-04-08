@@ -98,13 +98,6 @@
 #'   values reveal source regions more effectively while not introducing too
 #'   much noise.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `border` sets the border colour of each tile.
-#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @family trajectory analysis functions
@@ -230,11 +223,13 @@ trajLevel <- function(
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
 
   # extra.args
-  extra.args <- rlang::list2(...)
+  extra.args <- capture_dots(...)
 
   extra.args$ylab <- extra.args$ylab %||% ""
   extra.args$xlab <- extra.args$xlab %||% ""
-  extra.args$main <- extra.args$main %||% ""
+  extra.args$title <- extra.args$title %||% ""
+  extra.args$subtitle <- extra.args$subtitle %||% ""
+  extra.args$caption <- extra.args$caption %||% ""
   extra.args$border <- extra.args$border %||% NA
 
   if ("method" %in% names(extra.args)) {
@@ -673,7 +668,9 @@ trajLevel <- function(
     ggplot2::labs(
       x = quickText(extra.args$xlab, auto.text),
       y = quickText(extra.args$ylab, auto.text),
-      title = quickText(extra.args$main, auto.text),
+      title = quickText(extra.args$title, auto.text),
+      subtitle = quickText(extra.args$subtitle, auto.text),
+      caption = quickText(extra.args$caption, auto.text),
       fill = quickText(key.title, auto.text = auto.text)
     )
 

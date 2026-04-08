@@ -70,7 +70,7 @@ quickText <- function(text, auto.text = TRUE, ...) {
   }
 
   # are we going to actually parse this?
-  extra_args <- rlang::list2(...)
+  extra_args <- capture_dots(...)
   parse <- extra_args$parse %||% TRUE
 
   ## #return if already expression

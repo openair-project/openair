@@ -30,7 +30,6 @@ smoothTrend(
   date.format = NULL,
   auto.text = TRUE,
   ci = TRUE,
-  alpha = 0.2,
   progress = TRUE,
   plot = TRUE,
   key = NULL,
@@ -196,9 +195,6 @@ properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickTe
 
 \item{ci}{Should confidence intervals be plotted? The default is \code{TRUE}.}
 
-\item{alpha}{The alpha transparency of shaded confidence intervals - if
-plotted. A value of 0 is fully transparent and 1 is fully opaque.}
-
 \item{progress}{Show a progress bar when many groups make up \code{type}? Defaults
 to \code{TRUE}.}
 
@@ -212,13 +208,28 @@ to a file).}
 \code{key.position} to \code{"none"}.}
 
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
-Some additional arguments are also available:
+Some additional arguments are also available, varying somewhat in different
+plotting functions:
 \itemize{
-\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
-\item \code{ylim} and \code{xlim} control axis limits.
-\item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
-\item \code{fontsize} overrides the overall font size of the plot.
-\item \code{cex}, \code{lwd}, \code{lty}, \code{alpha}, and \code{pch} control various graphical parameters.
+\item \code{title}, \code{subtitle}, \code{caption}, \code{xlab} and \code{ylab} control the plot
+title, subtitle, caption, x-axis label and y-axis label. All of these are
+passed through to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.
+\item \code{xlim}, \code{ylim} and \code{limits} control the limits of the x-axis, y-axis and
+colorbar scales.
+\item \code{ncol} and \code{nrow} set the number of columns and rows in a faceted plot.
+\item \code{fontsize} overrides the overall font size of the plot by setting the
+\code{text} argument of \code{\link[ggplot2:theme]{ggplot2::theme()}}. It may also be applied
+proportionately to any \code{openair} annotations (e.g., N/E/S/W labels on polar
+coordinate plots).
+\item Various graphical parameters are also supported: \code{linewidth},
+\code{linetype},\code{ shape}, \code{size}, \code{border}, and \code{alpha}. Not all parameters
+apply to all plots. These can take a single value, or a vector of multiple
+values - e.g., \code{shape = c(1, 2)} - which will be recycled to the length of
+values needed.
+\item \code{lineend}, \code{linejoin} and \code{linemitre} tweak the appearance of line
+plots; see \code{\link[ggplot2:geom_path]{ggplot2::geom_line()}} for more information.
+\item In polar coordinate plots, \code{annotate = FALSE} will remove the N/E/S/W
+labels and any other annotations.
 }}
 }
 \value{
@@ -257,7 +268,7 @@ smoothTrend(mydata, pollutant = "nox")
 smoothTrend(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
 
 # several pollutants, no plotting symbol
-smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), pch = NA)
+smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), shape = NA)
 
 # percentiles
 smoothTrend(mydata,
@@ -268,7 +279,7 @@ smoothTrend(mydata,
 # several percentiles with control over lines used
 smoothTrend(mydata,
   pollutant = "o3", statistic = "percentile",
-  percentile = c(5, 50, 95), lwd = c(1, 2, 1), lty = c(5, 1, 5)
+  percentile = c(5, 50, 95), linewidth = c(1, 2, 1), linetype = c(5, 1, 5)
 )
 }
 }

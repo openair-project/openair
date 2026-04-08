@@ -112,12 +112,6 @@
 #'
 #' @param border Border colour for shaded areas. Default is no border.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'
 #' @export
 #' @return an [openair][openair-package] object. Summarised proportions can be
 #'   extracted directly using the `$data` operator, e.g. `object$data` for
@@ -215,12 +209,18 @@ windRose <- function(
   angle[angle < 3] <- 3
 
   # extra.args args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # label controls
   extra.args$xlab <- quickText(extra.args$xlab, auto.text)
   extra.args$ylab <- quickText(extra.args$ylab, auto.text)
-  extra.args$main <- quickText(extra.args$main, auto.text)
+  extra.args$title <- quickText(extra.args$title, auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+
+  # need separate handling to be overwritten
+  if ("caption" %in% names(extra.args)) {
+    extra.args$caption <- quickText(extra.args$caption %||% NULL, auto.text)
+  }
 
   # preset statitistics
   if (is.character(statistic)) {
@@ -498,10 +498,12 @@ windRose <- function(
       ggplot2::labs(
         x = extra.args$xlab,
         y = extra.args$ylab,
-        title = extra.args$main,
-        caption = if (annotate) {
-          "Mean wind speed bias (test \u2212 reference) by reference direction"
-        }
+        title = extra.args$title,
+        subtitle = extra.args$subtitle,
+        caption = extra.args$caption %||%
+          if (annotate) {
+            "Mean wind speed bias (test \u2212 reference) by reference direction"
+          }
       ) +
       ggplot2::guides(fill = fill_guide) +
       get_facet(
@@ -832,8 +834,9 @@ windRose <- function(
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
-      title = extra.args$main,
-      caption = if (annotate) stat.lab
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption %||% if (annotate) stat.lab
     ) +
     ggplot2::guides(
       fill = key_guide,
@@ -1090,7 +1093,7 @@ pollutionRose <- function(
   ...
 ) {
   # extra.args args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # check if key.header / key.footer are being used
   key.title <- check_key_header(key.title, extra.args)

@@ -112,15 +112,6 @@
 #'   before change"` can be used. If more than one pollutant is plotted then use
 #'   `c` e.g. `name.pol = c("nox here", "o3 there")`.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `lwd`, `lty`, and `shape` control various graphical parameters. `pch` is accepted as an alias for `shape`.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `border` sets the border colour of each tile.
-#'   - `ylim` and `xlim` control axis limits.
-#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
@@ -151,8 +142,8 @@
 #'   group = TRUE,
 #'   avg.time = "year",
 #'   normalise = "1/1/1998",
-#'   lwd = 3,
-#'   lty = 1
+#'   linewidth = 3,
+#'   linetype = 1
 #' )
 #'
 #' # examples of selecting by date
@@ -167,13 +158,13 @@
 #' )
 #'
 #' # choose different line styles etc
-#' timePlot(mydata, pollutant = c("nox", "no2"), lty = 1)
+#' timePlot(mydata, pollutant = c("nox", "no2"), linetype = 1)
 #'
 #' # choose different line styles etc
 #' timePlot(
 #'   selectByDate(mydata, year = 2004, month = 6),
 #'   pollutant = c("nox", "no2"),
-#'   lwd = c(1, 2),
+#'   linewidth = c(1, 2),
 #'   col = "black"
 #' )
 #'
@@ -226,7 +217,7 @@ timePlot <- function(
   key.position <- check_key_position(key.position, key)
 
   # Args setup
-  extra.args <- rlang::list2(...)
+  extra.args <- capture_dots(...)
 
   # detect if group is a column name rather than a boolean
   group_is_col <- is.character(group) && length(group) == 1
@@ -288,9 +279,7 @@ timePlot <- function(
   windflow <- resolve_windflow_opts(windflow)
 
   # style controls
-  extra.args$shape <- extra.args$shape %||% extra.args$pch %||% NA
-  extra.args$pch <- NULL
-  extra.args$layout <- extra.args$layout %||% NULL
+  extra.args$shape <- extra.args$shape %||% NA
 
   # check & cut data
   mydata <- prepare_timeplot_data(
@@ -329,8 +318,10 @@ timePlot <- function(
   }
 
   # label controls
+  extra.args$title <- quickText(extra.args$title, auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+  extra.args$caption <- quickText(extra.args$caption, auto.text)
   extra.args$xlab <- quickText(extra.args$xlab %||% "", auto.text)
-  extra.args$main <- quickText(extra.args$main, auto.text)
   extra.args$ylab <- quickText(
     extra.args$ylab %||%
       dplyr::case_when(
@@ -344,8 +335,9 @@ timePlot <- function(
   # if stacking of plots by year is needed
   if (stack || all(type == "year")) {
     mydata$year <- as.character(lubridate::year(mydata$date))
-    if (is.null(extra.args$layout)) {
-      extra.args$layout <- c(1, length(unique(mydata$year)))
+    if (is.null(extra.args$nrow) && is.null(extra.args$ncol)) {
+      extra.args$ncol <- 1
+      extra.args$nrow <- length(unique(mydata$year))
     }
     lubridate::year(mydata$date) <- lubridate::year(mydata$date)[1]
     date.format <- date.format %||% "%b"
@@ -365,7 +357,7 @@ timePlot <- function(
     x_scale_fun <- ggplot2::scale_x_datetime
   }
 
-  # number of distinct pollutants (for panel layout / faceting)
+  # number of distinct pollutants (for faceting)
   npol <- length(unique(mydata$variable))
 
   # number of groups used for colour/linetype/linewidth aesthetics
@@ -377,17 +369,17 @@ timePlot <- function(
     n_groups <- npol
   }
 
-  extra.args$lty <- extra.args$lty %||% 1
-  while (length(extra.args$lty) < n_groups) {
-    extra.args$lty <- c(extra.args$lty, extra.args$lty)
+  extra.args$linetype <- extra.args$linetype %||% 1
+  while (length(extra.args$linetype) < n_groups) {
+    extra.args$linetype <- c(extra.args$linetype, extra.args$linetype)
   }
-  extra.args$lty <- extra.args$lty[1:n_groups]
+  extra.args$linetype <- extra.args$linetype[1:n_groups]
 
-  extra.args$lwd <- extra.args$lwd %||% 1
-  while (length(extra.args$lwd) < n_groups) {
-    extra.args$lwd <- c(extra.args$lwd, extra.args$lwd)
+  extra.args$linewidth <- extra.args$linewidth %||% 0.5
+  while (length(extra.args$linewidth) < n_groups) {
+    extra.args$linewidth <- c(extra.args$linewidth, extra.args$linewidth)
   }
-  extra.args$lwd <- extra.args$lwd[1:n_groups]
+  extra.args$linewidth <- extra.args$linewidth[1:n_groups]
 
   use_shape <- !all(is.na(extra.args$shape))
   if (use_shape) {
@@ -397,14 +389,16 @@ timePlot <- function(
     extra.args$shape <- extra.args$shape[1:n_groups]
   }
 
-  # layout - stack vertically
+  # stack vertically
   if (
-    is.null(extra.args$layout) &&
+    is.null(extra.args$nrow) &&
+      is.null(extra.args$ncol) &&
       !isTRUE(group) &&
       !stack &&
       all(type == "default")
   ) {
-    extra.args$layout <- c(1, npol)
+    extra.args$ncol <- 1L
+    extra.args$nrow <- npol
   }
 
   # deal with type
@@ -462,6 +456,9 @@ timePlot <- function(
     ) +
     ggplot2::geom_line(
       ggplot2::aes(linewidth = .data[[aes_col]]),
+      lineend = extra.args$lineend %||% "butt",
+      linejoin = extra.args$linejoin %||% "round",
+      linemitre = extra.args$linemitre %||% 10,
       show.legend = TRUE
     ) +
     {
@@ -475,12 +472,14 @@ timePlot <- function(
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
-      title = extra.args$main,
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption,
       fill = legend_title,
       colour = legend_title,
       linetype = legend_title,
       linewidth = legend_title,
-      shape = legend_title
+      shape = if (use_shape) legend_title
     ) +
     get_facet(
       type,
@@ -515,12 +514,12 @@ timePlot <- function(
       aesthetics = c("fill", "colour")
     ) +
     ggplot2::scale_linetype_manual(
-      values = extra.args$lty,
+      values = extra.args$linetype,
       drop = FALSE,
       label = \(x) label_openair(x, auto_text = auto.text)
     ) +
     ggplot2::scale_linewidth_manual(
-      values = extra.args$lwd / 2,
+      values = extra.args$linewidth,
       drop = FALSE,
       label = \(x) label_openair(x, auto_text = auto.text)
     ) +
