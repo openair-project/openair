@@ -323,7 +323,10 @@ conditionalQuantile <- function(
     ggplot2::geom_line(
       ggplot2::aes(y = .data$med, color = "median"),
       linewidth = 1,
-      na.rm = TRUE
+      na.rm = TRUE,
+      lineend = extra.args$lineend %||% "butt",
+      linejoin = extra.args$linejoin %||% "round",
+      linemitre = extra.args$linemitre %||% 10
     ) +
     ggplot2::geom_segment(
       data = obs_range_data,

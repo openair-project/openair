@@ -565,7 +565,10 @@ percentileRose <- function(
           linewidth = extra.args$linewidth / 3,
           show.legend = method != "cpf",
           key_glyph = ggplot2::draw_key_rect,
-          position = ggplot2::position_identity()
+          position = ggplot2::position_identity(),
+          lineend = extra.args$lineend %||% "butt",
+          linejoin = extra.args$linejoin %||% "round",
+          linemitre = extra.args$linemitre %||% 10
         )
     }
   }
@@ -577,7 +580,10 @@ percentileRose <- function(
         data = plot_data |> dplyr::filter(.data$percentile == "Mean"),
         colour = mean.col,
         linewidth = mean.lwd,
-        linetype = mean.lty
+        linetype = mean.lty,
+        lineend = extra.args$lineend %||% "butt",
+        linejoin = extra.args$linejoin %||% "round",
+        linemitre = extra.args$linemitre %||% 10
       )
   }
 

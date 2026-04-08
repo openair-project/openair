@@ -129,6 +129,9 @@
 #'   values - e.g., `shape = c(1, 2)` - which will be recycled to the length of
 #'   values needed.
 #'
+#'   - `lineend`, `linejoin` and `linemitre` tweak the appearance of line
+#'   plots; see [ggplot2::geom_line()] for more information.
+#'
 #'   - In polar coordinate plots, `annotate = FALSE` will remove the N/E/S/W
 #'   labels and any other annotations.
 #'

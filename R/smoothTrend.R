@@ -263,7 +263,10 @@ smoothTrend <- function(
         ),
         y = .data$conc
       ),
-      show.legend = FALSE
+      show.legend = FALSE,
+      lineend = extra.args$lineend %||% "butt",
+      linejoin = extra.args$linejoin %||% "round",
+      linemitre = extra.args$linemitre %||% 10
     ) +
     ggplot2::geom_point(
       data = newdata,
@@ -293,7 +296,10 @@ smoothTrend <- function(
         linewidth = .data$variable,
         linetype = .data$variable
       ),
-      show.legend = FALSE
+      show.legend = FALSE,
+      lineend = extra.args$lineend %||% "butt",
+      linejoin = extra.args$linejoin %||% "round",
+      linemitre = extra.args$linemitre %||% 10
     ) +
     gg_ref_x(ref.x = ref.x) +
     gg_ref_y(ref.y = ref.y) +

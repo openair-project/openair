@@ -588,7 +588,10 @@ variationPlot <- function(
         ),
         show.legend = TRUE,
         na.rm = TRUE,
-        key_glyph = "point"
+        key_glyph = "point",
+        lineend = extra.args$lineend %||% "butt",
+        linejoin = extra.args$linejoin %||% "round",
+        linemitre = extra.args$linemitre %||% 10
       ) +
       ggplot2::scale_x_continuous(
         breaks = xbreaks,
@@ -646,7 +649,10 @@ variationPlot <- function(
           ),
           show.legend = TRUE,
           na.rm = TRUE,
-          key_glyph = "point"
+          key_glyph = "point",
+          lineend = extra.args$lineend %||% "butt",
+          linejoin = extra.args$linejoin %||% "round",
+          linemitre = extra.args$linemitre %||% 10
         )
     } else {
       thePlot <-

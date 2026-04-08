@@ -413,7 +413,10 @@ conditionalEval <- function(
       ggplot2::geom_line(
         ggplot2::aes(y = mean, color = .data[["group"]]),
         linewidth = 1,
-        na.rm = TRUE
+        na.rm = TRUE,
+        lineend = extra.args$lineend %||% "butt",
+        linejoin = extra.args$linejoin %||% "round",
+        linemitre = extra.args$linemitre %||% 10
       ) +
       ggplot2::scale_color_manual(
         values = stats::setNames(myColors, var.obs),

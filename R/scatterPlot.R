@@ -710,7 +710,8 @@ scatter_scatter <- function(
         pt_shape %||% 16L,
         ln_width,
         ln_type,
-        fixed_color = myColors[1L]
+        fixed_color = myColors[1L],
+        extra.args
       )
   }
 
@@ -1375,7 +1376,8 @@ scatter_density <- function(
   shape,
   linewidth,
   linetype,
-  fixed_color = NULL
+  fixed_color = NULL,
+  extra.args
 ) {
   alpha_val <- if (is.na(alpha)) 1 else alpha
   pt_args <- list(mapping = mapping, size = size, alpha = alpha_val)
@@ -1390,7 +1392,10 @@ scatter_density <- function(
     mapping = mapping,
     linewidth = linewidth,
     linetype = linetype,
-    alpha = alpha_val
+    alpha = alpha_val,
+    lineend = extra.args$lineend %||% "butt",
+    linejoin = extra.args$linejoin %||% "round",
+    linemitre = extra.args$linemitre %||% 10
   )
   if (!is.null(fixed_color)) {
     ln_args$color <- fixed_color

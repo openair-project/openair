@@ -548,7 +548,10 @@ build_theilsen_plot <- function(
       colour = data.col,
       linewidth = extra.args$linewidth[1] %||% 0.75,
       linetype = extra.args$linetype[1] %||% 1,
-      alpha = extra.args$alpha %||% 1
+      alpha = extra.args$alpha %||% 1,
+      lineend = extra.args$lineend %||% "butt",
+      linejoin = extra.args$linejoin %||% "round",
+      linemitre = extra.args$linemitre %||% 10
     ) +
     ggplot2::geom_point(
       data = split.data,

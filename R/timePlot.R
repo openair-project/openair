@@ -456,6 +456,9 @@ timePlot <- function(
     ) +
     ggplot2::geom_line(
       ggplot2::aes(linewidth = .data[[aes_col]]),
+      lineend = extra.args$lineend %||% "butt",
+      linejoin = extra.args$linejoin %||% "round",
+      linemitre = extra.args$linemitre %||% 10,
       show.legend = TRUE
     ) +
     {
