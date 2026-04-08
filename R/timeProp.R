@@ -47,13 +47,6 @@
 #'   100. This is helpful to show the relative (percentage) contribution of the
 #'   proportions.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `border` sets the border colour of each bar.
-#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw

@@ -112,12 +112,6 @@
 #'
 #' @param border Border colour for shaded areas. Default is no border.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'
 #' @export
 #' @return an [openair][openair-package] object. Summarised proportions can be
 #'   extracted directly using the `$data` operator, e.g. `object$data` for

@@ -67,14 +67,6 @@
 #' @param intervals User-supplied intervals for the scale e.g. `intervals = c(0,
 #'   10, 30, 50)`.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `lwd` overrides the line width for percentile lines when `fill = FALSE`.
-#'   - `annotate = FALSE` will not plot the N/E/S/W labels.
-#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @family polar directional analysis functions

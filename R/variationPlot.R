@@ -75,14 +75,6 @@
 #' @param alpha The alpha transparency used for plotting confidence intervals.
 #'   `0` is fully transparent and 1 is opaque. The default is `0.4`.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `linewidth` and `linetype` control various graphical parameters.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `ylim` controls axis limits.
-#'
 #' @export
 #'
 #' @seealso [timeVariation()], which conveniently assembles many time-related

@@ -59,14 +59,6 @@
 #'   optimised automatically. However, sometimes it is useful to set the
 #'   smoothing amount manually using `k`.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
-#'   - `ylim` and `xlim` control axis limits.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `size`, `linewidth`, `linetype`, `alpha`, and `shape` control various graphical parameters.
-#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw

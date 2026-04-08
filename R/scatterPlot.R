@@ -112,13 +112,34 @@
 #'   first transformed to a unit square. Values should be between 0 and 1.
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `size`, `linewidth`, `linetype`, `alpha`, `shape` and `border` control various graphical parameters.
-#'   - For `method = "hexbin"` a log-scale fill is applied by default; pass `trans = NULL` to disable or
-#'   provide custom `trans` and `inv` transform functions. `bins` controls the number of bins.
+#'   Some additional arguments are also available, varying somewhat in different
+#'   plotting functions:
+#'
+#'   - `title`, `subtitle`, `caption`, `xlab` and `ylab` control the plot
+#'   title, subtitle, caption, x-axis label and y-axis label. All of these are
+#'   passed through to [quickText()] if `auto.text = TRUE`.
+#'
+#'   - `xlim`, `ylim` and `limits` control the limits of the x-axis, y-axis and
+#'   colorbar scales.
+#'
+#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2
+#'   columns and 5 rows.
+#'
+#'   - `fontsize` overrides the overall font size of the plot by setting the
+#'   `text` argument of [ggplot2::theme()]. It may also be applied
+#'   proportionately to any `openair` annotations (e.g., N/E/S/W labels on polar
+#'   coordinate plots).
+#'
+#'   - Various graphical parameters are also supported: `linewidth`,
+#'   `linetype`,` shape`, `size`, `border`, and `alpha`. Not all parameters
+#'   apply to all plots. These can take a single value, or a vector of multiple
+#'   values - e.g., `shape = c(1, 2)` - which will be recycled to the length of
+#'   values needed.
+#'
+#'   - For `method = "hexbin"` a log-scale fill is applied by default;
+#'   pass `trans = NULL` to disable or provide custom `trans` and `inv`
+#'   transform functions. `bins` controls the number of bins.
+#'
 #'   - `date.format` controls the format of date-time x-axes.
 #'
 #' @export

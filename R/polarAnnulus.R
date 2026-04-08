@@ -102,13 +102,6 @@
 #'   too noisy and affected more by outliers. Choosing a lower value of `k` (say
 #'   10) may help produce a better plot.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `annotate = FALSE` will not plot the N/E/S/W labels.
-#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw

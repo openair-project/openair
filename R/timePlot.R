@@ -112,15 +112,6 @@
 #'   before change"` can be used. If more than one pollutant is plotted then use
 #'   `c` e.g. `name.pol = c("nox here", "o3 there")`.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `linewidth`, `linetype`, and `shape` control various graphical parameters.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `border` sets the border colour of each tile.
-#'   - `ylim` and `xlim` control axis limits.
-#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw

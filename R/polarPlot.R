@@ -275,13 +275,6 @@
 #'   `"quantile.slope"`. Default is `0.5` which is equal to the median and will
 #'   be ignored if `"quantile.slope"` is not used.
 #'
-#' @param ... Addition options are passed on to [cutData()] for `type` handling.
-#'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `fontsize` overrides the overall font size of the plot.
-#'   - `annotate = FALSE` will not plot the N/E/S/W labels.
-#'
 #' @return an [openair][openair-package] object. `data` contains four set
 #'   columns: `cond`, conditioning based on `type`; `u` and `v`, the
 #'   translational vectors based on `ws` and `wd`; and the local `pollutant`
