@@ -72,11 +72,18 @@
   `type` argument now responds to this, showing only four panels when
   `wd.res = 4` and a 5x5 grid of sixteen panels when `wd.res = 16`.
 
-- `TheilSen` and `smoothTrend` now use a more straightfoward way to
-  imput missing data when `deseason = TRUE` and missing monthly data are
-  present based on monthly linear regression by month. The user is
-  alerted to the imputation and the monthly plot shows the imputed data
-  as a filled grey circle.
+- [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md)
+  will now annotate the identity of the radial axis as a caption, if
+  `annotate = TRUE`.
+
+- [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md)
+  and
+  [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
+  now use a more straightfoward way to imput missing data when
+  `deseason = TRUE` and missing monthly data are present based on
+  monthly linear regression by month. The user is alerted to the
+  imputation and the monthly plot shows the imputed data as a filled
+  grey circle.
 
 ### Bug Fixes
 
