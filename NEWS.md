@@ -36,6 +36,8 @@
 
 - `polarPlot()` will now annotate the identity of the radial axis as a caption, if `annotate = TRUE`.
 
+-  `TheilSen()` and `smoothTrend()` now use a more straightfoward way to imput missing data when `deseason = TRUE` and missing monthly data are present based on monthly linear regression by month. The user is alerted to the imputation and the monthly plot shows the imputed data as a filled grey circle.
+
 ## Bug Fixes
 
 - `timeAverage()` now has a more robust approach to multi-period averaging time such as "3 day". Bin boundaries are at fixed periods of time, which should ensure consistency across data sets that start at different times. This also means there is less need to use the argument `start.date` unless there is a need to extend the start date of the data for some reason e.g. to the beginning of a year. THis change may result in slight differences in returned output but should not affect periods such as "day", "hour" and "month".

@@ -27,8 +27,7 @@
 #'
 #' @param deseason Should the data be de-deasonalized first? If `TRUE` the
 #'   function `stl` is used (seasonal trend decomposition using loess). Note
-#'   that if `TRUE` missing data are first imputed using a Kalman filter and
-#'   Kalman smooth.
+#'   that if `TRUE` missing data are first imputed using a linear regression by month because `stl` cannot handle missing data. In this case the plot shows where the missing data have been imputed as a grey filled circle.
 #'
 #' @param statistic Statistic used for calculating monthly values. Default is
 #'   `"mean"`, but can also be `"percentile"`. See [timeAverage()] for more
@@ -196,7 +195,13 @@ smoothTrend <- function(
     map_type(
       mydata,
       type = vars,
-      fun = \(df) deseason_smoothtrend_data(df, deseason = deseason),
+      fun = \(df) {
+        deseason_smoothtrend_data(
+          df,
+          deseason = deseason,
+          pollutant = pollutant
+        )
+      },
       .include_default = TRUE
     )
 
@@ -277,6 +282,15 @@ smoothTrend <- function(
         y = .data$conc
       ),
       show.legend = dplyr::n_distinct(levels(newdata$variable)) > 1
+    ) +
+    ggplot2::geom_point(
+      data = dplyr::filter(newdata, .data$imputed),
+      ggplot2::aes(y = .data$conc),
+      size = extra.args$cex * 3,
+      shape = 21,
+      fill = "grey50",
+      colour = "grey20",
+      show.legend = FALSE
     ) +
     ggplot2::geom_ribbon(
       data = fit,
@@ -502,7 +516,7 @@ prepare_smoothtrend_data <- function(
 
 #' Apply deaseason, if requested
 #' @noRd
-deseason_smoothtrend_data <- function(mydata, deseason) {
+deseason_smoothtrend_data <- function(mydata, deseason, pollutant) {
   # return if nothing to analyse
   if (all(is.na(mydata$value))) {
     return(data.frame(date = NA, conc = NA))
@@ -533,14 +547,9 @@ deseason_smoothtrend_data <- function(mydata, deseason) {
       frequency = 12
     )
 
-    # fill any missing data using a Kalman filter
-
+    was_na <- is.na(myts)
     if (anyNA(myts)) {
-      # use forecast package to get best arima
-      fit <- stats::ts(rowSums(stats::tsSmooth(stats::StructTS(myts))[, -2]))
-      id <- which(is.na(myts))
-
-      myts[id] <- fit[id]
+      myts <- fill_ts_gaps(myts, pollutant)
     }
 
     ssd <- stats::stl(myts, s.window = 11, robust = TRUE, s.degree = 1)
@@ -551,12 +560,14 @@ deseason_smoothtrend_data <- function(mydata, deseason) {
     results <- data.frame(
       date = mydata$date,
       conc = as.vector(deseas),
+      imputed = was_na,
       stringsAsFactors = FALSE
     )
   } else {
     results <- data.frame(
       date = mydata$date,
       conc = mydata[["value"]],
+      imputed = FALSE,
       stringsAsFactors = FALSE
     )
   }
