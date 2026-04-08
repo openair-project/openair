@@ -20,7 +20,9 @@ regci <- function(
   x <- as.matrix(xy[, 1:p, drop = FALSE])
   y <- xy[, p1]
 
-  if (SEED) set.seed(2)
+  if (SEED) {
+    set.seed(2)
+  }
 
   block.length <- if (autocor) round(length(y)^(1 / 3)) else 1
   # Buhlmann and Kunsch (1994): block length = n^(1/3)
@@ -30,17 +32,19 @@ regci <- function(
   bvec <- apply(data, 1, regboot, x, y, regfun, ...)
 
   ilow <- round((alpha / 2) * nboot) + 1
-  ihi  <- nboot - round((alpha / 2) * nboot)
+  ihi <- nboot - round((alpha / 2) * nboot)
 
   # Sort each parameter's bootstrap distribution, then extract CI bounds
-  bvec_sorted <- apply(bvec, 1, sort)  # nboot x p1
+  bvec_sorted <- apply(bvec, 1, sort) # nboot x p1
   pvec <- apply(bvec, 1, function(b) {
     p_val <- (sum(b < 0) + 0.5 * sum(b == 0)) / nboot
     2 * min(p_val, 1 - p_val)
   })
 
   regci <- matrix(
-    0, p1, 5,
+    0,
+    p1,
+    5,
     dimnames = list(
       c("intercept", rep("X", p)),
       c("ci.low", "ci.up", "Estimate", "S.E.", "p-value")

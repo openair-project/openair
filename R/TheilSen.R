@@ -45,8 +45,7 @@
 #'
 #' @param deseason Should the data be de-deasonalized first? If `TRUE` the
 #'   function `stl` is used (seasonal trend decomposition using loess). Note
-#'   that if `TRUE` missing data are first imputed using a Kalman filter and
-#'   Kalman smooth.
+#'   that if `TRUE` missing data are first imputed using a linear regression by month because `stl` cannot handle missing data. In this case the plot shows where the missing data have been imputed as a grey filled circle.
 #'
 #' @param avg.time Can be \dQuote{month} (the default), \dQuote{season} or
 #'   \dQuote{year}. Determines the time over which data should be averaged. Note
@@ -373,6 +372,7 @@ process_theilsen_subset <- function(
   if (avg.time == "month") {
     mydata$date <- lubridate::as_date(mydata$date)
     deseas <- mydata[[pollutant]]
+    was_na <- rep(FALSE, nrow(mydata))
 
     if (deseason && nrow(mydata) > 24) {
       myts <- stats::ts(
@@ -382,10 +382,9 @@ process_theilsen_subset <- function(
         frequency = 12
       )
 
+      was_na <- is.na(myts)
       if (anyNA(myts)) {
-        fit <- stats::ts(rowSums(stats::tsSmooth(stats::StructTS(myts))[, -2]))
-        id <- which(is.na(myts))
-        myts[id] <- fit[id]
+        myts <- fill_ts_gaps(myts, pollutant)
       }
 
       ssd <- stats::stl(myts, s.window = 11, robust = TRUE, s.degree = 1)
@@ -397,12 +396,14 @@ process_theilsen_subset <- function(
     all.results <- data.frame(
       date = mydata$date,
       conc = deseas,
+      imputed = was_na,
       stringsAsFactors = FALSE
     )
   } else {
     all.results <- data.frame(
       date = lubridate::as_date(mydata$date),
       conc = mydata[[pollutant]],
+      imputed = FALSE,
       stringsAsFactors = FALSE
     )
   }
@@ -560,6 +561,14 @@ build_theilsen_plot <- function(
       shape = extra.args$shape[1] %||% 1,
       alpha = extra.args$alpha[1] %||% 1,
       colour = data.col
+    ) +
+    ggplot2::geom_point(
+      data = dplyr::filter(split.data, .data$imputed),
+      mapping = ggplot2::aes(x = .data$date, y = .data$conc),
+      size = extra.args$cex %||% 3,
+      shape = 21,
+      fill = "grey50",
+      colour = "grey20"
     ) +
     ggplot2::geom_abline(
       data = res2,
