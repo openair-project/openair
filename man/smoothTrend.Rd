@@ -30,7 +30,6 @@ smoothTrend(
   date.format = NULL,
   auto.text = TRUE,
   ci = TRUE,
-  alpha = 0.2,
   progress = TRUE,
   plot = TRUE,
   key = NULL,
@@ -195,9 +194,6 @@ axis labels will automatically try and format pollutant names and units
 properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
 
 \item{ci}{Should confidence intervals be plotted? The default is \code{TRUE}.}
-
-\item{alpha}{The alpha transparency of shaded confidence intervals - if
-plotted. A value of 0 is fully transparent and 1 is fully opaque.}
 
 \item{progress}{Show a progress bar when many groups make up \code{type}? Defaults
 to \code{TRUE}.}

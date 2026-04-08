@@ -375,7 +375,7 @@ timePlot <- function(
   }
   extra.args$linetype <- extra.args$linetype[1:n_groups]
 
-  extra.args$linewidth <- extra.args$linewidth %||% 1
+  extra.args$linewidth <- extra.args$linewidth %||% 0.5
   while (length(extra.args$linewidth) < n_groups) {
     extra.args$linewidth <- c(extra.args$linewidth, extra.args$linewidth)
   }
@@ -476,7 +476,7 @@ timePlot <- function(
       colour = legend_title,
       linetype = legend_title,
       linewidth = legend_title,
-      shape = legend_title
+      shape = if (use_shape) legend_title
     ) +
     get_facet(
       type,

@@ -545,13 +545,17 @@ build_theilsen_plot <- function(
     ggplot2::geom_line(
       data = split.data,
       mapping = ggplot2::aes(x = .data$date, y = .data$conc),
-      colour = data.col
+      colour = data.col,
+      linewidth = extra.args$linewidth[1] %||% 0.75,
+      linetype = extra.args$linetype[1] %||% 1,
+      alpha = extra.args$alpha %||% 1
     ) +
     ggplot2::geom_point(
       data = split.data,
       mapping = ggplot2::aes(x = .data$date, y = .data$conc),
-      size = extra.args$size %||% 3,
-      shape = 21,
+      size = extra.args$size[1] %||% 3,
+      shape = extra.args$shape[1] %||% 1,
+      alpha = extra.args$alpha[1] %||% 1,
       colour = data.col
     ) +
     ggplot2::geom_abline(

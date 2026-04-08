@@ -152,6 +152,8 @@ variationPlot <- function(
     auto.text
   )
   extra.args$linetype <- extra.args$linetype %||% 1
+  extra.args$linewidth <- extra.args$linewidth %||% 0.75
+  extra.args$shape <- extra.args$shape %||% 16
 
   drop <- extra.args$drop %||% "none"
   extra.args$drop <- NULL
@@ -466,11 +468,9 @@ variationPlot <- function(
   poll_labels <- name.pol %||% levels(mydata$group)
 
   # linetypes
-  ltys <- extra.args$linetype
-  while (length(ltys) < nlevels(mydata$group)) {
-    ltys <- c(ltys, ltys)
-  }
-  ltys <- ltys[1:nlevels(mydata$group)]
+  ltys <- recycle_to_length(extra.args$linetype, nlevels(mydata$group))
+  lwds <- recycle_to_length(extra.args$linewidth, nlevels(mydata$group))
+  shps <- recycle_to_length(extra.args$shape, nlevels(mydata$group))
 
   # construct plot
   thePlot <-
@@ -492,6 +492,8 @@ variationPlot <- function(
       color = NULL,
       fill = NULL,
       linetype = NULL,
+      linewidth = NULL,
+      shape = NULL,
       title = extra.args$title,
       subtitle = extra.args$subtitle,
       caption = extra.args$caption
@@ -514,6 +516,24 @@ variationPlot <- function(
     ) +
     ggplot2::scale_linetype_manual(
       values = ltys,
+      labels = stats::setNames(
+        label_openair(poll_labels, auto_text = auto.text),
+        levels(mydata$group)
+      ),
+      guide = ggplot2::guide_legend(ncol = key.columns),
+      drop = FALSE
+    ) +
+    ggplot2::scale_linewidth_manual(
+      values = lwds,
+      labels = stats::setNames(
+        label_openair(poll_labels, auto_text = auto.text),
+        levels(mydata$group)
+      ),
+      guide = ggplot2::guide_legend(ncol = key.columns),
+      drop = FALSE
+    ) +
+    ggplot2::scale_shape_manual(
+      values = shps,
       labels = stats::setNames(
         label_openair(poll_labels, auto_text = auto.text),
         levels(mydata$group)
@@ -552,6 +572,7 @@ variationPlot <- function(
           ),
           show.legend = FALSE,
           na.rm = TRUE,
+          color = extra.args$border %||% "transparent",
           alpha = alpha / dplyr::n_distinct(mydata$ci)
         )
     }
@@ -562,7 +583,8 @@ variationPlot <- function(
         ggplot2::aes(
           y = .data$mid,
           colour = .data$group,
-          linetype = .data$group
+          linetype = .data$group,
+          linewidth = .data$group
         ),
         show.legend = TRUE,
         na.rm = TRUE,
@@ -591,7 +613,7 @@ variationPlot <- function(
               group = interaction(.data$group, .data$ci)
             ),
             show.legend = FALSE,
-            color = NA,
+            color = extra.args$border %||% "transparent",
             alpha = alpha / dplyr::n_distinct(mydata$ci),
             width = widths[[i]],
             na.rm = TRUE
@@ -619,7 +641,8 @@ variationPlot <- function(
             y = .data$mid,
             colour = .data$group,
             group = .data$group,
-            linetype = .data$group
+            linetype = .data$group,
+            linewidth = .data$group
           ),
           show.legend = TRUE,
           na.rm = TRUE,
@@ -632,7 +655,8 @@ variationPlot <- function(
           ggplot2::aes(
             y = .data$mid,
             colour = .data$group,
-            group = .data$group
+            group = .data$group,
+            shape = .data$group
           ),
           show.legend = TRUE,
           key_glyph = "point",

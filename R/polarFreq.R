@@ -52,6 +52,8 @@
 #'   Note that for options other than `"frequency"`, it is necessary to also
 #'   provide the name of a `pollutant`.
 #'
+#' @param limits The limits of the colour bar (e.g., `c(0, 100)`).
+#'
 #' @param ws.int Wind speed interval assumed. In some cases e.g. a low met mast,
 #'   an interval of 0.5 may be more appropriate.
 #'
@@ -401,7 +403,7 @@ polarFreq <- function(
         transform = ifelse(trans, "sqrt", "identity"),
         oob = scales::oob_squish,
         breaks = scales::pretty_breaks(6),
-        limits = extra.args$limits
+        limits = limits
       ) +
       ggplot2::guides(
         fill = ggplot2::guide_colorbar(

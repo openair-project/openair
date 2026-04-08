@@ -16,7 +16,15 @@
 
     - `title`, `subtitle` and `caption` can be used throughout `openair` (`title` replacing `main` and `caption` replacing `sub`). All are passed through `quickText()` if `auto.text = TRUE`.
 
-- `timePlot()` now takes `shape` (or the legacy `pch`) in `...`, which will create line charts with markers. Multiple shapes can be provided - e.g., `shape = c(1, 2, 3)` - which will be recycled in the same way as line type or width.
+- Additional interaction between `...` parameters and various plots:
+
+    - `timePlot()` now takes `shape` to add markers to the line chart. This can be a vector to vary with pollutant/group.
+    
+    - `timeProp()` now takes `linewidth` and `linetype` to control `border` style.
+    
+    - `TheilSen()` now takes `linewidth`, `linetype`, `shape` and `alpha`.
+    
+    - `smoothTrend()` now takes `linetype`, `linewidth`, `shape` and `size`. These can be vectors to vary based on pollutant. The linewidth of the data will always be half of that of the model.
 
 - `smoothTrend()` will now use `loess` when it has insufficient data to fit a GAM.
 

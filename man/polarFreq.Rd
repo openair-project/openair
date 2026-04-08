@@ -169,6 +169,8 @@ values needed.
 \item In polar coordinate plots, \code{annotate = FALSE} will remove the N/E/S/W
 labels and any other annotations.
 }}
+
+\item{limits}{The limits of the colour bar (e.g., \code{c(0, 100)}).}
 }
 \value{
 an \link[=openair-package]{openair} object

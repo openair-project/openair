@@ -211,7 +211,9 @@ timeProp <- function(
     ) +
     ggplot2::geom_rect(
       show.legend = TRUE,
-      colour = extra.args$border %||% "transparent"
+      colour = extra.args$border[1] %||% "transparent",
+      linewidth = extra.args$linewidth[1] %||% 0.25,
+      linetype = extra.args$linetype[1] %||% 1
     ) +
     ggplot2::scale_fill_manual(
       values = openColours(cols, dplyr::n_distinct(results[[proportion]])),

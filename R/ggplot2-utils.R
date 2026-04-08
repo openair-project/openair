@@ -259,16 +259,24 @@ annotate_compass_points <- function(size, labels = c("N", "E", "S", "W")) {
 }
 
 # Recycle helper similar to lattice behaviour
-recycle_to_length <- function(x, n) {
+recycle_to_length <- function(x, n, expect1 = FALSE) {
   if (length(x) == n) {
     return(x)
   }
   if (length(x) == 1) {
     return(rep(x, n))
   }
-  cli::cli_abort(
-    "Length mismatch: argument must be length 1 or same length as 'h'/'v'"
-  )
+
+  if (expect1) {
+    cli::cli_abort(
+      "Length mismatch: argument must be length 1 or same length as 'h'/'v'"
+    )
+  } else {
+    while (length(x) < n) {
+      x <- c(x, x)
+    }
+    x <- x[seq_len(x)]
+  }
 }
 
 # Convert lattice-style ref.y list to ggplot2 geom_hline layers
