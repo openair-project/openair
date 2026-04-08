@@ -201,10 +201,9 @@ TheilSen <- function(
   silent = FALSE,
   ...
 ) {
-  # input checking
+  # 1. Input Checking & Argument Setup
   rlang::arg_match(avg.time, c("year", "month", "season"))
 
-  # greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
     trend$col <- c("black", "black")
     data.col <- "darkgrey"
@@ -221,20 +220,10 @@ TheilSen <- function(
   extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
   extra.args$caption <- quickText(extra.args$caption, auto.text)
 
-  # find time interval
-  # need this because if user has a data capture threshold, need to know
-  # original time interval
-  # Working this out for unique dates for all data is what is done here.
-  # More reliable than trying to work it out after conditioning where there
-  # may be too few data for the calculation to be reliable
+  # 2. Time Interval & Data Preparation
   interval <- find_time_interval(mydata$date)
+  days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) / 24 / 3600
 
-  # equivalent number of days, used to refine interval for month/year
-  days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) /
-    24 /
-    3600
-
-  # better interval, most common interval in a year
   if (floor(days) == 31) {
     interval <- "month"
   }
@@ -242,17 +231,8 @@ TheilSen <- function(
     interval <- "year"
   }
 
-  # data checks
   mydata <- checkPrep(mydata, c("date", pollutant), type, remove.calm = FALSE)
-
-  # cutData depending on type
   mydata <- cutData(mydata, type, ...)
-
-  # for overall data and graph plotting
-  start.year <- get_first_year(mydata$date)
-  end.year <- get_last_year(mydata$date)
-  start.month <- get_first_month(mydata$date)
-  end.month <- get_last_month(mydata$date)
 
   mydata <- timeAverage(
     mydata,
@@ -265,128 +245,24 @@ TheilSen <- function(
     progress = !silent
   )
 
-  # timeAverage drops type if default
   if ("default" %in% type) {
     mydata$default <- "default"
   }
 
-  process.cond <- function(mydata) {
-    if (all(is.na(mydata[[pollutant]]))) {
-      return(data.frame(
-        b = NA,
-        a = NA,
-        lower.a = NA,
-        upper.a = NA,
-        lower.b = NA,
-        upper.b = NA,
-        p.stars = NA
-      ))
-    }
-
-    # sometimes data have long trailing NAs, so start and end at
-    # first and last data
-    min.idx <- min(which(!is.na(mydata[, pollutant])))
-    max.idx <- max(which(!is.na(mydata[, pollutant])))
-    mydata <- mydata[min.idx:max.idx, ]
-
-    # these subsets may have different dates to overall
-    start.year <- get_first_year(mydata$date)
-    end.year <- get_last_year(mydata$date)
-    start.month <- get_first_month(mydata$date)
-    end.month <- get_last_month(mydata$date)
-
-    if (avg.time == "month") {
-      mydata$date <- lubridate::as_date(mydata$date)
-
-      deseas <- mydata[[pollutant]]
-
-      # can't deseason less than 2 years of data
-      if (deseason && nrow(mydata) > 24) {
-        myts <- stats::ts(
-          mydata[[pollutant]],
-          start = c(start.year, start.month),
-          end = c(end.year, end.month),
-          frequency = 12
-        )
-
-        # fill any missing data using a Kalman filter
-
-        if (anyNA(myts)) {
-          fit <- stats::ts(rowSums(stats::tsSmooth(stats::StructTS(myts))[,
-            -2
-          ]))
-          id <- which(is.na(myts))
-
-          myts[id] <- fit[id]
-        }
-
-        # key thing is to allow the seanonal cycle to vary, hence
-        # s.window should not be "periodic"; set quite high to avoid
-        # overly fitted seasonal cycle
-        # robustness also makes sense for sometimes noisy data
-        ssd <- stats::stl(myts, s.window = 11, robust = TRUE, s.degree = 1)
-
-        deseas <- ssd$time.series[, "trend"] + ssd$time.series[, "remainder"]
-
-        deseas <- as.vector(deseas)
-      }
-
-      all.results <- data.frame(
-        date = mydata$date,
-        conc = deseas,
-        stringsAsFactors = FALSE
-      )
-      results <- stats::na.omit(all.results)
-    } else {
-      # assume annual
-      all.results <- data.frame(
-        date = lubridate::as_date(mydata$date),
-        conc = mydata[[pollutant]],
-        stringsAsFactors = FALSE
-      )
-      results <- stats::na.omit(all.results)
-    }
-
-    # now calculate trend, uncertainties etc
-    if (nrow(results) < 6) {
-      # need enough data to calculate trend, set missing if not
-
-      results <- dplyr::mutate(
-        results,
-        b = NA,
-        a = NA,
-        lower.a = NA,
-        upper.a = NA,
-        lower.b = NA,
-        upper.b = NA,
-        p.stars = NA
-      )
-
-      return(results)
-    }
-
-    MKresults <- mk_stats(
-      results$date,
-      results$conc,
-      alpha,
-      autocor,
-      silent = silent
-    )
-
-    # make sure missing data are put back in for plotting
-    results <- dplyr::full_join(all.results, MKresults, by = "date")
-
-    results
-  }
-
-  # split data by type and apply process.cond to each subset, then recombine
+  # 3. Calculate Theil-Sen statistics (Bootstrap)
   split.data <- mydata |>
     dplyr::group_by(dplyr::across(dplyr::all_of(type))) |>
     tidyr::nest() |>
     dplyr::mutate(
       data = purrr::map(
         .data$data,
-        process.cond,
+        process_theilsen_subset,
+        pollutant = pollutant,
+        avg.time = avg.time,
+        deseason = deseason,
+        alpha = alpha,
+        autocor = autocor,
+        silent = silent,
         .progress = "Taking Bootstrap Samples"
       )
     ) |>
@@ -397,7 +273,6 @@ TheilSen <- function(
     return(NULL)
   }
 
-  # calculate slopes etc
   split.data <- dplyr::mutate(
     split.data,
     slope = 365 * .data$b,
@@ -408,7 +283,7 @@ TheilSen <- function(
     upper = 365 * .data$upper.b
   )
 
-  # aggregated results
+  # 4. Aggregate Results & Calculate Percentage Trends
   res2 <- dplyr::summarise(
     split.data,
     dplyr::across(dplyr::everything(), ~ mean(.x, na.rm = TRUE)),
@@ -416,29 +291,153 @@ TheilSen <- function(
   ) |>
     tidyr::drop_na()
 
-  # calculate percentage changes in slope and uncertainties need
-  # start and end dates (in days) to work out concentrations at those
-  # points percentage change defined as 100.(C.end/C.start -1) /
-  # duration
+  percent_data <- add_percentage_change(split.data, type)
+  split.data <- dplyr::left_join(split.data, percent_data, by = type)
+  res2 <- dplyr::left_join(res2, percent_data, by = type)
+
+  # 5. Build and output plot
+  thePlot <- build_theilsen_plot(
+    split.data = split.data,
+    res2 = res2,
+    type = type,
+    slope.percent = slope.percent,
+    dec.place = dec.place,
+    slope.text = slope.text,
+    lab.cex = lab.cex,
+    lab.frac = lab.frac,
+    text.col = text.col,
+    data.col = data.col,
+    trend = trend,
+    extra.args = extra.args,
+    x.relation = x.relation,
+    y.relation = y.relation,
+    auto.text = auto.text,
+    strip.position = strip.position,
+    date.breaks = date.breaks,
+    date.format = date.format
+  )
+
+  if (plot) {
+    plot(thePlot)
+  }
+
+  output <- list(
+    plot = thePlot,
+    data = list(
+      main.data = dplyr::tibble(split.data),
+      res2 = dplyr::tibble(res2),
+      subsets = c("main.data", "res2")
+    ),
+    call = match.call()
+  )
+  class(output) <- "openair"
+
+  invisible(output)
+}
+
+# -----------------------------------------------------------------------------
+# Helper Functions
+# -----------------------------------------------------------------------------
+
+# Process individual subsets for Theil-Sen calculations and deseasonalization
+process_theilsen_subset <- function(
+  mydata,
+  pollutant,
+  avg.time,
+  deseason,
+  alpha,
+  autocor,
+  silent
+) {
+  if (all(is.na(mydata[[pollutant]]))) {
+    return(data.frame(
+      b = NA,
+      a = NA,
+      lower.a = NA,
+      upper.a = NA,
+      lower.b = NA,
+      upper.b = NA,
+      p.stars = NA
+    ))
+  }
+
+  min.idx <- min(which(!is.na(mydata[, pollutant])))
+  max.idx <- max(which(!is.na(mydata[, pollutant])))
+  mydata <- mydata[min.idx:max.idx, ]
+
+  start.year <- get_first_year(mydata$date)
+  end.year <- get_last_year(mydata$date)
+  start.month <- get_first_month(mydata$date)
+  end.month <- get_last_month(mydata$date)
+
+  if (avg.time == "month") {
+    mydata$date <- lubridate::as_date(mydata$date)
+    deseas <- mydata[[pollutant]]
+
+    if (deseason && nrow(mydata) > 24) {
+      myts <- stats::ts(
+        mydata[[pollutant]],
+        start = c(start.year, start.month),
+        end = c(end.year, end.month),
+        frequency = 12
+      )
+
+      if (anyNA(myts)) {
+        fit <- stats::ts(rowSums(stats::tsSmooth(stats::StructTS(myts))[, -2]))
+        id <- which(is.na(myts))
+        myts[id] <- fit[id]
+      }
+
+      ssd <- stats::stl(myts, s.window = 11, robust = TRUE, s.degree = 1)
+      deseas <- as.vector(
+        ssd$time.series[, "trend"] + ssd$time.series[, "remainder"]
+      )
+    }
+
+    all.results <- data.frame(
+      date = mydata$date,
+      conc = deseas,
+      stringsAsFactors = FALSE
+    )
+  } else {
+    all.results <- data.frame(
+      date = lubridate::as_date(mydata$date),
+      conc = mydata[[pollutant]],
+      stringsAsFactors = FALSE
+    )
+  }
+
+  results <- stats::na.omit(all.results)
+
+  if (nrow(results) < 6) {
+    return(dplyr::mutate(
+      results,
+      b = NA,
+      a = NA,
+      lower.a = NA,
+      upper.a = NA,
+      lower.b = NA,
+      upper.b = NA,
+      p.stars = NA
+    ))
+  }
+
+  MKresults <- mk_stats(
+    results$date,
+    results$conc,
+    alpha,
+    autocor,
+    silent = silent
+  )
+  dplyr::full_join(all.results, MKresults, by = "date")
+}
+
+# Add percentage change per year
+add_percentage_change <- function(split.data, type) {
   start <- dplyr::slice_head(split.data, n = 1, by = dplyr::all_of(type))
   end <- dplyr::slice_tail(split.data, n = 1, by = dplyr::all_of(type))
 
-  percent.change <- dplyr::full_join(
-    start,
-    end,
-    by = type,
-    suffix = c(".start", ".end")
-  )
-
-  pct_per_year <- function(slope, intercept, date_start, date_end) {
-    d_start <- as.numeric(date_start)
-    d_end <- as.numeric(date_end)
-    c_start <- slope * d_start / 365 + intercept
-    c_end <- slope * d_end / 365 + intercept
-    100 * 365 * (c_end / c_start - 1) / (d_end - d_start)
-  }
-
-  percent.change <- percent.change |>
+  dplyr::full_join(start, end, by = type, suffix = c(".start", ".end")) |>
     dplyr::mutate(
       slope.percent = pct_per_year(
         .data$slope.start,
@@ -459,36 +458,90 @@ TheilSen <- function(
         .data$date.end
       )
     ) |>
-    dplyr::select(
-      dplyr::all_of(c(type, "slope.percent", "lower.percent", "upper.percent"))
-    )
+    dplyr::select(dplyr::all_of(c(
+      type,
+      "slope.percent",
+      "lower.percent",
+      "upper.percent"
+    )))
+}
 
-  split.data <- dplyr::left_join(split.data, percent.change, by = type)
+# Formula for % change per year
+pct_per_year <- function(slope, intercept, date_start, date_end) {
+  d_start <- as.numeric(date_start)
+  d_end <- as.numeric(date_end)
+  c_start <- slope * d_start / 365 + intercept
+  c_end <- slope * d_end / 365 + intercept
+  100 * 365 * (c_end / c_start - 1) / (d_end - d_start)
+}
 
-  res2 <- dplyr::left_join(res2, percent.change, by = type)
+# Function to calculate Theil-Sen slope estimates, confidence intervals, and p values
+mk_stats <- function(x, y, alpha, autocor, silent) {
+  # Run the bootstrap regression on the RAW uncentered data
+  estimates <- regci(
+    as.numeric(x),
+    y,
+    alpha = alpha,
+    autocor = autocor,
+    pr = silent
+  )$regci
+  p <- estimates[2, 5]
 
-  # for text on plot - % trend or not?
-  slope <- "slope"
-  lower <- "lower"
-  upper <- "upper"
-  units <- "units"
+  stars <- dplyr::case_when(
+    p < 0.001 ~ "***",
+    p < 0.01 ~ "**",
+    p < 0.05 ~ "*",
+    p < 0.1 ~ "+",
+    .default = ""
+  )
 
-  if (slope.percent) {
-    slope <- "slope.percent"
-    lower <- "lower.percent"
-    upper <- "upper.percent"
-    units <- "%"
-  }
+  data.frame(
+    date = x,
+    a = estimates[1, 3],
+    b = estimates[2, 3],
+    upper.a = estimates[1, 1], # Lower intercept paired with...
+    upper.b = estimates[2, 2], # Upper slope
+    lower.a = estimates[1, 2], # Upper intercept paired with...
+    lower.b = estimates[2, 1], # Lower slope
+    p = p,
+    p.stars = stars,
+    stringsAsFactors = FALSE
+  )
+}
 
-  # x-axis scale function
-  if (lubridate::is.Date(split.data$date)) {
-    x_scale_fun <- ggplot2::scale_x_date
+# Centralised ggplot construction
+build_theilsen_plot <- function(
+  split.data,
+  res2,
+  type,
+  slope.percent,
+  dec.place,
+  slope.text,
+  lab.cex,
+  lab.frac,
+  text.col,
+  data.col,
+  trend,
+  extra.args,
+  x.relation,
+  y.relation,
+  auto.text,
+  strip.position,
+  date.breaks,
+  date.format
+) {
+  slope_var <- if (slope.percent) "slope.percent" else "slope"
+  lower_var <- if (slope.percent) "lower.percent" else "lower"
+  upper_var <- if (slope.percent) "upper.percent" else "upper"
+  units_str <- if (slope.percent) "%" else "units"
+
+  x_scale_fun <- if (lubridate::is.Date(split.data$date)) {
+    ggplot2::scale_x_date
   } else {
-    x_scale_fun <- ggplot2::scale_x_datetime
+    ggplot2::scale_x_datetime
   }
 
-  thePlot <-
-    ggplot2::ggplot() +
+  ggplot2::ggplot() +
     ggplot2::geom_line(
       data = split.data,
       mapping = ggplot2::aes(x = .data$date, y = .data$conc),
@@ -526,14 +579,13 @@ TheilSen <- function(
       data = res2,
       mapping = ggplot2::aes(
         label = paste(
-          round(.data[[slope]], dec.place),
-          " ",
-          "[",
-          round(.data[[lower]], dec.place),
+          round(.data[[slope_var]], dec.place),
+          " [",
+          round(.data[[lower_var]], dec.place),
           ", ",
-          round(.data[[upper]], dec.place),
+          round(.data[[upper_var]], dec.place),
           "] ",
-          slope.text %||% paste0(units, "/year"),
+          slope.text %||% paste0(units_str, "/year"),
           " ",
           .data$p.stars,
           sep = ""
@@ -562,9 +614,7 @@ TheilSen <- function(
       date_labels = date.format %||% ggplot2::waiver(),
       limits = extra.args$xlim
     ) +
-    ggplot2::scale_y_continuous(
-      limits = extra.args$ylim
-    ) +
+    ggplot2::scale_y_continuous(limits = extra.args$ylim) +
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
@@ -572,56 +622,4 @@ TheilSen <- function(
       subtitle = extra.args$subtitle,
       caption = extra.args$caption
     )
-
-  if (plot) {
-    plot(thePlot)
-  }
-
-  output <- list(
-    plot = thePlot,
-    data = list(
-      main.data = dplyr::tibble(split.data),
-      res2 = dplyr::tibble(res2),
-      subsets = c("main.data", "res2")
-    ),
-    call = match.call()
-  )
-  class(output) <- "openair"
-
-  invisible(output)
-}
-
-# function to calculate theil-sen slope estimates, confidence intervals and p
-# values
-mk_stats <- function(x, y, alpha, autocor, silent) {
-  estimates <- regci(
-    as.numeric(x),
-    y,
-    alpha = alpha,
-    autocor = autocor,
-    pr = silent
-  )$regci
-
-  p <- estimates[2, 5]
-
-  stars <- dplyr::case_when(
-    p < 0.001 ~ "***",
-    p < 0.01 ~ "**",
-    p < 0.05 ~ "*",
-    p < 0.1 ~ "+",
-    .default = ""
-  )
-
-  data.frame(
-    date = x,
-    a = estimates[1, 3],
-    b = estimates[2, 3],
-    upper.a = estimates[1, 1],
-    upper.b = estimates[2, 2],
-    lower.a = estimates[1, 2],
-    lower.b = estimates[2, 1],
-    p = p,
-    p.stars = stars,
-    stringsAsFactors = FALSE
-  )
 }
