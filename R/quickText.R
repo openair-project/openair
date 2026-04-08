@@ -79,6 +79,8 @@ quickText <- function(text, auto.text = TRUE, ...) {
     return(ans)
   }
 
+  text <- gsub("'", "\\\\'", text)
+
   if (parse) {
     ans <- paste("expression(paste('", text, " ", sep = "")
   } else {

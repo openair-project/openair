@@ -24,6 +24,8 @@
 
 - Fix intercept calculation in single-predictor Theil-Sen regression Updated the intercept formula in `tsp1reg` from `median(y) - slope * median(x)` to `median(y - slope * x)`. This resolves a visual bug where trend lines (especially annual aggregations with negative slopes) appeared horizontally displaced due to inaccurate intercept estimates on sparse data. This fix affects the visual display of the trend lines but not the calculated slopes or uncertainties.
 
+- `quickText()` is once again tolerant of apostrophes.
+
 # openair 3.0.0
 
 ## Dependency Changes
