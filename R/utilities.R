@@ -284,7 +284,7 @@ fill_ts_gaps <- function(myts, pollutant) {
     ) |>
     dplyr::select("pred") |>
     tidyr::unnest("pred") |>
-    dplyr::arrange("t") |>
+    dplyr::arrange(.data$t) |>
     dplyr::mutate(
       value = dplyr::if_else(is.na(.data$value), .data$pred, .data$value)
     ) |>
