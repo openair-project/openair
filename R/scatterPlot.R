@@ -1291,6 +1291,8 @@ scatter_density <- function(
   xlab,
   ylab,
   title,
+  subtitle,
+  caption,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
