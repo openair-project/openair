@@ -99,7 +99,7 @@
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
 #'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
 #'   - `fontsize` overrides the overall font size of the plot.
 #'   - `border` sets the border colour of each tile.
@@ -172,7 +172,7 @@ trendLevel <- function(
   # check key.position
   key.position <- check_key_position(key.position, key)
 
-  extra.args <- rlang::list2(...)
+  extra.args <- capture_dots(...)
 
   # check length of x
   if (length(x) > 1) {
@@ -512,7 +512,9 @@ trendLevel <- function(
     ggplot2::labs(
       x = quickText(extra.args$xlab %||% x, auto.text = auto.text),
       y = quickText(extra.args$ylab %||% y, auto.text = auto.text),
-      title = quickText(extra.args$main %||% "", auto.text = auto.text),
+      title = quickText(extra.args$title %||% "", auto.text = auto.text),
+      subtitle = quickText(extra.args$subtitle %||% "", auto.text = auto.text),
+      caption = quickText(extra.args$caption %||% "", auto.text = auto.text),
       fill = quickText(key.title, auto.text = auto.text)
     ) +
     ggplot2::guides(

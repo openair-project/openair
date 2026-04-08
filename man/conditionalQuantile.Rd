@@ -94,7 +94,7 @@ to a file).}
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
 Some additional arguments are also available:
 \itemize{
-\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{xlab}, \code{ylab} and \code{title} override the x-axis label, y-axis label, and plot title.
 \item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
 \item \code{fontsize} overrides the overall font size of the plot.
 }}

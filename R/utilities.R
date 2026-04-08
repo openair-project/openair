@@ -301,7 +301,9 @@ capture_dots <- function(...) {
     lty = list(to = "linetype", transform = NULL),
     lwd = list(to = "linewidth", transform = NULL),
     font = list(to = "fontface", transform = NULL),
-    fontfamily = list(to = "family", transform = NULL)
+    fontfamily = list(to = "family", transform = NULL),
+    main = list(to = "title", transform = NULL),
+    sub = list(to = "caption", transform = NULL)
   )
 
   lattice_only <- c(

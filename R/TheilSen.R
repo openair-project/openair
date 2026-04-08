@@ -120,10 +120,10 @@
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
 #'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
 #'   - `fontsize` overrides the overall font size of the plot.
-#'   - `cex`, `lwd`, and `pch` control various graphical parameters.
+#'   - `shape`, `linewidth`, and `size` control various graphical parameters.
 #'   - `ylim` and `xlim` control axis limits.
 #'
 #' @export TheilSen
@@ -220,12 +220,14 @@ TheilSen <- function(
   }
 
   # extra.args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # label controls
   extra.args$ylab <- quickText(extra.args$ylab %||% pollutant, auto.text)
   extra.args$xlab <- quickText(extra.args$xlab %||% "year", auto.text)
-  extra.args$main <- quickText(extra.args$main, auto.text)
+  extra.args$title <- quickText(extra.args$title, auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+  extra.args$caption <- quickText(extra.args$caption, auto.text)
 
   # find time interval
   # need this because if user has a data capture threshold, need to know
@@ -503,7 +505,7 @@ TheilSen <- function(
     ggplot2::geom_point(
       data = split.data,
       mapping = ggplot2::aes(x = .data$date, y = .data$conc),
-      size = extra.args$cex %||% 3,
+      size = extra.args$size %||% 3,
       shape = 21,
       colour = data.col
     ) +
@@ -574,7 +576,9 @@ TheilSen <- function(
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
-      title = extra.args$main
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption
     )
 
   if (plot) {

@@ -209,7 +209,7 @@ to a file).}
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
 Some additional arguments are also available:
 \itemize{
-\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{xlab}, \code{ylab} and \code{title} override the x-axis label, y-axis label, and plot title.
 \item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
 \item \code{fontsize} overrides the overall font size of the plot.
 \item \code{annotate = FALSE} will not plot the N/E/S/W labels.
@@ -254,7 +254,7 @@ smoothing parameter \code{k}.
 \dontrun{
 polarAnnulus(mydata,
   pollutant = "pm10",
-  main = "diurnal variation in pm10 at Marylebone Road"
+  title = "diurnal variation in pm10 at Marylebone Road"
 )
 }
 
@@ -269,7 +269,7 @@ mydata$pmc <- mydata$pm10 - mydata$pm25
 \dontrun{
 polarAnnulus(mydata,
   poll = "pmc", period = "trend",
-  main = "trend in pmc at Marylebone Road"
+  title = "trend in pmc at Marylebone Road"
 )
 }
 }

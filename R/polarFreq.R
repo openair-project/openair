@@ -75,7 +75,7 @@
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
 #'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
 #'   - `fontsize` overrides the overall font size of the plot.
 #'   - `annotate = FALSE` will not plot the N/E/S/W labels.
@@ -170,12 +170,14 @@ polarFreq <- function(
   wd.int <- 360 / round(wd.nint)
 
   # extra.args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # label controls
   extra.args$xlab <- quickText(extra.args$xlab, auto.text)
   extra.args$ylab <- quickText(extra.args$ylab, auto.text)
-  extra.args$main <- quickText(extra.args$main, auto.text)
+  extra.args$title <- quickText(extra.args$title, auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+  extra.args$caption <- quickText(extra.args$caption, auto.text)
 
   if (!is.null(pollutant)) {
     vars <- c(vars, pollutant)
@@ -360,7 +362,9 @@ polarFreq <- function(
     ggplot2::labs(
       y = extra.args$ylab,
       x = extra.args$xlab,
-      title = extra.args$main,
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption,
       fill = quickText(key.title, auto.text = auto.text)
     ) +
     get_facet(

@@ -2,11 +2,13 @@
 
 ## Dependency Changes
 
-- `openair` now suggests `rnaturalearth` over `rnaturalearthdata`. `rnaturalearthdata` is still required for a medium map resolution and `rnaturalearthhires` for a high map resolution, but these are now managed by `rnaturalearth` directly.
+- `{openair}` now suggests `{rnaturalearth}` over `{rnaturalearthdata}`. `{rnaturalearthdata}` is still required for a medium map resolution and `{rnaturalearthhires}` for a high map resolution, but these are now managed by `{rnaturalearth}` directly.
 
 ## New Features
 
-- `timePlot()` now takes `shape` (or `pch`) in `...`, which will create line charts with markers. Multiple shapes can be provided - e.g., `shape = c(1, 2, 3)` - which will be recycled in the same way as line type or width.
+- All plotting functions now take `ggplot2`-formatted parameter names (i.e., `linewidth` instead of `lwd`, `shape` instead of `pch`, etc.). All of `title`, `subtitle` and `caption` now can be passed (`title` replacing `main` and `caption` replacing `sub`), all of which are passed through `quickText()` if `auto.text = TRUE`.
+
+- `timePlot()` now takes `shape` (or the legacy `pch`) in `...`, which will create line charts with markers. Multiple shapes can be provided - e.g., `shape = c(1, 2, 3)` - which will be recycled in the same way as line type or width.
 
 - `smoothTrend()` will now use `loess` when it has insufficient data to fit a GAM.
 
@@ -54,7 +56,7 @@
 
 ## New Features
 
-- `timeVariation()` has been almost completely rewritten. It is now a thin wrapper around the new `variationPlot()`, which can take any arbitrary `x` value - passed to [cutData()] - to use for its x-axis. Furthermore, it has gained the following changes:
+- `timeVariation()` has been almost completely rewritten. It is now a thin wrapper around the new `variationPlot()`, which can take any arbitrary `x` value - passed to `cutData()` - to use for its x-axis. Furthermore, it has gained the following changes:
 
     - Gained the `panels` argument. This allows for panels other than "hour.weekday", "hour", "month", and "weekday" to be represented in the plot assembly.
 
@@ -66,7 +68,7 @@
 
 - `timePlot()` refinements:
     
-    - `group` can now take a character string, passed to [cutData()] via [timeAverage()]. This works similarly to `group` in `timeVariation()` in that it colours traces within the panel, rather than splitting them into multiple panels.
+    - `group` can now take a character string, passed to `cutData()` via `timeAverage()`. This works similarly to `group` in `timeVariation()` in that it colours traces within the panel, rather than splitting them into multiple panels.
     
     - Gained the `x.relation` argument, allowing for different x ranges on different panels.
 

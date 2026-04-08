@@ -169,24 +169,14 @@ polarCluster <-
 
     min.scale <- floor(min(mydata[[x]], na.rm = TRUE))
 
-    extra.args <- list(...)
+    extra.args <- capture_dots(...)
 
     # label controls
-    extra.args$xlab <- if ("xlab" %in% names(extra.args)) {
-      quickText(extra.args$xlab, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
-    extra.args$ylab <- if ("ylab" %in% names(extra.args)) {
-      quickText(extra.args$ylab, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
-    extra.args$main <- if ("main" %in% names(extra.args)) {
-      quickText(extra.args$main, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
+    extra.args$xlab <- quickText(extra.args$xlab, auto.text)
+    extra.args$ylab <- quickText(extra.args$ylab, auto.text)
+    extra.args$title <- quickText(extra.args$title, auto.text)
+    extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+    extra.args$caption <- quickText(extra.args$caption, auto.text)
 
     # layout default
     if (!"layout" %in% names(extra.args)) {
@@ -344,7 +334,9 @@ polarCluster <-
         color = "Cluster",
         x = extra.args$xlab,
         y = extra.args$ylab,
-        title = extra.args$main
+        title = extra.args$title,
+        subtitle = extra.args$subtitle,
+        caption = extra.args$caption
       ) +
       get_facet(
         ifelse(dplyr::n_distinct(results.grid$nclust) > 1, "nclust", "default"),

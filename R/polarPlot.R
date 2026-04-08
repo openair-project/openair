@@ -335,7 +335,7 @@
 #' \dontrun{
 #'
 #' # polarPlots by year on same scale
-#' polarPlot(mydata, pollutant = "so2", type = "year", main = "polarPlot of so2")
+#' polarPlot(mydata, pollutant = "so2", type = "year", title = "polarPlot of so2")
 #'
 #' # set minimum number of bins to be used to see if pattern remains similar
 #' polarPlot(mydata, pollutant = "nox", min.bin = 3)
@@ -469,25 +469,17 @@ polarPlot <-
     key.position <- check_key_position(key.position, key)
 
     ## extra.args setup
-    extra.args <- list(...)
+    extra.args <- capture_dots(...)
 
     ## label controls
-    extra.args$xlab <- if ("xlab" %in% names(extra.args)) {
-      quickText(extra.args$xlab, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
+    extra.args$xlab <- quickText(extra.args$xlab, auto.text)
+    extra.args$ylab <- quickText(extra.args$ylab, auto.text)
+    extra.args$title <- quickText(extra.args$title, auto.text)
+    extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
 
-    extra.args$ylab <- if ("ylab" %in% names(extra.args)) {
-      quickText(extra.args$ylab, auto.text)
-    } else {
-      quickText("", auto.text)
-    }
-
-    extra.args$main <- if ("main" %in% names(extra.args)) {
-      quickText(extra.args$main, auto.text)
-    } else {
-      quickText("", auto.text)
+    # separate handling for being overwritten
+    if ("caption" %in% names(extra.args)) {
+      extra.args$caption <- quickText(extra.args$caption, auto.text)
     }
 
     # if clustering, return lower resolution plot
@@ -934,20 +926,21 @@ polarPlot <-
         color = legend_title,
         x = extra.args$xlab,
         y = extra.args$ylab,
-        title = extra.args$main,
-        subtitle = sub,
-        caption = if (
-          formula.label &&
-            grepl("slope|intercept", statistic) &&
-            length(pollutant) == 2
-        ) {
-          quickText(
-            paste0("Formula: ", pollutant[1], " = m.", pollutant[2], " + c"),
-            auto.text
-          )
-        } else {
-          NULL
-        }
+        title = extra.args$title,
+        subtitle = extra.args$subtitle %||% sub,
+        caption = extra.args$caption %||%
+          if (
+            formula.label &&
+              grepl("slope|intercept", statistic) &&
+              length(pollutant) == 2
+          ) {
+            quickText(
+              paste0("Formula: ", pollutant[1], " = m.", pollutant[2], " + c"),
+              auto.text
+            )
+          } else {
+            NULL
+          }
       ) +
       {
         if (key.position %in% c("left", "right")) {

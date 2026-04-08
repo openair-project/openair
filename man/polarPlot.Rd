@@ -395,7 +395,7 @@ polarPlot(mydata, pollutant = "nox")
 \dontrun{
 
 # polarPlots by year on same scale
-polarPlot(mydata, pollutant = "so2", type = "year", main = "polarPlot of so2")
+polarPlot(mydata, pollutant = "so2", type = "year", title = "polarPlot of so2")
 
 # set minimum number of bins to be used to see if pattern remains similar
 polarPlot(mydata, pollutant = "nox", min.bin = 3)

@@ -104,10 +104,10 @@
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
 #'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
 #'   - `fontsize` overrides the overall font size of the plot.
-#'   - `cex`, `lwd`, and `pch` control various graphical parameters.
+#'   - `size` and `shape` control various graphical parameters.
 #'
 #' @export
 #'
@@ -238,7 +238,7 @@ TaylorDiagram <- function(
   key.position <- check_key_position(key.position, key)
 
   # extra.args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # label controls
   extra.args$xlab <- quickText(
@@ -259,9 +259,11 @@ TaylorDiagram <- function(
       ),
     auto.text
   )
-  extra.args$main <- quickText(extra.args$main, auto.text)
-  extra.args$pch <- extra.args$pch %||% 20
-  extra.args$cex <- extra.args$cex %||% 2
+  extra.args$title <- quickText(extra.args$title, auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+  extra.args$caption <- quickText(extra.args$caption, auto.text)
+  extra.args$shape <- extra.args$shape %||% 20
+  extra.args$size <- extra.args$size %||% 2
   extra.args$fontsize <- extra.args$fontsize %||% 11
 
   # check to see if two data sets are present
@@ -465,7 +467,7 @@ TaylorDiagram <- function(
   }
 
   # ensure correct number of shapes
-  shapes <- extra.args$pch
+  shapes <- extra.args$shape
   while (length(shapes) <= nlevels(results[[group]])) {
     shapes <- c(shapes, shapes)
   }
@@ -522,7 +524,7 @@ TaylorDiagram <- function(
         colour = text.obs,
         shape = text.obs
       ),
-      size = extra.args$cex * 2
+      size = extra.args$size * 2
     ) +
     ggplot2::annotate(
       geom = "text",
@@ -582,7 +584,9 @@ TaylorDiagram <- function(
     ggplot2::labs(
       x = extra.args$xlab,
       y = if (!positive_only) NULL else extra.args$ylab,
-      title = extra.args$main,
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption,
       color = quickText(key.title, auto.text = auto.text),
       shape = quickText(key.title, auto.text = auto.text)
     ) +
@@ -643,7 +647,7 @@ TaylorDiagram <- function(
           shape = .data[[group]],
           group = .data$newgrp
         ),
-        size = extra.args$cex * 2
+        size = extra.args$size * 2
       ) +
       ggplot2::scale_color_manual(
         values = c(openColours(cols, n = nlevels(results[[group]])), "black"),

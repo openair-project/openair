@@ -102,8 +102,6 @@ differentiate them.}
 from 0 (full transparency) to 1 (full opacity). Setting it below 1 can help
 view trajectories, trajectory surfaces etc. \emph{and} a filled base map.}
 
-\item{map.lwd}{The map line width, a positive number, defaulting to \code{1}.}
-
 \item{map.lty}{The map line type. Line types can either be specified as an
 integer (\code{0} = blank, \code{1} = solid (default), \code{2} = dashed, \code{3} = dotted,
 \code{4} = dotdash, \code{5} = longdash, \code{6} = twodash) or as one of the character
@@ -163,11 +161,13 @@ to a file).}
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
 Some additional arguments are also available:
 \itemize{
-\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{xlab}, \code{ylab} and \code{title} override the x-axis label, y-axis label, and plot title.
 \item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
 \item \code{fontsize} overrides the overall font size of the plot.
 \item \code{border} sets the border colour of each bar.
 }}
+
+\item{map.linewidth}{The map line width, a positive number, defaulting to \code{1}.}
 }
 \description{
 This function plots back trajectories. This function requires that data are
@@ -218,8 +218,8 @@ trajPlot(
   cols = "turbo",
   key.position = "right",
   key.columns = 1,
-  lwd = 2,
-  cex = 4
+  linewidth = 2,
+  size = 4
 )
 }
 }

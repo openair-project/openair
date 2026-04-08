@@ -251,9 +251,9 @@ to a file).}
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
 Some additional arguments are also available:
 \itemize{
-\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{xlab}, \code{ylab} and \code{title} override the x-axis label, y-axis label, and plot title.
 \item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
-\item \code{lwd}, \code{lty}, and \code{shape} control various graphical parameters. \code{pch} is accepted as an alias for \code{shape}.
+\item \code{linewidth}, \code{linetype}, and \code{shape} control various graphical parameters.
 \item \code{fontsize} overrides the overall font size of the plot.
 \item \code{border} sets the border colour of each tile.
 \item \code{ylim} and \code{xlim} control axis limits.
@@ -311,8 +311,8 @@ timePlot(
   group = TRUE,
   avg.time = "year",
   normalise = "1/1/1998",
-  lwd = 3,
-  lty = 1
+  linewidth = 3,
+  linetype = 1
 )
 
 # examples of selecting by date
@@ -327,13 +327,13 @@ timePlot(
 )
 
 # choose different line styles etc
-timePlot(mydata, pollutant = c("nox", "no2"), lty = 1)
+timePlot(mydata, pollutant = c("nox", "no2"), linetype = 1)
 
 # choose different line styles etc
 timePlot(
   selectByDate(mydata, year = 2004, month = 6),
   pollutant = c("nox", "no2"),
-  lwd = c(1, 2),
+  linewidth = c(1, 2),
   col = "black"
 )
 

@@ -214,11 +214,11 @@ to a file).}
 \item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
 Some additional arguments are also available:
 \itemize{
-\item \code{xlab}, \code{ylab} and \code{main} override the x-axis label, y-axis label, and plot title.
+\item \code{xlab}, \code{ylab} and \code{title} override the x-axis label, y-axis label, and plot title.
 \item \code{ylim} and \code{xlim} control axis limits.
 \item \code{layout} sets the layout of facets - e.g., \code{layout(2, 5)} will have 2 columns and 5 rows.
 \item \code{fontsize} overrides the overall font size of the plot.
-\item \code{cex}, \code{lwd}, \code{lty}, \code{alpha}, and \code{pch} control various graphical parameters.
+\item \code{size}, \code{linewidth}, \code{linetype}, \code{alpha}, and \code{shape} control various graphical parameters.
 }}
 }
 \value{
@@ -257,7 +257,7 @@ smoothTrend(mydata, pollutant = "nox")
 smoothTrend(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
 
 # several pollutants, no plotting symbol
-smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), pch = NA)
+smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), shape = NA)
 
 # percentiles
 smoothTrend(mydata,
@@ -268,7 +268,7 @@ smoothTrend(mydata,
 # several percentiles with control over lines used
 smoothTrend(mydata,
   pollutant = "o3", statistic = "percentile",
-  percentile = c(5, 50, 95), lwd = c(1, 2, 1), lty = c(5, 1, 5)
+  percentile = c(5, 50, 95), linewidth = c(1, 2, 1), linetype = c(5, 1, 5)
 )
 }
 }

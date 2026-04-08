@@ -77,9 +77,9 @@
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
 #'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
-#'   - `lwd` and `lty` control various graphical parameters.
+#'   - `linewidth` and `linetype` control various graphical parameters.
 #'   - `fontsize` overrides the overall font size of the plot.
 #'   - `ylim` controls axis limits.
 #'
@@ -144,7 +144,7 @@ variationPlot <- function(
   )
 
   # extra.args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # labels
   extra.args$ylab <- quickText(
@@ -153,12 +153,13 @@ variationPlot <- function(
     auto.text
   )
   extra.args$xlab <- quickText(extra.args$x %||% x, auto.text)
-  extra.args$main <- quickText(extra.args$main %||% "", auto.text)
-  extra.args$sub <- quickText(
-    extra.args$sub %||% create_varplot_sub_text(statistic, conf.int),
+  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
+  extra.args$caption <- quickText(
+    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int),
     auto.text
   )
-  extra.args$lty <- extra.args$lty %||% 1
+  extra.args$linetype <- extra.args$linetype %||% 1
 
   drop <- extra.args$drop %||% "none"
   extra.args$drop <- NULL
@@ -473,7 +474,7 @@ variationPlot <- function(
   poll_labels <- name.pol %||% levels(mydata$group)
 
   # linetypes
-  ltys <- extra.args$lty
+  ltys <- extra.args$linetype
   while (length(ltys) < nlevels(mydata$group)) {
     ltys <- c(ltys, ltys)
   }
@@ -499,8 +500,9 @@ variationPlot <- function(
       color = NULL,
       fill = NULL,
       linetype = NULL,
-      title = extra.args$main,
-      caption = extra.args$sub
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption
     ) +
     ggplot2::coord_cartesian(
       ylim = extra.args$ylim
@@ -535,7 +537,7 @@ variationPlot <- function(
   if (difference) {
     thePlot <-
       thePlot +
-      ggplot2::geom_hline(yintercept = 0, lty = 2)
+      ggplot2::geom_hline(yintercept = 0, linetype = 2)
   }
 
   # add geometries

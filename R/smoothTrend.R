@@ -61,11 +61,11 @@
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
 #'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
 #'   - `ylim` and `xlim` control axis limits.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
 #'   - `fontsize` overrides the overall font size of the plot.
-#'   - `cex`, `lwd`, `lty`, `alpha`, and `pch` control various graphical parameters.
+#'   - `size`, `linewidth`, `linetype`, `alpha`, and `shape` control various graphical parameters.
 #'
 #' @export
 #' @return an [openair][openair-package] object
@@ -80,7 +80,7 @@
 #' smoothTrend(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
 #'
 #' # several pollutants, no plotting symbol
-#' smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), pch = NA)
+#' smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), shape = NA)
 #'
 #' # percentiles
 #' smoothTrend(mydata,
@@ -91,7 +91,7 @@
 #' # several percentiles with control over lines used
 #' smoothTrend(mydata,
 #'   pollutant = "o3", statistic = "percentile",
-#'   percentile = c(5, 50, 95), lwd = c(1, 2, 1), lty = c(5, 1, 5)
+#'   percentile = c(5, 50, 95), linewidth = c(1, 2, 1), linetype = c(5, 1, 5)
 #' )
 #' }
 smoothTrend <- function(
@@ -130,7 +130,7 @@ smoothTrend <- function(
   key.position <- check_key_position(key.position, key)
 
   # extra.args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # validation checks
   if (length(pollutant) > 1 && length(percentile) > 1) {
@@ -153,14 +153,16 @@ smoothTrend <- function(
   }
 
   # Style controls w/ defaults
-  extra.args$lty <- extra.args$lty %||% 1L
-  extra.args$lwd <- extra.args$lwd %||% 1L
-  extra.args$pch <- extra.args$pch %||% 1L
-  extra.args$cex <- extra.args$cex %||% 1L
+  extra.args$linetype <- extra.args$linetype %||% 1L
+  extra.args$linewidth <- extra.args$linewidth %||% 1L
+  extra.args$shape <- extra.args$shape %||% 1L
+  extra.args$size <- extra.args$size %||% 1L
   extra.args$layout <- extra.args$layout %||% NULL
 
   # label controls
-  extra.args$main <- quickText(extra.args$main %||% "", auto.text)
+  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
+  extra.args$caption <- quickText(extra.args$caption %||% "", auto.text)
   extra.args$ylab <- quickText(
     extra.args$ylab %||% paste(pollutant, collapse = ", "),
     auto.text
@@ -266,15 +268,15 @@ smoothTrend <- function(
     ggplot2::geom_line(
       data = newdata,
       ggplot2::aes(color = .data$variable, y = .data$conc),
-      linewidth = extra.args$lwd / 2,
-      linetype = extra.args$lty,
+      linewidth = extra.args$linewidth,
+      linetype = extra.args$linetype,
       show.legend = FALSE
     ) +
     ggplot2::geom_point(
       data = newdata,
       ggplot2::aes(color = .data$variable, y = .data$conc),
-      size = extra.args$cex * 3,
-      shape = extra.args$pch,
+      size = extra.args$size,
+      shape = extra.args$shape,
       show.legend = dplyr::n_distinct(levels(newdata$variable)) > 1
     ) +
     ggplot2::geom_ribbon(
@@ -284,14 +286,14 @@ smoothTrend <- function(
         ymax = .data$upper,
         ymin = .data$lower
       ),
-      linewidth = extra.args$lwd,
+      linewidth = extra.args$linewidth,
       alpha = ifelse(ci, alpha, 0),
       show.legend = FALSE
     ) +
     ggplot2::geom_line(
       data = fit,
       ggplot2::aes(color = .data$variable, y = .data$pred),
-      linewidth = extra.args$lwd,
+      linewidth = extra.args$linewidth,
       show.legend = FALSE
     ) +
     gg_ref_x(ref.x = ref.x) +
@@ -328,7 +330,9 @@ smoothTrend <- function(
     ggplot2::labs(
       y = extra.args$ylab,
       x = extra.args$xlab,
-      title = extra.args$main,
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption,
       color = NULL,
       fill = NULL
     ) +

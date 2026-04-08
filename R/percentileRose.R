@@ -69,7 +69,7 @@
 #'
 #' @param ... Addition options are passed on to [cutData()] for `type` handling.
 #'   Some additional arguments are also available:
-#'   - `xlab`, `ylab` and `main` override the x-axis label, y-axis label, and plot title.
+#'   - `xlab`, `ylab` and `title` override the x-axis label, y-axis label, and plot title.
 #'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2 columns and 5 rows.
 #'   - `fontsize` overrides the overall font size of the plot.
 #'   - `lwd` overrides the line width for percentile lines when `fill = FALSE`.
@@ -227,14 +227,20 @@ percentileRose <- function(
   }
 
   # extra.args setup
-  extra.args <- list(...)
+  extra.args <- capture_dots(...)
 
   # label controls
   extra.args$xlab <- quickText(extra.args$xlab, auto.text)
   extra.args$ylab <- quickText(extra.args$ylab, auto.text)
-  extra.args$main <- quickText(extra.args$main, auto.text)
+  extra.args$title <- quickText(extra.args$title, auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
 
-  extra.args$lwd <- extra.args$lwd %||% 2
+  # separate handling for being overwritten
+  if ("caption" %in% names(extra.args)) {
+    extra.args$caption <- quickText(extra.args$caption, auto.text)
+  }
+
+  extra.args$linewidth <- extra.args$linewidth %||% 2
 
   # check if key.header / key.footer are being used
   key.title <- check_key_header(key.title, extra.args)
@@ -521,7 +527,9 @@ percentileRose <- function(
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
-      title = extra.args$main,
+      title = extra.args$title,
+      subtitle = extra.args$subtitle,
+      caption = extra.args$caption %||% sub
     ) +
     ggplot2::scale_colour_manual(
       values = c(
@@ -561,7 +569,7 @@ percentileRose <- function(
         thePlot +
         ggplot2::geom_line(
           ggplot2::aes(colour = .data[["percentile"]]),
-          linewidth = extra.args$lwd / 3,
+          linewidth = extra.args$linewidth / 3,
           show.legend = method != "cpf",
           key_glyph = ggplot2::draw_key_rect,
           position = ggplot2::position_identity()
@@ -575,13 +583,9 @@ percentileRose <- function(
       ggplot2::geom_line(
         data = plot_data |> dplyr::filter(.data$percentile == "Mean"),
         colour = mean.col,
-        linewidth = mean.lwd / 3,
+        linewidth = mean.lwd,
         linetype = mean.lty
       )
-  }
-
-  if (method == "cpf") {
-    thePlot <- thePlot + ggplot2::labs(caption = sub)
   }
 
   # make key full width/height

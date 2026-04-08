@@ -212,7 +212,7 @@ timeVariation <- function(
     )
   }
 
-  extra.args <- rlang::list2(...)
+  extra.args <- capture_dots(...)
 
   # month.last deprecation
   if ("month.last" %in% names(extra.args)) {
@@ -233,9 +233,10 @@ timeVariation <- function(
       ifelse(normalise, "normalised level", toString(pollutant)),
     auto.text
   )
-  extra.args$main <- quickText(extra.args$main %||% "", auto.text)
-  extra.args$sub <- quickText(
-    extra.args$sub %||% create_varplot_sub_text(statistic, conf.int),
+  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
+  extra.args$caption <- quickText(
+    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int),
     auto.text
   )
 
@@ -269,10 +270,12 @@ timeVariation <- function(
   }
 
   # title for overall and individual plots
-  overall.main <- extra.args$main
-  extra.args$main <- ""
-  overall.sub <- extra.args$sub
-  extra.args$sub <- ""
+  overall.title <- extra.args$title
+  extra.args$title <- ""
+  overall.subtitle <- extra.args$subtitle
+  extra.args$subtitle <- ""
+  overall.caption <- extra.args$caption
+  extra.args$caption <- ""
 
   # get the xvars and facets for each panel
   panels_x <- list()
@@ -357,8 +360,9 @@ timeVariation <- function(
       ) +
       patchwork::plot_layout(guides = "collect") &
       patchwork::plot_annotation(
-        title = overall.main,
-        caption = overall.sub
+        title = overall.title,
+        subtitle = overall.subtitle,
+        caption = overall.caption
       ) &
       theme_openair(key.position) &
       ggplot2::theme(

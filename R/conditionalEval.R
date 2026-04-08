@@ -117,7 +117,7 @@ conditionalEval <- function(
     cli::cli_abort("Only one type can be used with this function")
   }
 
-  extra.args <- rlang::list2(...)
+  extra.args <- capture_dots(...)
 
   # Determine mode: "other" (variable/date) or model-eval statistic
   other <- FALSE
@@ -440,8 +440,8 @@ conditionalEval <- function(
     return_data <- results
   }
 
-  if ("main" %in% names(extra.args)) {
-    title <- quickText(extra.args$main, auto.text)
+  if ("title" %in% names(extra.args)) {
+    title <- quickText(extra.args$title, auto.text)
     cq_plt <- cq_plt + ggplot2::labs(title = title)
     right_plt <- right_plt + ggplot2::labs(title = title)
   }
