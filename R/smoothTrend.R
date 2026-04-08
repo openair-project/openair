@@ -207,7 +207,13 @@ smoothTrend <- function(
     map_type(
       mydata,
       type = vars,
-      fun = \(df) deseason_smoothtrend_data(df, deseason = deseason, pollutant = pollutant),
+      fun = \(df) {
+        deseason_smoothtrend_data(
+          df,
+          deseason = deseason,
+          pollutant = pollutant
+        )
+      },
       .include_default = TRUE
     )
 
@@ -482,7 +488,9 @@ deseason_smoothtrend_data <- function(mydata, deseason, pollutant) {
     )
 
     was_na <- is.na(myts)
-    if (anyNA(myts)) myts <- fill_ts_gaps(myts, pollutant)
+    if (anyNA(myts)) {
+      myts <- fill_ts_gaps(myts, pollutant)
+    }
 
     ssd <- stats::stl(myts, s.window = 11, robust = TRUE, s.degree = 1)
 
