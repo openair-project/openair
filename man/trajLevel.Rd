@@ -148,6 +148,8 @@ differentiate them.}
 from 0 (full transparency) to 1 (full opacity). Setting it below 1 can help
 view trajectories, trajectory surfaces etc. \emph{and} a filled base map.}
 
+\item{map.lwd}{The map line width, a positive number, defaulting to \code{1}.}
+
 \item{map.lty}{The map line type. Line types can either be specified as an
 integer (\code{0} = blank, \code{1} = solid (default), \code{2} = dashed, \code{3} = dotted,
 \code{4} = dotdash, \code{5} = longdash, \code{6} = twodash) or as one of the character

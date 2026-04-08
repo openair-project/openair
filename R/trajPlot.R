@@ -61,7 +61,7 @@
 #'   from 0 (full transparency) to 1 (full opacity). Setting it below 1 can help
 #'   view trajectories, trajectory surfaces etc. *and* a filled base map.
 #'
-#' @param map.linewidth The map line width, a positive number, defaulting to `1`.
+#' @param map.lwd The map line width, a positive number, defaulting to `1`.
 #'
 #' @param map.lty The map line type. Line types can either be specified as an
 #'   integer (`0` = blank, `1` = solid (default), `2` = dashed, `3` = dotted,
@@ -320,7 +320,7 @@ trajPlot <- function(
         map.cols = map.cols,
         map.border = map.border,
         map.alpha = map.alpha,
-        map.lwd = map.linewidth,
+        map.lwd = map.lwd,
         map.lty = map.lty
       )
   }
@@ -467,7 +467,7 @@ layer_worldmap <- function(
   map.cols,
   map.border,
   map.alpha,
-  map.linewidth,
+  map.lwd,
   map.lty
 ) {
   map_sf <- rnaturalearth::ne_countries(scale = map.res) |>
@@ -489,7 +489,7 @@ layer_worldmap <- function(
     colour = map.border,
     fill = map.cols,
     alpha = map.alpha,
-    linewidth = map.linewidth / 10,
+    linewidth = map.lwd / 10,
     linetype = map.lty
   )
 }

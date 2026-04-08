@@ -363,7 +363,7 @@ capture_dots <- function(...) {
       transformed <- if (!is.null(mapping$transform)) {
         mapping$transform(value)
       } else {
-        setNames(list(value), mapping$to)
+        stats::setNames(list(value), mapping$to)
       }
       if (is.list(transformed) && !is.null(names(transformed))) {
         for (nm in names(transformed)) {
