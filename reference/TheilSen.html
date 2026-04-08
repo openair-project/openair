@@ -122,8 +122,7 @@ necessarily) a pollutant.</p></dd>
 <dt id="arg-deseason">deseason<a class="anchor" aria-label="anchor" href="#arg-deseason"></a></dt>
 <dd><p>Should the data be de-deasonalized first? If <code>TRUE</code> the
 function <code>stl</code> is used (seasonal trend decomposition using loess). Note
-that if <code>TRUE</code> missing data are first imputed using a Kalman filter and
-Kalman smooth.</p></dd>
+that if <code>TRUE</code> missing data are first imputed using a linear regression by month because <code>stl</code> cannot handle missing data. In this case the plot shows where the missing data have been imputed as a grey filled circle.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
