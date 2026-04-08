@@ -134,6 +134,7 @@ polarFreq <- function(
   ws.int = 1,
   wd.nint = 36,
   grid.line = 5,
+  limits = NULL,
   breaks = NULL,
   labels = NULL,
   cols = "default",

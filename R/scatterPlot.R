@@ -623,7 +623,8 @@ scatter_scatter <- function(
         pt_alpha,
         pt_shape,
         ln_width,
-        ln_type
+        ln_type,
+        extra.args = extra.args
       )
 
     ## continuous colour scale for z
@@ -661,7 +662,8 @@ scatter_scatter <- function(
         pt_alpha,
         NULL,
         ln_width,
-        ln_type
+        ln_type,
+        extra.args = extra.args
       )
 
     shape_vals <- if (!is.null(pt_shape)) {
@@ -711,7 +713,7 @@ scatter_scatter <- function(
         ln_width,
         ln_type,
         fixed_color = myColors[1L],
-        extra.args
+        extra.args = extra.args
       )
   }
 

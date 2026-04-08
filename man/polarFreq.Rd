@@ -11,6 +11,7 @@ polarFreq(
   ws.int = 1,
   wd.nint = 36,
   grid.line = 5,
+  limits = NULL,
   breaks = NULL,
   labels = NULL,
   cols = "default",
@@ -57,6 +58,8 @@ an interval of 0.5 may be more appropriate.}
 \item{wd.nint}{Number of intervals of wind direction.}
 
 \item{grid.line}{Radial spacing of grid lines.}
+
+\item{limits}{The limits of the colour bar (e.g., \code{c(0, 100)}).}
 
 \item{breaks, labels}{If a categorical colour scale is required then \code{breaks}
 should be specified. These should be provided as a numeric vector, e.g.,
@@ -171,8 +174,6 @@ plots; see \code{\link[ggplot2:geom_path]{ggplot2::geom_line()}} for more inform
 \item In polar coordinate plots, \code{annotate = FALSE} will remove the N/E/S/W
 labels and any other annotations.
 }}
-
-\item{limits}{The limits of the colour bar (e.g., \code{c(0, 100)}).}
 }
 \value{
 an \link[=openair-package]{openair} object
