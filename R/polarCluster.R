@@ -178,11 +178,6 @@ polarCluster <-
     extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
     extra.args$caption <- quickText(extra.args$caption, auto.text)
 
-    # layout default
-    if (!"layout" %in% names(extra.args)) {
-      extra.args$layout <- NULL
-    }
-
     # if considering differences
     if (is.data.frame(after)) {
       results.grid <- polarDiff(

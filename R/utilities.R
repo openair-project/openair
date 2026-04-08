@@ -303,7 +303,10 @@ capture_dots <- function(...) {
     font = list(to = "fontface", transform = NULL),
     fontfamily = list(to = "family", transform = NULL),
     main = list(to = "title", transform = NULL),
-    sub = list(to = "caption", transform = NULL)
+    sub = list(to = "caption", transform = NULL),
+    layout = list(to = c("ncol", "nrow"), transform = function(x) {
+      list(ncol = x[1], nrow = x[2])
+    })
   )
 
   lattice_only <- c(
@@ -357,10 +360,17 @@ capture_dots <- function(...) {
     if (param %in% names(extra.args)) {
       mapping <- lattice_map[[param]]
       value <- extra.args[[param]]
-      extra.args[[mapping$to]] <- if (!is.null(mapping$transform)) {
+      transformed <- if (!is.null(mapping$transform)) {
         mapping$transform(value)
       } else {
-        value
+        setNames(list(value), mapping$to)
+      }
+      if (is.list(transformed) && !is.null(names(transformed))) {
+        for (nm in names(transformed)) {
+          extra.args[[nm]] <- transformed[[nm]]
+        }
+      } else {
+        extra.args[[mapping$to]] <- transformed
       }
       extra.args[[param]] <- NULL
     }

@@ -92,7 +92,8 @@
 #'   type = "year",
 #'   pollutant = "o3",
 #'   col = "brewer1",
-#'   layout = c(4, 2)
+#'   ncol = 4,
+#'   nrow = 2
 #' )
 #'
 #' # percentile concentrations by season and day/nighttime..

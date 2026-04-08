@@ -116,8 +116,7 @@
 #'   - `xlim`, `ylim` and `limits` control the limits of the x-axis, y-axis and
 #'   colorbar scales.
 #'
-#'   - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have 2
-#'   columns and 5 rows.
+#'   - `ncol` and `nrow` set the number of columns and rows in a faceted plot.
 #'
 #'   - `fontsize` overrides the overall font size of the plot by setting the
 #'   `text` argument of [ggplot2::theme()]. It may also be applied

@@ -486,11 +486,6 @@ polarPlot <-
     key_header <- statistic
     key_footer <- paste(pollutant, collapse = ", ")
 
-    ## layout default
-    if (!"layout" %in% names(extra.args)) {
-      extra.args$layout <- NULL
-    }
-
     ## extract variables of interest
     vars <- c(wd, x, pollutant)
 
@@ -823,9 +818,10 @@ polarPlot <-
       }
     }
 
-    ## special handling of layout for uncertainty
-    if (uncertainty && is.null(extra.args$layout)) {
-      extra.args$layout <- c(3, 1)
+    ## special handling of nrow/ncol for uncertainty
+    if (uncertainty && is.null(extra.args$nrow) && is.null(extra.args$ncol)) {
+      extra.args$ncol <- 3L
+      extra.args$nrow <- 1L
     }
 
     # if uncertainty = TRUE, change type for plotting (3 panels)

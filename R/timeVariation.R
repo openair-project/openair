@@ -327,7 +327,8 @@ timeVariation <- function(
         args <- append(args, extra.args)
 
         if (i == 1) {
-          args$layout <- c(NA, 1)
+          args$nrow <- 1L
+          args$ncol <- NULL
         }
 
         do.call(variationPlot, args)

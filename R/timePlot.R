@@ -280,7 +280,6 @@ timePlot <- function(
 
   # style controls
   extra.args$shape <- extra.args$shape %||% NA
-  extra.args$layout <- extra.args$layout %||% NULL
 
   # check & cut data
   mydata <- prepare_timeplot_data(
@@ -336,8 +335,9 @@ timePlot <- function(
   # if stacking of plots by year is needed
   if (stack || all(type == "year")) {
     mydata$year <- as.character(lubridate::year(mydata$date))
-    if (is.null(extra.args$layout)) {
-      extra.args$layout <- c(1, length(unique(mydata$year)))
+    if (is.null(extra.args$nrow) && is.null(extra.args$ncol)) {
+      extra.args$ncol <- 1
+      extra.args$nrow <- length(unique(mydata$year))
     }
     lubridate::year(mydata$date) <- lubridate::year(mydata$date)[1]
     date.format <- date.format %||% "%b"
@@ -357,7 +357,7 @@ timePlot <- function(
     x_scale_fun <- ggplot2::scale_x_datetime
   }
 
-  # number of distinct pollutants (for panel layout / faceting)
+  # number of distinct pollutants (for faceting)
   npol <- length(unique(mydata$variable))
 
   # number of groups used for colour/linetype/linewidth aesthetics
@@ -389,14 +389,16 @@ timePlot <- function(
     extra.args$shape <- extra.args$shape[1:n_groups]
   }
 
-  # layout - stack vertically
+  # stack vertically
   if (
-    is.null(extra.args$layout) &&
+    is.null(extra.args$nrow) &&
+      is.null(extra.args$ncol) &&
       !isTRUE(group) &&
       !stack &&
       all(type == "default")
   ) {
-    extra.args$layout <- c(1, npol)
+    extra.args$ncol <- 1L
+    extra.args$nrow <- npol
   }
 
   # deal with type

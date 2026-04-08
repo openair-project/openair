@@ -149,7 +149,6 @@ smoothTrend <- function(
   extra.args$linewidth <- extra.args$linewidth %||% 1L
   extra.args$shape <- extra.args$shape %||% 1L
   extra.args$size <- extra.args$size %||% 1L
-  extra.args$layout <- extra.args$layout %||% NULL
 
   # label controls
   extra.args$title <- quickText(extra.args$title %||% "", auto.text)

@@ -6,7 +6,15 @@
 
 ## New Features
 
-- All plotting functions now take `ggplot2`-formatted parameter names (i.e., `linewidth` instead of `lwd`, `shape` instead of `pch`, etc.). All of `title`, `subtitle` and `caption` now can be passed (`title` replacing `main` and `caption` replacing `sub`), all of which are passed through `quickText()` if `auto.text = TRUE`.
+- Refinements to how parameters are passed via `...` to plotting functions:
+
+    - Graphical parameters are now defined using `ggplot2` conventions (e.g., `shape` over `pch`).
+    
+    - `base`/`lattice` paramters are automatically remapped to their `ggplot2` equivalent with a warning.
+    
+    - `nrow` and `ncol` can now be provided to control facet layout. As above, `layout` is automatically unpacked into `ncol` and `nrow` with a warning.
+
+    - `title`, `subtitle` and `caption` can be used throughout `openair` (`title` replacing `main` and `caption` replacing `sub`). All are passed through `quickText()` if `auto.text = TRUE`.
 
 - `timePlot()` now takes `shape` (or the legacy `pch`) in `...`, which will create line charts with markers. Multiple shapes can be provided - e.g., `shape = c(1, 2, 3)` - which will be recycled in the same way as line type or width.
 
