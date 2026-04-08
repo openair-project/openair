@@ -27,8 +27,7 @@
 #'
 #' @param deseason Should the data be de-deasonalized first? If `TRUE` the
 #'   function `stl` is used (seasonal trend decomposition using loess). Note
-#'   that if `TRUE` missing data are first imputed using a Kalman filter and
-#'   Kalman smooth.
+#'   that if `TRUE` missing data are first imputed using a linear regression by month because `stl` cannot handle missing data. In this case the plot shows where the missing data have been imputed as a grey filled circle.
 #'
 #' @param statistic Statistic used for calculating monthly values. Default is
 #'   `"mean"`, but can also be `"percentile"`. See [timeAverage()] for more

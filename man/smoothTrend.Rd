@@ -105,8 +105,7 @@ smoothing amount manually using \code{k}.}
 
 \item{deseason}{Should the data be de-deasonalized first? If \code{TRUE} the
 function \code{stl} is used (seasonal trend decomposition using loess). Note
-that if \code{TRUE} missing data are first imputed using a Kalman filter and
-Kalman smooth.}
+that if \code{TRUE} missing data are first imputed using a linear regression by month because \code{stl} cannot handle missing data. In this case the plot shows where the missing data have been imputed as a grey filled circle.}
 
 \item{simulate}{Should simulations be carried out to determine the
 Mann-Kendall tau and p-value. The default is \code{FALSE}. If \code{TRUE}, bootstrap
