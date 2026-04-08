@@ -69,8 +69,8 @@ cutData(
 
 - wd.res:
 
-  The resolution of wind direction bins; one of `4`, `8` (the default)
-  or `16`.
+  The number of wind direction bins; one of `4` (N/E/S/W), `8`
+  (N/NE/E/SE/etc., the default) or `16` (N/NNE/NE/ENE/etc.).
 
 - start.day:
 

@@ -31,7 +31,6 @@ smoothTrend(
   date.format = NULL,
   auto.text = TRUE,
   ci = TRUE,
-  alpha = 0.2,
   progress = TRUE,
   plot = TRUE,
   key = NULL,
@@ -269,11 +268,6 @@ smoothTrend(
 
   Should confidence intervals be plotted? The default is `TRUE`.
 
-- alpha:
-
-  The alpha transparency of shaded confidence intervals - if plotted. A
-  value of 0 is fully transparent and 1 is fully opaque.
-
 - progress:
 
   Show a progress bar when many groups make up `type`? Defaults to
@@ -296,20 +290,40 @@ smoothTrend(
 
   Addition options are passed on to
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-  for `type` handling. Some additional arguments are also available:
+  for `type` handling. Some additional arguments are also available,
+  varying somewhat in different plotting functions:
 
-  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
-    and plot title.
+  - `title`, `subtitle`, `caption`, `xlab` and `ylab` control the plot
+    title, subtitle, caption, x-axis label and y-axis label. All of
+    these are passed through to
+    [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+    if `auto.text = TRUE`.
 
-  - `ylim` and `xlim` control axis limits.
+  - `xlim`, `ylim` and `limits` control the limits of the x-axis, y-axis
+    and colorbar scales.
 
-  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
-    2 columns and 5 rows.
+  - `ncol` and `nrow` set the number of columns and rows in a faceted
+    plot.
 
-  - `fontsize` overrides the overall font size of the plot.
+  - `fontsize` overrides the overall font size of the plot by setting
+    the `text` argument of
+    [`ggplot2::theme()`](https://ggplot2.tidyverse.org/reference/theme.html).
+    It may also be applied proportionately to any `openair` annotations
+    (e.g., N/E/S/W labels on polar coordinate plots).
 
-  - `cex`, `lwd`, `lty`, `alpha`, and `pch` control various graphical
-    parameters.
+  - Various graphical parameters are also supported: `linewidth`,
+    `linetype`,` shape`, `size`, `border`, and `alpha`. Not all
+    parameters apply to all plots. These can take a single value, or a
+    vector of multiple values - e.g., `shape = c(1, 2)` - which will be
+    recycled to the length of values needed.
+
+  - `lineend`, `linejoin` and `linemitre` tweak the appearance of line
+    plots; see
+    [`ggplot2::geom_line()`](https://ggplot2.tidyverse.org/reference/geom_path.html)
+    for more information.
+
+  - In polar coordinate plots, `annotate = FALSE` will remove the
+    N/E/S/W labels and any other annotations.
 
 ## Value
 
@@ -366,7 +380,7 @@ if (FALSE) { # \dontrun{
 smoothTrend(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
 
 # several pollutants, no plotting symbol
-smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), pch = NA)
+smoothTrend(mydata, pollutant = c("no2", "o3", "pm10", "pm25"), shape = NA)
 
 # percentiles
 smoothTrend(mydata,
@@ -377,7 +391,7 @@ smoothTrend(mydata,
 # several percentiles with control over lines used
 smoothTrend(mydata,
   pollutant = "o3", statistic = "percentile",
-  percentile = c(5, 50, 95), lwd = c(1, 2, 1), lty = c(5, 1, 5)
+  percentile = c(5, 50, 95), linewidth = c(1, 2, 1), linetype = c(5, 1, 5)
 )
 } # }
 ```

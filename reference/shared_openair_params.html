@@ -191,6 +191,31 @@ to a file).</p></dd>
 <dd><p>Deprecated; please use <code>key.position</code>. If <code>FALSE</code>, sets
 <code>key.position</code> to <code>"none"</code>.</p></dd>
 
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Addition options are passed on to <code><a href="cutData.html">cutData()</a></code> for <code>type</code> handling.
+Some additional arguments are also available, varying somewhat in different
+plotting functions:</p><ul><li><p><code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>xlab</code> and <code>ylab</code> control the plot
+title, subtitle, caption, x-axis label and y-axis label. All of these are
+passed through to <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></li>
+<li><p><code>xlim</code>, <code>ylim</code> and <code>limits</code> control the limits of the x-axis, y-axis and
+colorbar scales.</p></li>
+<li><p><code>ncol</code> and <code>nrow</code> set the number of columns and rows in a faceted plot.</p></li>
+<li><p><code>fontsize</code> overrides the overall font size of the plot by setting the
+<code>text</code> argument of <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code>. It may also be applied
+proportionately to any <code>openair</code> annotations (e.g., N/E/S/W labels on polar
+coordinate plots).</p></li>
+<li><p>Various graphical parameters are also supported: <code>linewidth</code>,
+<code>linetype</code>,<code> shape</code>, <code>size</code>, <code>border</code>, and <code>alpha</code>. Not all parameters
+apply to all plots. These can take a single value, or a vector of multiple
+values - e.g., <code>shape = c(1, 2)</code> - which will be recycled to the length of
+values needed.</p></li>
+<li><p><code>lineend</code>, <code>linejoin</code> and <code>linemitre</code> tweak the appearance of line
+plots; see <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">ggplot2::geom_line()</a></code> for more information.</p></li>
+<li><p>In polar coordinate plots, <code>annotate = FALSE</code> will remove the N/E/S/W
+labels and any other annotations.</p></li>
+</ul></dd>
+
 </dl></div>
 
   </main></div>

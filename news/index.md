@@ -4,18 +4,56 @@
 
 ### Dependency Changes
 
-- `openair` now suggests `rnaturalearth` over `rnaturalearthdata`.
-  `rnaturalearthdata` is still required for a medium map resolution and
-  `rnaturalearthhires` for a high map resolution, but these are now
-  managed by `rnaturalearth` directly.
+- [openair](https://openair-project.github.io/openair/) now suggests
+  [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) over
+  [rnaturalearthdata](https://docs.ropensci.org/rnaturalearthdata/).
+  [rnaturalearthdata](https://docs.ropensci.org/rnaturalearthdata/) is
+  still required for a medium map resolution and `{rnaturalearthhires}`
+  for a high map resolution, but these are now managed by
+  [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) directly.
 
 ### New Features
 
-- [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
-  now takes `shape` (or `pch`) in `...`, which will create line charts
-  with markers. Multiple shapes can be provided - e.g.,
-  `shape = c(1, 2, 3)` - which will be recycled in the same way as line
-  type or width.
+- Refinements to how parameters are passed via `...` to plotting
+  functions:
+
+  - Graphical parameters are now defined using `ggplot2` conventions
+    (e.g., `shape` over `pch`).
+
+  - `base`/`lattice` paramters are automatically remapped to their
+    `ggplot2` equivalent with a warning.
+
+  - `nrow` and `ncol` can now be provided to control facet layout. As
+    above, `layout` is automatically unpacked into `ncol` and `nrow`
+    with a warning.
+
+  - `title`, `subtitle` and `caption` can be used throughout `openair`
+    (`title` replacing `main` and `caption` replacing `sub`). All are
+    passed through
+    [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+    if `auto.text = TRUE`.
+
+  - `lineend`, `linejoin` and `linemitre` tweak the appearance of line
+    plots; see
+    [`ggplot2::geom_line()`](https://ggplot2.tidyverse.org/reference/geom_path.html)
+    for more information.
+
+- Additional interaction between `...` parameters and various plots:
+
+  - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
+    now takes `shape` to add markers to the line chart. This can be a
+    vector to vary with pollutant/group.
+
+  - [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md)
+    now takes `linewidth` and `linetype` to control `border` style.
+
+  - [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md)
+    now takes `linewidth`, `linetype`, `shape` and `alpha`.
+
+  - [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
+    now takes `linetype`, `linewidth`, `shape` and `size`. These can be
+    vectors to vary based on pollutant. The linewidth of the data will
+    always be half of that of the model.
 
 - [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
   will now use `loess` when it has insufficient data to fit a GAM.
@@ -128,8 +166,10 @@ CRAN release: 2026-04-02
   has been almost completely rewritten. It is now a thin wrapper around
   the new
   [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md),
-  which can take any arbitrary `x` value - passed to \[cutData()\] - to
-  use for its x-axis. Furthermore, it has gained the following changes:
+  which can take any arbitrary `x` value - passed to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md) -
+  to use for its x-axis. Furthermore, it has gained the following
+  changes:
 
   - Gained the `panels` argument. This allows for panels other than
     “hour.weekday”, “hour”, “month”, and “weekday” to be represented in
@@ -153,8 +193,11 @@ CRAN release: 2026-04-02
 - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
   refinements:
 
-  - `group` can now take a character string, passed to \[cutData()\] via
-    \[timeAverage()\]. This works similarly to `group` in
+  - `group` can now take a character string, passed to
+    [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+    via
+    [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md).
+    This works similarly to `group` in
     [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
     in that it colours traces within the panel, rather than splitting
     them into multiple panels.

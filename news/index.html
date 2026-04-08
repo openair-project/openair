@@ -56,11 +56,25 @@
 <div class="section level3">
 <h3 id="dependency-changes-development-version">Dependency Changes<a class="anchor" aria-label="anchor" href="#dependency-changes-development-version"></a></h3>
 <ul><li>
-<code>openair</code> now suggests <code>rnaturalearth</code> over <code>rnaturalearthdata</code>. <code>rnaturalearthdata</code> is still required for a medium map resolution and <code>rnaturalearthhires</code> for a high map resolution, but these are now managed by <code>rnaturalearth</code> directly.</li>
+<a href="https://openair-project.github.io/openair/">openair</a> now suggests <a href="https://docs.ropensci.org/rnaturalearth/" class="external-link">rnaturalearth</a> over <a href="https://docs.ropensci.org/rnaturalearthdata/" class="external-link">rnaturalearthdata</a>. <a href="https://docs.ropensci.org/rnaturalearthdata/" class="external-link">rnaturalearthdata</a> is still required for a medium map resolution and <code>{rnaturalearthhires}</code> for a high map resolution, but these are now managed by <a href="https://docs.ropensci.org/rnaturalearth/" class="external-link">rnaturalearth</a> directly.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
-<ul><li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> now takes <code>shape</code> (or <code>pch</code>) in <code>...</code>, which will create line charts with markers. Multiple shapes can be provided - e.g., <code>shape = c(1, 2, 3)</code> - which will be recycled in the same way as line type or width.</p></li>
+<ul><li>
+<p>Refinements to how parameters are passed via <code>...</code> to plotting functions:</p>
+<ul><li><p>Graphical parameters are now defined using <code>ggplot2</code> conventions (e.g., <code>shape</code> over <code>pch</code>).</p></li>
+<li><p><code>base</code>/<code>lattice</code> paramters are automatically remapped to their <code>ggplot2</code> equivalent with a warning.</p></li>
+<li><p><code>nrow</code> and <code>ncol</code> can now be provided to control facet layout. As above, <code>layout</code> is automatically unpacked into <code>ncol</code> and <code>nrow</code> with a warning.</p></li>
+<li><p><code>title</code>, <code>subtitle</code> and <code>caption</code> can be used throughout <code>openair</code> (<code>title</code> replacing <code>main</code> and <code>caption</code> replacing <code>sub</code>). All are passed through <code><a href="../reference/quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></li>
+<li><p><code>lineend</code>, <code>linejoin</code> and <code>linemitre</code> tweak the appearance of line plots; see <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">ggplot2::geom_line()</a></code> for more information.</p></li>
+</ul></li>
+<li>
+<p>Additional interaction between <code>...</code> parameters and various plots:</p>
+<ul><li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> now takes <code>shape</code> to add markers to the line chart. This can be a vector to vary with pollutant/group.</p></li>
+<li><p><code><a href="../reference/timeProp.html">timeProp()</a></code> now takes <code>linewidth</code> and <code>linetype</code> to control <code>border</code> style.</p></li>
+<li><p><code><a href="../reference/TheilSen.html">TheilSen()</a></code> now takes <code>linewidth</code>, <code>linetype</code>, <code>shape</code> and <code>alpha</code>.</p></li>
+<li><p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> now takes <code>linetype</code>, <code>linewidth</code>, <code>shape</code> and <code>size</code>. These can be vectors to vary based on pollutant. The linewidth of the data will always be half of that of the model.</p></li>
+</ul></li>
 <li><p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> will now use <code>loess</code> when it has insufficient data to fit a GAM.</p></li>
 <li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> regain the <code>map.res</code> argument. This is passed to <code><a href="https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html" class="external-link">rnaturalearth::ne_countries()</a></code> so can take three different resolutions.</p></li>
 <li><p><code><a href="../reference/cutData.html">cutData()</a></code> gains the <code>wd.res</code> argument, which can take one of <code>4</code>, <code>8</code>, or <code>16</code>, defaulting to <code>8</code>. <code>4</code> cuts the data into North, East, South and West. <code>16</code> cuts the data into N, NNE, NE, ENE, etc. All plotting function’s <code>type</code> argument now responds to this, showing only four panels when <code>wd.res = 4</code> and a 5x5 grid of sixteen panels when <code>wd.res = 16</code>.</p></li>
@@ -97,7 +111,7 @@
 <div class="section level3">
 <h3 id="new-features-3-0-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-3-0-0"></a></h3>
 <ul><li>
-<p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> has been almost completely rewritten. It is now a thin wrapper around the new <code><a href="../reference/variationPlot.html">variationPlot()</a></code>, which can take any arbitrary <code>x</code> value - passed to [cutData()] - to use for its x-axis. Furthermore, it has gained the following changes:</p>
+<p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> has been almost completely rewritten. It is now a thin wrapper around the new <code><a href="../reference/variationPlot.html">variationPlot()</a></code>, which can take any arbitrary <code>x</code> value - passed to <code><a href="../reference/cutData.html">cutData()</a></code> - to use for its x-axis. Furthermore, it has gained the following changes:</p>
 <ul><li><p>Gained the <code>panels</code> argument. This allows for panels other than “hour.weekday”, “hour”, “month”, and “weekday” to be represented in the plot assembly.</p></li>
 <li><p>When <code>key</code> is <code>FALSE</code>, no key is shown for any of the four <code><a href="../reference/timeVariation.html">timeVariation()</a></code> plots. Previously, any value passed to <code>key</code> would cause all four plots to display a key.</p></li>
 <li><p>(!) BREAKING: The order of <code>xlab</code> and <code>ylim</code> now matches the order of <code>panels</code>. <code>month.last</code> has also been deprecated; if used and <code>TRUE</code>, this will override <code>panels</code> with a warning. The output names <code>output$data</code> will now vary based on <code>panels</code>, and the <code>type</code> column will be named <code>{type}_type</code> (e.g., “hour_type”).</p></li>
@@ -105,7 +119,7 @@
 </ul></li>
 <li>
 <p><code><a href="../reference/timePlot.html">timePlot()</a></code> refinements:</p>
-<ul><li><p><code>group</code> can now take a character string, passed to [cutData()] via [timeAverage()]. This works similarly to <code>group</code> in <code><a href="../reference/timeVariation.html">timeVariation()</a></code> in that it colours traces within the panel, rather than splitting them into multiple panels.</p></li>
+<ul><li><p><code>group</code> can now take a character string, passed to <code><a href="../reference/cutData.html">cutData()</a></code> via <code><a href="../reference/timeAverage.html">timeAverage()</a></code>. This works similarly to <code>group</code> in <code><a href="../reference/timeVariation.html">timeVariation()</a></code> in that it colours traces within the panel, rather than splitting them into multiple panels.</p></li>
 <li><p>Gained the <code>x.relation</code> argument, allowing for different x ranges on different panels.</p></li>
 </ul></li>
 <li>

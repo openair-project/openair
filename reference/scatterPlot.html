@@ -367,12 +367,25 @@ to a file).</p></dd>
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>Addition options are passed on to <code><a href="cutData.html">cutData()</a></code> for <code>type</code> handling.
-Some additional arguments are also available:</p><ul><li><p><code>xlab</code>, <code>ylab</code> and <code>main</code> override the x-axis label, y-axis label, and plot title.</p></li>
-<li><p><code>layout</code> sets the layout of facets - e.g., <code>layout(2, 5)</code> will have 2 columns and 5 rows.</p></li>
-<li><p><code>fontsize</code> overrides the overall font size of the plot.</p></li>
-<li><p><code>cex</code>, <code>lwd</code>, <code>lty</code>, <code>alpha</code>, <code>pch</code> and <code>border</code> control various graphical parameters.</p></li>
-<li><p>For <code>method = "hexbin"</code> a log-scale fill is applied by default; pass <code>trans = NULL</code> to disable or
-provide custom <code>trans</code> and <code>inv</code> transform functions. <code>bins</code> controls the number of bins.</p></li>
+Some additional arguments are also available, varying somewhat in different
+plotting functions:</p><ul><li><p><code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>xlab</code> and <code>ylab</code> control the plot
+title, subtitle, caption, x-axis label and y-axis label. All of these are
+passed through to <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></li>
+<li><p><code>xlim</code>, <code>ylim</code> and <code>limits</code> control the limits of the x-axis, y-axis and
+colorbar scales.</p></li>
+<li><p><code>ncol</code> and <code>nrow</code> set the number of columns and rows in a faceted plot.</p></li>
+<li><p><code>fontsize</code> overrides the overall font size of the plot by setting the
+<code>text</code> argument of <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code>. It may also be applied
+proportionately to any <code>openair</code> annotations (e.g., N/E/S/W labels on polar
+coordinate plots).</p></li>
+<li><p>Various graphical parameters are also supported: <code>linewidth</code>,
+<code>linetype</code>,<code> shape</code>, <code>size</code>, <code>border</code>, and <code>alpha</code>. Not all parameters
+apply to all plots. These can take a single value, or a vector of multiple
+values - e.g., <code>shape = c(1, 2)</code> - which will be recycled to the length of
+values needed.</p></li>
+<li><p>For <code>method = "hexbin"</code> a log-scale fill is applied by default;
+pass <code>trans = NULL</code> to disable or provide custom <code>trans</code> and <code>inv</code>
+transform functions. <code>bins</code> controls the number of bins.</p></li>
 <li><p><code>date.format</code> controls the format of date-time x-axes.</p></li>
 </ul></dd>
 
@@ -444,11 +457,11 @@ times and other statistics in a flexible way</p></div>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># example of the use of continuous where colour is used to show</span></span></span>
 <span class="r-in"><span><span class="co"># different levels of a third (numeric) variable</span></span></span>
-<span class="r-in"><span><span class="co"># plot daily averages and choose a filled plot symbol (pch = 16)</span></span></span>
+<span class="r-in"><span><span class="co"># plot daily averages and choose a filled plot symbol (shape = 16)</span></span></span>
 <span class="r-in"><span><span class="co"># select only 2004</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">dat2004</span>, x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, z <span class="op">=</span> <span class="st">"co"</span>, avg.time <span class="op">=</span> <span class="st">"day"</span>, pch <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">dat2004</span>, x <span class="op">=</span> <span class="st">"nox"</span>, y <span class="op">=</span> <span class="st">"no2"</span>, z <span class="op">=</span> <span class="st">"co"</span>, avg.time <span class="op">=</span> <span class="st">"day"</span>, shape <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># show linear fit, by year</span></span></span>
 <span class="r-in"><span><span class="fu">scatterPlot</span><span class="op">(</span><span class="va">mydata</span>,</span></span>

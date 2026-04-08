@@ -187,17 +187,40 @@ corPlot(
 
   Addition options are passed on to
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-  for `type` handling. Some additional arguments are also available:
+  for `type` handling. Some additional arguments are also available,
+  varying somewhat in different plotting functions:
 
-  - `xlab`, `ylab` and `main` override the x-axis label, y-axis label,
-    and plot title.
+  - `title`, `subtitle`, `caption`, `xlab` and `ylab` control the plot
+    title, subtitle, caption, x-axis label and y-axis label. All of
+    these are passed through to
+    [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+    if `auto.text = TRUE`.
 
-  - `layout` sets the layout of facets - e.g., `layout(2, 5)` will have
-    2 columns and 5 rows.
+  - `xlim`, `ylim` and `limits` control the limits of the x-axis, y-axis
+    and colorbar scales.
 
-  - `fontsize` overrides the overall font size of the plot.
+  - `ncol` and `nrow` set the number of columns and rows in a faceted
+    plot.
 
-  - `border` sets the border colour of each ellipse.
+  - `fontsize` overrides the overall font size of the plot by setting
+    the `text` argument of
+    [`ggplot2::theme()`](https://ggplot2.tidyverse.org/reference/theme.html).
+    It may also be applied proportionately to any `openair` annotations
+    (e.g., N/E/S/W labels on polar coordinate plots).
+
+  - Various graphical parameters are also supported: `linewidth`,
+    `linetype`,` shape`, `size`, `border`, and `alpha`. Not all
+    parameters apply to all plots. These can take a single value, or a
+    vector of multiple values - e.g., `shape = c(1, 2)` - which will be
+    recycled to the length of values needed.
+
+  - `lineend`, `linejoin` and `linemitre` tweak the appearance of line
+    plots; see
+    [`ggplot2::geom_line()`](https://ggplot2.tidyverse.org/reference/geom_path.html)
+    for more information.
+
+  - In polar coordinate plots, `annotate = FALSE` will remove the
+    N/E/S/W labels and any other annotations.
 
 ## Value
 

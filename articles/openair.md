@@ -158,7 +158,7 @@ However, the real flexibility comes from being able to use the type
 option.
 
 ``` r
-windRose(mydata, type = "year", layout = c(4, 2), width = 0.4)
+windRose(mydata, type = "year", ncol = 4, nrow = 2, width = 0.4)
 ```
 
 ![](openair_files/figure-html/windrose2-1.png)
