@@ -250,28 +250,45 @@ pad_string <- function(y, n = NULL) {
 #' @noRd
 fill_ts_gaps <- function(myts, pollutant) {
   n_missing <- sum(is.na(myts))
-  val_str <- sprintf("%d missing monthly value%s found in '%s'.",
-                     n_missing, if (n_missing == 1) "" else "s", pollutant)
-  gap_str <- sprintf("%s filled using a linear model fitted per calendar month before deseasonalising.",
-                     if (n_missing == 1) "Gap" else "Gaps")
+  val_str <- sprintf(
+    "%d missing monthly value%s found in '%s'.",
+    n_missing,
+    if (n_missing == 1) "" else "s",
+    pollutant
+  )
+  gap_str <- sprintf(
+    "%s filled using a linear model fitted per calendar month before deseasonalising.",
+    if (n_missing == 1) "Gap" else "Gaps"
+  )
   cli::cli_inform(c("!" = val_str, "i" = gap_str))
   overall_mean <- mean(myts, na.rm = TRUE)
-  filled <- dplyr::tibble(value = as.numeric(myts), month = cycle(myts), t = seq_along(myts)) |>
-    tidyr::nest(.by = month) |>
-    dplyr::mutate(pred = purrr::map(data, function(d) {
-      obs <- dplyr::filter(d, !is.na(value))
-      fitted <- if (nrow(obs) >= 2) {
-        as.numeric(stats::predict(stats::lm(value ~ t, data = obs), newdata = d))
-      } else {
-        rep(if (nrow(obs) == 1) obs$value else overall_mean, nrow(d))
-      }
-      dplyr::mutate(d, pred = fitted)
-    })) |>
-    dplyr::select(pred) |>
-    tidyr::unnest(pred) |>
-    dplyr::arrange(t) |>
-    dplyr::mutate(value = dplyr::if_else(is.na(value), pred, value)) |>
-    dplyr::pull(value)
+  filled <- dplyr::tibble(
+    value = as.numeric(myts),
+    month = stats::cycle(myts),
+    t = seq_along(myts)
+  ) |>
+    tidyr::nest(.by = "month") |>
+    dplyr::mutate(
+      pred = purrr::map(.data$data, function(d) {
+        obs <- dplyr::filter(d, !is.na(.data$value))
+        fitted <- if (nrow(obs) >= 2) {
+          as.numeric(stats::predict(
+            stats::lm(value ~ t, data = obs),
+            newdata = d
+          ))
+        } else {
+          rep(if (nrow(obs) == 1) obs$value else overall_mean, nrow(d))
+        }
+        dplyr::mutate(d, pred = fitted)
+      })
+    ) |>
+    dplyr::select("pred") |>
+    tidyr::unnest("pred") |>
+    dplyr::arrange("t") |>
+    dplyr::mutate(
+      value = dplyr::if_else(is.na(.data$value), .data$pred, .data$value)
+    ) |>
+    dplyr::pull("value")
   myts[] <- filled
   myts
 }
