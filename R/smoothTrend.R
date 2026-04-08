@@ -207,7 +207,7 @@ smoothTrend <- function(
     map_type(
       mydata,
       type = vars,
-      fun = \(df) deseason_smoothtrend_data(df, deseason = deseason),
+      fun = \(df) deseason_smoothtrend_data(df, deseason = deseason, pollutant = pollutant),
       .include_default = TRUE
     )
 
@@ -276,6 +276,15 @@ smoothTrend <- function(
       size = extra.args$cex * 3,
       shape = extra.args$pch,
       show.legend = dplyr::n_distinct(levels(newdata$variable)) > 1
+    ) +
+    ggplot2::geom_point(
+      data = dplyr::filter(newdata, .data$imputed),
+      ggplot2::aes(y = .data$conc),
+      size = extra.args$cex * 3,
+      shape = 21,
+      fill = "grey50",
+      colour = "grey20",
+      show.legend = FALSE
     ) +
     ggplot2::geom_ribbon(
       data = fit,
@@ -441,7 +450,7 @@ prepare_smoothtrend_data <- function(
 
 #' Apply deaseason, if requested
 #' @noRd
-deseason_smoothtrend_data <- function(mydata, deseason) {
+deseason_smoothtrend_data <- function(mydata, deseason, pollutant) {
   # return if nothing to analyse
   if (all(is.na(mydata$value))) {
     return(data.frame(date = NA, conc = NA))
@@ -472,15 +481,8 @@ deseason_smoothtrend_data <- function(mydata, deseason) {
       frequency = 12
     )
 
-    # fill any missing data using a Kalman filter
-
-    if (anyNA(myts)) {
-      # use forecast package to get best arima
-      fit <- stats::ts(rowSums(stats::tsSmooth(stats::StructTS(myts))[, -2]))
-      id <- which(is.na(myts))
-
-      myts[id] <- fit[id]
-    }
+    was_na <- is.na(myts)
+    if (anyNA(myts)) myts <- fill_ts_gaps(myts, pollutant)
 
     ssd <- stats::stl(myts, s.window = 11, robust = TRUE, s.degree = 1)
 
@@ -490,12 +492,14 @@ deseason_smoothtrend_data <- function(mydata, deseason) {
     results <- data.frame(
       date = mydata$date,
       conc = as.vector(deseas),
+      imputed = was_na,
       stringsAsFactors = FALSE
     )
   } else {
     results <- data.frame(
       date = mydata$date,
       conc = mydata[["value"]],
+      imputed = FALSE,
       stringsAsFactors = FALSE
     )
   }

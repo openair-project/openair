@@ -239,6 +239,43 @@ pad_string <- function(y, n = NULL) {
   y
 }
 
+#' Fill missing values in a monthly ts object using lm per calendar month
+#'
+#' For each calendar month, fits a linear model of value ~ time index using
+#' available observations, then predicts at missing positions. Falls back to
+#' the single observed value (1 obs) or the overall mean (0 obs).
+#'
+#' @param myts A \code{ts} object with frequency 12.
+#' @param pollutant Character string naming the pollutant, used in the message.
+#' @noRd
+fill_ts_gaps <- function(myts, pollutant) {
+  n_missing <- sum(is.na(myts))
+  val_str <- sprintf("%d missing monthly value%s found in '%s'.",
+                     n_missing, if (n_missing == 1) "" else "s", pollutant)
+  gap_str <- sprintf("%s filled using a linear model fitted per calendar month before deseasonalising.",
+                     if (n_missing == 1) "Gap" else "Gaps")
+  cli::cli_inform(c("!" = val_str, "i" = gap_str))
+  overall_mean <- mean(myts, na.rm = TRUE)
+  filled <- dplyr::tibble(value = as.numeric(myts), month = cycle(myts), t = seq_along(myts)) |>
+    tidyr::nest(.by = month) |>
+    dplyr::mutate(pred = purrr::map(data, function(d) {
+      obs <- dplyr::filter(d, !is.na(value))
+      fitted <- if (nrow(obs) >= 2) {
+        as.numeric(stats::predict(stats::lm(value ~ t, data = obs), newdata = d))
+      } else {
+        rep(if (nrow(obs) == 1) obs$value else overall_mean, nrow(d))
+      }
+      dplyr::mutate(d, pred = fitted)
+    })) |>
+    dplyr::select(pred) |>
+    tidyr::unnest(pred) |>
+    dplyr::arrange(t) |>
+    dplyr::mutate(value = dplyr::if_else(is.na(value), pred, value)) |>
+    dplyr::pull(value)
+  myts[] <- filled
+  myts
+}
+
 #' Simple block bootstrap, overlapping blocks, no wrap-around,
 #' no matching of ends
 #' @param n length of data
