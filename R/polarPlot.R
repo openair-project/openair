@@ -427,7 +427,7 @@ polarPlot <-
       stop("Maximum number of types is 2.")
     }
 
-    ## can't have conditioning here
+    # can't have conditioning here
     if (uncertainty) {
       type <- "default"
     }
@@ -461,14 +461,15 @@ polarPlot <-
     # check key.position
     key.position <- check_key_position(key.position, key)
 
-    ## extra.args setup
+    # extra.args setup
     extra.args <- capture_dots(...)
 
-    ## label controls
+    # label controls
     extra.args$xlab <- quickText(extra.args$xlab, auto.text)
     extra.args$ylab <- quickText(extra.args$ylab, auto.text)
     extra.args$title <- quickText(extra.args$title, auto.text)
     extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+    extra.args$annotate <- extra.args$annotate %||% TRUE
 
     # separate handling for being overwritten
     if ("caption" %in% names(extra.args)) {
@@ -482,11 +483,11 @@ polarPlot <-
       FALSE
     }
 
-    ## need to initialise key_header & key_footer for later combination
+    # need to initialise key_header & key_footer for later combination
     key_header <- statistic
     key_footer <- paste(pollutant, collapse = ", ")
 
-    ## extract variables of interest
+    # extract variables of interest
     vars <- c(wd, x, pollutant)
 
     if (statistic == "york_slope") {
@@ -531,7 +532,7 @@ polarPlot <-
         type <- type[1]
       }
 
-      ## use pollutants as conditioning variables
+      # use pollutants as conditioning variables
       mydata <- tidyr::gather(
         mydata,
         key = "variable",
@@ -539,7 +540,7 @@ polarPlot <-
         dplyr::all_of(pollutant),
         factor_key = TRUE
       )
-      ## now set pollutant to "value"
+      # now set pollutant to "value"
       pollutant <- "value"
 
       if (type == "default") {
@@ -549,13 +550,13 @@ polarPlot <-
       }
     }
 
-    ## cutData depending on type
+    # cutData depending on type
     mydata <- cutData(mydata, type, ...)
 
-    ## if upper ws not set, set it to the max to display all information
+    # if upper ws not set, set it to the max to display all information
     max.ws <- max(mydata[[x]], na.rm = TRUE)
     min.ws <- min(mydata[[x]], na.rm = TRUE)
-    clip <- TRUE ## used for removing data where ws > upper
+    clip <- TRUE # used for removing data where ws > upper
 
     if (is.na(upper)) {
       upper <- max.ws
@@ -567,12 +568,12 @@ polarPlot <-
 
     int <- 51
 
-    ## binning wd data properly
-    ## use 10 degree binning of wd if already binned, else 5
+    # binning wd data properly
+    # use 10 degree binning of wd if already binned, else 5
     if (all(mydata[[wd]] %% 10 == 0, na.rm = TRUE)) {
       wd.int <- 10
     } else {
-      if (toupper(statistic) == "NWR") wd.int <- 2 else wd.int <- 5 ## how to split wd
+      if (toupper(statistic) == "NWR") wd.int <- 2 else wd.int <- 5 # how to split wd
     }
 
     if (toupper(statistic) == "NWR") {
@@ -586,29 +587,29 @@ polarPlot <-
     } # limit any smoothing
 
     ws.seq <- seq(min.ws, max.ws, length = ws_bins)
-    wd.seq <- seq(from = wd.int, to = 360, by = wd.int) ## wind directions from wd.int to 360
+    wd.seq <- seq(from = wd.int, to = 360, by = wd.int) # wind directions from wd.int to 360
     ws.wd <- expand.grid(x = ws.seq, wd = wd.seq)
 
-    u <- with(ws.wd, x * sin(pi * wd / 180)) ## convert to polar coords
+    u <- with(ws.wd, x * sin(pi * wd / 180)) # convert to polar coords
     v <- with(ws.wd, x * cos(pi * wd / 180))
 
-    ## data to predict over
+    # data to predict over
     input.data <- expand.grid(
       u = seq(-upper, upper, length = int),
       v = seq(-upper, upper, length = int)
     )
 
-    ## Pval is only set in the CPF branch; initialise to NULL so it always exists
+    # Pval is only set in the CPF branch; initialise to NULL so it always exists
     Pval <- NULL
 
     if (statistic == "cpf") {
-      ## can be interval of percentiles or a single (threshold)
+      # can be interval of percentiles or a single (threshold)
       if (length(percentile) > 1) {
         statistic <- "cpfi" # CPF interval
 
         if (length(percentile) == 3) {
-          ## in this case there is a trim value as a proprtion of the mean
-          ## if this value <0 use absolute values as range
+          # in this case there is a trim value as a proprtion of the mean
+          # if this value <0 use absolute values as range
           Mean <- mean(mydata[[pollutant]], na.rm = TRUE)
 
           if (percentile[3] < 0) {
@@ -656,12 +657,28 @@ polarPlot <-
         )
         if (!formula.label) sub <- NULL # no label
       }
+    } else if (
+      formula.label &&
+        grepl("slope|intercept", statistic) &&
+        length(pollutant) == 2
+    ) {
+      sub <- paste0("Formula: ", pollutant[1], " = m.", pollutant[2], " + c")
     } else {
       sub <- NULL
     }
 
-    ## Thin wrapper — delegates to polar_prepare_grid() with all dependencies
-    ## passed explicitly rather than captured from the enclosing scope.
+    # define radial axis
+    if (extra.args$annotate) {
+      # label radial axis
+      sub <- quickText(paste(
+        paste0("Radial axis shows ", x),
+        sub,
+        sep = "\n"
+      ))
+    }
+
+    # Thin wrapper — delegates to polar_prepare_grid() with all dependencies
+    # passed explicitly rather than captured from the enclosing scope.
     prepare.grid <- function(mydata) {
       polar_prepare_grid(
         mydata = mydata,
@@ -696,10 +713,9 @@ polarPlot <-
       )
     }
 
-    ## if min.bin >1 show the missing data. Work this out by running twice:
-    ## first time with no missings, second with min.bin.
-    ## Plot one surface on top of the other.
-
+    # if min.bin >1 show the missing data. Work this out by running twice:
+    # first time with no missings, second with min.bin.
+    # Plot one surface on top of the other.
     if (!missing(min.bin)) {
       tmp <- min.bin
       min.bin <- 0
@@ -731,18 +747,18 @@ polarPlot <-
       )
     }
 
-    ## with CPF make sure not >1 due to surface fitting
+    # with CPF make sure not >1 due to surface fitting
     if (any(res$z > 1, na.rm = TRUE) && statistic %in% c("cpf", "cpfi")) {
       id <- which(res$z > 1)
       res$z[id] <- 1
     }
 
-    ## remove wind speeds > upper to make a circle
+    # remove wind speeds > upper to make a circle
     if (clip) {
       res$z[(res$u^2 + res$v^2)^0.5 > upper] <- NA
     }
 
-    ## normalise by divining by mean conditioning value if needed
+    # normalise by divining by mean conditioning value if needed
     if (normalise) {
       res <- dplyr::mutate(
         res,
@@ -818,7 +834,7 @@ polarPlot <-
       }
     }
 
-    ## special handling of nrow/ncol for uncertainty
+    # special handling of nrow/ncol for uncertainty
     if (uncertainty && is.null(extra.args$nrow) && is.null(extra.args$ncol)) {
       extra.args$ncol <- 3L
       extra.args$nrow <- 1L
@@ -906,7 +922,7 @@ polarPlot <-
       set_extra_fontsize(extra.args) +
       annotate_compass_points(
         size = ifelse(
-          extra.args$annotate %||% TRUE,
+          extra.args$annotate,
           if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
           0
         )
@@ -916,20 +932,8 @@ polarPlot <-
         x = extra.args$xlab,
         y = extra.args$ylab,
         title = extra.args$title,
-        subtitle = extra.args$subtitle %||% sub,
-        caption = extra.args$caption %||%
-          if (
-            formula.label &&
-              grepl("slope|intercept", statistic) &&
-              length(pollutant) == 2
-          ) {
-            quickText(
-              paste0("Formula: ", pollutant[1], " = m.", pollutant[2], " + c"),
-              auto.text
-            )
-          } else {
-            NULL
-          }
+        subtitle = extra.args$subtitle,
+        caption = extra.args$caption %||% sub
       ) +
       {
         if (key.position %in% c("left", "right")) {
@@ -984,16 +988,16 @@ polarPlot <-
   }
 
 
-## Top-level surface-fitting worker for polarPlot().
-##
-## In the original code this was a nested closure (prepare.grid) that implicitly
-## captured ~25 variables from the enclosing polarPlot() scope.  Lifting it to a
-## top-level function makes every dependency explicit, improves readability, and
-## allows independent testing.
-##
-## Parameters mirror the variables previously captured from polarPlot():
-##   wd_col / x_col  — column names for wind direction and the radial variable
-##                     (renamed to avoid shadowing the local cut() results)
+# Top-level surface-fitting worker for polarPlot().
+#
+# In the original code this was a nested closure (prepare.grid) that implicitly
+# captured ~25 variables from the enclosing polarPlot() scope.  Lifting it to a
+# top-level function makes every dependency explicit, improves readability, and
+# allows independent testing.
+#
+# Parameters mirror the variables previously captured from polarPlot():
+#   wd_col / x_col  — column names for wind direction and the radial variable
+#                     (renamed to avoid shadowing the local cut() results)
 polar_prepare_grid <- function(
   mydata,
   wd_col,
@@ -1025,8 +1029,8 @@ polar_prepare_grid <- function(
   y_error,
   cluster = FALSE
 ) {
-  ## Identify which ws and wd bins the data belong to.
-  ## Note: local variables 'wd' and 'x' shadow the column-name parameters.
+  # Identify which ws and wd bins the data belong to.
+  # Note: local variables 'wd' and 'x' shadow the column-name parameters.
   wd <- cut(
     wd.int * ceiling(mydata[[wd_col]] / wd.int - 0.5),
     breaks = seq(0, 360, wd.int),
@@ -1040,7 +1044,7 @@ polar_prepare_grid <- function(
   )
 
   if (!statistic %in% c(correlation_stats, "nwr")) {
-    ## Simple binned statistics
+    # Simple binned statistics
     stat_fn <- switch(
       statistic,
       frequency = \(x) length(stats::na.omit(x)),
@@ -1079,18 +1083,17 @@ polar_prepare_grid <- function(
       dplyr::pull(.data$value) |>
       unname()
   } else if (toupper(statistic) == "NWR") {
-    ## Non-parametric Wind Regression: fully vectorised over all grid points.
-    ##
-    ## For each grid point g and each observation d, compute the Gaussian kernel
-    ## weight w[g,d] in one shot via outer(), then recover the weighted mean as
-    ## a matrix–vector product.  Avoids the per-row dplyr rowwise() overhead.
+    # Non-parametric Wind Regression: fully vectorised over all grid points
+    # For each grid point g and each observation d, compute the Gaussian kernel
+    # weight w[g,d] in one shot via outer(), then recover the weighted mean as
+    # a matrix–vector product.  Avoids the per-row dplyr rowwise() overhead.
     ws_diff <- outer(ws.wd$x, mydata[[x_col]], `-`) # n_grid × n_data
     wd_diff <- outer(ws.wd$wd, mydata[[wd_col]], `-`) # n_grid × n_data
     wd_diff[wd_diff < -180] <- wd_diff[wd_diff < -180] + 360
     W <- gauss_dens(ws_diff, wd_diff, 0, 0, ws_spread, wd_spread)
     binned <- drop(W %*% mydata[[pollutant]]) / rowSums(W)
   } else {
-    ## Kernel-weighted pair-wise statistics (correlation, regression, etc.)
+    # Kernel-weighted pair-wise statistics (correlation, regression, etc.)
     binned <- mapply(
       calculate_weighted_statistics,
       ws1 = ws.wd$x,
@@ -1113,11 +1116,11 @@ polar_prepare_grid <- function(
     binned <- ifelse(binned == Inf, NA, binned)
   }
 
-  ## Bin frequencies — used for weighting and min.bin filtering
+  # Bin frequencies — used for weighting and min.bin filtering
   bin.len <- tapply(mydata[[pollutant[1]]], list(x, wd), length)
   binned.len <- as.vector(bin.len)
 
-  ## Apply edge weights (down-weight bins with very few observations)
+  # Apply edge weights (down-weight bins with very few observations)
   W <- rep(1, times = length(binned))
   ids <- which(binned.len == 1)
   W[ids] <- W[ids] * weights[1]
@@ -1126,16 +1129,16 @@ polar_prepare_grid <- function(
   ids <- which(binned.len == 3)
   W[ids] <- W[ids] * weights[3]
 
-  ## Remove bins with fewer than min.bin observations
+  # Remove bins with fewer than min.bin observations
   ids <- which(binned.len < min.bin)
   binned[ids] <- NA
   binned.len[ids] <- NA
 
-  ## GAM power transform: sqrt for positive-only data, identity otherwise
+  # GAM power transform: sqrt for positive-only data, identity otherwise
   n <- if (force.positive) 0.5 else 1
 
   if (!uncertainty) {
-    ## Standard surface fit (no confidence intervals)
+    # Standard surface fit (no confidence intervals)
     Mgam <- try(mgcv::gam(binned^n ~ s(u, v, k = k), weights = W), TRUE)
 
     if (!inherits(Mgam, "try-error")) {
@@ -1160,12 +1163,12 @@ polar_prepare_grid <- function(
       )
     }
   } else {
-    ## Surface fit with 95% confidence intervals
+    # Surface fit with 95% confidence intervals
     Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k), weights = binned.len)
     pred_se <- mgcv::predict.gam(Mgam, input.data, se.fit = TRUE)
-    uncer <- 2 * as.vector(pred_se[[2]]) ## approx 95% CI half-width
+    uncer <- 2 * as.vector(pred_se[[2]]) # approx 95% CI half-width
 
-    ## Unweighted central prediction
+    # Unweighted central prediction
     Mgam <- mgcv::gam(binned^n ~ s(u, v, k = k))
     pred <- as.vector(mgcv::predict.gam(Mgam, input.data))
     Lower <- (pred - uncer)^(1 / n)
@@ -1182,7 +1185,7 @@ polar_prepare_grid <- function(
     results <- dplyr::bind_rows(prediction, lower_uncer, upper_uncer)
   }
 
-  ## Remove predictions that are too far from the original data
+  # Remove predictions that are too far from the original data
   exclude <- function(results) {
     x <- seq(-upper, upper, length = int)
     wsp <- rep(x, int)
@@ -1209,12 +1212,12 @@ gauss_dens <- function(x, y, mx, my, sx, sy) {
 }
 
 
-## Kernel-weighted pair-wise statistics dispatcher.
-##
-## Takes the grid centre (ws1, wd1) directly — no more data[[1]] / across()
-## indirection.  Computes Gaussian kernel weights, filters low-weight rows, then
-## delegates to the appropriate sub-function.  Returns a scalar suitable for
-## direct use with mapply().
+# Kernel-weighted pair-wise statistics dispatcher.
+#
+# Takes the grid centre (ws1, wd1) directly — no more data[[1]] / across()
+# indirection.  Computes Gaussian kernel weights, filters low-weight rows, then
+# delegates to the appropriate sub-function.  Returns a scalar suitable for
+# direct use with mapply().
 calculate_weighted_statistics <- function(
   ws1,
   wd1,
