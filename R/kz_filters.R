@@ -46,7 +46,7 @@
 #' @param data.thresh Numeric (0--1). Minimum fraction of valid (non-\code{NA})
 #'   values required within a window for a filtered value to be returned;
 #'   otherwise \code{NA} is returned. Applies to the actual window size, which
-#'   is smaller near the series edges. Default is \code{0.75} (75%).
+#'   is smaller near the series edges. Default is \code{0.5} (50%).
 #' @param type Used for splitting the data further. Passed to [cutData()].
 #' @param components Logical. If \code{TRUE} (default) and more than one
 #'   \code{m} value is supplied, component columns are added by differencing
@@ -87,7 +87,7 @@ kzFilter <- function(
   pollutant = "o3",
   m = c(5L, 25L, 169L, 8761L),
   k = 5L,
-  data.thresh = 0.75,
+  data.thresh = 0.5,
   type = "default",
   components = TRUE,
   comp.names = c("short", "diurnal", "synoptic", "seasonal", "trend"),
@@ -247,7 +247,7 @@ kzFilter <- function(
 #' @param data.thresh Numeric (0--1). Minimum fraction of valid (non-\code{NA})
 #'   values required within a window for a filtered value to be returned;
 #'   otherwise \code{NA} is returned. Applies to the actual window size, which
-#'   is smaller near the series edges. Default is \code{0.75} (75%).
+#'   is smaller near the series edges. Default is \code{0.5} (50%).
 #' @param type Used for splitting the data further. Passed to [cutData()].
 #' @param components Logical. If \code{TRUE} (default) and more than one
 #'   \code{m} value is supplied, component columns are added by differencing
@@ -289,7 +289,7 @@ kzaFilter <- function(
   m = c(5L, 25L, 169L, 8761L),
   k = 5L,
   sensitivity = 1.0,
-  data.thresh = 0.75,
+  data.thresh = 0.5,
   type = "default",
   components = TRUE,
   comp.names = c("short", "diurnal", "synoptic", "seasonal", "trend"),

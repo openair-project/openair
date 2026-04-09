@@ -7,7 +7,7 @@ using namespace Rcpp;
 //
 // Uses a sliding window so each pass is O(n) regardless of m.
 // [[Rcpp::export]]
-NumericVector kz_cpp(NumericVector x, int m, int k, double data_thresh = 0.75) {
+NumericVector kz_cpp(NumericVector x, int m, int k, double data_thresh = 0.5) {
   int n = x.length();
 
   // Ping-pong between two buffers to avoid allocating inside the loop.
@@ -79,7 +79,7 @@ NumericVector kz_cpp(NumericVector x, int m, int k, double data_thresh = 0.75) {
 // shrinks in regions of high local rate of change, preserving sharp features.
 // [[Rcpp::export]]
 NumericVector kza_cpp(NumericVector x, int m, int k, double sensitivity = 1.0,
-                      double data_thresh = 0.75) {
+                      double data_thresh = 0.5) {
   int n = x.length();
 
   // --- Step 1: Baseline KZ filter ---
