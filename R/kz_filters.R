@@ -5,16 +5,32 @@
 #' The KZ filter is a low-pass filter formed by iterating a simple moving
 #' average \code{k} times with window size \code{m}.
 #'
-#' With the default window sizes of 5, 24, 168 and 720 (suited to hourly data),
+#' With the default window sizes of 5, 24, 168 and 8760 (suited to hourly data),
 #' the function returns four intermediate filtered columns and five physical
 #' components derived by differencing:
 #' \enumerate{
-#'   \item \strong{comp_1} — short-term (sub-hourly residual, \code{pollutant - kz_5})
-#'   \item \strong{comp_2} — diurnal/synoptic (\code{kz_5 - kz_24})
-#'   \item \strong{comp_3} — weather/weekly (\code{kz_24 - kz_168})
-#'   \item \strong{comp_4} — seasonal (\code{kz_168 - kz_720})
-#'   \item \strong{comp_5} — long-term trend (\code{kz_720})
+#'   \item \strong{short} — sub-hourly fluctuations (\code{pollutant - kz_5})
+#'   \item \strong{diurnal} — daily cycle (\code{kz_5 - kz_24})
+#'   \item \strong{synoptic} — 2–7 day weather systems (\code{kz_24 - kz_168})
+#'   \item \strong{seasonal} — weekly to annual variability (\code{kz_168 - kz_8760})
+#'   \item \strong{trend} — multi-year trend (\code{kz_8760})
 #' }
+#'
+#' @section Edge effects:
+#' At the start and end of the series the filter window is silently truncated
+#' rather than padded, so no \code{NA}s are introduced. However, values within
+#' the affected boundary zone are averaged over fewer points than the interior
+#' and should be interpreted with caution.
+#'
+#' The affected length at each end of the series for a single filter pass is
+#' \code{floor(m / 2)} observations. Because the filter is iterated \code{k}
+#' times (each pass consuming the output of the previous one), the total
+#' affected zone at each end is approximately \code{k * floor(m / 2)}
+#' observations. With the default \code{m = c(5, 24, 168, 8760)} and
+#' \code{k = 3}, the affected zones are roughly 7 h, 36 h, 252 h (~10 days),
+#' and 13,140 h (~1.5 years) at each end respectively. The \code{trend}
+#' component therefore requires at least 3–4 years of data for the interior
+#' estimates to be unaffected.
 #'
 #' @param mydata A data frame containing a \code{date} field in \code{Date} or
 #'   \code{POSIXct} format. The input time series must be regular, e.g., hourly
@@ -23,7 +39,7 @@
 #'   More than one pollutant can be supplied as a vector, e.g.,
 #'   \code{pollutant = c("o3", "nox")}.
 #' @param m Integer vector of window sizes. Defaults to \code{c(5, 24, 168,
-#'   720)} (suited to hourly data). All values must be >= 3.
+#'   8760)} (suited to hourly data). All values must be >= 3.
 #' @param k Integer. The number of iterations applied at each window size.
 #' @param min_valid Integer. Minimum number of valid (non-\code{NA}) points
 #'   required in a window to return a value.
@@ -32,36 +48,46 @@
 #'   \code{m} value is supplied, component columns are added by differencing
 #'   adjacent filtered series.
 #' @param comp.names Character vector of names for the component columns. Must
-#'   have length \code{length(m) + 1}. Defaults to \code{c("short",
-#'   "synoptic", "weather", "seasonal", "trend")} to match the default
-#'   \code{m} values. If the length does not match, numbered names
-#'   (\code{comp_1}, \code{comp_2}, \ldots) are used with a warning.
+#'   have length \code{length(m) + 1}. Defaults to \code{c("short", "diurnal",
+#'   "synoptic", "seasonal", "trend")} to match the default \code{m} values.
+#'   If the length does not match, numbered names (\code{comp_1},
+#'   \code{comp_2}, \ldots) are used with a warning.
+#' @param to_narrow Logical. If \code{TRUE}, return the data in tidy (long)
+#'   format with a \code{component} column and a \code{value} column instead
+#'   of one column per component. Intermediate filter columns (\code{kz_*})
+#'   are dropped. Default is \code{FALSE}. Ignored when \code{components =
+#'   FALSE} or a single \code{m} value is supplied.
 #' @param ... Passed to [cutData()] for use with \code{type}.
 #'
-#' @return A tibble with the original columns plus:
-#'   \itemize{
-#'     \item Intermediate filter columns named \code{kz_{m}} (single pollutant)
-#'       or \code{kz_{m}_{pollutant}} (multiple pollutants).
-#'     \item Component columns named according to \code{comp.names} (single
-#'       pollutant) or \code{{comp.name}_{pollutant}} (multiple pollutants).
-#'   }
+#' @return When \code{to_narrow = FALSE} (default), a tibble with the original
+#'   columns plus intermediate filter columns (\code{kz_{m}}) and component
+#'   columns. When \code{to_narrow = TRUE}, a tidy tibble with a
+#'   \code{component} column (factor ordered fast to slow) and a \code{value}
+#'   column.
 #' @author David Carslaw
 #' @export
 #' @examples
+#'
+#' \dontrun{
 #' # Default: 4 window sizes, 5 descriptively named components returned
-#' mydata <- kzFilter(mydata, pollutant = "pm25")
+#' mydata <- kzFilter(mydata, pollutant = "nox")
+#'
+#' # Tidy long format
+#' mydata <- kzFilter(mydata, pollutant = "nox", to_narrow = TRUE)
 #'
 #' # Single window size (no component decomposition)
-#' mydata <- kzFilter(mydata, pollutant = "o3", m = 24, k = 5)
+#' mydata <- kzFilter(mydata, pollutant = "nox", m = 24, k = 5)
+#' }
 kzFilter <- function(
   mydata,
   pollutant = "o3",
-  m = c(5L, 24L, 168L, 720L),
+  m = c(5L, 24L, 168L, 8760L),
   k = 3L,
   min_valid = 1L,
   type = "default",
   components = TRUE,
-  comp.names = c("short", "synoptic", "weather", "seasonal", "trend"),
+  comp.names = c("short", "diurnal", "synoptic", "seasonal", "trend"),
+  to_narrow = FALSE,
   ...
 ) {
   if (any(m < 3L)) {
@@ -98,7 +124,11 @@ kzFilter <- function(
       filt_cols <- character(length(m))
 
       for (i in seq_along(m)) {
-        col_name <- if (multi_poll) paste0("kz_", m[i], "_", p) else paste0("kz_", m[i])
+        col_name <- if (multi_poll) {
+          paste0("kz_", m[i], "_", p)
+        } else {
+          paste0("kz_", m[i])
+        }
         mydata[[col_name]] <- kz_cpp(
           mydata[[p]],
           as.integer(m[i]),
@@ -111,11 +141,16 @@ kzFilter <- function(
       if (components && length(m) > 1L) {
         n <- length(m)
         for (j in seq_len(n + 1L)) {
-          comp_name <- if (multi_poll) paste0(comp.names[j], "_", p) else comp.names[j]
+          comp_name <- if (multi_poll) {
+            paste0(comp.names[j], "_", p)
+          } else {
+            comp.names[j]
+          }
           if (j == 1L) {
             mydata[[comp_name]] <- mydata[[p]] - mydata[[filt_cols[1L]]]
           } else if (j <= n) {
-            mydata[[comp_name]] <- mydata[[filt_cols[j - 1L]]] - mydata[[filt_cols[j]]]
+            mydata[[comp_name]] <- mydata[[filt_cols[j - 1L]]] -
+              mydata[[filt_cols[j]]]
           } else {
             mydata[[comp_name]] <- mydata[[filt_cols[n]]]
           }
@@ -125,10 +160,33 @@ kzFilter <- function(
     mydata
   }
 
-  mydata <- map_type(mydata, type = type, fun = calc_kz_df, .include_default = TRUE)
+  mydata <- map_type(
+    mydata,
+    type = type,
+    fun = calc_kz_df,
+    .include_default = TRUE
+  )
 
   if (any(type == "default")) {
     mydata$default <- NULL
+  }
+
+  if (to_narrow && components && length(m) > 1L) {
+    actual_comp_cols <- if (multi_poll) {
+      as.vector(outer(comp.names, pollutant, paste, sep = "_"))
+    } else {
+      comp.names
+    }
+    mydata <- mydata |>
+      dplyr::select(-dplyr::matches("^kz_\\d+")) |>
+      tidyr::pivot_longer(
+        cols = dplyr::all_of(actual_comp_cols),
+        names_to = "component",
+        values_to = "value"
+      ) |>
+      dplyr::mutate(
+        component = factor(.data$component, levels = actual_comp_cols)
+      )
   }
 
   return(mydata)
@@ -141,16 +199,32 @@ kzFilter <- function(
 #' components. The KZA filter uses a standard KZ filter to detect structural
 #' breaks and shrinks the window near those breaks to preserve sharp features.
 #'
-#' With the default window sizes of 5, 24, 168 and 720 (suited to hourly data),
+#' With the default window sizes of 5, 24, 168 and 8760 (suited to hourly data),
 #' the function returns four intermediate filtered columns and five physical
 #' components derived by differencing:
 #' \enumerate{
-#'   \item \strong{comp_1} — short-term (sub-hourly residual, \code{pollutant - kza_5})
-#'   \item \strong{comp_2} — diurnal/synoptic (\code{kza_5 - kza_24})
-#'   \item \strong{comp_3} — weather/weekly (\code{kza_24 - kza_168})
-#'   \item \strong{comp_4} — seasonal (\code{kza_168 - kza_720})
-#'   \item \strong{comp_5} — long-term trend (\code{kza_720})
+#'   \item \strong{short} — sub-hourly fluctuations (\code{pollutant - kza_5})
+#'   \item \strong{diurnal} — daily cycle (\code{kza_5 - kza_24})
+#'   \item \strong{synoptic} — 2–7 day weather systems (\code{kza_24 - kza_168})
+#'   \item \strong{seasonal} — weekly to annual variability (\code{kza_168 - kza_8760})
+#'   \item \strong{trend} — multi-year trend (\code{kza_8760})
 #' }
+#'
+#' @section Edge effects:
+#' At the start and end of the series the filter window is silently truncated
+#' rather than padded, so no \code{NA}s are introduced. However, values within
+#' the affected boundary zone are averaged over fewer points than the interior
+#' and should be interpreted with caution.
+#'
+#' The affected length at each end of the series for a single filter pass is
+#' \code{floor(m / 2)} observations. Because the filter is iterated \code{k}
+#' times (each pass consuming the output of the previous one), the total
+#' affected zone at each end is approximately \code{k * floor(m / 2)}
+#' observations. With the default \code{m = c(5, 24, 168, 8760)} and
+#' \code{k = 3}, the affected zones are roughly 7 h, 36 h, 252 h (~10 days),
+#' and 13,140 h (~1.5 years) at each end respectively. The \code{trend}
+#' component therefore requires at least 3–4 years of data for the interior
+#' estimates to be unaffected.
 #'
 #' @param mydata A data frame containing a \code{date} field in \code{Date} or
 #'   \code{POSIXct} format. The input time series must be regular, e.g., hourly
@@ -159,7 +233,7 @@ kzFilter <- function(
 #'   More than one pollutant can be supplied as a vector, e.g.,
 #'   \code{pollutant = c("o3", "nox")}.
 #' @param m Integer vector of maximum window sizes. Defaults to \code{c(5, 24,
-#'   168, 720)} (suited to hourly data).
+#'   168, 8760)} (suited to hourly data).
 #' @param k Integer. The number of iterations for the baseline KZ filter used
 #'   to detect structural breaks.
 #' @param sensitivity Numeric. Controls how aggressively the window shrinks at
@@ -169,36 +243,46 @@ kzFilter <- function(
 #'   \code{m} value is supplied, component columns are added by differencing
 #'   adjacent filtered series.
 #' @param comp.names Character vector of names for the component columns. Must
-#'   have length \code{length(m) + 1}. Defaults to \code{c("short",
-#'   "synoptic", "weather", "seasonal", "trend")} to match the default
-#'   \code{m} values. If the length does not match, numbered names
-#'   (\code{comp_1}, \code{comp_2}, \ldots) are used with a warning.
+#'   have length \code{length(m) + 1}. Defaults to \code{c("short", "diurnal",
+#'   "synoptic", "seasonal", "trend")} to match the default \code{m} values.
+#'   If the length does not match, numbered names (\code{comp_1},
+#'   \code{comp_2}, \ldots) are used with a warning.
+#' @param to_narrow Logical. If \code{TRUE}, return the data in tidy (long)
+#'   format with a \code{component} column and a \code{value} column instead
+#'   of one column per component. Intermediate filter columns (\code{kza_*})
+#'   are dropped. Default is \code{FALSE}. Ignored when \code{components =
+#'   FALSE} or a single \code{m} value is supplied.
 #' @param ... Passed to [cutData()] for use with \code{type}.
 #'
-#' @return A tibble with the original columns plus:
-#'   \itemize{
-#'     \item Intermediate filter columns named \code{kza_{m}} (single pollutant)
-#'       or \code{kza_{m}_{pollutant}} (multiple pollutants).
-#'     \item Component columns named according to \code{comp.names} (single
-#'       pollutant) or \code{{comp.name}_{pollutant}} (multiple pollutants).
-#'   }
+#' @return When \code{to_narrow = FALSE} (default), a tibble with the original
+#'   columns plus intermediate filter columns (\code{kza_{m}}) and component
+#'   columns. When \code{to_narrow = TRUE}, a tidy tibble with a
+#'   \code{component} column (factor ordered fast to slow) and a \code{value}
+#'   column.
 #' @author David Carslaw
 #' @export
 #' @examples
+#'
+#' \dontrun{
 #' # Default: 4 window sizes, 5 descriptively named components returned
-#' mydata <- kzaFilter(mydata, pollutant = "pm25")
+#' mydata <- kzaFilter(mydata, pollutant = "nox")
+#'
+#' # Tidy long format
+#' mydata <- kzaFilter(mydata, pollutant = "nox", to_narrow = TRUE)
 #'
 #' # Single window size (no component decomposition)
-#' mydata <- kzaFilter(mydata, pollutant = "o3", m = 24, k = 5)
+#' mydata <- kzaFilter(mydata, pollutant = "nox", m = 24, k = 5)
+#' }
 kzaFilter <- function(
   mydata,
   pollutant = "o3",
-  m = c(5L, 24L, 168L, 720L),
+  m = c(5L, 24L, 168L, 8760L),
   k = 3L,
   sensitivity = 1.0,
   type = "default",
   components = TRUE,
-  comp.names = c("short", "synoptic", "weather", "seasonal", "trend"),
+  comp.names = c("short", "diurnal", "synoptic", "seasonal", "trend"),
+  to_narrow = FALSE,
   ...
 ) {
   for (p in pollutant) {
@@ -231,7 +315,11 @@ kzaFilter <- function(
       filt_cols <- character(length(m))
 
       for (i in seq_along(m)) {
-        col_name <- if (multi_poll) paste0("kza_", m[i], "_", p) else paste0("kza_", m[i])
+        col_name <- if (multi_poll) {
+          paste0("kza_", m[i], "_", p)
+        } else {
+          paste0("kza_", m[i])
+        }
         mydata[[col_name]] <- kza_cpp(
           mydata[[p]],
           as.integer(m[i]),
@@ -244,11 +332,16 @@ kzaFilter <- function(
       if (components && length(m) > 1L) {
         n <- length(m)
         for (j in seq_len(n + 1L)) {
-          comp_name <- if (multi_poll) paste0(comp.names[j], "_", p) else comp.names[j]
+          comp_name <- if (multi_poll) {
+            paste0(comp.names[j], "_", p)
+          } else {
+            comp.names[j]
+          }
           if (j == 1L) {
             mydata[[comp_name]] <- mydata[[p]] - mydata[[filt_cols[1L]]]
           } else if (j <= n) {
-            mydata[[comp_name]] <- mydata[[filt_cols[j - 1L]]] - mydata[[filt_cols[j]]]
+            mydata[[comp_name]] <- mydata[[filt_cols[j - 1L]]] -
+              mydata[[filt_cols[j]]]
           } else {
             mydata[[comp_name]] <- mydata[[filt_cols[n]]]
           }
@@ -258,10 +351,33 @@ kzaFilter <- function(
     mydata
   }
 
-  mydata <- map_type(mydata, type = type, fun = calc_kza_df, .include_default = TRUE)
+  mydata <- map_type(
+    mydata,
+    type = type,
+    fun = calc_kza_df,
+    .include_default = TRUE
+  )
 
   if (any(type == "default")) {
     mydata$default <- NULL
+  }
+
+  if (to_narrow && components && length(m) > 1L) {
+    actual_comp_cols <- if (multi_poll) {
+      as.vector(outer(comp.names, pollutant, paste, sep = "_"))
+    } else {
+      comp.names
+    }
+    mydata <- mydata |>
+      dplyr::select(-dplyr::matches("^kza_\\d+")) |>
+      tidyr::pivot_longer(
+        cols = dplyr::all_of(actual_comp_cols),
+        names_to = "component",
+        values_to = "value"
+      ) |>
+      dplyr::mutate(
+        component = factor(.data$component, levels = actual_comp_cols)
+      )
   }
 
   return(mydata)
