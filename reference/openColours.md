@@ -72,7 +72,7 @@ The following schemes are made available by `openColours()`:
   "greyscale".
 
 - Simplified versions of the `viridis` colours: "viridis", "plasma",
-  "magma", "inferno", "cividis", and "turbo".
+  "magma", "inferno", "cividis", "turbo", "rocket" and "mako".
 
 - Simplified versions of the `RColorBrewer` sequential palettes:
   "Blues", "BuGn", "BuPu", "GnBu", "Greens", "Greys", "Oranges", "OrRd",

@@ -77,6 +77,8 @@
     [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
     for more details.
 
+  - Completed the set of “viridis” palettes with “rocket” and “mako”.
+
   - Added
     [`openColors()`](https://openair-project.github.io/openair/reference/openColours.md)
     and
