@@ -82,6 +82,7 @@ using a range of commonly used statistics.</p>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  min.bin <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  ws.upper <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>  angle.scale <span class="op">=</span> <span class="fl">45</span>,</span>
 <span>  offset <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  border.col <span class="op">=</span> <span class="st">"transparent"</span>,</span>
 <span>  key.title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">statistic</span>, <span class="va">pollutant</span>, sep <span class="op">=</span> <span class="st">" "</span><span class="op">)</span>,</span>
@@ -200,6 +201,15 @@ care. Also, the <code>polarFreq</code> function can be of use in such circumstan
 <dd><p>A user-defined upper wind speed to use. This is useful for
 ensuring a consistent scale between different plots. For example, to always
 ensure that wind speeds are displayed between 1-10, set <code>ws.int = 10</code>.</p></dd>
+
+
+<dt id="arg-angle-scale">angle.scale<a class="anchor" aria-label="anchor" href="#arg-angle-scale"></a></dt>
+<dd><p>In radial plots (e.g., <code><a href="polarPlot.html">polarPlot()</a></code>), the radial scale is
+drawn directly on the plot itself. While suitable defaults have been
+chosen, sometimes the placement of the scale may interfere with an
+interesting feature. <code>angle.scale</code> can take any value between <code>0</code> and <code>360</code>
+to place the scale at a different angle, or <code>FALSE</code> to move it to the side
+of the plots.</p></dd>
 
 
 <dt id="arg-offset">offset<a class="anchor" aria-label="anchor" href="#arg-offset"></a></dt>

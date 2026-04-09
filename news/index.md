@@ -118,6 +118,9 @@
   imputation and the monthly plot shows the imputed data as a filled
   grey circle.
 
+- [`polarFreq()`](https://openair-project.github.io/openair/reference/polarFreq.md)
+  gains `angle.scale`, in line with all other polar coordinate plots.
+
 ### Bug Fixes
 
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)

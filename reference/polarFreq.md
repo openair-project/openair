@@ -23,6 +23,7 @@ polarFreq(
   type = "default",
   min.bin = 1,
   ws.upper = NA,
+  angle.scale = 45,
   offset = 10,
   border.col = "transparent",
   key.title = paste(statistic, pollutant, sep = " "),
@@ -163,6 +164,16 @@ polarFreq(
   A user-defined upper wind speed to use. This is useful for ensuring a
   consistent scale between different plots. For example, to always
   ensure that wind speeds are displayed between 1-10, set `ws.int = 10`.
+
+- angle.scale:
+
+  In radial plots (e.g.,
+  [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md)),
+  the radial scale is drawn directly on the plot itself. While suitable
+  defaults have been chosen, sometimes the placement of the scale may
+  interfere with an interesting feature. `angle.scale` can take any
+  value between `0` and `360` to place the scale at a different angle,
+  or `FALSE` to move it to the side of the plots.
 
 - offset:
 
