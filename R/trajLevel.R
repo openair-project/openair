@@ -703,7 +703,7 @@ trajLevel <- function(
         show.legend = TRUE
       ) +
       ggplot2::scale_fill_manual(
-        values = openair::openColours(
+        values = resolve_colour_opts(
           cols,
           n = dplyr::n_distinct(levels(out_data_sf$cuts))
         ),
@@ -744,7 +744,7 @@ trajLevel <- function(
         show.legend = TRUE
       ) +
       ggplot2::scale_fill_gradientn(
-        colours = openair::openColours(cols),
+        colours = resolve_colour_opts(cols, 100),
         oob = scales::oob_squish,
         na.value = NA
       )
@@ -832,7 +832,7 @@ trajLevel <- function(
       ggplot2::scale_alpha_identity() +
       ggplot2::scale_fill_stepsn(
         transform = scales::transform_log10(),
-        colors = openColours(cols),
+        colors = resolve_colour_opts(cols, 100),
         n.breaks = 15,
         limits = c(min.bin, NA)
       ) +

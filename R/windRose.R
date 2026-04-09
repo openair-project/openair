@@ -827,7 +827,7 @@ windRose <- function(
     ) +
     scale_x_compass() +
     ggplot2::scale_fill_manual(
-      values = openColours(scheme = cols, n = length(interval_labels)),
+      values = resolve_colour_opts(cols, n = length(interval_labels)),
       aesthetics = c("colour", "fill"),
       na.translate = FALSE
     ) +

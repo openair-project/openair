@@ -587,7 +587,7 @@ scatter_scatter <- function(
     group_levels <- "all"
   }
 
-  myColors <- openColours(cols, n_groups)
+  myColors <- resolve_colour_opts(cols, n_groups)
 
   ## panel column names for LM labels and facet
   panel_cols <- setdiff(type, "default")
@@ -637,7 +637,7 @@ scatter_scatter <- function(
     }
     plt <- plt +
       ggplot2::scale_color_gradientn(
-        colors = openColours(cols, 200),
+        colors = resolve_colour_opts(cols, 200),
         limits = z_limits,
         oob = scales::oob_squish,
         labels = z_labs,
@@ -912,7 +912,7 @@ scatter_hexbin <- function(
 ) {
   mydata <- cutData(mydata, type)
 
-  myColors <- openColours(cols, 200)
+  myColors <- resolve_colour_opts(cols, 200)
 
   ## hexbin fill transform (default: log; trans = NULL → none)
   hex_transform <- if (
@@ -1116,7 +1116,7 @@ scatter_level <- function(
   if (missing(cols) || identical(cols, "hue")) {
     cols <- "default"
   }
-  myColors <- openColours(cols, 200)
+  myColors <- resolve_colour_opts(cols, 200)
 
   geom_fn <- if (smooth) ggplot2::geom_raster else ggplot2::geom_tile
 
@@ -1311,7 +1311,7 @@ scatter_density <- function(
     .include_default = TRUE
   )
 
-  myColors <- openColours(cols, 200)
+  myColors <- resolve_colour_opts(cols, 200)
 
   plt <- ggplot2::ggplot(
     grid_data,

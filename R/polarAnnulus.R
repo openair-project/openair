@@ -566,7 +566,7 @@ polarAnnulus <-
         )
       ) +
       ggplot2::scale_fill_gradientn(
-        colours = openColours(cols),
+        colours = resolve_colour_opts(cols, 100),
         aesthetics = c("colour", "fill"),
         limits = limits,
         breaks = scales::breaks_pretty(6),

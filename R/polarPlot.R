@@ -913,7 +913,7 @@ polarPlot <-
         expand = ggplot2::expansion()
       ) +
       ggplot2::scale_color_gradientn(
-        colours = openColours(cols),
+        colours = resolve_colour_opts(cols, 100),
         oob = scales::oob_squish,
         na.value = mis.col,
         limits = limits

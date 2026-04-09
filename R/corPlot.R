@@ -454,7 +454,7 @@ corPlot <- function(
       expand = ggplot2::expansion(c(0.01, 0.01))
     ) +
     ggplot2::scale_fill_gradientn(
-      colours = openair::openColours(cols, n = 100),
+      colours = resolve_colour_opts(cols, n = 100),
       limits = c(-1, 1),
       oob = scales::oob_squish
     ) +

@@ -28,6 +28,18 @@
     
     - `smoothTrend()` now takes `linetype`, `linewidth`, `shape` and `size`. These can be vectors to vary based on pollutant. The linewidth of the data will always be half of that of the model.
 
+- Refinements to colours in `{openair}`:
+
+    - `openColours()` gains `direction`, `alpha`, `begin` and `end` for better control over colour palettes.
+    
+    - Any `cols` argument in `{openair}` can now take the `colourOpts()` function, which tells each plotting function how to use the new `openColours()` arguments.
+    
+    - Added additional palettes by Paul Tol; "tol.highcontrast", "tol.vibrant", "tol.mediumcontrast", "tol.pale" and "tol.dark".
+    
+    - Added various palettes based on the work of Fabio Crameri - see `openColours()` for more details.
+    
+    - Added `openColors()` and `colorOpts()` which are synonymous with their British English equivalents `openColours()` and `colourOpts()`.
+
 - `smoothTrend()` will now use `loess` when it has insufficient data to fit a GAM.
 
 - `trajPlot()` and `trajLevel()` regain the `map.res` argument. This is passed to `rnaturalearth::ne_countries()` so can take three different resolutions.

@@ -216,7 +216,10 @@ timeProp <- function(
       linetype = extra.args$linetype[1] %||% 1
     ) +
     ggplot2::scale_fill_manual(
-      values = openColours(cols, dplyr::n_distinct(results[[proportion]])),
+      values = resolve_colour_opts(
+        cols,
+        dplyr::n_distinct(results[[proportion]])
+      ),
       breaks = levels(results[[proportion]]),
       labels = \(x) label_openair(x, auto_text = auto.text),
       drop = FALSE

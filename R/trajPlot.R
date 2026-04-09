@@ -367,7 +367,7 @@ trajPlot <- function(
     thePlot <-
       thePlot +
       ggplot2::scale_color_manual(
-        values = openair::openColours(
+        values = resolve_colour_opts(
           ifelse(n_cols == 1, "grey20", cols),
           n = n_cols
         ),
@@ -404,7 +404,7 @@ trajPlot <- function(
     thePlot <-
       thePlot +
       ggplot2::scale_color_gradientn(
-        colours = openair::openColours(cols),
+        colours = resolve_colour_opts(cols, 100),
         oob = scales::oob_squish,
         label = if (lubridate::is.POSIXct(mydata[[group]])) {
           \(x) scales::label_date()(as.POSIXct(x))

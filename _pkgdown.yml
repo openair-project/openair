@@ -40,8 +40,9 @@ reference:
 - subtitle: Plot Utilities
   desc: Tools for refining openair plots.
   contents:
-  - openColours
   - quickText
+  - openColours
+  - colourOpts
   - windflowOpts
 - subtitle: Smoothing Functions
   desc: Tools for smoothing data for plotting or analysis
