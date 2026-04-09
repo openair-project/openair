@@ -28,6 +28,12 @@
     
     - `smoothTrend()` now takes `linetype`, `linewidth`, `shape` and `size`. These can be vectors to vary based on pollutant. The linewidth of the data will always be half of that of the model.
 
+- Refinements to colours in `{openair}`:
+
+    - `openColours()` gains `direction`, `alpha`, `begin` and `end` for better control over colour palettes.
+    
+    - Added `openColors()`, which is synonymous with `openColours()`.
+
 - `smoothTrend()` will now use `loess` when it has insufficient data to fit a GAM.
 
 - `trajPlot()` and `trajLevel()` regain the `map.res` argument. This is passed to `rnaturalearth::ne_countries()` so can take three different resolutions.

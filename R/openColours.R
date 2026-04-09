@@ -2,7 +2,7 @@
 #'
 #' This in primarily an internal openair function to make it easy for users to
 #' select particular colour schemes, or define their own range of colours of a
-#' user-defined length.
+#' user-defined length. `openColours()` and `openColors()` are synonyms.
 #'
 #' @section Schemes:
 #'
@@ -61,9 +61,9 @@
 #' @section Details:
 #'
 #'   Because of the way many of the schemes have been developed they only exist
-#'   over certain number of colour gradations (typically 3--10) --- see
-#'   `?brewer.pal` for actual details. If less than or more than the required
-#'   number of colours is supplied then `openair` will interpolate the colours.
+#'   over certain number of colour gradations (typically 3--10). If less than or
+#'   more than the required number of colours is supplied then `openair` will
+#'   interpolate the colours.
 #'
 #'   Each of the pre-defined schemes have merits and their use will depend on a
 #'   particular situation. For showing incrementing concentrations, e.g., high
@@ -84,8 +84,23 @@
 #'
 #' @param scheme Any one of the pre-defined `openair` schemes (e.g.,
 #'   `"increment"`) or a user-defined palette (e.g., `c("red", "orange",
-#'   "gold")`). See `?openColours` for a full list of available schemes.
-#' @param n number of colours required.
+#'   "gold")`). See [openColours()] for a full list of available schemes.
+#'
+#' @param n The whole number of colours required. If not provided, sequential
+#'   palettes will return `100` colours and qualitative palettes will return the
+#'   maximum number of colours available for that scheme.
+#'
+#' @param alpha The alpha transparency level (between `0` and `1`) for the
+#'   colours. `0` is fully transparent, and `1` is fully opaque.
+#'
+#' @param begin,end For sequential schemes, the fraction (between `0` and `1`)
+#'   of the colour scheme to use. For example, if `begin = 0.2` and `end = 0.8`,
+#'   only the middle 60% of the colour scheme will be used. This can be useful
+#'   for avoiding very light or dark colours at the ends of schemes.
+#'
+#' @param direction The order of the colours. `1` is the default and gives the
+#'   normal order. `-1` will reverse the order of the colours.
+#'
 #' @export
 #' @return A character vector of hex codes
 #' @author David Carslaw
@@ -105,45 +120,76 @@
 #' cols <- openColours(c("yellow", "green", "red"), 10)
 #' cols
 #'
-openColours <- function(scheme = "default", n = 100) {
+openColours <- function(
+  scheme = "default",
+  n = 100,
+  alpha = 1,
+  begin = 0,
+  end = 1,
+  direction = 1
+) {
+  # input checks
+  if (begin > 1 || begin < 0 || end > 1 || end < 0 || begin > end) {
+    cli::cli_abort(
+      "{.arg begin} and {.arg end} must be between `0` and `1`, and {.arg begin} must be less than {.arg end}."
+    )
+  }
+
+  if (!direction %in% c(1, -1)) {
+    cli::cli_abort(
+      "{.arg direction} must be either `1` (for normal order) or `-1` (for reverse order)."
+    )
+  }
+
+  if (alpha > 1 || alpha < 0) {
+    cli::cli_abort(
+      "{.arg alpha} must be between `0` and `1`."
+    )
+  }
+
   # pre-defined brewer colour palettes sequential, diverging, qualitative
-  brewer.col <- c(
-    "Blues",
-    "BuGn",
-    "BuPu",
-    "GnBu",
-    "Greens",
-    "Greys",
-    "Oranges",
-    "OrRd",
-    "PuBu",
-    "PuBuGn",
-    "PuRd",
-    "Purples",
-    "RdPu",
-    "Reds",
-    "YlGn",
-    "YlGnBu",
-    "YlOrBr",
-    "YlOrRd",
-    "BrBG",
-    "PiYG",
-    "PRGn",
-    "PuOr",
-    "RdBu",
-    "RdGy",
-    "RdYlBu",
-    "RdYlGn",
-    "Spectral",
-    "Accent",
-    "Dark2",
-    "Paired",
-    "Pastel1",
-    "Pastel2",
-    "Set1",
-    "Set2",
-    "Set3"
+  brewer_schemes_qual <- c(
+    "Accent" = 8,
+    "Dark2" = 8,
+    "Paired" = 12,
+    "Pastel1" = 9,
+    "Pastel2" = 8,
+    "Set1" = 9,
+    "Set2" = 8,
+    "Set3" = 12
   )
+
+  brewer_schemes_seq <- c(
+    "Blues" = 9,
+    "BuGn" = 9,
+    "BuPu" = 9,
+    "GnBu" = 9,
+    "Greens" = 9,
+    "Greys" = 9,
+    "Oranges" = 9,
+    "OrRd" = 9,
+    "PuBu" = 9,
+    "PuBuGn" = 9,
+    "PuRd" = 9,
+    "Purples" = 9,
+    "RdPu" = 9,
+    "Reds" = 9,
+    "YlGn" = 9,
+    "YlGnBu" = 9,
+    "YlOrBr" = 9,
+    "YlOrRd" = 9,
+    "BrBG" = 11,
+    "PiYG" = 11,
+    "PRGn" = 11,
+    "PuOr" = 11,
+    "RdBu" = 11,
+    "RdGy" = 11,
+    "RdYlBu" = 11,
+    "RdYlGn" = 11,
+    "Spectral" = 11
+  )
+
+  brewer_schemes <- c(brewer_schemes_qual, brewer_schemes_seq)
 
   # max colours allowed for each brewer pal
   brewer.n <- c(rep(9, 18), rep(9, 9), c(8, 8, 12, 9, 8, 9, 8, 12))
@@ -190,32 +236,70 @@ openColours <- function(scheme = "default", n = 100) {
     "brewer1",
     "hue",
     "greyscale",
-    brewer.col
+    names(brewer_schemes)
   )
 
   # get colours based on scheme
   if (length(scheme) == 1L) {
-    if (scheme == "brewer1") {
-      cols <- brewerPalette(n, "Set1", brewer.col, brewer.n)
+    if (scheme %in% c(names(brewer_schemes), "brewer1")) {
+      scheme[scheme == "brewer1"] <- "Set1"
+      cols <- brewerPalette(
+        n,
+        scheme,
+        direction = direction,
+        begin = begin,
+        end = end,
+        alpha = alpha
+      )
     }
-    if (scheme %in% brewer.col) {
-      cols <- brewerPalette(n, scheme, brewer.col, brewer.n)
-    }
+
     if (scheme == "hue") {
-      cols <- huePalette(n)
+      cols <- huePalette(
+        n,
+        direction = direction,
+        begin = begin,
+        end = end,
+        alpha = alpha
+      )
     }
+
     if (scheme == "greyscale") {
-      cols <- grDevices::grey(seq(0.9, 0.1, length = n))
+      if (missing(begin)) {
+        begin <- 0.1
+      }
+      if (missing(end)) {
+        end <- 0.9
+      }
+      cols <- grDevices::grey(seq(end, begin, length = n))
+      if (direction == -1) {
+        cols <- rev(cols)
+      }
+      hex_alpha <- sprintf("%02X", round(alpha * 255))
+      cols <- paste0(cols, hex_alpha)
     }
+
     if (scheme %in% seq_schemes) {
-      cols <- seqPalette(n, scheme = scheme)
+      cols <- seqPalette(
+        n,
+        scheme = scheme,
+        direction = direction,
+        begin = begin,
+        end = end,
+        alpha = alpha
+      )
     }
+
     if (scheme %in% qual_schemes) {
       # if n not provided, return max number o
       if (missing(n)) {
         n <- qual_scheme_lengths[[scheme]]
       }
-      cols <- qualPalette(n, scheme = scheme)
+      cols <- qualPalette(
+        n,
+        scheme = scheme,
+        direction = direction,
+        alpha = alpha
+      )
     }
   }
 
@@ -232,13 +316,18 @@ openColours <- function(scheme = "default", n = 100) {
       )
     }
 
-    if (length(scheme) > 1) {
-      # interpolate
-      user.cols <- grDevices::colorRampPalette(scheme)
-      cols <- user.cols(n)
-    } else {
-      cols <- rep(scheme, n)
+    # interpolate
+    user.cols <- grDevices::colorRampPalette(scheme)
+    cols <- user.cols(n)
+
+    # handle direction
+    if (direction == -1) {
+      cols <- rev(cols)
     }
+
+    # handle alpha
+    hex_alpha <- sprintf("%02X", round(alpha * 255))
+    cols <- paste0(cols, hex_alpha)
   }
 
   if (any(scheme %in% schemes) && length(scheme) > 1L) {
@@ -254,17 +343,35 @@ openColours <- function(scheme = "default", n = 100) {
   cols
 }
 
+#' @rdname openColours
+#' @export
+openColors <- openColours
+
 #' Function to build Brewer palettes
 #' @noRd
-brewerPalette <- function(n, scheme, brewer.col, brewer.n) {
-  n.brew <- brewer.n[scheme == brewer.col]
+brewerPalette <- function(n, scheme, direction, begin, end, alpha) {
+  max_pal_n <- unname(brewer_schemes[names(brewer_schemes) == scheme])
 
-  if (n >= 3 && n <= n.brew) {
-    brewer.pal(n, scheme)
+  if (n >= 3 && n <= max_pal_n) {
+    brewer.pal(
+      n,
+      scheme,
+      direction = direction,
+      begin = begin,
+      end = end,
+      alpha = alpha
+    )
   } else {
     thefun <-
       suppressWarnings(grDevices::colorRampPalette(
-        brewer.pal(n.brew, scheme),
+        brewer.pal(
+          max_pal_n,
+          scheme,
+          direction = direction,
+          begin = begin,
+          end = end,
+          alpha = alpha
+        ),
         interpolate = "spline"
       ))
     thefun(n)
@@ -273,25 +380,39 @@ brewerPalette <- function(n, scheme, brewer.col, brewer.n) {
 
 #' Build hue palette
 #' @noRd
-huePalette <- function(n) {
+huePalette <- function(n, direction, begin, end, alpha) {
   h <- c(0, 360) + 15
   l <- 65
   c <- 100
-
   if ((diff(h) %% 360) < 1) {
     h[2] <- h[2] - 360 / n
   }
 
-  grDevices::hcl(
-    h = seq(h[1], h[2], length = n),
+  # apply begin/end to hue range
+  h <- h[1] + (h[2] - h[1]) * c(begin, end)
+
+  cols <- grDevices::hcl(
+    h = seq(h[1], h[2], length.out = n),
     c = c,
     l = l
   )
+
+  # handle direction
+  if (direction == -1) {
+    cols <- rev(cols)
+  }
+
+  # apply alpha
+  cols <- substr(cols, 1, 7)
+  hex_alpha <- sprintf("%02X", round(alpha * 255))
+  cols <- paste0(cols, hex_alpha)
+
+  cols
 }
 
 #' Function to manage qualitative palettes
 #' @noRd
-qualPalette <- function(n, scheme) {
+qualPalette <- function(n, scheme, direction, alpha) {
   if (scheme %in% c("cbPalette", "okabeito")) {
     cols <- c(
       "#E69F00",
@@ -415,8 +536,13 @@ qualPalette <- function(n, scheme) {
     )
   }
 
-  max <- length(cols)
+  # handle direction
+  if (direction == -1) {
+    cols <- rev(cols)
+  }
 
+  # subset data
+  max <- length(cols)
   if (n >= 1 && n <= max) {
     cols <- cols[1:n]
   } else {
@@ -428,12 +554,19 @@ qualPalette <- function(n, scheme) {
       call = NULL
     )
   }
+
+  # handle alpha
+  cols <- substr(cols, 1, 7)
+  hex_alpha <- sprintf("%02X", round(alpha * 255))
+  cols <- paste0(cols, hex_alpha)
+
+  cols
 }
 
 
 #' Function to manage sequential palettes
 #' @noRd
-seqPalette <- function(n, scheme) {
+seqPalette <- function(n, scheme, direction, begin, end, alpha) {
   interpolate <- "linear"
 
   if (scheme == "default") {
@@ -574,11 +707,25 @@ seqPalette <- function(n, scheme) {
     cols <- c("#12436D", "#2073BC", "#6BACE6")
   }
 
-  fun <- grDevices::colorRampPalette(colors = cols, interpolate = interpolate)
+  # handle begin/end
+  len_cols <- length(cols)
+  indices <- round(1 + (len_cols - 1) * c(begin, end))
+  cols <- cols[indices[1]:indices[2]]
 
+  # handle direction
+  if (direction == -1) {
+    cols <- rev(cols)
+  }
+
+  # interpolate sequential colours
+  fun <- grDevices::colorRampPalette(colors = cols, interpolate = interpolate)
   cols <- fun(n)
 
-  return(cols)
+  # handle alpha
+  hex_alpha <- sprintf("%02X", round(alpha * 255))
+  cols <- paste0(cols, hex_alpha)
+
+  cols
 }
 
 #' Helper to check provided data are valid colours

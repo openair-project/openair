@@ -2,15 +2,45 @@
 % Please edit documentation in R/openColours.R
 \name{openColours}
 \alias{openColours}
+\alias{openColors}
 \title{Pre-defined openair colours and definition of user-defined colours}
 \usage{
-openColours(scheme = "default", n = 100)
+openColours(
+  scheme = "default",
+  n = 100,
+  alpha = 1,
+  begin = 0,
+  end = 1,
+  direction = 1
+)
+
+openColors(
+  scheme = "default",
+  n = 100,
+  alpha = 1,
+  begin = 0,
+  end = 1,
+  direction = 1
+)
 }
 \arguments{
 \item{scheme}{Any one of the pre-defined \code{openair} schemes (e.g.,
-\code{"increment"}) or a user-defined palette (e.g., \code{c("red", "orange", "gold")}). See \code{?openColours} for a full list of available schemes.}
+\code{"increment"}) or a user-defined palette (e.g., \code{c("red", "orange", "gold")}). See \code{\link[=openColours]{openColours()}} for a full list of available schemes.}
 
-\item{n}{number of colours required.}
+\item{n}{The whole number of colours required. If not provided, sequential
+palettes will return \code{100} colours and qualitative palettes will return the
+maximum number of colours available for that scheme.}
+
+\item{alpha}{The alpha transparency level (between \code{0} and \code{1}) for the
+colours. \code{0} is fully transparent, and \code{1} is fully opaque.}
+
+\item{begin, end}{For sequential schemes, the fraction (between \code{0} and \code{1})
+of the colour scheme to use. For example, if \code{begin = 0.2} and \code{end = 0.8},
+only the middle 60\% of the colour scheme will be used. This can be useful
+for avoiding very light or dark colours at the ends of schemes.}
+
+\item{direction}{The order of the colours. \code{1} is the default and gives the
+normal order. \code{-1} will reverse the order of the colours.}
 }
 \value{
 A character vector of hex codes
@@ -18,7 +48,7 @@ A character vector of hex codes
 \description{
 This in primarily an internal openair function to make it easy for users to
 select particular colour schemes, or define their own range of colours of a
-user-defined length.
+user-defined length. \code{openColours()} and \code{openColors()} are synonyms.
 }
 \section{Schemes}{
 
@@ -78,9 +108,9 @@ like \code{\link[=calendarPlot]{calendarPlot()}}.
 
 
 Because of the way many of the schemes have been developed they only exist
-over certain number of colour gradations (typically 3--10) --- see
-\code{?brewer.pal} for actual details. If less than or more than the required
-number of colours is supplied then \code{openair} will interpolate the colours.
+over certain number of colour gradations (typically 3--10). If less than or
+more than the required number of colours is supplied then \code{openair} will
+interpolate the colours.
 
 Each of the pre-defined schemes have merits and their use will depend on a
 particular situation. For showing incrementing concentrations, e.g., high
