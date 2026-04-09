@@ -272,7 +272,11 @@ openColours <- function(
         call = NULL
       )
     }
-    cols <- grDevices::colorRampPalette(scheme)(n %||% 100L)
+
+    cols <- scheme
+    idx <- round(1 + (length(cols) - 1) * c(begin, end))
+    cols <- cols[idx[1]:idx[2]]
+    cols <- grDevices::colorRampPalette(cols)(n %||% 100L)
     return(.finalise(cols, direction, alpha))
   }
 
