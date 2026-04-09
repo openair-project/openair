@@ -249,9 +249,9 @@ timeVariation(
   for `type` handling. Some additional arguments are also available,
   varying somewhat in different plotting functions:
 
-  - `title`, `subtitle`, `caption`, `xlab` and `ylab` control the plot
-    title, subtitle, caption, x-axis label and y-axis label. All of
-    these are passed through to
+  - `title`, `subtitle`, `caption`, `tag`, `xlab` and `ylab` control the
+    plot title, subtitle, caption, tag, x-axis label and y-axis label.
+    All of these are passed through to
     [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
     if `auto.text = TRUE`.
 

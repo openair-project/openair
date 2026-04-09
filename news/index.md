@@ -27,9 +27,9 @@
     above, `layout` is automatically unpacked into `ncol` and `nrow`
     with a warning.
 
-  - `title`, `subtitle` and `caption` can be used throughout `openair`
-    (`title` replacing `main` and `caption` replacing `sub`). All are
-    passed through
+  - `title`, `subtitle`, `tag`, and `caption` can be used throughout
+    `openair` (`title` replacing `main` and `caption` replacing `sub`).
+    All are passed through
     [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
     if `auto.text = TRUE`.
 
