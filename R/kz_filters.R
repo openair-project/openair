@@ -27,9 +27,9 @@
 #' times (each pass consuming the output of the previous one), the total
 #' affected zone at each end is approximately \code{k * floor(m / 2)}
 #' observations. With the default \code{m = c(5, 25, 169, 8761)} and
-#' \code{k = 3}, the affected zones are roughly 7 h, 36 h, 252 h (~10 days),
-#' and 13,140 h (~1.5 years) at each end respectively. The \code{trend}
-#' component therefore requires at least 3–4 years of data for the interior
+#' \code{k = 5}, the affected zones are roughly 12 h, 60 h, 420 h (~17 days),
+#' and 21,900 h (~2.5 years) at each end respectively. The \code{trend}
+#' component therefore requires at least 5–6 years of data for the interior
 #' estimates to be unaffected.
 #'
 #' @param mydata A data frame containing a \code{date} field in \code{Date} or
@@ -86,7 +86,7 @@ kzFilter <- function(
   mydata,
   pollutant = "o3",
   m = c(5L, 25L, 169L, 8761L),
-  k = 3L,
+  k = 5L,
   data.thresh = 0.75,
   type = "default",
   components = TRUE,
@@ -225,9 +225,9 @@ kzFilter <- function(
 #' times (each pass consuming the output of the previous one), the total
 #' affected zone at each end is approximately \code{k * floor(m / 2)}
 #' observations. With the default \code{m = c(5, 25, 169, 8761)} and
-#' \code{k = 3}, the affected zones are roughly 7 h, 36 h, 252 h (~10 days),
-#' and 13,140 h (~1.5 years) at each end respectively. The \code{trend}
-#' component therefore requires at least 3–4 years of data for the interior
+#' \code{k = 5}, the affected zones are roughly 12 h, 60 h, 420 h (~17 days),
+#' and 21,900 h (~2.5 years) at each end respectively. The \code{trend}
+#' component therefore requires at least 5–6 years of data for the interior
 #' estimates to be unaffected.
 #'
 #' @param mydata A data frame containing a \code{date} field in \code{Date} or
@@ -287,7 +287,7 @@ kzaFilter <- function(
   mydata,
   pollutant = "o3",
   m = c(5L, 25L, 169L, 8761L),
-  k = 3L,
+  k = 5L,
   sensitivity = 1.0,
   data.thresh = 0.75,
   type = "default",
