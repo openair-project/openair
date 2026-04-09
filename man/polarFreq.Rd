@@ -19,6 +19,7 @@ polarFreq(
   type = "default",
   min.bin = 1,
   ws.upper = NA,
+  angle.scale = 45,
   offset = 10,
   border.col = "transparent",
   key.title = paste(statistic, pollutant, sep = " "),
@@ -116,6 +117,13 @@ care. Also, the \code{polarFreq} function can be of use in such circumstances.}
 \item{ws.upper}{A user-defined upper wind speed to use. This is useful for
 ensuring a consistent scale between different plots. For example, to always
 ensure that wind speeds are displayed between 1-10, set \code{ws.int = 10}.}
+
+\item{angle.scale}{In radial plots (e.g., \code{\link[=polarPlot]{polarPlot()}}), the radial scale is
+drawn directly on the plot itself. While suitable defaults have been
+chosen, sometimes the placement of the scale may interfere with an
+interesting feature. \code{angle.scale} can take any value between \code{0} and \code{360}
+to place the scale at a different angle, or \code{FALSE} to move it to the side
+of the plots.}
 
 \item{offset}{\code{offset} controls the size of the 'hole' in the middle and is
 expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a

@@ -142,6 +142,7 @@ polarFreq <- function(
   type = "default",
   min.bin = 1,
   ws.upper = NA,
+  angle.scale = 45,
   offset = 10,
   border.col = "transparent",
   key.title = paste(statistic, pollutant, sep = " "),
@@ -341,7 +342,7 @@ polarFreq <- function(
       NULL,
       ggplot2::coord_radial(
         clip = "on",
-        r.axis.inside = 45,
+        r.axis.inside = angle.scale,
         rlim = c(NA, max.ws),
         inner.radius = offset / 100
       ),

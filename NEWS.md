@@ -50,7 +50,9 @@
 
 - `polarPlot()` will now annotate the identity of the radial axis as a caption, if `annotate = TRUE`.
 
--  `TheilSen()` and `smoothTrend()` now use a more straightfoward way to imput missing data when `deseason = TRUE` and missing monthly data are present based on monthly linear regression by month. The user is alerted to the imputation and the monthly plot shows the imputed data as a filled grey circle.
+- `TheilSen()` and `smoothTrend()` now use a more straightfoward way to imput missing data when `deseason = TRUE` and missing monthly data are present based on monthly linear regression by month. The user is alerted to the imputation and the monthly plot shows the imputed data as a filled grey circle.
+
+- `polarFreq()` gains `angle.scale`, in line with all other polar coordinate plots.
 
 ## Bug Fixes
 
