@@ -31,6 +31,8 @@
   "inferno",
   "plasma",
   "cividis",
+  "rocket",
+  "mako",
   "gaf.seq",
   "bam",
   "berlin",
@@ -101,7 +103,7 @@
 #'   "greyscale".
 #'
 #'   * Simplified versions of the `viridis` colours: "viridis", "plasma",
-#'   "magma", "inferno", "cividis", and "turbo".
+#'   "magma", "inferno", "cividis", "turbo", "rocket" and "mako".
 #'
 #'   * Simplified versions of the `RColorBrewer` sequential palettes: "Blues", "BuGn",
 #'   "BuPu", "GnBu", "Greens", "Greys", "Oranges", "OrRd", "PuBu", "PuBuGn",
@@ -503,6 +505,30 @@ openColors <- openColours
       "#F66B19FF",
       "#CB2A04FF",
       "#7A0403FF"
+    ),
+    rocket = c(
+      "#03051AFF",
+      "#2A1636FF",
+      "#551E4FFF",
+      "#841E5AFF",
+      "#B41658FF",
+      "#DD2C45FF",
+      "#F06043FF",
+      "#F5936AFF",
+      "#F6C09EFF",
+      "#FAEBDDFF"
+    ),
+    mako = c(
+      "#0B0405FF",
+      "#28192FFF",
+      "#3B2F5EFF",
+      "#40498EFF",
+      "#366A9FFF",
+      "#348AA6FF",
+      "#38AAACFF",
+      "#54C9ADFF",
+      "#A0DFB9FF",
+      "#DEF5E5FF"
     ),
     gaf.seq = c("#12436D", "#2073BC", "#6BACE6"),
     bam = c(

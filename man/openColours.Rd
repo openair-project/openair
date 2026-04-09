@@ -60,7 +60,7 @@ The following schemes are made available by \code{openColours()}:
 \item "default", "increment", "brewer1", "heat", "jet", "turbo", "hue",
 "greyscale".
 \item Simplified versions of the \code{viridis} colours: "viridis", "plasma",
-"magma", "inferno", "cividis", and "turbo".
+"magma", "inferno", "cividis", "turbo", "rocket" and "mako".
 \item Simplified versions of the \code{RColorBrewer} sequential palettes: "Blues", "BuGn",
 "BuPu", "GnBu", "Greens", "Greys", "Oranges", "OrRd", "PuBu", "PuBuGn",
 "PuRd", "Purples", "RdPu", "Reds", "YlGn", "YlGnBu", "YlOrBr", "YlOrRd".
