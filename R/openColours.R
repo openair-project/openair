@@ -31,7 +31,47 @@
   "inferno",
   "plasma",
   "cividis",
-  "gaf.seq"
+  "gaf.seq",
+  "bam",
+  "berlin",
+  "broc",
+  "bukavu",
+  "cork",
+  "fes",
+  "lisbon",
+  "managua",
+  "oleron",
+  "roma",
+  "tofino",
+  "vanimo",
+  "vik",
+  "acton",
+  "bamO",
+  "bamako",
+  "batlow",
+  "batlowK",
+  "batlowW",
+  "bilbao",
+  "brocO",
+  "buda",
+  "corkO",
+  "davos",
+  "devon",
+  "glasgow",
+  "grayC",
+  "hawaii",
+  "imola",
+  "lajolla",
+  "lapaz",
+  "lipari",
+  "navia",
+  "naviaW",
+  "nuuk",
+  "oslo",
+  "romaO",
+  "tokyo",
+  "turku",
+  "vikO"
 )
 
 # All known scheme names
@@ -67,10 +107,20 @@
 #'   "BuPu", "GnBu", "Greens", "Greys", "Oranges", "OrRd", "PuBu", "PuBuGn",
 #'   "PuRd", "Purples", "RdPu", "Reds", "YlGn", "YlGnBu", "YlOrBr", "YlOrRd".
 #'
+#'   * Simplified versions of Fabio Crameri's sequential palettes: "acton",
+#'   "bamO", "bamako", "batlow", "batlowK", "batlowW", "bilbao", "brocO",
+#'   "buda", "corkO", "davos", "devon", "glasgow", "grayC", "hawaii", "imola",
+#'   "lajolla", "lapaz", "lipari", "navia", "naviaW", "nuuk", "oslo", "romaO",
+#'   "tokyo", "turku", "vikO".
+#'
 #'   **Diverging Palettes:**
 #'
 #'   * Simplified versions of the `RColorBrewer` diverging palettes: "BrBG",
 #'   "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral".
+#'
+#'   * Simplified versions of Fabio Crameri's diverging palettes: "bam",
+#'   "berlin", "broc", "bukavu", "cork", "fes", "lisbon", "managua", "oleron",
+#'   "roma", "tofino", "vanimo", "vik"
 #'
 #'   **Qualitative Palettes:**
 #'
@@ -150,13 +200,25 @@
 #'   normal order. `-1` will reverse the order of the colours.
 #'
 #' @export
+#'
 #' @return A character vector of hex codes
+#'
 #' @author David Carslaw
 #' @author Jack Davison
-#' @references <https://colorbrewer2.org/>
-#' @references <https://check-air-quality.service.gov.uk/>
+#'
 #' @references
+#' Color Brewer
+#' <https://colorbrewer2.org/>
+#'
+#' DAQI Colours
+#' <https://check-air-quality.service.gov.uk/>
+#'
+#' UK Government Analysis Function
 #' <https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/>
+#'
+#' Fabio Crameri's Color Schemes
+#' Crameri, F. 2023. Scientific Colour Maps (version 8.0.1). Zenodo. DOI: \doi{doi:10.5281/zenodo.1243862}.
+#'
 #' @examples
 #'
 #' # to return 5 colours from the "jet" scheme:
@@ -438,7 +500,451 @@ openColors <- openColours
       "#CB2A04FF",
       "#7A0403FF"
     ),
-    gaf.seq = c("#12436D", "#2073BC", "#6BACE6")
+    gaf.seq = c("#12436D", "#2073BC", "#6BACE6"),
+    bam = c(
+      '#65024B',
+      '#9E3C85',
+      '#C86FB1',
+      '#E4AED6',
+      '#F5E3EF',
+      '#EFF3E5',
+      '#C1DAA2',
+      '#7BA755',
+      '#457B2A',
+      '#0D4C00'
+    ),
+    berlin = c(
+      '#9EB0FF',
+      '#5AA3DA',
+      '#2D7597',
+      '#1A4256',
+      '#11181D',
+      '#270D01',
+      '#501803',
+      '#8A3F2A',
+      '#C37469',
+      '#FFADAD'
+    ),
+    broc = c(
+      '#2C1A4C',
+      '#284477',
+      '#4A759F',
+      '#8BA7C2',
+      '#CED9E5',
+      '#E8E8D2',
+      '#C5C58F',
+      '#8C8C55',
+      '#555527',
+      '#262600'
+    ),
+    cork = c(
+      '#2C194C',
+      '#284578',
+      '#48739E',
+      '#83A1BE',
+      '#CBD7E3',
+      '#D2E1D2',
+      '#8EB38D',
+      '#4E884D',
+      '#1C5B19',
+      '#0F2903'
+    ),
+    lisbon = c(
+      '#E6E5FF',
+      '#9AAED2',
+      '#5177A4',
+      '#1E4368',
+      '#111D2B',
+      '#262419',
+      '#575134',
+      '#8D8556',
+      '#C8C28F',
+      '#FFFFD9'
+    ),
+    managua = c(
+      '#FFCF67',
+      '#DC9955',
+      '#B96C46',
+      '#92463B',
+      '#662A3C',
+      '#4E315D',
+      '#4E5593',
+      '#5B80BC',
+      '#6DB0DD',
+      '#81E7FF'
+    ),
+    roma = c(
+      '#7E1700',
+      '#995215',
+      '#B07F2A',
+      '#C8B455',
+      '#D0E3A3',
+      '#A4E5D2',
+      '#5DC1D3',
+      '#3191C1',
+      '#2064AE',
+      '#033198'
+    ),
+    tofino = c(
+      '#DED9FF',
+      '#92A3DD',
+      '#4A6BAD',
+      '#273C65',
+      '#111825',
+      '#112113',
+      '#244D28',
+      '#3F8144',
+      '#87B86F',
+      '#DBE69B'
+    ),
+    vanimo = c(
+      '#FFCDFD',
+      '#D280C3',
+      '#A1498E',
+      '#5C244F',
+      '#22141C',
+      '#1B1D11',
+      '#36491A',
+      '#5A7C2A',
+      '#84B44C',
+      '#BEFDA5'
+    ),
+    vik = c(
+      '#001261',
+      '#033E7D',
+      '#1D6E9C',
+      '#71A8C4',
+      '#CADDE7',
+      '#EACEBE',
+      '#D39774',
+      '#BD6432',
+      '#8B2706',
+      '#590008'
+    ),
+    acton = c(
+      '#260D40',
+      '#3E2E5E',
+      '#534C7A',
+      '#71618C',
+      '#93658F',
+      '#BC6992',
+      '#D586AA',
+      '#DFABC9',
+      '#E8CDE4',
+      '#F0EAFA'
+    ),
+    bamako = c(
+      '#003B47',
+      '#0E433F',
+      '#1F4E34',
+      '#365E26',
+      '#527014',
+      '#728302',
+      '#988D03',
+      '#BEA82E',
+      '#E1C76D',
+      '#FFE5AD'
+    ),
+    bamO = c(
+      '#4F3043',
+      '#874979',
+      '#B776A6',
+      '#D7B0C9',
+      '#D6CBC6',
+      '#BAC4A2',
+      '#839165',
+      '#606448',
+      '#4C423B',
+      '#4E3042'
+    ),
+    batlow = c(
+      '#011959',
+      '#103F60',
+      '#1B5962',
+      '#3C6D56',
+      '#687B3D',
+      '#9C892B',
+      '#D29343',
+      '#F8A17B',
+      '#FDB6BB',
+      '#FACCFA'
+    ),
+    batlowK = c(
+      '#04050A',
+      '#1A2C41',
+      '#35525F',
+      '#4F6657',
+      '#6F7845',
+      '#A08D38',
+      '#D89E50',
+      '#F6A986',
+      '#FDB8BE',
+      '#FACCFA'
+    ),
+    batlowW = c(
+      '#011959',
+      '#103F60',
+      '#1A5862',
+      '#396E59',
+      '#647E42',
+      '#999032',
+      '#D0A35A',
+      '#EEAF91',
+      '#FED7D5',
+      '#FFFEFE'
+    ),
+    bilbao = c(
+      '#4C0001',
+      '#732529',
+      '#93454B',
+      '#A06257',
+      '#A6775C',
+      '#AC8C60',
+      '#B5A772',
+      '#C2BCA3',
+      '#D1D1CD',
+      '#FFFFFF'
+    ),
+    brocO = c(
+      '#372F38',
+      '#384164',
+      '#547199',
+      '#8AA3BF',
+      '#C1CCD0',
+      '#CACBAB',
+      '#9E9E6C',
+      '#6A683C',
+      '#443F29',
+      '#372F37'
+    ),
+    buda = c(
+      '#B301B3',
+      '#B32B9E',
+      '#B94792',
+      '#C2618A',
+      '#CA7982',
+      '#D0917B',
+      '#D7AA75',
+      '#DDC36E',
+      '#E5DE68',
+      '#FFFF66'
+    ),
+    corkO = c(
+      '#3F3E3A',
+      '#3E445D',
+      '#536D93',
+      '#849EBA',
+      '#ADC4C7',
+      '#A1C4A6',
+      '#73A36F',
+      '#4E723A',
+      '#434F2C',
+      '#3F3E3A'
+    ),
+    davos = c(
+      '#00054A',
+      '#112C71',
+      '#285190',
+      '#43709D',
+      '#5E8598',
+      '#78968D',
+      '#99AD88',
+      '#C9D29E',
+      '#F2F2D1',
+      '#FEFEFE'
+    ),
+    devon = c(
+      '#2C1A4C',
+      '#293467',
+      '#275085',
+      '#3669AD',
+      '#6181D0',
+      '#979AE6',
+      '#BAB3F1',
+      '#D0CCF5',
+      '#E7E4FA',
+      '#FFFFFF'
+    ),
+    glasgow = c(
+      '#361338',
+      '#4F1A22',
+      '#6A250B',
+      '#744500',
+      '#716311',
+      '#687B47',
+      '#60927D',
+      '#74A9B0',
+      '#A5BDD7',
+      '#DBD3FF'
+    ),
+    grayC = c(
+      '#000000',
+      '#232323',
+      '#3C3C3C',
+      '#565656',
+      '#6C6C6C',
+      '#818181',
+      '#9A9A9A',
+      '#B6B6B6',
+      '#D7D7D7',
+      '#FFFFFF'
+    ),
+    hawaii = c(
+      '#8C0273',
+      '#922A58',
+      '#964642',
+      '#996330',
+      '#9D831E',
+      '#97A829',
+      '#80C55F',
+      '#65D89C',
+      '#6BEADA',
+      '#B3F2FD'
+    ),
+    imola = c(
+      '#1A33B3',
+      '#2446A9',
+      '#2D599F',
+      '#396B94',
+      '#497B85',
+      '#5F927B',
+      '#7BAE74',
+      '#98CB6D',
+      '#C3E967',
+      '#FFFF66'
+    ),
+    lajolla = c(
+      '#191900',
+      '#33220F',
+      '#5A2F22',
+      '#8F403D',
+      '#C7504B',
+      '#E0714F',
+      '#E79452',
+      '#EEB555',
+      '#F8DE7B',
+      '#FFFECB'
+    ),
+    lapaz = c(
+      '#1A0C64',
+      '#232D7B',
+      '#2A4B8E',
+      '#36679D',
+      '#4C80A3',
+      '#6D95A1',
+      '#94A298',
+      '#BFB199',
+      '#EED2BF',
+      '#FEF2F3'
+    ),
+    lipari = c(
+      '#031326',
+      '#13385A',
+      '#46587A',
+      '#6B5F76',
+      '#8E616C',
+      '#BB6461',
+      '#E57B62',
+      '#E7A279',
+      '#E8C89E',
+      '#FDF5DA'
+    ),
+    navia = c(
+      '#031327',
+      '#07345E',
+      '#14578A',
+      '#28728F',
+      '#388285',
+      '#4A937A',
+      '#65AB6C',
+      '#98CB6F',
+      '#D7E5A7',
+      '#FCF4D9'
+    ),
+    naviaW = c(
+      '#041427',
+      '#093660',
+      '#1A5C89',
+      '#2E778D',
+      '#3F8884',
+      '#559C79',
+      '#7BBA71',
+      '#BEDF95',
+      '#EBF5D4',
+      '#FEFEFD'
+    ),
+    nuuk = c(
+      '#05598C',
+      '#296283',
+      '#497183',
+      '#6F878D',
+      '#929C96',
+      '#ABAD96',
+      '#BAB98D',
+      '#C7C684',
+      '#DFDF8D',
+      '#FEFEB2'
+    ),
+    oslo = c(
+      '#010101',
+      '#0D1B29',
+      '#133250',
+      '#1F4C7B',
+      '#3869A8',
+      '#6489C6',
+      '#89A0CA',
+      '#AAB6CA',
+      '#D3D5DA',
+      '#FFFFFF'
+    ),
+    romaO = c(
+      '#733957',
+      '#874036',
+      '#A2662C',
+      '#C3A34B',
+      '#D5D893',
+      '#B4DEC5',
+      '#74BBCD',
+      '#4F87B8',
+      '#5B538B',
+      '#723959'
+    ),
+    tokyo = c(
+      '#1C0E34',
+      '#4B2044',
+      '#683F4E',
+      '#705751',
+      '#726753',
+      '#757A54',
+      '#7C9859',
+      '#8DC16E',
+      '#C0ECAA',
+      '#EFFCDD'
+    ),
+    turku = c(
+      '#000000',
+      '#242420',
+      '#414135',
+      '#5F5F44',
+      '#7E7C52',
+      '#A89864',
+      '#CFA67C',
+      '#EAAD98',
+      '#FCC6C2',
+      '#FFE6E6'
+    ),
+    vikO = c(
+      '#4F1A3D',
+      '#3A3567',
+      '#3A6696',
+      '#759EBC',
+      '#BEC2C5',
+      '#D9AE97',
+      '#C57C56',
+      '#943D24',
+      '#681922',
+      '#50193C'
+    )
   )
 
   # strip any embedded alpha before subsetting/interpolating

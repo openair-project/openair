@@ -36,6 +36,8 @@
     
     - Added additional palettes by Paul Tol; "tol.highcontrast", "tol.vibrant", "tol.mediumcontrast", "tol.pale" and "tol.dark".
     
+    - Added various palettes based on the work of Fabio Crameri - see `openColours()` for more details.
+    
     - Added `openColors()` and `colorOpts()` which are synonymous with their British English equivalents `openColours()` and `colourOpts()`.
 
 - `smoothTrend()` will now use `loess` when it has insufficient data to fit a GAM.

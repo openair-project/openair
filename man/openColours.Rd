@@ -64,12 +64,20 @@ The following schemes are made available by \code{openColours()}:
 \item Simplified versions of the \code{RColorBrewer} sequential palettes: "Blues", "BuGn",
 "BuPu", "GnBu", "Greens", "Greys", "Oranges", "OrRd", "PuBu", "PuBuGn",
 "PuRd", "Purples", "RdPu", "Reds", "YlGn", "YlGnBu", "YlOrBr", "YlOrRd".
+\item Simplified versions of Fabio Crameri's sequential palettes: "acton",
+"bamO", "bamako", "batlow", "batlowK", "batlowW", "bilbao", "brocO",
+"buda", "corkO", "davos", "devon", "glasgow", "grayC", "hawaii", "imola",
+"lajolla", "lapaz", "lipari", "navia", "naviaW", "nuuk", "oslo", "romaO",
+"tokyo", "turku", "vikO".
 }
 
 \strong{Diverging Palettes:}
 \itemize{
 \item Simplified versions of the \code{RColorBrewer} diverging palettes: "BrBG",
 "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral".
+\item Simplified versions of Fabio Crameri's diverging palettes: "bam",
+"berlin", "broc", "bukavu", "cork", "fes", "lisbon", "managua", "oleron",
+"roma", "tofino", "vanimo", "vik"
 }
 
 \strong{Qualitative Palettes:}
@@ -78,8 +86,9 @@ The following schemes are made available by \code{openColours()}:
 "Accent", "Dark2", "Paired", "Pastel1", "Pastel2", "Set1", "Set2", "Set3".
 \item "okabeito" (or "cbPalette"), a colour-blind safe palette based on
 the work of Masataka Okabe and Kei Ito (\url{https://jfly.uni-koeln.de/color/})
-\item "tol.bright" (or "tol"), "tol.muted" and "tol.light", colour-blind safe
-palettes based on the work of Paul Tol.
+\item "tol.bright" (or "tol"), "tol.highcontrast", "tol.vibrant", "tol.muted",
+"tol.mediumcontrast", "tol.pale", "tol.dark", and "tol.light"; colour-blind
+safe palettes based on the work of Paul Tol.
 \item "tableau" and "observable", aliases for the
 "Tableau10"
 (\url{https://www.tableau.com/blog/colors-upgrade-tableau-10-56782}) and
@@ -143,11 +152,17 @@ cols
 
 }
 \references{
+Color Brewer
 \url{https://colorbrewer2.org/}
 
+DAQI Colours
 \url{https://check-air-quality.service.gov.uk/}
 
+UK Government Analysis Function
 \url{https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/}
+
+Fabio Crameri's Color Schemes
+Crameri, F. 2023. Scientific Colour Maps (version 8.0.1). Zenodo. DOI: \doi{doi:10.5281/zenodo.1243862}.
 }
 \author{
 David Carslaw
