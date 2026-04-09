@@ -546,7 +546,7 @@ trendLevel <- function(
       thePlot +
       ggplot2::scale_fill_manual(
         values = resolve_colour_opts(
-          scheme = cols,
+          cols,
           n = dplyr::n_distinct(levels(newdata$cuts))
         ),
         na.value = col.na,

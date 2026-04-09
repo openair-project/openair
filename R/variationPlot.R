@@ -503,7 +503,7 @@ variationPlot <- function(
     ) +
     ggplot2::scale_color_manual(
       values = resolve_colour_opts(
-        scheme = cols,
+        cols,
         n = nlevels(mydata$group)
       ),
       labels = stats::setNames(
