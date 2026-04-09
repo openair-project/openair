@@ -10,7 +10,12 @@
   "observable" = 10,
   "tol" = 7,
   "tol.bright" = 7,
+  "tol.highcontrast" = 3,
+  "tol.vibrant" = 7,
   "tol.muted" = 10,
+  "tol.mediumcontrast" = 6,
+  "tol.pale" = 6,
+  "tol.dark" = 6,
   "tol.light" = 9
 )
 
@@ -75,8 +80,9 @@
 #'   * "okabeito" (or "cbPalette"), a colour-blind safe palette based on
 #'   the work of Masataka Okabe and Kei Ito (<https://jfly.uni-koeln.de/color/>)
 #'
-#'   * "tol.bright" (or "tol"), "tol.muted" and "tol.light", colour-blind safe
-#'   palettes based on the work of Paul Tol.
+#'   * "tol.bright" (or "tol"), "tol.highcontrast", "tol.vibrant", "tol.muted",
+#'   "tol.mediumcontrast", "tol.pale", "tol.dark", and "tol.light"; colour-blind
+#'   safe palettes based on the work of Paul Tol.
 #'
 #'   * "tableau" and "observable", aliases for the
 #'   "Tableau10"
@@ -451,7 +457,17 @@ openColors <- openColours
 .qualPalette <- function(n, scheme, direction, alpha) {
   cols <- switch(
     scheme,
-    cbPalette = ,
+    cbPalette = c(
+      "#E69F00",
+      "#56B4E9",
+      "#009E73",
+      "#F0E442",
+      "#0072B2",
+      "#D55E00",
+      "#CC79A7",
+      "#999999",
+      "#000000"
+    ),
     okabeito = c(
       "#E69F00",
       "#56B4E9",
@@ -485,7 +501,15 @@ openColors <- openColours
       "#A285D1"
     ),
     gaf.focus = c("#BFBFBF", "#12436D"),
-    tol = ,
+    tol = c(
+      "#4477AA",
+      "#EE6677",
+      "#228833",
+      "#CCBB44",
+      "#66CCEE",
+      "#AA3377",
+      "#BBBBBB"
+    ),
     tol.bright = c(
       "#4477AA",
       "#EE6677",
@@ -493,6 +517,20 @@ openColors <- openColours
       "#CCBB44",
       "#66CCEE",
       "#AA3377",
+      "#BBBBBB"
+    ),
+    tol.highcontrast = c(
+      "#004488",
+      "#DDAA33",
+      "#BB5566"
+    ),
+    tol.vibrant = c(
+      "#EE7733",
+      "#0077BB",
+      "#33BBEE",
+      "#EE3377",
+      "#CC3311",
+      "#009988",
       "#BBBBBB"
     ),
     tol.muted = c(
@@ -506,6 +544,30 @@ openColors <- openColours
       "#999933",
       "#AA4499",
       "#DDDDDD"
+    ),
+    tol.mediumcontrast = c(
+      "#EECC66",
+      "#EE99AA",
+      "#6699CC",
+      "#997700",
+      "#994455",
+      "#004488"
+    ),
+    tol.pale = c(
+      "#BBCCEE",
+      "#CCEEFF",
+      "#CCDDAA",
+      "#EEEEBB",
+      "#FFCCCC",
+      "#DDDDDD"
+    ),
+    tol.dark = c(
+      "#222255",
+      "#225555",
+      "#225522",
+      "#666633",
+      "#663333",
+      "#555555"
     ),
     tol.light = c(
       "#77AADD",
