@@ -130,18 +130,8 @@ polarDiff <- function(
   # build final polarPlot args, merging defaults with user-supplied Args
   plot_args <- utils::modifyList(
     list(
-      cols = c(
-        "#002F70",
-        "#3167BB",
-        "#879FDB",
-        "#C8D2F1",
-        "#F6F6F6",
-        "#F4C8C8",
-        "#DA8A8B",
-        "#AE4647",
-        "#5F1415"
-      ),
-      key.position = "none",
+      cols = openColours("vik", n = 9),
+      key.position = "right",
       par.settings = list(axis.line = list(col = "black")),
       alpha = 1,
       key.title = paste("Difference", pollutant_name, sep = " "),
