@@ -32,7 +32,9 @@
 
     - `openColours()` gains `direction`, `alpha`, `begin` and `end` for better control over colour palettes.
     
-    - Added `openColors()`, which is synonymous with `openColours()`.
+    - Any `cols` argument in `{openair}` can now take the `colourOpts()` function, which tells each plotting function how to use the new `openColours()` arguments.
+    
+    - Added `openColors()` and `colorOpts()` which are synonymous with their British English equivalents `openColours()` and `colourOpts()`.
 
 - `smoothTrend()` will now use `loess` when it has insufficient data to fit a GAM.
 

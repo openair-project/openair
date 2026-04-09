@@ -526,7 +526,7 @@ percentileRose <- function(
     ) +
     ggplot2::scale_colour_manual(
       values = c(
-        openair::openColours(cols, n = length(percentile[percentile != 0])),
+        resolve_colour_opts(cols, n = length(percentile[percentile != 0])),
         mean.col
       ),
       breaks = fct_labels,

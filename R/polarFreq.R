@@ -375,7 +375,7 @@ polarFreq <- function(
     thePlot <-
       thePlot +
       ggplot2::scale_fill_manual(
-        values = openColours(
+        values = resolve_colour_opts(
           scheme = cols,
           n = dplyr::n_distinct(levels(results.grid$cuts))
         ),
@@ -400,7 +400,7 @@ polarFreq <- function(
     thePlot <-
       thePlot +
       ggplot2::scale_fill_gradientn(
-        colours = openColours(cols),
+        colours = resolve_colour_opts(cols, 100),
         transform = ifelse(trans, "sqrt", "identity"),
         oob = scales::oob_squish,
         breaks = scales::pretty_breaks(6),

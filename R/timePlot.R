@@ -508,7 +508,7 @@ timePlot <- function(
       transform = ifelse(log, "log10", "identity")
     ) +
     ggplot2::scale_color_manual(
-      values = openColours(scheme = cols, n = n_groups),
+      values = resolve_colour_opts(scheme = cols, n = n_groups),
       drop = FALSE,
       label = \(x) label_openair(x, auto_text = auto.text),
       aesthetics = c("fill", "colour")

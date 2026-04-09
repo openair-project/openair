@@ -502,7 +502,7 @@ variationPlot <- function(
       ylim = extra.args$ylim
     ) +
     ggplot2::scale_color_manual(
-      values = openColours(
+      values = resolve_colour_opts(
         scheme = cols,
         n = nlevels(mydata$group)
       ),

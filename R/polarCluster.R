@@ -238,7 +238,7 @@ polarCluster <-
     nlev <- max(n.clusters) + 1
     breaks <- c(0, 1:max(n.clusters))
     nlev2 <- length(breaks)
-    col <- openColours(cols, (nlev2 - 1))
+    col <- resolve_colour_opts(cols, (nlev2 - 1))
     col.scale <- breaks
 
     myform <- stats::formula("cluster ~ u * v | nclust")
@@ -313,7 +313,10 @@ polarCluster <-
         expand = ggplot2::expansion()
       ) +
       ggplot2::scale_color_manual(
-        values = openColours(cols, n = dplyr::n_distinct(results.grid$cluster)),
+        values = resolve_colour_opts(
+          cols,
+          n = dplyr::n_distinct(results.grid$cluster)
+        ),
         drop = FALSE
       ) +
       theme_openair_radial(key.position %||% "right", panel.ontop = TRUE) +

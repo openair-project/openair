@@ -150,7 +150,7 @@ conditionalQuantile <- function(
     col.2 <- grDevices::grey(0.5)
     col.5 <- grDevices::grey(0.25)
   } else {
-    cols <- openair::openColours(cols, n = 3L)
+    cols <- resolve_colour_opts(cols, n = 3L)
     ideal.col <- "#0080ff"
     col.1 <- cols[1]
     col.2 <- cols[2]

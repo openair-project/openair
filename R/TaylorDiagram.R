@@ -624,7 +624,10 @@ TaylorDiagram <- function(
         linewidth = arrow.lwd / 3
       ) +
       ggplot2::scale_color_manual(
-        values = c(openColours(cols, n = nlevels(results[[group]])), "black"),
+        values = c(
+          resolve_colour_opts(cols, n = nlevels(results[[group]])),
+          "black"
+        ),
         breaks = c(levels(results[[group]]), text.obs)
       ) +
       ggplot2::guides(
@@ -643,7 +646,10 @@ TaylorDiagram <- function(
         size = extra.args$size * 2
       ) +
       ggplot2::scale_color_manual(
-        values = c(openColours(cols, n = nlevels(results[[group]])), "black"),
+        values = c(
+          resolve_colour_opts(cols, n = nlevels(results[[group]])),
+          "black"
+        ),
         breaks = c(levels(results[[group]]), text.obs)
       ) +
       ggplot2::guides(

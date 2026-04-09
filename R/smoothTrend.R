@@ -320,7 +320,10 @@ smoothTrend <- function(
     theme_openair(key.position) +
     set_extra_fontsize(extra.args) +
     ggplot2::scale_fill_manual(
-      values = openColours(cols, dplyr::n_distinct(levels(newdata$variable))),
+      values = resolve_colour_opts(
+        cols,
+        dplyr::n_distinct(levels(newdata$variable))
+      ),
       breaks = levels(newdata$variable),
       labels = lapply(name.pol %||% levels(newdata$variable), \(x) {
         label_openair(x, auto_text = auto.text)

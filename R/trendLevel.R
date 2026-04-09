@@ -545,7 +545,7 @@ trendLevel <- function(
     thePlot <-
       thePlot +
       ggplot2::scale_fill_manual(
-        values = openColours(
+        values = resolve_colour_opts(
           scheme = cols,
           n = dplyr::n_distinct(levels(newdata$cuts))
         ),
@@ -571,7 +571,7 @@ trendLevel <- function(
     thePlot <-
       thePlot +
       ggplot2::scale_fill_gradientn(
-        colours = openColours(cols),
+        colours = resolve_colour_opts(cols, 100),
         na.value = col.na,
         oob = scales::oob_squish,
         limit = limits

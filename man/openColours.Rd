@@ -7,7 +7,7 @@
 \usage{
 openColours(
   scheme = "default",
-  n = 100,
+  n = NULL,
   alpha = 1,
   begin = 0,
   end = 1,
@@ -16,7 +16,7 @@ openColours(
 
 openColors(
   scheme = "default",
-  n = 100,
+  n = NULL,
   alpha = 1,
   begin = 0,
   end = 1,

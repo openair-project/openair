@@ -30,7 +30,9 @@
 #'   `"turbo"`, `"viridis"`, `"tol"`, `"Dark2"`, etc.) or a user-defined vector
 #'   of R colours (e.g., `c("yellow", "green", "blue", "black")` - see
 #'   [colours()] for a full list) or hex-codes (e.g., `c("#30123B", "#9CF649",
-#'   "#7A0403")`). See [openColours()] for more details.
+#'   "#7A0403")`). Alternatively, can be a list of arguments to control the
+#'   colour palette more closely (e.g., `palette`, `direction`, `alpha`, etc.).
+#'   See [openColours()] and [colourOpts()] for more details.
 #'
 #' @param date.breaks Number of major x-axis intervals to use. The function will
 #'   try and choose a sensible number of dates/times as well as formatting the
