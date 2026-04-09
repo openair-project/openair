@@ -5,15 +5,15 @@
 #' The KZ filter is a low-pass filter formed by iterating a simple moving
 #' average \code{k} times with window size \code{m}.
 #'
-#' With the default window sizes of 5, 24, 168 and 8760 (suited to hourly data),
+#' With the default window sizes of 5, 25, 169 and 8761 (suited to hourly data),
 #' the function returns four intermediate filtered columns and five physical
 #' components derived by differencing:
 #' \enumerate{
 #'   \item \strong{short} — sub-hourly fluctuations (\code{pollutant - kz_5})
-#'   \item \strong{diurnal} — daily cycle (\code{kz_5 - kz_24})
-#'   \item \strong{synoptic} — 2–7 day weather systems (\code{kz_24 - kz_168})
-#'   \item \strong{seasonal} — weekly to annual variability (\code{kz_168 - kz_8760})
-#'   \item \strong{trend} — multi-year trend (\code{kz_8760})
+#'   \item \strong{diurnal} — daily cycle (\code{kz_5 - kz_25})
+#'   \item \strong{synoptic} — 2–7 day weather systems (\code{kz_25 - kz_169})
+#'   \item \strong{seasonal} — weekly to annual variability (\code{kz_169 - kz_8761})
+#'   \item \strong{trend} — multi-year trend (\code{kz_8761})
 #' }
 #'
 #' @section Edge effects:
@@ -26,7 +26,7 @@
 #' \code{floor(m / 2)} observations. Because the filter is iterated \code{k}
 #' times (each pass consuming the output of the previous one), the total
 #' affected zone at each end is approximately \code{k * floor(m / 2)}
-#' observations. With the default \code{m = c(5, 24, 168, 8760)} and
+#' observations. With the default \code{m = c(5, 25, 169, 8761)} and
 #' \code{k = 3}, the affected zones are roughly 7 h, 36 h, 252 h (~10 days),
 #' and 13,140 h (~1.5 years) at each end respectively. The \code{trend}
 #' component therefore requires at least 3–4 years of data for the interior
@@ -38,8 +38,10 @@
 #' @param pollutant The name of a pollutant, e.g., \code{pollutant = "o3"}.
 #'   More than one pollutant can be supplied as a vector, e.g.,
 #'   \code{pollutant = c("o3", "nox")}.
-#' @param m Integer vector of window sizes. Defaults to \code{c(5, 24, 168,
-#'   8760)} (suited to hourly data). All values must be >= 3.
+#' @param m Integer vector of window sizes. Defaults to \code{c(5, 25, 169,
+#'   8761)} (suited to hourly data). All values must be >= 3. Values of
+#'   \code{m} should be odd; even values will produce a symmetric window of
+#'   \code{m + 1} points rather than \code{m}.
 #' @param k Integer. The number of iterations applied at each window size.
 #' @param data.thresh Numeric (0--1). Minimum fraction of valid (non-\code{NA})
 #'   values required within a window for a filtered value to be returned;
@@ -83,7 +85,7 @@
 kzFilter <- function(
   mydata,
   pollutant = "o3",
-  m = c(5L, 24L, 168L, 8760L),
+  m = c(5L, 25L, 169L, 8761L),
   k = 3L,
   data.thresh = 0.75,
   type = "default",
@@ -201,15 +203,15 @@ kzFilter <- function(
 #' components. The KZA filter uses a standard KZ filter to detect structural
 #' breaks and shrinks the window near those breaks to preserve sharp features.
 #'
-#' With the default window sizes of 5, 24, 168 and 8760 (suited to hourly data),
+#' With the default window sizes of 5, 25, 169 and 8761 (suited to hourly data),
 #' the function returns four intermediate filtered columns and five physical
 #' components derived by differencing:
 #' \enumerate{
 #'   \item \strong{short} — sub-hourly fluctuations (\code{pollutant - kza_5})
-#'   \item \strong{diurnal} — daily cycle (\code{kza_5 - kza_24})
-#'   \item \strong{synoptic} — 2–7 day weather systems (\code{kza_24 - kza_168})
-#'   \item \strong{seasonal} — weekly to annual variability (\code{kza_168 - kza_8760})
-#'   \item \strong{trend} — multi-year trend (\code{kza_8760})
+#'   \item \strong{diurnal} — daily cycle (\code{kza_5 - kza_25})
+#'   \item \strong{synoptic} — 2–7 day weather systems (\code{kza_25 - kza_169})
+#'   \item \strong{seasonal} — weekly to annual variability (\code{kza_169 - kza_8761})
+#'   \item \strong{trend} — multi-year trend (\code{kza_8761})
 #' }
 #'
 #' @section Edge effects:
@@ -222,7 +224,7 @@ kzFilter <- function(
 #' \code{floor(m / 2)} observations. Because the filter is iterated \code{k}
 #' times (each pass consuming the output of the previous one), the total
 #' affected zone at each end is approximately \code{k * floor(m / 2)}
-#' observations. With the default \code{m = c(5, 24, 168, 8760)} and
+#' observations. With the default \code{m = c(5, 25, 169, 8761)} and
 #' \code{k = 3}, the affected zones are roughly 7 h, 36 h, 252 h (~10 days),
 #' and 13,140 h (~1.5 years) at each end respectively. The \code{trend}
 #' component therefore requires at least 3–4 years of data for the interior
@@ -234,8 +236,10 @@ kzFilter <- function(
 #' @param pollutant The name of a pollutant, e.g., \code{pollutant = "o3"}.
 #'   More than one pollutant can be supplied as a vector, e.g.,
 #'   \code{pollutant = c("o3", "nox")}.
-#' @param m Integer vector of maximum window sizes. Defaults to \code{c(5, 24,
-#'   168, 8760)} (suited to hourly data).
+#' @param m Integer vector of maximum window sizes. Defaults to \code{c(5, 25,
+#'   169, 8761)} (suited to hourly data). Values of \code{m} should be odd;
+#'   even values will produce a symmetric window of \code{m + 1} points rather
+#'   than \code{m}.
 #' @param k Integer. The number of iterations for the baseline KZ filter used
 #'   to detect structural breaks.
 #' @param sensitivity Numeric. Controls how aggressively the window shrinks at
@@ -282,7 +286,7 @@ kzFilter <- function(
 kzaFilter <- function(
   mydata,
   pollutant = "o3",
-  m = c(5L, 24L, 168L, 8760L),
+  m = c(5L, 25L, 169L, 8761L),
   k = 3L,
   sensitivity = 1.0,
   data.thresh = 0.75,

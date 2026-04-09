@@ -7,7 +7,7 @@
 kzaFilter(
   mydata,
   pollutant = "o3",
-  m = c(5L, 24L, 168L, 8760L),
+  m = c(5L, 25L, 169L, 8761L),
   k = 3L,
   sensitivity = 1,
   data.thresh = 0.75,
@@ -27,8 +27,10 @@ or daily.}
 More than one pollutant can be supplied as a vector, e.g.,
 \code{pollutant = c("o3", "nox")}.}
 
-\item{m}{Integer vector of maximum window sizes. Defaults to \code{c(5, 24,
-168, 8760)} (suited to hourly data).}
+\item{m}{Integer vector of maximum window sizes. Defaults to \code{c(5, 25,
+  169, 8761)} (suited to hourly data). Values of \code{m} should be odd;
+even values will produce a symmetric window of \code{m + 1} points rather
+than \code{m}.}
 
 \item{k}{Integer. The number of iterations for the baseline KZ filter used
 to detect structural breaks.}
@@ -75,15 +77,15 @@ components. The KZA filter uses a standard KZ filter to detect structural
 breaks and shrinks the window near those breaks to preserve sharp features.
 }
 \details{
-With the default window sizes of 5, 24, 168 and 8760 (suited to hourly data),
+With the default window sizes of 5, 25, 169 and 8761 (suited to hourly data),
 the function returns four intermediate filtered columns and five physical
 components derived by differencing:
 \enumerate{
 \item \strong{short} — sub-hourly fluctuations (\code{pollutant - kza_5})
-\item \strong{diurnal} — daily cycle (\code{kza_5 - kza_24})
-\item \strong{synoptic} — 2–7 day weather systems (\code{kza_24 - kza_168})
-\item \strong{seasonal} — weekly to annual variability (\code{kza_168 - kza_8760})
-\item \strong{trend} — multi-year trend (\code{kza_8760})
+\item \strong{diurnal} — daily cycle (\code{kza_5 - kza_25})
+\item \strong{synoptic} — 2–7 day weather systems (\code{kza_25 - kza_169})
+\item \strong{seasonal} — weekly to annual variability (\code{kza_169 - kza_8761})
+\item \strong{trend} — multi-year trend (\code{kza_8761})
 }
 }
 \section{Edge effects}{
@@ -97,7 +99,7 @@ The affected length at each end of the series for a single filter pass is
 \code{floor(m / 2)} observations. Because the filter is iterated \code{k}
 times (each pass consuming the output of the previous one), the total
 affected zone at each end is approximately \code{k * floor(m / 2)}
-observations. With the default \code{m = c(5, 24, 168, 8760)} and
+observations. With the default \code{m = c(5, 25, 169, 8761)} and
 \code{k = 3}, the affected zones are roughly 7 h, 36 h, 252 h (~10 days),
 and 13,140 h (~1.5 years) at each end respectively. The \code{trend}
 component therefore requires at least 3–4 years of data for the interior
