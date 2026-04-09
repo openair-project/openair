@@ -177,6 +177,7 @@ polarCluster <-
     extra.args$title <- quickText(extra.args$title, auto.text)
     extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
     extra.args$caption <- quickText(extra.args$caption, auto.text)
+    extra.args$tag <- quickText(extra.args$tag, auto.text)
 
     # if considering differences
     if (is.data.frame(after)) {
@@ -334,7 +335,8 @@ polarCluster <-
         y = extra.args$ylab,
         title = extra.args$title,
         subtitle = extra.args$subtitle,
-        caption = extra.args$caption
+        caption = extra.args$caption,
+        tag = extra.args$tag
       ) +
       get_facet(
         ifelse(dplyr::n_distinct(results.grid$nclust) > 1, "nclust", "default"),

@@ -155,6 +155,7 @@ corPlot <- function(
   extra.args$title <- quickText(extra.args$title %||% NULL, auto.text)
   extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
   extra.args$caption <- quickText(extra.args$caption, auto.text)
+  extra.args$tag <- quickText(extra.args$tag, auto.text)
 
   # check triangle is set properly
   triangle <- rlang::arg_match(triangle)
@@ -476,6 +477,7 @@ corPlot <- function(
       title = extra.args$title,
       subtitle = extra.args$subtitle,
       caption = extra.args$caption,
+      tag = extra.args$tag,
       fill = key.title
     )
 

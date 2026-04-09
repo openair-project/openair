@@ -111,9 +111,9 @@
 #'   Some additional arguments are also available, varying somewhat in different
 #'   plotting functions:
 #'
-#'   - `title`, `subtitle`, `caption`, `xlab` and `ylab` control the plot
-#'   title, subtitle, caption, x-axis label and y-axis label. All of these are
-#'   passed through to [quickText()] if `auto.text = TRUE`.
+#'   - `title`, `subtitle`, `caption`, `tag`, `xlab` and `ylab` control the plot
+#'   title, subtitle, caption, tag, x-axis label and y-axis label. All of these
+#'   are passed through to [quickText()] if `auto.text = TRUE`.
 #'
 #'   - `xlim`, `ylim` and `limits` control the limits of the x-axis, y-axis and
 #'   colorbar scales.

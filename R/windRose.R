@@ -216,6 +216,7 @@ windRose <- function(
   extra.args$ylab <- quickText(extra.args$ylab, auto.text)
   extra.args$title <- quickText(extra.args$title, auto.text)
   extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+  extra.args$tag <- quickText(extra.args$tag, auto.text)
 
   # need separate handling to be overwritten
   if ("caption" %in% names(extra.args)) {
@@ -503,7 +504,8 @@ windRose <- function(
         caption = extra.args$caption %||%
           if (annotate) {
             "Mean wind speed bias (test \u2212 reference) by reference direction"
-          }
+          },
+        tag = extra.args$tag
       ) +
       ggplot2::guides(fill = fill_guide) +
       get_facet(
@@ -836,7 +838,8 @@ windRose <- function(
       y = extra.args$ylab,
       title = extra.args$title,
       subtitle = extra.args$subtitle,
-      caption = extra.args$caption %||% if (annotate) stat.lab
+      caption = extra.args$caption %||% if (annotate) stat.lab,
+      tag = extra.args$tag
     ) +
     ggplot2::guides(
       fill = key_guide,

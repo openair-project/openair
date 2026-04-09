@@ -87,6 +87,7 @@ timeProp <- function(
     auto.text
   )
   extra.args$caption <- quickText(extra.args$caption %||% "", auto.text)
+  extra.args$tag <- quickText(extra.args$tag, auto.text)
   extra.args$xlab <- quickText(extra.args$xlab %||% "date", auto.text)
   extra.args$ylab <- quickText(
     extra.args$ylab %||%
@@ -262,6 +263,7 @@ timeProp <- function(
       title = extra.args$title,
       subtitle = extra.args$subtitle,
       caption = extra.args$caption,
+      tag = extra.args$tag,
       fill = quickText(key.title, auto.text = auto.text)
     ) +
     theme_openair(key.position) +

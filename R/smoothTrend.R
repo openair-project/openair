@@ -149,6 +149,7 @@ smoothTrend <- function(
   extra.args$title <- quickText(extra.args$title %||% "", auto.text)
   extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
   extra.args$caption <- quickText(extra.args$caption %||% "", auto.text)
+  extra.args$tag <- quickText(extra.args$tag, auto.text)
   extra.args$ylab <- quickText(
     extra.args$ylab %||% paste(pollutant, collapse = ", "),
     auto.text
@@ -399,6 +400,7 @@ smoothTrend <- function(
       title = extra.args$title,
       subtitle = extra.args$subtitle,
       caption = extra.args$caption,
+      tag = extra.args$tag,
       color = NULL,
       fill = NULL,
       shape = NULL,

@@ -151,6 +151,7 @@ variationPlot <- function(
     extra.args$caption %||% create_varplot_sub_text(statistic, conf.int),
     auto.text
   )
+  extra.args$tag <- quickText(extra.args$tag, auto.text)
   extra.args$linetype <- extra.args$linetype %||% 1
   extra.args$linewidth <- extra.args$linewidth %||% 0.75
   extra.args$shape <- extra.args$shape %||% 16
@@ -496,7 +497,8 @@ variationPlot <- function(
       shape = NULL,
       title = extra.args$title,
       subtitle = extra.args$subtitle,
-      caption = extra.args$caption
+      caption = extra.args$caption,
+      tag = extra.args$tag
     ) +
     ggplot2::coord_cartesian(
       ylim = extra.args$ylim

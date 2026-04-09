@@ -671,6 +671,7 @@ trajLevel <- function(
       title = quickText(extra.args$title, auto.text),
       subtitle = quickText(extra.args$subtitle, auto.text),
       caption = quickText(extra.args$caption, auto.text),
+      tag = quickText(extra.args$tag, auto.text),
       fill = quickText(key.title, auto.text = auto.text)
     )
 

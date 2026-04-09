@@ -321,6 +321,7 @@ timePlot <- function(
   extra.args$title <- quickText(extra.args$title, auto.text)
   extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
   extra.args$caption <- quickText(extra.args$caption, auto.text)
+  extra.args$tag <- quickText(extra.args$tag, auto.text)
   extra.args$xlab <- quickText(extra.args$xlab %||% "", auto.text)
   extra.args$ylab <- quickText(
     extra.args$ylab %||%
@@ -475,6 +476,7 @@ timePlot <- function(
       title = extra.args$title,
       subtitle = extra.args$subtitle,
       caption = extra.args$caption,
+      tag = extra.args$tag,
       fill = legend_title,
       colour = legend_title,
       linetype = legend_title,

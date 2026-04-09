@@ -394,7 +394,8 @@ conditionalQuantile <- function(
       y = quickText(extra.args$ylab %||% "observed value", auto.text),
       title = quickText(extra.args$title, auto.text),
       subtitle = quickText(extra.args$subtitle, auto.text),
-      caption = quickText(extra.args$caption, auto.text)
+      caption = quickText(extra.args$caption, auto.text),
+      tag = quickText(extra.args$tag, auto.text)
     )
 
   if (plot) {

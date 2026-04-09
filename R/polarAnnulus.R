@@ -208,6 +208,7 @@ polarAnnulus <-
     extra.args$ylab <- quickText(extra.args$ylab, auto.text)
     extra.args$title <- quickText(extra.args$title, auto.text)
     extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+    extra.args$tag <- quickText(extra.args$tag, auto.text)
 
     # separate handling for being overwritten
     if ("caption" %in% names(extra.args)) {
@@ -578,6 +579,7 @@ polarAnnulus <-
         title = extra.args$title,
         subtitle = extra.args$subtitle,
         caption = extra.args$caption %||% sub,
+        tag = extra.args$tag,
         colour = quickText(key.title, auto.text = auto.text),
         fill = quickText(key.title, auto.text = auto.text)
       ) +

@@ -14,7 +14,7 @@
     
     - `nrow` and `ncol` can now be provided to control facet layout. As above, `layout` is automatically unpacked into `ncol` and `nrow` with a warning.
 
-    - `title`, `subtitle` and `caption` can be used throughout `openair` (`title` replacing `main` and `caption` replacing `sub`). All are passed through `quickText()` if `auto.text = TRUE`.
+    - `title`, `subtitle`, `tag`, and `caption` can be used throughout `openair` (`title` replacing `main` and `caption` replacing `sub`). All are passed through `quickText()` if `auto.text = TRUE`.
     
     - `lineend`, `linejoin` and `linemitre` tweak the appearance of line plots; see `ggplot2::geom_line()` for more information.
 

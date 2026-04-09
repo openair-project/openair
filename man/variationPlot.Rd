@@ -150,9 +150,9 @@ to a file).}
 Some additional arguments are also available, varying somewhat in different
 plotting functions:
 \itemize{
-\item \code{title}, \code{subtitle}, \code{caption}, \code{xlab} and \code{ylab} control the plot
-title, subtitle, caption, x-axis label and y-axis label. All of these are
-passed through to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.
+\item \code{title}, \code{subtitle}, \code{caption}, \code{tag}, \code{xlab} and \code{ylab} control the plot
+title, subtitle, caption, tag, x-axis label and y-axis label. All of these
+are passed through to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.
 \item \code{xlim}, \code{ylim} and \code{limits} control the limits of the x-axis, y-axis and
 colorbar scales.
 \item \code{ncol} and \code{nrow} set the number of columns and rows in a faceted plot.

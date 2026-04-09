@@ -508,6 +508,7 @@ trendLevel <- function(
       title = quickText(extra.args$title %||% "", auto.text = auto.text),
       subtitle = quickText(extra.args$subtitle %||% "", auto.text = auto.text),
       caption = quickText(extra.args$caption %||% "", auto.text = auto.text),
+      tag = quickText(extra.args$tag, auto.text = auto.text),
       fill = quickText(key.title, auto.text = auto.text)
     ) +
     ggplot2::guides(

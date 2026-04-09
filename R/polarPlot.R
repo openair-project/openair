@@ -469,6 +469,7 @@ polarPlot <-
     extra.args$ylab <- quickText(extra.args$ylab, auto.text)
     extra.args$title <- quickText(extra.args$title, auto.text)
     extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+    extra.args$tag <- quickText(extra.args$tag, auto.text)
     extra.args$annotate <- extra.args$annotate %||% TRUE
 
     # separate handling for being overwritten
@@ -933,7 +934,8 @@ polarPlot <-
         y = extra.args$ylab,
         title = extra.args$title,
         subtitle = extra.args$subtitle,
-        caption = extra.args$caption %||% sub
+        caption = extra.args$caption %||% sub,
+        tag = extra.args$tag
       ) +
       {
         if (key.position %in% c("left", "right")) {

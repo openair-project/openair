@@ -289,6 +289,7 @@ scatterPlot <- function(
   title <- quickText(extra.args$title, auto.text)
   subtitle <- quickText(extra.args$subtitle, auto.text)
   caption <- quickText(extra.args$caption, auto.text)
+  tag <- quickText(extra.args$tag, auto.text)
 
   ## prepare data
   mydata <- prepare_scatter_data(
@@ -344,6 +345,7 @@ scatterPlot <- function(
       title = title,
       subtitle = subtitle,
       caption = caption,
+      tag = tag,
       extra.args = extra.args
     ),
     hexbin = scatter_hexbin(
@@ -371,6 +373,7 @@ scatterPlot <- function(
       title = title,
       subtitle = subtitle,
       caption = caption,
+      tag = tag,
       extra.args = extra.args
     ),
     level = scatter_level(
@@ -402,6 +405,7 @@ scatterPlot <- function(
       title = title,
       subtitle = subtitle,
       caption = caption,
+      tag = tag,
       extra.args = extra.args
     ),
     density = scatter_density(
@@ -425,6 +429,7 @@ scatterPlot <- function(
       title = title,
       subtitle = subtitle,
       caption = caption,
+      tag = tag,
       extra.args = extra.args
     )
   )
@@ -559,6 +564,7 @@ scatter_scatter <- function(
   title = title,
   subtitle = subtitle,
   caption = caption,
+  tag = tag,
   extra.args
 ) {
   has_z <- !is.na(z)
@@ -867,7 +873,8 @@ scatter_scatter <- function(
       y = ylab,
       title = title,
       subtitle = subtitle,
-      caption = caption
+      caption = caption,
+      tag = tag
     )
 
   return(
@@ -908,6 +915,7 @@ scatter_hexbin <- function(
   title = title,
   subtitle = subtitle,
   caption = caption,
+  tag,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
@@ -1003,7 +1011,8 @@ scatter_hexbin <- function(
       y = ylab,
       title = title,
       subtitle = subtitle,
-      caption = caption
+      caption = caption,
+      tag = tag
     )
 
   return(
@@ -1048,6 +1057,7 @@ scatter_level <- function(
   title = title,
   subtitle = subtitle,
   caption = caption,
+  tag,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
@@ -1164,7 +1174,8 @@ scatter_level <- function(
       y = ylab,
       title = title,
       subtitle = subtitle,
-      caption = caption
+      caption = caption,
+      tag = tag
     )
 
   return(
@@ -1296,6 +1307,7 @@ scatter_density <- function(
   title,
   subtitle,
   caption,
+  tag,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
@@ -1354,7 +1366,8 @@ scatter_density <- function(
       y = ylab,
       title = title,
       subtitle = subtitle,
-      caption = caption
+      caption = caption,
+      tag = tag
     )
 
   return(

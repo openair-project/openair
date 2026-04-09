@@ -262,6 +262,7 @@ calendarPlot <-
     extra.args$title <- quickText(extra.args$title %||% NULL, auto.text)
     extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
     extra.args$caption <- quickText(extra.args$caption, auto.text)
+    extra.args$tag <- quickText(extra.args$tag, auto.text)
 
     # check if key.header / key.footer are being used
     key.title <- check_key_header(key.title, extra.args)
@@ -549,6 +550,7 @@ calendarPlot <-
         title = extra.args$title,
         subtitle = extra.args$subtitle,
         caption = extra.args$caption,
+        tag = extra.args$tag,
         fill = quickText(key.title, auto.text = auto.text)
       ) +
       ggplot2::scale_x_continuous(

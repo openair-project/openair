@@ -173,6 +173,7 @@ polarFreq <- function(
   extra.args$title <- quickText(extra.args$title, auto.text)
   extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
   extra.args$caption <- quickText(extra.args$caption, auto.text)
+  extra.args$tag <- quickText(extra.args$tag, auto.text)
 
   if (!is.null(pollutant)) {
     vars <- c(vars, pollutant)
@@ -360,6 +361,7 @@ polarFreq <- function(
       title = extra.args$title,
       subtitle = extra.args$subtitle,
       caption = extra.args$caption,
+      tag = extra.args$tag,
       fill = quickText(key.title, auto.text = auto.text)
     ) +
     get_facet(
