@@ -187,8 +187,13 @@ smoothTrend(
   `"turbo"`, `"viridis"`, `"tol"`, `"Dark2"`, etc.) or a user-defined
   vector of R colours (e.g., `c("yellow", "green", "blue", "black")` -
   see [`colours()`](https://rdrr.io/r/grDevices/colors.html) for a full
-  list) or hex-codes (e.g., `c("#30123B", "#9CF649", "#7A0403")`). See
+  list) or hex-codes (e.g., `c("#30123B", "#9CF649", "#7A0403")`).
+  Alternatively, can be a list of arguments to control the colour
+  palette more closely (e.g., `palette`, `direction`, `alpha`, etc.).
+  See
   [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+  and
+  [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
   for more details.
 
 - x.relation, y.relation:

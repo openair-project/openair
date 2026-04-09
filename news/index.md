@@ -55,6 +55,37 @@
     vectors to vary based on pollutant. The linewidth of the data will
     always be half of that of the model.
 
+- Refinements to colours in
+  [openair](https://openair-project.github.io/openair/):
+
+  - [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+    gains `direction`, `alpha`, `begin` and `end` for better control
+    over colour palettes.
+
+  - Any `cols` argument in
+    [openair](https://openair-project.github.io/openair/) can now take
+    the
+    [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
+    function, which tells each plotting function how to use the new
+    [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+    arguments.
+
+  - Added additional palettes by Paul Tol; “tol.highcontrast”,
+    “tol.vibrant”, “tol.mediumcontrast”, “tol.pale” and “tol.dark”.
+
+  - Added various palettes based on the work of Fabio Crameri - see
+    [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+    for more details.
+
+  - Added
+    [`openColors()`](https://openair-project.github.io/openair/reference/openColours.md)
+    and
+    [`colorOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
+    which are synonymous with their British English equivalents
+    [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+    and
+    [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md).
+
 - [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
   will now use `loess` when it has insufficient data to fit a GAM.
 

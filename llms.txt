@@ -245,11 +245,18 @@ Additional plotting functions for visualising air quality data.
 
 Tools for refining openair plots.
 
-- [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
-  : Pre-defined openair colours and definition of user-defined colours
-
 - [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
   : Automatic text formatting for openair
+
+- [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+  [`openColors()`](https://openair-project.github.io/openair/reference/openColours.md)
+  : Pre-defined openair colours and definition of user-defined colours
+
+- [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
+  [`colorOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
+  :
+
+  Define `cols` options for `openair` plots
 
 - [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md)
   :

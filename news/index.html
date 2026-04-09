@@ -75,6 +75,14 @@
 <li><p><code><a href="../reference/TheilSen.html">TheilSen()</a></code> now takes <code>linewidth</code>, <code>linetype</code>, <code>shape</code> and <code>alpha</code>.</p></li>
 <li><p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> now takes <code>linetype</code>, <code>linewidth</code>, <code>shape</code> and <code>size</code>. These can be vectors to vary based on pollutant. The linewidth of the data will always be half of that of the model.</p></li>
 </ul></li>
+<li>
+<p>Refinements to colours in <a href="https://openair-project.github.io/openair/">openair</a>:</p>
+<ul><li><p><code><a href="../reference/openColours.html">openColours()</a></code> gains <code>direction</code>, <code>alpha</code>, <code>begin</code> and <code>end</code> for better control over colour palettes.</p></li>
+<li><p>Any <code>cols</code> argument in <a href="https://openair-project.github.io/openair/">openair</a> can now take the <code><a href="../reference/colourOpts.html">colourOpts()</a></code> function, which tells each plotting function how to use the new <code><a href="../reference/openColours.html">openColours()</a></code> arguments.</p></li>
+<li><p>Added additional palettes by Paul Tol; “tol.highcontrast”, “tol.vibrant”, “tol.mediumcontrast”, “tol.pale” and “tol.dark”.</p></li>
+<li><p>Added various palettes based on the work of Fabio Crameri - see <code><a href="../reference/openColours.html">openColours()</a></code> for more details.</p></li>
+<li><p>Added <code><a href="../reference/openColours.html">openColors()</a></code> and <code><a href="../reference/colourOpts.html">colorOpts()</a></code> which are synonymous with their British English equivalents <code><a href="../reference/openColours.html">openColours()</a></code> and <code><a href="../reference/colourOpts.html">colourOpts()</a></code>.</p></li>
+</ul></li>
 <li><p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> will now use <code>loess</code> when it has insufficient data to fit a GAM.</p></li>
 <li><p><code><a href="../reference/trajPlot.html">trajPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> regain the <code>map.res</code> argument. This is passed to <code><a href="https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html" class="external-link">rnaturalearth::ne_countries()</a></code> so can take three different resolutions.</p></li>
 <li><p><code><a href="../reference/cutData.html">cutData()</a></code> gains the <code>wd.res</code> argument, which can take one of <code>4</code>, <code>8</code>, or <code>16</code>, defaulting to <code>8</code>. <code>4</code> cuts the data into North, East, South and West. <code>16</code> cuts the data into N, NNE, NE, ENE, etc. All plotting function’s <code>type</code> argument now responds to this, showing only four panels when <code>wd.res = 4</code> and a 5x5 grid of sixteen panels when <code>wd.res = 16</code>.</p></li>

@@ -171,8 +171,13 @@ timeVariation(
   `"turbo"`, `"viridis"`, `"tol"`, `"Dark2"`, etc.) or a user-defined
   vector of R colours (e.g., `c("yellow", "green", "blue", "black")` -
   see [`colours()`](https://rdrr.io/r/grDevices/colors.html) for a full
-  list) or hex-codes (e.g., `c("#30123B", "#9CF649", "#7A0403")`). See
+  list) or hex-codes (e.g., `c("#30123B", "#9CF649", "#7A0403")`).
+  Alternatively, can be a list of arguments to control the colour
+  palette more closely (e.g., `palette`, `direction`, `alpha`, etc.).
+  See
   [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+  and
+  [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
   for more details.
 
 - ref.y:
@@ -322,95 +327,3 @@ David Carslaw
 Jack Davison
 
 ## Examples
-
-``` r
-# basic use
-timeVariation(mydata, pollutant = "nox")
-
-
-# for a subset of conditions
-if (FALSE) { # \dontrun{
-timeVariation(subset(mydata, ws > 3 & wd > 100 & wd < 270),
-  pollutant = "pm10", ylab = "pm10 (ug/m3)"
-)
-
-# multiple pollutants with concentrations normalised
-timeVariation(mydata, pollutant = c("nox", "co"), normalise = TRUE)
-
-# show BST/GMT variation (see ?cutData for more details)
-# the NOx plot shows the profiles are very similar when expressed in
-# local time, showing that the profile is dominated by a local source
-# that varies by local time and not by GMT i.e. road vehicle emissions
-
-timeVariation(mydata, pollutant = "nox", type = "dst", local.tz = "Europe/London")
-
-# In this case it is better to group the results for clarity:
-timeVariation(mydata, pollutant = "nox", group = "dst", local.tz = "Europe/London")
-
-# By contrast, a variable such as wind speed shows a clear shift when
-#  expressed in local time. These two plots can help show whether the
-#  variation is dominated by man-made influences or natural processes
-
-timeVariation(mydata, pollutant = "ws", group = "dst", local.tz = "Europe/London")
-
-# It is also possible to plot several variables and set type. For
-# example, consider the NOx and NO2 split by levels of O3:
-
-timeVariation(mydata, pollutant = c("nox", "no2"), type = "o3", normalise = TRUE)
-
-# difference in concentrations
-timeVariation(mydata, poll = c("pm25", "pm10"), difference = TRUE)
-
-# It is also useful to consider how concentrations vary by
-# considering two different periods e.g. in intervention
-# analysis. In the following plot NO2 has clearly increased but much
-# less so at weekends - perhaps suggesting vehicles other than cars
-# are important because flows of cars are approximately invariant by
-# day of the week
-
-mydata <- splitByDate(mydata, dates = "1/1/2003", labels = c("before Jan. 2003", "After Jan. 2003"))
-timeVariation(mydata, pollutant = "no2", group = "split.by", difference = TRUE)
-
-# sub plots can be extracted from the openair object
-myplot <- timeVariation(mydata, pollutant = "no2")
-myplot$plot$hour.weekday
-
-# individual plots
-myplot$plot$hour.weekday
-myplot$plot$hour
-myplot$plot$day
-myplot$plot$month
-
-# numerical results (mean, lower/upper uncertainties)
-myplot$data$hour.weekday
-myplot$data$hour
-myplot$data$day
-myplot$data$month
-
-# plot quantiles and median
-timeVariation(
-  mydata,
-  statistic = "median",
-  poll = "pm10",
-  cols = "firebrick"
-)
-
-# with different intervals
-timeVariation(
-  mydata,
-  statistic = "median",
-  poll = "pm10",
-  conf.int = c(0.75, 0.99),
-  cols = "firebrick"
-)
-
-# with different (arbitrary) panels
-# note 'hemisphere' is passed to cutData() for season
-timeVariation(
-  mydata,
-  pollutant = "no2",
-  panels = c("weekday.season", "year", "wd"),
-  hemisphere = "southern"
-)
-} # }
-```

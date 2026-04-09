@@ -225,7 +225,9 @@ where over-lapping confidence intervals can over complicate plots.</p></dd>
 <dd><p>Colours to use for plotting. Can be a pre-set palette (e.g.,
 <code>"turbo"</code>, <code>"viridis"</code>, <code>"tol"</code>, <code>"Dark2"</code>, etc.) or a user-defined vector
 of R colours (e.g., <code>c("yellow", "green", "blue", "black")</code> - see
-<code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> for a full list) or hex-codes (e.g., <code>c("#30123B", "#9CF649", "#7A0403")</code>). See <code><a href="openColours.html">openColours()</a></code> for more details.</p></dd>
+<code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> for a full list) or hex-codes (e.g., <code>c("#30123B", "#9CF649", "#7A0403")</code>). Alternatively, can be a list of arguments to control the
+colour palette more closely (e.g., <code>palette</code>, <code>direction</code>, <code>alpha</code>, etc.).
+See <code><a href="openColours.html">openColours()</a></code> and <code><a href="colourOpts.html">colourOpts()</a></code> for more details.</p></dd>
 
 
 <dt id="arg-ref-y">ref.y<a class="anchor" aria-label="anchor" href="#arg-ref-y"></a></dt>
@@ -352,97 +354,7 @@ whether the temporal variation of that feature differs from other features
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># basic use</span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"nox"</span><span class="op">)</span></span></span>
-<span class="r-plt img"><img src="timeVariation-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># for a subset of conditions</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">mydata</span>, <span class="va">ws</span> <span class="op">&gt;</span> <span class="fl">3</span> <span class="op">&amp;</span> <span class="va">wd</span> <span class="op">&gt;</span> <span class="fl">100</span> <span class="op">&amp;</span> <span class="va">wd</span> <span class="op">&lt;</span> <span class="fl">270</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  pollutant <span class="op">=</span> <span class="st">"pm10"</span>, ylab <span class="op">=</span> <span class="st">"pm10 (ug/m3)"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># multiple pollutants with concentrations normalised</span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nox"</span>, <span class="st">"co"</span><span class="op">)</span>, normalise <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># show BST/GMT variation (see ?cutData for more details)</span></span></span>
-<span class="r-in"><span><span class="co"># the NOx plot shows the profiles are very similar when expressed in</span></span></span>
-<span class="r-in"><span><span class="co"># local time, showing that the profile is dominated by a local source</span></span></span>
-<span class="r-in"><span><span class="co"># that varies by local time and not by GMT i.e. road vehicle emissions</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"nox"</span>, type <span class="op">=</span> <span class="st">"dst"</span>, local.tz <span class="op">=</span> <span class="st">"Europe/London"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># In this case it is better to group the results for clarity:</span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"nox"</span>, group <span class="op">=</span> <span class="st">"dst"</span>, local.tz <span class="op">=</span> <span class="st">"Europe/London"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># By contrast, a variable such as wind speed shows a clear shift when</span></span></span>
-<span class="r-in"><span><span class="co">#  expressed in local time. These two plots can help show whether the</span></span></span>
-<span class="r-in"><span><span class="co">#  variation is dominated by man-made influences or natural processes</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"ws"</span>, group <span class="op">=</span> <span class="st">"dst"</span>, local.tz <span class="op">=</span> <span class="st">"Europe/London"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># It is also possible to plot several variables and set type. For</span></span></span>
-<span class="r-in"><span><span class="co"># example, consider the NOx and NO2 split by levels of O3:</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"nox"</span>, <span class="st">"no2"</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"o3"</span>, normalise <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># difference in concentrations</span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span><span class="va">mydata</span>, poll <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pm25"</span>, <span class="st">"pm10"</span><span class="op">)</span>, difference <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># It is also useful to consider how concentrations vary by</span></span></span>
-<span class="r-in"><span><span class="co"># considering two different periods e.g. in intervention</span></span></span>
-<span class="r-in"><span><span class="co"># analysis. In the following plot NO2 has clearly increased but much</span></span></span>
-<span class="r-in"><span><span class="co"># less so at weekends - perhaps suggesting vehicles other than cars</span></span></span>
-<span class="r-in"><span><span class="co"># are important because flows of cars are approximately invariant by</span></span></span>
-<span class="r-in"><span><span class="co"># day of the week</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">mydata</span> <span class="op">&lt;-</span> <span class="fu"><a href="splitByDate.html">splitByDate</a></span><span class="op">(</span><span class="va">mydata</span>, dates <span class="op">=</span> <span class="st">"1/1/2003"</span>, labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"before Jan. 2003"</span>, <span class="st">"After Jan. 2003"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"no2"</span>, group <span class="op">=</span> <span class="st">"split.by"</span>, difference <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># sub plots can be extracted from the openair object</span></span></span>
-<span class="r-in"><span><span class="va">myplot</span> <span class="op">&lt;-</span> <span class="fu">timeVariation</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"no2"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">plot</span><span class="op">$</span><span class="va">hour.weekday</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># individual plots</span></span></span>
-<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">plot</span><span class="op">$</span><span class="va">hour.weekday</span></span></span>
-<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">plot</span><span class="op">$</span><span class="va">hour</span></span></span>
-<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">plot</span><span class="op">$</span><span class="va">day</span></span></span>
-<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">plot</span><span class="op">$</span><span class="va">month</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># numerical results (mean, lower/upper uncertainties)</span></span></span>
-<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">hour.weekday</span></span></span>
-<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">hour</span></span></span>
-<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">day</span></span></span>
-<span class="r-in"><span><span class="va">myplot</span><span class="op">$</span><span class="va">data</span><span class="op">$</span><span class="va">month</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># plot quantiles and median</span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">mydata</span>,</span></span>
-<span class="r-in"><span>  statistic <span class="op">=</span> <span class="st">"median"</span>,</span></span>
-<span class="r-in"><span>  poll <span class="op">=</span> <span class="st">"pm10"</span>,</span></span>
-<span class="r-in"><span>  cols <span class="op">=</span> <span class="st">"firebrick"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># with different intervals</span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">mydata</span>,</span></span>
-<span class="r-in"><span>  statistic <span class="op">=</span> <span class="st">"median"</span>,</span></span>
-<span class="r-in"><span>  poll <span class="op">=</span> <span class="st">"pm10"</span>,</span></span>
-<span class="r-in"><span>  conf.int <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.75</span>, <span class="fl">0.99</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  cols <span class="op">=</span> <span class="st">"firebrick"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># with different (arbitrary) panels</span></span></span>
-<span class="r-in"><span><span class="co"># note 'hemisphere' is passed to cutData() for season</span></span></span>
-<span class="r-in"><span><span class="fu">timeVariation</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  <span class="va">mydata</span>,</span></span>
-<span class="r-in"><span>  pollutant <span class="op">=</span> <span class="st">"no2"</span>,</span></span>
-<span class="r-in"><span>  panels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"weekday.season"</span>, <span class="st">"year"</span>, <span class="st">"wd"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  hemisphere <span class="op">=</span> <span class="st">"southern"</span></span></span>
-<span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
-</code></pre></div>
+
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
