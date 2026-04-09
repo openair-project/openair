@@ -264,7 +264,7 @@ smoothTrend <- function(
         linetype = .data$variable,
         linewidth = ggplot2::stage(
           .data$variable,
-          after_scale = linewidth * 1 / 2
+          after_scale = .data$linewidth * 1 / 2
         ),
         y = .data$conc
       ),

@@ -224,12 +224,12 @@ whether the temporal variation of that feature differs from other features
 }
 \examples{
 
+\dontrun{
 # basic use
 timeVariation(mydata, pollutant = "nox")
 
 # for a subset of conditions
-\dontrun{
-timeVariation(subset(mydata, ws > 3 & wd > 100 & wd < 270),
+#' timeVariation(subset(mydata, ws > 3 & wd > 100 & wd < 270),
   pollutant = "pm10", ylab = "pm10 (ug/m3)"
 )
 
