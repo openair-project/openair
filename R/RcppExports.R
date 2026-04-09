@@ -24,6 +24,14 @@ distAngle <- function(Lonm, Latm) {
     .Call(`_openair_distAngle`, Lonm, Latm)
 }
 
+kz_cpp <- function(x, m, k, min_valid = 1L) {
+    .Call(`_openair_kz_cpp`, x, m, k, min_valid)
+}
+
+kza_cpp <- function(x, m, k, sensitivity = 1.0) {
+    .Call(`_openair_kza_cpp`, x, m, k, sensitivity)
+}
+
 #' @keywords internal
 rolling_average_cpp <- function(x, width, alignment, threshold, statistic = "mean", probs = NULL) {
     .Call(`_openair_rolling_average_cpp`, x, width, alignment, threshold, statistic, probs)
