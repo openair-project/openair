@@ -10,6 +10,7 @@ kzaFilter(
   m = c(5L, 24L, 168L, 8760L),
   k = 3L,
   sensitivity = 1,
+  data.thresh = 0.75,
   type = "default",
   components = TRUE,
   comp.names = c("short", "diurnal", "synoptic", "seasonal", "trend"),
@@ -34,6 +35,11 @@ to detect structural breaks.}
 
 \item{sensitivity}{Numeric. Controls how aggressively the window shrinks at
 structural breaks (higher = more aggressive).}
+
+\item{data.thresh}{Numeric (0--1). Minimum fraction of valid (non-\code{NA})
+values required within a window for a filtered value to be returned;
+otherwise \code{NA} is returned. Applies to the actual window size, which
+is smaller near the series edges. Default is \code{0.75} (75\%).}
 
 \item{type}{Used for splitting the data further. Passed to \code{\link[=cutData]{cutData()}}.}
 

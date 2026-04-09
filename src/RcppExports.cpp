@@ -48,22 +48,22 @@ BEGIN_RCPP
 END_RCPP
 }
 // kz_cpp
-NumericVector kz_cpp(NumericVector x, int m, int k, int min_valid);
-RcppExport SEXP _openair_kz_cpp(SEXP xSEXP, SEXP mSEXP, SEXP kSEXP, SEXP min_validSEXP) {
+NumericVector kz_cpp(NumericVector x, int m, int k, double data_thresh);
+RcppExport SEXP _openair_kz_cpp(SEXP xSEXP, SEXP mSEXP, SEXP kSEXP, SEXP data_threshSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< int >::type min_valid(min_validSEXP);
-    rcpp_result_gen = Rcpp::wrap(kz_cpp(x, m, k, min_valid));
+    Rcpp::traits::input_parameter< double >::type data_thresh(data_threshSEXP);
+    rcpp_result_gen = Rcpp::wrap(kz_cpp(x, m, k, data_thresh));
     return rcpp_result_gen;
 END_RCPP
 }
 // kza_cpp
-NumericVector kza_cpp(NumericVector x, int m, int k, double sensitivity);
-RcppExport SEXP _openair_kza_cpp(SEXP xSEXP, SEXP mSEXP, SEXP kSEXP, SEXP sensitivitySEXP) {
+NumericVector kza_cpp(NumericVector x, int m, int k, double sensitivity, double data_thresh);
+RcppExport SEXP _openair_kza_cpp(SEXP xSEXP, SEXP mSEXP, SEXP kSEXP, SEXP sensitivitySEXP, SEXP data_threshSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -71,7 +71,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type m(mSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
     Rcpp::traits::input_parameter< double >::type sensitivity(sensitivitySEXP);
-    rcpp_result_gen = Rcpp::wrap(kza_cpp(x, m, k, sensitivity));
+    Rcpp::traits::input_parameter< double >::type data_thresh(data_threshSEXP);
+    rcpp_result_gen = Rcpp::wrap(kza_cpp(x, m, k, sensitivity, data_thresh));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -158,7 +159,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_openair_distEuclid", (DL_FUNC) &_openair_distEuclid, 2},
     {"_openair_distAngle", (DL_FUNC) &_openair_distAngle, 2},
     {"_openair_kz_cpp", (DL_FUNC) &_openair_kz_cpp, 4},
-    {"_openair_kza_cpp", (DL_FUNC) &_openair_kza_cpp, 4},
+    {"_openair_kza_cpp", (DL_FUNC) &_openair_kza_cpp, 5},
     {"_openair_rolling_average_cpp", (DL_FUNC) &_openair_rolling_average_cpp, 6},
     {"_openair_calc_sqtba_cpp", (DL_FUNC) &_openair_calc_sqtba_cpp, 7},
     {"_openair_dateAggregate", (DL_FUNC) &_openair_dateAggregate, 5},

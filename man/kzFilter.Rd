@@ -9,7 +9,7 @@ kzFilter(
   pollutant = "o3",
   m = c(5L, 24L, 168L, 8760L),
   k = 3L,
-  min_valid = 1L,
+  data.thresh = 0.75,
   type = "default",
   components = TRUE,
   comp.names = c("short", "diurnal", "synoptic", "seasonal", "trend"),
@@ -31,8 +31,10 @@ More than one pollutant can be supplied as a vector, e.g.,
 
 \item{k}{Integer. The number of iterations applied at each window size.}
 
-\item{min_valid}{Integer. Minimum number of valid (non-\code{NA}) points
-required in a window to return a value.}
+\item{data.thresh}{Numeric (0--1). Minimum fraction of valid (non-\code{NA})
+values required within a window for a filtered value to be returned;
+otherwise \code{NA} is returned. Applies to the actual window size, which
+is smaller near the series edges. Default is \code{0.75} (75\%).}
 
 \item{type}{Used for splitting the data further. Passed to \code{\link[=cutData]{cutData()}}.}
 

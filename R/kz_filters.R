@@ -41,8 +41,10 @@
 #' @param m Integer vector of window sizes. Defaults to \code{c(5, 24, 168,
 #'   8760)} (suited to hourly data). All values must be >= 3.
 #' @param k Integer. The number of iterations applied at each window size.
-#' @param min_valid Integer. Minimum number of valid (non-\code{NA}) points
-#'   required in a window to return a value.
+#' @param data.thresh Numeric (0--1). Minimum fraction of valid (non-\code{NA})
+#'   values required within a window for a filtered value to be returned;
+#'   otherwise \code{NA} is returned. Applies to the actual window size, which
+#'   is smaller near the series edges. Default is \code{0.75} (75%).
 #' @param type Used for splitting the data further. Passed to [cutData()].
 #' @param components Logical. If \code{TRUE} (default) and more than one
 #'   \code{m} value is supplied, component columns are added by differencing
@@ -83,7 +85,7 @@ kzFilter <- function(
   pollutant = "o3",
   m = c(5L, 24L, 168L, 8760L),
   k = 3L,
-  min_valid = 1L,
+  data.thresh = 0.75,
   type = "default",
   components = TRUE,
   comp.names = c("short", "diurnal", "synoptic", "seasonal", "trend"),
@@ -133,7 +135,7 @@ kzFilter <- function(
           mydata[[p]],
           as.integer(m[i]),
           as.integer(k),
-          as.integer(min_valid)
+          as.numeric(data.thresh)
         )
         filt_cols[i] <- col_name
       }
@@ -238,6 +240,10 @@ kzFilter <- function(
 #'   to detect structural breaks.
 #' @param sensitivity Numeric. Controls how aggressively the window shrinks at
 #'   structural breaks (higher = more aggressive).
+#' @param data.thresh Numeric (0--1). Minimum fraction of valid (non-\code{NA})
+#'   values required within a window for a filtered value to be returned;
+#'   otherwise \code{NA} is returned. Applies to the actual window size, which
+#'   is smaller near the series edges. Default is \code{0.75} (75%).
 #' @param type Used for splitting the data further. Passed to [cutData()].
 #' @param components Logical. If \code{TRUE} (default) and more than one
 #'   \code{m} value is supplied, component columns are added by differencing
@@ -279,6 +285,7 @@ kzaFilter <- function(
   m = c(5L, 24L, 168L, 8760L),
   k = 3L,
   sensitivity = 1.0,
+  data.thresh = 0.75,
   type = "default",
   components = TRUE,
   comp.names = c("short", "diurnal", "synoptic", "seasonal", "trend"),
@@ -324,7 +331,8 @@ kzaFilter <- function(
           mydata[[p]],
           as.integer(m[i]),
           as.integer(k),
-          as.numeric(sensitivity)
+          as.numeric(sensitivity),
+          as.numeric(data.thresh)
         )
         filt_cols[i] <- col_name
       }
