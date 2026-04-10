@@ -51,6 +51,8 @@ reference:
   - rollingQuantile
   - GaussianSmooth
   - WhittakerSmooth
+  - kzFilter
+  - kzaFilter
 - subtitle: Data Utilities
   desc: Tools for manipulating and summarising air quality data.
   contents:
