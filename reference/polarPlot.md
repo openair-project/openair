@@ -23,13 +23,15 @@ polarPlot(
   cols = "default",
   weights = c(0.25, 0.5, 0.75),
   min.bin = 1,
-  mis.col = "grey",
+  col.na = "grey",
   upper = NA,
   angle.scale = 315,
   units = x,
   force.positive = TRUE,
   k = 100,
   normalise = FALSE,
+  breaks = NULL,
+  labels = NULL,
   key.title = paste(statistic, pollutant, sep = " "),
   key.position = "right",
   strip.position = "top",
@@ -265,12 +267,12 @@ polarPlot(
   data with care. Also, the `polarFreq` function can be of use in such
   circumstances.
 
-- mis.col:
+- col.na:
 
   When `min.bin` is \> 1 it can be useful to show where data are removed
-  on the plots. This is done by shading the missing data in `mis.col`.
-  To not highlight missing data when `min.bin` \> 1 choose
-  `mis.col = "transparent"`.
+  on the plots. This is done by shading the missing data in `col.na`. To
+  not highlight missing data when `min.bin` \> 1 choose
+  `col.na = "transparent"`.
 
 - upper:
 
@@ -326,6 +328,18 @@ polarPlot(
   particularly useful if one is interested in the patterns of
   concentrations for several pollutants on different scales e.g. NOx and
   CO. Often useful if more than one `pollutant` is chosen.
+
+- breaks, labels:
+
+  If a categorical colour scale is required then `breaks` should be
+  specified. These should be provided as a numeric vector, e.g.,
+  `breaks = c(0, 50, 100, 1000)`. Users should set the maximum value of
+  `breaks` to exceed the maximum data value to ensure it is within the
+  maximum final range, e.g., 100–1000 in this case. Labels will
+  automatically be generated, but can be customised by passing a
+  character vector to `labels`, e.g.,
+  `labels = c("good", "bad", "very bad")`. In this example, `0 - 50`
+  will be `"good"` and so on. Note there is one less label than break.
 
 - key.title:
 

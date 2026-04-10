@@ -269,12 +269,12 @@ polarCluster(
       recommended to consider your data with care. Also, the `polarFreq`
       function can be of use in such circumstances.
 
-  `mis.col`
+  `col.na`
 
   :   When `min.bin` is \> 1 it can be useful to show where data are
       removed on the plots. This is done by shading the missing data in
-      `mis.col`. To not highlight missing data when `min.bin` \> 1
-      choose `mis.col = "transparent"`.
+      `col.na`. To not highlight missing data when `min.bin` \> 1 choose
+      `col.na = "transparent"`.
 
   `upper`
 
@@ -390,6 +390,19 @@ polarCluster(
       Most `openair` plotting functions can take two `type` arguments.
       If two are given, the first is used for the columns and the second
       for the rows.
+
+  `breaks,labels`
+
+  :   If a categorical colour scale is required then `breaks` should be
+      specified. These should be provided as a numeric vector, e.g.,
+      `breaks = c(0, 50, 100, 1000)`. Users should set the maximum value
+      of `breaks` to exceed the maximum data value to ensure it is
+      within the maximum final range, e.g., 100–1000 in this case.
+      Labels will automatically be generated, but can be customised by
+      passing a character vector to `labels`, e.g.,
+      `labels = c("good", "bad", "very bad")`. In this example, `0 - 50`
+      will be `"good"` and so on. Note there is one less label than
+      break.
 
   `key.position`
 

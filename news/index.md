@@ -88,6 +88,14 @@
     and
     [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md).
 
+- [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md),
+  [`polarAnnulus()`](https://openair-project.github.io/openair/reference/polarAnnulus.md)
+  and
+  [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
+  have gained `breaks` and `labels`, which behave identically to similar
+  arguments in functions like
+  [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md).
+
 - [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
   will now use `loess` when it has insufficient data to fit a GAM.
 

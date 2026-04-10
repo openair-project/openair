@@ -18,6 +18,8 @@ corPlot(
   dendrogram = FALSE,
   triangle = c("both", "upper", "lower"),
   diagonal = TRUE,
+  breaks = NULL,
+  labels = NULL,
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
@@ -120,6 +122,18 @@ corPlot(
   Should the 'diagonal' of the correlation plot be shown? The diagonal
   of a correlation matrix is axiomatically always `1` as it represents
   correlating a variable with itself. Defaults to `TRUE`.
+
+- breaks, labels:
+
+  If a categorical colour scale is required then `breaks` should be
+  specified. These should be provided as a numeric vector, e.g.,
+  `breaks = c(0, 50, 100, 1000)`. Users should set the maximum value of
+  `breaks` to exceed the maximum data value to ensure it is within the
+  maximum final range, e.g., 100–1000 in this case. Labels will
+  automatically be generated, but can be customised by passing a
+  character vector to `labels`, e.g.,
+  `labels = c("good", "bad", "very bad")`. In this example, `0 - 50`
+  will be `"good"` and so on. Note there is one less label than break.
 
 - cols:
 

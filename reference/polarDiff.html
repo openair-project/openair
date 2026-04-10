@@ -268,10 +268,10 @@ to NA. Care should be taken when using a value &gt; 1 because of the risk of
 removing real data points. It is recommended to consider your data with
 care. Also, the <code>polarFreq</code> function can be of use in such circumstances.</p></dd>
 
-    <dt><code>mis.col</code></dt>
+    <dt><code>col.na</code></dt>
 <dd><p>When <code>min.bin</code> is &gt; 1 it can be useful to show where data are
 removed on the plots. This is done by shading the missing data in
-<code>mis.col</code>. To not highlight missing data when <code>min.bin</code> &gt; 1 choose <code>mis.col = "transparent"</code>.</p></dd>
+<code>col.na</code>. To not highlight missing data when <code>min.bin</code> &gt; 1 choose <code>col.na = "transparent"</code>.</p></dd>
 
     <dt><code>upper</code></dt>
 <dd><p>This sets the upper limit wind speed to be used. Often there are
@@ -353,6 +353,17 @@ of R colours (e.g., <code>c("yellow", "green", "blue", "black")</code> - see
 <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> for a full list) or hex-codes (e.g., <code>c("#30123B", "#9CF649", "#7A0403")</code>). Alternatively, can be a list of arguments to control the
 colour palette more closely (e.g., <code>palette</code>, <code>direction</code>, <code>alpha</code>, etc.).
 See <code><a href="openColours.html">openColours()</a></code> and <code><a href="colourOpts.html">colourOpts()</a></code> for more details.</p></dd>
+
+    <dt><code>breaks,labels</code></dt>
+<dd><p>If a categorical colour scale is required then <code>breaks</code>
+should be specified. These should be provided as a numeric vector, e.g.,
+<code>breaks = c(0, 50, 100, 1000)</code>. Users should set the maximum value of
+<code>breaks</code> to exceed the maximum data value to ensure it is within the
+maximum final range, e.g., 100–1000 in this case. Labels will
+automatically be generated, but can be customised by passing a character
+vector to <code>labels</code>, e.g., <code>labels = c("good", "bad", "very bad")</code>. In this
+example, <code>0 - 50</code> will be <code>"good"</code> and so on. Note there is one less label
+than break.</p></dd>
 
     <dt><code>angle.scale</code></dt>
 <dd><p>In radial plots (e.g., <code><a href="polarPlot.html">polarPlot()</a></code>), the radial scale is

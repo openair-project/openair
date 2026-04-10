@@ -75,6 +75,8 @@ to group similar variables.</p>
 <span>  dendrogram <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  triangle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"both"</span>, <span class="st">"upper"</span>, <span class="st">"lower"</span><span class="op">)</span>,</span>
 <span>  diagonal <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  labels <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  r.thresh <span class="op">=</span> <span class="fl">0.8</span>,</span>
 <span>  text.col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"black"</span>, <span class="st">"black"</span><span class="op">)</span>,</span>
@@ -163,6 +165,18 @@ Can be <code>"both"</code>, <code>"lower"</code> or <code>"upper"</code>. Defaul
 <dd><p>Should the 'diagonal' of the correlation plot be shown? The
 diagonal of a correlation matrix is axiomatically always <code>1</code> as it
 represents correlating a variable with itself. Defaults to <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-breaks-labels">breaks, labels<a class="anchor" aria-label="anchor" href="#arg-breaks-labels"></a></dt>
+<dd><p>If a categorical colour scale is required then <code>breaks</code>
+should be specified. These should be provided as a numeric vector, e.g.,
+<code>breaks = c(0, 50, 100, 1000)</code>. Users should set the maximum value of
+<code>breaks</code> to exceed the maximum data value to ensure it is within the
+maximum final range, e.g., 100–1000 in this case. Labels will
+automatically be generated, but can be customised by passing a character
+vector to <code>labels</code>, e.g., <code>labels = c("good", "bad", "very bad")</code>. In this
+example, <code>0 - 50</code> will be <code>"good"</code> and so on. Note there is one less label
+than break.</p></dd>
 
 
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
