@@ -330,7 +330,7 @@ polarFreq <- function(
       ggplot2::aes(x = .data$wd, y = .data$ws)
     ) +
     ggplot2::geom_tile(
-      ggplot2::aes(fill = .data[[ifelse(categorical, "cuts", "weights")]]),
+      ggplot2::aes(fill = .data[["weights"]]),
       colour = border.col,
       show.legend = TRUE
     ) +
@@ -376,9 +376,9 @@ polarFreq <- function(
       ggplot2::scale_fill_manual(
         values = resolve_colour_opts(
           cols,
-          n = dplyr::n_distinct(levels(results.grid$cuts))
+          n = dplyr::n_distinct(levels(results.grid$weights))
         ),
-        breaks = levels(results.grid$cuts),
+        breaks = levels(results.grid$weights),
         drop = FALSE
       ) +
       ggplot2::guides(

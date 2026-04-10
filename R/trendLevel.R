@@ -470,8 +470,8 @@ trendLevel <- function(
 
   # handle breaks
   categorical <- !is.null(breaks)
-  newdata$cuts <- cut_plot_breaks(
-    newdata$cuts,
+  newdata[[pollutant]] <- cut_plot_breaks(
+    newdata[[pollutant]],
     breaks = breaks,
     labels = labels
   )
@@ -483,7 +483,7 @@ trendLevel <- function(
       ggplot2::aes(
         x = num_convert(.data[[x]]),
         y = num_convert(.data[[y]]),
-        fill = .data[[ifelse(categorical, "cuts", pollutant)]]
+        fill = .data[[pollutant]]
       )
     ) +
     ggplot2::geom_tile(
@@ -539,10 +539,10 @@ trendLevel <- function(
       ggplot2::scale_fill_manual(
         values = resolve_colour_opts(
           cols,
-          n = dplyr::n_distinct(levels(newdata$cuts))
+          n = dplyr::n_distinct(levels(newdata[[pollutant]]))
         ),
         na.value = col.na,
-        breaks = levels(newdata$cuts),
+        breaks = levels(newdata[[pollutant]]),
         drop = FALSE
       ) +
       ggplot2::guides(

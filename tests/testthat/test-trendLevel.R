@@ -102,15 +102,14 @@ test_that("min.bin = 5 produces at least as many NAs as min.bin = 1", {
 
 # --- breaks / categorical scale ----------------------------------------------
 
-test_that("supplying breaks adds a 'cuts' factor column", {
+test_that("supplying breaks discretises the nox column", {
   tl_cat <- trendLevel(
     dat,
     pollutant = "nox",
     breaks = c(0, 50, 200, 1000),
     plot = FALSE
   )
-  expect_true("cuts" %in% names(tl_cat$data))
-  expect_true(is.factor(tl_cat$data$cuts))
+  expect_true(is.factor(tl_cat$data$nox))
 })
 
 # --- Input validation --------------------------------------------------------

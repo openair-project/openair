@@ -107,10 +107,9 @@ test_that("finer ws.int produces more rows than coarser ws.int", {
 
 # --- categorical scale -------------------------------------------------------
 
-test_that("supplying breaks produces a 'cuts' factor column", {
+test_that("supplying bins weights column", {
   pf_cat <- polarFreq(dat, breaks = c(0, 10, 50, 200), plot = FALSE)
-  expect_true("cuts" %in% names(pf_cat$data))
-  expect_true(is.factor(pf_cat$data$cuts))
+  expect_true(is.factor(pf_cat$data$weights))
 })
 
 # --- type conditioning -------------------------------------------------------
