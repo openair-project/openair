@@ -80,6 +80,10 @@
   - Completed the set of “viridis” palettes with “rocket” and “mako”.
 
   - Added
+    [`openSchemes()`](https://openair-project.github.io/openair/reference/openSchemes.md)
+    which returns a table of available colour palettes.
+
+  - Added
     [`openColors()`](https://openair-project.github.io/openair/reference/openColours.md)
     and
     [`colorOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)

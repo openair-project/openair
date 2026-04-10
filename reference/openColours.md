@@ -64,12 +64,13 @@ A character vector of hex codes
 
 ## Schemes
 
-The following schemes are made available by `openColours()`:
+The following schemes are made available by `openColours()`. This list
+is also available as a table by using
+[`openSchemes()`](https://openair-project.github.io/openair/reference/openSchemes.md).
 
 **Sequential Colours:**
 
-- "default", "increment", "brewer1", "heat", "jet", "turbo", "hue",
-  "greyscale".
+- "default", "increment", "heat", "jet", "turbo", "hue", "greyscale".
 
 - Simplified versions of the `viridis` colours: "viridis", "plasma",
   "magma", "inferno", "cividis", "turbo", "rocket" and "mako".

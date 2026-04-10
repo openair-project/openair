@@ -239,18 +239,21 @@ Additional plotting functions for visualising air quality data.
 - [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
   : Correlation matrices with conditioning
 
-## Utilities
+## Plot Utilities
 
-### Plot Utilities
+### Colours
 
-Tools for refining openair plots.
-
-- [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
-  : Automatic text formatting for openair
+Functions for defining colour schemes and colour options for openair
+plots.
 
 - [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
   [`openColors()`](https://openair-project.github.io/openair/reference/openColours.md)
   : Pre-defined openair colours and definition of user-defined colours
+
+- [`openSchemes()`](https://openair-project.github.io/openair/reference/openSchemes.md)
+  :
+
+  List available colour schemes in `openair`
 
 - [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
   [`colorOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
@@ -258,10 +261,19 @@ Tools for refining openair plots.
 
   Define `cols` options for `openair` plots
 
+### Other Plot Utilities.
+
+Other functions to help with controlling openair plots.
+
+- [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+  : Automatic text formatting for openair
+
 - [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md)
   :
 
   Define `windflow` options for `openair` plots
+
+## Data Utilities
 
 ### Smoothing Functions
 
