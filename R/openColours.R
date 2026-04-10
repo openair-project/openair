@@ -340,7 +340,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
     multiple = TRUE
   )
 
-  out <- tibble::tibble(
+  out <- dplyr::tibble(
     palette = character(0),
     type = character(0),
     max_n = numeric(0)
@@ -349,7 +349,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   if (any(palette_type == "seq")) {
     out <- dplyr::bind_rows(
       out,
-      tibble::tibble(
+      dplyr::tibble(
         palette = unique(unname(c(.seq_schemes, .brewer_seq_schemes))),
         type = "sequential",
         max_n = NA
@@ -360,7 +360,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   if (any(palette_type == "div")) {
     out <- dplyr::bind_rows(
       out,
-      tibble::tibble(
+      dplyr::tibble(
         palette = unique(unname(c(.div_schemes, .brewer_div_schemes))),
         type = "diverging",
         max_n = NA
@@ -371,7 +371,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   if (any(palette_type == "qual")) {
     out <- dplyr::bind_rows(
       out,
-      tibble::tibble(
+      dplyr::tibble(
         palette = unique(unname(c(names(.qual_schemes), .brewer_qual_schemes))),
         type = "sequential",
         max_n = as.numeric(c(
