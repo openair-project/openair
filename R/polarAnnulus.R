@@ -599,19 +599,50 @@ polarAnnulus <-
       ) +
       {
         if (categorical) {
-          ggplot2::scale_fill_manual(
-            values = resolve_colour_opts(cols, nlevels(results.grid$pred)),
-            aesthetics = c("colour", "fill"),
-            na.value = col.na,
-            drop = FALSE
+          list(
+            ggplot2::scale_fill_manual(
+              values = resolve_colour_opts(cols, nlevels(results.grid$pred)),
+              aesthetics = c("colour", "fill"),
+              na.value = col.na,
+              drop = FALSE
+            ),
+            ggplot2::guides(
+              fill = ggplot2::guide_legend(
+                reverse = TRUE,
+                theme = ggplot2::theme(
+                  legend.title.position = ifelse(
+                    key.position %in% c("left", "right"),
+                    "top",
+                    key.position
+                  ),
+                  legend.text.position = key.position
+                )
+              ),
+              color = ggplot2::guide_none()
+            )
           )
         } else {
-          ggplot2::scale_fill_gradientn(
-            colours = resolve_colour_opts(cols, 100),
-            aesthetics = c("colour", "fill"),
-            limits = limits,
-            breaks = scales::breaks_pretty(6),
-            na.value = col.na
+          list(
+            ggplot2::scale_fill_gradientn(
+              colours = resolve_colour_opts(cols, 100),
+              aesthetics = c("colour", "fill"),
+              limits = limits,
+              breaks = scales::breaks_pretty(6),
+              na.value = col.na
+            ),
+            ggplot2::guides(
+              fill = ggplot2::guide_colorbar(
+                theme = ggplot2::theme(
+                  legend.title.position = ifelse(
+                    key.position %in% c("left", "right"),
+                    "top",
+                    key.position
+                  ),
+                  legend.text.position = key.position
+                )
+              ),
+              color = ggplot2::guide_none()
+            )
           )
         }
       } +

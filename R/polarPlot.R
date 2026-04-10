@@ -207,9 +207,9 @@
 #'   removing real data points. It is recommended to consider your data with
 #'   care. Also, the `polarFreq` function can be of use in such circumstances.
 #'
-#' @param mis.col When `min.bin` is > 1 it can be useful to show where data are
+#' @param col.na When `min.bin` is > 1 it can be useful to show where data are
 #'   removed on the plots. This is done by shading the missing data in
-#'   `mis.col`. To not highlight missing data when `min.bin` > 1 choose `mis.col
+#'   `col.na`. To not highlight missing data when `min.bin` > 1 choose `col.na
 #'   = "transparent"`.
 #'
 #' @param upper This sets the upper limit wind speed to be used. Often there are
@@ -368,7 +368,7 @@ polarPlot <-
     cols = "default",
     weights = c(0.25, 0.5, 0.75),
     min.bin = 1,
-    mis.col = "grey",
+    col.na = "grey",
     upper = NA,
     angle.scale = 315,
     units = x,
@@ -465,6 +465,7 @@ polarPlot <-
 
     # extra.args setup
     extra.args <- capture_dots(...)
+    col.na <- extra.args$mis.col %||% col.na
 
     # label controls
     extra.args$xlab <- quickText(extra.args$xlab, auto.text)
@@ -917,7 +918,9 @@ polarPlot <-
       dplyr::arrange(!is.na(.data$z), .data$z) |>
       ggplot2::ggplot(ggplot2::aes(x = .data$wd, y = .data$x)) +
       ggplot2::geom_point(
-        ggplot2::aes(colour = .data$z),
+        ggplot2::aes(colour = .data$z, fill = .data$z),
+        shape = 21,
+        key_glyph = "rect",
         show.legend = TRUE
       ) +
       ggplot2::ggproto(
@@ -935,12 +938,13 @@ polarPlot <-
           list(
             ggplot2::scale_color_manual(
               values = resolve_colour_opts(cols, nlevels(plot_data$z)),
-              na.value = mis.col,
+              aesthetics = c("fill", "colour"),
+              na.value = col.na,
               drop = FALSE
             ),
             ggplot2::guides(
-              color = ggplot2::guide_legend(
-                override.aes = list(size = 5),
+              fill = ggplot2::guide_legend(
+                reverse = TRUE,
                 theme = ggplot2::theme(
                   legend.title.position = ifelse(
                     key.position %in% c("left", "right"),
@@ -949,19 +953,21 @@ polarPlot <-
                   ),
                   legend.text.position = key.position
                 )
-              )
+              ),
+              color = ggplot2::guide_none()
             )
           )
         } else {
           list(
             ggplot2::scale_color_gradientn(
               colours = resolve_colour_opts(cols, 100),
+              aesthetics = c("fill", "colour"),
               oob = scales::oob_squish,
-              na.value = mis.col,
+              na.value = col.na,
               limits = limits
             ),
             ggplot2::guides(
-              color = ggplot2::guide_colorbar(
+              fill = ggplot2::guide_colorbar(
                 theme = ggplot2::theme(
                   legend.title.position = ifelse(
                     key.position %in% c("left", "right"),
@@ -970,7 +976,8 @@ polarPlot <-
                   ),
                   legend.text.position = key.position
                 )
-              )
+              ),
+              color = ggplot2::guide_none()
             )
           )
         }

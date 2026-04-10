@@ -18,7 +18,7 @@ polarPlot(
   cols = "default",
   weights = c(0.25, 0.5, 0.75),
   min.bin = 1,
-  mis.col = "grey",
+  col.na = "grey",
   upper = NA,
   angle.scale = 315,
   units = x,
@@ -217,9 +217,9 @@ to NA. Care should be taken when using a value > 1 because of the risk of
 removing real data points. It is recommended to consider your data with
 care. Also, the \code{polarFreq} function can be of use in such circumstances.}
 
-\item{mis.col}{When \code{min.bin} is > 1 it can be useful to show where data are
+\item{col.na}{When \code{min.bin} is > 1 it can be useful to show where data are
 removed on the plots. This is done by shading the missing data in
-\code{mis.col}. To not highlight missing data when \code{min.bin} > 1 choose \code{mis.col = "transparent"}.}
+\code{col.na}. To not highlight missing data when \code{min.bin} > 1 choose \code{col.na = "transparent"}.}
 
 \item{upper}{This sets the upper limit wind speed to be used. Often there are
 only a relatively few data points at very high wind speeds and plotting all
