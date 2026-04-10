@@ -148,6 +148,10 @@
   uses of the filters will be covered in the
   [openair](https://openair-project.github.io/openair/) book.
 
+- The default `key.position` of
+  [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
+  is now `"right"`.
+
 ### Bug Fixes
 
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
