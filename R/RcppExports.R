@@ -24,11 +24,11 @@ distAngle <- function(Lonm, Latm) {
     .Call(`_openair_distAngle`, Lonm, Latm)
 }
 
-kz_cpp <- function(x, m, k, data_thresh = 0.75) {
+kz_cpp <- function(x, m, k, data_thresh = 0.5) {
     .Call(`_openair_kz_cpp`, x, m, k, data_thresh)
 }
 
-kza_cpp <- function(x, m, k, sensitivity = 1.0, data_thresh = 0.75) {
+kza_cpp <- function(x, m, k, sensitivity = 1.0, data_thresh = 0.5) {
     .Call(`_openair_kza_cpp`, x, m, k, sensitivity, data_thresh)
 }
 

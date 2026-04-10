@@ -7,12 +7,12 @@
 kzFilter(
   mydata,
   pollutant = "o3",
-  m = c(5L, 25L, 169L, 8761L),
-  k = 3L,
-  data.thresh = 0.75,
+  m = c(25L, 169L, 721L, 8761L),
+  k = 5L,
+  data.thresh = 0.5,
   type = "default",
   components = TRUE,
-  comp.names = c("short", "diurnal", "synoptic", "seasonal", "trend"),
+  comp.names = c("short", "synoptic", "intermediate", "seasonal", "trend"),
   to_narrow = FALSE,
   ...
 )
@@ -26,7 +26,7 @@ or daily.}
 More than one pollutant can be supplied as a vector, e.g.,
 \code{pollutant = c("o3", "nox")}.}
 
-\item{m}{Integer vector of window sizes. Defaults to \code{c(5, 25, 169,
+\item{m}{Integer vector of window sizes. Defaults to \code{c(25, 169, 721,
   8761)} (suited to hourly data). All values must be >= 3. Values of
 \code{m} should be odd; even values will produce a symmetric window of
 \code{m + 1} points rather than \code{m}.}
@@ -36,7 +36,7 @@ More than one pollutant can be supplied as a vector, e.g.,
 \item{data.thresh}{Numeric (0--1). Minimum fraction of valid (non-\code{NA})
 values required within a window for a filtered value to be returned;
 otherwise \code{NA} is returned. Applies to the actual window size, which
-is smaller near the series edges. Default is \code{0.75} (75\%).}
+is smaller near the series edges. Default is \code{0.5} (50\%).}
 
 \item{type}{Used for splitting the data further. Passed to \code{\link[=cutData]{cutData()}}.}
 
@@ -45,8 +45,8 @@ is smaller near the series edges. Default is \code{0.75} (75\%).}
 adjacent filtered series.}
 
 \item{comp.names}{Character vector of names for the component columns. Must
-have length \code{length(m) + 1}. Defaults to \code{c("short", "diurnal",
-  "synoptic", "seasonal", "trend")} to match the default \code{m} values.
+have length \code{length(m) + 1}. Defaults to \code{c("short", "synoptic",
+  "intermediate", "seasonal", "trend")} to match the default \code{m} values.
 If the length does not match, numbered names (\code{comp_1},
 \code{comp_2}, \ldots) are used with a warning.}
 
@@ -72,14 +72,14 @@ The KZ filter is a low-pass filter formed by iterating a simple moving
 average \code{k} times with window size \code{m}.
 }
 \details{
-With the default window sizes of 5, 25, 169 and 8761 (suited to hourly data),
+With the default window sizes of 25, 169, 721 and 8761 (suited to hourly data),
 the function returns four intermediate filtered columns and five physical
 components derived by differencing:
 \enumerate{
-\item \strong{short} — sub-hourly fluctuations (\code{pollutant - kz_5})
-\item \strong{diurnal} — daily cycle (\code{kz_5 - kz_25})
+\item \strong{short} — daily cycle and short-term variations within it (\code{pollutant - kz_25})
 \item \strong{synoptic} — 2–7 day weather systems (\code{kz_25 - kz_169})
-\item \strong{seasonal} — weekly to annual variability (\code{kz_169 - kz_8761})
+\item \strong{intermediate} — weekly to monthly variability (\code{kz_169 - kz_721})
+\item \strong{seasonal} — monthly to annual variability (\code{kz_721 - kz_8761})
 \item \strong{trend} — multi-year trend (\code{kz_8761})
 }
 }
@@ -94,11 +94,11 @@ The affected length at each end of the series for a single filter pass is
 \code{floor(m / 2)} observations. Because the filter is iterated \code{k}
 times (each pass consuming the output of the previous one), the total
 affected zone at each end is approximately \code{k * floor(m / 2)}
-observations. With the default \code{m = c(5, 25, 169, 8761)} and
-\code{k = 3}, the affected zones are roughly 7 h, 36 h, 252 h (~10 days),
-and 13,140 h (~1.5 years) at each end respectively. The \code{trend}
-component therefore requires at least 3–4 years of data for the interior
-estimates to be unaffected.
+observations. With the default \code{m = c(25, 169, 721, 8761)} and
+\code{k = 5}, the affected zones are roughly 60 h (~2.5 days), 420 h
+(~17 days), 1,800 h (~75 days), and 21,900 h (~2.5 years) at each end
+respectively. The \code{trend} component therefore requires at least 5–6
+years of data for the interior estimates to be unaffected.
 }
 
 \examples{
