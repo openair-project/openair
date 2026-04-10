@@ -92,6 +92,7 @@ functions like
 ``` r
 # `windflow` can be `TRUE` to use defaults
 trendLevel(mydata, type = "default", cols = "greyscale", windflow = TRUE)
+#> Warning: Unknown or uninitialised column: `cuts`.
 
 
 # use the `windflowOpts()` function to customise arrows
@@ -106,4 +107,5 @@ trendLevel(
     linetype = 2
   )
 )
+#> Warning: Unknown or uninitialised column: `cuts`.
 ```

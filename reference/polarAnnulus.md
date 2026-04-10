@@ -19,7 +19,7 @@ polarAnnulus(
   percentile = NA,
   limits = NULL,
   cols = "default",
-  col.na = "white",
+  col.na = "grey",
   offset = 50,
   angle.scale = 0,
   min.bin = 1,

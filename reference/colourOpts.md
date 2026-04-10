@@ -57,4 +57,5 @@ trendLevel(
   "no2",
   cols = colourOpts("viridis", direction = 1, alpha = 0.5)
 )
+#> Warning: Unknown or uninitialised column: `cuts`.
 ```
