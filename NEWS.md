@@ -42,6 +42,8 @@
     
     - Added `openColors()` and `colorOpts()` which are synonymous with their British English equivalents `openColours()` and `colourOpts()`.
 
+- `polarPlot()`, `polarAnnulus()` and `corPlot()` have gained `breaks` and `labels`, which behave identically to similar arguments in functions like `trendLevel()`.
+
 - `smoothTrend()` will now use `loess` when it has insufficient data to fit a GAM.
 
 - `trajPlot()` and `trajLevel()` regain the `map.res` argument. This is passed to `rnaturalearth::ne_countries()` so can take three different resolutions.

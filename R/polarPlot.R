@@ -375,6 +375,8 @@ polarPlot <-
     force.positive = TRUE,
     k = 100,
     normalise = FALSE,
+    breaks = NULL,
+    labels = NULL,
     key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
     strip.position = "top",
@@ -898,11 +900,26 @@ polarPlot <-
       limits <- NULL
     }
 
+    # handle breaks
+    categorical <- FALSE
+    if (!is.null(breaks)) {
+      # assign labels if no labels are given
+      labels <- get_labels_from_breaks(breaks, labels)
+      categorical <- TRUE
+      plot_data <- dplyr::mutate(
+        plot_data,
+        z = cut(.data$z, breaks = breaks, labels = labels)
+      )
+    }
+
     thePlot <-
       plot_data |>
       dplyr::arrange(!is.na(.data$z), .data$z) |>
       ggplot2::ggplot(ggplot2::aes(x = .data$wd, y = .data$x)) +
-      ggplot2::geom_point(ggplot2::aes(colour = .data$z)) +
+      ggplot2::geom_point(
+        ggplot2::aes(colour = .data$z),
+        show.legend = TRUE
+      ) +
       ggplot2::ggproto(
         NULL,
         ggplot2::coord_radial(r.axis.inside = angle.scale),
@@ -913,12 +930,51 @@ polarPlot <-
         limits = range(pretty(plot_data$x, 20)),
         expand = ggplot2::expansion()
       ) +
-      ggplot2::scale_color_gradientn(
-        colours = resolve_colour_opts(cols, 100),
-        oob = scales::oob_squish,
-        na.value = mis.col,
-        limits = limits
-      ) +
+      {
+        if (categorical) {
+          list(
+            ggplot2::scale_color_manual(
+              values = resolve_colour_opts(cols, nlevels(plot_data$z)),
+              na.value = mis.col,
+              drop = FALSE
+            ),
+            ggplot2::guides(
+              color = ggplot2::guide_legend(
+                override.aes = list(size = 5),
+                theme = ggplot2::theme(
+                  legend.title.position = ifelse(
+                    key.position %in% c("left", "right"),
+                    "top",
+                    key.position
+                  ),
+                  legend.text.position = key.position
+                )
+              )
+            )
+          )
+        } else {
+          list(
+            ggplot2::scale_color_gradientn(
+              colours = resolve_colour_opts(cols, 100),
+              oob = scales::oob_squish,
+              na.value = mis.col,
+              limits = limits
+            ),
+            ggplot2::guides(
+              color = ggplot2::guide_colorbar(
+                theme = ggplot2::theme(
+                  legend.title.position = ifelse(
+                    key.position %in% c("left", "right"),
+                    "top",
+                    key.position
+                  ),
+                  legend.text.position = key.position
+                )
+              )
+            )
+          )
+        }
+      } +
       theme_openair_radial(key.position, panel.ontop = TRUE) +
       set_extra_fontsize(extra.args) +
       annotate_compass_points(
@@ -960,18 +1016,6 @@ polarPlot <-
         auto.text = auto.text,
         strip.position = strip.position,
         wd.res = extra.args$wd.res %||% 8
-      ) +
-      ggplot2::guides(
-        color = ggplot2::guide_colorbar(
-          theme = ggplot2::theme(
-            legend.title.position = ifelse(
-              key.position %in% c("left", "right"),
-              "top",
-              key.position
-            ),
-            legend.text.position = key.position
-          )
-        )
       )
 
     if (plot) {

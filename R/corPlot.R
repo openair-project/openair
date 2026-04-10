@@ -112,6 +112,8 @@ corPlot <- function(
   dendrogram = FALSE,
   triangle = c("both", "upper", "lower"),
   diagonal = TRUE,
+  breaks = NULL,
+  labels = NULL,
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
@@ -416,6 +418,18 @@ corPlot <- function(
     x
   }
 
+  # handle breaks
+  categorical <- FALSE
+  if (!is.null(breaks)) {
+    # assign labels if no labels are given
+    labels <- get_labels_from_breaks(breaks, labels)
+    categorical <- TRUE
+    ellipse_data <- dplyr::mutate(
+      ellipse_data,
+      cor = cut(.data$cor, breaks = breaks, labels = labels)
+    )
+  }
+
   # construct plot
   thePlot <-
     ellipse_data |>
@@ -427,7 +441,8 @@ corPlot <- function(
         group = interaction(.data$x, .data$y),
         fill = .data$cor
       ),
-      color = extra.args$border %||% "transparent"
+      color = extra.args$border %||% "transparent",
+      show.legend = TRUE
     ) +
     get_facet(
       type,
@@ -454,23 +469,6 @@ corPlot <- function(
       ),
       expand = ggplot2::expansion(c(0.01, 0.01))
     ) +
-    ggplot2::scale_fill_gradientn(
-      colours = resolve_colour_opts(cols, n = 100),
-      limits = c(-1, 1),
-      oob = scales::oob_squish
-    ) +
-    ggplot2::guides(
-      fill = ggplot2::guide_colorbar(
-        theme = ggplot2::theme(
-          legend.title.position = ifelse(
-            key.position %in% c("left", "right"),
-            "top",
-            key.position
-          ),
-          legend.text.position = key.position
-        )
-      )
-    ) +
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
@@ -480,6 +478,47 @@ corPlot <- function(
       tag = extra.args$tag,
       fill = key.title
     )
+
+  if (categorical) {
+    thePlot <-
+      thePlot +
+      ggplot2::scale_fill_manual(
+        values = resolve_colour_opts(cols, n = nlevels(ellipse_data$cor)),
+        drop = FALSE
+      ) +
+      ggplot2::guides(
+        fill = ggplot2::guide_legend(
+          theme = ggplot2::theme(
+            legend.title.position = ifelse(
+              key.position %in% c("left", "right"),
+              "top",
+              key.position
+            ),
+            legend.text.position = key.position
+          )
+        )
+      )
+  } else {
+    thePlot <-
+      thePlot +
+      ggplot2::scale_fill_gradientn(
+        colours = resolve_colour_opts(cols, n = 100),
+        limits = c(-1, 1),
+        oob = scales::oob_squish
+      ) +
+      ggplot2::guides(
+        fill = ggplot2::guide_colorbar(
+          theme = ggplot2::theme(
+            legend.title.position = ifelse(
+              key.position %in% c("left", "right"),
+              "top",
+              key.position
+            ),
+            legend.text.position = key.position
+          )
+        )
+      )
+  }
 
   # if dendrogram, need to use legendry to switch dendro to the opposite side of
   # the plot. else just use the base ggplot2 guides to check overlaps
@@ -501,7 +540,7 @@ corPlot <- function(
 
   # add text annotations, if requested
   if (annotate != "none") {
-    ellipse_data$cor_fmt <- round(ellipse_data$cor * 100)
+    ellipse_data$cor_fmt <- round(ellipse_data$cor_dummy * 100)
 
     annotation_column <-
       dplyr::case_when(
@@ -513,24 +552,24 @@ corPlot <- function(
 
     thePlot <- thePlot +
       ggplot2::geom_text(
-        data = dplyr::filter(ellipse_data, abs(.data$cor) < r.thresh),
+        data = dplyr::filter(ellipse_data, abs(.data$cor_dummy) < r.thresh),
         ggplot2::aes(
           x = as.numeric(.data$x),
           y = as.numeric(.data$y),
           label = .data[[annotation_column]],
-          color = factor(sign(.data$cor), c("-1", "0", "1"))
+          color = factor(sign(.data$cor_dummy), c("-1", "0", "1"))
         ),
         size = 3,
         check_overlap = TRUE,
         show.legend = FALSE
       ) +
       ggplot2::geom_text(
-        data = dplyr::filter(ellipse_data, abs(.data$cor) >= r.thresh),
+        data = dplyr::filter(ellipse_data, abs(.data$cor_dummy) >= r.thresh),
         ggplot2::aes(
           x = as.numeric(.data$x),
           y = as.numeric(.data$y),
           label = .data[[annotation_column]],
-          color = factor(sign(.data$cor), c("-1", "0", "1"))
+          color = factor(sign(.data$cor_dummy), c("-1", "0", "1"))
         ),
         size = 3,
         check_overlap = TRUE,
@@ -543,6 +582,9 @@ corPlot <- function(
           "0" = text.col[2],
           "1" = text.col[2]
         )
+      ) +
+      ggplot2::guides(
+        color = ggplot2::guide_none()
       )
   }
 

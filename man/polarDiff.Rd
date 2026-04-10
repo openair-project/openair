@@ -245,6 +245,15 @@ of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
 \code{\link[=colours]{colours()}} for a full list) or hex-codes (e.g., \code{c("#30123B", "#9CF649", "#7A0403")}). Alternatively, can be a list of arguments to control the
 colour palette more closely (e.g., \code{palette}, \code{direction}, \code{alpha}, etc.).
 See \code{\link[=openColours]{openColours()}} and \code{\link[=colourOpts]{colourOpts()}} for more details.}
+    \item{\code{breaks,labels}}{If a categorical colour scale is required then \code{breaks}
+should be specified. These should be provided as a numeric vector, e.g.,
+\code{breaks = c(0, 50, 100, 1000)}. Users should set the maximum value of
+\code{breaks} to exceed the maximum data value to ensure it is within the
+maximum final range, e.g., 100--1000 in this case. Labels will
+automatically be generated, but can be customised by passing a character
+vector to \code{labels}, e.g., \code{labels = c("good", "bad", "very bad")}. In this
+example, \code{0 - 50} will be \code{"good"} and so on. Note there is one less label
+than break.}
     \item{\code{angle.scale}}{In radial plots (e.g., \code{\link[=polarPlot]{polarPlot()}}), the radial scale is
 drawn directly on the plot itself. While suitable defaults have been
 chosen, sometimes the placement of the scale may interfere with an

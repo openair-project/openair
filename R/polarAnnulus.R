@@ -151,6 +151,8 @@ polarAnnulus <-
     force.positive = TRUE,
     k = c(20, 10),
     normalise = FALSE,
+    breaks = NULL,
+    labels = NULL,
     strip.position = "top",
     key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
@@ -537,6 +539,18 @@ polarAnnulus <-
     # check if key.header / key.footer are being used
     key.title <- check_key_header(key.title, extra.args)
 
+    # handle breaks
+    categorical <- FALSE
+    if (!is.null(breaks)) {
+      # assign labels if no labels are given
+      labels <- get_labels_from_breaks(breaks, labels)
+      categorical <- TRUE
+      results.grid <- dplyr::mutate(
+        results.grid,
+        pred = cut(.data$pred, breaks = breaks, labels = labels)
+      )
+    }
+
     # plotting
     thePlot <-
       ggplot2::ggplot(
@@ -566,13 +580,24 @@ polarAnnulus <-
           linewidth = 0.25
         )
       ) +
-      ggplot2::scale_fill_gradientn(
-        colours = resolve_colour_opts(cols, 100),
-        aesthetics = c("colour", "fill"),
-        limits = limits,
-        breaks = scales::breaks_pretty(6),
-        na.value = col.na
-      ) +
+      {
+        if (categorical) {
+          ggplot2::scale_fill_manual(
+            values = resolve_colour_opts(cols, nlevels(results.grid$pred)),
+            aesthetics = c("colour", "fill"),
+            na.value = col.na,
+            drop = FALSE
+          )
+        } else {
+          ggplot2::scale_fill_gradientn(
+            colours = resolve_colour_opts(cols, 100),
+            aesthetics = c("colour", "fill"),
+            limits = limits,
+            breaks = scales::breaks_pretty(6),
+            na.value = col.na
+          )
+        }
+      } +
       ggplot2::labs(
         x = extra.args$xlab,
         y = extra.args$ylab,
