@@ -76,8 +76,8 @@ The following schemes are made available by \code{openColours()}:
 \item Simplified versions of the \code{RColorBrewer} diverging palettes: "BrBG",
 "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral".
 \item Simplified versions of Fabio Crameri's diverging palettes: "bam",
-"berlin", "broc", "bukavu", "cork", "fes", "lisbon", "managua", "oleron",
-"roma", "tofino", "vanimo", "vik"
+"berlin", "broc", "cork", "lisbon", "managua", "roma", "tofino", "vanimo",
+"vik"
 }
 
 \strong{Qualitative Palettes:}
@@ -152,17 +152,15 @@ cols
 
 }
 \references{
-Color Brewer
-\url{https://colorbrewer2.org/}
+Color Brewer: \url{https://colorbrewer2.org/}
 
-DAQI Colours
-\url{https://check-air-quality.service.gov.uk/}
+DAQI Colours: \url{https://check-air-quality.service.gov.uk/}
 
-UK Government Analysis Function
+UK Government Analysis Function:
 \url{https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/}
 
-Fabio Crameri's Color Schemes
-Crameri, F. 2023. Scientific Colour Maps (version 8.0.1). Zenodo. DOI: \doi{doi:10.5281/zenodo.1243862}.
+Fabio Crameri's Color Schemes: Crameri, F. 2023. Scientific Colour Maps
+(version 8.0.1). Zenodo. DOI: \doi{doi:10.5281/zenodo.1243862}.
 }
 \author{
 David Carslaw

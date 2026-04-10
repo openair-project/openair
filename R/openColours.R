@@ -37,12 +37,9 @@
   "bam",
   "berlin",
   "broc",
-  "bukavu",
   "cork",
-  "fes",
   "lisbon",
   "managua",
-  "oleron",
   "roma",
   "tofino",
   "vanimo",
@@ -121,8 +118,8 @@
 #'   "PiYG", "PRGn", "PuOr", "RdBu", "RdGy", "RdYlBu", "RdYlGn", "Spectral".
 #'
 #'   * Simplified versions of Fabio Crameri's diverging palettes: "bam",
-#'   "berlin", "broc", "bukavu", "cork", "fes", "lisbon", "managua", "oleron",
-#'   "roma", "tofino", "vanimo", "vik"
+#'   "berlin", "broc", "cork", "lisbon", "managua", "roma", "tofino", "vanimo",
+#'   "vik"
 #'
 #'   **Qualitative Palettes:**
 #'
@@ -208,18 +205,15 @@
 #' @author David Carslaw
 #' @author Jack Davison
 #'
-#' @references
-#' Color Brewer
-#' <https://colorbrewer2.org/>
+#' @references Color Brewer: <https://colorbrewer2.org/>
 #'
-#' DAQI Colours
-#' <https://check-air-quality.service.gov.uk/>
+#'   DAQI Colours: <https://check-air-quality.service.gov.uk/>
 #'
-#' UK Government Analysis Function
-#' <https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/>
+#'   UK Government Analysis Function:
+#'   <https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/>
 #'
-#' Fabio Crameri's Color Schemes
-#' Crameri, F. 2023. Scientific Colour Maps (version 8.0.1). Zenodo. DOI: \doi{doi:10.5281/zenodo.1243862}.
+#'   Fabio Crameri's Color Schemes: Crameri, F. 2023. Scientific Colour Maps
+#'   (version 8.0.1). Zenodo. DOI: \doi{doi:10.5281/zenodo.1243862}.
 #'
 #' @examples
 #'
