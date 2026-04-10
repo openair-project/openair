@@ -121,6 +121,16 @@
 - [`polarFreq()`](https://openair-project.github.io/openair/reference/polarFreq.md)
   gains `angle.scale`, in line with all other polar coordinate plots.
 
+- New Kolmogorov-Zurbenko (KZ) Filter functions `kzFilter` and
+  `kzaFilter`. These functions significantly enhance the capability of
+  [openair](https://openair-project.github.io/openair/) by allowing
+  different time components to be separated and analysed separately. The
+  `kzFilter` is considered a good default for a wide range of problems
+  whereas the `kzaFilter` is the adaptive version that is well-suited to
+  capturing abrumpt changes e.g. through an intervention. The range of
+  uses of the filters will be covered in the
+  [openair](https://openair-project.github.io/openair/) book.
+
 ### Bug Fixes
 
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
