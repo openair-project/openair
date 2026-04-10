@@ -151,6 +151,8 @@ polarAnnulus <-
     force.positive = TRUE,
     k = c(20, 10),
     normalise = FALSE,
+    breaks = NULL,
+    labels = NULL,
     strip.position = "top",
     key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
@@ -270,16 +272,33 @@ polarAnnulus <-
       na.rm = TRUE
     )
 
-    if (statistic == "cpf") {
-      sub <- paste0(
-        "CPF probability at the ",
-        percentile,
-        "th percentile (=",
-        round(Pval, 1),
-        ")"
+    # handle caption
+    sub <- NULL
+    if (extra.args$annotate %||% TRUE) {
+      if (statistic == "cpf") {
+        sub <- paste0(
+          "CPF probability at the ",
+          percentile,
+          "th percentile (=",
+          round(Pval, 1),
+          ")"
+        )
+      } else {
+        sub <- NULL
+      }
+
+      sub <- paste(
+        list(
+          "hour" = "Radial axis shows hour of the day",
+          "weekday" = "Radial axis shows day of the week",
+          "season" = "Radial axis shows month of the year",
+          "trend" = NULL
+        )[[period]],
+        sub,
+        sep = "\n"
       )
-    } else {
-      sub <- NULL
+
+      sub <- quickText(sub, auto.text = auto.text)
     }
 
     prepare.grid <- function(mydata) {
@@ -537,6 +556,18 @@ polarAnnulus <-
     # check if key.header / key.footer are being used
     key.title <- check_key_header(key.title, extra.args)
 
+    # handle breaks
+    categorical <- FALSE
+    if (!is.null(breaks)) {
+      # assign labels if no labels are given
+      labels <- get_labels_from_breaks(breaks, labels)
+      categorical <- TRUE
+      results.grid <- dplyr::mutate(
+        results.grid,
+        pred = cut(.data$pred, breaks = breaks, labels = labels)
+      )
+    }
+
     # plotting
     thePlot <-
       ggplot2::ggplot(
@@ -566,13 +597,55 @@ polarAnnulus <-
           linewidth = 0.25
         )
       ) +
-      ggplot2::scale_fill_gradientn(
-        colours = resolve_colour_opts(cols, 100),
-        aesthetics = c("colour", "fill"),
-        limits = limits,
-        breaks = scales::breaks_pretty(6),
-        na.value = col.na
-      ) +
+      {
+        if (categorical) {
+          list(
+            ggplot2::scale_fill_manual(
+              values = resolve_colour_opts(cols, nlevels(results.grid$pred)),
+              aesthetics = c("colour", "fill"),
+              na.value = col.na,
+              drop = FALSE
+            ),
+            ggplot2::guides(
+              fill = ggplot2::guide_legend(
+                reverse = TRUE,
+                theme = ggplot2::theme(
+                  legend.title.position = ifelse(
+                    key.position %in% c("left", "right"),
+                    "top",
+                    key.position
+                  ),
+                  legend.text.position = key.position
+                )
+              ),
+              color = ggplot2::guide_none()
+            )
+          )
+        } else {
+          list(
+            ggplot2::scale_fill_gradientn(
+              colours = resolve_colour_opts(cols, 100),
+              aesthetics = c("colour", "fill"),
+              limits = limits,
+              breaks = scales::breaks_pretty(6),
+              na.value = col.na
+            ),
+            ggplot2::guides(
+              fill = ggplot2::guide_colorbar(
+                theme = ggplot2::theme(
+                  legend.title.position = ifelse(
+                    key.position %in% c("left", "right"),
+                    "top",
+                    key.position
+                  ),
+                  legend.text.position = key.position
+                )
+              ),
+              color = ggplot2::guide_none()
+            )
+          )
+        }
+      } +
       ggplot2::labs(
         x = extra.args$xlab,
         y = extra.args$ylab,

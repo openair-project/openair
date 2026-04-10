@@ -194,9 +194,9 @@ records in each bin an so on; bins with less than 2 valid records are set
 to NA. Care should be taken when using a value > 1 because of the risk of
 removing real data points. It is recommended to consider your data with
 care. Also, the \code{polarFreq} function can be of use in such circumstances.}
-    \item{\code{mis.col}}{When \code{min.bin} is > 1 it can be useful to show where data are
+    \item{\code{col.na}}{When \code{min.bin} is > 1 it can be useful to show where data are
 removed on the plots. This is done by shading the missing data in
-\code{mis.col}. To not highlight missing data when \code{min.bin} > 1 choose \code{mis.col = "transparent"}.}
+\code{col.na}. To not highlight missing data when \code{min.bin} > 1 choose \code{col.na = "transparent"}.}
     \item{\code{upper}}{This sets the upper limit wind speed to be used. Often there are
 only a relatively few data points at very high wind speeds and plotting all
 of them can reduce the useful information in the plot.}
@@ -266,6 +266,15 @@ possible pollutant source is active or not).
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
 given, the first is used for the columns and the second for the rows.}
+    \item{\code{breaks,labels}}{If a categorical colour scale is required then \code{breaks}
+should be specified. These should be provided as a numeric vector, e.g.,
+\code{breaks = c(0, 50, 100, 1000)}. Users should set the maximum value of
+\code{breaks} to exceed the maximum data value to ensure it is within the
+maximum final range, e.g., 100--1000 in this case. Labels will
+automatically be generated, but can be customised by passing a character
+vector to \code{labels}, e.g., \code{labels = c("good", "bad", "very bad")}. In this
+example, \code{0 - 50} will be \code{"good"} and so on. Note there is one less label
+than break.}
     \item{\code{key.position}}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}

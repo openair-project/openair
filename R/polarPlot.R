@@ -207,9 +207,9 @@
 #'   removing real data points. It is recommended to consider your data with
 #'   care. Also, the `polarFreq` function can be of use in such circumstances.
 #'
-#' @param mis.col When `min.bin` is > 1 it can be useful to show where data are
+#' @param col.na When `min.bin` is > 1 it can be useful to show where data are
 #'   removed on the plots. This is done by shading the missing data in
-#'   `mis.col`. To not highlight missing data when `min.bin` > 1 choose `mis.col
+#'   `col.na`. To not highlight missing data when `min.bin` > 1 choose `col.na
 #'   = "transparent"`.
 #'
 #' @param upper This sets the upper limit wind speed to be used. Often there are
@@ -368,13 +368,15 @@ polarPlot <-
     cols = "default",
     weights = c(0.25, 0.5, 0.75),
     min.bin = 1,
-    mis.col = "grey",
+    col.na = "grey",
     upper = NA,
     angle.scale = 315,
     units = x,
     force.positive = TRUE,
     k = 100,
     normalise = FALSE,
+    breaks = NULL,
+    labels = NULL,
     key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
     strip.position = "top",
@@ -463,6 +465,7 @@ polarPlot <-
 
     # extra.args setup
     extra.args <- capture_dots(...)
+    col.na <- extra.args$mis.col %||% col.na
 
     # label controls
     extra.args$xlab <- quickText(extra.args$xlab, auto.text)
@@ -898,11 +901,28 @@ polarPlot <-
       limits <- NULL
     }
 
+    # handle breaks
+    categorical <- FALSE
+    if (!is.null(breaks)) {
+      # assign labels if no labels are given
+      labels <- get_labels_from_breaks(breaks, labels)
+      categorical <- TRUE
+      plot_data <- dplyr::mutate(
+        plot_data,
+        z = cut(.data$z, breaks = breaks, labels = labels)
+      )
+    }
+
     thePlot <-
       plot_data |>
       dplyr::arrange(!is.na(.data$z), .data$z) |>
       ggplot2::ggplot(ggplot2::aes(x = .data$wd, y = .data$x)) +
-      ggplot2::geom_point(ggplot2::aes(colour = .data$z)) +
+      ggplot2::geom_point(
+        ggplot2::aes(colour = .data$z, fill = .data$z),
+        shape = 21,
+        key_glyph = "rect",
+        show.legend = TRUE
+      ) +
       ggplot2::ggproto(
         NULL,
         ggplot2::coord_radial(r.axis.inside = angle.scale),
@@ -913,12 +933,55 @@ polarPlot <-
         limits = range(pretty(plot_data$x, 20)),
         expand = ggplot2::expansion()
       ) +
-      ggplot2::scale_color_gradientn(
-        colours = resolve_colour_opts(cols, 100),
-        oob = scales::oob_squish,
-        na.value = mis.col,
-        limits = limits
-      ) +
+      {
+        if (categorical) {
+          list(
+            ggplot2::scale_color_manual(
+              values = resolve_colour_opts(cols, nlevels(plot_data$z)),
+              aesthetics = c("fill", "colour"),
+              na.value = col.na,
+              drop = FALSE
+            ),
+            ggplot2::guides(
+              fill = ggplot2::guide_legend(
+                reverse = TRUE,
+                theme = ggplot2::theme(
+                  legend.title.position = ifelse(
+                    key.position %in% c("left", "right"),
+                    "top",
+                    key.position
+                  ),
+                  legend.text.position = key.position
+                )
+              ),
+              color = ggplot2::guide_none()
+            )
+          )
+        } else {
+          list(
+            ggplot2::scale_color_gradientn(
+              colours = resolve_colour_opts(cols, 100),
+              aesthetics = c("fill", "colour"),
+              oob = scales::oob_squish,
+              na.value = col.na,
+              limits = limits
+            ),
+            ggplot2::guides(
+              fill = ggplot2::guide_colorbar(
+                theme = ggplot2::theme(
+                  legend.title.position = ifelse(
+                    key.position %in% c("left", "right"),
+                    "top",
+                    key.position
+                  ),
+                  legend.text.position = key.position
+                )
+              ),
+              color = ggplot2::guide_none()
+            )
+          )
+        }
+      } +
       theme_openair_radial(key.position, panel.ontop = TRUE) +
       set_extra_fontsize(extra.args) +
       annotate_compass_points(
@@ -929,7 +992,7 @@ polarPlot <-
         )
       ) +
       ggplot2::labs(
-        color = legend_title,
+        fill = legend_title,
         x = extra.args$xlab,
         y = extra.args$ylab,
         title = extra.args$title,
@@ -960,18 +1023,6 @@ polarPlot <-
         auto.text = auto.text,
         strip.position = strip.position,
         wd.res = extra.args$wd.res %||% 8
-      ) +
-      ggplot2::guides(
-        color = ggplot2::guide_colorbar(
-          theme = ggplot2::theme(
-            legend.title.position = ifelse(
-              key.position %in% c("left", "right"),
-              "top",
-              key.position
-            ),
-            legend.text.position = key.position
-          )
-        )
       )
 
     if (plot) {

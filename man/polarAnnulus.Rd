@@ -24,6 +24,8 @@ polarAnnulus(
   force.positive = TRUE,
   k = c(20, 10),
   normalise = FALSE,
+  breaks = NULL,
+  labels = NULL,
   strip.position = "top",
   key.title = paste(statistic, pollutant, sep = " "),
   key.position = "right",
@@ -180,6 +182,16 @@ mean value. This is done \emph{after} fitting the smooth surface. This option is
 particularly useful if one is interested in the patterns of concentrations
 for several pollutants on different scales e.g. NOx and CO. Often useful if
 more than one \code{pollutant} is chosen.}
+
+\item{breaks, labels}{If a categorical colour scale is required then \code{breaks}
+should be specified. These should be provided as a numeric vector, e.g.,
+\code{breaks = c(0, 50, 100, 1000)}. Users should set the maximum value of
+\code{breaks} to exceed the maximum data value to ensure it is within the
+maximum final range, e.g., 100--1000 in this case. Labels will
+automatically be generated, but can be customised by passing a character
+vector to \code{labels}, e.g., \code{labels = c("good", "bad", "very bad")}. In this
+example, \code{0 - 50} will be \code{"good"} and so on. Note there is one less label
+than break.}
 
 \item{strip.position}{Location where the facet 'strips' are located when
 using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
