@@ -902,17 +902,14 @@ polarPlot <-
     }
 
     # handle breaks
-    categorical <- FALSE
-    if (!is.null(breaks)) {
-      # assign labels if no labels are given
-      labels <- get_labels_from_breaks(breaks, labels)
-      categorical <- TRUE
-      plot_data <- dplyr::mutate(
-        plot_data,
-        z = cut(.data$z, breaks = breaks, labels = labels)
-      )
-    }
+    categorical <- !is.null(breaks)
+    plot_data$z <- cut_plot_breaks(
+      plot_data$z,
+      breaks = breaks,
+      labels = labels
+    )
 
+    # make plot
     thePlot <-
       plot_data |>
       dplyr::arrange(!is.na(.data$z), .data$z) |>

@@ -310,16 +310,12 @@ polarFreq <- function(
   results.grid$weights[which(is.na(results.grid$weights))] <- 0
 
   # handle breaks
-  categorical <- FALSE
-  if (!is.null(breaks)) {
-    # assign labels if no labels are given
-    labels <- get_labels_from_breaks(breaks, labels)
-    categorical <- TRUE
-    results.grid <- dplyr::mutate(
-      results.grid,
-      cuts = cut(.data$weights, breaks = breaks, labels = labels)
-    )
-  }
+  categorical <- !is.null(breaks)
+  results.grid$weights <- cut_plot_breaks(
+    results.grid$weights,
+    breaks = breaks,
+    labels = labels
+  )
 
   # set the upper wind speed
   if (is.na(ws.upper)) {

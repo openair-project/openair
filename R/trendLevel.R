@@ -468,22 +468,13 @@ trendLevel <- function(
   # check if key.header / key.footer are being used
   key.title <- check_key_header(key.title, extra.args)
 
-  # categorical colour scale or not?
-  categorical <- FALSE
-  if (!is.null(breaks)) {
-    # get breaks
-    labels <- get_labels_from_breaks(breaks, labels)
-
-    # cut data into categories
-    newdata$cuts <- cut(
-      newdata[[pollutant]],
-      breaks = breaks,
-      labels = labels,
-      include.lowest = TRUE
-    )
-
-    categorical <- TRUE
-  }
+  # handle breaks
+  categorical <- !is.null(breaks)
+  newdata$cuts <- cut_plot_breaks(
+    newdata$cuts,
+    breaks = breaks,
+    labels = labels
+  )
 
   # construct plot
   thePlot <-

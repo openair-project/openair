@@ -142,7 +142,7 @@ polarAnnulus <-
     percentile = NA,
     limits = NULL,
     cols = "default",
-    col.na = "white",
+    col.na = "grey",
     offset = 50,
     angle.scale = 0,
     min.bin = 1,
@@ -557,16 +557,12 @@ polarAnnulus <-
     key.title <- check_key_header(key.title, extra.args)
 
     # handle breaks
-    categorical <- FALSE
-    if (!is.null(breaks)) {
-      # assign labels if no labels are given
-      labels <- get_labels_from_breaks(breaks, labels)
-      categorical <- TRUE
-      results.grid <- dplyr::mutate(
-        results.grid,
-        pred = cut(.data$pred, breaks = breaks, labels = labels)
-      )
-    }
+    categorical <- !is.null(breaks)
+    results.grid$pred <- cut_plot_breaks(
+      results.grid$pred,
+      breaks = breaks,
+      labels = labels
+    )
 
     # plotting
     thePlot <-

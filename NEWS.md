@@ -44,7 +44,11 @@
     
     - Added `openColors()` and `colorOpts()` which are synonymous with their British English equivalents `openColours()` and `colourOpts()`.
 
-- `polarPlot()`, `polarAnnulus()` and `corPlot()` have gained `breaks` and `labels`, which behave identically to similar arguments in functions like `trendLevel()`.
+- Refinements to how `breaks` and `labels` are implemented in functions like `trendLevel()`:
+
+    - If `breaks` don't cover the full range of the data being binned, the maximum and minimum `breaks` will be overwritten so that it does.
+    
+    - `polarPlot()`, `polarAnnulus()` and `corPlot()` have gained `breaks` and `labels`.
 
 - `smoothTrend()` will now use `loess` when it has insufficient data to fit a GAM.
 

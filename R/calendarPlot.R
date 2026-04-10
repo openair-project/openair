@@ -472,16 +472,12 @@ calendarPlot <-
       dplyr::mutate(value = .data$conc.mat)
 
     # handle breaks
-    categorical <- FALSE
-    if (!is.null(breaks)) {
-      # assign labels if no labels are given
-      labels <- get_labels_from_breaks(breaks, labels)
-      categorical <- TRUE
-      mydata <- dplyr::mutate(
-        mydata,
-        conc.mat = cut(.data$conc.mat, breaks = breaks, labels = labels)
-      )
-    }
+    categorical <- !is.null(breaks)
+    mydata$conc.mat <- cut_plot_breaks(
+      mydata$conc.mat,
+      breaks = breaks,
+      labels = labels
+    )
 
     # add in ws and wd if there
     newdata <-

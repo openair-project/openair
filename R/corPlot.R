@@ -419,16 +419,12 @@ corPlot <- function(
   }
 
   # handle breaks
-  categorical <- FALSE
-  if (!is.null(breaks)) {
-    # assign labels if no labels are given
-    labels <- get_labels_from_breaks(breaks, labels)
-    categorical <- TRUE
-    ellipse_data <- dplyr::mutate(
-      ellipse_data,
-      cor = cut(.data$cor, breaks = breaks, labels = labels)
-    )
-  }
+  categorical <- !is.null(breaks)
+  ellipse_data$conc.mat <- cut_plot_breaks(
+    ellipse_data$cor,
+    breaks = breaks,
+    labels = labels
+  )
 
   # construct plot
   thePlot <-
