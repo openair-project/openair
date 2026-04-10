@@ -992,7 +992,7 @@ polarPlot <-
         )
       ) +
       ggplot2::labs(
-        color = legend_title,
+        fill = legend_title,
         x = extra.args$xlab,
         y = extra.args$ylab,
         title = extra.args$title,
