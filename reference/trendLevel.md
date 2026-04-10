@@ -296,13 +296,11 @@ Jack Davison
 # basic use
 # default statistic = "mean"
 trendLevel(mydata, pollutant = "nox")
-#> Warning: Unknown or uninitialised column: `cuts`.
 
 
 # applying same as 'own' statistic
 my.mean <- function(x) mean(x, na.rm = TRUE)
 trendLevel(mydata, pollutant = "nox", statistic = my.mean)
-#> Warning: Unknown or uninitialised column: `cuts`.
 
 
 # alternative for 'third party' statistic
