@@ -420,7 +420,7 @@ corPlot <- function(
 
   # handle breaks
   categorical <- !is.null(breaks)
-  ellipse_data$conc.mat <- cut_plot_breaks(
+  ellipse_data$cor <- cut_plot_breaks(
     ellipse_data$cor,
     breaks = breaks,
     labels = labels
@@ -484,6 +484,7 @@ corPlot <- function(
       ) +
       ggplot2::guides(
         fill = ggplot2::guide_legend(
+          reverse = TRUE,
           theme = ggplot2::theme(
             legend.title.position = ifelse(
               key.position %in% c("left", "right"),

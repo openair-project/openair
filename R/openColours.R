@@ -298,7 +298,7 @@ openColours <- function(
     .huePalette(n_out, direction, begin, end, alpha)
   } else if (scheme == "greyscale") {
     .greyPalette(n_out, direction, begin, end, alpha)
-  } else if (scheme %in% .seq_schemes) {
+  } else if (scheme %in% c(.div_schemes, .seq_schemes)) {
     .seqPalette(n_out, scheme, direction, begin, end, alpha)
   } else if (scheme %in% names(.qual_schemes)) {
     .qualPalette(n_out, scheme, direction, alpha)
