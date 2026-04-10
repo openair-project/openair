@@ -92,8 +92,8 @@ The following schemes are made available by `openColours()`:
   "Spectral".
 
 - Simplified versions of Fabio Crameri's diverging palettes: "bam",
-  "berlin", "broc", "bukavu", "cork", "fes", "lisbon", "managua",
-  "oleron", "roma", "tofino", "vanimo", "vik"
+  "berlin", "broc", "cork", "lisbon", "managua", "roma", "tofino",
+  "vanimo", "vik"
 
 **Qualitative Palettes:**
 
@@ -159,14 +159,14 @@ names. To see the full list of names, type
 
 ## References
 
-Color Brewer <https://colorbrewer2.org/>
+Color Brewer: <https://colorbrewer2.org/>
 
-DAQI Colours <https://check-air-quality.service.gov.uk/>
+DAQI Colours: <https://check-air-quality.service.gov.uk/>
 
-UK Government Analysis Function
+UK Government Analysis Function:
 <https://analysisfunction.civilservice.gov.uk/policy-store/data-visualisation-colours-in-charts/>
 
-Fabio Crameri's Color Schemes Crameri, F. 2023. Scientific Colour Maps
+Fabio Crameri's Color Schemes: Crameri, F. 2023. Scientific Colour Maps
 (version 8.0.1). Zenodo. DOI:
 [doi:10.5281/zenodo.1243862](https://doi.org/10.5281/zenodo.1243862) .
 
