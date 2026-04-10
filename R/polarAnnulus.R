@@ -272,16 +272,33 @@ polarAnnulus <-
       na.rm = TRUE
     )
 
-    if (statistic == "cpf") {
-      sub <- paste0(
-        "CPF probability at the ",
-        percentile,
-        "th percentile (=",
-        round(Pval, 1),
-        ")"
+    # handle caption
+    sub <- NULL
+    if (extra.args$annotate %||% TRUE) {
+      if (statistic == "cpf") {
+        sub <- paste0(
+          "CPF probability at the ",
+          percentile,
+          "th percentile (=",
+          round(Pval, 1),
+          ")"
+        )
+      } else {
+        sub <- NULL
+      }
+
+      sub <- paste(
+        list(
+          "hour" = "Radial axis shows hour of the day",
+          "weekday" = "Radial axis shows day of the week",
+          "season" = "Radial axis shows month of the year",
+          "trend" = NULL
+        )[[period]],
+        sub,
+        sep = "\n"
       )
-    } else {
-      sub <- NULL
+
+      sub <- quickText(sub, auto.text = auto.text)
     }
 
     prepare.grid <- function(mydata) {
