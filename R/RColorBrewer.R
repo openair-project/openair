@@ -1,4 +1,4 @@
-divlist <- c(
+.brewer_div_schemes <- c(
   "BrBG",
   "PiYG",
   "PRGn",
@@ -9,7 +9,8 @@ divlist <- c(
   "RdYlGn",
   "Spectral"
 )
-quallist <- c(
+
+.brewer_qual_schemes <- c(
   "Accent",
   "Dark2",
   "Paired",
@@ -19,7 +20,8 @@ quallist <- c(
   "Set2",
   "Set3"
 )
-seqlist <- c(
+
+.brewer_seq_schemes <- c(
   "Blues",
   "BuGn",
   "BuPu",
@@ -39,34 +41,21 @@ seqlist <- c(
   "YlOrBr",
   "YlOrRd"
 )
-colorblindlist <- c(
-  "BrBG",
-  "PiYG",
-  "PRGn",
-  "PuOr",
-  "RdBu",
-  "RdYlBu",
-  "Dark2",
-  "Paired",
-  "Set2",
-  seqlist
+
+names(.brewer_div_schemes) <- .brewer_div_schemes
+names(.brewer_qual_schemes) <- .brewer_qual_schemes
+names(.brewer_seq_schemes) <- .brewer_seq_schemes
+
+divnum <- setNames(rep(11L, length(.brewer_div_schemes)), .brewer_div_schemes)
+qualnum <- setNames(c(8L, 8L, 12L, 9L, 8L, 9L, 8L, 12L), .brewer_qual_schemes)
+seqnum <- setNames(rep(9L, length(.brewer_seq_schemes)), .brewer_seq_schemes)
+
+.brewer_schemes <- c(
+  .brewer_div_schemes,
+  .brewer_qual_schemes,
+  .brewer_seq_schemes
 )
-
-names(divlist) <- divlist
-names(quallist) <- quallist
-names(seqlist) <- seqlist
-
-divnum <- setNames(rep(11L, length(divlist)), divlist)
-qualnum <- setNames(c(8L, 8L, 12L, 9L, 8L, 9L, 8L, 12L), quallist)
-seqnum <- setNames(rep(9L, length(seqlist)), seqlist)
-
-namelist <- c(divlist, quallist, seqlist)
 maxcolors <- c(divnum, qualnum, seqnum)
-catlist <- rep(
-  c("div", "qual", "seq"),
-  c(length(divlist), length(quallist), length(seqlist))
-)
-colorblind <- namelist %in% colorblindlist
 
 # ---------------------------------------------------------------------------
 # Palette data: each palette is a list of length-(max_n - 2) matrices,
@@ -1748,7 +1737,7 @@ colorblind <- namelist %in% colorblindlist
 # brewer.pal: look up the pre-computed RGB vectors
 # ---------------------------------------------------------------------------
 brewer.pal <- function(n, name, direction = 1, alpha = 1, begin = 0, end = 1) {
-  is_seq <- name %in% seqlist
+  is_seq <- name %in% .brewer_seq_schemes
 
   max_n <- maxcolors[[name]]
   if (n < 3) {

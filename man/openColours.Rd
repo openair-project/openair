@@ -53,12 +53,12 @@ user-defined length. \code{openColours()} and \code{openColors()} are synonyms.
 \section{Schemes}{
 
 
-The following schemes are made available by \code{openColours()}:
+The following schemes are made available by \code{openColours()}. This list is
+also available as a table by using \code{openSchemes()}.
 
 \strong{Sequential Colours:}
 \itemize{
-\item "default", "increment", "brewer1", "heat", "jet", "turbo", "hue",
-"greyscale".
+\item "default", "increment", "heat", "jet", "turbo", "hue", "greyscale".
 \item Simplified versions of the \code{viridis} colours: "viridis", "plasma",
 "magma", "inferno", "cividis", "turbo", "rocket" and "mako".
 \item Simplified versions of the \code{RColorBrewer} sequential palettes: "Blues", "BuGn",

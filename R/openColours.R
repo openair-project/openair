@@ -19,9 +19,25 @@
   "tol.light" = 9
 )
 
+# Diverging palette names (excluding brewer)
+.div_schemes <- c(
+  "broc",
+  "cork",
+  "vik",
+  "lisbon",
+  "tofino",
+  "berlin",
+  "roma",
+  "bam",
+  "vanimo",
+  "managua"
+)
+
 # Sequential palette names (excluding brewer)
 .seq_schemes <- c(
   "default",
+  "hue",
+  "greyscale",
   "increment",
   "heat",
   "jet",
@@ -34,16 +50,6 @@
   "rocket",
   "mako",
   "gaf.seq",
-  "bam",
-  "berlin",
-  "broc",
-  "cork",
-  "lisbon",
-  "managua",
-  "roma",
-  "tofino",
-  "vanimo",
-  "vik",
   "acton",
   "bamO",
   "bamako",
@@ -74,14 +80,15 @@
 )
 
 # All known scheme names
-.all_schemes <- c(
+.all_schemes <- unname(c(
   .seq_schemes,
+  .brewer_seq_schemes,
+  .div_schemes,
+  .brewer_div_schemes,
   names(.qual_schemes),
-  "brewer1",
-  "hue",
-  "greyscale",
-  namelist # from brewer.pal definitions
-)
+  .brewer_qual_schemes,
+  "brewer1"
+))
 
 
 #' Pre-defined openair colours and definition of user-defined colours
@@ -92,12 +99,12 @@
 #'
 #' @section Schemes:
 #'
-#'   The following schemes are made available by `openColours()`:
+#'   The following schemes are made available by `openColours()`. This list is
+#'   also available as a table by using `openSchemes()`.
 #'
 #'   **Sequential Colours:**
 #'
-#'   * "default", "increment", "brewer1", "heat", "jet", "turbo", "hue",
-#'   "greyscale".
+#'   * "default", "increment", "heat", "jet", "turbo", "hue", "greyscale".
 #'
 #'   * Simplified versions of the `viridis` colours: "viridis", "plasma",
 #'   "magma", "inferno", "cividis", "turbo", "rocket" and "mako".
@@ -285,7 +292,7 @@ openColours <- function(
     scheme <- "Set1"
   }
 
-  cols <- if (scheme %in% namelist) {
+  cols <- if (scheme %in% .brewer_schemes) {
     .brewerPalette(n_out, scheme, direction, begin, end, alpha)
   } else if (scheme == "hue") {
     .huePalette(n_out, direction, begin, end, alpha)
@@ -303,6 +310,84 @@ openColours <- function(
 #' @rdname openColours
 #' @export
 openColors <- openColours
+
+#' List available colour schemes in `openair`
+#'
+#' This function returns a table of the available colour schemes in `openair`,
+#' along with their type (sequential, diverging, or qualitative) and the maximum
+#' number of colours available for that scheme (where applicable). This can be
+#' useful for users to explore the available schemes and to check which schemes
+#' can provide a certain number of colours.
+#'
+#' @param palette_type A character vector specifying which types of palettes to
+#'   include in the output. Options are `"seq"` for sequential, `"div"` for
+#'   diverging, and `"qual"` for qualitative. Multiple options can be selected
+#'   (e.g., `c("seq", "div")`). All three are returned by default.
+#'
+#' @param n An optional whole number to filter the schemes by their maximum
+#'   number of colours. Only schemes that can provide at least `n` colours will
+#'   be included in the output. This only applies to qualitative schemes, as
+#'   sequential and diverging schemes can be interpolated to any number of
+#'   colours.
+#'
+#' @author Jack Davison
+#'
+#' @export
+openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
+  palette_type = rlang::arg_match(
+    palette_type,
+    c("seq", "div", "qual"),
+    multiple = TRUE
+  )
+
+  out <- tibble::tibble(
+    palette = character(0),
+    type = character(0),
+    max_n = numeric(0)
+  )
+
+  if (any(palette_type == "seq")) {
+    out <- dplyr::bind_rows(
+      out,
+      tibble::tibble(
+        palette = unique(unname(c(.seq_schemes, .brewer_seq_schemes))),
+        type = "sequential",
+        max_n = NA
+      )
+    )
+  }
+
+  if (any(palette_type == "div")) {
+    out <- dplyr::bind_rows(
+      out,
+      tibble::tibble(
+        palette = unique(unname(c(.div_schemes, .brewer_div_schemes))),
+        type = "diverging",
+        max_n = NA
+      )
+    )
+  }
+
+  if (any(palette_type == "qual")) {
+    out <- dplyr::bind_rows(
+      out,
+      tibble::tibble(
+        palette = unique(unname(c(names(.qual_schemes), .brewer_qual_schemes))),
+        type = "sequential",
+        max_n = as.numeric(c(
+          unname(.qual_schemes),
+          qualnum[.brewer_qual_schemes]
+        ))
+      )
+    )
+  }
+
+  if (!is.null(n)) {
+    out <- dplyr::filter_out(out, .data$max_n < n)
+  }
+
+  return(out)
+}
 
 #' Apply direction and alpha to a colour vector
 #' @noRd

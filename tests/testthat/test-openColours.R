@@ -248,3 +248,119 @@ test_that("greyscale uses conservative begin/end defaults", {
   expect_true(all(rgb_vals > 0)) # no pure black
   expect_true(all(rgb_vals < 255)) # no pure white
 })
+
+test_that("openSchemes returns a tibble with the correct columns and types", {
+  out <- openSchemes()
+  expect_s3_class(out, "tbl_df")
+  expect_named(out, c("palette", "type", "max_n"))
+  expect_type(out$palette, "character")
+  expect_type(out$type, "character")
+  expect_type(out$max_n, "double")
+})
+
+test_that("openSchemes returns all three types by default", {
+  out <- openSchemes()
+  expect_true("sequential" %in% out$type)
+  expect_true("diverging" %in% out$type)
+  # qualitative palettes are labelled "sequential" — check via max_n instead
+  expect_true(any(!is.na(out$max_n)))
+})
+
+test_that("palette_type = 'seq' returns only sequential rows", {
+  out <- openSchemes(palette_type = "seq")
+  expect_true(all(out$type == "sequential"))
+  expect_true(all(is.na(out$max_n)))
+})
+
+test_that("palette_type = 'div' returns only diverging rows", {
+  out <- openSchemes(palette_type = "div")
+  expect_true(all(out$type == "diverging"))
+  expect_true(all(is.na(out$max_n)))
+})
+
+test_that("palette_type = 'qual' returns only rows with a finite max_n", {
+  out <- openSchemes(palette_type = "qual")
+  expect_true(all(!is.na(out$max_n)))
+  expect_true(all(out$max_n > 0))
+})
+
+test_that("palette_type combinations return the union of the requested types", {
+  seq_div <- openSchemes(palette_type = c("seq", "div"))
+  seq_out <- openSchemes(palette_type = "seq")
+  div_out <- openSchemes(palette_type = "div")
+  expect_equal(nrow(seq_div), nrow(seq_out) + nrow(div_out))
+  expect_false("diverging" %in% openSchemes(palette_type = "seq")$type)
+  expect_false("sequential" %in% openSchemes(palette_type = "div")$type)
+})
+
+test_that("all three palette_type values together equals the default", {
+  all_explicit <- openSchemes(palette_type = c("seq", "div", "qual"))
+  all_default <- openSchemes()
+  expect_equal(all_explicit, all_default)
+})
+
+test_that("n filters qualitative schemes that are too small", {
+  out_unfiltered <- openSchemes(palette_type = "qual")
+  out_filtered <- openSchemes(palette_type = "qual", n = 8)
+
+  # All retained schemes must support at least n colours
+  expect_true(all(out_filtered$max_n >= 8))
+
+  # Filtering must remove at least one scheme (e.g. tol.highcontrast has 3)
+  expect_lt(nrow(out_filtered), nrow(out_unfiltered))
+})
+
+test_that("n does not filter sequential or diverging rows (max_n is NA)", {
+  out_seq <- openSchemes(palette_type = "seq", n = 50)
+  expect_equal(nrow(out_seq), nrow(openSchemes(palette_type = "seq")))
+
+  out_div <- openSchemes(palette_type = "div", n = 50)
+  expect_equal(nrow(out_div), nrow(openSchemes(palette_type = "div")))
+})
+
+test_that("n = 1 retains all qualitative schemes", {
+  out <- openSchemes(palette_type = "qual", n = 1)
+  expect_equal(nrow(out), nrow(openSchemes(palette_type = "qual")))
+})
+
+test_that("n equal to a scheme's max_n retains that scheme", {
+  # tol.highcontrast has max_n = 3
+  out <- openSchemes(palette_type = "qual", n = 3)
+  expect_true("tol.highcontrast" %in% out$palette)
+})
+
+test_that("n one above a scheme's max_n excludes that scheme", {
+  out <- openSchemes(palette_type = "qual", n = 4)
+  expect_false("tol.highcontrast" %in% out$palette)
+})
+
+test_that("known sequential palettes are present", {
+  out <- openSchemes(palette_type = "seq")
+  expect_true("viridis" %in% out$palette)
+  expect_true("default" %in% out$palette)
+  expect_true("jet" %in% out$palette)
+})
+
+test_that("known diverging palettes are present", {
+  out <- openSchemes(palette_type = "div")
+  expect_true("vik" %in% out$palette)
+  expect_true("berlin" %in% out$palette)
+})
+
+test_that("known qualitative palettes are present with correct max_n", {
+  out <- openSchemes(palette_type = "qual")
+  expect_true("okabeito" %in% out$palette)
+  expect_equal(out$max_n[out$palette == "okabeito"], 9)
+  expect_equal(out$max_n[out$palette == "tol.highcontrast"], 3)
+  expect_equal(out$max_n[out$palette == "daqi"], 10)
+})
+
+test_that("palettes are not duplicated", {
+  out <- openSchemes()
+  expect_equal(nrow(out), length(unique(out$palette)))
+})
+
+test_that("invalid palette_type is rejected", {
+  expect_error(openSchemes(palette_type = "bad"))
+  expect_error(openSchemes(palette_type = c("seq", "bad")))
+})

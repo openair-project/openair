@@ -36,14 +36,20 @@ reference:
   - scatterPlot
   - corPlot
 
-- title: Utilities
-- subtitle: Plot Utilities
-  desc: Tools for refining openair plots.
+- title: Plot Utilities
+- subtitle: Colours
+  desc: Functions for defining colour schemes and colour options for openair plots.
+  contents:
+  - openColours
+  - openSchemes
+  - colourOpts
+- subtitle: Other Plot Utilities.
+  desc: Other functions to help with controlling openair plots. 
   contents:
   - quickText
-  - openColours
-  - colourOpts
   - windflowOpts
+
+- title: Data Utilities
 - subtitle: Smoothing Functions
   desc: Tools for smoothing data for plotting or analysis
   contents:

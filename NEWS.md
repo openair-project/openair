@@ -39,6 +39,8 @@
     - Added various palettes based on the work of Fabio Crameri - see `openColours()` for more details.
     
     - Completed the set of "viridis" palettes with "rocket" and "mako".
+
+    - Added `openSchemes()` which returns a table of available colour palettes.
     
     - Added `openColors()` and `colorOpts()` which are synonymous with their British English equivalents `openColours()` and `colourOpts()`.
 
