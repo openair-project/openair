@@ -373,7 +373,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
       out,
       dplyr::tibble(
         palette = unique(unname(c(names(.qual_schemes), .brewer_qual_schemes))),
-        type = "sequential",
+        type = "qualitative",
         max_n = as.numeric(c(
           unname(.qual_schemes),
           qualnum[.brewer_qual_schemes]
