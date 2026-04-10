@@ -64,6 +64,8 @@
 
 - New Kolmogorov-Zurbenko (KZ) Filter functions `kzFilter` and `kzaFilter`. These functions significantly enhance the capability of `{openair}` by allowing different time components to be separated and analysed separately. The `kzFilter` is considered a good default for a wide range of problems whereas the `kzaFilter` is the adaptive version that is well-suited to capturing abrumpt changes e.g. through an intervention. The range of uses of the filters will be covered in the `{openair}` book.
 
+- The default `key.position` of `corPlot()` is now `"right"`.
+
 ## Bug Fixes
 
 - `timeAverage()` now has a more robust approach to multi-period averaging time such as "3 day". Bin boundaries are at fixed periods of time, which should ensure consistency across data sets that start at different times. This also means there is less need to use the argument `start.date` unless there is a need to extend the start date of the data for some reason e.g. to the beginning of a year. THis change may result in slight differences in returned output but should not affect periods such as "day", "hour" and "month".

@@ -21,7 +21,7 @@ corPlot(
   r.thresh = 0.8,
   text.col = c("black", "black"),
   key.title = NULL,
-  key.position = "none",
+  key.position = "right",
   strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
