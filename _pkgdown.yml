@@ -43,7 +43,7 @@ reference:
   - openColours
   - openSchemes
   - colourOpts
-- subtitle: Other Plot Utilities.
+- subtitle: Other Plot Utilities
   desc: Other functions to help with controlling openair plots. 
   contents:
   - quickText
