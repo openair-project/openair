@@ -139,7 +139,7 @@ plots.
 
   Define `cols` options for `openair` plots
 
-### Other Plot Utilities.
+### Other Plot Utilities
 
 Other functions to help with controlling openair plots.
 
