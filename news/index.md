@@ -182,6 +182,10 @@
 - [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
   is once again tolerant of apostrophes.
 
+- [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md)
+  will no longer produce a square-shaped surface when
+  `exclude.missing = FALSE`.
+
 ## openair 3.0.0
 
 CRAN release: 2026-04-02
