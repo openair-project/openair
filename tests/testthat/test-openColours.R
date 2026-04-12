@@ -263,7 +263,7 @@ test_that("openSchemes returns all three types by default", {
   expect_true("sequential" %in% out$type)
   expect_true("diverging" %in% out$type)
   # qualitative palettes are labelled "sequential" — check via max_n instead
-  expect_true(any(!is.na(out$max_n)))
+  expect_true(!all(is.na(out$max_n)))
 })
 
 test_that("palette_type = 'seq' returns only sequential rows", {
@@ -280,7 +280,7 @@ test_that("palette_type = 'div' returns only diverging rows", {
 
 test_that("palette_type = 'qual' returns only rows with a finite max_n", {
   out <- openSchemes(palette_type = "qual")
-  expect_true(all(!is.na(out$max_n)))
+  expect_true(!anyNA(out$max_n))
   expect_true(all(out$max_n > 0))
 })
 
