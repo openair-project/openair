@@ -78,6 +78,8 @@
 
 - `quickText()` is once again tolerant of apostrophes.
 
+- `polarPlot()` will no longer produce a square-shaped surface when `exclude.missing = FALSE`.
+
 # openair 3.0.0
 
 ## Dependency Changes
