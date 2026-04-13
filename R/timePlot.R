@@ -361,11 +361,18 @@ timePlot <- function(
   # number of distinct pollutants (for faceting)
   npol <- length(unique(mydata$variable))
 
+  # when a single pollutant is plotted with type conditioning, colour by the
+  # type column so each facet gets a distinct colour
+  colour_by_type <- !group_is_col && !isTRUE(group) && npol == 1 && !all(type == "default")
+  type_colour_col <- if (colour_by_type) type[type != "default"][1L] else NULL
+
   # number of groups used for colour/linetype/linewidth aesthetics
   if (group_is_col) {
     group_levels <- unique(as.character(mydata[[group]]))
     mydata[[group]] <- factor(mydata[[group]], levels = group_levels)
     n_groups <- length(group_levels)
+  } else if (colour_by_type) {
+    n_groups <- length(unique(mydata[[type_colour_col]]))
   } else {
     n_groups <- npol
   }
@@ -438,10 +445,17 @@ timePlot <- function(
       }
     )
 
-  # aesthetic column: group column name when group is a string, else "variable"
-  aes_col <- if (group_is_col) group else "variable"
-  # legend title: show group column name when group is a string, else no title
-  legend_title <- if (group_is_col) quickText(group, auto.text) else NULL
+  # aesthetic column: group column name when group is a string, the type column
+  # when colouring by type (single pollutant + conditioning), else "variable"
+  aes_col <- if (group_is_col) group else if (colour_by_type) type_colour_col else "variable"
+  # legend title
+  legend_title <- if (group_is_col) {
+    quickText(group, auto.text)
+  } else if (colour_by_type) {
+    quickText(type_colour_col, auto.text)
+  } else {
+    NULL
+  }
 
   # built plot
   thePlot <-
