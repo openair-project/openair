@@ -60,6 +60,8 @@
 
 - `TheilSen()` and `smoothTrend()` now use a more straightfoward way to imput missing data when `deseason = TRUE` and missing monthly data are present based on monthly linear regression by month. The user is alerted to the imputation and the monthly plot shows the imputed data as a filled grey circle.
 
+- `ws` and/or `wd` have been added to `percentileRose()`, `polarAnnulus()`, `polarDiff()` and `polarFreq()` in line with `polarPlot()`.
+
 - `polarFreq()` gains `angle.scale`, in line with all other polar coordinate plots.
 
 - New Kolmogorov-Zurbenko (KZ) Filter functions `kzFilter` and `kzaFilter`. These functions significantly enhance the capability of `{openair}` by allowing different time components to be separated and analysed separately. The `kzFilter` is considered a good default for a wide range of problems whereas the `kzaFilter` is the adaptive version that is well-suited to capturing abrumpt changes e.g. through an intervention. The range of uses of the filters will be covered in the `{openair}` book.

@@ -7,6 +7,7 @@
 polarAnnulus(
   mydata,
   pollutant = "nox",
+  wd = "wd",
   resolution = "fine",
   local.tz = NULL,
   period = "hour",
@@ -36,8 +37,8 @@ polarAnnulus(
 )
 }
 \arguments{
-\item{mydata}{A data frame minimally containing \code{date}, \code{wd} and a
-pollutant.}
+\item{mydata}{A data frame minimally containing \code{date}, a wind direction and
+a pollutant.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \code{pollutant = "nox"}. There can also be
@@ -48,6 +49,10 @@ user stacking the data and it is possible to work with columns of data
 directly. A typical use would be \code{pollutant = c("obs", "mod")} to compare
 two columns \dQuote{obs} (the observations) and \dQuote{mod} (modelled
 values).}
+
+\item{wd}{The name of the column in \code{mydata} representing the decimal wind
+direction, 0 to 360 where 0/360 are North and 180 is South. Defaults to
+\code{"wd"}.}
 
 \item{resolution}{Two plot resolutions can be set: \dQuote{normal} and
 \dQuote{fine} (the default).}
@@ -255,13 +260,13 @@ concentrations of pollutants vary by wind direction and a time period e.g. by
 month, day of week.
 }
 \details{
-The \code{polarAnnulus} function shares many of the properties of the
-\code{polarPlot}. However, \code{polarAnnulus} is focussed on displaying
-information on how concentrations of a pollutant (values of another variable)
-vary with wind direction and time. Plotting as an annulus helps to reduce
-compression of information towards the centre of the plot. The circular plot
-is easy to interpret because wind direction is most easily understood in
-polar rather than Cartesian coordinates.
+The \code{polarAnnulus} function shares many of the properties of the \code{polarPlot}.
+However, \code{polarAnnulus} is focussed on displaying information on how
+concentrations of a pollutant (values of another variable) vary with wind
+direction and time. Plotting as an annulus helps to reduce compression of
+information towards the centre of the plot. The circular plot is easy to
+interpret because wind direction is most easily understood in polar rather
+than Cartesian coordinates.
 
 The inner part of the annulus represents the earliest time and the outer part
 of the annulus the latest time. The time dimension can be shown in many ways
@@ -271,8 +276,8 @@ how concentrations vary by hour of the day and wind direction. Such plots can
 be very useful for understanding how different source influences affect a
 location.
 
-For \code{type = "trend"} the amount of smoothing does not vary linearly with
-the length of the time series i.e. a certain amount of smoothing per unit
+For \code{type = "trend"} the amount of smoothing does not vary linearly with the
+length of the time series i.e. a certain amount of smoothing per unit
 interval in time. This is a deliberate choice because should one be
 interested in a subset (in time) of data, more detail will be provided for
 the subset compared with the full data set. This allows users to investigate

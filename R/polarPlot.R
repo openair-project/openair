@@ -61,10 +61,10 @@
 #'
 #' @inheritParams shared_openair_params
 #'
-#' @param mydata A data frame minimally containing `wd`, another variable to
-#'   plot in polar coordinates (the default is a column \dQuote{ws} --- wind
-#'   speed) and a pollutant. Should also contain `date` if plots by time period
-#'   are required.
+#' @param mydata A data frame minimally containing a decimal wind direction,
+#'   another variable to plot in polar coordinates (the default is a column
+#'   `"ws"` --- wind speed) and a pollutant. Should also contain `date` if plots
+#'   by time period are required.
 #'
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
 #'   data frame should be supplied e.g. `pollutant = "nox"`. There can also be
@@ -81,8 +81,6 @@
 #'
 #' @param x Name of variable to plot against wind direction in polar
 #'   coordinates, the default is wind speed, \dQuote{ws}.
-#'
-#' @param wd Name of wind direction field.
 #'
 #' @param statistic The statistic that should be applied to each wind
 #'   speed/direction bin. Because of the smoothing involved, the colour scale
@@ -208,9 +206,9 @@
 #'   care. Also, the `polarFreq` function can be of use in such circumstances.
 #'
 #' @param col.na When `min.bin` is > 1 it can be useful to show where data are
-#'   removed on the plots. This is done by shading the missing data in
-#'   `col.na`. To not highlight missing data when `min.bin` > 1 choose `col.na
-#'   = "transparent"`.
+#'   removed on the plots. This is done by shading the missing data in `col.na`.
+#'   To not highlight missing data when `min.bin` > 1 choose `col.na =
+#'   "transparent"`.
 #'
 #' @param upper This sets the upper limit wind speed to be used. Often there are
 #'   only a relatively few data points at very high wind speeds and plotting all
@@ -1035,7 +1033,11 @@ polarPlot <-
 
     # return attribute of scale used - useful for data with negative scales such as air_temp
     attr(newdata, "radial_scale") <- range(radial_scale)
-    output <- list(plot = thePlot, data = newdata, call = match.call())
+    output <- list(
+      plot = thePlot,
+      data = dplyr::tibble(newdata),
+      call = match.call()
+    )
     class(output) <- "openair"
 
     # Final return

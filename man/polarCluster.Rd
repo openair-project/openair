@@ -21,10 +21,10 @@ polarCluster(
 )
 }
 \arguments{
-\item{mydata}{A data frame minimally containing \code{wd}, another variable to
-plot in polar coordinates (the default is a column \dQuote{ws} --- wind
-speed) and a pollutant. Should also contain \code{date} if plots by time period
-are required.}
+\item{mydata}{A data frame minimally containing a decimal wind direction,
+another variable to plot in polar coordinates (the default is a column
+\code{"ws"} --- wind speed) and a pollutant. Should also contain \code{date} if plots
+by time period are required.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \code{pollutant = "nox"}. Only one pollutant
@@ -33,7 +33,9 @@ can be chosen.}
 \item{x}{Name of variable to plot against wind direction in polar
 coordinates, the default is wind speed, \dQuote{ws}.}
 
-\item{wd}{Name of wind direction field.}
+\item{wd}{The name of the column in \code{mydata} representing the decimal wind
+direction, 0 to 360 where 0/360 are North and 180 is South. Defaults to
+\code{"wd"}.}
 
 \item{n.clusters}{Number of clusters to use. If \code{n.clusters} is more than
 length 1, then a faceted plot will be output showing the clusters
@@ -195,8 +197,8 @@ to NA. Care should be taken when using a value > 1 because of the risk of
 removing real data points. It is recommended to consider your data with
 care. Also, the \code{polarFreq} function can be of use in such circumstances.}
     \item{\code{col.na}}{When \code{min.bin} is > 1 it can be useful to show where data are
-removed on the plots. This is done by shading the missing data in
-\code{col.na}. To not highlight missing data when \code{min.bin} > 1 choose \code{col.na = "transparent"}.}
+removed on the plots. This is done by shading the missing data in \code{col.na}.
+To not highlight missing data when \code{min.bin} > 1 choose \code{col.na = "transparent"}.}
     \item{\code{upper}}{This sets the upper limit wind speed to be used. Often there are
 only a relatively few data points at very high wind speeds and plotting all
 of them can reduce the useful information in the plot.}

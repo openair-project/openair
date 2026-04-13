@@ -7,6 +7,7 @@
 percentileRose(
   mydata,
   pollutant = "nox",
+  ws = "ws",
   wd = "wd",
   type = "default",
   percentile = c(25, 50, 75, 90, 95),
@@ -32,15 +33,20 @@ percentileRose(
 )
 }
 \arguments{
-\item{mydata}{A data frame minimally containing \code{wd} and a numeric field to
-plot --- \code{pollutant}.}
+\item{mydata}{A data frame minimally containing a decimal wind direction and
+a numeric field to plot.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \code{pollutant = "nox"}. More than one
 pollutant can be supplied e.g. \code{pollutant = c("no2", "o3")} provided there
 is only one \code{type}.}
 
-\item{wd}{Name of wind direction field.}
+\item{ws}{The name of the column in \code{mydata} representing the wind speed.
+Defaults to \code{"ws"}.}
+
+\item{wd}{The name of the column in \code{mydata} representing the decimal wind
+direction, 0 to 360 where 0/360 are North and 180 is South. Defaults to
+\code{"wd"}.}
 
 \item{type}{Character string(s) defining how data should be split/conditioned
 before plotting. \code{"default"} produces a single panel using the entire

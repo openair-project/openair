@@ -5,13 +5,13 @@
 #' concentrations of pollutants vary by wind direction and a time period e.g. by
 #' month, day of week.
 #'
-#' The `polarAnnulus` function shares many of the properties of the
-#' `polarPlot`. However, `polarAnnulus` is focussed on displaying
-#' information on how concentrations of a pollutant (values of another variable)
-#' vary with wind direction and time. Plotting as an annulus helps to reduce
-#' compression of information towards the centre of the plot. The circular plot
-#' is easy to interpret because wind direction is most easily understood in
-#' polar rather than Cartesian coordinates.
+#' The `polarAnnulus` function shares many of the properties of the `polarPlot`.
+#' However, `polarAnnulus` is focussed on displaying information on how
+#' concentrations of a pollutant (values of another variable) vary with wind
+#' direction and time. Plotting as an annulus helps to reduce compression of
+#' information towards the centre of the plot. The circular plot is easy to
+#' interpret because wind direction is most easily understood in polar rather
+#' than Cartesian coordinates.
 #'
 #' The inner part of the annulus represents the earliest time and the outer part
 #' of the annulus the latest time. The time dimension can be shown in many ways
@@ -21,8 +21,8 @@
 #' be very useful for understanding how different source influences affect a
 #' location.
 #'
-#' For `type = "trend"` the amount of smoothing does not vary linearly with
-#' the length of the time series i.e. a certain amount of smoothing per unit
+#' For `type = "trend"` the amount of smoothing does not vary linearly with the
+#' length of the time series i.e. a certain amount of smoothing per unit
 #' interval in time. This is a deliberate choice because should one be
 #' interested in a subset (in time) of data, more detail will be provided for
 #' the subset compared with the full data set. This allows users to investigate
@@ -32,8 +32,8 @@
 #' @inheritParams shared_openair_params
 #' @inheritParams polarPlot
 #'
-#' @param mydata A data frame minimally containing `date`, `wd` and a
-#'   pollutant.
+#' @param mydata A data frame minimally containing `date`, a wind direction and
+#'   a pollutant.
 #'
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
 #'   data frame should be supplied e.g. `pollutant = "nox"`. There can also be
@@ -134,6 +134,7 @@ polarAnnulus <-
   function(
     mydata,
     pollutant = "nox",
+    wd = "wd",
     resolution = "fine",
     local.tz = NULL,
     period = "hour",
@@ -191,7 +192,7 @@ polarAnnulus <-
     }
 
     # extract variables of interest
-    vars <- c("wd", "date", pollutant)
+    vars <- c(wd, "date", pollutant)
 
     if (period == "trend" && "season" %in% type) {
       cli::cli_abort(
@@ -236,10 +237,10 @@ polarAnnulus <-
     }
 
     # add extra wds - reduces discontinuity at 0/360
-    zero.wd <- dplyr::filter(mydata, .data$wd == 360)
+    zero.wd <- dplyr::filter(mydata, .data[[wd]] == 360)
 
     if (nrow(zero.wd) > 0) {
-      zero.wd$wd <- 0
+      zero.wd[[wd]] <- 0
       mydata <- rbind(mydata, zero.wd)
     }
 
@@ -369,11 +370,15 @@ polarAnnulus <-
 
       time.seq <- seq(0, 10, length = 24)
 
-      wd <- seq(from = 0, to = 360, 10) # wind directions from 10 to 360
-      ws.wd <- expand.grid(time.seq = time.seq, wd = wd)
+      wd_seq <- seq(from = 0, to = 360, 10) # wind directions from 10 to 360
+      ws.wd <- expand.grid(time.seq = time.seq, wd = wd_seq)
 
       # identify which ws and wd bins the data belong
-      wd.cut <- cut(mydata$wd, seq(0, 360, length = 38), include.lowest = TRUE)
+      wd.cut <- cut(
+        mydata[[wd]],
+        seq(0, 360, length = 38),
+        include.lowest = TRUE
+      )
 
       # divide-up the data for the annulus
       time.cut <- cut(
@@ -441,7 +446,7 @@ polarAnnulus <-
 
       # data to predict over
       time.seq <- ws.wd$time.seq
-      wd <- ws.wd$wd
+      wd_seq <- ws.wd$wd
 
       input.data <- expand.grid(
         time.seq = seq(0, 10, length = len.int),
@@ -456,7 +461,7 @@ polarAnnulus <-
         n <- 1
       }
 
-      input <- data.frame(binned, time.seq, wd)
+      input <- data.frame(binned, time.seq, wd = wd_seq)
 
       # note use of cyclic smooth for the wind direction component
       Mgam <- mgcv::gam(

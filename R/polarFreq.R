@@ -30,7 +30,8 @@
 #' @inheritParams shared_openair_params
 #' @inheritParams polarPlot
 #'
-#' @param mydata A data frame minimally containing `ws`, `wd` and `date`.
+#' @param mydata A data frame minimally containing a wind speed, a decimal wind
+#'   direction, and `date`.
 #'
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
 #'   data frame should be supplied e.g. `pollutant = "nox"`
@@ -130,6 +131,8 @@
 polarFreq <- function(
   mydata,
   pollutant = NULL,
+  ws = "ws",
+  wd = "wd",
   statistic = "frequency",
   ws.int = 1,
   wd.nint = 36,
@@ -157,7 +160,7 @@ polarFreq <- function(
   key.position <- check_key_position(key.position, key)
 
   # extract necessary data
-  vars <- c("wd", "ws")
+  vars <- c(wd, ws)
   if (any(type %in% dateTypes)) {
     vars <- c(vars, "date")
   }
@@ -184,8 +187,8 @@ polarFreq <- function(
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
 
   # to make first interval easier to work with, set ws = 0 + e
-  ids <- which(mydata$ws == 0)
-  mydata$ws[ids] <- mydata$ws[ids] + 0.0001
+  ids <- which(mydata[[ws]] == 0)
+  mydata[[ws]][ids] <- mydata[[ws]][ids] + 0.0001
 
   # remove all NAs
   mydata <- stats::na.omit(mydata)
@@ -219,16 +222,16 @@ polarFreq <- function(
   key.title <- gsub("weighted.mean", "contribution (%)", key.title)
 
   # make sure wd data are rounded to nearest 10
-  mydata$wd <- wd.int * ceiling(mydata$wd / wd.int - 0.5)
+  mydata$wd <- wd.int * ceiling(mydata[[wd]] / wd.int - 0.5)
 
   prepare.grid <- function(mydata) {
-    mydata$wd[mydata$wd == 360] <- 0
-    wd <- factor(mydata$wd)
-    ws <- factor(ws.int * ceiling(mydata$ws / ws.int))
+    mydata[[wd]][mydata$wd == 360] <- 0
+    wd_vec <- factor(mydata[[wd]])
+    ws_vec <- factor(ws.int * ceiling(mydata[[ws]] / ws.int))
 
     if (statistic == "frequency") {
       # case with only ws and wd
-      weights <- tapply(mydata$ws, list(wd, ws), function(x) {
+      weights <- tapply(mydata[[ws]], list(wd_vec, ws_vec), function(x) {
         length(stats::na.omit(x))
       })
     }
@@ -236,7 +239,7 @@ polarFreq <- function(
     if (statistic == "mean") {
       weights <- tapply(
         mydata[[pollutant]],
-        list(wd, ws),
+        list(wd_vec, ws_vec),
         function(x) mean(x, na.rm = TRUE)
       )
     }
@@ -244,7 +247,7 @@ polarFreq <- function(
     if (statistic == "median") {
       weights <- tapply(
         mydata[[pollutant]],
-        list(wd, ws),
+        list(wd_vec, ws_vec),
         function(x) stats::median(x, na.rm = TRUE)
       )
     }
@@ -252,7 +255,7 @@ polarFreq <- function(
     if (statistic == "max") {
       weights <- tapply(
         mydata[[pollutant]],
-        list(wd, ws),
+        list(wd_vec, ws_vec),
         function(x) max(x, na.rm = TRUE)
       )
     }
@@ -260,7 +263,7 @@ polarFreq <- function(
     if (statistic == "stdev") {
       weights <- tapply(
         mydata[[pollutant]],
-        list(wd, ws),
+        list(wd_vec, ws_vec),
         function(x) stats::sd(x, na.rm = TRUE)
       )
     }
@@ -268,7 +271,7 @@ polarFreq <- function(
     if (statistic == "weighted.mean") {
       weights <- tapply(
         mydata[[pollutant]],
-        list(wd, ws),
+        list(wd_vec, ws_vec),
         function(x) (mean(x) * length(x) / nrow(mydata))
       )
 
@@ -279,7 +282,7 @@ polarFreq <- function(
     weights <- as.vector(t(weights))
 
     # frequency - remove points with freq < min.bin
-    bin.len <- tapply(mydata$ws, list(wd, ws), function(x) {
+    bin.len <- tapply(mydata[[ws]], list(wd_vec, ws_vec), function(x) {
       length(stats::na.omit(x))
     })
     binned.len <- as.vector(t(bin.len))
@@ -287,8 +290,8 @@ polarFreq <- function(
     weights[ids] <- NA
 
     ws.wd <- expand.grid(
-      ws = as.numeric(levels(ws)),
-      wd = as.numeric(levels(wd))
+      ws = as.numeric(levels(ws_vec)),
+      wd = as.numeric(levels(wd_vec))
     )
 
     weights <- cbind(ws.wd, weights)

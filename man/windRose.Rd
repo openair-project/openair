@@ -43,9 +43,12 @@ windRose(
 \arguments{
 \item{mydata}{A data frame containing fields \code{ws} and \code{wd}}
 
-\item{ws}{Name of the column representing wind speed.}
+\item{ws}{The name of the column in \code{mydata} representing the wind speed.
+Defaults to \code{"ws"}.}
 
-\item{wd}{Name of the column representing wind direction.}
+\item{wd}{The name of the column in \code{mydata} representing the decimal wind
+direction, 0 to 360 where 0/360 are North and 180 is South. Defaults to
+\code{"wd"}.}
 
 \item{ws2, wd2}{The user can supply a second set of wind speed and wind
 direction values with which the first can be compared. See
