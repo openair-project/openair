@@ -182,6 +182,13 @@
 - [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
   is once again tolerant of apostrophes.
 
+- [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md)
+  will no longer overwrite the default `range` of functions like
+  [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md)
+  and
+  [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
+  if `range` is not supplied by the user.
+
 - [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md)
   will no longer produce a square-shaped surface when
   `exclude.missing = FALSE`.
