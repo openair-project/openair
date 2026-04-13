@@ -7,6 +7,8 @@
 polarFreq(
   mydata,
   pollutant = NULL,
+  ws = "ws",
+  wd = "wd",
   statistic = "frequency",
   ws.int = 1,
   wd.nint = 36,
@@ -32,10 +34,18 @@ polarFreq(
 )
 }
 \arguments{
-\item{mydata}{A data frame minimally containing \code{ws}, \code{wd} and \code{date}.}
+\item{mydata}{A data frame minimally containing a wind speed, a decimal wind
+direction, and \code{date}.}
 
 \item{pollutant}{Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. \code{pollutant = "nox"}}
+
+\item{ws}{The name of the column in \code{mydata} representing the wind speed.
+Defaults to \code{"ws"}.}
+
+\item{wd}{The name of the column in \code{mydata} representing the decimal wind
+direction, 0 to 360 where 0/360 are North and 180 is South. Defaults to
+\code{"wd"}.}
 
 \item{statistic}{The statistic that should be applied to each wind
 speed/direction bin. Can be one of:

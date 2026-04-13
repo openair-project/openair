@@ -59,8 +59,6 @@ to a file).}
 \item{...}{
   Arguments passed on to \code{\link[=windRose]{windRose}}
   \describe{
-    \item{\code{ws}}{Name of the column representing wind speed.}
-    \item{\code{wd}}{Name of the column representing wind direction.}
     \item{\code{ws2,wd2}}{The user can supply a second set of wind speed and wind
 direction values with which the first can be compared. See
 \code{\link[=pollutionRose]{pollutionRose()}} for more details.}
@@ -107,6 +105,11 @@ each bin.}
 printed in each panel together with a description of the statistic below
 the plot. If \code{FALSE} then only the statistic will be printed.}
     \item{\code{border}}{Border colour for shaded areas. Default is no border.}
+    \item{\code{ws}}{The name of the column in \code{mydata} representing the wind speed.
+Defaults to \code{"ws"}.}
+    \item{\code{wd}}{The name of the column in \code{mydata} representing the decimal wind
+direction, 0 to 360 where 0/360 are North and 180 is South. Defaults to
+\code{"wd"}.}
     \item{\code{type}}{Character string(s) defining how data should be split/conditioned
 before plotting. \code{"default"} produces a single panel using the entire
 dataset. Any other options will split the plot into different panels - a

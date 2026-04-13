@@ -42,8 +42,9 @@ polarDiff <- function(
   before,
   after,
   pollutant = "nox",
-  type = "default",
   x = "ws",
+  wd = "wd",
+  type = "default",
   limits = NULL,
   auto.text = TRUE,
   plot = TRUE,
@@ -54,9 +55,9 @@ polarDiff <- function(
 
   # variables needed, check for York regression where x and y error needed
   vars <- if (all(c("x_error", "y_error") %in% names(extra.args))) {
-    c(x, "wd", pollutant, extra.args$x_error, extra.args$y_error)
+    c(x, wd, pollutant, extra.args$x_error, extra.args$y_error)
   } else {
-    c(x, "wd", pollutant)
+    c(x, wd, pollutant)
   }
 
   # collapse multi-pollutant name once, used throughout
@@ -89,6 +90,7 @@ polarDiff <- function(
           theData,
           pollutant = pollutant,
           x = x,
+          wd = wd,
           type = "period",
           plot = FALSE,
           ...
@@ -163,6 +165,7 @@ polarDiff <- function(
         mydata = polar_data,
         pollutant = pollutant,
         x = x,
+        wd = "wd",
         limits = resolved_limits,
         force.positive = FALSE,
         plot = FALSE,

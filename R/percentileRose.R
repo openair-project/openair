@@ -29,8 +29,8 @@
 #' @inheritParams shared_openair_params
 #' @inheritParams polarPlot
 #'
-#' @param mydata A data frame minimally containing `wd` and a numeric field to
-#'   plot --- `pollutant`.
+#' @param mydata A data frame minimally containing a decimal wind direction and
+#'   a numeric field to plot.
 #'
 #' @param pollutant Mandatory. A pollutant name corresponding to a variable in a
 #'   data frame should be supplied e.g. `pollutant = "nox"`. More than one
@@ -107,6 +107,7 @@
 percentileRose <- function(
   mydata,
   pollutant = "nox",
+  ws = "ws",
   wd = "wd",
   type = "default",
   percentile = c(25, 50, 75, 90, 95),
@@ -156,8 +157,8 @@ percentileRose <- function(
   }
 
   # check to see if ws is in the data and is calm (need to remove as no wd)
-  if ("ws" %in% names(mydata)) {
-    id <- which(mydata$ws == 0 & mydata[[wd]] == 0)
+  if (ws %in% names(mydata)) {
+    id <- which(mydata[[ws]] == 0 & mydata[[wd]] == 0)
     if (length(id) > 0) {
       mydata <- mydata[-id, ]
     }
@@ -169,7 +170,7 @@ percentileRose <- function(
   mydata[[wd]] <- angle * ceiling(mydata[[wd]] / angle - 0.5)
 
   # when it generates angle at 0 and 360, make all 360
-  if (0 %in% mydata$wd) {
+  if (0 %in% mydata[[wd]]) {
     id <- which(mydata[[wd]] == 0)
     mydata[[wd]][id] <- 360
   }
@@ -302,7 +303,8 @@ percentileRose <- function(
 
     if (method == "default") {
       ## calculate percentiles
-      percentiles <- dplyr::group_by(mydata, wd) |>
+      percentiles <- mydata |>
+        dplyr::group_by(.data[[wd]]) |>
         dplyr::reframe(
           {{ pollutant }} := stats::quantile(
             .data[[pollutant]],
@@ -310,12 +312,13 @@ percentileRose <- function(
             na.rm = TRUE
           )
         ) |>
-        dplyr::group_by(wd) |>
+        dplyr::group_by(.data[[wd]]) |>
         dplyr::mutate(percentile = percentile)
     }
 
     if (tolower(method) == "cpf") {
-      percentiles1 <- dplyr::group_by(mydata, wd) |>
+      percentiles1 <- mydata |>
+        dplyr::group_by(.data[[wd]]) |>
         dplyr::summarise(dplyr::across(
           dplyr::where(is.numeric),
           ~ length(which(.x < overall.lower)) / length(.x)
@@ -323,7 +326,8 @@ percentileRose <- function(
 
       percentiles1$percentile <- min(percentile)
 
-      percentiles2 <- dplyr::group_by(mydata, wd) |>
+      percentiles2 <- mydata |>
+        dplyr::group_by(.data[[wd]]) |>
         dplyr::summarise(dplyr::across(
           dplyr::where(is.numeric),
           ~ length(which(.x > upper)) / length(.x)
@@ -358,7 +362,8 @@ percentileRose <- function(
 
     ## calculate mean; assume a percentile of 999 to flag it later
 
-    percentiles <- dplyr::group_by(mydata, wd) |>
+    percentiles <- mydata |>
+      dplyr::group_by(.data[[wd]]) |>
       dplyr::summarise(dplyr::across(
         dplyr::where(is.numeric),
         ~ mean(.x, na.rm = TRUE)
@@ -617,7 +622,16 @@ percentileRose <- function(
     plot(thePlot)
   }
 
-  output <- list(plot = thePlot, data = results.grid, call = match.call())
+  # standardise output data
+  out_data <- dplyr::ungroup(results.grid)
+  names(out_data)[names(out_data) == wd] <- "wd"
+
+  # output
+  output <- list(
+    plot = thePlot,
+    data = out_data,
+    call = match.call()
+  )
   class(output) <- "openair"
 
   invisible(output)

@@ -8,8 +8,9 @@ polarDiff(
   before,
   after,
   pollutant = "nox",
-  type = "default",
   x = "ws",
+  wd = "wd",
+  type = "default",
   limits = NULL,
   auto.text = TRUE,
   plot = TRUE,
@@ -33,6 +34,13 @@ regression techniques are to be plotted, \code{pollutant} takes two elements
 too. For example, \code{pollutant = c("bc", "pm25")} where \code{"bc"} is a function
 of \code{"pm25"}.}
 
+\item{x}{Name of variable to plot against wind direction in polar
+coordinates, the default is wind speed, \dQuote{ws}.}
+
+\item{wd}{The name of the column in \code{mydata} representing the decimal wind
+direction, 0 to 360 where 0/360 are North and 180 is South. Defaults to
+\code{"wd"}.}
+
 \item{type}{Character string(s) defining how data should be split/conditioned
 before plotting. \code{"default"} produces a single panel using the entire
 dataset. Any other options will split the plot into different panels - a
@@ -55,9 +63,6 @@ possible pollutant source is active or not).
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
 given, the first is used for the columns and the second for the rows.}
 
-\item{x}{Name of variable to plot against wind direction in polar
-coordinates, the default is wind speed, \dQuote{ws}.}
-
 \item{limits}{The function does its best to choose sensible limits
 automatically. However, there are circumstances when the user will wish to
 set different ones. An example would be a series of plots showing each year
@@ -77,7 +82,6 @@ to a file).}
 \item{...}{
   Arguments passed on to \code{\link[=polarPlot]{polarPlot}}
   \describe{
-    \item{\code{wd}}{Name of wind direction field.}
     \item{\code{statistic}}{The statistic that should be applied to each wind
 speed/direction bin. Because of the smoothing involved, the colour scale
 for some of these statistics is only to provide an indication of overall
@@ -188,8 +192,8 @@ to NA. Care should be taken when using a value > 1 because of the risk of
 removing real data points. It is recommended to consider your data with
 care. Also, the \code{polarFreq} function can be of use in such circumstances.}
     \item{\code{col.na}}{When \code{min.bin} is > 1 it can be useful to show where data are
-removed on the plots. This is done by shading the missing data in
-\code{col.na}. To not highlight missing data when \code{min.bin} > 1 choose \code{col.na = "transparent"}.}
+removed on the plots. This is done by shading the missing data in \code{col.na}.
+To not highlight missing data when \code{min.bin} > 1 choose \code{col.na = "transparent"}.}
     \item{\code{upper}}{This sets the upper limit wind speed to be used. Often there are
 only a relatively few data points at very high wind speeds and plotting all
 of them can reduce the useful information in the plot.}

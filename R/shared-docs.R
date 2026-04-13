@@ -3,6 +3,13 @@
 #' @description This is a central place for describing common shared parameters.
 #'   This ensures consistency across `openair`
 #'
+#' @param ws The name of the column in `mydata` representing the wind speed.
+#'   Defaults to `"ws"`.
+#'
+#' @param wd The name of the column in `mydata` representing the decimal wind
+#'   direction, 0 to 360 where 0/360 are North and 180 is South. Defaults to
+#'   `"wd"`.
+#'
 #' @param type Character string(s) defining how data should be split/conditioned
 #'   before plotting. `"default"` produces a single panel using the entire
 #'   dataset. Any other options will split the plot into different panels - a

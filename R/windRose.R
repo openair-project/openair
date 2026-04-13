@@ -26,10 +26,6 @@
 #'
 #' @param mydata A data frame containing fields `ws` and `wd`
 #'
-#' @param ws Name of the column representing wind speed.
-#'
-#' @param wd Name of the column representing wind direction.
-#'
 #' @param ws2,wd2 The user can supply a second set of wind speed and wind
 #'   direction values with which the first can be compared. See
 #'   [pollutionRose()] for more details.
