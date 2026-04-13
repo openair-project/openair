@@ -144,13 +144,7 @@ to a file).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Arguments passed on to <code><a href="windRose.html">windRose</a></code></p><dl><dt><code>ws</code></dt>
-<dd><p>Name of the column representing wind speed.</p></dd>
-
-    <dt><code>wd</code></dt>
-<dd><p>Name of the column representing wind direction.</p></dd>
-
-    <dt><code>ws2,wd2</code></dt>
+<dd><p>Arguments passed on to <code><a href="windRose.html">windRose</a></code></p><dl><dt><code>ws2,wd2</code></dt>
 <dd><p>The user can supply a second set of wind speed and wind
 direction values with which the first can be compared. See
 <code>pollutionRose()</code> for more details.</p></dd>
@@ -221,6 +215,15 @@ the plot. If <code>FALSE</code> then only the statistic will be printed.</p></dd
 
     <dt><code>border</code></dt>
 <dd><p>Border colour for shaded areas. Default is no border.</p></dd>
+
+    <dt><code>ws</code></dt>
+<dd><p>The name of the column in <code>mydata</code> representing the wind speed.
+Defaults to <code>"ws"</code>.</p></dd>
+
+    <dt><code>wd</code></dt>
+<dd><p>The name of the column in <code>mydata</code> representing the decimal wind
+direction, 0 to 360 where 0/360 are North and 180 is South. Defaults to
+<code>"wd"</code>.</p></dd>
 
     <dt><code>type</code></dt>
 <dd><p>Character string(s) defining how data should be split/conditioned

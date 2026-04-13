@@ -5,6 +5,17 @@ ensures consistency across `openair`
 
 ## Arguments
 
+- ws:
+
+  The name of the column in `mydata` representing the wind speed.
+  Defaults to `"ws"`.
+
+- wd:
+
+  The name of the column in `mydata` representing the decimal wind
+  direction, 0 to 360 where 0/360 are North and 180 is South. Defaults
+  to `"wd"`.
+
 - type:
 
   Character string(s) defining how data should be split/conditioned

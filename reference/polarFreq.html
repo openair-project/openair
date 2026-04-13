@@ -70,6 +70,8 @@ using a range of commonly used statistics.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">polarFreq</span><span class="op">(</span></span>
 <span>  <span class="va">mydata</span>,</span>
 <span>  pollutant <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ws <span class="op">=</span> <span class="st">"ws"</span>,</span>
+<span>  wd <span class="op">=</span> <span class="st">"wd"</span>,</span>
 <span>  statistic <span class="op">=</span> <span class="st">"frequency"</span>,</span>
 <span>  ws.int <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  wd.nint <span class="op">=</span> <span class="fl">36</span>,</span>
@@ -100,12 +102,24 @@ using a range of commonly used statistics.</p>
 
 
 <dl><dt id="arg-mydata">mydata<a class="anchor" aria-label="anchor" href="#arg-mydata"></a></dt>
-<dd><p>A data frame minimally containing <code>ws</code>, <code>wd</code> and <code>date</code>.</p></dd>
+<dd><p>A data frame minimally containing a wind speed, a decimal wind
+direction, and <code>date</code>.</p></dd>
 
 
 <dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
 <dd><p>Mandatory. A pollutant name corresponding to a variable in a
 data frame should be supplied e.g. <code>pollutant = "nox"</code></p></dd>
+
+
+<dt id="arg-ws">ws<a class="anchor" aria-label="anchor" href="#arg-ws"></a></dt>
+<dd><p>The name of the column in <code>mydata</code> representing the wind speed.
+Defaults to <code>"ws"</code>.</p></dd>
+
+
+<dt id="arg-wd">wd<a class="anchor" aria-label="anchor" href="#arg-wd"></a></dt>
+<dd><p>The name of the column in <code>mydata</code> representing the decimal wind
+direction, 0 to 360 where 0/360 are North and 180 is South. Defaults to
+<code>"wd"</code>.</p></dd>
 
 
 <dt id="arg-statistic">statistic<a class="anchor" aria-label="anchor" href="#arg-statistic"></a></dt>

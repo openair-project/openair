@@ -11,6 +11,7 @@ a time period e.g. by month, day of week.
 polarAnnulus(
   mydata,
   pollutant = "nox",
+  wd = "wd",
   resolution = "fine",
   local.tz = NULL,
   period = "hour",
@@ -44,7 +45,8 @@ polarAnnulus(
 
 - mydata:
 
-  A data frame minimally containing `date`, `wd` and a pollutant.
+  A data frame minimally containing `date`, a wind direction and a
+  pollutant.
 
 - pollutant:
 
@@ -57,6 +59,12 @@ polarAnnulus(
   columns of data directly. A typical use would be
   `pollutant = c("obs", "mod")` to compare two columns “obs” (the
   observations) and “mod” (modelled values).
+
+- wd:
+
+  The name of the column in `mydata` representing the decimal wind
+  direction, 0 to 360 where 0/360 are North and 180 is South. Defaults
+  to `"wd"`.
 
 - resolution:
 

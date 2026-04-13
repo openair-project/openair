@@ -11,6 +11,8 @@ range of commonly used statistics.
 polarFreq(
   mydata,
   pollutant = NULL,
+  ws = "ws",
+  wd = "wd",
   statistic = "frequency",
   ws.int = 1,
   wd.nint = 36,
@@ -40,12 +42,24 @@ polarFreq(
 
 - mydata:
 
-  A data frame minimally containing `ws`, `wd` and `date`.
+  A data frame minimally containing a wind speed, a decimal wind
+  direction, and `date`.
 
 - pollutant:
 
   Mandatory. A pollutant name corresponding to a variable in a data
   frame should be supplied e.g. `pollutant = "nox"`
+
+- ws:
+
+  The name of the column in `mydata` representing the wind speed.
+  Defaults to `"ws"`.
+
+- wd:
+
+  The name of the column in `mydata` representing the decimal wind
+  direction, 0 to 360 where 0/360 are North and 180 is South. Defaults
+  to `"wd"`.
 
 - statistic:
 

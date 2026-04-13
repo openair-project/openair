@@ -91,14 +91,6 @@ pollutionRose(
   Arguments passed on to
   [`windRose`](https://openair-project.github.io/openair/reference/windRose.md)
 
-  `ws`
-
-  :   Name of the column representing wind speed.
-
-  `wd`
-
-  :   Name of the column representing wind direction.
-
   `ws2,wd2`
 
   :   The user can supply a second set of wind speed and wind direction
@@ -186,6 +178,17 @@ pollutionRose(
   `border`
 
   :   Border colour for shaded areas. Default is no border.
+
+  `ws`
+
+  :   The name of the column in `mydata` representing the wind speed.
+      Defaults to `"ws"`.
+
+  `wd`
+
+  :   The name of the column in `mydata` representing the decimal wind
+      direction, 0 to 360 where 0/360 are North and 180 is South.
+      Defaults to `"wd"`.
 
   `type`
 

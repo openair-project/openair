@@ -135,6 +135,15 @@
   imputation and the monthly plot shows the imputed data as a filled
   grey circle.
 
+- `ws` and/or `wd` have been added to
+  [`percentileRose()`](https://openair-project.github.io/openair/reference/percentileRose.md),
+  [`polarAnnulus()`](https://openair-project.github.io/openair/reference/polarAnnulus.md),
+  [`polarDiff()`](https://openair-project.github.io/openair/reference/polarDiff.md)
+  and
+  [`polarFreq()`](https://openair-project.github.io/openair/reference/polarFreq.md)
+  in line with
+  [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md).
+
 - [`polarFreq()`](https://openair-project.github.io/openair/reference/polarFreq.md)
   gains `angle.scale`, in line with all other polar coordinate plots.
 

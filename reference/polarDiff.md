@@ -12,8 +12,9 @@ polarDiff(
   before,
   after,
   pollutant = "nox",
-  type = "default",
   x = "ws",
+  wd = "wd",
+  type = "default",
   limits = NULL,
   auto.text = TRUE,
   plot = TRUE,
@@ -43,6 +44,17 @@ polarDiff(
   such as Pearson correlation and regression techniques are to be
   plotted, `pollutant` takes two elements too. For example,
   `pollutant = c("bc", "pm25")` where `"bc"` is a function of `"pm25"`.
+
+- x:
+
+  Name of variable to plot against wind direction in polar coordinates,
+  the default is wind speed, “ws”.
+
+- wd:
+
+  The name of the column in `mydata` representing the decimal wind
+  direction, 0 to 360 where 0/360 are North and 180 is South. Defaults
+  to `"wd"`.
 
 - type:
 
@@ -74,11 +86,6 @@ polarDiff(
   two are given, the first is used for the columns and the second for
   the rows.
 
-- x:
-
-  Name of variable to plot against wind direction in polar coordinates,
-  the default is wind speed, “ws”.
-
 - limits:
 
   The function does its best to choose sensible limits automatically.
@@ -107,10 +114,6 @@ polarDiff(
 
   Arguments passed on to
   [`polarPlot`](https://openair-project.github.io/openair/reference/polarPlot.md)
-
-  `wd`
-
-  :   Name of wind direction field.
 
   `statistic`
 

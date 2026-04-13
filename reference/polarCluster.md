@@ -28,10 +28,10 @@ polarCluster(
 
 - mydata:
 
-  A data frame minimally containing `wd`, another variable to plot in
-  polar coordinates (the default is a column “ws” — wind speed) and a
-  pollutant. Should also contain `date` if plots by time period are
-  required.
+  A data frame minimally containing a decimal wind direction, another
+  variable to plot in polar coordinates (the default is a column `"ws"`
+  — wind speed) and a pollutant. Should also contain `date` if plots by
+  time period are required.
 
 - pollutant:
 
@@ -46,7 +46,9 @@ polarCluster(
 
 - wd:
 
-  Name of wind direction field.
+  The name of the column in `mydata` representing the decimal wind
+  direction, 0 to 360 where 0/360 are North and 180 is South. Defaults
+  to `"wd"`.
 
 - n.clusters:
 

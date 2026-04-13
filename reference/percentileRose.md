@@ -10,6 +10,7 @@ areas.
 percentileRose(
   mydata,
   pollutant = "nox",
+  ws = "ws",
   wd = "wd",
   type = "default",
   percentile = c(25, 50, 75, 90, 95),
@@ -39,8 +40,8 @@ percentileRose(
 
 - mydata:
 
-  A data frame minimally containing `wd` and a numeric field to plot —
-  `pollutant`.
+  A data frame minimally containing a decimal wind direction and a
+  numeric field to plot.
 
 - pollutant:
 
@@ -49,9 +50,16 @@ percentileRose(
   pollutant can be supplied e.g. `pollutant = c("no2", "o3")` provided
   there is only one `type`.
 
+- ws:
+
+  The name of the column in `mydata` representing the wind speed.
+  Defaults to `"ws"`.
+
 - wd:
 
-  Name of wind direction field.
+  The name of the column in `mydata` representing the decimal wind
+  direction, 0 to 360 where 0/360 are North and 180 is South. Defaults
+  to `"wd"`.
 
 - type:
 
