@@ -282,7 +282,7 @@ timePlot <- function(
   extra.args$shape <- extra.args$shape %||% NA
 
   # check & cut data
-  mydata <- prepare_timeplot_data(
+  prepped <- prepare_timeplot_data(
     mydata = mydata,
     pollutant = pollutant,
     type = type,
@@ -292,6 +292,8 @@ timePlot <- function(
     group = group,
     ...
   )
+  mydata <- prepped$data
+  type <- prepped$type
 
   # time average & reshape data
   mydata <- time_average_timeplot_data(
@@ -363,8 +365,15 @@ timePlot <- function(
 
   # when a single pollutant is plotted with type conditioning, colour by the
   # type column so each facet gets a distinct colour
-  colour_by_type <- !group_is_col && !isTRUE(group) && npol == 1 && !all(type == "default")
-  type_colour_col <- if (colour_by_type) type[type != "default"][1L] else NULL
+  colour_by_type <- !group_is_col &&
+    !isTRUE(group) &&
+    npol == 1 &&
+    !all(type == "default")
+  type_colour_col <- if (colour_by_type) {
+    type[type != "default"][1L]
+  } else {
+    NULL
+  }
 
   # number of groups used for colour/linetype/linewidth aesthetics
   if (group_is_col) {
@@ -377,24 +386,15 @@ timePlot <- function(
     n_groups <- npol
   }
 
-  extra.args$linetype <- extra.args$linetype %||% 1
-  while (length(extra.args$linetype) < n_groups) {
-    extra.args$linetype <- c(extra.args$linetype, extra.args$linetype)
-  }
-  extra.args$linetype <- extra.args$linetype[1:n_groups]
-
-  extra.args$linewidth <- extra.args$linewidth %||% 0.5
-  while (length(extra.args$linewidth) < n_groups) {
-    extra.args$linewidth <- c(extra.args$linewidth, extra.args$linewidth)
-  }
-  extra.args$linewidth <- extra.args$linewidth[1:n_groups]
+  extra.args$linetype <- recycle_to_length(extra.args$linetype %||% 1, n_groups)
+  extra.args$linewidth <- recycle_to_length(
+    extra.args$linewidth %||% 0.5,
+    n_groups
+  )
 
   use_shape <- !all(is.na(extra.args$shape))
   if (use_shape) {
-    while (length(extra.args$shape) < n_groups) {
-      extra.args$shape <- c(extra.args$shape, extra.args$shape)
-    }
-    extra.args$shape <- extra.args$shape[1:n_groups]
+    extra.args$shape <- recycle_to_length(extra.args$shape, n_groups)
   }
 
   # stack vertically
@@ -447,7 +447,13 @@ timePlot <- function(
 
   # aesthetic column: group column name when group is a string, the type column
   # when colouring by type (single pollutant + conditioning), else "variable"
-  aes_col <- if (group_is_col) group else if (colour_by_type) type_colour_col else "variable"
+  aes_col <- if (group_is_col) {
+    group
+  } else if (colour_by_type) {
+    type_colour_col
+  } else {
+    "variable"
+  }
   # legend title
   legend_title <- if (group_is_col) {
     quickText(group, auto.text)
@@ -623,7 +629,12 @@ prepare_timeplot_data <- function(
   }
 
   # cut data
-  mydata <- cutData(mydata, type, ...)
+  names <- type
+  if (windflow$windflow) {
+    names[names == "ws"] <- "ws_type"
+    names[names == "wd"] <- "wd_type"
+  }
+  mydata <- cutData(mydata, type, names = names, ...)
 
   # check for duplicates - can't really have duplicate data in a timeplot
   # when group is a column, duplicate check must also split by that column
@@ -633,7 +644,7 @@ prepare_timeplot_data <- function(
   }
 
   # return data
-  return(mydata)
+  return(list(data = mydata, type = names))
 }
 
 #' timeAverage and reshape timeplot data
@@ -696,7 +707,7 @@ time_average_timeplot_data <- function(
 
   # need to flag if ws/wd are being plotted *and* used for windflow
   flag_wind_pollutant <- windflow$windflow &&
-    ("ws" %in% pollutant || "wd" %in% pollutant)
+    ("ws" %in% c(type, pollutant) || "wd" %in% c(type, pollutant))
 
   # retain ws/wd if needed later
   if (flag_wind_pollutant) {

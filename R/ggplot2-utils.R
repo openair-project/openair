@@ -138,7 +138,7 @@ get_facet <- function(
         strip.position <- "top"
       }
 
-      if (type == "wd") {
+      if (type %in% c("wd", "wd_type")) {
         fun <-
           facet_wd(
             ggplot2::vars(.data[[type]]),

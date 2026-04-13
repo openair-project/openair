@@ -38,7 +38,7 @@ layer_windflow <- function(
       "ws",
       limits = limits,
       oob = scales::oob_squish,
-      palette = scales::pal_area(range = range)
+      palette = scales::pal_area(range = range %||% c(0.1, 1))
     )
   )
 }
