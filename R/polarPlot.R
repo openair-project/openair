@@ -873,6 +873,11 @@ polarPlot <-
         wd = (wd + 180) %% 360
       )
 
+    # if not exclude missing, ensure a 'circular' plot limited by `upper`
+    if (!exclude.missing) {
+      plot_data <- dplyr::filter(plot_data, .data$x <= upper)
+    }
+
     # if using the min.bin arg, just drop missing z that's also missing "miss".
     # otherwise drop all of missing z
     if ("miss" %in% names(plot_data)) {
