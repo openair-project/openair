@@ -78,6 +78,8 @@
 
 - `quickText()` is once again tolerant of apostrophes.
 
+- `windflowOpts()` will no longer overwrite the default `range` of functions like `calendarPlot()` and `trendLevel()` if `range` is not supplied by the user.
+
 # openair 3.0.0
 
 ## Dependency Changes

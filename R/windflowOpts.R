@@ -81,6 +81,11 @@ windflowOpts <- function(
     colour <- color
   }
 
+  # allow for `range` to be overwritten by the parent function
+  if (missing(range)) {
+    range <- NULL
+  }
+
   list(
     limits = limits,
     range = range,
@@ -147,7 +152,7 @@ resolve_windflow_opts <- function(x, ...) {
   out <-
     windflowOpts(
       limits = x$limits %||% default_opts$limits,
-      range = x$range %||% default_opts$range,
+      range = x$range %||% default_opts$range %||% c(0.1, 1),
       arrow.angle = x$arrow.angle %||% default_opts$arrow.angle,
       arrow.length = x$arrow.length %||% default_opts$arrow.length,
       arrow.ends = x$arrow.ends %||% default_opts$arrow.ends,
