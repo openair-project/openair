@@ -202,6 +202,13 @@
   will no longer produce a square-shaped surface when
   `exclude.missing = FALSE`.
 
+- `fontsize` is now correctly passed to
+  [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md),
+  [`polarAnnulus()`](https://openair-project.github.io/openair/reference/polarAnnulus.md),
+  [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md),
+  and
+  [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md).
+
 ## openair 3.0.0
 
 CRAN release: 2026-04-02
