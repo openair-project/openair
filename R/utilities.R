@@ -437,24 +437,41 @@ capture_dots <- function(...) {
 
 # Handle cutting numeric vectors for discretising plots
 cut_plot_breaks <- function(x, breaks, labels) {
-  if (!is.null(breaks)) {
-    categorical <- TRUE
-
-    # ensure breaks covers all data
-    if (max(breaks) < max(x, na.rm = TRUE)) {
-      breaks[length(breaks)] <- ceiling(max(x, na.rm = TRUE))
-    }
-    if (min(breaks) > min(x, na.rm = TRUE)) {
-      breaks[1] <- floor(min(x, na.rm = TRUE))
-    }
-    breaks <- sort(unique(breaks))
-
-    # assign labels if no labels are given
-    labels <- get_labels_from_breaks(breaks, labels)
-
-    x <- cut(x, breaks = breaks, labels = labels, include.lowest = TRUE)
+  if (is.null(breaks)) {
+    return(x)
   }
-  x
+
+  # if only one break, use as number of intervals
+  if (length(breaks) == 1) {
+    x <- cutVecNumeric(x = x, type = "", n.levels = breaks, is.axis = FALSE)
+
+    if (!is.null(labels)) {
+      if (length(labels) != nlevels(x)) {
+        cli::cli_abort(
+          "Length of {.arg labels} ({length(labels)}) \\
+          is not equal to number of categories ({nlevels(x)})."
+        )
+      }
+      levels(x) <- labels
+    }
+
+    return(x)
+  }
+
+  # assign labels if no labels are given
+  labels <- labels %||% get_labels_from_breaks(breaks, labels)
+
+  # ensure breaks covers all data
+  if (max(breaks) < max(x, na.rm = TRUE)) {
+    breaks[length(breaks)] <- ceiling(max(x, na.rm = TRUE))
+  }
+  if (min(breaks) > min(x, na.rm = TRUE)) {
+    breaks[1] <- floor(min(x, na.rm = TRUE))
+  }
+
+  # cut x into breaks
+  breaks <- sort(unique(breaks))
+  cut(x, breaks = breaks, labels = labels, include.lowest = TRUE)
 }
 
 # Recycle helper

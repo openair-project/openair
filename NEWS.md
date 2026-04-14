@@ -48,6 +48,8 @@
 
     - If `breaks` don't cover the full range of the data being binned, the maximum and minimum `breaks` will be overwritten so that it does.
     
+    - If `breaks` is of length `1`, the colour range will be split into `breaks` categories, using the same logic as running `cutData()` on a numeric column.
+    
     - `polarPlot()`, `polarAnnulus()` and `corPlot()` have gained `breaks` and `labels`.
 
 - `smoothTrend()` will now use `loess` when it has insufficient data to fit a GAM.

@@ -268,15 +268,25 @@ possible pollutant source is active or not).
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
 given, the first is used for the columns and the second for the rows.}
-    \item{\code{breaks,labels}}{If a categorical colour scale is required then \code{breaks}
-should be specified. These should be provided as a numeric vector, e.g.,
-\code{breaks = c(0, 50, 100, 1000)}. Users should set the maximum value of
-\code{breaks} to exceed the maximum data value to ensure it is within the
-maximum final range, e.g., 100--1000 in this case. Labels will
-automatically be generated, but can be customised by passing a character
-vector to \code{labels}, e.g., \code{labels = c("good", "bad", "very bad")}. In this
-example, \code{0 - 50} will be \code{"good"} and so on. Note there is one less label
-than break.}
+    \item{\code{breaks,labels}}{If a categorical colour scale is required, \code{breaks}
+should be specified. This can be either of:
+\itemize{
+\item A single value, which will divide the scale into \code{breaks} levels using the
+same logic as \code{\link[=cutData]{cutData()}}. For example, \code{breaks = 5} will split the scale
+into five quantiles.
+\item A numeric vector, which will define the specific breakpoints. For
+example, \code{c(0, 50, 100)} will bin the data into \verb{0 to 50}, \verb{50 to 100}, and
+so on. If \code{breaks} does not cover the full range of the data, the outer
+limits will be extended so that the full colour scale is covered while
+retaining the desired number of breaks.
+}
+
+By default, \code{breaks} will generate nicely formatted labels for each
+category. The \code{labels} argument overrides this - for example, a user could
+define \verb{breaks = 3, labels = c("low", "medium", "high")}. Care should be
+taken to provide the appropriate number of \code{labels} - it should be equal to
+\code{breaks} if a single value is given, or equal to \code{length(breaks)-1} if
+\code{breaks} is a vector.}
     \item{\code{key.position}}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}
