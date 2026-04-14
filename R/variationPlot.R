@@ -476,8 +476,7 @@ variationPlot <- function(
   # construct plot
   thePlot <-
     ggplot2::ggplot(mydata, ggplot2::aes(x = .data$x)) +
-    theme_openair(key.position = key.position) +
-    set_extra_fontsize(extra.args) +
+    theme_openair(key.position = key.position, extra.args = extra.args) +
     get_facet(
       if (all(type == "default")) "default" else type_cols,
       extra.args,

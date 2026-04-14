@@ -318,8 +318,7 @@ smoothTrend <- function(
     ) +
     gg_ref_x(ref.x = ref.x) +
     gg_ref_y(ref.y = ref.y) +
-    theme_openair(key.position) +
-    set_extra_fontsize(extra.args) +
+    theme_openair(key.position, extra.args = extra.args) +
     ggplot2::scale_fill_manual(
       values = resolve_colour_opts(
         cols,

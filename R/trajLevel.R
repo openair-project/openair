@@ -654,8 +654,11 @@ trajLevel <- function(
 
   # base plot & themes
   thePlot <- ggplot2::ggplot(data = out_data_sf) +
-    theme_openair_sf(key.position, grid.col = grid.col) +
-    set_extra_fontsize(extra.args) +
+    theme_openair_sf(
+      key.position,
+      extra.args = extra.args,
+      grid.col = grid.col
+    ) +
     get_facet(
       type,
       extra.args,

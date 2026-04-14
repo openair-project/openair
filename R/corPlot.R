@@ -448,9 +448,8 @@ corPlot <- function(
       strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    theme_openair(key.position) +
+    theme_openair(key.position, extra.args = extra.args) +
     ggplot2::theme(panel.grid = ggplot2::element_blank(), aspect.ratio = 1) +
-    set_extra_fontsize(extra.args) +
     x_axis_scale(
       labels = label_openair(
         remove_tag(levels(plotdata$x)),

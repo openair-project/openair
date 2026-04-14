@@ -565,7 +565,11 @@ TaylorDiagram <- function(
       breaks = scales::pretty_breaks(6),
       expand = ggplot2::expansion()
     ) +
-    theme_openair_radial(key.position = key.position, panel.ontop = FALSE) +
+    theme_openair_radial(
+      key.position = key.position,
+      extra.args,
+      panel.ontop = FALSE
+    ) +
     ggplot2::theme(
       panel.grid.major.x = ggplot2::element_line(color = "grey85"),
       panel.spacing = ggplot2::unit(0, "cm"),
@@ -574,7 +578,6 @@ TaylorDiagram <- function(
       panel.grid.minor = ggplot2::element_blank(),
       panel.grid.major.y = ggplot2::element_line()
     ) +
-    set_extra_fontsize(extra.args) +
     ggplot2::labs(
       x = extra.args$xlab,
       y = if (!positive_only) NULL else extra.args$ylab,

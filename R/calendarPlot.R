@@ -534,12 +534,11 @@ calendarPlot <-
         axes = "all_x"
       ) +
       ggplot2::coord_cartesian(expand = FALSE, ratio = 1) +
-      theme_openair(key.position = key.position) +
+      theme_openair(key.position = key.position, extra.args = extra.args) +
       ggplot2::theme(
         axis.ticks = ggplot2::element_blank(),
         axis.text.y = ggplot2::element_blank()
       ) +
-      set_extra_fontsize(extra.args) +
       ggplot2::labs(
         y = extra.args$ylab,
         x = extra.args$xlab,

@@ -615,8 +615,7 @@ build_theilsen_plot <- function(
       vjust = 1,
       fontface = "bold"
     ) +
-    theme_openair("none") +
-    set_extra_fontsize(extra.args) +
+    theme_openair("none", extra.args) +
     get_facet(
       type,
       extra.args,

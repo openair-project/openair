@@ -491,8 +491,7 @@ trendLevel <- function(
       show.legend = TRUE
     ) +
     ggplot2::coord_cartesian(clip = "off", expand = FALSE) +
-    theme_openair(key.position) +
-    set_extra_fontsize(extra.args) +
+    theme_openair(key.position, extra.args = extra.args) +
     ggplot2::labs(
       x = quickText(extra.args$xlab %||% x, auto.text = auto.text),
       y = quickText(extra.args$ylab %||% y, auto.text = auto.text),

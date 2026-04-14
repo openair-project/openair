@@ -427,8 +427,7 @@ windRose <- function(
 
     thePlot <-
       ggplot2::ggplot(diff_results) +
-      theme_openair_radial(key.position) +
-      set_extra_fontsize(extra.args) +
+      theme_openair_radial(key.position, extra.args = extra.args) +
       ggplot2::theme(
         panel.grid.major.y = ggplot2::element_line(
           colour = grid.col,
@@ -794,8 +793,11 @@ windRose <- function(
         y = .data$value
       )
     ) +
-    theme_openair_radial(key.position, panel.ontop = normalise) +
-    set_extra_fontsize(extra.args) +
+    theme_openair_radial(
+      key.position,
+      extra.args = extra.args,
+      panel.ontop = normalise
+    ) +
     ggplot2::theme(
       panel.grid.major.y = ggplot2::element_line(
         colour = grid.col,

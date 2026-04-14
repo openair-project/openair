@@ -434,13 +434,11 @@ scatterPlot <- function(
     )
   )
 
-  plt <- out$plot + set_extra_fontsize(extra.args)
-
   if (plot) {
-    print(plt)
+    print(out$plot)
   }
 
-  output <- list(plot = plt, data = out$data, call = match.call())
+  output <- list(plot = out$plot, data = out$data, call = match.call())
   class(output) <- "openair"
   invisible(output)
 }
@@ -866,7 +864,8 @@ scatter_scatter <- function(
   ## theme + labels + strip control
   plt <- plt +
     theme_openair(
-      key.position = if (n_groups == 1L && !has_z) "none" else key.position
+      key.position = if (n_groups == 1L && !has_z) "none" else key.position,
+      extra.args = extra.args
     ) +
     ggplot2::labs(
       x = xlab,
@@ -1005,7 +1004,7 @@ scatter_hexbin <- function(
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    theme_openair(key.position = key.position) +
+    theme_openair(key.position = key.position, extra.args = extra.args) +
     ggplot2::labs(
       x = xlab,
       y = ylab,
@@ -1168,7 +1167,7 @@ scatter_level <- function(
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    theme_openair(key.position = key.position) +
+    theme_openair(key.position = key.position, extra.args = extra.args) +
     ggplot2::labs(
       x = xlab,
       y = ylab,
@@ -1360,7 +1359,7 @@ scatter_density <- function(
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    theme_openair(key.position = key.position) +
+    theme_openair(key.position = key.position, extra.args = extra.args) +
     ggplot2::labs(
       x = xlab,
       y = ylab,

@@ -266,8 +266,7 @@ timeProp <- function(
       tag = extra.args$tag,
       fill = quickText(key.title, auto.text = auto.text)
     ) +
-    theme_openair(key.position) +
-    set_extra_fontsize(extra.args) +
+    theme_openair(key.position, extra.args = extra.args) +
     get_facet(
       type,
       extra.args,

@@ -256,8 +256,7 @@ conditionalEval <- function(
         auto.text,
         wd.res = extra.args$wd.res %||% 8
       ) +
-      theme_openair(key.position = "bottom") +
-      set_extra_fontsize(extra.args) +
+      theme_openair(key.position = "bottom", extra.args = extra.args) +
       ggplot2::guides(
         fill = ggplot2::guide_legend(direction = "vertical")
       ) +
@@ -427,8 +426,7 @@ conditionalEval <- function(
         limits = c(y_lo, y_hi)
       ) +
       right_facet +
-      theme_openair("bottom") +
-      set_extra_fontsize(extra.args) +
+      theme_openair("bottom", extra.args = extra.args) +
       ggplot2::labs(
         x = quickText(extra.args$xlab, auto.text),
         y = quickText(extra.args$ylab, auto.text),

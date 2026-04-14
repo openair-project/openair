@@ -365,7 +365,7 @@ timeVariation <- function(
         subtitle = overall.subtitle,
         caption = overall.caption
       ) &
-      theme_openair(key.position) &
+      theme_openair(key.position, extra.args = extra.args) &
       ggplot2::theme(
         panel.spacing = ggplot2::rel(panel.gap),
         plot.margin = ggplot2::unit(rep(0.25, 4), "cm")

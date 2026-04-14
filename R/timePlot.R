@@ -489,7 +489,10 @@ timePlot <- function(
     } +
     gg_ref_x(ref.x) +
     gg_ref_y(ref.y) +
-    theme_openair(key.position = ifelse(n_groups == 1, "none", key.position)) +
+    theme_openair(
+      key.position = ifelse(n_groups == 1, "none", key.position),
+      extra.args = extra.args
+    ) +
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,

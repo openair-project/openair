@@ -385,8 +385,7 @@ conditionalQuantile <- function(
       strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    theme_openair(key.position) +
-    set_extra_fontsize(extra.args) +
+    theme_openair(key.position, extra.args = extra.args) +
     ggplot2::labs(
       color = NULL,
       fill = NULL,

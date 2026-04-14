@@ -456,3 +456,24 @@ cut_plot_breaks <- function(x, breaks, labels) {
   }
   x
 }
+
+# Recycle helper
+recycle_to_length <- function(x, n, expect1 = FALSE) {
+  if (length(x) == n) {
+    return(x)
+  }
+  if (length(x) == 1) {
+    return(rep(x, n))
+  }
+
+  if (expect1) {
+    cli::cli_abort(
+      "Length mismatch: argument must be length 1 or same length as 'h'/'v'"
+    )
+  } else {
+    while (length(x) < n) {
+      x <- c(x, x)
+    }
+    x <- x[seq_len(x)]
+  }
+}

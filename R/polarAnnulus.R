@@ -590,7 +590,11 @@ polarAnnulus <-
         inner_radius = c(offset / 100, 1) * 0.475
       ) +
       scale_x_compass() +
-      theme_openair_radial(key.position, panel.ontop = TRUE) +
+      theme_openair_radial(
+        key.position,
+        extra.args = extra.args,
+        panel.ontop = TRUE
+      ) +
       ggplot2::theme(
         panel.grid.major.y = ggplot2::element_line(
           colour = "grey50",
