@@ -443,7 +443,19 @@ cut_plot_breaks <- function(x, breaks, labels) {
 
   # if only one break, use as number of intervals
   if (length(breaks) == 1) {
-    return(cutVecNumeric(x = x, type = "", n.levels = breaks, is.axis = FALSE))
+    x <- cutVecNumeric(x = x, type = "", n.levels = breaks, is.axis = FALSE)
+
+    if (!is.null(labels)) {
+      if (length(labels) != nlevels(x)) {
+        cli::cli_abort(
+          "Length of {.arg labels} ({length(labels)}) \\
+          is not equal to number of categories ({nlevels(x)})."
+        )
+      }
+      levels(x) <- labels
+    }
+
+    return(x)
   }
 
   # assign labels if no labels are given
