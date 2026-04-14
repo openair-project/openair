@@ -88,6 +88,7 @@
 <li>
 <p>Refinements to how <code>breaks</code> and <code>labels</code> are implemented in functions like <code><a href="../reference/trendLevel.html">trendLevel()</a></code>:</p>
 <ul><li><p>If <code>breaks</code> don’t cover the full range of the data being binned, the maximum and minimum <code>breaks</code> will be overwritten so that it does.</p></li>
+<li><p>If <code>breaks</code> is of length <code>1</code>, the colour range will be split into <code>breaks</code> categories, using the same logic as running <code><a href="../reference/cutData.html">cutData()</a></code> on a numeric column.</p></li>
 <li><p><code><a href="../reference/polarPlot.html">polarPlot()</a></code>, <code><a href="../reference/polarAnnulus.html">polarAnnulus()</a></code> and <code><a href="../reference/corPlot.html">corPlot()</a></code> have gained <code>breaks</code> and <code>labels</code>.</p></li>
 </ul></li>
 <li><p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> will now use <code>loess</code> when it has insufficient data to fit a GAM.</p></li>

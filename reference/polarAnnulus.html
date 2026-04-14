@@ -292,15 +292,21 @@ more than one <code>pollutant</code> is chosen.</p></dd>
 
 
 <dt id="arg-breaks-labels">breaks, labels<a class="anchor" aria-label="anchor" href="#arg-breaks-labels"></a></dt>
-<dd><p>If a categorical colour scale is required then <code>breaks</code>
-should be specified. These should be provided as a numeric vector, e.g.,
-<code>breaks = c(0, 50, 100, 1000)</code>. Users should set the maximum value of
-<code>breaks</code> to exceed the maximum data value to ensure it is within the
-maximum final range, e.g., 100–1000 in this case. Labels will
-automatically be generated, but can be customised by passing a character
-vector to <code>labels</code>, e.g., <code>labels = c("good", "bad", "very bad")</code>. In this
-example, <code>0 - 50</code> will be <code>"good"</code> and so on. Note there is one less label
-than break.</p></dd>
+<dd><p>If a categorical colour scale is required, <code>breaks</code>
+should be specified. This can be either of:</p><ul><li><p>A single value, which will divide the scale into <code>breaks</code> levels using the
+same logic as <code><a href="cutData.html">cutData()</a></code>. For example, <code>breaks = 5</code> will split the scale
+into five quantiles.</p></li>
+<li><p>A numeric vector, which will define the specific breakpoints. For
+example, <code>c(0, 50, 100)</code> will bin the data into <code>0 to 50</code>, <code>50 to 100</code>, and
+so on. If <code>breaks</code> does not cover the full range of the data, the outer
+limits will be extended so that the full colour scale is covered while
+retaining the desired number of breaks.</p></li>
+</ul><p>By default, <code>breaks</code> will generate nicely formatted labels for each
+category. The <code>labels</code> argument overrides this - for example, a user could
+define <code>breaks = 3, labels = c("low", "medium", "high")</code>. Care should be
+taken to provide the appropriate number of <code>labels</code> - it should be equal to
+<code>breaks</code> if a single value is given, or equal to <code>length(breaks)-1</code> if
+<code>breaks</code> is a vector.</p></dd>
 
 
 <dt id="arg-strip-position">strip.position<a class="anchor" aria-label="anchor" href="#arg-strip-position"></a></dt>
