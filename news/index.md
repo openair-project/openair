@@ -55,43 +55,6 @@
     vectors to vary based on pollutant. The linewidth of the data will
     always be half of that of the model.
 
-- Refinements to colours in
-  [openair](https://openair-project.github.io/openair/):
-
-  - [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
-    gains `direction`, `alpha`, `begin` and `end` for better control
-    over colour palettes.
-
-  - Any `cols` argument in
-    [openair](https://openair-project.github.io/openair/) can now take
-    the
-    [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
-    function, which tells each plotting function how to use the new
-    [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
-    arguments.
-
-  - Added additional palettes by Paul Tol; “tol.highcontrast”,
-    “tol.vibrant”, “tol.mediumcontrast”, “tol.pale” and “tol.dark”.
-
-  - Added various palettes based on the work of Fabio Crameri - see
-    [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
-    for more details.
-
-  - Completed the set of “viridis” palettes with “rocket” and “mako”.
-
-  - Added
-    [`openSchemes()`](https://openair-project.github.io/openair/reference/openSchemes.md)
-    which returns a table of available colour palettes.
-
-  - Added
-    [`openColors()`](https://openair-project.github.io/openair/reference/openColours.md)
-    and
-    [`colorOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
-    which are synonymous with their British English equivalents
-    [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
-    and
-    [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md).
-
 - Refinements to how `breaks` and `labels` are implemented in functions
   like
   [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md):
@@ -110,15 +73,75 @@
     [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
     have gained `breaks` and `labels`.
 
+- Refinements to colours in
+  [openair](https://openair-project.github.io/openair/):
+
+  - [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+    gains `direction`, `alpha`, `begin` and `end` for better control
+    over colour palettes.
+
+  - Added
+    [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md).
+    Any `cols` argument in
+    [openair](https://openair-project.github.io/openair/) can now take
+    the
+    [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
+    function, which tells each plotting function how to use the new
+    [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+    arguments.
+
+  - Added
+    [`openSchemes()`](https://openair-project.github.io/openair/reference/openSchemes.md)
+    which returns a table of available colour palettes.
+
+  - New palettes:
+
+    - Completed the set of “viridis” palettes with “rocket” and “mako”.
+
+    - Added additional palettes by Paul Tol; `"tol.highcontrast"`,
+      `"tol.vibrant"`, `"tol.mediumcontrast"`, `"tol.pale"` and
+      `"tol.dark"`.
+
+    - Added various palettes based on the work of Fabio Crameri - see
+      [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+      for more details.
+
+  - Added
+    [`openColors()`](https://openair-project.github.io/openair/reference/openColours.md)
+    and
+    [`colorOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
+    which are synonymous with their British English equivalents
+    [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+    and
+    [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md).
+
+- New Kolmogorov-Zurbenko (KZ) Filter functions
+  [`kzFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md)
+  and
+  [`kzaFilter()`](https://openair-project.github.io/openair/reference/kzaFilter.md).
+  These functions significantly enhance the capability of
+  [openair](https://openair-project.github.io/openair/) by allowing
+  different time components to be separated and analysed separately. The
+  [`kzFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md)
+  function is considered a good default for a wide range of problems
+  whereas the
+  [`kzaFilter()`](https://openair-project.github.io/openair/reference/kzaFilter.md)
+  function is the adaptive version that is well-suited to capturing
+  abrupt changes, e.g., through an intervention. The range of uses of
+  the filters will be covered in the
+  [openair](https://openair-project.github.io/openair/) book.
+
+- [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md)
+  and
+  [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
+  now use a more straightforward way to input missing data when
+  `deseason = TRUE` and missing monthly data are present based on
+  monthly linear regression by month. The user is alerted to the
+  imputation and the monthly plot shows the imputed data as a filled
+  grey circle.
+
 - [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
   will now use `loess` when it has insufficient data to fit a GAM.
-
-- [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md)
-  and
-  [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md)
-  regain the `map.res` argument. This is passed to
-  [`rnaturalearth::ne_countries()`](https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html)
-  so can take three different resolutions.
 
 - [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
   gains the `wd.res` argument, which can take one of `4`, `8`, or `16`,
@@ -127,18 +150,16 @@
   `type` argument now responds to this, showing only four panels when
   `wd.res = 4` and a 5x5 grid of sixteen panels when `wd.res = 16`.
 
+- [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md)
+  and
+  [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md)
+  regain the `map.res` argument. This is passed to
+  [`rnaturalearth::ne_countries()`](https://docs.ropensci.org/rnaturalearth/reference/ne_countries.html)
+  so can take three different resolutions.
+
 - [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md)
   will now annotate the identity of the radial axis as a caption, if
   `annotate = TRUE`.
-
-- [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md)
-  and
-  [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md)
-  now use a more straightfoward way to imput missing data when
-  `deseason = TRUE` and missing monthly data are present based on
-  monthly linear regression by month. The user is alerted to the
-  imputation and the monthly plot shows the imputed data as a filled
-  grey circle.
 
 - `ws` and/or `wd` have been added to
   [`percentileRose()`](https://openair-project.github.io/openair/reference/percentileRose.md),
@@ -149,18 +170,9 @@
   in line with
   [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md).
 
-- [`polarFreq()`](https://openair-project.github.io/openair/reference/polarFreq.md)
-  gains `angle.scale`, in line with all other polar coordinate plots.
-
-- New Kolmogorov-Zurbenko (KZ) Filter functions `kzFilter` and
-  `kzaFilter`. These functions significantly enhance the capability of
-  [openair](https://openair-project.github.io/openair/) by allowing
-  different time components to be separated and analysed separately. The
-  `kzFilter` is considered a good default for a wide range of problems
-  whereas the `kzaFilter` is the adaptive version that is well-suited to
-  capturing abrumpt changes e.g. through an intervention. The range of
-  uses of the filters will be covered in the
-  [openair](https://openair-project.github.io/openair/) book.
+- `angle.scale` has been added to
+  [`polarFreq()`](https://openair-project.github.io/openair/reference/polarFreq.md)
+  in line with all other polar coordinate plots.
 
 - The default `key.position` of
   [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
@@ -184,14 +196,14 @@
 - [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md)
   now supports `type = "wd"`.
 
-- Fix intercept calculation in single-predictor Theil-Sen regression
-  Updated the intercept formula in `tsp1reg` from
-  `median(y) - slope * median(x)` to `median(y - slope * x)`. This
-  resolves a visual bug where trend lines (especially annual
-  aggregations with negative slopes) appeared horizontally displaced due
-  to inaccurate intercept estimates on sparse data. This fix affects the
-  visual display of the trend lines but not the calculated slopes or
-  uncertainties.
+- Fix intercept calculation in
+  [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md).
+  Updated the intercept formula from `median(y) - slope * median(x)` to
+  `median(y - slope * x)`. This resolves a visual bug where trend lines
+  (especially annual aggregations with negative slopes) appeared
+  horizontally displaced due to inaccurate intercept estimates on sparse
+  data. This fix affects the visual display of the trend lines but not
+  the calculated slopes or uncertainties.
 
 - [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
   is once again tolerant of apostrophes.
