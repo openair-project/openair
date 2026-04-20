@@ -38,7 +38,7 @@
 
 - Refinements to colours in `{openair}`:
 
-    - `openColours()` gains `direction`, `alpha`, `begin`, `end`, `brightness` and `saturation` for better control over colour palettes.
+    - `openColours()` gains `direction`, `alpha`, `begin`, `end`, `lightness` and `saturation` for better control over colour palettes.
     
     - Added `colourOpts()`. Any `cols` argument in `{openair}` can now take the `colourOpts()` function, which tells each plotting function how to use the new `openColours()` arguments.
     

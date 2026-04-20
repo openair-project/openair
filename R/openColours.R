@@ -205,9 +205,9 @@
 #' @param direction The order of the colours. `1` is the default and gives the
 #'   normal order. `-1` will reverse the order of the colours.
 #'
-#' @param brightness The brightness of the colours, between `0` (completely
+#' @param lightness The lightness of the colours, between `0` (completely
 #'   black) and `1` (completely white). The default is `0.5`, which gives the
-#'   original brightness of the colours. Values less than `0.5` will make the
+#'   original lightness of the colours. Values less than `0.5` will make the
 #'   colours darker, and values greater than `0.5` will make the colours
 #'   brighter.
 #'
@@ -253,8 +253,8 @@ openColours <- function(
   begin = 0,
   end = 1,
   direction = 1,
-  brightness = 0.5,
-  saturation = 0.5
+  saturation = 0.5,
+  lightness = 0.5
 ) {
   # standardise inputs
   fix_01 <- function(x) {
@@ -265,7 +265,7 @@ openColours <- function(
   alpha <- fix_01(alpha)
   begin <- fix_01(begin)
   end <- fix_01(end)
-  brightness <- fix_01(brightness)
+  lightness <- fix_01(lightness)
   saturation <- fix_01(saturation)
   direction <- sign(direction)
   direction[direction == 0] <- 1
@@ -295,7 +295,7 @@ openColours <- function(
     idx <- round(1 + (length(cols) - 1) * c(begin, end))
     cols <- cols[idx[1]:idx[2]]
     cols <- grDevices::colorRampPalette(cols)(n %||% 100L)
-    return(.finalise(cols, direction, alpha, brightness, saturation))
+    return(.finalise(cols, direction, alpha, lightness, saturation))
   }
 
   # single named scheme
@@ -315,13 +315,13 @@ openColours <- function(
       begin,
       end,
       alpha,
-      brightness,
+      lightness,
       saturation
     )
   } else if (scheme == "hue") {
-    .huePalette(n_out, direction, begin, end, alpha, brightness, saturation)
+    .huePalette(n_out, direction, begin, end, alpha, lightness, saturation)
   } else if (scheme == "greyscale") {
-    .greyPalette(n_out, direction, begin, end, alpha, brightness, saturation)
+    .greyPalette(n_out, direction, begin, end, alpha, lightness, saturation)
   } else if (scheme %in% c(.div_schemes, .seq_schemes)) {
     .seqPalette(
       n_out,
@@ -330,11 +330,11 @@ openColours <- function(
       begin,
       end,
       alpha,
-      brightness,
+      lightness,
       saturation
     )
   } else if (scheme %in% names(.qual_schemes)) {
-    .qualPalette(n_out, scheme, direction, alpha, brightness, saturation)
+    .qualPalette(n_out, scheme, direction, alpha, lightness, saturation)
   }
 
   cols
@@ -425,22 +425,22 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
 
 #' Apply direction and alpha to a colour vector
 #' @noRd
-.finalise <- function(cols, direction, alpha, brightness, saturation) {
+.finalise <- function(cols, direction, alpha, lightness, saturation) {
   if (direction == -1) {
     cols <- rev(cols)
   }
   cols <- substr(cols, 1, 7)
   cols <- paste0(cols, sprintf("%02X", round(alpha * 255)))
-  cols <- .adjust_brightness(cols, brightness)
+  cols <- .adjust_lightness(cols, lightness)
   cols <- .adjust_saturation(cols, saturation)
   cols
 }
 
-#' Adjust the brightness of a colour vector
+#' Adjust the lightness of a colour vector
 #' @noRd
-.adjust_brightness <- function(color, brightness = 0.5) {
+.adjust_lightness <- function(color, lightness = 0.5) {
   # standardise to -1 to 1
-  factor <- (brightness - 0.5) * 2
+  factor <- (lightness - 0.5) * 2
 
   rgba_vals <- grDevices::col2rgb(color, alpha = TRUE) / 255
   rgb_vals <- rgba_vals[1:3, , drop = FALSE]
@@ -509,7 +509,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   begin,
   end,
   alpha,
-  brightness,
+  lightness,
   saturation
 ) {
   max_n <- maxcolors[[scheme]]
@@ -538,7 +538,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
       substr(base_cols, 1, 7),
       interpolate = "spline"
     )(n)
-    .finalise(cols, direction = 1L, alpha = alpha, brightness, saturation)
+    .finalise(cols, direction = 1L, alpha = alpha, lightness, saturation)
   }
 }
 
@@ -550,7 +550,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   begin,
   end,
   alpha,
-  brightness,
+  lightness,
   saturation
 ) {
   h <- c(0, 360) + 15
@@ -563,7 +563,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
     c = 100,
     l = 65
   )
-  .finalise(cols, direction, alpha, brightness, saturation)
+  .finalise(cols, direction, alpha, lightness, saturation)
 }
 
 #' Greyscale palette
@@ -574,7 +574,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   begin,
   end,
   alpha,
-  brightness,
+  lightness,
   saturation
 ) {
   # default begin/end for greyscale avoids pure black/white
@@ -585,7 +585,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
     end <- 0.9
   }
   cols <- grDevices::grey(seq(end, begin, length.out = n))
-  .finalise(cols, direction, alpha, brightness, saturation)
+  .finalise(cols, direction, alpha, lightness, saturation)
 }
 
 #' Sequential palettes
@@ -597,7 +597,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   begin,
   end,
   alpha,
-  brightness,
+  lightness,
   saturation
 ) {
   interpolate <- "linear"
@@ -1191,12 +1191,12 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   cols <- cols[idx[1]:idx[2]]
 
   cols <- grDevices::colorRampPalette(cols, interpolate = interpolate)(n)
-  .finalise(cols, direction, alpha, brightness, saturation)
+  .finalise(cols, direction, alpha, lightness, saturation)
 }
 
 #' Qualitative palettes
 #' @noRd
-.qualPalette <- function(n, scheme, direction, alpha, brightness, saturation) {
+.qualPalette <- function(n, scheme, direction, alpha, lightness, saturation) {
   cols <- switch(
     scheme,
     cbPalette = c(
@@ -1365,5 +1365,5 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   }
 
   # finalise with direction = 1 as already handled above
-  .finalise(cols[1:n], direction = 1, alpha, brightness, saturation)
+  .finalise(cols[1:n], direction = 1, alpha, lightness, saturation)
 }

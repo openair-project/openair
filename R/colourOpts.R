@@ -26,8 +26,8 @@ colourOpts <- function(
   begin = 0,
   end = 1,
   direction = 1,
-  brightness = 0.5,
-  saturation = 0.5
+  saturation = 0.5,
+  lightness = 0.5
 ) {
   list(
     scheme = scheme,
@@ -35,8 +35,8 @@ colourOpts <- function(
     begin = begin,
     end = end,
     direction = direction,
-    brightness = brightness,
-    saturation = saturation
+    saturation = saturation,
+    lightness = lightness
   )
 }
 
@@ -68,7 +68,7 @@ resolve_colour_opts <- function(x, n, ...) {
     begin = x$begin %||% defaults$begin,
     end = x$end %||% defaults$end,
     direction = x$direction %||% defaults$direction,
-    brightness = x$brightness %||% defaults$brightness,
+    lightness = x$lightness %||% defaults$lightness,
     saturation = x$saturation %||% defaults$saturation
   )
 }

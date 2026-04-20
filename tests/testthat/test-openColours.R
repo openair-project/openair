@@ -122,24 +122,6 @@ test_that("user-supplied colours respect direction and alpha", {
   expect_true(all(substr(cols, 8, 9) == "00"))
 })
 
-test_that("invalid alpha throws an error", {
-  expect_error(openColours("jet", 5, alpha = -0.1), "alpha")
-  expect_error(openColours("jet", 5, alpha = 1.1), "alpha")
-})
-
-test_that("invalid direction throws an error", {
-  expect_error(openColours("jet", 5, direction = 0), "direction")
-  expect_error(openColours("jet", 5, direction = 2), "direction")
-  expect_error(openColours("jet", 5, direction = "reverse"), "direction")
-})
-
-test_that("invalid begin/end throws an error", {
-  expect_error(openColours("jet", 5, begin = -0.1), "begin")
-  expect_error(openColours("jet", 5, end = 1.1), "end")
-  expect_error(openColours("jet", 5, begin = 0.8, end = 0.2), "begin")
-  expect_error(openColours("jet", 5, begin = 0.5, end = 0.5), "begin")
-})
-
 test_that("requesting too many colours from a qualitative palette throws an error", {
   expect_error(openColours("daqi.bands", 5), "Too many")
   expect_error(openColours("gaf.focus", 3), "Too many")

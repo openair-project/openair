@@ -11,8 +11,8 @@ colourOpts(
   begin = 0,
   end = 1,
   direction = 1,
-  brightness = 0.5,
-  saturation = 0.5
+  saturation = 0.5,
+  lightness = 0.5
 )
 
 colorOpts(
@@ -21,8 +21,8 @@ colorOpts(
   begin = 0,
   end = 1,
   direction = 1,
-  brightness = 0.5,
-  saturation = 0.5
+  saturation = 0.5,
+  lightness = 0.5
 )
 }
 \arguments{
@@ -40,17 +40,17 @@ for avoiding very light or dark colours at the ends of schemes.}
 \item{direction}{The order of the colours. \code{1} is the default and gives the
 normal order. \code{-1} will reverse the order of the colours.}
 
-\item{brightness}{The brightness of the colours, between \code{0} (completely
-black) and \code{1} (completely white). The default is \code{0.5}, which gives the
-original brightness of the colours. Values less than \code{0.5} will make the
-colours darker, and values greater than \code{0.5} will make the colours
-brighter.}
-
 \item{saturation}{The saturation of the colours, between \code{0} (completely
 desaturated, i.e., grey) and \code{1} (completely saturated). The default is
 \code{0.5}, which gives the original saturation of the colours. Values less than
 \code{0.5} will make the colours more desaturated (greyer), and values greater
 than \code{0.5} will make the colours more saturated (vibrant).}
+
+\item{lightness}{The lightness of the colours, between \code{0} (completely
+black) and \code{1} (completely white). The default is \code{0.5}, which gives the
+original lightness of the colours. Values less than \code{0.5} will make the
+colours darker, and values greater than \code{0.5} will make the colours
+brighter.}
 }
 \value{
 A list of options that can be passed to the \code{cols} argument of
