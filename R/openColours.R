@@ -439,6 +439,10 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
 #' Adjust the lightness of a colour vector
 #' @noRd
 .adjust_lightness <- function(color, lightness = 0.5) {
+  if (lightness == 0.5) {
+    return(color)
+  }
+
   # standardise to -1 to 1
   factor <- (lightness - 0.5) * 2
 
@@ -460,6 +464,10 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
 #' Adjust the saturation of a colour vector
 #' @noRd
 .adjust_saturation <- function(color, saturation = 0.5) {
+  if (saturation == 0.5) {
+    return(color)
+  }
+
   factor <- (saturation - 0.5) * 2
 
   rgba_vals <- grDevices::col2rgb(color, alpha = TRUE) / 255
