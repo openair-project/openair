@@ -38,7 +38,7 @@
 
 - Refinements to colours in `{openair}`:
 
-    - `openColours()` gains `direction`, `alpha`, `begin` and `end` for better control over colour palettes.
+    - `openColours()` gains `direction`, `alpha`, `begin`, `end`, `lightness` and `saturation` for better control over colour palettes.
     
     - Added `colourOpts()`. Any `cols` argument in `{openair}` can now take the `colourOpts()` function, which tells each plotting function how to use the new `openColours()` arguments.
     
@@ -46,7 +46,7 @@
 
     - New palettes:
 
-        - Completed the set of "viridis" palettes with "rocket" and "mako".
+        - Completed the set of "viridis" palettes with `"rocket"` and `"mako"`.
 
         - Added additional palettes by Paul Tol; `"tol.highcontrast"`, `"tol.vibrant"`, `"tol.mediumcontrast"`, `"tol.pale"` and `"tol.dark"`.
     

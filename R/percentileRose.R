@@ -117,7 +117,7 @@ percentileRose <- function(
   angle = 10,
   mean = TRUE,
   mean.lty = 1,
-  mean.lwd = 3,
+  mean.lwd = 1,
   mean.col = "grey",
   fill = TRUE,
   intervals = NULL,
