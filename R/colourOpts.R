@@ -8,6 +8,7 @@
 #' `colourOpts()` and `colorOpts()` are synonyms.
 #'
 #' @inheritParams openColours
+#' @family colour functions
 #'
 #' @export
 #' @return A list of options that can be passed to the `cols` argument of
@@ -24,20 +25,18 @@ colourOpts <- function(
   alpha = 1,
   begin = 0,
   end = 1,
-  direction = 1
+  direction = 1,
+  brightness = 0.5,
+  saturation = 0.5
 ) {
-  fix_01 <- function(x) {
-    x[x < 0] <- 0
-    x[x > 1] <- 1
-    x
-  }
-
   list(
     scheme = scheme,
-    alpha = fix_01(alpha),
-    begin = fix_01(begin),
-    end = fix_01(end),
-    direction = sign(direction)
+    alpha = alpha,
+    begin = begin,
+    end = end,
+    direction = direction,
+    brightness = brightness,
+    saturation = saturation
   )
 }
 
@@ -68,6 +67,8 @@ resolve_colour_opts <- function(x, n, ...) {
     alpha = x$alpha %||% defaults$alpha,
     begin = x$begin %||% defaults$begin,
     end = x$end %||% defaults$end,
-    direction = x$direction %||% defaults$direction
+    direction = x$direction %||% defaults$direction,
+    brightness = x$brightness %||% defaults$brightness,
+    saturation = x$saturation %||% defaults$saturation
   )
 }

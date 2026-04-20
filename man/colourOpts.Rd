@@ -5,13 +5,29 @@
 \alias{colorOpts}
 \title{Define \code{cols} options for \code{openair} plots}
 \usage{
-colourOpts(scheme = "default", alpha = 1, begin = 0, end = 1, direction = 1)
+colourOpts(
+  scheme = "default",
+  alpha = 1,
+  begin = 0,
+  end = 1,
+  direction = 1,
+  brightness = 0.5,
+  saturation = 0.5
+)
 
-colorOpts(scheme = "default", alpha = 1, begin = 0, end = 1, direction = 1)
+colorOpts(
+  scheme = "default",
+  alpha = 1,
+  begin = 0,
+  end = 1,
+  direction = 1,
+  brightness = 0.5,
+  saturation = 0.5
+)
 }
 \arguments{
 \item{scheme}{Any one of the pre-defined \code{openair} schemes (e.g.,
-\code{"increment"}) or a user-defined palette (e.g., \code{c("red", "orange", "gold")}). See \code{\link[=openColours]{openColours()}} for a full list of available schemes.}
+\code{"increment"}) or a user-defined palette (e.g., \code{c("red", "orange", "gold")}). Use \code{\link[=openSchemes]{openSchemes()}} for a full list of available schemes.}
 
 \item{alpha}{The alpha transparency level (between \code{0} and \code{1}) for the
 colours. \code{0} is fully transparent, and \code{1} is fully opaque.}
@@ -23,6 +39,18 @@ for avoiding very light or dark colours at the ends of schemes.}
 
 \item{direction}{The order of the colours. \code{1} is the default and gives the
 normal order. \code{-1} will reverse the order of the colours.}
+
+\item{brightness}{The brightness of the colours, between \code{0} (completely
+black) and \code{1} (completely white). The default is \code{0.5}, which gives the
+original brightness of the colours. Values less than \code{0.5} will make the
+colours darker, and values greater than \code{0.5} will make the colours
+brighter.}
+
+\item{saturation}{The saturation of the colours, between \code{0} (completely
+desaturated, i.e., grey) and \code{1} (completely saturated). The default is
+\code{0.5}, which gives the original saturation of the colours. Values less than
+\code{0.5} will make the colours more desaturated (greyer), and values greater
+than \code{0.5} will make the colours more saturated (vibrant).}
 }
 \value{
 A list of options that can be passed to the \code{cols} argument of
@@ -43,3 +71,9 @@ trendLevel(
   cols = colourOpts("viridis", direction = 1, alpha = 0.5)
 )
 }
+\seealso{
+Other colour functions: 
+\code{\link{openColours}()},
+\code{\link{openSchemes}()}
+}
+\concept{colour functions}

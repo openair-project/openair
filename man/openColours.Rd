@@ -11,7 +11,9 @@ openColours(
   alpha = 1,
   begin = 0,
   end = 1,
-  direction = 1
+  direction = 1,
+  brightness = 0.5,
+  saturation = 0.5
 )
 
 openColors(
@@ -20,12 +22,14 @@ openColors(
   alpha = 1,
   begin = 0,
   end = 1,
-  direction = 1
+  direction = 1,
+  brightness = 0.5,
+  saturation = 0.5
 )
 }
 \arguments{
 \item{scheme}{Any one of the pre-defined \code{openair} schemes (e.g.,
-\code{"increment"}) or a user-defined palette (e.g., \code{c("red", "orange", "gold")}). See \code{\link[=openColours]{openColours()}} for a full list of available schemes.}
+\code{"increment"}) or a user-defined palette (e.g., \code{c("red", "orange", "gold")}). Use \code{\link[=openSchemes]{openSchemes()}} for a full list of available schemes.}
 
 \item{n}{The whole number of colours required. If not provided, sequential
 palettes will return \code{100} colours and qualitative palettes will return the
@@ -41,6 +45,18 @@ for avoiding very light or dark colours at the ends of schemes.}
 
 \item{direction}{The order of the colours. \code{1} is the default and gives the
 normal order. \code{-1} will reverse the order of the colours.}
+
+\item{brightness}{The brightness of the colours, between \code{0} (completely
+black) and \code{1} (completely white). The default is \code{0.5}, which gives the
+original brightness of the colours. Values less than \code{0.5} will make the
+colours darker, and values greater than \code{0.5} will make the colours
+brighter.}
+
+\item{saturation}{The saturation of the colours, between \code{0} (completely
+desaturated, i.e., grey) and \code{1} (completely saturated). The default is
+\code{0.5}, which gives the original saturation of the colours. Values less than
+\code{0.5} will make the colours more desaturated (greyer), and values greater
+than \code{0.5} will make the colours more saturated (vibrant).}
 }
 \value{
 A character vector of hex codes
@@ -162,8 +178,14 @@ UK Government Analysis Function:
 Fabio Crameri's Color Schemes: Crameri, F. 2023. Scientific Colour Maps
 (version 8.0.1). Zenodo. DOI: \doi{doi:10.5281/zenodo.1243862}.
 }
+\seealso{
+Other colour functions: 
+\code{\link{colourOpts}()},
+\code{\link{openSchemes}()}
+}
 \author{
 David Carslaw
 
 Jack Davison
 }
+\concept{colour functions}

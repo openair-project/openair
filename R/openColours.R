@@ -188,7 +188,7 @@
 #'
 #' @param scheme Any one of the pre-defined `openair` schemes (e.g.,
 #'   `"increment"`) or a user-defined palette (e.g., `c("red", "orange",
-#'   "gold")`). See [openColours()] for a full list of available schemes.
+#'   "gold")`). Use [openSchemes()] for a full list of available schemes.
 #'
 #' @param n The whole number of colours required. If not provided, sequential
 #'   palettes will return `100` colours and qualitative palettes will return the
@@ -205,10 +205,23 @@
 #' @param direction The order of the colours. `1` is the default and gives the
 #'   normal order. `-1` will reverse the order of the colours.
 #'
+#' @param brightness The brightness of the colours, between `0` (completely
+#'   black) and `1` (completely white). The default is `0.5`, which gives the
+#'   original brightness of the colours. Values less than `0.5` will make the
+#'   colours darker, and values greater than `0.5` will make the colours
+#'   brighter.
+#'
+#' @param saturation The saturation of the colours, between `0` (completely
+#'   desaturated, i.e., grey) and `1` (completely saturated). The default is
+#'   `0.5`, which gives the original saturation of the colours. Values less than
+#'   `0.5` will make the colours more desaturated (greyer), and values greater
+#'   than `0.5` will make the colours more saturated (vibrant).
+#'
 #' @export
 #'
 #' @return A character vector of hex codes
 #'
+#' @family colour functions
 #' @author David Carslaw
 #' @author Jack Davison
 #'
@@ -239,21 +252,23 @@ openColours <- function(
   alpha = 1,
   begin = 0,
   end = 1,
-  direction = 1
+  direction = 1,
+  brightness = 0.5,
+  saturation = 0.5
 ) {
-  if (alpha < 0 || alpha > 1) {
-    cli::cli_abort("{.arg alpha} must be between `0` and `1`.")
+  # standardise inputs
+  fix_01 <- function(x) {
+    x[x < 0] <- 0
+    x[x > 1] <- 1
+    x
   }
-  if (!direction %in% c(1, -1)) {
-    cli::cli_abort(
-      "{.arg direction} must be either `1` (normal order) or `-1` (reverse order)."
-    )
-  }
-  if (begin < 0 || begin > 1 || end < 0 || end > 1 || begin >= end) {
-    cli::cli_abort(
-      "{.arg begin} and {.arg end} must be between `0` and `1`, and {.arg begin} must be less than {.arg end}."
-    )
-  }
+  alpha <- fix_01(alpha)
+  begin <- fix_01(begin)
+  end <- fix_01(end)
+  brightness <- fix_01(brightness)
+  saturation <- fix_01(saturation)
+  direction <- sign(direction)
+  direction[direction == 0] <- 1
 
   # user-supplied colour vectors
   if (length(scheme) > 1L || !scheme %in% .all_schemes) {
@@ -280,7 +295,7 @@ openColours <- function(
     idx <- round(1 + (length(cols) - 1) * c(begin, end))
     cols <- cols[idx[1]:idx[2]]
     cols <- grDevices::colorRampPalette(cols)(n %||% 100L)
-    return(.finalise(cols, direction, alpha))
+    return(.finalise(cols, direction, alpha, brightness, saturation))
   }
 
   # single named scheme
@@ -293,15 +308,33 @@ openColours <- function(
   }
 
   cols <- if (scheme %in% .brewer_schemes) {
-    .brewerPalette(n_out, scheme, direction, begin, end, alpha)
+    .brewerPalette(
+      n_out,
+      scheme,
+      direction,
+      begin,
+      end,
+      alpha,
+      brightness,
+      saturation
+    )
   } else if (scheme == "hue") {
-    .huePalette(n_out, direction, begin, end, alpha)
+    .huePalette(n_out, direction, begin, end, alpha, brightness, saturation)
   } else if (scheme == "greyscale") {
-    .greyPalette(n_out, direction, begin, end, alpha)
+    .greyPalette(n_out, direction, begin, end, alpha, brightness, saturation)
   } else if (scheme %in% c(.div_schemes, .seq_schemes)) {
-    .seqPalette(n_out, scheme, direction, begin, end, alpha)
+    .seqPalette(
+      n_out,
+      scheme,
+      direction,
+      begin,
+      end,
+      alpha,
+      brightness,
+      saturation
+    )
   } else if (scheme %in% names(.qual_schemes)) {
-    .qualPalette(n_out, scheme, direction, alpha)
+    .qualPalette(n_out, scheme, direction, alpha, brightness, saturation)
   }
 
   cols
@@ -330,6 +363,7 @@ openColors <- openColours
 #'   sequential and diverging schemes can be interpolated to any number of
 #'   colours.
 #'
+#' @family colour functions
 #' @author Jack Davison
 #'
 #' @export
@@ -391,12 +425,71 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
 
 #' Apply direction and alpha to a colour vector
 #' @noRd
-.finalise <- function(cols, direction, alpha) {
+.finalise <- function(cols, direction, alpha, brightness, saturation) {
   if (direction == -1) {
     cols <- rev(cols)
   }
   cols <- substr(cols, 1, 7)
-  paste0(cols, sprintf("%02X", round(alpha * 255)))
+  cols <- paste0(cols, sprintf("%02X", round(alpha * 255)))
+  cols <- .adjust_brightness(cols, brightness)
+  cols <- .adjust_saturation(cols, saturation)
+  cols
+}
+
+#' Adjust the brightness of a colour vector
+#' @noRd
+.adjust_brightness <- function(color, brightness = 0.5) {
+  # standardise to -1 to 1
+  factor <- (brightness - 0.5) * 2
+
+  rgba_vals <- grDevices::col2rgb(color, alpha = TRUE) / 255
+  rgb_vals <- rgba_vals[1:3, , drop = FALSE]
+  alpha <- rgba_vals[4, ]
+
+  if (factor > 0) {
+    new_rgb <- rgb_vals + (1 - rgb_vals) * factor
+  } else if (factor < 0) {
+    new_rgb <- rgb_vals * (1 + factor)
+  } else {
+    new_rgb <- rgb_vals
+  }
+
+  grDevices::rgb(new_rgb[1, ], new_rgb[2, ], new_rgb[3, ], alpha = alpha)
+}
+
+#' Adjust the saturation of a colour vector
+#' @noRd
+.adjust_saturation <- function(color, saturation = 0.5) {
+  factor <- (saturation - 0.5) * 2
+
+  rgba_vals <- grDevices::col2rgb(color, alpha = TRUE) / 255
+  rgb_vals <- rgba_vals[1:3, , drop = FALSE]
+  alpha <- rgba_vals[4, ]
+
+  # Greyscale luminance of the colour (the target for desaturation)
+  luminance <- unname(
+    0.2126 *
+      rgb_vals[1, ] +
+      0.7152 * rgb_vals[2, ] +
+      0.0722 * rgb_vals[3, ]
+  )
+
+  grey <- matrix(luminance, nrow = 3, ncol = length(luminance), byrow = TRUE)
+
+  if (factor > 0) {
+    # Blend away from greyscale toward original (or beyond)
+    new_rgb <- rgb_vals + (rgb_vals - grey) * factor
+  } else if (factor < 0) {
+    # Blend toward greyscale
+    new_rgb <- rgb_vals + (rgb_vals - grey) * factor
+  } else {
+    new_rgb <- rgb_vals
+  }
+
+  # Clamp — unlike lightness, saturation can push values out of range
+  new_rgb[] <- pmax(0, pmin(1, new_rgb))
+
+  grDevices::rgb(new_rgb[1, ], new_rgb[2, ], new_rgb[3, ], alpha = alpha)
 }
 
 #' Check whether strings are valid R colours
@@ -409,7 +502,16 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
 
 #' Brewer palette dispatcher
 #' @noRd
-.brewerPalette <- function(n, scheme, direction, begin, end, alpha) {
+.brewerPalette <- function(
+  n,
+  scheme,
+  direction,
+  begin,
+  end,
+  alpha,
+  brightness,
+  saturation
+) {
   max_n <- maxcolors[[scheme]]
   if (n >= 3L && n <= max_n) {
     brewer.pal(
@@ -436,13 +538,21 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
       substr(base_cols, 1, 7),
       interpolate = "spline"
     )(n)
-    .finalise(cols, direction = 1L, alpha = alpha)
+    .finalise(cols, direction = 1L, alpha = alpha, brightness, saturation)
   }
 }
 
 #' Hue palette
 #' @noRd
-.huePalette <- function(n, direction, begin, end, alpha) {
+.huePalette <- function(
+  n,
+  direction,
+  begin,
+  end,
+  alpha,
+  brightness,
+  saturation
+) {
   h <- c(0, 360) + 15
   if ((diff(h) %% 360) < 1) {
     h[2] <- h[2] - 360 / n
@@ -453,12 +563,20 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
     c = 100,
     l = 65
   )
-  .finalise(cols, direction, alpha)
+  .finalise(cols, direction, alpha, brightness, saturation)
 }
 
 #' Greyscale palette
 #' @noRd
-.greyPalette <- function(n, direction, begin, end, alpha) {
+.greyPalette <- function(
+  n,
+  direction,
+  begin,
+  end,
+  alpha,
+  brightness,
+  saturation
+) {
   # default begin/end for greyscale avoids pure black/white
   if (begin == 0) {
     begin <- 0.1
@@ -467,12 +585,21 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
     end <- 0.9
   }
   cols <- grDevices::grey(seq(end, begin, length.out = n))
-  .finalise(cols, direction, alpha)
+  .finalise(cols, direction, alpha, brightness, saturation)
 }
 
 #' Sequential palettes
 #' @noRd
-.seqPalette <- function(n, scheme, direction, begin, end, alpha) {
+.seqPalette <- function(
+  n,
+  scheme,
+  direction,
+  begin,
+  end,
+  alpha,
+  brightness,
+  saturation
+) {
   interpolate <- "linear"
 
   cols <- switch(
@@ -1064,12 +1191,12 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   cols <- cols[idx[1]:idx[2]]
 
   cols <- grDevices::colorRampPalette(cols, interpolate = interpolate)(n)
-  .finalise(cols, direction, alpha)
+  .finalise(cols, direction, alpha, brightness, saturation)
 }
 
 #' Qualitative palettes
 #' @noRd
-.qualPalette <- function(n, scheme, direction, alpha) {
+.qualPalette <- function(n, scheme, direction, alpha, brightness, saturation) {
   cols <- switch(
     scheme,
     cbPalette = c(
@@ -1238,5 +1365,5 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   }
 
   # finalise with direction = 1 as already handled above
-  .finalise(cols[1:n], direction = 1, alpha)
+  .finalise(cols[1:n], direction = 1, alpha, brightness, saturation)
 }
