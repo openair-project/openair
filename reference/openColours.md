@@ -14,7 +14,9 @@ openColours(
   alpha = 1,
   begin = 0,
   end = 1,
-  direction = 1
+  direction = 1,
+  saturation = 0.5,
+  lightness = 0.5
 )
 
 openColors(
@@ -23,7 +25,9 @@ openColors(
   alpha = 1,
   begin = 0,
   end = 1,
-  direction = 1
+  direction = 1,
+  saturation = 0.5,
+  lightness = 0.5
 )
 ```
 
@@ -32,8 +36,9 @@ openColors(
 - scheme:
 
   Any one of the pre-defined `openair` schemes (e.g., `"increment"`) or
-  a user-defined palette (e.g., `c("red", "orange", "gold")`). See
-  `openColours()` for a full list of available schemes.
+  a user-defined palette (e.g., `c("red", "orange", "gold")`). Use
+  [`openSchemes()`](https://openair-project.github.io/openair/reference/openSchemes.md)
+  for a full list of available schemes.
 
 - n:
 
@@ -57,6 +62,21 @@ openColors(
 
   The order of the colours. `1` is the default and gives the normal
   order. `-1` will reverse the order of the colours.
+
+- saturation:
+
+  The saturation of the colours, between `0` (completely desaturated,
+  i.e., grey) and `1` (completely saturated). The default is `0.5`,
+  which gives the original saturation of the colours. Values less than
+  `0.5` will make the colours more desaturated (greyer), and values
+  greater than `0.5` will make the colours more saturated (vibrant).
+
+- lightness:
+
+  The lightness of the colours, between `0` (completely black) and `1`
+  (completely white). The default is `0.5`, which gives the original
+  lightness of the colours. Values less than `0.5` will make the colours
+  darker, and values greater than `0.5` will make the colours brighter.
 
 ## Value
 
@@ -170,6 +190,12 @@ UK Government Analysis Function:
 Fabio Crameri's Color Schemes: Crameri, F. 2023. Scientific Colour Maps
 (version 8.0.1). Zenodo. DOI:
 [doi:10.5281/zenodo.1243862](https://doi.org/10.5281/zenodo.1243862) .
+
+## See also
+
+Other colour functions:
+[`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md),
+[`openSchemes()`](https://openair-project.github.io/openair/reference/openSchemes.md)
 
 ## Author
 

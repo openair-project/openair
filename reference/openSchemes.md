@@ -30,6 +30,12 @@ openSchemes(palette_type = c("seq", "div", "qual"), n = NULL)
   sequential and diverging schemes can be interpolated to any number of
   colours.
 
+## See also
+
+Other colour functions:
+[`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md),
+[`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+
 ## Author
 
 Jack Davison

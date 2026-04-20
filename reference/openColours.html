@@ -70,7 +70,9 @@ user-defined length. <code>openColours()</code> and <code>openColors()</code> ar
 <span>  alpha <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  begin <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  end <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  direction <span class="op">=</span> <span class="fl">1</span></span>
+<span>  direction <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  saturation <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  lightness <span class="op">=</span> <span class="fl">0.5</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">openColors</span><span class="op">(</span></span>
@@ -79,7 +81,9 @@ user-defined length. <code>openColours()</code> and <code>openColors()</code> ar
 <span>  alpha <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  begin <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  end <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  direction <span class="op">=</span> <span class="fl">1</span></span>
+<span>  direction <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  saturation <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  lightness <span class="op">=</span> <span class="fl">0.5</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -89,7 +93,7 @@ user-defined length. <code>openColours()</code> and <code>openColors()</code> ar
 
 <dl><dt id="arg-scheme">scheme<a class="anchor" aria-label="anchor" href="#arg-scheme"></a></dt>
 <dd><p>Any one of the pre-defined <code>openair</code> schemes (e.g.,
-<code>"increment"</code>) or a user-defined palette (e.g., <code>c("red", "orange", "gold")</code>). See <code>openColours()</code> for a full list of available schemes.</p></dd>
+<code>"increment"</code>) or a user-defined palette (e.g., <code>c("red", "orange", "gold")</code>). Use <code><a href="openSchemes.html">openSchemes()</a></code> for a full list of available schemes.</p></dd>
 
 
 <dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
@@ -113,6 +117,22 @@ for avoiding very light or dark colours at the ends of schemes.</p></dd>
 <dt id="arg-direction">direction<a class="anchor" aria-label="anchor" href="#arg-direction"></a></dt>
 <dd><p>The order of the colours. <code>1</code> is the default and gives the
 normal order. <code>-1</code> will reverse the order of the colours.</p></dd>
+
+
+<dt id="arg-saturation">saturation<a class="anchor" aria-label="anchor" href="#arg-saturation"></a></dt>
+<dd><p>The saturation of the colours, between <code>0</code> (completely
+desaturated, i.e., grey) and <code>1</code> (completely saturated). The default is
+<code>0.5</code>, which gives the original saturation of the colours. Values less than
+<code>0.5</code> will make the colours more desaturated (greyer), and values greater
+than <code>0.5</code> will make the colours more saturated (vibrant).</p></dd>
+
+
+<dt id="arg-lightness">lightness<a class="anchor" aria-label="anchor" href="#arg-lightness"></a></dt>
+<dd><p>The lightness of the colours, between <code>0</code> (completely
+black) and <code>1</code> (completely white). The default is <code>0.5</code>, which gives the
+original lightness of the colours. Values less than <code>0.5</code> will make the
+colours darker, and values greater than <code>0.5</code> will make the colours
+brighter.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -199,6 +219,12 @@ names. To see the full list of names, type <code><a href="https://rdrr.io/r/grDe
 <p>Fabio Crameri's Color Schemes: Crameri, F. 2023. Scientific Colour Maps
 (version 8.0.1). Zenodo. DOI: <a href="https://doi.org/10.5281/zenodo.1243862" class="external-link">doi:10.5281/zenodo.1243862</a>
 .</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other colour functions:
+<code><a href="colourOpts.html">colourOpts()</a></code>,
+<code><a href="openSchemes.html">openSchemes()</a></code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

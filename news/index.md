@@ -77,8 +77,8 @@
   [openair](https://openair-project.github.io/openair/):
 
   - [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
-    gains `direction`, `alpha`, `begin` and `end` for better control
-    over colour palettes.
+    gains `direction`, `alpha`, `begin`, `end`, `lightness` and
+    `saturation` for better control over colour palettes.
 
   - Added
     [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md).
@@ -96,7 +96,8 @@
 
   - New palettes:
 
-    - Completed the set of “viridis” palettes with “rocket” and “mako”.
+    - Completed the set of “viridis” palettes with `"rocket"` and
+      `"mako"`.
 
     - Added additional palettes by Paul Tol; `"tol.highcontrast"`,
       `"tol.vibrant"`, `"tol.mediumcontrast"`, `"tol.pale"` and
