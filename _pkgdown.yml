@@ -48,6 +48,7 @@ reference:
   contents:
   - quickText
   - windflowOpts
+  - refOpts
 
 - title: Data Utilities
 - subtitle: Smoothing Functions

@@ -837,10 +837,10 @@ scatter_scatter <- function(
   ## reference lines
   plt <- plt +
     .layer_ref_scatter(ref.x, "x", mydata[[x]]) +
-    .layer_ref_scatter(ref.y, "y", mydata[[y]]) +
+    .layer_ref_scatter(ref.y, "y", mydata[[y]])
 
-    ## axis scales
-    plt <- plt +
+  ## axis scales
+  plt <- plt +
     .scatter_x_scale(log.x, x, mydata, extra.args) +
     .scatter_y_scale(log.y, y, mydata, extra.args) +
     gg_coord_limits(extra.args)
@@ -1341,8 +1341,8 @@ scatter_density <- function(
   }
 
   plt <- plt +
-    .layer_ref_scatter(ref.x, "x", mydata$x) +
-    .layer_ref_scatter(ref.y, "y", mydata$y) +
+    .layer_ref_scatter(ref.x, "x", mydata[["x"]]) +
+    .layer_ref_scatter(ref.y, "y", mydata[["y"]]) +
     .scatter_x_scale(log.x, "x", grid_data, extra.args) +
     .scatter_y_scale(log.y, "y", grid_data, extra.args) +
     gg_coord_limits(extra.args) +
