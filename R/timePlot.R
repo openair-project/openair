@@ -95,16 +95,6 @@
 #' @param ci If a smooth fit line is applied, then `ci` determines whether the
 #'   95 percent confidence intervals are shown.
 #'
-#' @param ref.x See `ref.y` for details. In this case the correct date format
-#'   should be used for a vertical line e.g. `ref.x = list(v =
-#'   as.POSIXct("2000-06-15"), lty = 5)`.
-#'
-#' @param ref.y A list with details of the horizontal lines to be added
-#'   representing reference line(s). For example, `ref.y = list(h = 50, lty =
-#'   5)` will add a dashed horizontal line at 50. Several lines can be plotted
-#'   e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-#'   "blue"))`.
-#'
 #' @param name.pol This option can be used to give alternative names for the
 #'   variables plotted. Instead of taking the column headings as names, the user
 #'   can supply replacements. For example, if a column had the name "nox" and
@@ -355,8 +345,10 @@ timePlot <- function(
 
   # x-axis scale function
   if (lubridate::is.Date(mydata$date)) {
+    x_type <- "date"
     x_scale_fun <- ggplot2::scale_x_date
   } else {
+    x_type <- "datetime"
     x_scale_fun <- ggplot2::scale_x_datetime
   }
 
@@ -487,8 +479,13 @@ timePlot <- function(
         ggplot2::geom_point(ggplot2::aes(shape = .data[[aes_col]]))
       }
     } +
-    gg_ref_x(ref.x) +
-    gg_ref_y(ref.y) +
+    layer_ref(
+      ref = ref.x,
+      which = "x",
+      type = x_type,
+      tz = lubridate::tz(mydata$date)
+    ) +
+    layer_ref(ref = ref.y, which = "y", type = "numeric") +
     theme_openair(
       key.position = ifelse(n_groups == 1, "none", key.position),
       extra.args = extra.args

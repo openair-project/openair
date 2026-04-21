@@ -75,6 +75,16 @@ plotted. \code{"same"} ensures all panels use the same scale and \code{"free"} w
 use panel-specific scales. The latter is a useful setting when plotting
 data with very different values.}
 
+\item{ref.x}{Either a single value or values representing the x axis
+intercepts to draw lines, or a list such as that provided by \code{\link[=refOpts]{refOpts()}} to
+customise the colour/width/type/etc. of each line. See \code{\link[=refOpts]{refOpts()}} for more
+details.}
+
+\item{ref.y}{Either a single value or values representing the y axis
+intercepts to draw lines, or a list such as that provided by \code{\link[=refOpts]{refOpts()}} to
+customise the colour/width/type/etc. of each line. See \code{\link[=refOpts]{refOpts()}} for more
+details.}
+
 \item{angle.scale}{In radial plots (e.g., \code{\link[=polarPlot]{polarPlot()}}), the radial scale is
 drawn directly on the plot itself. While suitable defaults have been
 chosen, sometimes the placement of the scale may interfere with an
