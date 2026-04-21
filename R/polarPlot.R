@@ -377,7 +377,6 @@ polarPlot <-
     labels = NULL,
     key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
-    strip.position = "top",
     auto.text = TRUE,
     ws_spread = 1.5,
     wd_spread = 5,
@@ -1022,9 +1021,7 @@ polarPlot <-
       get_facet(
         type,
         extra.args = extra.args,
-        scales = "fixed",
         auto.text = auto.text,
-        strip.position = strip.position,
         wd.res = extra.args$wd.res %||% 8
       )
 

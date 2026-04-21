@@ -183,8 +183,6 @@ TheilSen <- function(
   dec.place = 2,
   lab.frac = 0.99,
   lab.cex = 0.8,
-  x.relation = "same",
-  y.relation = "same",
   data.col = "cornflowerblue",
   trend = list(lty = c(1, 5), lwd = c(2, 1), col = c("red", "red")),
   text.col = "darkgreen",
@@ -195,7 +193,6 @@ TheilSen <- function(
   slope.percent = FALSE,
   date.breaks = 7,
   date.format = NULL,
-  strip.position = "top",
   plot = TRUE,
   silent = FALSE,
   ...
@@ -309,10 +306,7 @@ TheilSen <- function(
     data.col = data.col,
     trend = trend,
     extra.args = extra.args,
-    x.relation = x.relation,
-    y.relation = y.relation,
     auto.text = auto.text,
-    strip.position = strip.position,
     date.breaks = date.breaks,
     date.format = date.format
   )
@@ -525,10 +519,7 @@ build_theilsen_plot <- function(
   data.col,
   trend,
   extra.args,
-  x.relation,
-  y.relation,
   auto.text,
-  strip.position,
   date.breaks,
   date.format
 ) {
@@ -619,10 +610,8 @@ build_theilsen_plot <- function(
     get_facet(
       type,
       extra.args,
-      scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
       drop = FALSE,
-      strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     ) +
     x_scale_fun(

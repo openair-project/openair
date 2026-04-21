@@ -252,7 +252,6 @@ conditionalEval <- function(
       get_facet(
         type,
         extra.args,
-        "fixed",
         auto.text,
         wd.res = extra.args$wd.res %||% 8
       ) +
@@ -377,7 +376,6 @@ conditionalEval <- function(
       get_facet(
         type,
         extra.args,
-        "fixed",
         auto.text,
         wd.res = extra.args$wd.res %||% 8
       )

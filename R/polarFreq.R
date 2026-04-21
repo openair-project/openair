@@ -150,7 +150,6 @@ polarFreq <- function(
   border.col = "transparent",
   key.title = paste(statistic, pollutant, sep = " "),
   key.position = "right",
-  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   key = NULL,
@@ -370,9 +369,7 @@ polarFreq <- function(
     get_facet(
       type,
       extra.args,
-      scales = "fixed",
       auto.text = auto.text,
-      strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     )
 

@@ -239,15 +239,12 @@ scatterPlot <- function(
   key.title = group,
   key.columns = 1,
   key.position = "right",
-  strip.position = "top",
   log.x = FALSE,
   log.y = FALSE,
   x.inc = NULL,
   y.inc = NULL,
   limits = NULL,
   windflow = NULL,
-  y.relation = "same",
-  x.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
   k = NA,
@@ -329,14 +326,11 @@ scatterPlot <- function(
       windflow = windflow,
       log.x = log.x,
       log.y = log.y,
-      x.relation = x.relation,
-      y.relation = y.relation,
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
       key.title = key.title,
       key.columns = key.columns,
-      strip.position = strip.position,
       limits = limits,
       k = k,
       auto.text = auto.text,
@@ -361,12 +355,9 @@ scatterPlot <- function(
       mod.line = mod.line,
       log.x = log.x,
       log.y = log.y,
-      x.relation = x.relation,
-      y.relation = y.relation,
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
-      strip.position = strip.position,
       auto.text = auto.text,
       xlab = xlab,
       ylab = ylab,
@@ -391,12 +382,9 @@ scatterPlot <- function(
       limits = limits,
       log.x = log.x,
       log.y = log.y,
-      x.relation = x.relation,
-      y.relation = y.relation,
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
-      strip.position = strip.position,
       k = k,
       dist = dist,
       auto.text = auto.text,
@@ -417,12 +405,9 @@ scatterPlot <- function(
       mod.line = mod.line,
       log.x = log.x,
       log.y = log.y,
-      x.relation = x.relation,
-      y.relation = y.relation,
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
-      strip.position = strip.position,
       auto.text = auto.text,
       xlab = xlab,
       ylab = ylab,
@@ -546,14 +531,12 @@ scatter_scatter <- function(
   windflow,
   log.x,
   log.y,
-  x.relation,
-  y.relation,
   ref.x,
   ref.y,
   key.position,
   key.title,
   key.columns,
-  strip.position,
+
   limits,
   k,
   auto.text,
@@ -595,9 +578,6 @@ scatter_scatter <- function(
 
   ## panel column names for LM labels and facet
   panel_cols <- setdiff(type, "default")
-
-  ## facet scales
-  facet_scales <- relation_to_facet_scales(x.relation, y.relation)
 
   ## point size / alpha
   pt_size <- extra.args$size %||% 1
@@ -854,9 +834,8 @@ scatter_scatter <- function(
     get_facet(
       type,
       extra.args,
-      scales = facet_scales,
       auto.text = auto.text,
-      strip.position = strip.position,
+
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     )
@@ -902,12 +881,10 @@ scatter_hexbin <- function(
   mod.line,
   log.x,
   log.y,
-  x.relation,
-  y.relation,
   ref.x,
   ref.y,
   key.position,
-  strip.position,
+
   auto.text,
   xlab,
   ylab,
@@ -998,9 +975,8 @@ scatter_hexbin <- function(
     get_facet(
       type,
       extra.args,
-      scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
-      strip.position = strip.position,
+
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     ) +
@@ -1042,12 +1018,10 @@ scatter_level <- function(
   limits,
   log.x,
   log.y,
-  x.relation,
-  y.relation,
   ref.x,
   ref.y,
   key.position,
-  strip.position,
+
   k,
   dist,
   auto.text,
@@ -1161,9 +1135,8 @@ scatter_level <- function(
     get_facet(
       type,
       extra.args,
-      scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
-      strip.position = strip.position,
+
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     ) +
@@ -1294,12 +1267,10 @@ scatter_density <- function(
   mod.line,
   log.x,
   log.y,
-  x.relation,
-  y.relation,
   ref.x,
   ref.y,
   key.position,
-  strip.position,
+
   auto.text,
   xlab,
   ylab,
@@ -1353,9 +1324,8 @@ scatter_density <- function(
     get_facet(
       type,
       extra.args,
-      scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
-      strip.position = strip.position,
+
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     ) +

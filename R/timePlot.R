@@ -198,13 +198,10 @@ timePlot <- function(
   smooth = FALSE,
   smooth_k = NULL,
   ci = TRUE,
-  x.relation = "same",
-  y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
   key.columns = NULL,
   key.position = "bottom",
-  strip.position = "top",
   name.pol = pollutant,
   date.breaks = 7,
   date.format = NULL,
@@ -255,9 +252,6 @@ timePlot <- function(
     cli::cli_inform("No {.field avg.time} specified; using 'month'.")
     avg.time <- "month"
   }
-
-  rlang::arg_match(x.relation, c("same", "free"))
-  rlang::arg_match(y.relation, c("same", "free"))
 
   if (group_is_col) {
     if (!group %in% names(mydata) && !group %in% dateTypes) {
@@ -509,10 +503,8 @@ timePlot <- function(
     get_facet(
       type,
       extra.args,
-      scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
       drop = FALSE,
-      strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     ) +
     ggplot2::coord_cartesian(

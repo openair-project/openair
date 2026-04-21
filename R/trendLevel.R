@@ -140,7 +140,6 @@ trendLevel <- function(
   auto.text = TRUE,
   key.title = paste("use.stat.name", pollutant, sep = " "),
   key.position = "right",
-  strip.position = "top",
   labels = NULL,
   breaks = NULL,
   statistic = c(
@@ -395,8 +394,23 @@ trendLevel <- function(
     mydata |>
     cutData(x, n.levels = n.levels[1], is.axis = TRUE, ...) |>
     cutData(y, n.levels = n.levels[2], is.axis = TRUE, ...) |>
-    cutData(type, n.levels = n.levels[3], drop = "outside", ...) |>
-    tidyr::complete(!!!rlang::syms(c(x, y, type)))
+    cutData(type, n.levels = n.levels[3], drop = "outside", ...)
+
+  # ensure valid combinations present within panels
+  newdata <-
+    map_type(
+      newdata,
+      type,
+      \(df) {
+        dplyr::mutate(
+          df,
+          x_var = droplevels(.data[[x]]),
+          y_var = droplevels(.data[[y]]),
+        ) |>
+          tidyr::complete(.data$x_var, .data$y_var) |>
+          dplyr::select(-"x_var", -"y_var")
+      }
+    )
 
   # select only pollutant and axis/facet columns
   newdata <- dplyr::select(
@@ -508,10 +522,8 @@ trendLevel <- function(
     get_facet(
       type,
       extra.args = extra.args,
-      scales = "fixed",
       auto.text = auto.text,
       drop = drop.unused.types,
-      strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     )
 

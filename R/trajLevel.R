@@ -183,7 +183,6 @@ trajLevel <- function(
   key.title = NULL,
   key.position = "right",
   key.columns = NULL,
-  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   key = NULL,
@@ -662,10 +661,8 @@ trajLevel <- function(
     get_facet(
       type,
       extra.args,
-      scales = "fixed",
       drop = FALSE,
       auto.text = auto.text,
-      strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     ) +
     ggplot2::labs(

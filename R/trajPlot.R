@@ -148,7 +148,6 @@ trajPlot <- function(
   key.title = group,
   key.position = "right",
   key.columns = 1,
-  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   key = NULL,
@@ -298,9 +297,7 @@ trajPlot <- function(
     get_facet(
       type,
       extra.args,
-      scales = "fixed",
       auto.text = auto.text,
-      strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     ) +
     ggplot2::labs(

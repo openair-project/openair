@@ -26,15 +26,12 @@ scatterPlot(
   key.title = group,
   key.columns = 1,
   key.position = "right",
-  strip.position = "top",
   log.x = FALSE,
   log.y = FALSE,
   x.inc = NULL,
   y.inc = NULL,
   limits = NULL,
   windflow = NULL,
-  y.relation = "same",
-  x.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
   k = NA,
@@ -190,13 +187,6 @@ number of categories.}
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}
 
-\item{strip.position}{Location where the facet 'strips' are located when
-using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
-\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
-argument defines whether the strips are "switched" and can take either
-\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
-locations to the bottom of the plot.}
-
 \item{log.x, log.y}{Should the x-axis/y-axis appear on a log scale? The
 default is \code{FALSE}. If \code{TRUE} a well-formatted log10 scale is used. This
 can be useful for checking linearity once logged.}
@@ -213,11 +203,6 @@ span 0-100.}
 be plotted using arrows. Alternatively, can be a list of arguments to
 control the appearance of the arrows (colour, linewidth, alpha value,
 etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
-
-\item{x.relation, y.relation}{This determines how the x- and y-axis scales are
-plotted. \code{"same"} ensures all panels use the same scale and \code{"free"} will
-use panel-specific scales. The latter is a useful setting when plotting
-data with very different values.}
 
 \item{ref.x, ref.y}{A list with details of the horizontal or vertical lines to
 be added representing reference line(s). For example, \code{ref.y = list(h = 50, lty = 5)} will add a dashed horizontal line at 50. Several lines can be
