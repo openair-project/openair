@@ -1,9 +1,14 @@
-# Kolmogorov-Zurbenko (KZ) Filter
+# (Adaptive) Kolmogorov-Zurbenko (KZ) Filter
 
-Applies a Kolmogorov-Zurbenko filter to one or more pollutant columns in
-a data frame at multiple window sizes and returns the decomposed
-components. The KZ filter is a low-pass filter formed by iterating a
-simple moving average `k` times with window size `m`.
+`kzFilter()` applies a Kolmogorov-Zurbenko filter to one or more
+pollutant columns in a data frame at multiple window sizes and returns
+the decomposed components. The KZ filter is a low-pass filter formed by
+iterating a simple moving average `k` times with window size `m`.
+`kzaFilter()` applies an *adaptive* Kolmogorov-Zurbenko filter to one or
+more pollutant columns in a data frame at multiple window sizes and
+returns the decomposed components. The KZA filter uses a standard KZ
+filter to detect structural breaks and shrinks the window near those
+breaks to preserve sharp features.
 
 ## Usage
 
@@ -13,6 +18,20 @@ kzFilter(
   pollutant = "o3",
   m = c(25L, 169L, 721L, 8761L),
   k = 5L,
+  data.thresh = 0.5,
+  type = "default",
+  components = TRUE,
+  comp.names = c("short", "synoptic", "intermediate", "seasonal", "trend"),
+  to_narrow = FALSE,
+  ...
+)
+
+kzaFilter(
+  mydata,
+  pollutant = "o3",
+  m = c(25L, 169L, 721L, 8761L),
+  k = 5L,
+  sensitivity = 1,
   data.thresh = 0.5,
   type = "default",
   components = TRUE,
@@ -37,14 +56,17 @@ kzFilter(
 
 - m:
 
-  Integer vector of window sizes. Defaults to `c(25, 169, 721, 8761)`
-  (suited to hourly data). All values must be \>= 3. Values of `m`
-  should be odd; even values will produce a symmetric window of `m + 1`
-  points rather than `m`.
+  Integer vector of window sizes (`kzFilter()`) or maximum window sizes
+  (`kzaFilter()`). Defaults to `c(25, 169, 721, 8761)` (suited to hourly
+  data). All values must be \>= 3. Values of `m` should be odd; even
+  values will produce a symmetric window of `m + 1` points rather than
+  `m`.
 
 - k:
 
-  Integer. The number of iterations applied at each window size.
+  Integer. The number of iterations applied at each window size
+  (`kzFilter()`) or the number of iterations for the baseline KZ filter
+  used to detect structural breaks (`kzaFilter()`).
 
 - data.thresh:
 
@@ -75,9 +97,9 @@ kzFilter(
 
   Logical. If `TRUE`, return the data in tidy (long) format with a
   `component` column and a `value` column instead of one column per
-  component. Intermediate filter columns (`kz_*`) are dropped. Default
-  is `FALSE`. Ignored when `components = FALSE` or a single `m` value is
-  supplied.
+  component. Intermediate filter columns (`kz(a)_*`) are dropped.
+  Default is `FALSE`. Ignored when `components = FALSE` or a single `m`
+  value is supplied.
 
 - ...:
 
@@ -85,29 +107,36 @@ kzFilter(
   [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
   for use with `type`.
 
+- sensitivity:
+
+  Numeric. Controls how aggressively the window shrinks at structural
+  breaks (higher = more aggressive). Used in `kzaFilter()`.
+
 ## Value
 
 When `to_narrow = FALSE` (default), a tibble with the original columns
-plus intermediate filter columns (`kz_{m}`) and component columns. When
-`to_narrow = TRUE`, a tidy tibble with a `component` column (factor
+plus intermediate filter columns (`kz(a)_{m}`) and component columns.
+When `to_narrow = TRUE`, a tidy tibble with a `component` column (factor
 ordered fast to slow) and a `value` column.
 
-## Details
+## Default window sizes
 
 With the default window sizes of 25, 169, 721 and 8761 (suited to hourly
 data), the function returns four intermediate filtered columns and five
 physical components derived by differencing:
 
-1.  **short** — daily cycle and short-term variations within it
-    (`pollutant - kz_25`)
+- **short** — daily cycle and short-term variations within it
+  (`pollutant - kz(a)_25`)
 
-2.  **synoptic** — 2–7 day weather systems (`kz_25 - kz_169`)
+- **synoptic** — 2–7 day weather systems (`kz(a)_25 - kz(a)_169`)
 
-3.  **intermediate** — weekly to monthly variability (`kz_169 - kz_721`)
+- **intermediate** — weekly to monthly variability
+  (`kz(a)_169 - kz(a)_721`)
 
-4.  **seasonal** — monthly to annual variability (`kz_721 - kz_8761`)
+- **seasonal** — monthly to annual variability
+  (`kz(a)_721 - kz(a)_8761`)
 
-5.  **trend** — multi-year trend (`kz_8761`)
+- **trend** — multi-year trend (`kz(a)_8761`)
 
 ## Edge effects
 
@@ -142,5 +171,16 @@ mydata <- kzFilter(mydata, pollutant = "nox", to_narrow = TRUE)
 
 # Single window size (no component decomposition)
 mydata <- kzFilter(mydata, pollutant = "nox", m = 24, k = 5)
+} # }
+
+if (FALSE) { # \dontrun{
+# Default: 4 window sizes, 5 descriptively named components returned
+mydata <- kzaFilter(mydata, pollutant = "nox")
+
+# Tidy long format
+mydata <- kzaFilter(mydata, pollutant = "nox", to_narrow = TRUE)
+
+# Single window size (no component decomposition)
+mydata <- kzaFilter(mydata, pollutant = "nox", m = 24, k = 5)
 } # }
 ```

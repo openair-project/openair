@@ -162,14 +162,14 @@
 - New Kolmogorov-Zurbenko (KZ) Filter functions
   [`kzFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md)
   and
-  [`kzaFilter()`](https://openair-project.github.io/openair/reference/kzaFilter.md).
+  [`kzaFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md).
   These functions significantly enhance the capability of
   [openair](https://openair-project.github.io/openair/) by allowing
   different time components to be separated and analysed separately. The
   [`kzFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md)
   function is considered a good default for a wide range of problems
   whereas the
-  [`kzaFilter()`](https://openair-project.github.io/openair/reference/kzaFilter.md)
+  [`kzaFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md)
   function is the adaptive version that is well-suited to capturing
   abrupt changes, e.g., through an intervention. The range of uses of
   the filters will be covered in the

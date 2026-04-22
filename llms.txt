@@ -294,9 +294,8 @@ Tools for smoothing data for plotting or analysis
   : Calculate Whittaker-Eilers Smoothing, Interpolation and Baseline
   Determination
 - [`kzFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md)
-  : Kolmogorov-Zurbenko (KZ) Filter
-- [`kzaFilter()`](https://openair-project.github.io/openair/reference/kzaFilter.md)
-  : Adaptive Kolmogorov-Zurbenko (KZA) Filter
+  [`kzaFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md)
+  : (Adaptive) Kolmogorov-Zurbenko (KZ) Filter
 
 ### Data Utilities
 
