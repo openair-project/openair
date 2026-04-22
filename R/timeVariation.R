@@ -341,7 +341,9 @@ timeVariation <- function(
 
   # add reference if requested
   if (!is.null(ref.y)) {
-    plots <- purrr::map(plots, \(plt) plt + gg_ref_y(ref.y = ref.y))
+    plots <- purrr::map(plots, \(plt) {
+      plt + layer_ref(ref = ref.y, which = "y", type = "numeric")
+    })
   }
 
   # if more than one plot, use patchwork to combine

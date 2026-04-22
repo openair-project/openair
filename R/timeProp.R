@@ -39,7 +39,7 @@
 #'   3-month seasonal values are calculated with spring defined as March, April,
 #'   May and so on.
 #'
-#'   Note that `avg.time` when used in `timeProp` should be greater than the
+#'   Note that `avg.time` when used in [timeProp()] should be greater than the
 #'   time gap in the original data. For example, `avg.time = "day"` for hourly
 #'   data is OK, but `avg.time = "hour"` for daily data is not.
 #'
@@ -66,6 +66,8 @@ timeProp <- function(
   normalise = FALSE,
   x.relation = "same",
   y.relation = "same",
+  ref.x = NULL,
+  ref.y = NULL,
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
@@ -193,8 +195,10 @@ timeProp <- function(
 
   # x-axis scale function
   if (lubridate::is.Date(results$xleft)) {
+    x_type <- "date"
     x_scale_fun <- ggplot2::scale_x_date
   } else {
+    x_type <- "datetime"
     x_scale_fun <- ggplot2::scale_x_datetime
   }
 
@@ -215,6 +219,17 @@ timeProp <- function(
       colour = extra.args$border[1] %||% "transparent",
       linewidth = extra.args$linewidth[1] %||% 0.25,
       linetype = extra.args$linetype[1] %||% 1
+    ) +
+    layer_ref(
+      ref = ref.x,
+      which = "x",
+      type = x_type,
+      tz = lubridate::tz(results$xleft)
+    ) +
+    layer_ref(
+      ref = ref.y,
+      which = "y",
+      type = "numeric"
     ) +
     ggplot2::scale_fill_manual(
       values = resolve_colour_opts(

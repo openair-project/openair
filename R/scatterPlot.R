@@ -97,12 +97,6 @@
 #'   `c(lower, upper)`, so `limits = c(0, 100)` would force the plot limits to
 #'   span 0-100.
 #'
-#' @param ref.x,ref.y A list with details of the horizontal or vertical lines to
-#'   be added representing reference line(s). For example, `ref.y = list(h = 50,
-#'   lty = 5)` will add a dashed horizontal line at 50. Several lines can be
-#'   plotted e.g. `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green",
-#'   "blue"))`.
-#'
 #' @param k Smoothing parameter supplied to `gam` for fitting a smooth surface
 #'   when `method = "level"`.
 #'
@@ -841,7 +835,9 @@ scatter_scatter <- function(
   }
 
   ## reference lines
-  plt <- plt + gg_ref_x(ref.x) + gg_ref_y(ref.y)
+  plt <- plt +
+    .layer_ref_scatter(ref.x, "x", mydata[[x]]) +
+    .layer_ref_scatter(ref.y, "y", mydata[[y]])
 
   ## axis scales
   plt <- plt +
@@ -990,8 +986,8 @@ scatter_hexbin <- function(
   }
 
   plt <- plt +
-    gg_ref_x(ref.x) +
-    gg_ref_y(ref.y) +
+    .layer_ref_scatter(ref.x, "x", mydata[[x]]) +
+    .layer_ref_scatter(ref.y, "y", mydata[[y]]) +
     .scatter_x_scale(log.x, x, mydata, extra.args) +
     .scatter_y_scale(log.y, y, mydata, extra.args) +
     gg_coord_limits(extra.args) +
@@ -1153,8 +1149,8 @@ scatter_level <- function(
   }
 
   plt <- plt +
-    gg_ref_x(ref.x) +
-    gg_ref_y(ref.y) +
+    .layer_ref_scatter(ref.x, "x", mydata$xgrid) +
+    .layer_ref_scatter(ref.y, "y", mydata$ygrid) +
     .scatter_x_scale(log.x, "xgrid", mydata, extra.args) +
     .scatter_y_scale(log.y, "ygrid", mydata, extra.args) +
     gg_coord_limits(extra.args) +
@@ -1345,8 +1341,8 @@ scatter_density <- function(
   }
 
   plt <- plt +
-    gg_ref_x(ref.x) +
-    gg_ref_y(ref.y) +
+    .layer_ref_scatter(ref.x, "x", mydata[["x"]]) +
+    .layer_ref_scatter(ref.y, "y", mydata[["y"]]) +
     .scatter_x_scale(log.x, "x", grid_data, extra.args) +
     .scatter_y_scale(log.y, "y", grid_data, extra.args) +
     gg_coord_limits(extra.args) +
@@ -1642,4 +1638,28 @@ compute_lm_labels <- function(
   })
 
   dplyr::bind_rows(Filter(Negate(is.null), results))
+}
+
+# handle ref layers for scatterplot
+.layer_ref_scatter <- function(ref, which, vec) {
+  if (lubridate::is.POSIXct(vec)) {
+    layer_ref(
+      ref,
+      which,
+      type = "datetime",
+      tz = lubridate::tz(vec)
+    )
+  } else if (lubridate::is.Date(vec)) {
+    layer_ref(
+      ref,
+      which,
+      type = "date"
+    )
+  } else {
+    layer_ref(
+      ref,
+      which,
+      type = "numeric"
+    )
+  }
 }
