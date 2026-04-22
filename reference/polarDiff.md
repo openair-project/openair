@@ -410,15 +410,6 @@ polarDiff(
       [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
       if `auto.text = TRUE`.
 
-  `strip.position`
-
-  :   Location where the facet 'strips' are located when using `type`.
-      When one `type` is provided, can be one of `"left"`, `"right"`,
-      `"bottom"` or `"top"`. When two `type`s are provided, this
-      argument defines whether the strips are "switched" and can take
-      either `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch
-      the 'top' strip locations to the bottom of the plot.
-
   `key`
 
   :   Deprecated; please use `key.position`. If `FALSE`, sets

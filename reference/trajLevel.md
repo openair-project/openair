@@ -39,7 +39,6 @@ trajLevel(
   key.title = NULL,
   key.position = "right",
   key.columns = NULL,
-  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   key = NULL,
@@ -261,15 +260,6 @@ trajLevel(
   choose to use several columns by setting `key.columns` to be less than
   the number of categories.
 
-- strip.position:
-
-  Location where the facet 'strips' are located when using `type`. When
-  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
-  or `"top"`. When two `type`s are provided, this argument defines
-  whether the strips are "switched" and can take either `"x"`, `"y"`, or
-  `"both"`. For example, `"x"` will switch the 'top' strip locations to
-  the bottom of the plot.
-
 - auto.text:
 
   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis labels
@@ -298,8 +288,10 @@ trajLevel(
   varying somewhat in different plotting functions:
 
   - `title`, `subtitle`, `caption`, `tag`, `xlab` and `ylab` control the
-    plot title, subtitle, caption, tag, x-axis label and y-axis label.
-    All of these are passed through to
+    plot title, subtitle, caption, tag, x-axis label and y-axis label,
+    passed to
+    [`ggplot2::labs()`](https://ggplot2.tidyverse.org/reference/labs.html)
+    via
     [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
     if `auto.text = TRUE`.
 
@@ -308,6 +300,20 @@ trajLevel(
 
   - `ncol` and `nrow` set the number of columns and rows in a faceted
     plot.
+
+  - `scales` can be `"fixed"`, `"free_x"`, `"free_y"` or `"free"` to
+    control whether axes are shared across facets when using `type`.
+    Also supported are the legacy `x.relation` and `y.relation`, which
+    can be either `"same"` or `"free"` and get remapped to `scales`
+    automatically.
+
+  - Similarly, `space`, `axes`, `axis.labels`, `switch` and
+    `strip.position` can be used to customise the appearance of faceted
+    plots. See
+    [`ggplot2::facet_wrap()`](https://ggplot2.tidyverse.org/reference/facet_wrap.html)
+    and
+    [`ggplot2::facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html)
+    for the arguments these take.
 
   - `fontsize` overrides the overall font size of the plot by setting
     the `text` argument of

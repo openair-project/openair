@@ -253,15 +253,6 @@ pollutionRose(
       expressed on a scale of `0` to `100`, where `0` is no hole and
       `100` is a hole that takes up the entire plotting area.
 
-  `strip.position`
-
-  :   Location where the facet 'strips' are located when using `type`.
-      When one `type` is provided, can be one of `"left"`, `"right"`,
-      `"bottom"` or `"top"`. When two `type`s are provided, this
-      argument defines whether the strips are "switched" and can take
-      either `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch
-      the 'top' strip locations to the bottom of the plot.
-
   `auto.text`
 
   :   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis

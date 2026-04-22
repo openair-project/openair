@@ -22,14 +22,11 @@ timeProp(
   type = "default",
   cols = "Set1",
   normalise = FALSE,
-  x.relation = "same",
-  y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
-  strip.position = "top",
   date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
@@ -128,13 +125,6 @@ timeProp(
   is helpful to show the relative (percentage) contribution of the
   proportions.
 
-- x.relation, y.relation:
-
-  This determines how the x- and y-axis scales are plotted. `"same"`
-  ensures all panels use the same scale and `"free"` will use
-  panel-specific scales. The latter is a useful setting when plotting
-  data with very different values.
-
 - ref.x:
 
   Either a single value or values representing the x axis intercepts to
@@ -171,15 +161,6 @@ timeProp(
   Used to set the title of the legend. The legend title is passed to
   [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
   if `auto.text = TRUE`.
-
-- strip.position:
-
-  Location where the facet 'strips' are located when using `type`. When
-  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
-  or `"top"`. When two `type`s are provided, this argument defines
-  whether the strips are "switched" and can take either `"x"`, `"y"`, or
-  `"both"`. For example, `"x"` will switch the 'top' strip locations to
-  the bottom of the plot.
 
 - date.breaks:
 
@@ -225,8 +206,10 @@ timeProp(
   varying somewhat in different plotting functions:
 
   - `title`, `subtitle`, `caption`, `tag`, `xlab` and `ylab` control the
-    plot title, subtitle, caption, tag, x-axis label and y-axis label.
-    All of these are passed through to
+    plot title, subtitle, caption, tag, x-axis label and y-axis label,
+    passed to
+    [`ggplot2::labs()`](https://ggplot2.tidyverse.org/reference/labs.html)
+    via
     [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
     if `auto.text = TRUE`.
 
@@ -235,6 +218,20 @@ timeProp(
 
   - `ncol` and `nrow` set the number of columns and rows in a faceted
     plot.
+
+  - `scales` can be `"fixed"`, `"free_x"`, `"free_y"` or `"free"` to
+    control whether axes are shared across facets when using `type`.
+    Also supported are the legacy `x.relation` and `y.relation`, which
+    can be either `"same"` or `"free"` and get remapped to `scales`
+    automatically.
+
+  - Similarly, `space`, `axes`, `axis.labels`, `switch` and
+    `strip.position` can be used to customise the appearance of faceted
+    plots. See
+    [`ggplot2::facet_wrap()`](https://ggplot2.tidyverse.org/reference/facet_wrap.html)
+    and
+    [`ggplot2::facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html)
+    for the arguments these take.
 
   - `fontsize` overrides the overall font size of the plot by setting
     the `text` argument of

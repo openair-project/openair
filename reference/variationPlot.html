@@ -91,7 +91,6 @@ variables will be joined by a line.</p>
 <span>  ci <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"hue"</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.4</span>,</span>
-<span>  strip.position <span class="op">=</span> <span class="st">"top"</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"top"</span>,</span>
 <span>  key.columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  name.pol <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -214,15 +213,6 @@ See <code><a href="openColours.html">openColours()</a></code> and <code><a href=
 <code>0</code> is fully transparent and 1 is opaque. The default is <code>0.4</code>.</p></dd>
 
 
-<dt id="arg-strip-position">strip.position<a class="anchor" aria-label="anchor" href="#arg-strip-position"></a></dt>
-<dd><p>Location where the facet 'strips' are located when
-using <code>type</code>. When one <code>type</code> is provided, can be one of <code>"left"</code>,
-<code>"right"</code>, <code>"bottom"</code> or <code>"top"</code>. When two <code>type</code>s are provided, this
-argument defines whether the strips are "switched" and can take either
-<code>"x"</code>, <code>"y"</code>, or <code>"both"</code>. For example, <code>"x"</code> will switch the 'top' strip
-locations to the bottom of the plot.</p></dd>
-
-
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
 <dd><p>Location where the legend is to be placed. Allowed
 arguments include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"left"</code> and <code>"none"</code>,
@@ -262,11 +252,19 @@ to a file).</p></dd>
 <dd><p>Addition options are passed on to <code><a href="cutData.html">cutData()</a></code> for <code>type</code> handling.
 Some additional arguments are also available, varying somewhat in different
 plotting functions:</p><ul><li><p><code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>tag</code>, <code>xlab</code> and <code>ylab</code> control the plot
-title, subtitle, caption, tag, x-axis label and y-axis label. All of these
-are passed through to <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></li>
+title, subtitle, caption, tag, x-axis label and y-axis label, passed to
+<code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs()</a></code> via <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></li>
 <li><p><code>xlim</code>, <code>ylim</code> and <code>limits</code> control the limits of the x-axis, y-axis and
 colorbar scales.</p></li>
 <li><p><code>ncol</code> and <code>nrow</code> set the number of columns and rows in a faceted plot.</p></li>
+<li><p><code>scales</code> can be <code>"fixed"</code>, <code>"free_x"</code>, <code>"free_y"</code> or <code>"free"</code> to control
+whether axes are shared across facets when using <code>type</code>. Also supported are
+the legacy <code>x.relation</code> and <code>y.relation</code>, which can be either <code>"same"</code> or
+<code>"free"</code> and get remapped to <code>scales</code> automatically.</p></li>
+<li><p>Similarly, <code>space</code>, <code>axes</code>, <code>axis.labels</code>, <code>switch</code> and <code>strip.position</code>
+can be used to customise the appearance of faceted plots. See
+<code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">ggplot2::facet_wrap()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">ggplot2::facet_grid()</a></code> for the arguments these
+take.</p></li>
 <li><p><code>fontsize</code> overrides the overall font size of the plot by setting the
 <code>text</code> argument of <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code>. It may also be applied
 proportionately to any <code>openair</code> annotations (e.g., N/E/S/W labels on polar

@@ -30,15 +30,12 @@ scatterPlot(
   key.title = group,
   key.columns = 1,
   key.position = "right",
-  strip.position = "top",
   log.x = FALSE,
   log.y = FALSE,
   x.inc = NULL,
   y.inc = NULL,
   limits = NULL,
   windflow = NULL,
-  y.relation = "same",
-  x.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
   k = NA,
@@ -257,15 +254,6 @@ scatterPlot(
   `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`, the last of
   which removes the legend entirely.
 
-- strip.position:
-
-  Location where the facet 'strips' are located when using `type`. When
-  one `type` is provided, can be one of `"left"`, `"right"`, `"bottom"`
-  or `"top"`. When two `type`s are provided, this argument defines
-  whether the strips are "switched" and can take either `"x"`, `"y"`, or
-  `"both"`. For example, `"x"` will switch the 'top' strip locations to
-  the bottom of the plot.
-
 - log.x, log.y:
 
   Should the x-axis/y-axis appear on a log scale? The default is
@@ -292,13 +280,6 @@ scatterPlot(
   etc.). See
   [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md)
   for details.
-
-- x.relation, y.relation:
-
-  This determines how the x- and y-axis scales are plotted. `"same"`
-  ensures all panels use the same scale and `"free"` will use
-  panel-specific scales. The latter is a useful setting when plotting
-  data with very different values.
 
 - ref.x:
 

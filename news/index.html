@@ -59,12 +59,19 @@
 <a href="https://openair-project.github.io/openair/">openair</a> now suggests <a href="https://docs.ropensci.org/rnaturalearth/" class="external-link">rnaturalearth</a> over <a href="https://docs.ropensci.org/rnaturalearthdata/" class="external-link">rnaturalearthdata</a>. <a href="https://docs.ropensci.org/rnaturalearthdata/" class="external-link">rnaturalearthdata</a> is still required for a medium map resolution and <code>{rnaturalearthhires}</code> for a high map resolution, but these are now managed by <a href="https://docs.ropensci.org/rnaturalearth/" class="external-link">rnaturalearth</a> directly.</li>
 </ul></div>
 <div class="section level3">
+<h3 id="breaking-changes-development-version">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<ul><li>
+<code>strip.position</code>, <code>x.relation</code> and <code>y.relation</code> are now no longer function-level arguments and are handled via <code>...</code>. See “New Features” below for details.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
 <ul><li>
 <p>Refinements to how parameters are passed via <code>...</code> to plotting functions:</p>
 <ul><li><p>Graphical parameters are now defined using <code>ggplot2</code> conventions (e.g., <code>shape</code> over <code>pch</code>).</p></li>
 <li><p><code>base</code>/<code>lattice</code> paramters are automatically remapped to their <code>ggplot2</code> equivalent with a warning.</p></li>
 <li><p><code>nrow</code> and <code>ncol</code> can now be provided to control facet layout. As above, <code>layout</code> is automatically unpacked into <code>ncol</code> and <code>nrow</code> with a warning.</p></li>
+<li><p><code>scales</code> can now be provided to control facet scale restrictions. As above, <code>x.relation</code> and <code>y.relation</code> are automatically combined into <code>scales</code> with a warning.</p></li>
+<li><p><code>space</code>, <code>axes</code>, <code>axis.labels</code>, <code>strip.position</code> and <code>switch</code> are now passed to <code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">ggplot2::facet_wrap()</a></code> or <code><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">ggplot2::facet_grid()</a></code>.</p></li>
 <li><p><code>title</code>, <code>subtitle</code>, <code>tag</code>, and <code>caption</code> can be used throughout <code>openair</code> (<code>title</code> replacing <code>main</code> and <code>caption</code> replacing <code>sub</code>). All are passed through <code><a href="../reference/quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></li>
 <li><p><code>lineend</code>, <code>linejoin</code> and <code>linemitre</code> tweak the appearance of line plots; see <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">ggplot2::geom_line()</a></code> for more information.</p></li>
 </ul></li>

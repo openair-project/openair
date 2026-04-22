@@ -12,6 +12,12 @@
   for a high map resolution, but these are now managed by
   [rnaturalearth](https://docs.ropensci.org/rnaturalearth/) directly.
 
+### Breaking Changes
+
+- `strip.position`, `x.relation` and `y.relation` are now no longer
+  function-level arguments and are handled via `...`. See “New Features”
+  below for details.
+
 ### New Features
 
 - Refinements to how parameters are passed via `...` to plotting
@@ -26,6 +32,16 @@
   - `nrow` and `ncol` can now be provided to control facet layout. As
     above, `layout` is automatically unpacked into `ncol` and `nrow`
     with a warning.
+
+  - `scales` can now be provided to control facet scale restrictions. As
+    above, `x.relation` and `y.relation` are automatically combined into
+    `scales` with a warning.
+
+  - `space`, `axes`, `axis.labels`, `strip.position` and `switch` are
+    now passed to
+    [`ggplot2::facet_wrap()`](https://ggplot2.tidyverse.org/reference/facet_wrap.html)
+    or
+    [`ggplot2::facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html).
 
   - `title`, `subtitle`, `tag`, and `caption` can be used throughout
     `openair` (`title` replacing `main` and `caption` replacing `sub`).

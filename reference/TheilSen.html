@@ -86,8 +86,6 @@ day of the week or a certain time of day are unexpected.</p>
 <span>  dec.place <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  lab.frac <span class="op">=</span> <span class="fl">0.99</span>,</span>
 <span>  lab.cex <span class="op">=</span> <span class="fl">0.8</span>,</span>
-<span>  x.relation <span class="op">=</span> <span class="st">"same"</span>,</span>
-<span>  y.relation <span class="op">=</span> <span class="st">"same"</span>,</span>
 <span>  ref.x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref.y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  data.col <span class="op">=</span> <span class="st">"cornflowerblue"</span>,</span>
@@ -100,7 +98,6 @@ day of the week or a certain time of day are unexpected.</p>
 <span>  slope.percent <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  date.breaks <span class="op">=</span> <span class="fl">7</span>,</span>
 <span>  date.format <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  strip.position <span class="op">=</span> <span class="st">"top"</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  silent <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
@@ -193,13 +190,6 @@ be printed at, default 0.99.</p></dd>
 <dd><p>Size of text for trend information.</p></dd>
 
 
-<dt id="arg-x-relation-y-relation">x.relation, y.relation<a class="anchor" aria-label="anchor" href="#arg-x-relation-y-relation"></a></dt>
-<dd><p>This determines how the x- and y-axis scales are
-plotted. <code>"same"</code> ensures all panels use the same scale and <code>"free"</code> will
-use panel-specific scales. The latter is a useful setting when plotting
-data with very different values.</p></dd>
-
-
 <dt id="arg-ref-x">ref.x<a class="anchor" aria-label="anchor" href="#arg-ref-x"></a></dt>
 <dd><p>Either a single value or values representing the x axis
 intercepts to draw lines, or a list such as that provided by <code><a href="refOpts.html">refOpts()</a></code> to
@@ -283,15 +273,6 @@ override this. For format types see <code><a href="https://rdrr.io/r/base/strpti
 the date like "Jan-2012" set <code>date.format = "\%b-\%Y"</code>.</p></dd>
 
 
-<dt id="arg-strip-position">strip.position<a class="anchor" aria-label="anchor" href="#arg-strip-position"></a></dt>
-<dd><p>Location where the facet 'strips' are located when
-using <code>type</code>. When one <code>type</code> is provided, can be one of <code>"left"</code>,
-<code>"right"</code>, <code>"bottom"</code> or <code>"top"</code>. When two <code>type</code>s are provided, this
-argument defines whether the strips are "switched" and can take either
-<code>"x"</code>, <code>"y"</code>, or <code>"both"</code>. For example, <code>"x"</code> will switch the 'top' strip
-locations to the bottom of the plot.</p></dd>
-
-
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
 <dd><p>When <code>openair</code> plots are created they are automatically printed
 to the active graphics device. <code>plot = FALSE</code> deactivates this behaviour.
@@ -309,11 +290,19 @@ progress.</p></dd>
 <dd><p>Addition options are passed on to <code><a href="cutData.html">cutData()</a></code> for <code>type</code> handling.
 Some additional arguments are also available, varying somewhat in different
 plotting functions:</p><ul><li><p><code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>tag</code>, <code>xlab</code> and <code>ylab</code> control the plot
-title, subtitle, caption, tag, x-axis label and y-axis label. All of these
-are passed through to <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></li>
+title, subtitle, caption, tag, x-axis label and y-axis label, passed to
+<code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs()</a></code> via <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></li>
 <li><p><code>xlim</code>, <code>ylim</code> and <code>limits</code> control the limits of the x-axis, y-axis and
 colorbar scales.</p></li>
 <li><p><code>ncol</code> and <code>nrow</code> set the number of columns and rows in a faceted plot.</p></li>
+<li><p><code>scales</code> can be <code>"fixed"</code>, <code>"free_x"</code>, <code>"free_y"</code> or <code>"free"</code> to control
+whether axes are shared across facets when using <code>type</code>. Also supported are
+the legacy <code>x.relation</code> and <code>y.relation</code>, which can be either <code>"same"</code> or
+<code>"free"</code> and get remapped to <code>scales</code> automatically.</p></li>
+<li><p>Similarly, <code>space</code>, <code>axes</code>, <code>axis.labels</code>, <code>switch</code> and <code>strip.position</code>
+can be used to customise the appearance of faceted plots. See
+<code><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">ggplot2::facet_wrap()</a></code> and <code><a href="https://ggplot2.tidyverse.org/reference/facet_grid.html" class="external-link">ggplot2::facet_grid()</a></code> for the arguments these
+take.</p></li>
 <li><p><code>fontsize</code> overrides the overall font size of the plot by setting the
 <code>text</code> argument of <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code>. It may also be applied
 proportionately to any <code>openair</code> annotations (e.g., N/E/S/W labels on polar
