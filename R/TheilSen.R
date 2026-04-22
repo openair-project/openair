@@ -183,6 +183,8 @@ TheilSen <- function(
   dec.place = 2,
   lab.frac = 0.99,
   lab.cex = 0.8,
+  ref.x = NULL,
+  ref.y = NULL,
   data.col = "cornflowerblue",
   trend = list(lty = c(1, 5), lwd = c(2, 1), col = c("red", "red")),
   text.col = "darkgreen",
@@ -306,6 +308,8 @@ TheilSen <- function(
     data.col = data.col,
     trend = trend,
     extra.args = extra.args,
+    ref.x = ref.x,
+    ref.y = ref.y,
     auto.text = auto.text,
     date.breaks = date.breaks,
     date.format = date.format
@@ -519,6 +523,8 @@ build_theilsen_plot <- function(
   data.col,
   trend,
   extra.args,
+  ref.x,
+  ref.y,
   auto.text,
   date.breaks,
   date.format
@@ -528,10 +534,12 @@ build_theilsen_plot <- function(
   upper_var <- if (slope.percent) "upper.percent" else "upper"
   units_str <- if (slope.percent) "%" else "units"
 
-  x_scale_fun <- if (lubridate::is.Date(split.data$date)) {
-    ggplot2::scale_x_date
+  if (lubridate::is.Date(split.data$date)) {
+    x_type <- "date"
+    x_scale_fun <- ggplot2::scale_x_date
   } else {
-    ggplot2::scale_x_datetime
+    x_type <- "datetime"
+    x_scale_fun <- ggplot2::scale_x_datetime
   }
 
   ggplot2::ggplot() +
@@ -582,6 +590,17 @@ build_theilsen_plot <- function(
       color = trend$col[2],
       linewidth = trend$lwd[2] / 2,
       linetype = trend$lty[2]
+    ) +
+    layer_ref(
+      ref = ref.x,
+      which = "x",
+      type = x_type,
+      tz = lubridate::tz(split.data$date)
+    ) +
+    layer_ref(
+      ref = ref.y,
+      which = "y",
+      type = "numeric"
     ) +
     ggplot2::geom_text(
       data = res2,

@@ -26,7 +26,7 @@
     
     - `lineend`, `linejoin` and `linemitre` tweak the appearance of line plots; see `ggplot2::geom_line()` for more information.
 
-- Additional interaction between `...` parameters and various plots:
+- Additional interactions between `...` parameters and various plots:
 
     - `timePlot()` now takes `shape` to add markers to the line chart. This can be a vector to vary with pollutant/group.
     
@@ -35,6 +35,18 @@
     - `TheilSen()` now takes `linewidth`, `linetype`, `shape` and `alpha`.
     
     - `smoothTrend()` now takes `linetype`, `linewidth`, `shape` and `size`. These can be vectors to vary based on pollutant. The linewidth of the data will always be half of that of the model.
+
+- Refinements to how `ref.x` and `ref.y` behave throughout `{openair}`:
+
+    - `ref.x` and `ref.y` can now take a vector rather than a list, which will just use those values as the x/y intercept with default graphical parameters.
+    
+    - `ref.x` and `ref.y` have been added to `timeProp()` and `TheilSen()`.
+    
+    - `ref.x` and `ref.y` can now take `{ggplot2}`-style parameters (`intercept`, `alpha`, `colour`, `linetype`, `linewidth`). The old parameter names (`h`/`v`, `cols`, `lty` and `lwd`) are automatically remapped so still work.
+    
+    - The non-intercept arguments passed to `ref.x` and `ref.y` (e.g., `alpha`) are now automatically recycled to the length of `intercept`, similar to how `...` parameters are recycled.
+
+    - Added `refOpts()` to help construct values for `ref.x` and `ref.y`, similar to `windflowOpts()`.
 
 - Refinements to how `breaks` and `labels` are implemented in functions like `trendLevel()`:
 

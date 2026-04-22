@@ -528,6 +528,7 @@ recycle_to_length <- function(x, n, expect1 = FALSE) {
     while (length(x) < n) {
       x <- c(x, x)
     }
-    x <- x[seq_len(x)]
+    x <- x[seq_len(n)]
   }
+  x
 }

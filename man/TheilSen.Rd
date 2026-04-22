@@ -17,6 +17,8 @@ TheilSen(
   dec.place = 2,
   lab.frac = 0.99,
   lab.cex = 0.8,
+  ref.x = NULL,
+  ref.y = NULL,
   data.col = "cornflowerblue",
   trend = list(lty = c(1, 5), lwd = c(2, 1), col = c("red", "red")),
   text.col = "darkgreen",
@@ -94,6 +96,16 @@ at. The default is 2.}
 be printed at, default 0.99.}
 
 \item{lab.cex}{Size of text for trend information.}
+
+\item{ref.x}{Either a single value or values representing the x axis
+intercepts to draw lines, or a list such as that provided by \code{\link[=refOpts]{refOpts()}} to
+customise the colour/width/type/etc. of each line. See \code{\link[=refOpts]{refOpts()}} for more
+details.}
+
+\item{ref.y}{Either a single value or values representing the y axis
+intercepts to draw lines, or a list such as that provided by \code{\link[=refOpts]{refOpts()}} to
+customise the colour/width/type/etc. of each line. See \code{\link[=refOpts]{refOpts()}} for more
+details.}
 
 \item{data.col}{Colour name for the data}
 

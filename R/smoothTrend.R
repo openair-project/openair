@@ -309,8 +309,8 @@ smoothTrend <- function(
       linejoin = extra.args$linejoin %||% "round",
       linemitre = extra.args$linemitre %||% 10
     ) +
-    gg_ref_x(ref.x = ref.x) +
-    gg_ref_y(ref.y = ref.y) +
+    layer_ref(ref = ref.x, "x", "datetime", tz = lubridate::tz(newdata$date)) +
+    layer_ref(ref = ref.y, "y", "numeric") +
     theme_openair(key.position, extra.args = extra.args) +
     ggplot2::scale_fill_manual(
       values = resolve_colour_opts(

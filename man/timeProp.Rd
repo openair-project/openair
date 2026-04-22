@@ -12,6 +12,8 @@ timeProp(
   type = "default",
   cols = "Set1",
   normalise = FALSE,
+  ref.x = NULL,
+  ref.y = NULL,
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
@@ -43,7 +45,7 @@ followed by a space. For example, an average of 2 months would be \code{avg.time
 3-month seasonal values are calculated with spring defined as March, April,
 May and so on.
 
-Note that \code{avg.time} when used in \code{timeProp} should be greater than the
+Note that \code{avg.time} when used in \code{\link[=timeProp]{timeProp()}} should be greater than the
 time gap in the original data. For example, \code{avg.time = "day"} for hourly
 data is OK, but \code{avg.time = "hour"} for daily data is not.}
 
@@ -79,6 +81,16 @@ See \code{\link[=openColours]{openColours()}} and \code{\link[=colourOpts]{colou
 \item{normalise}{If \code{normalise = TRUE} then each time interval is scaled to
 100. This is helpful to show the relative (percentage) contribution of the
 proportions.}
+
+\item{ref.x}{Either a single value or values representing the x axis
+intercepts to draw lines, or a list such as that provided by \code{\link[=refOpts]{refOpts()}} to
+customise the colour/width/type/etc. of each line. See \code{\link[=refOpts]{refOpts()}} for more
+details.}
+
+\item{ref.y}{Either a single value or values representing the y axis
+intercepts to draw lines, or a list such as that provided by \code{\link[=refOpts]{refOpts()}} to
+customise the colour/width/type/etc. of each line. See \code{\link[=refOpts]{refOpts()}} for more
+details.}
 
 \item{key.columns}{Number of columns to be used in a categorical legend. With
 many categories a single column can make to key too wide. The user can thus
