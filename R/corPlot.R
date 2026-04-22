@@ -119,7 +119,6 @@ corPlot <- function(
   text.col = c("black", "black"),
   key.title = NULL,
   key.position = "right",
-  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   key = NULL,
@@ -136,6 +135,9 @@ corPlot <- function(
 
   # extra.args setup
   extra.args <- capture_dots(...)
+
+  # fix the scales arg
+  extra.args$scales <- extra.args$scales %||% "free"
 
   # check if key.header / key.footer are being used
   key.title <- check_key_header(key.title, extra.args)
@@ -443,9 +445,7 @@ corPlot <- function(
     get_facet(
       type,
       extra.args,
-      scales = "free",
       auto.text = auto.text,
-      strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     ) +
     theme_openair(key.position, extra.args = extra.args) +

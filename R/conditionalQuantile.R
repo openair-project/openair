@@ -114,7 +114,6 @@ conditionalQuantile <- function(
   cols = "YlOrRd",
   key.columns = 2,
   key.position = "bottom",
-  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   key = NULL,
@@ -380,9 +379,7 @@ conditionalQuantile <- function(
     get_facet(
       type,
       extra.args,
-      "fixed",
       auto.text,
-      strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     ) +
     theme_openair(key.position, extra.args = extra.args) +

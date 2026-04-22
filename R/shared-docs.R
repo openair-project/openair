@@ -71,11 +71,6 @@
 #'   `breaks` if a single value is given, or equal to `length(breaks)-1` if
 #'   `breaks` is a vector.
 #'
-#' @param x.relation,y.relation This determines how the x- and y-axis scales are
-#'   plotted. `"same"` ensures all panels use the same scale and `"free"` will
-#'   use panel-specific scales. The latter is a useful setting when plotting
-#'   data with very different values.
-#'
 #' @param ref.x Either a single value or values representing the x axis
 #'   intercepts to draw lines, or a list such as that provided by [refOpts()] to
 #'   customise the colour/width/type/etc. of each line. See [refOpts()] for more
@@ -114,13 +109,6 @@
 #'   choose to use several columns by setting `key.columns` to be less than the
 #'   number of categories.
 #'
-#' @param strip.position Location where the facet 'strips' are located when
-#'   using `type`. When one `type` is provided, can be one of `"left"`,
-#'   `"right"`, `"bottom"` or `"top"`. When two `type`s are provided, this
-#'   argument defines whether the strips are "switched" and can take either
-#'   `"x"`, `"y"`, or `"both"`. For example, `"x"` will switch the 'top' strip
-#'   locations to the bottom of the plot.
-#'
 #' @param auto.text Either `TRUE` (default) or `FALSE`. If `TRUE` titles and
 #'   axis labels will automatically try and format pollutant names and units
 #'   properly, e.g., by subscripting the "2" in "NO2". Passed to [quickText()].
@@ -139,13 +127,23 @@
 #'   plotting functions:
 #'
 #'   - `title`, `subtitle`, `caption`, `tag`, `xlab` and `ylab` control the plot
-#'   title, subtitle, caption, tag, x-axis label and y-axis label. All of these
-#'   are passed through to [quickText()] if `auto.text = TRUE`.
+#'   title, subtitle, caption, tag, x-axis label and y-axis label, passed to
+#'   [ggplot2::labs()] via [quickText()] if `auto.text = TRUE`.
 #'
 #'   - `xlim`, `ylim` and `limits` control the limits of the x-axis, y-axis and
 #'   colorbar scales.
 #'
 #'   - `ncol` and `nrow` set the number of columns and rows in a faceted plot.
+#'
+#'   - `scales` can be `"fixed"`, `"free_x"`, `"free_y"` or `"free"` to control
+#'   whether axes are shared across facets when using `type`. Also supported are
+#'   the legacy `x.relation` and `y.relation`, which can be either `"same"` or
+#'   `"free"` and get remapped to `scales` automatically.
+#'
+#'   - Similarly, `space`, `axes`, `axis.labels`, `switch` and `strip.position`
+#'   can be used to customise the appearance of faceted plots. See
+#'   [ggplot2::facet_wrap()] and [ggplot2::facet_grid()] for the arguments these
+#'   take.
 #'
 #'   - `fontsize` overrides the overall font size of the plot by setting the
 #'   `text` argument of [ggplot2::theme()]. It may also be applied

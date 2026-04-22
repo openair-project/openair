@@ -64,14 +64,11 @@ timeProp <- function(
   type = "default",
   cols = "Set1",
   normalise = FALSE,
-  x.relation = "same",
-  y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
-  strip.position = "top",
   date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
@@ -285,10 +282,8 @@ timeProp <- function(
     get_facet(
       type,
       extra.args,
-      scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text,
       drop = TRUE,
-      strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     )
 

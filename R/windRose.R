@@ -164,7 +164,6 @@ windRose <- function(
   paddle = TRUE,
   key.title = "(m/s)",
   key.position = "bottom",
-  strip.position = "top",
   dig.lab = 5,
   include.lowest = FALSE,
   statistic = "prop.count",
@@ -506,9 +505,7 @@ windRose <- function(
       get_facet(
         type,
         extra.args,
-        scales = "fixed",
         auto.text = auto.text,
-        strip.position = strip.position,
         drop = FALSE,
         wd.res = extra.args$wd.res %||% 8
       )
@@ -847,9 +844,7 @@ windRose <- function(
     get_facet(
       type,
       extra.args,
-      scales = "fixed",
       auto.text = auto.text,
-      strip.position = strip.position,
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     )

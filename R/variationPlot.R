@@ -109,7 +109,6 @@ variationPlot <- function(
   ci = TRUE,
   cols = "hue",
   alpha = 0.4,
-  strip.position = "top",
   key.position = "top",
   key.columns = NULL,
   name.pol = NULL,
@@ -480,10 +479,8 @@ variationPlot <- function(
     get_facet(
       if (all(type == "default")) "default" else type_cols,
       extra.args,
-      scales = "fixed",
       auto.text = auto.text,
       drop = FALSE,
-      strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     ) +
     ggplot2::labs(

@@ -126,7 +126,6 @@ percentileRose <- function(
   auto.text = TRUE,
   key.title = NULL,
   key.position = "bottom",
-  strip.position = "top",
   plot = TRUE,
   key = NULL,
   ...
@@ -550,10 +549,8 @@ percentileRose <- function(
     get_facet(
       type = type,
       extra.args = extra.args,
-      scales = "fixed",
       auto.text = auto.text,
       drop = FALSE,
-      strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     )
 

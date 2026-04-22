@@ -4,6 +4,10 @@
 
 - `{openair}` now suggests `{rnaturalearth}` over `{rnaturalearthdata}`. `{rnaturalearthdata}` is still required for a medium map resolution and `{rnaturalearthhires}` for a high map resolution, but these are now managed by `{rnaturalearth}` directly.
 
+## Breaking Changes
+
+- `strip.position`, `x.relation` and `y.relation` are now no longer function-level arguments and are handled via `...`. See "New Features" below for details.
+
 ## New Features
 
 - Refinements to how parameters are passed via `...` to plotting functions:
@@ -13,6 +17,10 @@
     - `base`/`lattice` paramters are automatically remapped to their `ggplot2` equivalent with a warning.
     
     - `nrow` and `ncol` can now be provided to control facet layout. As above, `layout` is automatically unpacked into `ncol` and `nrow` with a warning.
+    
+    - `scales` can now be provided to control facet scale restrictions. As above, `x.relation` and `y.relation` are automatically combined into `scales` with a warning.
+    
+    - `space`, `axes`, `axis.labels`, `strip.position` and `switch` are now passed to `ggplot2::facet_wrap()` or `ggplot2::facet_grid()`.
 
     - `title`, `subtitle`, `tag`, and `caption` can be used throughout `openair` (`title` replacing `main` and `caption` replacing `sub`). All are passed through `quickText()` if `auto.text = TRUE`.
     

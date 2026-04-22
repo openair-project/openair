@@ -345,8 +345,10 @@ check_key_position <- function(key.position, key) {
 # parameter names, with warnings about any parameters that are being remapped or
 # ignored
 capture_dots <- function(...) {
+  # capture the args as a list
   extra.args <- rlang::list2(...)
 
+  # conversions from lattice to ggplot2
   lattice_map <- list(
     pch = list(to = "shape", transform = NULL),
     col = list(to = "colour", transform = NULL),
@@ -363,6 +365,7 @@ capture_dots <- function(...) {
     })
   )
 
+  # parameters that do not cleanly map onto ggplot2
   lattice_only <- c(
     "fin",
     "pin",
@@ -376,9 +379,12 @@ capture_dots <- function(...) {
     "tcl"
   )
 
+  # get args that can be converted to ggplot2 in ...
   found_convertible <- names(extra.args)[
     names(extra.args) %in% names(lattice_map)
   ]
+
+  # if any params are going to be converted, warn about this
   if (length(found_convertible) > 0) {
     bullets <- vapply(
       found_convertible,
@@ -391,15 +397,19 @@ capture_dots <- function(...) {
     )
     names(bullets) <- rep("*", length(bullets))
     cli::cli_warn(c(
-      "The following {.pkg lattice}/{.pkg base} graphical parameters will be converted to {.pkg ggplot2} equivalents:",
+      "The following {.pkg lattice}/{.pkg base} graphical parameters will be \\
+      converted to {.pkg ggplot2} equivalents:",
       bullets
     ))
   }
 
+  # if any params are not converted, also warn
   found_no_equivalent <- names(extra.args)[names(extra.args) %in% lattice_only]
   if (length(found_no_equivalent) > 0) {
     cli::cli_warn(c(
-      "The following {.pkg lattice}/{.pkg base} graphical parameters have no {.pkg ggplot2} equivalent and will be ignored. Some of these parameters may have equivalents within {.fun ggplot2::theme}.",
+      "The following {.pkg lattice}/{.pkg base} graphical parameters have \\
+      no {.pkg ggplot2} equivalent and will be ignored. Some of these \\ 
+      parameters may have equivalents within {.fun ggplot2::theme}.",
       purrr::map_vec(
         found_no_equivalent,
         \(p) {
@@ -410,6 +420,7 @@ capture_dots <- function(...) {
     ))
   }
 
+  # transform args
   for (param in names(lattice_map)) {
     if (param %in% names(extra.args)) {
       mapping <- lattice_map[[param]]
@@ -430,9 +441,35 @@ capture_dots <- function(...) {
     }
   }
 
+  # delete unmappable args
   extra.args[found_no_equivalent] <- NULL
 
-  return(extra.args)
+  # Resolve x.relation / y.relation -> scales
+  if (any(c("x.relation", "y.relation") %in% names(extra.args))) {
+    x_rel <- extra.args[["x.relation"]] %||% "same"
+    y_rel <- extra.args[["y.relation"]] %||% "same"
+
+    scales_val <- dplyr::case_when(
+      x_rel == "free" & y_rel == "free" ~ "free",
+      x_rel == "free" & y_rel == "same" ~ "free_x",
+      x_rel == "same" & y_rel == "free" ~ "free_y",
+      .default = "fixed"
+    )
+
+    if (is.null(extra.args[["scales"]])) {
+      extra.args[["scales"]] <- scales_val
+      cli::cli_warn(c(
+        "{.arg x.relation}/{.arg y.relation} converted to \\
+        {.code scales = {.val {scales_val}}} for {.fun ggplot2::facet_wrap} \\
+        or {.fun ggplot2::facet_grid}."
+      ))
+    }
+
+    extra.args[["x.relation"]] <- NULL
+    extra.args[["y.relation"]] <- NULL
+  }
+
+  extra.args
 }
 
 # Handle cutting numeric vectors for discretising plots

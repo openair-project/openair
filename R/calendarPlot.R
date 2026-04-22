@@ -189,7 +189,6 @@ calendarPlot <-
     show.year = TRUE,
     key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
-    strip.position = "top",
     auto.text = TRUE,
     plot = TRUE,
     key = NULL,
@@ -255,6 +254,9 @@ calendarPlot <-
 
     # extra args
     extra.args <- capture_dots(...)
+
+    # if no axes set, use all_x for a nice default
+    extra.args$axes <- extra.args$axes %||% "all_x"
 
     # label controls
     extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
@@ -528,10 +530,7 @@ calendarPlot <-
         type,
         extra.args,
         auto.text = auto.text,
-        scales = "fixed",
-        drop = remove.empty,
-        strip.position = strip.position,
-        axes = "all_x"
+        drop = remove.empty
       ) +
       ggplot2::coord_cartesian(expand = FALSE, ratio = 1) +
       theme_openair(key.position = key.position, extra.args = extra.args) +

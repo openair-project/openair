@@ -221,7 +221,6 @@ TaylorDiagram <- function(
   key.title = group,
   key.columns = 1,
   key.position = "right",
-  strip.position = "top",
   auto.text = TRUE,
   plot = TRUE,
   key = NULL,
@@ -595,10 +594,8 @@ TaylorDiagram <- function(
     get_facet(
       type,
       extra.args,
-      scales = "fixed",
       auto.text = auto.text,
       drop = FALSE,
-      strip.position = strip.position,
       wd.res = extra.args$wd.res %||% 8
     )
 

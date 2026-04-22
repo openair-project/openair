@@ -96,13 +96,10 @@ smoothTrend <- function(
   autocor = FALSE,
   type = "default",
   cols = "brewer1",
-  x.relation = "same",
-  y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
   key.columns = 1,
   key.position = "bottom",
-  strip.position = "top",
   name.pol = NULL,
   date.breaks = 7,
   date.format = NULL,
@@ -126,10 +123,6 @@ smoothTrend <- function(
     )
     percentile <- percentile[1]
   }
-
-  # check avg.time
-  rlang::arg_match(x.relation, c("same", "free"))
-  rlang::arg_match(y.relation, c("same", "free"))
 
   # set stat to percentile if user provides some
   if (!missing(percentile) && statistic != "percentile") {
@@ -387,9 +380,7 @@ smoothTrend <- function(
     get_facet(
       type = type,
       extra.args = extra.args,
-      scales = relation_to_facet_scales(x.relation, y.relation),
       auto.text = auto.text,
-      strip.position = strip.position,
       drop = TRUE,
       wd.res = extra.args$wd.res %||% 8
     ) +

@@ -148,29 +148,33 @@ user_has_set_theme <- function() {
 get_facet <- function(
   type,
   extra.args,
-  scales,
   auto.text,
   drop = FALSE,
-  strip.position = "top",
-  wd.res = 8,
-  ...
+  wd.res = 8
 ) {
   fun <- NULL
   if (any(type != "default")) {
+    # need special handling for strip.position
+    strip.position <- extra.args$strip.position %||% "top"
+
+    # one type - wrapped 2D grid
     if (length(type) == 1) {
+      # if invalid strip.position, just set it to top
       if (!strip.position %in% c("top", "bottom", "left", "right")) {
         strip.position <- "top"
       }
 
+      # special handling for wd, else normal facet_wrap
       if (type %in% c("wd", "wd_type")) {
         fun <-
           facet_wd(
             ggplot2::vars(.data[[type]]),
             labeller = labeller_openair(auto_text = auto.text),
-            scales = scales,
+            scales = extra.args$scales %||% "fixed",
+            axes = extra.args$axes %||% "margins",
+            axis.labels = extra.args$axis.labels %||% "all",
             strip.position = strip.position,
-            resolution = wd.res,
-            ...
+            resolution = wd.res
           )
       } else {
         fun <-
@@ -184,12 +188,15 @@ get_facet <- function(
             nrow = if (rlang::is_integerish(extra.args$nrow, finite = TRUE)) {
               extra.args$nrow
             },
-            scales = scales,
-            strip.position = strip.position,
-            ...
+            scales = extra.args$scales %||% "fixed",
+            space = extra.args$space %||% "fixed",
+            axes = extra.args$axes %||% "margins",
+            axis.labels = extra.args$axis.labels %||% "all",
+            strip.position = strip.position
           )
       }
     } else {
+      # two types - 2D matrix
       if (!strip.position %in% c("x", "y", "both")) {
         strip.position <- NULL
       }
@@ -200,27 +207,17 @@ get_facet <- function(
           cols = ggplot2::vars(.data[[type[1]]]),
           rows = ggplot2::vars(.data[[type[2]]]),
           labeller = labeller_openair(auto_text = auto.text),
-          scales = scales,
-          switch = strip.position,
-          ...
+          scales = extra.args$scales %||% "fixed",
+          space = extra.args$space %||% "fixed",
+          axes = extra.args$axes %||% "margins",
+          axis.labels = extra.args$axis.labels %||% "all",
+          switch = extra.args$switch %||% extra.args$strip.position
         )
     }
   }
+
   fun
 }
-
-# convert `lattice` 'relation' to `ggplot2`
-relation_to_facet_scales <- function(x.relation, y.relation) {
-  x.relation <- x.relation == "free"
-  y.relation <- y.relation == "free"
-  dplyr::case_when(
-    x.relation && !y.relation ~ "free_x",
-    !x.relation && y.relation ~ "free_y",
-    x.relation && y.relation ~ "free",
-    !x.relation && !y.relation ~ "fixed"
-  )
-}
-
 
 # Scales ------------------------------------------------------------------
 

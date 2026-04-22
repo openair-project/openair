@@ -344,9 +344,7 @@ polarCluster <-
       get_facet(
         ifelse(dplyr::n_distinct(results.grid$nclust) > 1, "nclust", "default"),
         extra.args = extra.args,
-        scales = "fixed",
         auto.text = auto.text,
-        strip.position = extra.args$strip.position %||% "top",
         wd.res = extra.args$wd.res %||% 8
       ) +
       ggplot2::guides(

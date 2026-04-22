@@ -23,13 +23,10 @@ timePlot(
   smooth = FALSE,
   smooth_k = NULL,
   ci = TRUE,
-  x.relation = "same",
-  y.relation = "same",
   ref.x = NULL,
   ref.y = NULL,
   key.columns = NULL,
   key.position = "bottom",
-  strip.position = "top",
   name.pol = pollutant,
   date.breaks = 7,
   date.format = NULL,
@@ -193,11 +190,6 @@ avoid over-fitting.}
 \item{ci}{If a smooth fit line is applied, then \code{ci} determines whether the
 95 percent confidence intervals are shown.}
 
-\item{x.relation, y.relation}{This determines how the x- and y-axis scales are
-plotted. \code{"same"} ensures all panels use the same scale and \code{"free"} will
-use panel-specific scales. The latter is a useful setting when plotting
-data with very different values.}
-
 \item{ref.x}{Either a single value or values representing the x axis
 intercepts to draw lines, or a list such as that provided by \code{\link[=refOpts]{refOpts()}} to
 customise the colour/width/type/etc. of each line. See \code{\link[=refOpts]{refOpts()}} for more
@@ -216,13 +208,6 @@ number of categories.}
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}
-
-\item{strip.position}{Location where the facet 'strips' are located when
-using \code{type}. When one \code{type} is provided, can be one of \code{"left"},
-\code{"right"}, \code{"bottom"} or \code{"top"}. When two \code{type}s are provided, this
-argument defines whether the strips are "switched" and can take either
-\code{"x"}, \code{"y"}, or \code{"both"}. For example, \code{"x"} will switch the 'top' strip
-locations to the bottom of the plot.}
 
 \item{name.pol}{This option can be used to give alternative names for the
 variables plotted. Instead of taking the column headings as names, the user
@@ -258,11 +243,19 @@ Some additional arguments are also available, varying somewhat in different
 plotting functions:
 \itemize{
 \item \code{title}, \code{subtitle}, \code{caption}, \code{tag}, \code{xlab} and \code{ylab} control the plot
-title, subtitle, caption, tag, x-axis label and y-axis label. All of these
-are passed through to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.
+title, subtitle, caption, tag, x-axis label and y-axis label, passed to
+\code{\link[ggplot2:labs]{ggplot2::labs()}} via \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.
 \item \code{xlim}, \code{ylim} and \code{limits} control the limits of the x-axis, y-axis and
 colorbar scales.
 \item \code{ncol} and \code{nrow} set the number of columns and rows in a faceted plot.
+\item \code{scales} can be \code{"fixed"}, \code{"free_x"}, \code{"free_y"} or \code{"free"} to control
+whether axes are shared across facets when using \code{type}. Also supported are
+the legacy \code{x.relation} and \code{y.relation}, which can be either \code{"same"} or
+\code{"free"} and get remapped to \code{scales} automatically.
+\item Similarly, \code{space}, \code{axes}, \code{axis.labels}, \code{switch} and \code{strip.position}
+can be used to customise the appearance of faceted plots. See
+\code{\link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}} and \code{\link[ggplot2:facet_grid]{ggplot2::facet_grid()}} for the arguments these
+take.
 \item \code{fontsize} overrides the overall font size of the plot by setting the
 \code{text} argument of \code{\link[ggplot2:theme]{ggplot2::theme()}}. It may also be applied
 proportionately to any \code{openair} annotations (e.g., N/E/S/W labels on polar

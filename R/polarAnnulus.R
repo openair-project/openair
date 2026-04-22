@@ -154,7 +154,6 @@ polarAnnulus <-
     normalise = FALSE,
     breaks = NULL,
     labels = NULL,
-    strip.position = "top",
     key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
     auto.text = TRUE,
@@ -671,10 +670,8 @@ polarAnnulus <-
       get_facet(
         type = type,
         extra.args = extra.args,
-        scales = "fixed",
         auto.text = auto.text,
         drop = FALSE,
-        strip.position = strip.position,
         wd.res = extra.args$wd.res %||% 8
       ) +
       ggplot2::guides(
