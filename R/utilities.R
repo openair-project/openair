@@ -245,7 +245,7 @@ pad_string <- function(y, n = NULL) {
 #' available observations, then predicts at missing positions. Falls back to
 #' the single observed value (1 obs) or the overall mean (0 obs).
 #'
-#' @param myts A \code{ts} object with frequency 12.
+#' @param myts A `ts` object with frequency 12.
 #' @param pollutant Character string naming the pollutant, used in the message.
 #' @noRd
 fill_ts_gaps <- function(myts, pollutant) {
