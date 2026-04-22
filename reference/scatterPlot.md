@@ -300,13 +300,23 @@ scatterPlot(
   panel-specific scales. The latter is a useful setting when plotting
   data with very different values.
 
-- ref.x, ref.y:
+- ref.x:
 
-  A list with details of the horizontal or vertical lines to be added
-  representing reference line(s). For example,
-  `ref.y = list(h = 50, lty = 5)` will add a dashed horizontal line
-  at 50. Several lines can be plotted e.g.
-  `ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))`.
+  Either a single value or values representing the x axis intercepts to
+  draw lines, or a list such as that provided by
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  to customise the colour/width/type/etc. of each line. See
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  for more details.
+
+- ref.y:
+
+  Either a single value or values representing the y axis intercepts to
+  draw lines, or a list such as that provided by
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  to customise the colour/width/type/etc. of each line. See
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  for more details.
 
 - k:
 

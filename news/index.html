@@ -69,11 +69,19 @@
 <li><p><code>lineend</code>, <code>linejoin</code> and <code>linemitre</code> tweak the appearance of line plots; see <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">ggplot2::geom_line()</a></code> for more information.</p></li>
 </ul></li>
 <li>
-<p>Additional interaction between <code>...</code> parameters and various plots:</p>
+<p>Additional interactions between <code>...</code> parameters and various plots:</p>
 <ul><li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> now takes <code>shape</code> to add markers to the line chart. This can be a vector to vary with pollutant/group.</p></li>
 <li><p><code><a href="../reference/timeProp.html">timeProp()</a></code> now takes <code>linewidth</code> and <code>linetype</code> to control <code>border</code> style.</p></li>
 <li><p><code><a href="../reference/TheilSen.html">TheilSen()</a></code> now takes <code>linewidth</code>, <code>linetype</code>, <code>shape</code> and <code>alpha</code>.</p></li>
 <li><p><code><a href="../reference/smoothTrend.html">smoothTrend()</a></code> now takes <code>linetype</code>, <code>linewidth</code>, <code>shape</code> and <code>size</code>. These can be vectors to vary based on pollutant. The linewidth of the data will always be half of that of the model.</p></li>
+</ul></li>
+<li>
+<p>Refinements to how <code>ref.x</code> and <code>ref.y</code> behave throughout <a href="https://openair-project.github.io/openair/">openair</a>:</p>
+<ul><li><p><code>ref.x</code> and <code>ref.y</code> can now take a vector rather than a list, which will just use those values as the x/y intercept with default graphical parameters.</p></li>
+<li><p><code>ref.x</code> and <code>ref.y</code> have been added to <code><a href="../reference/timeProp.html">timeProp()</a></code> and <code><a href="../reference/TheilSen.html">TheilSen()</a></code>.</p></li>
+<li><p><code>ref.x</code> and <code>ref.y</code> can now take <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a>-style parameters (<code>intercept</code>, <code>alpha</code>, <code>colour</code>, <code>linetype</code>, <code>linewidth</code>). The old parameter names (<code>h</code>/<code>v</code>, <code>cols</code>, <code>lty</code> and <code>lwd</code>) are automatically remapped so still work.</p></li>
+<li><p>The non-intercept arguments passed to <code>ref.x</code> and <code>ref.y</code> (e.g., <code>alpha</code>) are now automatically recycled to the length of <code>intercept</code>, similar to how <code>...</code> parameters are recycled.</p></li>
+<li><p>Added <code><a href="../reference/refOpts.html">refOpts()</a></code> to help construct values for <code>ref.x</code> and <code>ref.y</code>, similar to <code><a href="../reference/windflowOpts.html">windflowOpts()</a></code>.</p></li>
 </ul></li>
 <li>
 <p>Refinements to how <code>breaks</code> and <code>labels</code> are implemented in functions like <code><a href="../reference/trendLevel.html">trendLevel()</a></code>:</p>

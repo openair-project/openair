@@ -38,7 +38,7 @@
     [`ggplot2::geom_line()`](https://ggplot2.tidyverse.org/reference/geom_path.html)
     for more information.
 
-- Additional interaction between `...` parameters and various plots:
+- Additional interactions between `...` parameters and various plots:
 
   - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
     now takes `shape` to add markers to the line chart. This can be a
@@ -54,6 +54,33 @@
     now takes `linetype`, `linewidth`, `shape` and `size`. These can be
     vectors to vary based on pollutant. The linewidth of the data will
     always be half of that of the model.
+
+- Refinements to how `ref.x` and `ref.y` behave throughout
+  [openair](https://openair-project.github.io/openair/):
+
+  - `ref.x` and `ref.y` can now take a vector rather than a list, which
+    will just use those values as the x/y intercept with default
+    graphical parameters.
+
+  - `ref.x` and `ref.y` have been added to
+    [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md)
+    and
+    [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md).
+
+  - `ref.x` and `ref.y` can now take
+    [ggplot2](https://ggplot2.tidyverse.org)-style parameters
+    (`intercept`, `alpha`, `colour`, `linetype`, `linewidth`). The old
+    parameter names (`h`/`v`, `cols`, `lty` and `lwd`) are automatically
+    remapped so still work.
+
+  - The non-intercept arguments passed to `ref.x` and `ref.y` (e.g.,
+    `alpha`) are now automatically recycled to the length of
+    `intercept`, similar to how `...` parameters are recycled.
+
+  - Added
+    [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+    to help construct values for `ref.x` and `ref.y`, similar to
+    [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md).
 
 - Refinements to how `breaks` and `labels` are implemented in functions
   like

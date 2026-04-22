@@ -24,6 +24,8 @@ timeProp(
   normalise = FALSE,
   x.relation = "same",
   y.relation = "same",
+  ref.x = NULL,
+  ref.y = NULL,
   key.columns = 1,
   key.position = "right",
   key.title = proportion,
@@ -71,7 +73,7 @@ timeProp(
   `"season"`, in which case 3-month seasonal values are calculated with
   spring defined as March, April, May and so on.
 
-  Note that `avg.time` when used in `timeProp` should be greater than
+  Note that `avg.time` when used in `timeProp()` should be greater than
   the time gap in the original data. For example, `avg.time = "day"` for
   hourly data is OK, but `avg.time = "hour"` for daily data is not.
 
@@ -132,6 +134,24 @@ timeProp(
   ensures all panels use the same scale and `"free"` will use
   panel-specific scales. The latter is a useful setting when plotting
   data with very different values.
+
+- ref.x:
+
+  Either a single value or values representing the x axis intercepts to
+  draw lines, or a list such as that provided by
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  to customise the colour/width/type/etc. of each line. See
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  for more details.
+
+- ref.y:
+
+  Either a single value or values representing the y axis intercepts to
+  draw lines, or a list such as that provided by
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  to customise the colour/width/type/etc. of each line. See
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  for more details.
 
 - key.columns:
 

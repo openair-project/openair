@@ -86,6 +86,8 @@ data.</p>
 <span>  normalise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  x.relation <span class="op">=</span> <span class="st">"same"</span>,</span>
 <span>  y.relation <span class="op">=</span> <span class="st">"same"</span>,</span>
+<span>  ref.x <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ref.y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  key.columns <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
 <span>  key.title <span class="op">=</span> <span class="va">proportion</span>,</span>
@@ -128,7 +130,7 @@ used directly.</p></dd>
 followed by a space. For example, an average of 2 months would be <code>avg.time = "2 month"</code>. In addition, <code>avg.time</code> can equal <code>"season"</code>, in which case
 3-month seasonal values are calculated with spring defined as March, April,
 May and so on.</p>
-<p>Note that <code>avg.time</code> when used in <code>timeProp</code> should be greater than the
+<p>Note that <code>avg.time</code> when used in <code>timeProp()</code> should be greater than the
 time gap in the original data. For example, <code>avg.time = "day"</code> for hourly
 data is OK, but <code>avg.time = "hour"</code> for daily data is not.</p></dd>
 
@@ -173,6 +175,20 @@ proportions.</p></dd>
 plotted. <code>"same"</code> ensures all panels use the same scale and <code>"free"</code> will
 use panel-specific scales. The latter is a useful setting when plotting
 data with very different values.</p></dd>
+
+
+<dt id="arg-ref-x">ref.x<a class="anchor" aria-label="anchor" href="#arg-ref-x"></a></dt>
+<dd><p>Either a single value or values representing the x axis
+intercepts to draw lines, or a list such as that provided by <code><a href="refOpts.html">refOpts()</a></code> to
+customise the colour/width/type/etc. of each line. See <code><a href="refOpts.html">refOpts()</a></code> for more
+details.</p></dd>
+
+
+<dt id="arg-ref-y">ref.y<a class="anchor" aria-label="anchor" href="#arg-ref-y"></a></dt>
+<dd><p>Either a single value or values representing the y axis
+intercepts to draw lines, or a list such as that provided by <code><a href="refOpts.html">refOpts()</a></code> to
+customise the colour/width/type/etc. of each line. See <code><a href="refOpts.html">refOpts()</a></code> for more
+details.</p></dd>
 
 
 <dt id="arg-key-columns">key.columns<a class="anchor" aria-label="anchor" href="#arg-key-columns"></a></dt>

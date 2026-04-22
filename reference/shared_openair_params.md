@@ -107,6 +107,24 @@ ensures consistency across `openair`
   panel-specific scales. The latter is a useful setting when plotting
   data with very different values.
 
+- ref.x:
+
+  Either a single value or values representing the x axis intercepts to
+  draw lines, or a list such as that provided by
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  to customise the colour/width/type/etc. of each line. See
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  for more details.
+
+- ref.y:
+
+  Either a single value or values representing the y axis intercepts to
+  draw lines, or a list such as that provided by
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  to customise the colour/width/type/etc. of each line. See
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  for more details.
+
 - angle.scale:
 
   In radial plots (e.g.,

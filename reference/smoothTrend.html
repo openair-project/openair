@@ -229,14 +229,17 @@ data with very different values.</p></dd>
 
 
 <dt id="arg-ref-x">ref.x<a class="anchor" aria-label="anchor" href="#arg-ref-x"></a></dt>
-<dd><p>See <code>ref.y</code> for details. In this case the correct date format
-should be used for a vertical line e.g. <code>ref.x = list(v = as.POSIXct("2000-06-15"), lty = 5)</code>.</p></dd>
+<dd><p>Either a single value or values representing the x axis
+intercepts to draw lines, or a list such as that provided by <code><a href="refOpts.html">refOpts()</a></code> to
+customise the colour/width/type/etc. of each line. See <code><a href="refOpts.html">refOpts()</a></code> for more
+details.</p></dd>
 
 
 <dt id="arg-ref-y">ref.y<a class="anchor" aria-label="anchor" href="#arg-ref-y"></a></dt>
-<dd><p>A list with details of the horizontal lines to be added
-representing reference line(s). For example, <code>ref.y = list(h = 50, lty = 5)</code> will add a dashed horizontal line at 50. Several lines can be plotted
-e.g. <code>ref.y = list(h = c(50, 100), lty = c(1, 5), col = c("green", "blue"))</code>.</p></dd>
+<dd><p>Either a single value or values representing the y axis
+intercepts to draw lines, or a list such as that provided by <code><a href="refOpts.html">refOpts()</a></code> to
+customise the colour/width/type/etc. of each line. See <code><a href="refOpts.html">refOpts()</a></code> for more
+details.</p></dd>
 
 
 <dt id="arg-key-columns">key.columns<a class="anchor" aria-label="anchor" href="#arg-key-columns"></a></dt>

@@ -26,6 +26,8 @@ TheilSen(
   lab.cex = 0.8,
   x.relation = "same",
   y.relation = "same",
+  ref.x = NULL,
+  ref.y = NULL,
   data.col = "cornflowerblue",
   trend = list(lty = c(1, 5), lwd = c(2, 1), col = c("red", "red")),
   text.col = "darkgreen",
@@ -148,6 +150,24 @@ TheilSen(
   ensures all panels use the same scale and `"free"` will use
   panel-specific scales. The latter is a useful setting when plotting
   data with very different values.
+
+- ref.x:
+
+  Either a single value or values representing the x axis intercepts to
+  draw lines, or a list such as that provided by
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  to customise the colour/width/type/etc. of each line. See
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  for more details.
+
+- ref.y:
+
+  Either a single value or values representing the y axis intercepts to
+  draw lines, or a list such as that provided by
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  to customise the colour/width/type/etc. of each line. See
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  for more details.
 
 - data.col:
 

@@ -273,6 +273,11 @@ Other functions to help with controlling openair plots.
 
   Define `windflow` options for `openair` plots
 
+- [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  :
+
+  Define `ref.x` or `ref.y` options for `openair` plots
+
 ## Data Utilities
 
 ### Smoothing Functions
