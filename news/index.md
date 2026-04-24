@@ -270,6 +270,10 @@
   and
   [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md).
 
+- Strings with line breaks (e.g., the result of
+  `cutData(type="seasonyear"))`) will no longer error when used for
+  facet labels.
+
 ## openair 3.0.0
 
 CRAN release: 2026-04-02
