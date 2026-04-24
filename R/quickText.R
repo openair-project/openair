@@ -224,11 +224,15 @@ quickText <- function(text, auto.text = TRUE, ...) {
   ## one newline only
 
   if (grepl("\n", ans)) {
-    a <- ans
-    ans <- paste(substr(a, 1, 17), "atop(", substr(a, 18, nchar(a)), sep = "")
-    ans <- gsub("\n", "' , '", ans)
-    temp <- paste(")", sep = "", collapse = "")
-    ans <- paste(ans, temp, sep = "")
+    if (parse) {
+      a <- ans
+      ans <- paste(substr(a, 1, 17), "atop(", substr(a, 18, nchar(a)), sep = "")
+      ans <- gsub("\n", "' , '", ans)
+      temp <- paste(")", sep = "", collapse = "")
+      ans <- paste(ans, temp, sep = "")
+    } else {
+      ans <- gsub("\n", " ", ans)
+    }
   }
 
   ## ########################

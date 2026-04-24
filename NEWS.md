@@ -110,6 +110,8 @@
 
 - `fontsize` is now correctly passed to `scatterPlot()`, `polarAnnulus()`, `variationPlot()`, and `timePlot()`.
 
+- Strings with line breaks (e.g., the result of `cutData(type="seasonyear"))`) will no longer error when used for facet labels.
+
 # openair 3.0.0
 
 ## Dependency Changes

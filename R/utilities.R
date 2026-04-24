@@ -480,7 +480,7 @@ cut_plot_breaks <- function(x, breaks, labels) {
 
   # if only one break, use as number of intervals
   if (length(breaks) == 1) {
-    x <- cutVecNumeric(x = x, type = "", n.levels = breaks, is.axis = FALSE)
+    x <- cut_vec_numeric(x = x, type = "", n.levels = breaks, is.axis = FALSE)
 
     if (!is.null(labels)) {
       if (length(labels) != nlevels(x)) {

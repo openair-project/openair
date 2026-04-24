@@ -194,7 +194,7 @@ cutData <- function(
     }
   }
 
-  makeCond <- function(x, name = NULL, type = "default") {
+  cut_data <- function(x, name = NULL, type = "default") {
     if (is.null(names)) {
       name <- type
       if (!is.null(suffix)) {
@@ -231,11 +231,11 @@ cutData <- function(
       }
 
       # drop missing values in the dataframe, if any exist
-      x <- dropNAbyType(x, type)
+      x <- drop_na_by_type(x, type)
 
       # split by quantiles if numeric, else set to factor
       if (inherits(x[[type]], c("numeric", "integer"))) {
-        x[[name]] <- cutVecNumeric(
+        x[[name]] <- cut_vec_numeric(
           x[[type]],
           type = type,
           n.levels = n.levels,
@@ -266,35 +266,35 @@ cutData <- function(
     }
 
     if (type == "year") {
-      x[[name]] <- cutVecYear(x$date, drop = drop)
+      x[[name]] <- cut_vec_year(x$date, drop = drop)
     }
 
     if (type == "hour") {
-      x[[name]] <- cutVecHour(x$date, drop = drop)
+      x[[name]] <- cut_vec_hour(x$date, drop = drop)
     }
 
     if (type == "month") {
-      x[[name]] <- cutVecMonth(x$date, is.axis = is.axis, drop = drop)
+      x[[name]] <- cut_vec_month(x$date, is.axis = is.axis, drop = drop)
     }
 
     if (type %in% c("monthyear", "yearmonth")) {
-      x[[name]] <- cutVecMonthyear(x$date, is.axis = is.axis, drop = drop)
+      x[[name]] <- cut_vec_monthyear(x$date, is.axis = is.axis, drop = drop)
     }
 
     if (type == "week") {
-      x[[name]] <- cutVecWeek(x$date, drop = drop)
+      x[[name]] <- cut_vec_week(x$date, drop = drop)
     }
 
     if (type == "quarter") {
-      x[[name]] <- cutVecQuarter(x$date, drop = drop, is.axis = is.axis)
+      x[[name]] <- cut_vec_quarter(x$date, drop = drop, is.axis = is.axis)
     }
 
     if (type %in% c("quarteryear", "yearquarter")) {
-      x[[name]] <- cutVecQuarteryear(x$date, drop = drop, is.axis = is.axis)
+      x[[name]] <- cut_vec_quarteryear(x$date, drop = drop, is.axis = is.axis)
     }
 
     if (type == "season") {
-      x[[name]] <- cutVecSeason(
+      x[[name]] <- cut_vec_season(
         x$date,
         hemisphere = hemisphere,
         is.axis = is.axis,
@@ -304,7 +304,7 @@ cutData <- function(
     }
 
     if (type %in% c("seasonyear", "yearseason")) {
-      x[[name]] <- cutVecSeasonyear(
+      x[[name]] <- cut_vec_seasonyear(
         x$date,
         hemisphere = hemisphere,
         is.axis = is.axis,
@@ -313,11 +313,11 @@ cutData <- function(
     }
 
     if (type == "weekend") {
-      x[[name]] <- cutVecWeekend(x$date, drop = drop)
+      x[[name]] <- cut_vec_weekend(x$date, drop = drop)
     }
 
     if (type == "weekday") {
-      x[[name]] <- cutVecWeekday(
+      x[[name]] <- cut_vec_weekday(
         x$date,
         is.axis = is.axis,
         start.day = start.day,
@@ -326,30 +326,36 @@ cutData <- function(
     }
 
     if (type == "wd") {
-      x <- dropNAbyType(x, "wd")
-      x[[name]] <- cutVecWinddir(x$wd, drop = drop, bins = wd.res)
+      x <- drop_na_by_type(x, "wd")
+      x[[name]] <- cut_vec_wd(x$wd, drop = drop, bins = wd.res)
     }
 
     if (type %in% c("dst", "bstgmt", "gmtbst")) {
       type <- "dst" ## keep it simple
-      x[[name]] <- cutVecDST(x$date, local.tz = local.tz, drop = drop)
+      x[[name]] <- cut_vec_dst(x$date, local.tz = local.tz, drop = drop)
     }
 
     if (type == "daylight") {
-      x[[name]] <- cutVecDaylight(x$date, latitude, longitude, ..., drop = drop)
+      x[[name]] <- cut_vec_daylight(
+        x$date,
+        latitude,
+        longitude,
+        ...,
+        drop = drop
+      )
     }
 
     return(x)
   }
 
   for (i in seq_along(type)) {
-    x <- makeCond(x, name = names[i], type = type[i])
+    x <- cut_data(x, name = names[i], type = type[i])
   }
   return(x)
 }
 
 # Drop missing values and warn that it has happened
-dropNAbyType <- function(x, type) {
+drop_na_by_type <- function(x, type) {
   if (anyNA(x[[type]])) {
     lenNA <- length(which(is.na(x[[type]])))
     x <- x[!is.na(x[[type]]), ]
@@ -361,7 +367,7 @@ dropNAbyType <- function(x, type) {
 }
 
 # Cut a numeric vector into quantiles
-cutVecNumeric <- function(x, type, n.levels, is.axis) {
+cut_vec_numeric <- function(x, type, n.levels, is.axis) {
   temp.levels <-
     levels(cut(
       x,
@@ -396,7 +402,7 @@ cutVecNumeric <- function(x, type, n.levels, is.axis) {
 }
 
 # Cut a vector into a 'year' factor
-cutVecYear <- function(x, drop) {
+cut_vec_year <- function(x, drop) {
   x <- lubridate::year(x)
   if (drop %in% c("default", "empty")) {
     x <- ordered(x)
@@ -409,7 +415,7 @@ cutVecYear <- function(x, drop) {
 }
 
 # Cut a vector into a 'hour' factor
-cutVecHour <- function(x, drop) {
+cut_vec_hour <- function(x, drop) {
   x <- lubridate::hour(x)
   if (drop %in% c("none")) {
     x <- ordered(x, levels = 0:23)
@@ -424,7 +430,7 @@ cutVecHour <- function(x, drop) {
 }
 
 # Cut a vector into a factor of weeks of the year
-cutVecWeek <- function(x, drop) {
+cut_vec_week <- function(x, drop) {
   x <- as.numeric(format(x, "%W"))
   if (drop %in% c("none")) {
     x <- ordered(pad_string(x, 2), levels = pad_string(0:53))
@@ -439,7 +445,7 @@ cutVecWeek <- function(x, drop) {
 }
 
 # Cut a date vector into weekday/weekend
-cutVecWeekend <- function(x, drop) {
+cut_vec_weekend <- function(x, drop) {
   wdays <- lubridate::wday(x, week_start = 1L)
   x <- dplyr::recode_values(wdays, 1:5 ~ "weekday", 6:7 ~ "weekend")
   unique_vals <- unique(x)
@@ -453,7 +459,7 @@ cutVecWeekend <- function(x, drop) {
 }
 
 # Cut a date vector into weekdays
-cutVecWeekday <- function(x, is.axis, start.day, drop) {
+cut_vec_weekday <- function(x, is.axis, start.day, drop) {
   if (start.day == 0L) {
     start.day <- 7L
   }
@@ -474,7 +480,7 @@ cutVecWeekday <- function(x, is.axis, start.day, drop) {
 }
 
 # Cut a vector into an ordered 'month' factor
-cutVecMonth <- function(x, is.axis, drop) {
+cut_vec_month <- function(x, is.axis, drop) {
   x <- lubridate::month(x, label = TRUE, abbr = is.axis)
   levels <- levels(x)
   if (drop %in% c("default", "empty")) {
@@ -491,15 +497,15 @@ cutVecMonth <- function(x, is.axis, drop) {
 }
 
 # Cut a vector into 'monthyears' (e.g., January 2020)
-cutVecMonthyear <- function(x, is.axis, drop) {
+cut_vec_monthyear <- function(x, is.axis, drop) {
   str <- "%B %Y"
   if (is.axis) {
     str <- "%b\n%Y"
   }
 
   # get years and months
-  yrs <- cutVecYear(x, drop = "none")
-  mnths <- cutVecMonth(x, is.axis = is.axis, drop = "none")
+  yrs <- cut_vec_year(x, drop = "none")
+  mnths <- cut_vec_month(x, is.axis = is.axis, drop = "none")
 
   # get combinations of years and months
   levels <-
@@ -532,11 +538,11 @@ cutVecMonthyear <- function(x, is.axis, drop) {
 }
 
 # Cut into season year (e.g., Summer 2020)
-cutVecSeasonyear <- function(x, hemisphere, is.axis, drop) {
+cut_vec_seasonyear <- function(x, hemisphere, is.axis, drop) {
   sep <- ifelse(is.axis, "\n", "-")
 
   # get seasons/years
-  seasons <- cutVecSeason(
+  seasons <- cut_vec_season(
     x,
     hemisphere = hemisphere,
     is.axis = TRUE,
@@ -578,7 +584,7 @@ cutVecSeasonyear <- function(x, hemisphere, is.axis, drop) {
 }
 
 # Cut wind direction into bins
-cutVecWinddir <- function(x, drop, bins = 8) {
+cut_vec_wd <- function(x, drop, bins = 8) {
   check_bins <- as.character(bins)
   rlang::arg_match(check_bins, as.character(c(4, 8, 16, 32)))
   bin_width <- 360 / bins
@@ -654,7 +660,7 @@ cutVecWinddir <- function(x, drop, bins = 8) {
 }
 
 # Cut dates into DST
-cutVecDST <- function(x, local.tz, drop) {
+cut_vec_dst <- function(x, local.tz, drop) {
   ## how to extract BST/GMT
   if (is.null(local.tz)) {
     cli::cli_warn("missing time zone, assuming Europe/London")
@@ -690,7 +696,7 @@ cutVecDST <- function(x, local.tz, drop) {
 # * 86400, origin = format(x$date, "%Y-%m-%d")) (assuming you do not run into
 # next day!) currently unsure about extremes long nights and days at poles need
 # checking
-cutVecDaylight <- function(
+cut_vec_daylight <- function(
   x,
   latitude = 51.522393,
   longitude = -0.154700,
@@ -859,7 +865,7 @@ cutVecDaylight <- function(
 }
 
 # Cut a vector into seasons
-cutVecSeason <- function(
+cut_vec_season <- function(
   x,
   hemisphere,
   is.axis,
@@ -875,7 +881,7 @@ cutVecSeason <- function(
 
   # need to work out month names local to the user and extract first letter
   month_names_local <-
-    cutVecMonth(ISOdate(2000, 1:12, 1), is.axis = FALSE, drop = "none") |>
+    cut_vec_month(ISOdate(2000, 1:12, 1), is.axis = FALSE, drop = "none") |>
     substr(1, 1)
 
   # Function to create, e.g., 'winter (JFM)'
@@ -949,7 +955,7 @@ cutVecSeason <- function(
 }
 
 # cut a vector into quarters
-cutVecQuarter <- function(x, drop, is.axis) {
+cut_vec_quarter <- function(x, drop, is.axis) {
   x <- lubridate::quarter(x, with_year = FALSE)
   if (drop %in% c("none")) {
     x <- ordered(x, levels = 1:4)
@@ -966,10 +972,10 @@ cutVecQuarter <- function(x, drop, is.axis) {
 }
 
 # cut a vector into quarters and years
-cutVecQuarteryear <- function(x, drop, is.axis) {
+cut_vec_quarteryear <- function(x, drop, is.axis) {
   # get quarters and years
-  quarters <- cutVecQuarter(x, drop = "none", is.axis = is.axis)
-  years <- cutVecYear(x, drop = "none")
+  quarters <- cut_vec_quarter(x, drop = "none", is.axis = is.axis)
+  years <- cut_vec_year(x, drop = "none")
 
   # get combinations of years and quarters
   levels <-
