@@ -126,32 +126,31 @@
 #' )
 #' }
 trendLevel <- function(
-  mydata,
-  pollutant = "nox",
-  x = "month",
-  y = "hour",
-  type = "default",
-  rotate.axis = c(90, 0),
-  n.levels = c(10, 10, 4),
-  windflow = NULL,
-  limits = NULL,
-  min.bin = 1,
-  cols = "default",
-  auto.text = TRUE,
-  key.title = paste("use.stat.name", pollutant, sep = " "),
-  key.position = "right",
-  labels = NULL,
-  breaks = NULL,
-  statistic = c(
-    "mean",
-    "max",
-    "min",
-    "median",
-    "frequency",
-    "sum",
-    "sd",
-    "percentile"
-  ),
+    mydata,
+    pollutant = "nox",
+    x = "month",
+    y = "hour",
+    type = "default",
+    rotate.axis = c(90, 0),
+    n.levels = c(10, 10, 4),
+    windflow = NULL,
+    limits = NULL,
+    min.bin = 1,
+    cols = "default",
+    auto.text = TRUE,
+    key.title = paste("use.stat.name", pollutant, sep = " "),
+    key.position = "right",
+    breaks = NULL,
+    statistic = c(
+      "mean",
+      "max",
+      "min",
+      "median",
+      "frequency",
+      "sum",
+      "sd",
+      "percentile"
+    ),
   percentile = 95,
   stat.args = NULL,
   stat.safe.mode = TRUE,
@@ -165,6 +164,9 @@ trendLevel <- function(
   key.position <- check_key_position(key.position, key)
 
   extra.args <- capture_dots(...)
+
+  # deal with breaks
+  break_opts <- resolve_break_opts(breaks, extra.args)
 
   # check length of x
   if (length(x) > 1) {
@@ -483,11 +485,10 @@ trendLevel <- function(
   key.title <- check_key_header(key.title, extra.args)
 
   # handle breaks
-  categorical <- !is.null(breaks)
+  categorical <- !is.null(breaks_opts$breaks)
   newdata[[pollutant]] <- cut_plot_breaks(
     newdata[[pollutant]],
-    breaks = breaks,
-    labels = labels
+    breaks_opts
   )
 
   # construct plot

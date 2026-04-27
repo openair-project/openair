@@ -113,7 +113,6 @@ corPlot <- function(
   triangle = c("both", "upper", "lower"),
   diagonal = TRUE,
   breaks = NULL,
-  labels = NULL,
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
@@ -135,6 +134,9 @@ corPlot <- function(
 
   # extra.args setup
   extra.args <- capture_dots(...)
+
+  # deal with breaks
+  break_opts <- resolve_break_opts(breaks, extra.args)
 
   # fix the scales arg
   extra.args$scales <- extra.args$scales %||% "free"
@@ -421,11 +423,10 @@ corPlot <- function(
   }
 
   # handle breaks
-  categorical <- !is.null(breaks)
+  categorical <- !is.null(break_opts$breaks)
   ellipse_data$cor <- cut_plot_breaks(
     ellipse_data$cor,
-    breaks = breaks,
-    labels = labels
+    break_opts
   )
 
   # construct plot

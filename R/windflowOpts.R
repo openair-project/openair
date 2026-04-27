@@ -63,29 +63,29 @@
 #'   )
 #' )
 windflowOpts <- function(
-  limits = c(NA, NA),
-  range = c(0.1, 1),
-  arrow.angle = 15,
-  arrow.length = ggplot2::unit(0.5, "lines"),
-  arrow.ends = "last",
-  arrow.type = "closed",
-  lineend = "butt",
-  alpha = 1,
-  colour = "black",
-  linetype = 1,
-  linewidth = 0.5,
-  color = NULL,
-  windflow = TRUE
+    limits = c(NA, NA),
+    range = c(0.1, 1),
+    arrow.angle = 15,
+    arrow.length = ggplot2::unit(0.5, "lines"),
+    arrow.ends = "last",
+    arrow.type = "closed",
+    lineend = "butt",
+    alpha = 1,
+    colour = "black",
+    linetype = 1,
+    linewidth = 0.5,
+    color = NULL,
+    windflow = TRUE
 ) {
   if (missing(colour) && !is.null(color)) {
     colour <- color
   }
-
+  
   # allow for `range` to be overwritten by the parent function
   if (missing(range)) {
     range <- NULL
   }
-
+  
   list(
     limits = limits,
     range = range,
@@ -108,17 +108,17 @@ resolve_windflow_opts <- function(x, ...) {
   if (is.null(x)) {
     return(windflowOpts(windflow = FALSE, ...))
   }
-
+  
   if (rlang::is_logical(x)) {
     if (isTRUE(x)) {
       out <- windflowOpts(windflow = TRUE, ...)
     } else {
       out <- windflowOpts(windflow = FALSE, ...)
     }
-
+    
     return(out)
   }
-
+  
   if (!rlang::is_list(x) || !rlang::is_named(x)) {
     cli::cli_abort(
       c(
@@ -127,7 +127,7 @@ resolve_windflow_opts <- function(x, ...) {
       )
     )
   }
-
+  
   # warn if any lattice arguments have been used
   lattice_args <- c("col", "lty", "lwd", "scale")
   used_lattice_args <- lattice_args[lattice_args %in% names(x)]
@@ -140,15 +140,15 @@ resolve_windflow_opts <- function(x, ...) {
       )
     )
   }
-
+  
   # get the defaults, overriding anything function-specific with ...
   # need to do it this way to catch lattice args
   default_opts <- windflowOpts(...)
-
+  
   if ("scale" %in% names(x)) {
     default_opts$range <- default_opts$range * x$scale
   }
-
+  
   out <-
     windflowOpts(
       limits = x$limits %||% default_opts$limits,
@@ -164,7 +164,7 @@ resolve_windflow_opts <- function(x, ...) {
       linewidth = x$linewidth %||% x$lwd %||% default_opts$linewidth,
       windflow = x$windflow %||% default_opts$windflow
     )
-
+  
   out
 }
 

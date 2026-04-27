@@ -177,21 +177,21 @@ windRose <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
-
+  
   # greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
     calm.col <- "black"
   } else {
     calm.col <- "forestgreen"
   }
-
+  
   # make sure ws and wd and numeric
   mydata <- check_numeric(mydata, vars = c(ws, wd))
-
+  
   if (!is.na(ws2) && !is.na(wd2) && missing(angle)) {
     angle <- 10
   }
-
+  
   # check angle is sensible and warn about potential bias
   if (360 / angle != round(360 / angle)) {
     cli::cli_warn(
@@ -202,28 +202,28 @@ windRose <- function(
     )
   }
   angle[angle < 3] <- 3
-
+  
   # extra.args args setup
   extra.args <- capture_dots(...)
-
+  
   # label controls
   extra.args$xlab <- quickText(extra.args$xlab, auto.text)
   extra.args$ylab <- quickText(extra.args$ylab, auto.text)
   extra.args$title <- quickText(extra.args$title, auto.text)
   extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
   extra.args$tag <- quickText(extra.args$tag, auto.text)
-
+  
   # need separate handling to be overwritten
   if ("caption" %in% names(extra.args)) {
     extra.args$caption <- quickText(extra.args$caption %||% NULL, auto.text)
   }
-
+  
   # preset statitistics
   if (is.character(statistic)) {
     # allowed cases
     ok.stat <- c("prop.count", "prop.mean", "abs.count", "frequency")
     rlang::arg_match(statistic, ok.stat)
-
+    
     if (statistic == "prop.count") {
       stat.fun <- length
       stat.unit <- "%"
@@ -233,7 +233,7 @@ windRose <- function(
       stat.lab2 <- "mean"
       stat.labcalm <- function(x) round(x, 1)
     }
-
+    
     if (statistic == "prop.mean") {
       stat.fun <- function(x) sum(x, na.rm = TRUE)
       stat.unit <- "%"
@@ -243,7 +243,7 @@ windRose <- function(
       stat.lab2 <- "mean"
       stat.labcalm <- function(x) round(x, 1)
     }
-
+    
     if (statistic == "abs.count" || statistic == "frequency") {
       stat.fun <- length
       stat.unit <- ""
@@ -254,7 +254,7 @@ windRose <- function(
       stat.labcalm <- function(x) round(x, 0)
     }
   }
-
+  
   if (is.list(statistic)) {
     # IN DEVELOPMENT
     # this section has no testing/protection
@@ -262,7 +262,7 @@ windRose <- function(
     # scale it by total data or panel
     # convert proportions to percentage
     # label it
-
+    
     stat.fun <- statistic$fun
     stat.unit <- statistic$unit
     stat.scale <- statistic$scale
@@ -271,42 +271,42 @@ windRose <- function(
     stat.lab2 <- statistic$lab2
     stat.labcalm <- statistic$labcalm
   }
-
+  
   # variables we need
   vars <- c(wd, ws)
-
+  
   diff <- FALSE # i.e. not two sets of ws/wd
   rm.neg <- TRUE # will remove negative ws in check.prep
-
+  
   # case where two met data sets are to be compared
   if (!is.na(ws2) && !is.na(wd2)) {
     vars <- c(vars, ws2, wd2)
     diff <- TRUE
     rm.neg <- FALSE
-
+    
     # Speed bias (test - reference) and direction bias normalised to [-180, 180]
     mydata$.ws_bias <- mydata[[ws2]] - mydata[[ws]]
     mydata$.wd_bias <- ((mydata[[wd2]] - mydata[[wd]]) + 180) %% 360 - 180
-
+    
     # Reference wd/ws retained for binning — do not overwrite them
     vars <- c(wd, ws, ".ws_bias", ".wd_bias")
-
+    
     if (missing(cols)) {
       cols <- c("steelblue3", "white", "tomato2")
     }
     seg <- 1
   }
-
+  
   if (any(type %in% dateTypes)) {
     vars <- c(vars, "date")
   }
-
+  
   if (!is.null(pollutant)) {
     vars <- c(vars, pollutant)
   }
-
+  
   mydata <- cutData(mydata, type, ...)
-
+  
   mydata <- checkPrep(
     mydata,
     vars,
@@ -314,41 +314,41 @@ windRose <- function(
     remove.calm = FALSE,
     remove.neg = rm.neg
   )
-
+  
   # original data to use later
   mydata_orig <- mydata
-
+  
   # remove lines where ws is missing
   # wd can be NA and ws 0 (calm)
   id <- which(is.na(mydata[[ws]]))
-
+  
   if (length(id) > 0) {
     mydata <- mydata[-id, ]
   }
-
+  
   if (is.null(pollutant)) {
     pollutant <- ws
   }
-
+  
   mydata$x <- mydata[[pollutant]]
-
+  
   mydata[[wd]] <- angle * ceiling(mydata[[wd]] / angle - 0.5)
   mydata[[wd]][mydata[[wd]] == 0] <- 360
-
+  
   # flag calms as negatives
   if (calm.thresh == 0) {
     mydata[[wd]][mydata[, ws] == 0] <- -999 # set wd to flag where there are calms
   } else {
     mydata[[wd]][mydata[, ws] < calm.thresh] <- -999 # Note < not <=
   }
-
+  
   mydata[[wd]][mydata[, ws] < calm.thresh] <- -999 # set wd to flag where there are calms
   # do after rounding or -999 changes
-
+  
   # COMPARISON PLOT BRANCH (early return — must be before break setup)
   if (diff) {
     group_vars <- if (all(type == "default")) character(0) else type
-
+    
     # Per-direction mean ws bias (calms excluded)
     diff_results <- mydata |>
       dplyr::filter(.data[[wd]] != -999, !is.na(.data$.ws_bias)) |>
@@ -357,7 +357,7 @@ windRose <- function(
         n = dplyr::n(),
         .by = c(wd, dplyr::any_of(group_vars))
       )
-
+    
     # Panel-level circular mean of wd bias and overall ws bias (for arrow/annotation)
     wd_bias_panel <- mydata |>
       dplyr::filter(!is.na(.data$.wd_bias)) |>
@@ -370,7 +370,7 @@ windRose <- function(
       dplyr::mutate(
         panel_wd_bias = (atan2(.data$u, .data$v) * 180 / pi) %% 360
       )
-
+    
     # Radial scale: zero ring at r0, bars extend +/- max_abs_bias from it
     max_abs_bias <- max(abs(diff_results$mean_ws_bias), na.rm = TRUE)
     if (!is.finite(max_abs_bias) || max_abs_bias == 0) {
@@ -379,16 +379,16 @@ windRose <- function(
     if (!is.null(max.freq)) {
       max_abs_bias <- max.freq / 2
     }
-
+    
     r0 <- max_abs_bias * 1.5
     total_r <- r0 + max_abs_bias * 1.2
-
+    
     # Grid breaks centred on the zero ring
     bias_pretty <- pretty(c(-max_abs_bias * 1.1, max_abs_bias * 1.1))
     valid_breaks <- (r0 + bias_pretty) >= 0 & (r0 + bias_pretty) <= total_r
     grid_breaks_r <- r0 + bias_pretty[valid_breaks]
     grid_labels_v <- bias_pretty[valid_breaks]
-
+    
     # Grid line appearance
     if (is.list(grid.line)) {
       grid.lty <- grid.line[["lty"]] %||% 1
@@ -397,14 +397,14 @@ windRose <- function(
       grid.lty <- 1
       grid.col <- "grey85"
     }
-
+    
     # Diverging colour scale (expect cols to be length-3 low/mid/high)
     diff_colors <- if (length(cols) >= 3) {
       cols[c(1, ceiling(length(cols) / 2), length(cols))]
     } else {
       c("steelblue3", "white", "tomato2")
     }
-
+    
     fill_guide <- if (key.position == "none") {
       "none"
     } else {
@@ -419,11 +419,11 @@ windRose <- function(
         )
       )
     }
-
+    
     if (missing(key.title)) {
       key.title <- "ws bias\n(m/s)"
     }
-
+    
     thePlot <-
       ggplot2::ggplot(diff_results) +
       theme_openair_radial(key.position, extra.args = extra.args) +
@@ -509,7 +509,7 @@ windRose <- function(
         drop = FALSE,
         wd.res = extra.args$wd.res %||% 8
       )
-
+    
     if (annotate) {
       thePlot <- thePlot +
         ggplot2::geom_text(
@@ -534,12 +534,12 @@ windRose <- function(
           inherit.aes = FALSE
         )
     }
-
+    
     if (key.position %in% c("top", "bottom")) {
       thePlot <- thePlot +
         ggplot2::theme(legend.key.height = ggplot2::rel(0.5))
     }
-
+    
     if (annotate) {
       thePlot <- thePlot +
         annotate_compass_points(
@@ -550,28 +550,28 @@ windRose <- function(
           }
         )
     }
-
+    
     if (plot) {
       plot(thePlot)
     }
-
+    
     output <- list(plot = thePlot, data = diff_results, call = match.call())
     class(output) <- "openair"
     return(invisible(output))
   }
-
+  
   if (length(breaks) == 1) {
     breaks <- 0:(breaks - 1) * ws.int
   }
-
+  
   if (max(breaks) < max(mydata$x, na.rm = TRUE)) {
     breaks <- c(breaks, max(mydata$x, na.rm = TRUE))
   }
-
+  
   if (min(breaks) > min(mydata$x, na.rm = TRUE)) {
     cli::cli_warn("Some values are below minimum break.")
   }
-
+  
   breaks <- unique(breaks)
   interval_labels <- get_labels_from_breaks(breaks, sep = " to ")
   mydata$x <- cut(
@@ -581,7 +581,7 @@ windRose <- function(
     include.lowest = include.lowest,
     dig.lab = dig.lab
   )
-
+  
   # Build tidy summary: one row per (wd x interval) combination per panel
   prepare_rose_data <- function(mydata) {
     if (all(is.na(mydata$x))) {

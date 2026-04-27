@@ -6,7 +6,7 @@
 
 ## Breaking Changes
 
-- `strip.position`, `x.relation` and `y.relation` are now no longer function-level arguments and are handled via `...`. See "New Features" below for details.
+- `strip.position`, `x.relation`, `y.relation` and `labels` (as paired with `breaks`) are now no longer function-level arguments and are handled via `...`. See "New Features" below for details.
 
 ## New Features
 
@@ -48,13 +48,17 @@
 
     - Added `refOpts()` to help construct values for `ref.x` and `ref.y`, similar to `windflowOpts()`.
 
-- Refinements to how `breaks` and `labels` are implemented in functions like `trendLevel()`:
+- Refinements to how `breaks` are implemented in functions like `trendLevel()`:
 
-    - If `breaks` don't cover the full range of the data being binned, the maximum and minimum `breaks` will be overwritten so that it does.
+    - If `breaks` doesn't cover the full range of the data being binned, the maximum and minimum `breaks` will be overwritten so that it does.
     
-    - If `breaks` is of length `1`, the colour range will be split into `breaks` categories, using the same logic as running `cutData()` on a numeric column.
+    - If `breaks` is of length `1`, the colour range will be split into `breaks` categories, defaulting to using the same logic as running `cutData()` on a numeric column.
     
-    - `polarPlot()`, `polarAnnulus()` and `corPlot()` have gained `breaks` and `labels`.
+    - `breaks` can now take a named list, defined using the new `breakOpts()` function. Most significantly, this allows for the method of binning to change for single-value `breaks` (quantiles, equal range, bin widths, and 'pretty' breaks at time of writing).
+    
+    - `polarPlot()`, `polarAnnulus()` and `corPlot()` have gained `breaks`.
+    
+    - As stated above, `labels` is no longer a top-level argument and can be defined by passing a list to `breaks`. `labels` given to `...` will be converted with a warning.
 
 - Refinements to colours in `{openair}`:
 

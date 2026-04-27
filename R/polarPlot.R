@@ -374,7 +374,6 @@ polarPlot <-
     k = 100,
     normalise = FALSE,
     breaks = NULL,
-    labels = NULL,
     key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
     auto.text = TRUE,
@@ -471,6 +470,9 @@ polarPlot <-
     extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
     extra.args$tag <- quickText(extra.args$tag, auto.text)
     extra.args$annotate <- extra.args$annotate %||% TRUE
+
+    # deal with breaks
+    break_opts <- resolve_break_opts(breaks, extra.args)
 
     # separate handling for being overwritten
     if ("caption" %in% names(extra.args)) {
@@ -904,11 +906,10 @@ polarPlot <-
     }
 
     # handle breaks
-    categorical <- !is.null(breaks)
+    categorical <- !is.null(break_opts$breaks)
     plot_data$z <- cut_plot_breaks(
       plot_data$z,
-      breaks = breaks,
-      labels = labels
+      break_opts
     )
 
     # make plot
