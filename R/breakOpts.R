@@ -23,8 +23,8 @@
 #'   taken to provide the appropriate number of `labels` - it should always be
 #'   equal to the number of bins, or one less than the number of breakpoints.
 #'
-#' @param method When `breaks` is a single integer (e.g., `breaks = 5`),
-#'   `method` controls how this value is used to create breaks. Can be one of:
+#' @param method When `breaks` is a single number (e.g., `breaks = 5`), `method`
+#'   controls how this value is used to create breaks. Can be one of:
 #'
 #'   - `"number"` - splits the range into *n* quantiles (i.e., bins with roughly
 #'   the same number of measurements in them). This is equivalent to
@@ -37,14 +37,34 @@
 #'   - `"pretty"` - splits the range into *approximately* *n* bins with
 #'   aesthetically pleasing breakpoints using [pretty()].
 #'
+#'   - `"wd"` - splits the range into wind direction bins by passing it
+#'   to [cutData()]. Note that this option requires `breaks` to be one of `4`,
+#'   `8`, `16` or `32` and ignores all other arguments.
+#'
+#' @param max.bins If `max.bins` is set, only that number of bins will ever be
+#'   created. For example, if `breaks = c(0, 10, 20, 30, 40, 50)` and `max.bins
+#'   = 3`, `breaks` will be set to `c(0, 10, 20, 50)` to ensure only three bins
+#'   are made.
+#'
+#' @param include.lowest logical, indicating if an `x[i]` equal to the lowest
+#'   (or highest, for `right = FALSE`) 'breaks' value should be included.
+#'
+#' @param right logical, indicating if the intervals should be closed on the
+#'   right (and open on the left) or vice versa.
+#'
 #' @param dig.lab Integer which is used when labels are not given. It determines
-#'   the number of digits used in formatting the break numbers.
+#'   the number of digits used in formatting the break numbers. If `NULL`, the
+#'   labels will use the minimum number of decimal places possible to ensure the
+#'   breakpoints are unique, dropping all trailing zeroes.
 #'
 #' @export
 breakOpts <- function(
   breaks = NULL,
   labels = NULL,
-  method = c("number", "interval", "width", "pretty"),
+  method = c("number", "interval", "width", "pretty", "wd"),
+  max.bins = NULL,
+  include.lowest = NULL,
+  right = NULL,
   dig.lab = NULL
 ) {
   method <- rlang::arg_match(method, multiple = FALSE)
@@ -52,6 +72,9 @@ breakOpts <- function(
     breaks = breaks,
     labels = labels,
     method = method,
+    max.bins = max.bins,
+    include.lowest = include.lowest,
+    right = right,
     dig.lab = dig.lab
   )
 }
@@ -61,12 +84,33 @@ breakOpts <- function(
 resolve_break_opts <- function(x, extra.args, ...) {
   # if NULL, don't use breaks
   if (is.null(x)) {
-    return(breakOpts())
+    return(breakOpts(breaks = NULL))
+  }
+
+  # get the defaults, overriding anything function-specific with ...
+  default_opts <- breakOpts(...)
+
+  # warn if labels is in extra.args
+  if ("labels" %in% names(extra.args)) {
+    cli::cli_warn(
+      "{.arg labels} should now be provided to the {.arg breaks} argument \\
+      via {.fun openair::breakOpts}.",
+      .frequency = "regularly",
+      .frequency_id = "openair_labels_extra_args"
+    )
   }
 
   # if numeric, use default strategy
   if (is.numeric(x)) {
-    return(breakOpts(breaks = x, labels = extra.args$labels))
+    return(breakOpts(
+      breaks = x,
+      labels = extra.args$labels,
+      method = default_opts$method %||% "number",
+      max.bins = default_opts$max.bins,
+      include.lowest = default_opts$include.lowest %||% TRUE,
+      right = default_opts$right %||% TRUE,
+      dig.lab = default_opts$dig.lab
+    ))
   }
 
   # if not a named list, error
@@ -79,24 +123,17 @@ resolve_break_opts <- function(x, extra.args, ...) {
     )
   }
 
-  if ("labels" %in% names(extra.args)) {
-    cli::cli_warn(
-      "{.arg labels} should now be provided to the {.arg breaks} argument \\
-      via {.fun openair::breakOpts}.",
-      .frequency = "regularly",
-      .frequency_id = "openair_labels_extra_args"
-    )
-  }
-
-  # get the defaults, overriding anything function-specific with ...
-  # need to do it this way to catch lattice args
-  default_opts <- breakOpts(...)
-
+  # format as breakOpts
   out <-
     breakOpts(
       breaks = x$breaks %||% default_opts$breaks,
       labels = x$labels %||% extra.args$labels %||% default_opts$labels,
       method = x$method %||% default_opts$method,
+      max.bins = x$max.bins %||% default_opts$max.bins,
+      include.lowest = x$include.lowest %||%
+        default_opts$include.lowest %||%
+        TRUE,
+      right = x$right %||% default_opts$right %||% TRUE,
       dig.lab = x$dig.lab %||% extra.args$dig.lab %||% default_opts$dig.lab
     )
 
@@ -115,6 +152,12 @@ cut_plot_breaks <- function(x, opts) {
     return(x)
   }
 
+  if (method == "wd") {
+    new_x <- cut_vec_wd(x = x, drop = "none", bins = breaks)
+    new_x[is.na(x)] <- NA
+    return(new_x)
+  }
+
   # if only one break, use as number of intervals
   if (length(breaks) == 1) {
     # get range of data
@@ -124,7 +167,7 @@ cut_plot_breaks <- function(x, opts) {
     if (method == "number") {
       breaks <- quantile(
         x,
-        probs = seq(0, 1, length.out = breaks),
+        probs = seq(0, 1, length.out = breaks + 1),
         na.rm = TRUE
       ) |>
         unname()
@@ -132,15 +175,17 @@ cut_plot_breaks <- function(x, opts) {
 
     # interval - get range of values w/ length "breaks"
     if (method == "interval") {
-      breaks <- seq(x_range[1], x_range[2], length.out = breaks)
+      breaks <- seq(x_range[1], x_range[2], length.out = breaks + 1)
     }
 
     # width - get range of values w/ width "breaks"
     if (method == "width") {
       # ensure start/end divide into breaks
-      x_range[1] <- floor(x_range[1] / breaks) * breaks
-      x_range[2] <- ceiling(x_range[2] / breaks) * breaks
-      breaks <- seq(x_range[1], x_range[2], by = breaks)
+      x_range_floor <- floor(x_range[1] / breaks) * breaks
+      x_range_ceil <- ceiling(x_range[2] / breaks) * breaks
+      breaks <- seq(x_range_floor, x_range_ceil, by = breaks)
+      breaks[1] <- x_range[1]
+      breaks[length(breaks)] <- x_range[2]
     }
 
     # pretty - get nice breakpoints
@@ -149,12 +194,14 @@ cut_plot_breaks <- function(x, opts) {
     }
   }
 
+  # honour max.bins argument
+  n_bins <- length(breaks) - 1
+  if (n_bins > (opts$max.bins %||% (n_bins + 1))) {
+    breaks <- unique(c(breaks[1:(opts$max.bins)], max(breaks)))
+  }
+
   # ensure breaks look nice by rounding to appropriate decimal places
   breaks <- round_safely(breaks, n = 10, n_min = opts$dig.lab %||% 0)
-
-  # assign labels if no labels are given
-  labels <- labels %||%
-    get_labels_from_breaks(breaks, labels, sep = " to ", dig.lab = opts$dig.lab)
 
   # ensure breaks covers all data
   if (max(breaks) < max(x, na.rm = TRUE)) {
@@ -166,7 +213,19 @@ cut_plot_breaks <- function(x, opts) {
 
   # cut x into breaks
   breaks <- sort(unique(breaks))
-  cut(x, breaks = breaks, labels = labels, include.lowest = TRUE)
+
+  # assign labels if no labels are given
+  labels <- labels %||%
+    get_labels_from_breaks(breaks, labels, sep = " to ", dig.lab = opts$dig.lab)
+
+  # cut data
+  cut(
+    x,
+    breaks = breaks,
+    labels = labels,
+    include.lowest = opts$include.lowest,
+    right = opts$right
+  )
 }
 
 #' Create nice labels out of breaks, if only breaks are provided
@@ -184,14 +243,14 @@ get_labels_from_breaks <- function(
         scientific = FALSE,
         trim = TRUE,
         nsmall = dig.lab %||% 0L,
-        drop0trailing = is.null(dig.lab)
+        drop0trailing = TRUE
       ),
       format(
         utils::tail(breaks, -1),
         scientific = FALSE,
         trim = TRUE,
         nsmall = dig.lab %||% 0L,
-        drop0trailing = is.null(dig.lab)
+        drop0trailing = TRUE
       ),
       sep = sep
     )

@@ -10,7 +10,6 @@ windRose(
   wd = "wd",
   ws2 = NA,
   wd2 = NA,
-  ws.int = 2,
   angle = 30,
   type = "default",
   calm.thresh = 0,
@@ -20,15 +19,14 @@ windRose(
   width = 0.9,
   seg = 0.9,
   auto.text = TRUE,
-  breaks = 4,
+  breaks = openair::breakOpts(breaks = 2, max.bins = 4, method = "width", include.lowest
+    = FALSE, dig.lab = 5),
   offset = 10,
   normalise = FALSE,
   max.freq = NULL,
   paddle = TRUE,
   key.title = "(m/s)",
   key.position = "bottom",
-  dig.lab = 5,
-  include.lowest = FALSE,
   statistic = "prop.count",
   pollutant = NULL,
   annotate = TRUE,
@@ -52,9 +50,6 @@ direction, 0 to 360 where 0/360 are North and 180 is South. Defaults to
 \item{ws2, wd2}{The user can supply a second set of wind speed and wind
 direction values with which the first can be compared. See
 \code{\link[=pollutionRose]{pollutionRose()}} for more details.}
-
-\item{ws.int}{The Wind speed interval. Default is 2 m/s but for low met masts
-with low mean wind speeds a value of 1 or 0.5 m/s may be better.}
 
 \item{angle}{Default angle of \dQuote{spokes} is 30. Other potentially useful
 angles are 45 and 10. Note that the width of the wind speed interval may
@@ -117,11 +112,22 @@ wider.}
 axis labels will automatically try and format pollutant names and units
 properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
 
-\item{breaks}{Most commonly, the number of break points for wind speed. With
-the \code{ws.int} default of 2 m/s, the \code{breaks} default, 4, generates the break
-points 2, 4, 6, 8 m/s. However, \code{breaks} can also be used to set specific
-break points. For example, the argument \code{breaks = c(0, 1, 10, 100)} breaks
-the data into segments <1, 1-10, 10-100, >100.}
+\item{breaks}{This argument controls how wind speed (or \code{pollutant}
+concentrations) are binned. Can take any of:
+\itemize{
+\item A single number, defining the \emph{number} of bins to create. By default,
+intervals of width \code{2} are used; this can be overriden using the
+\code{\link[=breakOpts]{breakOpts()}} function or the legacy \code{ws.int} argument.
+\item A vector of numbers defining the specific breakpoints.
+\item The output of the \code{\link[=breakOpts]{breakOpts()}} function for in-depth control of how the
+data is cut.
+}
+
+Note that \code{\link[=windRose]{windRose()}} uses different defaults to the rest of \code{openair};
+\code{method} defaults to \code{"width"}, a single \code{breaks} value sets the \code{max.bin}
+argument of \code{\link[=breakOpts]{breakOpts()}} instead of \code{breaks}, \code{include.lowest} defaults to
+\code{FALSE} and \code{dig.lab} defaults to \code{5}. These can be overriden by using
+\code{\link[=breakOpts]{breakOpts()}}.}
 
 \item{offset}{\code{offset} controls the size of the 'hole' in the middle and is
 expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a
@@ -146,14 +152,6 @@ passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}
-
-\item{dig.lab}{The number of significant figures at which scientific number
-formatting is used in break point and key labelling. Default 5.}
-
-\item{include.lowest}{Logical. If \code{FALSE} (the default), the first interval
-will be left exclusive and right inclusive. If \code{TRUE}, the first interval
-will be left and right inclusive. Passed to the \code{include.lowest} argument
-of \code{\link[=cut]{cut()}}.}
 
 \item{statistic}{The \code{statistic} to be applied to each data bin in the plot.
 Options currently include \dQuote{prop.count}, \dQuote{prop.mean} and

@@ -7,7 +7,10 @@
 breakOpts(
   breaks = NULL,
   labels = NULL,
-  method = c("number", "interval", "width", "pretty"),
+  method = c("number", "interval", "width", "pretty", "wd"),
+  max.bins = NULL,
+  include.lowest = NULL,
+  right = NULL,
   dig.lab = NULL
 )
 }
@@ -31,8 +34,8 @@ define \verb{breaks = 3, labels = c("low", "medium", "high")}. Care should be
 taken to provide the appropriate number of \code{labels} - it should always be
 equal to the number of bins, or one less than the number of breakpoints.}
 
-\item{method}{When \code{breaks} is a single integer (e.g., \code{breaks = 5}),
-\code{method} controls how this value is used to create breaks. Can be one of:
+\item{method}{When \code{breaks} is a single number (e.g., \code{breaks = 5}), \code{method}
+controls how this value is used to create breaks. Can be one of:
 \itemize{
 \item \code{"number"} - splits the range into \emph{n} quantiles (i.e., bins with roughly
 the same number of measurements in them). This is equivalent to
@@ -41,10 +44,25 @@ the same number of measurements in them). This is equivalent to
 \item \code{"width"} - splits the range into some number of bins with width \emph{n}.
 \item \code{"pretty"} - splits the range into \emph{approximately} \emph{n} bins with
 aesthetically pleasing breakpoints using \code{\link[=pretty]{pretty()}}.
+\item \code{"wd"} - splits the range into wind direction bins by passing it
+to \code{\link[=cutData]{cutData()}}. Note that this option requires \code{breaks} to be one of \code{4},
+\code{8}, \code{16} or \code{32} and ignores all other arguments.
 }}
 
+\item{max.bins}{If \code{max.bins} is set, only that number of bins will ever be
+created. For example, if \code{breaks = c(0, 10, 20, 30, 40, 50)} and \code{max.bins = 3}, \code{breaks} will be set to \code{c(0, 10, 20, 50)} to ensure only three bins
+are made.}
+
+\item{include.lowest}{logical, indicating if an \code{x[i]} equal to the lowest
+(or highest, for \code{right = FALSE}) 'breaks' value should be included.}
+
+\item{right}{logical, indicating if the intervals should be closed on the
+right (and open on the left) or vice versa.}
+
 \item{dig.lab}{Integer which is used when labels are not given. It determines
-the number of digits used in formatting the break numbers.}
+the number of digits used in formatting the break numbers. If \code{NULL}, the
+labels will use the minimum number of decimal places possible to ensure the
+breakpoints are unique, dropping all trailing zeroes.}
 }
 \description{
 This function provides a convenient way to set default options for \code{breaks}

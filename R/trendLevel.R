@@ -126,31 +126,31 @@
 #' )
 #' }
 trendLevel <- function(
-    mydata,
-    pollutant = "nox",
-    x = "month",
-    y = "hour",
-    type = "default",
-    rotate.axis = c(90, 0),
-    n.levels = c(10, 10, 4),
-    windflow = NULL,
-    limits = NULL,
-    min.bin = 1,
-    cols = "default",
-    auto.text = TRUE,
-    key.title = paste("use.stat.name", pollutant, sep = " "),
-    key.position = "right",
-    breaks = NULL,
-    statistic = c(
-      "mean",
-      "max",
-      "min",
-      "median",
-      "frequency",
-      "sum",
-      "sd",
-      "percentile"
-    ),
+  mydata,
+  pollutant = "nox",
+  x = "month",
+  y = "hour",
+  type = "default",
+  rotate.axis = c(90, 0),
+  n.levels = c(10, 10, 4),
+  windflow = NULL,
+  limits = NULL,
+  min.bin = 1,
+  cols = "default",
+  auto.text = TRUE,
+  key.title = paste("use.stat.name", pollutant, sep = " "),
+  key.position = "right",
+  breaks = NULL,
+  statistic = c(
+    "mean",
+    "max",
+    "min",
+    "median",
+    "frequency",
+    "sum",
+    "sd",
+    "percentile"
+  ),
   percentile = 95,
   stat.args = NULL,
   stat.safe.mode = TRUE,
@@ -410,6 +410,7 @@ trendLevel <- function(
           y_var = droplevels(.data[[y]]),
         ) |>
           tidyr::complete(.data$x_var, .data$y_var) |>
+          tidyr::drop_na(dplyr::all_of(c("x_var", "y_var", type))) |>
           dplyr::select(-"x_var", -"y_var")
       }
     )
@@ -485,10 +486,10 @@ trendLevel <- function(
   key.title <- check_key_header(key.title, extra.args)
 
   # handle breaks
-  categorical <- !is.null(breaks_opts$breaks)
+  categorical <- !is.null(break_opts$breaks)
   newdata[[pollutant]] <- cut_plot_breaks(
     newdata[[pollutant]],
-    breaks_opts
+    break_opts
   )
 
   # construct plot

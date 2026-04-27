@@ -172,17 +172,17 @@ check_duplicate_rows <- function(mydata, type = NULL, fn = cli::cli_warn) {
 #' @examples
 #' map_type(openairmaps::polar_data, fun = head, type = c("site", "site_type"))
 map_type <- function(
-    mydata,
-    type,
-    fun,
-    .include_default = FALSE,
-    .row_bind = TRUE,
-    .progress = FALSE
+  mydata,
+  type,
+  fun,
+  .include_default = FALSE,
+  .row_bind = TRUE,
+  .progress = FALSE
 ) {
   if ((all(type == "default") || is.null(type)) && !.include_default) {
     return(fun(mydata))
   }
-  
+
   out <-
     purrr::map(
       .x = split(mydata, mydata[type], drop = TRUE),
@@ -193,14 +193,14 @@ map_type <- function(
       },
       .progress = .progress
     )
-  
+
   if (.row_bind) {
     out <-
       out |>
       dplyr::bind_rows() |>
       dplyr::relocate(dplyr::any_of(type))
   }
-  
+
   return(out)
 }
 
