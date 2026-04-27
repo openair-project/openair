@@ -79,7 +79,8 @@
 #'   `method` defaults to `"width"`, a single `breaks` value sets the `max.bin`
 #'   argument of [breakOpts()] instead of `breaks`, `include.lowest` defaults to
 #'   `FALSE` and `dig.lab` defaults to `5`. These can be overriden by using
-#'   [breakOpts()].
+#'   [breakOpts()]. `dig.lab` is also applied to the annotation added when
+#'   `annotate = TRUE`.
 #'
 #' @param normalise If `TRUE` each wind direction segment is normalised to equal
 #'   one. This is useful for showing how the concentrations (or other

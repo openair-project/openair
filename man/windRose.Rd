@@ -127,7 +127,8 @@ Note that \code{\link[=windRose]{windRose()}} uses different defaults to the res
 \code{method} defaults to \code{"width"}, a single \code{breaks} value sets the \code{max.bin}
 argument of \code{\link[=breakOpts]{breakOpts()}} instead of \code{breaks}, \code{include.lowest} defaults to
 \code{FALSE} and \code{dig.lab} defaults to \code{5}. These can be overriden by using
-\code{\link[=breakOpts]{breakOpts()}}.}
+\code{\link[=breakOpts]{breakOpts()}}. \code{dig.lab} is also applied to the annotation added when
+\code{annotate = TRUE}.}
 
 \item{offset}{\code{offset} controls the size of the 'hole' in the middle and is
 expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a
