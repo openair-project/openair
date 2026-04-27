@@ -1,19 +1,58 @@
+# R project files
 .Rproj.user
 .Rhistory
 .RData
+.Ruserdata
+
+# Compiled files
 src/*.o
 src/*.so
 src/*.dll
-openair.Rproj
+
+# R Check artifacts
+/*.Rcheck/
+
+# RStudio artifacts
 *~
-src-i386
-src-x64
 .*.Rnb.cached
-README_cache/*
+
+# Platform-specific build directories
+src-i386/
+src-x64/
+src-arm64/
+
+# macOS
 .DS_Store
-docs
+
+# Documentation (generated)
+docs/
 *.html
-inst/doc
+inst/doc/
+README_cache/
+
+# Quarto
 /.quarto/
+_freeze/
+
+# CRAN
 CRAN-SUBMISSION
+CRAN-RELEASE
+
+# renv (dependency management)
+renv/library/
+renv/staging/
+renv/sandbox/
+.Rprofile-renv
+
+# pak cache
+.pkg.lock
+
+# Test coverage
+coverage/
+
+# Positron / Posit AI
+.positai
+*.positai
+
+# Claude
 ^.*\.claude$
