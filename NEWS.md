@@ -112,6 +112,8 @@
 
 - Strings with line breaks (e.g., the result of `cutData(type="seasonyear"))`) will no longer error when used for facet labels.
 
+- `name.pol` will now correctly map onto the names of `pollutant`s in `timeVariation()`.
+
 # openair 3.0.0
 
 ## Dependency Changes

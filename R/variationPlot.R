@@ -245,7 +245,7 @@ variationPlot <- function(
       values_to = "value"
     ) |>
       dplyr::mutate(
-        group = factor(.data$group)
+        group = factor(.data$group, levels = pollutant)
       )
   } else {
     names(mydata)[names(mydata) == pollutant] <- "value"
@@ -276,7 +276,7 @@ variationPlot <- function(
             group = "wd_v"
           )
       ) |>
-      dplyr::mutate(group = factor(.data$group))
+      dplyr::mutate(group = factor(.data$group, levels = pollutant))
   }
 
   # calculate summary values and confidence intervals
@@ -427,7 +427,7 @@ variationPlot <- function(
     mydata <- mydata |>
       dplyr::filter(!.data$group %in% c("wd_u", "wd_v")) |>
       dplyr::bind_rows(wd_data) |>
-      dplyr::mutate(group = factor(.data$group))
+      dplyr::mutate(group = factor(.data$group, levels = pollutant))
   }
 
   # normalise the pattern by group (i.e., colour) if requested
