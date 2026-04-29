@@ -274,6 +274,9 @@
   `cutData(type="seasonyear"))`) will no longer error when used for
   facet labels.
 
+- `name.pol` will now correctly map onto the names of `pollutant`s in
+  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md).
+
 ## openair 3.0.0
 
 CRAN release: 2026-04-02
