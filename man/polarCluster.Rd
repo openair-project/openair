@@ -268,25 +268,11 @@ possible pollutant source is active or not).
 
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
 given, the first is used for the columns and the second for the rows.}
-    \item{\code{breaks,labels}}{If a categorical colour scale is required, \code{breaks}
-should be specified. This can be either of:
-\itemize{
-\item A single value, which will divide the scale into \code{breaks} levels using the
-same logic as \code{\link[=cutData]{cutData()}}. For example, \code{breaks = 5} will split the scale
-into five quantiles.
-\item A numeric vector, which will define the specific breakpoints. For
-example, \code{c(0, 50, 100)} will bin the data into \verb{0 to 50}, \verb{50 to 100}, and
-so on. If \code{breaks} does not cover the full range of the data, the outer
-limits will be extended so that the full colour scale is covered while
-retaining the desired number of breaks.
-}
-
-By default, \code{breaks} will generate nicely formatted labels for each
-category. The \code{labels} argument overrides this - for example, a user could
-define \verb{breaks = 3, labels = c("low", "medium", "high")}. Care should be
-taken to provide the appropriate number of \code{labels} - it should be equal to
-\code{breaks} if a single value is given, or equal to \code{length(breaks)-1} if
-\code{breaks} is a vector.}
+    \item{\code{breaks}}{\code{breaks} bins a continuous axis into discrete bins. It can
+either take a single number (e.g., \code{breaks = 5}) to split the scale into
+quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
+define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
+details.}
     \item{\code{key.position}}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}

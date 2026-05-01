@@ -140,7 +140,6 @@ trendLevel <- function(
   auto.text = TRUE,
   key.title = paste("use.stat.name", pollutant, sep = " "),
   key.position = "right",
-  labels = NULL,
   breaks = NULL,
   statistic = c(
     "mean",
@@ -165,6 +164,9 @@ trendLevel <- function(
   key.position <- check_key_position(key.position, key)
 
   extra.args <- capture_dots(...)
+
+  # deal with breaks
+  break_opts <- resolve_break_opts(breaks, extra.args)
 
   # check length of x
   if (length(x) > 1) {
@@ -408,6 +410,7 @@ trendLevel <- function(
           y_var = droplevels(.data[[y]]),
         ) |>
           tidyr::complete(.data$x_var, .data$y_var) |>
+          tidyr::drop_na(dplyr::all_of(c("x_var", "y_var", type))) |>
           dplyr::select(-"x_var", -"y_var")
       }
     )
@@ -483,11 +486,10 @@ trendLevel <- function(
   key.title <- check_key_header(key.title, extra.args)
 
   # handle breaks
-  categorical <- !is.null(breaks)
+  categorical <- !is.null(break_opts$breaks)
   newdata[[pollutant]] <- cut_plot_breaks(
     newdata[[pollutant]],
-    breaks = breaks,
-    labels = labels
+    break_opts
   )
 
   # construct plot

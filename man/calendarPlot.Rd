@@ -24,7 +24,6 @@ calendarPlot(
   cex.lim = c(0.6, 0.9),
   cex.date = 0.6,
   digits = 0,
-  labels = NULL,
   breaks = NULL,
   w.shift = 0,
   w.abbr.len = 1,
@@ -131,25 +130,11 @@ the text above \code{lim}.}
 \item{digits}{The number of digits used to display concentration values when
 \code{annotate = "value"}.}
 
-\item{breaks, labels}{If a categorical colour scale is required, \code{breaks}
-should be specified. This can be either of:
-\itemize{
-\item A single value, which will divide the scale into \code{breaks} levels using the
-same logic as \code{\link[=cutData]{cutData()}}. For example, \code{breaks = 5} will split the scale
-into five quantiles.
-\item A numeric vector, which will define the specific breakpoints. For
-example, \code{c(0, 50, 100)} will bin the data into \verb{0 to 50}, \verb{50 to 100}, and
-so on. If \code{breaks} does not cover the full range of the data, the outer
-limits will be extended so that the full colour scale is covered while
-retaining the desired number of breaks.
-}
-
-By default, \code{breaks} will generate nicely formatted labels for each
-category. The \code{labels} argument overrides this - for example, a user could
-define \verb{breaks = 3, labels = c("low", "medium", "high")}. Care should be
-taken to provide the appropriate number of \code{labels} - it should be equal to
-\code{breaks} if a single value is given, or equal to \code{length(breaks)-1} if
-\code{breaks} is a vector.}
+\item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
+either take a single number (e.g., \code{breaks = 5}) to split the scale into
+quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
+define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
+details.}
 
 \item{w.shift}{Controls the order of the days of the week. By default the
 plot shows Saturday first (\code{w.shift = 0}). To change this so that it starts
@@ -243,9 +228,9 @@ hourly or higher time resolution are supplied, then \code{\link[=calendarPlot]{c
 calculate daily averages using \code{\link[=timeAverage]{timeAverage()}}, which ensures that wind
 directions are vector-averaged.
 
-If wind speed is also available, then setting the option \code{annotate = "ws"}
-will plot the wind vectors whose length is scaled to the wind speed. Thus
-information on the daily mean wind speed and direction are available.
+If wind speed is also available, then using the \code{windflow} option will plot
+the wind vectors whose length is scaled to the wind speed. Thus information
+on the daily mean wind speed and direction are available.
 
 It is also possible to plot categorical scales. This is useful where, for
 example, an air quality index defines concentrations as bands, e.g., "good",
@@ -262,24 +247,36 @@ maximum daily 8-hour mean concentrations.
 calendarPlot(mydata, pollutant = "o3", year = 2003)
 
 # show wind vectors
-calendarPlot(mydata, pollutant = "o3", year = 2003, annotate = "wd")
+calendarPlot(mydata, pollutant = "o3", year = 2003, windflow = TRUE)
 \dontrun{
 # show wind vectors scaled by wind speed and different colours
-calendarPlot(mydata,
-  pollutant = "o3", year = 2003, annotate = "ws",
+calendarPlot(
+  mydata,
+  pollutant = "o3",
+  year = 2003,
+  windflow = TRUE,
   cols = "heat"
 )
 
 # show only specific months with selectByDate
-calendarPlot(selectByDate(mydata, month = c(3, 6, 10), year = 2003),
-  pollutant = "o3", year = 2003, annotate = "ws", cols = "heat"
+calendarPlot(
+  selectByDate(mydata, month = c(3, 6, 10), year = 2003),
+  pollutant = "o3",
+  year = 2003,
+  windflow = TRUE,
+  cols = "heat"
 )
 
 # categorical scale example
-calendarPlot(mydata,
-  pollutant = "no2", breaks = c(0, 50, 100, 150, 1000),
-  labels = c("Very low", "Low", "High", "Very High"),
-  cols = c("lightblue", "green", "yellow", "red"), statistic = "max"
+calendarPlot(
+  mydata,
+  pollutant = "no2",
+  breaks = breakOpts(
+    c(0, 50, 100, 150, 1000),
+    labels = c("Very low", "Low", "High", "Very High")
+  ),
+  cols = c("lightblue", "green", "yellow", "red"),
+  statistic = "max"
 )
 
 # UK daily air quality index
@@ -288,8 +285,10 @@ calendarPlot(
   mydata,
   "pm10",
   year = 1999,
-  breaks = pm10.breaks,
-  labels = c(1:10),
+  breaks = breakOpts(
+    pm10.breaks,
+    labels = c(1:10)
+  ),
   cols = "daqi",
   statistic = "mean",
   key.title = "PM10 DAQI"

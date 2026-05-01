@@ -17,9 +17,9 @@
 #' calculate daily averages using [timeAverage()], which ensures that wind
 #' directions are vector-averaged.
 #'
-#' If wind speed is also available, then setting the option `annotate = "ws"`
-#' will plot the wind vectors whose length is scaled to the wind speed. Thus
-#' information on the daily mean wind speed and direction are available.
+#' If wind speed is also available, then using the `windflow` option will plot
+#' the wind vectors whose length is scaled to the wind speed. Thus information
+#' on the daily mean wind speed and direction are available.
 #'
 #' It is also possible to plot categorical scales. This is useful where, for
 #' example, an air quality index defines concentrations as bands, e.g., "good",
@@ -127,24 +127,36 @@
 #' calendarPlot(mydata, pollutant = "o3", year = 2003)
 #'
 #' # show wind vectors
-#' calendarPlot(mydata, pollutant = "o3", year = 2003, annotate = "wd")
+#' calendarPlot(mydata, pollutant = "o3", year = 2003, windflow = TRUE)
 #' \dontrun{
 #' # show wind vectors scaled by wind speed and different colours
-#' calendarPlot(mydata,
-#'   pollutant = "o3", year = 2003, annotate = "ws",
+#' calendarPlot(
+#'   mydata,
+#'   pollutant = "o3",
+#'   year = 2003,
+#'   windflow = TRUE,
 #'   cols = "heat"
 #' )
 #'
 #' # show only specific months with selectByDate
-#' calendarPlot(selectByDate(mydata, month = c(3, 6, 10), year = 2003),
-#'   pollutant = "o3", year = 2003, annotate = "ws", cols = "heat"
+#' calendarPlot(
+#'   selectByDate(mydata, month = c(3, 6, 10), year = 2003),
+#'   pollutant = "o3",
+#'   year = 2003,
+#'   windflow = TRUE,
+#'   cols = "heat"
 #' )
 #'
 #' # categorical scale example
-#' calendarPlot(mydata,
-#'   pollutant = "no2", breaks = c(0, 50, 100, 150, 1000),
-#'   labels = c("Very low", "Low", "High", "Very High"),
-#'   cols = c("lightblue", "green", "yellow", "red"), statistic = "max"
+#' calendarPlot(
+#'   mydata,
+#'   pollutant = "no2",
+#'   breaks = breakOpts(
+#'     c(0, 50, 100, 150, 1000),
+#'     labels = c("Very low", "Low", "High", "Very High")
+#'   ),
+#'   cols = c("lightblue", "green", "yellow", "red"),
+#'   statistic = "max"
 #' )
 #'
 #' # UK daily air quality index
@@ -153,8 +165,10 @@
 #'   mydata,
 #'   "pm10",
 #'   year = 1999,
-#'   breaks = pm10.breaks,
-#'   labels = c(1:10),
+#'   breaks = breakOpts(
+#'     pm10.breaks,
+#'     labels = c(1:10)
+#'   ),
 #'   cols = "daqi",
 #'   statistic = "mean",
 #'   key.title = "PM10 DAQI"
@@ -181,7 +195,6 @@ calendarPlot <-
     cex.lim = c(0.6, 0.9),
     cex.date = 0.6,
     digits = 0,
-    labels = NULL,
     breaks = NULL,
     w.shift = 0,
     w.abbr.len = 1,
@@ -265,6 +278,9 @@ calendarPlot <-
     extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
     extra.args$caption <- quickText(extra.args$caption, auto.text)
     extra.args$tag <- quickText(extra.args$tag, auto.text)
+
+    # resolve breaks
+    break_opts <- resolve_break_opts(breaks, extra.args)
 
     # check if key.header / key.footer are being used
     key.title <- check_key_header(key.title, extra.args)
@@ -474,11 +490,10 @@ calendarPlot <-
       dplyr::mutate(value = .data$conc.mat)
 
     # handle breaks
-    categorical <- !is.null(breaks)
+    categorical <- !is.null(break_opts$breaks)
     mydata$conc.mat <- cut_plot_breaks(
       mydata$conc.mat,
-      breaks = breaks,
-      labels = labels
+      break_opts
     )
 
     # add in ws and wd if there

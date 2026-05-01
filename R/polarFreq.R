@@ -139,7 +139,6 @@ polarFreq <- function(
   grid.line = 5,
   limits = NULL,
   breaks = NULL,
-  labels = NULL,
   cols = "default",
   trans = TRUE,
   type = "default",
@@ -178,6 +177,9 @@ polarFreq <- function(
   extra.args$caption <- quickText(extra.args$caption, auto.text)
   extra.args$tag <- quickText(extra.args$tag, auto.text)
 
+  # deal with breaks
+  break_opts <- resolve_break_opts(breaks, extra.args)
+
   if (!is.null(pollutant)) {
     vars <- c(vars, pollutant)
   }
@@ -212,7 +214,7 @@ polarFreq <- function(
   }
 
   # over-ride transform if breaks supplied
-  if (!(any(is.null(breaks)) || anyNA(breaks))) {
+  if (!(any(is.null(break_opts$breaks)) || anyNA(break_opts$breaks))) {
     trans <- FALSE
   }
 
@@ -312,11 +314,10 @@ polarFreq <- function(
   results.grid$weights[which(is.na(results.grid$weights))] <- 0
 
   # handle breaks
-  categorical <- !is.null(breaks)
+  categorical <- !is.null(break_opts$breaks)
   results.grid$weights <- cut_plot_breaks(
     results.grid$weights,
-    breaks = breaks,
-    labels = labels
+    break_opts
   )
 
   # set the upper wind speed

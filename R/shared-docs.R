@@ -51,25 +51,11 @@
 #'   override this. For format types see [strptime()]. For example, to format
 #'   the date like "Jan-2012" set `date.format = "\%b-\%Y"`.
 #'
-#' @param breaks,labels If a categorical colour scale is required, `breaks`
-#'   should be specified. This can be either of:
-#'
-#'   - A single value, which will divide the scale into `breaks` levels using the
-#'   same logic as [cutData()]. For example, `breaks = 5` will split the scale
-#'   into five quantiles.
-#'
-#'   - A numeric vector, which will define the specific breakpoints. For
-#'   example, `c(0, 50, 100)` will bin the data into `0 to 50`, `50 to 100`, and
-#'   so on. If `breaks` does not cover the full range of the data, the outer
-#'   limits will be extended so that the full colour scale is covered while
-#'   retaining the desired number of breaks.
-#'
-#'   By default, `breaks` will generate nicely formatted labels for each
-#'   category. The `labels` argument overrides this - for example, a user could
-#'   define `breaks = 3, labels = c("low", "medium", "high")`. Care should be
-#'   taken to provide the appropriate number of `labels` - it should be equal to
-#'   `breaks` if a single value is given, or equal to `length(breaks)-1` if
-#'   `breaks` is a vector.
+#' @param breaks `breaks` bins a continuous axis into discrete bins. It can
+#'   either take a single number (e.g., `breaks = 5`) to split the scale into
+#'   quantiles, a vector of numbers (e.g., `breaks = c(0, 50, 100, 200, 500`) to
+#'   define specific break-points, or a named list. See [breakOpts()] for more
+#'   details.
 #'
 #' @param ref.x Either a single value or values representing the x axis
 #'   intercepts to draw lines, or a list such as that provided by [refOpts()] to
