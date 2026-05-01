@@ -30,6 +30,9 @@
 #'   direction values with which the first can be compared. See
 #'   [pollutionRose()] for more details.
 #'
+#' @param ws.int The Wind speed interval. Default is 2 m/s but for low met masts
+#'   with low mean wind speeds a value of 1 or 0.5 m/s may be better.
+#'
 #' @param angle Default angle of \dQuote{spokes} is 30. Other potentially useful
 #'   angles are 45 and 10. Note that the width of the wind speed interval may
 #'   need adjusting using `width`.
@@ -63,24 +66,11 @@
 #' @param paddle Either `TRUE` or `FALSE`. If `TRUE` plots rose using 'paddle'
 #'   style spokes. If `FALSE` plots rose using 'wedge' style spokes.
 #'
-#' @param breaks This argument controls how wind speed (or `pollutant`
-#'   concentrations) are binned. Can take any of:
-#'
-#'  - A single number, defining the *number* of bins to create. By default,
-#'   intervals of width `2` are used; this can be overriden using the
-#'   [breakOpts()] function or the legacy `ws.int` argument.
-#'
-#'  - A vector of numbers defining the specific breakpoints.
-#'
-#'  - The output of the [breakOpts()] function for in-depth control of how the
-#'   data is cut.
-#'
-#'   Note that [windRose()] uses different defaults to the rest of `openair`;
-#'   `method` defaults to `"width"`, a single `breaks` value sets the `max.bin`
-#'   argument of [breakOpts()] instead of `breaks`, `include.lowest` defaults to
-#'   `FALSE` and `dig.lab` defaults to `5`. These can be overriden by using
-#'   [breakOpts()]. `dig.lab` is also applied to the annotation added when
-#'   `annotate = TRUE`.
+#' @param breaks Most commonly, the number of break points for wind speed. With
+#'   the `ws.int` default of 2 m/s, the `breaks` default, 4, generates the break
+#'   points 2, 4, 6, 8 m/s. However, `breaks` can also be used to set specific
+#'   break points. For example, the argument `breaks = c(0, 1, 10, 100)` breaks
+#'   the data into segments <1, 1-10, 10-100, >100.
 #'
 #' @param normalise If `TRUE` each wind direction segment is normalised to equal
 #'   one. This is useful for showing how the concentrations (or other
@@ -91,6 +81,14 @@
 #' @param max.freq Controls the scaling used by setting the maximum value for
 #'   the radial limits. This is useful to ensure several plots use the same
 #'   radial limits.
+#'
+#' @param dig.lab The number of significant figures at which scientific number
+#'   formatting is used in break point and key labelling. Default 5.
+#'
+#' @param include.lowest Logical. If `FALSE` (the default), the first interval
+#'   will be left exclusive and right inclusive. If `TRUE`, the first interval
+#'   will be left and right inclusive. Passed to the `include.lowest` argument
+#'   of [cut()].
 #'
 #' @param statistic The `statistic` to be applied to each data bin in the plot.
 #'   Options currently include \dQuote{prop.count}, \dQuote{prop.mean} and
@@ -149,6 +147,7 @@ windRose <- function(
   wd = "wd",
   ws2 = NA,
   wd2 = NA,
+  ws.int = 2,
   angle = 30,
   type = "default",
   calm.thresh = 0,
@@ -158,19 +157,15 @@ windRose <- function(
   width = 0.9,
   seg = 0.9,
   auto.text = TRUE,
-  breaks = openair::breakOpts(
-    breaks = 2,
-    max.bins = 4,
-    method = "width",
-    include.lowest = FALSE,
-    dig.lab = 5
-  ),
+  breaks = 4,
   offset = 10,
   normalise = FALSE,
   max.freq = NULL,
   paddle = TRUE,
   key.title = "(m/s)",
   key.position = "bottom",
+  dig.lab = 5,
+  include.lowest = FALSE,
   statistic = "prop.count",
   pollutant = NULL,
   annotate = TRUE,
@@ -218,28 +213,6 @@ windRose <- function(
   extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
   extra.args$tag <- quickText(extra.args$tag, auto.text)
 
-  # resolve breaks - if numeric, use the prescribed way by windRose, else use
-  # break logic from rest of openair
-  if (is.numeric(breaks) && length(breaks) == 1L) {
-    break_opts <- breakOpts(
-      breaks = extra.args$ws.int %||% 2,
-      labels = extra.args$labels,
-      method = "width",
-      max.bins = breaks,
-      include.lowest = extra.args$include.lowest %||% FALSE,
-      dig.lab = extra.args$dig.lab %||% 5,
-      right = TRUE
-    )
-  } else {
-    break_opts <- resolve_break_opts(
-      breaks,
-      extra.args = extra.args,
-      include.lowest = extra.args$include.lowest %||% FALSE,
-      dig.lab = extra.args$dig.lab %||% 5,
-      right = TRUE
-    )
-  }
-
   # need separate handling to be overwritten
   if ("caption" %in% names(extra.args)) {
     extra.args$caption <- quickText(extra.args$caption %||% NULL, auto.text)
@@ -247,11 +220,6 @@ windRose <- function(
 
   # preset statitistics
   if (is.character(statistic)) {
-    digits <- break_opts$dig.lab
-    if (digits < 1) {
-      digits <- 1
-    }
-
     # allowed cases
     ok.stat <- c("prop.count", "prop.mean", "abs.count", "frequency")
     rlang::arg_match(statistic, ok.stat)
@@ -261,9 +229,7 @@ windRose <- function(
       stat.unit <- "%"
       stat.scale <- "all"
       stat.lab <- "Frequency of counts by wind direction (%)"
-      stat.fun2 <- function(x) {
-        format(mean(x, na.rm = TRUE), digits = digits)
-      }
+      stat.fun2 <- function(x) format(mean(x, na.rm = TRUE), digits = dig.lab)
       stat.lab2 <- "mean"
       stat.labcalm <- function(x) round(x, 1)
     }
@@ -273,7 +239,7 @@ windRose <- function(
       stat.unit <- "%"
       stat.scale <- "panel"
       stat.lab <- "Proportion contribution to the mean (%)"
-      stat.fun2 <- function(x) format(mean(x, na.rm = TRUE), digits = digits)
+      stat.fun2 <- function(x) format(mean(x, na.rm = TRUE), digits = 5)
       stat.lab2 <- "mean"
       stat.labcalm <- function(x) round(x, 1)
     }
@@ -594,11 +560,27 @@ windRose <- function(
     return(invisible(output))
   }
 
-  mydata$x <- cut_plot_breaks(
+  if (length(breaks) == 1) {
+    breaks <- 0:(breaks - 1) * ws.int
+  }
+
+  if (max(breaks) < max(mydata$x, na.rm = TRUE)) {
+    breaks <- c(breaks, max(mydata$x, na.rm = TRUE))
+  }
+
+  if (min(breaks) > min(mydata$x, na.rm = TRUE)) {
+    cli::cli_warn("Some values are below minimum break.")
+  }
+
+  breaks <- unique(breaks)
+  interval_labels <- get_labels_from_breaks(breaks, sep = " to ")
+  mydata$x <- cut(
     mydata$x,
-    break_opts
+    breaks = breaks,
+    labels = interval_labels,
+    include.lowest = include.lowest,
+    dig.lab = dig.lab
   )
-  interval_labels <- levels(mydata$x)
 
   # Build tidy summary: one row per (wd x interval) combination per panel
   prepare_rose_data <- function(mydata) {

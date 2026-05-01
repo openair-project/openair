@@ -62,6 +62,8 @@ to a file).}
     \item{\code{ws2,wd2}}{The user can supply a second set of wind speed and wind
 direction values with which the first can be compared. See
 \code{\link[=pollutionRose]{pollutionRose()}} for more details.}
+    \item{\code{ws.int}}{The Wind speed interval. Default is 2 m/s but for low met masts
+with low mean wind speeds a value of 1 or 0.5 m/s may be better.}
     \item{\code{angle}}{Default angle of \dQuote{spokes} is 30. Other potentially useful
 angles are 45 and 10. Note that the width of the wind speed interval may
 need adjusting using \code{width}.}
@@ -86,6 +88,12 @@ wider.}
     \item{\code{max.freq}}{Controls the scaling used by setting the maximum value for
 the radial limits. This is useful to ensure several plots use the same
 radial limits.}
+    \item{\code{dig.lab}}{The number of significant figures at which scientific number
+formatting is used in break point and key labelling. Default 5.}
+    \item{\code{include.lowest}}{Logical. If \code{FALSE} (the default), the first interval
+will be left exclusive and right inclusive. If \code{TRUE}, the first interval
+will be left and right inclusive. Passed to the \code{include.lowest} argument
+of \code{\link[=cut]{cut()}}.}
     \item{\code{statistic}}{The \code{statistic} to be applied to each data bin in the plot.
 Options currently include \dQuote{prop.count}, \dQuote{prop.mean} and
 \dQuote{abs.count}. The default \dQuote{prop.count} sizes bins according to
