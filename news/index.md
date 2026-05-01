@@ -23,14 +23,6 @@
   [`breakOpts()`](https://openair-project.github.io/openair/reference/breakOpts.md)
   function.
 
-- `breaks` in
-  [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
-  and
-  [`pollutionRose()`](https://openair-project.github.io/openair/reference/pollutionRose.md)
-  has superseded all of `labels`, `ws.int`, and `include.lowest`. These
-  have been removed, but can still be provided via `...` for
-  back-compatibility purposes.
-
 ### New Features
 
 - Refinements to how parameters are passed via `...` to plotting
@@ -136,19 +128,9 @@
     [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
     have gained `breaks`.
 
-  - The `breaks` argument in
-    [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
-    and
-    [`pollutionRose()`](https://openair-project.github.io/openair/reference/pollutionRose.md)
-    now behaves similarly to that of, e.g.,
-    [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md),
-    meaning different binning methods can be used. Unlike other
-    functions, the default binning strategy remains a fixed number of
-    fixed width bins.
-
-  - As stated above, `labels` is no longer a top-level argument and can
-    be defined by passing a list to `breaks`. `labels` given to `...`
-    will be converted with a warning.
+  - `labels` is no longer a top-level argument and can be defined by
+    passing a list to `breaks`. `labels` given to `...` will be
+    converted with a warning.
 
 - Refinements to colours in
   [openair](https://openair-project.github.io/openair/):
