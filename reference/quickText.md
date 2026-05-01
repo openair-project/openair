@@ -49,6 +49,7 @@ Jack Davison
 ## Examples
 
 ``` r
+
 # see axis formatting in an openair plot, e.g.:
 scatterPlot(
   mydata,

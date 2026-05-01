@@ -66,6 +66,7 @@ David Carslaw
 ## Examples
 
 ``` r
+
 ## select all of 1999
 data.1999 <- selectByDate(mydata, start = "1/1/1999", end = "31/12/1999 23:00")
 head(data.1999)

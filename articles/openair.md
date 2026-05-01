@@ -6,6 +6,7 @@ examples, please see the [online
 book](https://openair-project.github.io/book/).
 
 ``` r
+
 library(openair)
 ```
 
@@ -15,6 +16,7 @@ It is easy to import hourly data from 100s of sites and to import
 several sites at one time and several years of data.
 
 ``` r
+
 kc1 <- importAURN(site = "kc1", year = 2020)
 kc1
 #> # A tibble: 8,784 × 15
@@ -44,6 +46,7 @@ example, to select weekday (Monday to Friday) data from June to
 September for 2012 and for the hours 7am to 7pm inclusive:
 
 ``` r
+
 sub <- selectByDate(
   kc1,
   day = "weekday",
@@ -74,6 +77,7 @@ Similarly it is easy to time-average data in many flexible ways. For
 example, 2-week means can be calculated as
 
 ``` r
+
 sub2 <- timeAverage(kc1, avg.time = "2 week")
 sub2
 #> # A tibble: 27 × 12
@@ -149,6 +153,7 @@ wind roses very easily provided the variables `ws` (wind speed) and `wd`
 (wind direction) are available.
 
 ``` r
+
 windRose(mydata)
 ```
 
@@ -158,6 +163,7 @@ However, the real flexibility comes from being able to use the type
 option.
 
 ``` r
+
 windRose(mydata, type = "year", ncol = 4, nrow = 2, width = 0.4)
 ```
 
@@ -172,6 +178,7 @@ There are many flavours of bivariate polar plots, as described
 that are useful for understanding air pollution sources.
 
 ``` r
+
 polarPlot(
   mydata,
   pollutant = "so2",

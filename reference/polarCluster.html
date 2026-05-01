@@ -379,22 +379,12 @@ possible pollutant source is active or not).</p></li>
 </ul><p>Most <code>openair</code> plotting functions can take two <code>type</code> arguments. If two are
 given, the first is used for the columns and the second for the rows.</p></dd>
 
-    <dt><code>breaks,labels</code></dt>
-<dd><p>If a categorical colour scale is required, <code>breaks</code>
-should be specified. This can be either of:</p><ul><li><p>A single value, which will divide the scale into <code>breaks</code> levels using the
-same logic as <code><a href="cutData.html">cutData()</a></code>. For example, <code>breaks = 5</code> will split the scale
-into five quantiles.</p></li>
-<li><p>A numeric vector, which will define the specific breakpoints. For
-example, <code>c(0, 50, 100)</code> will bin the data into <code>0 to 50</code>, <code>50 to 100</code>, and
-so on. If <code>breaks</code> does not cover the full range of the data, the outer
-limits will be extended so that the full colour scale is covered while
-retaining the desired number of breaks.</p></li>
-</ul><p>By default, <code>breaks</code> will generate nicely formatted labels for each
-category. The <code>labels</code> argument overrides this - for example, a user could
-define <code>breaks = 3, labels = c("low", "medium", "high")</code>. Care should be
-taken to provide the appropriate number of <code>labels</code> - it should be equal to
-<code>breaks</code> if a single value is given, or equal to <code>length(breaks)-1</code> if
-<code>breaks</code> is a vector.</p></dd>
+    <dt><code>breaks</code></dt>
+<dd><p><code>breaks</code> bins a continuous axis into discrete bins. It can
+either take a single number (e.g., <code>breaks = 5</code>) to split the scale into
+quantiles, a vector of numbers (e.g., <code>breaks = c(0, 50, 100, 200, 500</code>) to
+define specific break-points, or a named list. See <code><a href="breakOpts.html">breakOpts()</a></code> for more
+details.</p></dd>
 
     <dt><code>key.position</code></dt>
 <dd><p>Location where the legend is to be placed. Allowed

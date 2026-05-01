@@ -90,6 +90,7 @@ functions like
 ## Examples
 
 ``` r
+
 # `windflow` can be `TRUE` to use defaults
 trendLevel(mydata, type = "default", cols = "greyscale", windflow = TRUE)
 

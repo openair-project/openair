@@ -69,6 +69,7 @@ Other import functions:
 ## Examples
 
 ``` r
+
 # import data for Stuttgart Am Neckartor (S)
 if (FALSE) { # \dontrun{
 stuttgart <- importEurope("debw118", year = 2010:2019, meta = TRUE)

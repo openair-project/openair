@@ -74,6 +74,7 @@ All **openair** functions are fully documented; access documentation
 using R in your IDE of choice.
 
 ``` r
+
 ?openair::polarPlot
 ```
 
@@ -94,6 +95,7 @@ and ideas for the application of **openair**’s various functions.
 **openair** can be installed from **CRAN** with:
 
 ``` r
+
 install.packages("openair")
 ```
 
@@ -101,6 +103,7 @@ You can also install the development version of **openair** from GitHub
 using [pak](https://pak.r-lib.org/):
 
 ``` r
+
 # install.packages("pak")
 pak::pak("openair-project/openair")
 ```

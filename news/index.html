@@ -60,8 +60,9 @@
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-development-version">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
-<ul><li>
-<code>strip.position</code>, <code>x.relation</code> and <code>y.relation</code> are now no longer function-level arguments and are handled via <code>...</code>. See “New Features” below for details.</li>
+<ul><li><p><code>strip.position</code>, <code>x.relation</code>, and <code>y.relation</code> are now no longer function-level arguments and are handled via <code>...</code>.</p></li>
+<li><p>The <code>labels</code> argument (as paired with <code>breaks</code>) is deprecated. If used (now passed through <code>...</code>) it will be automatically mapped to its new place in the <code><a href="../reference/breakOpts.html">breakOpts()</a></code> function.</p></li>
+<li><p><code>breaks</code> in <code><a href="../reference/windRose.html">windRose()</a></code> and <code><a href="../reference/pollutionRose.html">pollutionRose()</a></code> has superseded all of <code>labels</code>, <code>ws.int</code>, and <code>include.lowest</code>. These have been removed, but can still be provided via <code>...</code> for back-compatibility purposes.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
@@ -91,10 +92,13 @@
 <li><p>Added <code><a href="../reference/refOpts.html">refOpts()</a></code> to help construct values for <code>ref.x</code> and <code>ref.y</code>, similar to <code><a href="../reference/windflowOpts.html">windflowOpts()</a></code>.</p></li>
 </ul></li>
 <li>
-<p>Refinements to how <code>breaks</code> and <code>labels</code> are implemented in functions like <code><a href="../reference/trendLevel.html">trendLevel()</a></code>:</p>
-<ul><li><p>If <code>breaks</code> don’t cover the full range of the data being binned, the maximum and minimum <code>breaks</code> will be overwritten so that it does.</p></li>
-<li><p>If <code>breaks</code> is of length <code>1</code>, the colour range will be split into <code>breaks</code> categories, using the same logic as running <code><a href="../reference/cutData.html">cutData()</a></code> on a numeric column.</p></li>
-<li><p><code><a href="../reference/polarPlot.html">polarPlot()</a></code>, <code><a href="../reference/polarAnnulus.html">polarAnnulus()</a></code> and <code><a href="../reference/corPlot.html">corPlot()</a></code> have gained <code>breaks</code> and <code>labels</code>.</p></li>
+<p>Refinements to how <code>breaks</code> are implemented in functions like <code><a href="../reference/trendLevel.html">trendLevel()</a></code>:</p>
+<ul><li><p>If <code>breaks</code> doesn’t cover the full range of the data being binned, the maximum and minimum <code>breaks</code> will be overwritten so that it does.</p></li>
+<li><p>If <code>breaks</code> is of length <code>1</code>, the colour range will be split into <code>breaks</code> categories, defaulting to using the same logic as running <code><a href="../reference/cutData.html">cutData()</a></code> on a numeric column.</p></li>
+<li><p><code>breaks</code> can now take a named list, defined using the new <code><a href="../reference/breakOpts.html">breakOpts()</a></code> function. Most significantly, this allows for the method of binning to change for single-value <code>breaks</code> (quantiles, equal range bins, user-defined bin widths, approximate ‘pretty’ breaks and wind direction binning at time of writing).</p></li>
+<li><p><code><a href="../reference/polarPlot.html">polarPlot()</a></code>, <code><a href="../reference/polarAnnulus.html">polarAnnulus()</a></code> and <code><a href="../reference/corPlot.html">corPlot()</a></code> have gained <code>breaks</code>.</p></li>
+<li><p>The <code>breaks</code> argument in <code><a href="../reference/windRose.html">windRose()</a></code> and <code><a href="../reference/pollutionRose.html">pollutionRose()</a></code> now behaves similarly to that of, e.g., <code><a href="../reference/trendLevel.html">trendLevel()</a></code>, meaning different binning methods can be used. Unlike other functions, the default binning strategy remains a fixed number of fixed width bins.</p></li>
+<li><p>As stated above, <code>labels</code> is no longer a top-level argument and can be defined by passing a list to <code>breaks</code>. <code>labels</code> given to <code>...</code> will be converted with a warning.</p></li>
 </ul></li>
 <li>
 <p>Refinements to colours in <a href="https://openair-project.github.io/openair/">openair</a>:</p>

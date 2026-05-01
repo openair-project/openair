@@ -74,6 +74,7 @@ All **openair** functions are fully documented; access documentation
 using R in your IDE of choice.
 
 ``` r
+
 ?openair::polarPlot
 ```
 
@@ -94,6 +95,7 @@ and ideas for the application of **openair**’s various functions.
 **openair** can be installed from **CRAN** with:
 
 ``` r
+
 install.packages("openair")
 ```
 
@@ -101,6 +103,7 @@ You can also install the development version of **openair** from GitHub
 using [pak](https://pak.r-lib.org/):
 
 ``` r
+
 # install.packages("pak")
 pak::pak("openair-project/openair")
 ```
@@ -277,6 +280,11 @@ Other functions to help with controlling openair plots.
   :
 
   Define `ref.x` or `ref.y` options for `openair` plots
+
+- [`breakOpts()`](https://openair-project.github.io/openair/reference/breakOpts.md)
+  :
+
+  Define `breaks` options for `openair` plots
 
 ## Data Utilities
 

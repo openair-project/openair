@@ -28,7 +28,6 @@ calendarPlot(
   cex.lim = c(0.6, 0.9),
   cex.date = 0.6,
   digits = 0,
-  labels = NULL,
   breaks = NULL,
   w.shift = 0,
   w.abbr.len = 1,
@@ -190,28 +189,15 @@ calendarPlot(
   The number of digits used to display concentration values when
   `annotate = "value"`.
 
-- breaks, labels:
+- breaks:
 
-  If a categorical colour scale is required, `breaks` should be
-  specified. This can be either of:
-
-  - A single value, which will divide the scale into `breaks` levels
-    using the same logic as
-    [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
-    For example, `breaks = 5` will split the scale into five quantiles.
-
-  - A numeric vector, which will define the specific breakpoints. For
-    example, `c(0, 50, 100)` will bin the data into `0 to 50`,
-    `50 to 100`, and so on. If `breaks` does not cover the full range of
-    the data, the outer limits will be extended so that the full colour
-    scale is covered while retaining the desired number of breaks.
-
-  By default, `breaks` will generate nicely formatted labels for each
-  category. The `labels` argument overrides this - for example, a user
-  could define `breaks = 3, labels = c("low", "medium", "high")`. Care
-  should be taken to provide the appropriate number of `labels` - it
-  should be equal to `breaks` if a single value is given, or equal to
-  `length(breaks)-1` if `breaks` is a vector.
+  `breaks` bins a continuous axis into discrete bins. It can either take
+  a single number (e.g., `breaks = 5`) to split the scale into
+  quantiles, a vector of numbers (e.g.,
+  `breaks = c(0, 50, 100, 200, 500`) to define specific break-points, or
+  a named list. See
+  [`breakOpts()`](https://openair-project.github.io/openair/reference/breakOpts.md)
+  for more details.
 
 - w.shift:
 
@@ -345,10 +331,9 @@ that if hourly or higher time resolution are supplied, then
 [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md),
 which ensures that wind directions are vector-averaged.
 
-If wind speed is also available, then setting the option
-`annotate = "ws"` will plot the wind vectors whose length is scaled to
-the wind speed. Thus information on the daily mean wind speed and
-direction are available.
+If wind speed is also available, then using the `windflow` option will
+plot the wind vectors whose length is scaled to the wind speed. Thus
+information on the daily mean wind speed and direction are available.
 
 It is also possible to plot categorical scales. This is useful where,
 for example, an air quality index defines concentrations as bands, e.g.,
@@ -383,29 +368,37 @@ calendarPlot(mydata, pollutant = "o3", year = 2003)
 
 
 # show wind vectors
-calendarPlot(mydata, pollutant = "o3", year = 2003, annotate = "wd")
-#> Warning: ! `annotate` in `openair::calendarPlot()` no longer supports `'ws'` or `'wd'`.
-#> ℹ Please use the `windflow` argument instead for more thorough control over the
-#>   apperance of the 'windflow' arrow.
-#> ℹ Setting `windflow` to TRUE.
+calendarPlot(mydata, pollutant = "o3", year = 2003, windflow = TRUE)
 
 if (FALSE) { # \dontrun{
 # show wind vectors scaled by wind speed and different colours
-calendarPlot(mydata,
-  pollutant = "o3", year = 2003, annotate = "ws",
+calendarPlot(
+  mydata,
+  pollutant = "o3",
+  year = 2003,
+  windflow = TRUE,
   cols = "heat"
 )
 
 # show only specific months with selectByDate
-calendarPlot(selectByDate(mydata, month = c(3, 6, 10), year = 2003),
-  pollutant = "o3", year = 2003, annotate = "ws", cols = "heat"
+calendarPlot(
+  selectByDate(mydata, month = c(3, 6, 10), year = 2003),
+  pollutant = "o3",
+  year = 2003,
+  windflow = TRUE,
+  cols = "heat"
 )
 
 # categorical scale example
-calendarPlot(mydata,
-  pollutant = "no2", breaks = c(0, 50, 100, 150, 1000),
-  labels = c("Very low", "Low", "High", "Very High"),
-  cols = c("lightblue", "green", "yellow", "red"), statistic = "max"
+calendarPlot(
+  mydata,
+  pollutant = "no2",
+  breaks = breakOpts(
+    c(0, 50, 100, 150, 1000),
+    labels = c("Very low", "Low", "High", "Very High")
+  ),
+  cols = c("lightblue", "green", "yellow", "red"),
+  statistic = "max"
 )
 
 # UK daily air quality index
@@ -414,8 +407,10 @@ calendarPlot(
   mydata,
   "pm10",
   year = 1999,
-  breaks = pm10.breaks,
-  labels = c(1:10),
+  breaks = breakOpts(
+    pm10.breaks,
+    labels = c(1:10)
+  ),
   cols = "daqi",
   statistic = "mean",
   key.title = "PM10 DAQI"

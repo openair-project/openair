@@ -156,6 +156,11 @@ Other functions to help with controlling openair plots.
 
   Define `ref.x` or `ref.y` options for `openair` plots
 
+- [`breakOpts()`](https://openair-project.github.io/openair/reference/breakOpts.md)
+  :
+
+  Define `breaks` options for `openair` plots
+
 ## Data Utilities
 
 ### Smoothing Functions

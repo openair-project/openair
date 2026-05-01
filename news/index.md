@@ -14,9 +14,22 @@
 
 ### Breaking Changes
 
-- `strip.position`, `x.relation` and `y.relation` are now no longer
-  function-level arguments and are handled via `...`. See “New Features”
-  below for details.
+- `strip.position`, `x.relation`, and `y.relation` are now no longer
+  function-level arguments and are handled via `...`.
+
+- The `labels` argument (as paired with `breaks`) is deprecated. If used
+  (now passed through `...`) it will be automatically mapped to its new
+  place in the
+  [`breakOpts()`](https://openair-project.github.io/openair/reference/breakOpts.md)
+  function.
+
+- `breaks` in
+  [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
+  and
+  [`pollutionRose()`](https://openair-project.github.io/openair/reference/pollutionRose.md)
+  has superseded all of `labels`, `ws.int`, and `include.lowest`. These
+  have been removed, but can still be provided via `...` for
+  back-compatibility purposes.
 
 ### New Features
 
@@ -98,23 +111,44 @@
     to help construct values for `ref.x` and `ref.y`, similar to
     [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md).
 
-- Refinements to how `breaks` and `labels` are implemented in functions
-  like
+- Refinements to how `breaks` are implemented in functions like
   [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md):
 
-  - If `breaks` don’t cover the full range of the data being binned, the
-    maximum and minimum `breaks` will be overwritten so that it does.
+  - If `breaks` doesn’t cover the full range of the data being binned,
+    the maximum and minimum `breaks` will be overwritten so that it
+    does.
 
   - If `breaks` is of length `1`, the colour range will be split into
-    `breaks` categories, using the same logic as running
+    `breaks` categories, defaulting to using the same logic as running
     [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
     on a numeric column.
+
+  - `breaks` can now take a named list, defined using the new
+    [`breakOpts()`](https://openair-project.github.io/openair/reference/breakOpts.md)
+    function. Most significantly, this allows for the method of binning
+    to change for single-value `breaks` (quantiles, equal range bins,
+    user-defined bin widths, approximate ‘pretty’ breaks and wind
+    direction binning at time of writing).
 
   - [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md),
     [`polarAnnulus()`](https://openair-project.github.io/openair/reference/polarAnnulus.md)
     and
     [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
-    have gained `breaks` and `labels`.
+    have gained `breaks`.
+
+  - The `breaks` argument in
+    [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
+    and
+    [`pollutionRose()`](https://openair-project.github.io/openair/reference/pollutionRose.md)
+    now behaves similarly to that of, e.g.,
+    [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md),
+    meaning different binning methods can be used. Unlike other
+    functions, the default binning strategy remains a fixed number of
+    fixed width bins.
+
+  - As stated above, `labels` is no longer a top-level argument and can
+    be defined by passing a list to `breaks`. `labels` given to `...`
+    will be converted with a warning.
 
 - Refinements to colours in
   [openair](https://openair-project.github.io/openair/):

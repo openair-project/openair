@@ -206,6 +206,7 @@ Jack Davison
 ## Examples
 
 ``` r
+
 # to return 5 colours from the "jet" scheme:
 cols <- openColours("jet", 5)
 cols

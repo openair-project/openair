@@ -1,9 +1,9 @@
-pandoc: 3.1.11
+pandoc: 3.8.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   articles/openair: openair.html
-last_built: 2026-04-29T13:02Z
+last_built: 2026-05-01T09:15Z
 urls:
   reference: https://openair-project.github.io/openair/reference
   article: https://openair-project.github.io/openair/articles

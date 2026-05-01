@@ -251,6 +251,7 @@ David Carslaw
 ## Examples
 
 ``` r
+
 ## the example below is somewhat artificial --- assuming the observed
 ## values are given by NOx and the predicted values by NO2.
 

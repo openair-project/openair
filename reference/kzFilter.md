@@ -162,6 +162,7 @@ David Carslaw
 ## Examples
 
 ``` r
+
 if (FALSE) { # \dontrun{
 # Default: 4 window sizes, 5 descriptively named components returned
 mydata <- kzFilter(mydata, pollutant = "nox")

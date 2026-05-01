@@ -195,6 +195,7 @@ David Carslaw
 ## Examples
 
 ``` r
+
 ## import trajectory data for London in 2009
 if (FALSE) { # \dontrun{
 mytraj <- importTraj(site = "london", year = 2009)

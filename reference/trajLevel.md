@@ -421,6 +421,7 @@ Jack Davison
 ## Examples
 
 ``` r
+
 # show a simple case with no pollutant i.e. just the trajectories
 # let's check to see where the trajectories were coming from when
 # Heathrow Airport was closed due to the Icelandic volcanic eruption
