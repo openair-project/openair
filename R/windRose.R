@@ -1024,7 +1024,7 @@ windRose <- function(
 #'   used to set specific break points. For example, the argument `breaks =
 #'   c(0, 1, 10, 100)` breaks the data into segments <1, 1-10, 10-100, >100.
 #'
-#' @param Other arguments passed on to [windRose()].
+#' @param ... Other arguments passed on to [windRose()].
 #'
 #' @export
 #' @return an [openair][openair-package] object. Summarised proportions can be

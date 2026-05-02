@@ -165,7 +165,7 @@ cut_plot_breaks <- function(x, opts) {
 
     # number - get quantiles
     if (method == "number") {
-      breaks <- quantile(
+      breaks <- stats::quantile(
         x,
         probs = seq(0, 1, length.out = breaks + 1),
         na.rm = TRUE

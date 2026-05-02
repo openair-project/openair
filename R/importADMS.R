@@ -76,7 +76,7 @@
 #'   setting, `NULL`.
 #' @param all For .MOP files, return all variables or not. If `all = TRUE`
 #'   a large number of processed variables are returned.
-#' @inheritDotParams utils::read.csv
+#' @param ... Other arguments passed to [utils::read.csv()].
 #' @export
 #' @return In standard use [importADMS()] returns a data frame for use in
 #'   openair. By comparison to the original file, the resulting data frame is
