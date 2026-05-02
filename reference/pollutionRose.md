@@ -88,62 +88,7 @@ pollutionRose(
 
 - ...:
 
-  Addition options are passed on to
-  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-  for `type` handling. Some additional arguments are also available,
-  varying somewhat in different plotting functions:
-
-  - `title`, `subtitle`, `caption`, `tag`, `xlab` and `ylab` control the
-    plot title, subtitle, caption, tag, x-axis label and y-axis label,
-    passed to
-    [`ggplot2::labs()`](https://ggplot2.tidyverse.org/reference/labs.html)
-    via
-    [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
-    if `auto.text = TRUE`.
-
-  - `xlim`, `ylim` and `limits` control the limits of the x-axis, y-axis
-    and colorbar scales.
-
-  - `ncol` and `nrow` set the number of columns and rows in a faceted
-    plot.
-
-  - `scales` can be `"fixed"`, `"free_x"`, `"free_y"` or `"free"` to
-    control whether axes are shared across facets when using `type`.
-    Also supported are the legacy `x.relation` and `y.relation`, which
-    can be either `"same"` or `"free"` and get remapped to `scales`
-    automatically.
-
-  - Similarly, `space`, `axes`, `axis.labels`, `switch` and
-    `strip.position` can be used to customise the appearance of faceted
-    plots. See
-    [`ggplot2::facet_wrap()`](https://ggplot2.tidyverse.org/reference/facet_wrap.html)
-    and
-    [`ggplot2::facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html)
-    for the arguments these take.
-
-  - `fontsize` overrides the overall font size of the plot by setting
-    the `text` argument of
-    [`ggplot2::theme()`](https://ggplot2.tidyverse.org/reference/theme.html).
-    It may also be applied proportionately to any `openair` annotations
-    (e.g., N/E/S/W labels on polar coordinate plots).
-
-  - Various graphical parameters are also supported: `linewidth`,
-    `linetype`,` shape`, `size`, `border`, and `alpha`. Not all
-    parameters apply to all plots. These can take a single value, or a
-    vector of multiple values - e.g., `shape = c(1, 2)` - which will be
-    recycled to the length of values needed.
-
-  - `lineend`, `linejoin` and `linemitre` tweak the appearance of line
-    plots; see
-    [`ggplot2::geom_line()`](https://ggplot2.tidyverse.org/reference/geom_path.html)
-    for more information.
-
-  - In polar coordinate plots, `annotate = FALSE` will remove the
-    N/E/S/W labels and any other annotations.
-
-- Other:
-
-  arguments passed on to
+  Other arguments passed on to
   [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md).
 
 ## Value
