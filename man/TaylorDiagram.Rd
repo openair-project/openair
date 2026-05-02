@@ -162,7 +162,7 @@ apply to all plots. These can take a single value, or a vector of multiple
 values - e.g., \code{shape = c(1, 2)} - which will be recycled to the length of
 values needed.
 \item \code{lineend}, \code{linejoin} and \code{linemitre} tweak the appearance of line
-plots; see \code{\link[ggplot2:geom_path]{ggplot2::geom_line()}} for more information.
+plots; see \code{\link[ggplot2:geom_line]{ggplot2::geom_line()}} for more information.
 \item In polar coordinate plots, \code{annotate = FALSE} will remove the N/E/S/W
 labels and any other annotations.
 }}
@@ -310,10 +310,10 @@ Taylor, K.E.: Summarizing multiple aspects of model performance in a single
 diagram. J.  Geophys. Res., 106, 7183-7192, 2001 (also see PCMDI Report 55).
 }
 \seealso{
-Other model evaluation functions: 
-\code{\link{conditionalEval}()},
-\code{\link{conditionalQuantile}()},
-\code{\link{modStats}()}
+Other model evaluation functions:
+\code{\link[=conditionalEval]{conditionalEval()}},
+\code{\link[=conditionalQuantile]{conditionalQuantile()}},
+\code{\link[=modStats]{modStats()}}
 }
 \author{
 David Carslaw

@@ -222,13 +222,13 @@ importUKAQ(
 }
 }
 \seealso{
-Other import functions: 
-\code{\link{importADMS}()},
-\code{\link{importAURN}()},
-\code{\link{importEurope}()},
-\code{\link{importImperial}()},
-\code{\link{importMeta}()},
-\code{\link{importTraj}()}
+Other import functions:
+\code{\link[=importADMS]{importADMS()}},
+\code{\link[=importAURN]{importAURN()}},
+\code{\link[=importEurope]{importEurope()}},
+\code{\link[=importImperial]{importImperial()}},
+\code{\link[=importMeta]{importMeta()}},
+\code{\link[=importTraj]{importTraj()}}
 }
 \author{
 David Carslaw, Trevor Davies, and Jack Davison

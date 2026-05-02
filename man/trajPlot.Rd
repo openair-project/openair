@@ -182,7 +182,7 @@ apply to all plots. These can take a single value, or a vector of multiple
 values - e.g., \code{shape = c(1, 2)} - which will be recycled to the length of
 values needed.
 \item \code{lineend}, \code{linejoin} and \code{linemitre} tweak the appearance of line
-plots; see \code{\link[ggplot2:geom_path]{ggplot2::geom_line()}} for more information.
+plots; see \code{\link[ggplot2:geom_line]{ggplot2::geom_line()}} for more information.
 \item In polar coordinate plots, \code{annotate = FALSE} will remove the N/E/S/W
 labels and any other annotations.
 }}
@@ -242,10 +242,10 @@ trajPlot(
 }
 }
 \seealso{
-Other trajectory analysis functions: 
-\code{\link{importTraj}()},
-\code{\link{trajCluster}()},
-\code{\link{trajLevel}()}
+Other trajectory analysis functions:
+\code{\link[=importTraj]{importTraj()}},
+\code{\link[=trajCluster]{trajCluster()}},
+\code{\link[=trajLevel]{trajLevel()}}
 }
 \author{
 David Carslaw

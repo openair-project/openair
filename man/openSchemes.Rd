@@ -26,9 +26,9 @@ useful for users to explore the available schemes and to check which schemes
 can provide a certain number of colours.
 }
 \seealso{
-Other colour functions: 
-\code{\link{colourOpts}()},
-\code{\link{openColours}()}
+Other colour functions:
+\code{\link[=colourOpts]{colourOpts()}},
+\code{\link[=openColours]{openColours()}}
 }
 \author{
 Jack Davison

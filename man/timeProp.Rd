@@ -155,7 +155,7 @@ apply to all plots. These can take a single value, or a vector of multiple
 values - e.g., \code{shape = c(1, 2)} - which will be recycled to the length of
 values needed.
 \item \code{lineend}, \code{linejoin} and \code{linemitre} tweak the appearance of line
-plots; see \code{\link[ggplot2:geom_path]{ggplot2::geom_line()}} for more information.
+plots; see \code{\link[ggplot2:geom_line]{ggplot2::geom_line()}} for more information.
 \item In polar coordinate plots, \code{annotate = FALSE} will remove the N/E/S/W
 labels and any other annotations.
 }}
@@ -186,16 +186,16 @@ made up for any time interval.
 timeProp(mydata, pollutant = "so2", avg.time = "month", proportion = "wd")
 }
 \seealso{
-Other time series and trend functions: 
-\code{\link{TheilSen}()},
-\code{\link{calendarPlot}()},
-\code{\link{smoothTrend}()},
-\code{\link{timePlot}()},
-\code{\link{timeVariation}()}
+Other time series and trend functions:
+\code{\link[=TheilSen]{TheilSen()}},
+\code{\link[=calendarPlot]{calendarPlot()}},
+\code{\link[=smoothTrend]{smoothTrend()}},
+\code{\link[=timePlot]{timePlot()}},
+\code{\link[=timeVariation]{timeVariation()}}
 
-Other cluster analysis functions: 
-\code{\link{polarCluster}()},
-\code{\link{trajCluster}()}
+Other cluster analysis functions:
+\code{\link[=polarCluster]{polarCluster()}},
+\code{\link[=trajCluster]{trajCluster()}}
 }
 \author{
 David Carslaw

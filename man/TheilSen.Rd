@@ -194,7 +194,7 @@ apply to all plots. These can take a single value, or a vector of multiple
 values - e.g., \code{shape = c(1, 2)} - which will be recycled to the length of
 values needed.
 \item \code{lineend}, \code{linejoin} and \code{linemitre} tweak the appearance of line
-plots; see \code{\link[ggplot2:geom_path]{ggplot2::geom_line()}} for more information.
+plots; see \code{\link[ggplot2:geom_line]{ggplot2::geom_line()}} for more information.
 \item In polar coordinate plots, \code{annotate = FALSE} will remove the N/E/S/W
 labels and any other annotations.
 }}
@@ -288,12 +288,12 @@ Wetenschappen, Series A - Mathematical Sciences 53, 386-392, 521-525,
 the use of similar tests applied to UK/European air quality data.
 }
 \seealso{
-Other time series and trend functions: 
-\code{\link{calendarPlot}()},
-\code{\link{smoothTrend}()},
-\code{\link{timePlot}()},
-\code{\link{timeProp}()},
-\code{\link{timeVariation}()}
+Other time series and trend functions:
+\code{\link[=calendarPlot]{calendarPlot()}},
+\code{\link[=smoothTrend]{smoothTrend()}},
+\code{\link[=timePlot]{timePlot()}},
+\code{\link[=timeProp]{timeProp()}},
+\code{\link[=timeVariation]{timeVariation()}}
 }
 \author{
 David Carslaw with some trend code from Rand Wilcox

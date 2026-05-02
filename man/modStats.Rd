@@ -49,7 +49,7 @@ as that indicator is arguably the best single model performance indicator
 available.}
 
 \item{...}{
-  Arguments passed on to \code{\link[=cutData]{cutData}}
+  Arguments passed on to \code{\link{cutData}}
   \describe{
     \item{\code{x}}{A data frame containing a field \code{date}.}
     \item{\code{names}}{By default, the columns created by \code{\link[=cutData]{cutData()}} are named after
@@ -190,10 +190,10 @@ Willmott, C.J., Robeson, S.M., Matsuura, K., 2011. A refined index of model
 performance. International Journal of Climatology.
 }
 \seealso{
-Other model evaluation functions: 
-\code{\link{TaylorDiagram}()},
-\code{\link{conditionalEval}()},
-\code{\link{conditionalQuantile}()}
+Other model evaluation functions:
+\code{\link[=TaylorDiagram]{TaylorDiagram()}},
+\code{\link[=conditionalEval]{conditionalEval()}},
+\code{\link[=conditionalQuantile]{conditionalQuantile()}}
 }
 \author{
 David Carslaw

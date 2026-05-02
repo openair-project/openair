@@ -56,100 +56,40 @@ to a file).}
 \item{key}{Deprecated; please use \code{key.position}. If \code{FALSE}, sets
 \code{key.position} to \code{"none"}.}
 
-\item{...}{
-  Arguments passed on to \code{\link[=windRose]{windRose}}
-  \describe{
-    \item{\code{ws2,wd2}}{The user can supply a second set of wind speed and wind
-direction values with which the first can be compared. See
-\code{\link[=pollutionRose]{pollutionRose()}} for more details.}
-    \item{\code{ws.int}}{The Wind speed interval. Default is 2 m/s but for low met masts
-with low mean wind speeds a value of 1 or 0.5 m/s may be better.}
-    \item{\code{angle}}{Default angle of \dQuote{spokes} is 30. Other potentially useful
-angles are 45 and 10. Note that the width of the wind speed interval may
-need adjusting using \code{width}.}
-    \item{\code{calm.thresh}}{By default, conditions are considered to be calm when the
-wind speed is zero. The user can set a different threshold for calms be
-setting \code{calm.thresh} to a higher value. For example, \code{calm.thresh = 0.5}
-will identify wind speeds \strong{below} 0.5 as calm.}
-    \item{\code{bias.corr}}{When \code{angle} does not divide exactly into 360 a bias is
-introduced in the frequencies when the wind direction is already supplied
-rounded to the nearest 10 degrees, as is often the case. For example, if
-\code{angle = 22.5}, N, E, S, W will include 3 wind sectors and all other angles
-will be two. A bias correction can made to correct for this problem. A
-simple method according to Applequist (2012) is used to adjust the
-frequencies.}
-    \item{\code{grid.line}}{Grid line interval to use. If \code{NULL}, as in default, this is
-assigned based on the available data range. However, it can also be forced
-to a specific value, e.g. \code{grid.line = 10}. \code{grid.line} can also be a list
-to control the interval, line type and colour. For example \code{grid.line = list(value = 10, lty = 5, col = "purple")}.}
-    \item{\code{width}}{For paddle = TRUE, the adjustment factor for width of wind speed
-intervals. For example, width = 1.5 will make the paddle width 1.5 times
-wider.}
-    \item{\code{max.freq}}{Controls the scaling used by setting the maximum value for
-the radial limits. This is useful to ensure several plots use the same
-radial limits.}
-    \item{\code{dig.lab}}{The number of significant figures at which scientific number
-formatting is used in break point and key labelling. Default 5.}
-    \item{\code{include.lowest}}{Logical. If \code{FALSE} (the default), the first interval
-will be left exclusive and right inclusive. If \code{TRUE}, the first interval
-will be left and right inclusive. Passed to the \code{include.lowest} argument
-of \code{\link[=cut]{cut()}}.}
-    \item{\code{statistic}}{The \code{statistic} to be applied to each data bin in the plot.
-Options currently include \dQuote{prop.count}, \dQuote{prop.mean} and
-\dQuote{abs.count}. The default \dQuote{prop.count} sizes bins according to
-the proportion of the frequency of measurements.  Similarly,
-\dQuote{prop.mean} sizes bins according to their relative contribution to
-the mean. \dQuote{abs.count} provides the absolute count of measurements in
-each bin.}
-    \item{\code{annotate}}{If \code{TRUE} then the percentage calm and mean values are
-printed in each panel together with a description of the statistic below
-the plot. If \code{FALSE} then only the statistic will be printed.}
-    \item{\code{border}}{Border colour for shaded areas. Default is no border.}
-    \item{\code{ws}}{The name of the column in \code{mydata} representing the wind speed.
-Defaults to \code{"ws"}.}
-    \item{\code{wd}}{The name of the column in \code{mydata} representing the decimal wind
-direction, 0 to 360 where 0/360 are North and 180 is South. Defaults to
-\code{"wd"}.}
-    \item{\code{type}}{Character string(s) defining how data should be split/conditioned
-before plotting. \code{"default"} produces a single panel using the entire
-dataset. Any other options will split the plot into different panels - a
-roughly square grid of panels if one \code{type} is given, or a 2D matrix of
-panels if two \code{types} are given. \code{type} is always passed to \code{\link[=cutData]{cutData()}},
-and can therefore be any of:
+\item{...}{Addition options are passed on to \code{\link[=cutData]{cutData()}} for \code{type} handling.
+Some additional arguments are also available, varying somewhat in different
+plotting functions:
 \itemize{
-\item A built-in type defined in \code{\link[=cutData]{cutData()}} (e.g., \code{"season"}, \code{"year"},
-\code{"weekday"}, etc.). For example, \code{type = "season"} will split the plot into
-four panels, one for each season.
-\item The name of a numeric column in \code{mydata}, which will be split into
-\code{n.levels} quantiles (defaulting to 4).
-\item The name of a character or factor column in \code{mydata}, which will be used
-as-is. Commonly this could be a variable like \code{"site"} to ensure data from
-different monitoring sites are handled and presented separately. It could
-equally be any arbitrary column created by the user (e.g., whether a nearby
-possible pollutant source is active or not).
-}
+\item \code{title}, \code{subtitle}, \code{caption}, \code{tag}, \code{xlab} and \code{ylab} control the plot
+title, subtitle, caption, tag, x-axis label and y-axis label, passed to
+\code{\link[ggplot2:labs]{ggplot2::labs()}} via \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.
+\item \code{xlim}, \code{ylim} and \code{limits} control the limits of the x-axis, y-axis and
+colorbar scales.
+\item \code{ncol} and \code{nrow} set the number of columns and rows in a faceted plot.
+\item \code{scales} can be \code{"fixed"}, \code{"free_x"}, \code{"free_y"} or \code{"free"} to control
+whether axes are shared across facets when using \code{type}. Also supported are
+the legacy \code{x.relation} and \code{y.relation}, which can be either \code{"same"} or
+\code{"free"} and get remapped to \code{scales} automatically.
+\item Similarly, \code{space}, \code{axes}, \code{axis.labels}, \code{switch} and \code{strip.position}
+can be used to customise the appearance of faceted plots. See
+\code{\link[ggplot2:facet_wrap]{ggplot2::facet_wrap()}} and \code{\link[ggplot2:facet_grid]{ggplot2::facet_grid()}} for the arguments these
+take.
+\item \code{fontsize} overrides the overall font size of the plot by setting the
+\code{text} argument of \code{\link[ggplot2:theme]{ggplot2::theme()}}. It may also be applied
+proportionately to any \code{openair} annotations (e.g., N/E/S/W labels on polar
+coordinate plots).
+\item Various graphical parameters are also supported: \code{linewidth},
+\code{linetype},\code{ shape}, \code{size}, \code{border}, and \code{alpha}. Not all parameters
+apply to all plots. These can take a single value, or a vector of multiple
+values - e.g., \code{shape = c(1, 2)} - which will be recycled to the length of
+values needed.
+\item \code{lineend}, \code{linejoin} and \code{linemitre} tweak the appearance of line
+plots; see \code{\link[ggplot2:geom_line]{ggplot2::geom_line()}} for more information.
+\item In polar coordinate plots, \code{annotate = FALSE} will remove the N/E/S/W
+labels and any other annotations.
+}}
 
-Most \code{openair} plotting functions can take two \code{type} arguments. If two are
-given, the first is used for the columns and the second for the rows.}
-    \item{\code{cols}}{Colours to use for plotting. Can be a pre-set palette (e.g.,
-\code{"turbo"}, \code{"viridis"}, \code{"tol"}, \code{"Dark2"}, etc.) or a user-defined vector
-of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
-\code{\link[=colours]{colours()}} for a full list) or hex-codes (e.g., \code{c("#30123B", "#9CF649", "#7A0403")}). Alternatively, can be a list of arguments to control the
-colour palette more closely (e.g., \code{palette}, \code{direction}, \code{alpha}, etc.).
-See \code{\link[=openColours]{openColours()}} and \code{\link[=colourOpts]{colourOpts()}} for more details.}
-    \item{\code{angle.scale}}{In radial plots (e.g., \code{\link[=polarPlot]{polarPlot()}}), the radial scale is
-drawn directly on the plot itself. While suitable defaults have been
-chosen, sometimes the placement of the scale may interfere with an
-interesting feature. \code{angle.scale} can take any value between \code{0} and \code{360}
-to place the scale at a different angle, or \code{FALSE} to move it to the side
-of the plots.}
-    \item{\code{offset}}{\code{offset} controls the size of the 'hole' in the middle and is
-expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a
-hole that takes up the entire plotting area.}
-    \item{\code{auto.text}}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
-axis labels will automatically try and format pollutant names and units
-properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
-  }}
+\item{Other}{arguments passed on to \code{\link[=windRose]{windRose()}}.}
 }
 \value{
 an \link[=openair-package]{openair} object. Summarised proportions can be
@@ -227,13 +167,13 @@ pollutionRose(
 }
 }
 \seealso{
-Other polar directional analysis functions: 
-\code{\link{percentileRose}()},
-\code{\link{polarAnnulus}()},
-\code{\link{polarCluster}()},
-\code{\link{polarDiff}()},
-\code{\link{polarFreq}()},
-\code{\link{polarPlot}()},
-\code{\link{windRose}()}
+Other polar directional analysis functions:
+\code{\link[=percentileRose]{percentileRose()}},
+\code{\link[=polarAnnulus]{polarAnnulus()}},
+\code{\link[=polarCluster]{polarCluster()}},
+\code{\link[=polarDiff]{polarDiff()}},
+\code{\link[=polarFreq]{polarFreq()}},
+\code{\link[=polarPlot]{polarPlot()}},
+\code{\link[=windRose]{windRose()}}
 }
 \concept{polar directional analysis functions}

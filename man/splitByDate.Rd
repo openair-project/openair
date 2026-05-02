@@ -33,7 +33,7 @@ Defaults to \code{"split.by"}.}
 \item{format}{When \code{dates} are provided as character strings, this option
 defines the formats \code{\link[=splitByDate]{splitByDate()}} will use to coerce \code{dates} into R
 \code{Date} or \code{POSIXCt} objects. Passed to \code{\link[lubridate:as_date]{lubridate::as_date()}} or
-\code{\link[lubridate:as_date]{lubridate::as_datetime()}}. See \code{\link[=strptime]{strptime()}} for more information.}
+\code{\link[lubridate:as_datetime]{lubridate::as_datetime()}}. See \code{\link[=strptime]{strptime()}} for more information.}
 }
 \description{
 This function partitions a data frame up into different time segments. It

@@ -51,12 +51,12 @@ stuttgart <- importEurope("debw118", year = 2010:2019, meta = TRUE)
 
 }
 \seealso{
-Other import functions: 
-\code{\link{importADMS}()},
-\code{\link{importAURN}()},
-\code{\link{importImperial}()},
-\code{\link{importMeta}()},
-\code{\link{importTraj}()},
-\code{\link{importUKAQ}()}
+Other import functions:
+\code{\link[=importADMS]{importADMS()}},
+\code{\link[=importAURN]{importAURN()}},
+\code{\link[=importImperial]{importImperial()}},
+\code{\link[=importMeta]{importMeta()}},
+\code{\link[=importTraj]{importTraj()}},
+\code{\link[=importUKAQ]{importUKAQ()}}
 }
 \concept{import functions}

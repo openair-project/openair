@@ -161,10 +161,10 @@ Edition. Academic Press.
 The \code{verification} package for comprehensive functions for
 forecast verification.
 
-Other model evaluation functions: 
-\code{\link{TaylorDiagram}()},
-\code{\link{conditionalQuantile}()},
-\code{\link{modStats}()}
+Other model evaluation functions:
+\code{\link[=TaylorDiagram]{TaylorDiagram()}},
+\code{\link[=conditionalQuantile]{conditionalQuantile()}},
+\code{\link[=modStats]{modStats()}}
 }
 \author{
 David Carslaw

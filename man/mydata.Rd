@@ -12,7 +12,7 @@ An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) w
 Archive.  See \url{https://londonair.org.uk} for site details.
 }
 \usage{
-mydata
+data(mydata)
 }
 \description{
 The \code{mydata} dataset is provided as an example dataset as part of the openair

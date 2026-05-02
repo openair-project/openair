@@ -179,9 +179,9 @@ Fabio Crameri's Color Schemes: Crameri, F. 2023. Scientific Colour Maps
 (version 8.0.1). Zenodo. DOI: \doi{doi:10.5281/zenodo.1243862}.
 }
 \seealso{
-Other colour functions: 
-\code{\link{colourOpts}()},
-\code{\link{openSchemes}()}
+Other colour functions:
+\code{\link[=colourOpts]{colourOpts()}},
+\code{\link[=openSchemes]{openSchemes()}}
 }
 \author{
 David Carslaw

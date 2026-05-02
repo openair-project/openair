@@ -72,8 +72,8 @@ trendLevel(
 )
 }
 \seealso{
-Other colour functions: 
-\code{\link{openColours}()},
-\code{\link{openSchemes}()}
+Other colour functions:
+\code{\link[=openColours]{openColours()}},
+\code{\link[=openSchemes]{openSchemes()}}
 }
 \concept{colour functions}

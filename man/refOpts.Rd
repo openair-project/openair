@@ -17,7 +17,7 @@ refOpts(
 \item{intercept}{The axis intercept(s) for the reference lines. Should be
 numeric, dates, or date-times depending on the axis types. If another data
 type is provided, it will attempt to be coerced to the correct type using
-\code{\link[=as.numeric]{as.numeric()}}, \code{\link[lubridate:as_date]{lubridate::as_date()}} or \code{\link[lubridate:as_date]{lubridate::as_datetime()}},
+\code{\link[=as.numeric]{as.numeric()}}, \code{\link[lubridate:as_date]{lubridate::as_date()}} or \code{\link[lubridate:as_datetime]{lubridate::as_datetime()}},
 respectively.}
 
 \item{alpha}{Numeric value between 0 and 1 specifying the transparency of the

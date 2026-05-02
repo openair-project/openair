@@ -111,6 +111,7 @@ examples.
 
 Authors:
 \itemize{
+  \item David Carslaw \email{david.carslaw@york.ac.uk} (\href{https://orcid.org/0000-0003-0991-950X}{ORCID})
   \item Jack Davison \email{jack.davison@ricardo.com} (\href{https://orcid.org/0000-0003-2653-6615}{ORCID})
   \item Karl Ropkins \email{K.Ropkins@its.leeds.ac.uk} (\href{https://orcid.org/0000-0002-0294-6997}{ORCID})
 }

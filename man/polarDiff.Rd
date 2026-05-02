@@ -80,7 +80,7 @@ required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).}
 
 \item{...}{
-  Arguments passed on to \code{\link[=polarPlot]{polarPlot}}
+  Arguments passed on to \code{\link{polarPlot}}
   \describe{
     \item{\code{statistic}}{The statistic that should be applied to each wind
 speed/direction bin. Because of the smoothing involved, the colour scale
@@ -306,13 +306,13 @@ polarDiff(
 }
 }
 \seealso{
-Other polar directional analysis functions: 
-\code{\link{percentileRose}()},
-\code{\link{polarAnnulus}()},
-\code{\link{polarCluster}()},
-\code{\link{polarFreq}()},
-\code{\link{polarPlot}()},
-\code{\link{pollutionRose}()},
-\code{\link{windRose}()}
+Other polar directional analysis functions:
+\code{\link[=percentileRose]{percentileRose()}},
+\code{\link[=polarAnnulus]{polarAnnulus()}},
+\code{\link[=polarCluster]{polarCluster()}},
+\code{\link[=polarFreq]{polarFreq()}},
+\code{\link[=polarPlot]{polarPlot()}},
+\code{\link[=pollutionRose]{pollutionRose()}},
+\code{\link[=windRose]{windRose()}}
 }
 \concept{polar directional analysis functions}

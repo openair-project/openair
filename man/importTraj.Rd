@@ -136,18 +136,18 @@ mytraj <- merge(mytraj, theData, by = "date")
 }
 }
 \seealso{
-Other import functions: 
-\code{\link{importADMS}()},
-\code{\link{importAURN}()},
-\code{\link{importEurope}()},
-\code{\link{importImperial}()},
-\code{\link{importMeta}()},
-\code{\link{importUKAQ}()}
+Other import functions:
+\code{\link[=importADMS]{importADMS()}},
+\code{\link[=importAURN]{importAURN()}},
+\code{\link[=importEurope]{importEurope()}},
+\code{\link[=importImperial]{importImperial()}},
+\code{\link[=importMeta]{importMeta()}},
+\code{\link[=importUKAQ]{importUKAQ()}}
 
-Other trajectory analysis functions: 
-\code{\link{trajCluster}()},
-\code{\link{trajLevel}()},
-\code{\link{trajPlot}()}
+Other trajectory analysis functions:
+\code{\link[=trajCluster]{trajCluster()}},
+\code{\link[=trajLevel]{trajLevel()}},
+\code{\link[=trajPlot]{trajPlot()}}
 }
 \author{
 David Carslaw

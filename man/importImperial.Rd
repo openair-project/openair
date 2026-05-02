@@ -182,13 +182,13 @@ my1 <- importImperial(site = "my1", year = 2008, meteo = TRUE)
 }
 }
 \seealso{
-Other import functions: 
-\code{\link{importADMS}()},
-\code{\link{importAURN}()},
-\code{\link{importEurope}()},
-\code{\link{importMeta}()},
-\code{\link{importTraj}()},
-\code{\link{importUKAQ}()}
+Other import functions:
+\code{\link[=importADMS]{importADMS()}},
+\code{\link[=importAURN]{importAURN()}},
+\code{\link[=importEurope]{importEurope()}},
+\code{\link[=importMeta]{importMeta()}},
+\code{\link[=importTraj]{importTraj()}},
+\code{\link[=importUKAQ]{importUKAQ()}}
 }
 \author{
 David Carslaw and Ben Barratt

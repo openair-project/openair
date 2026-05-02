@@ -242,12 +242,12 @@ FDMS PM2.5 (where available) is shown in the 'v2.5' column.
 }
 
 \seealso{
-Other import functions: 
-\code{\link{importADMS}()},
-\code{\link{importEurope}()},
-\code{\link{importImperial}()},
-\code{\link{importMeta}()},
-\code{\link{importTraj}()},
-\code{\link{importUKAQ}()}
+Other import functions:
+\code{\link[=importADMS]{importADMS()}},
+\code{\link[=importEurope]{importEurope()}},
+\code{\link[=importImperial]{importImperial()}},
+\code{\link[=importMeta]{importMeta()}},
+\code{\link[=importTraj]{importTraj()}},
+\code{\link[=importUKAQ]{importUKAQ()}}
 }
 \concept{import functions}

@@ -240,7 +240,7 @@ apply to all plots. These can take a single value, or a vector of multiple
 values - e.g., \code{shape = c(1, 2)} - which will be recycled to the length of
 values needed.
 \item \code{lineend}, \code{linejoin} and \code{linemitre} tweak the appearance of line
-plots; see \code{\link[ggplot2:geom_path]{ggplot2::geom_line()}} for more information.
+plots; see \code{\link[ggplot2:geom_line]{ggplot2::geom_line()}} for more information.
 \item In polar coordinate plots, \code{annotate = FALSE} will remove the N/E/S/W
 labels and any other annotations.
 }}
@@ -304,14 +304,14 @@ polarAnnulus(mydata,
 }
 }
 \seealso{
-Other polar directional analysis functions: 
-\code{\link{percentileRose}()},
-\code{\link{polarCluster}()},
-\code{\link{polarDiff}()},
-\code{\link{polarFreq}()},
-\code{\link{polarPlot}()},
-\code{\link{pollutionRose}()},
-\code{\link{windRose}()}
+Other polar directional analysis functions:
+\code{\link[=percentileRose]{percentileRose()}},
+\code{\link[=polarCluster]{polarCluster()}},
+\code{\link[=polarDiff]{polarDiff()}},
+\code{\link[=polarFreq]{polarFreq()}},
+\code{\link[=polarPlot]{polarPlot()}},
+\code{\link[=pollutionRose]{pollutionRose()}},
+\code{\link[=windRose]{windRose()}}
 }
 \author{
 David Carslaw

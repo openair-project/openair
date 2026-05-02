@@ -121,14 +121,14 @@ Kejimkujik National Park, Nova Scotia. Journal of Geophysical Research, 100:
 2867-2881.
 }
 \seealso{
-Other trajectory analysis functions: 
-\code{\link{importTraj}()},
-\code{\link{trajLevel}()},
-\code{\link{trajPlot}()}
+Other trajectory analysis functions:
+\code{\link[=importTraj]{importTraj()}},
+\code{\link[=trajLevel]{trajLevel()}},
+\code{\link[=trajPlot]{trajPlot()}}
 
-Other cluster analysis functions: 
-\code{\link{polarCluster}()},
-\code{\link{timeProp}()}
+Other cluster analysis functions:
+\code{\link[=polarCluster]{polarCluster()}},
+\code{\link[=timeProp]{timeProp()}}
 }
 \author{
 David Carslaw

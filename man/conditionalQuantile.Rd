@@ -113,7 +113,7 @@ apply to all plots. These can take a single value, or a vector of multiple
 values - e.g., \code{shape = c(1, 2)} - which will be recycled to the length of
 values needed.
 \item \code{lineend}, \code{linejoin} and \code{linemitre} tweak the appearance of line
-plots; see \code{\link[ggplot2:geom_path]{ggplot2::geom_line()}} for more information.
+plots; see \code{\link[ggplot2:geom_line]{ggplot2::geom_line()}} for more information.
 \item In polar coordinate plots, \code{annotate = FALSE} will remove the N/E/S/W
 labels and any other annotations.
 }}
@@ -205,10 +205,10 @@ Wilks, D. S., 2005. Statistical Methods in the Atmospheric Sciences, Volume
 The \code{verification} package for comprehensive functions for forecast
 verification.
 
-Other model evaluation functions: 
-\code{\link{TaylorDiagram}()},
-\code{\link{conditionalEval}()},
-\code{\link{modStats}()}
+Other model evaluation functions:
+\code{\link[=TaylorDiagram]{TaylorDiagram()}},
+\code{\link[=conditionalEval]{conditionalEval()}},
+\code{\link[=modStats]{modStats()}}
 }
 \author{
 David Carslaw

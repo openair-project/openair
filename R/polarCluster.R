@@ -72,8 +72,7 @@
 #'   the clustered polar plot itself (similar to `data` returned by
 #'   [polarPlot()]). This may be useful for re-plotting the `polarCluster()`
 #'   plot in other ways.
-#' @inheritDotParams polarPlot -mydata -pollutant -x -wd -cols -angle.scale
-#'   -units -auto.text -plot
+#' @param ... Other arguments passed on to [polarPlot()].
 #' @export
 #' @return an [openair][openair-package] object. The object includes four main
 #'   components: `call`, the command used to generate the plot; `data`, by
