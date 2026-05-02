@@ -204,14 +204,145 @@ a large number of processed variables are returned.</p></dd>
     <dt><code>dec</code></dt>
 <dd><p>the character used in the file for decimal points.</p></dd>
 
+    <dt><code>numerals</code></dt>
+<dd><p>string indicating how to convert numbers whose conversion
+    to double precision would lose accuracy, see <code><a href="https://rdrr.io/r/utils/type.convert.html" class="external-link">type.convert</a></code>.
+    Can be abbreviated.  (Applies also to complex-number inputs.)</p></dd>
+
+    <dt><code>row.names</code></dt>
+<dd><p>a vector of row names.  This can be a vector giving
+    the actual row names, or a single number giving the column of the
+    table which contains the row names, or character string giving the
+    name of the table column containing the row names.</p>
+<p>If there is a header and the first row contains one fewer field than
+    the number of columns, the first column in the input is used for the
+    row names.  Otherwise if <code>row.names</code> is missing, the rows are
+    numbered.</p>
+<p>Using <code>row.names = NULL</code> forces row numbering. Missing or
+    <code>NULL</code> <code>row.names</code> generate row names that are considered
+    to be ‘automatic’ (and not preserved by <code><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></code>).</p></dd>
+
+    <dt><code>col.names</code></dt>
+<dd><p>a vector of optional names for the variables.
+    The default is to use <code>"V"</code> followed by the column number.</p></dd>
+
+    <dt><code>as.is</code></dt>
+<dd><p>controls conversion of character variables (insofar as
+    they are not converted to logical, numeric or complex) to factors,
+    if not otherwise specified by <code>colClasses</code>.
+    Its value is either a vector of logicals (values are recycled if
+    necessary), or a vector of numeric or character indices which
+    specify which columns should not be converted to factors.</p>
+<p>Note: to suppress all conversions including those of numeric
+    columns, set <code>colClasses = "character"</code>.</p>
+<p>Note that <code>as.is</code> is specified per column (not per
+    variable) and so includes the column of row names (if any) and any
+    columns to be skipped.</p></dd>
+
+    <dt><code>tryLogical</code></dt>
+<dd><p>a <code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a></code> determining if columns
+    consisting entirely of <code>"F"</code>, <code>"T"</code>, <code>"FALSE"</code>, and
+    <code>"TRUE"</code> should be converted to <code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical</a></code>; passed to
+    <code><a href="https://rdrr.io/r/utils/type.convert.html" class="external-link">type.convert</a></code>, true by default.</p></dd>
+
+    <dt><code>na.strings</code></dt>
+<dd><p>a character vector of strings which are to be
+    interpreted as <code><a href="https://rdrr.io/r/base/NA.html" class="external-link">NA</a></code> values.  Blank fields are also
+    considered to be missing values in logical, integer, numeric and
+    complex fields.  Note that the test happens <em>after</em>
+    white space is stripped from the input (if enabled), so <code>na.strings</code>
+    values may need their own white space stripped in advance.</p></dd>
+
+    <dt><code>colClasses</code></dt>
+<dd><p>character.  A vector of classes to be assumed for
+    the columns.  If unnamed, recycled as necessary.  If named, names
+    are matched with unspecified values being taken to be <code>NA</code>.</p>
+<p>Possible values are <code>NA</code> (the default, when
+    <code><a href="https://rdrr.io/r/utils/type.convert.html" class="external-link">type.convert</a></code> is used), <code>"NULL"</code> (when the column
+    is skipped), one of the atomic vector classes (logical, integer,
+    numeric, complex, character, raw), or <code>"factor"</code>, <code>"Date"</code>
+    or <code>"POSIXct"</code>.  Otherwise there needs to be an <code>as</code>
+    method (from package <span class="pkg">methods</span>) for conversion from
+    <code>"character"</code> to the specified formal class.</p>
+<p>Note that <code>colClasses</code> is specified per column (not per
+    variable) and so includes the column of row names (if any).</p></dd>
+
+    <dt><code>nrows</code></dt>
+<dd><p>integer: the maximum number of rows to read in.  Negative
+    and other invalid values are ignored.</p></dd>
+
+    <dt><code>skip</code></dt>
+<dd><p>integer: the number of lines of the data file to skip before
+    beginning to read data.</p></dd>
+
+    <dt><code>check.names</code></dt>
+<dd><p>logical.  If <code>TRUE</code> then the names of the
+    variables in the data frame are checked to ensure that they are
+    syntactically valid variable names.  If necessary they are adjusted
+    (by <code><a href="https://rdrr.io/r/base/make.names.html" class="external-link">make.names</a></code>) so that they are, and also to ensure
+    that there are no duplicates.</p></dd>
+
     <dt><code>fill</code></dt>
 <dd><p>logical. If <code>TRUE</code> then in case the rows have unequal
     length, blank fields are implicitly added.  See ‘Details’.</p></dd>
+
+    <dt><code>strip.white</code></dt>
+<dd><p>logical. Used only when <code>sep</code> has
+    been specified, and allows the stripping of leading and trailing
+    white space from unquoted <code>character</code> fields (<code>numeric</code> fields
+    are always stripped).  See <code><a href="https://rdrr.io/r/base/scan.html" class="external-link">scan</a></code> for further details
+    (including the exact meaning of ‘white space’),
+    remembering that the columns may include the row names.</p></dd>
+
+    <dt><code>blank.lines.skip</code></dt>
+<dd><p>logical: if <code>TRUE</code> blank lines in the
+    input are ignored.</p></dd>
 
     <dt><code>comment.char</code></dt>
 <dd><p>character: a character vector of length one
     containing a single character or an empty string.  Use <code>""</code> to
     turn off the interpretation of comments altogether.</p></dd>
+
+    <dt><code>allowEscapes</code></dt>
+<dd><p>logical.  Should C-style escapes such as
+    <samp>\n</samp> be processed or read verbatim (the default)?   Note that if
+    not within quotes these could be interpreted as a delimiter (but not
+    as a comment character).  For more details see <code><a href="https://rdrr.io/r/base/scan.html" class="external-link">scan</a></code>.</p></dd>
+
+    <dt><code>flush</code></dt>
+<dd><p>logical: if <code>TRUE</code>, <code>scan</code> will flush to the
+    end of the line after reading the last of the fields requested.
+    This allows putting comments after the last field.</p></dd>
+
+    <dt><code>stringsAsFactors</code></dt>
+<dd><p>logical: should character vectors be converted
+    to factors?  Note that this is overridden by <code>as.is</code> and
+    <code>colClasses</code>, both of which allow finer control.</p></dd>
+
+    <dt><code>fileEncoding</code></dt>
+<dd><p>character string: if non-empty declares the
+    encoding used on a file when given as a character string (not on an
+    existing connection) so the character data can
+    be re-encoded.  See the ‘Encoding’ section of the help for
+    <code><a href="https://rdrr.io/r/base/connections.html" class="external-link">file</a></code>, <a href="https://cloud.R-project.org/doc/manuals/R-data.html#Variations-on-read_002etable" class="external-link">“Variations on read.table”</a> in <cite>R Data Import/Export</cite>, and
+    ‘Note’.</p></dd>
+
+    <dt><code>encoding</code></dt>
+<dd><p>encoding to be assumed for input strings.  It is
+    used to mark character strings as known to be in
+    Latin-1 or UTF-8 (see <code><a href="https://rdrr.io/r/base/Encoding.html" class="external-link">Encoding</a></code>): it is not used to
+    re-encode the input, but allows <span style="R">R</span> to handle encoded strings in
+    their native encoding (if one of those two).  See ‘Value’
+    and ‘Note’.</p></dd>
+
+    <dt><code>text</code></dt>
+<dd><p>character string: if <code>file</code> is not supplied and this is,
+    then data are read from the value of <code>text</code> via a text connection.
+    Notice that a literal string can be used to include (small) data sets
+    within R code.</p></dd>
+
+    <dt><code>skipNul</code></dt>
+<dd><p>logical: should s be skipped?</p></dd>
 
 
 </dl></dd>

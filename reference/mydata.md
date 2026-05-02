@@ -9,7 +9,7 @@ Marylebone (London) air quality monitoring supersite between 1st January
 ## Usage
 
 ``` r
-mydata
+data(mydata)
 ```
 
 ## Format

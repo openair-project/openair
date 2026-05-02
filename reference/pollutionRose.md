@@ -88,177 +88,63 @@ pollutionRose(
 
 - ...:
 
-  Arguments passed on to
-  [`windRose`](https://openair-project.github.io/openair/reference/windRose.md)
+  Addition options are passed on to
+  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
+  for `type` handling. Some additional arguments are also available,
+  varying somewhat in different plotting functions:
 
-  `ws2,wd2`
+  - `title`, `subtitle`, `caption`, `tag`, `xlab` and `ylab` control the
+    plot title, subtitle, caption, tag, x-axis label and y-axis label,
+    passed to
+    [`ggplot2::labs()`](https://ggplot2.tidyverse.org/reference/labs.html)
+    via
+    [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+    if `auto.text = TRUE`.
 
-  :   The user can supply a second set of wind speed and wind direction
-      values with which the first can be compared. See `pollutionRose()`
-      for more details.
+  - `xlim`, `ylim` and `limits` control the limits of the x-axis, y-axis
+    and colorbar scales.
 
-  `ws.int`
+  - `ncol` and `nrow` set the number of columns and rows in a faceted
+    plot.
 
-  :   The Wind speed interval. Default is 2 m/s but for low met masts
-      with low mean wind speeds a value of 1 or 0.5 m/s may be better.
+  - `scales` can be `"fixed"`, `"free_x"`, `"free_y"` or `"free"` to
+    control whether axes are shared across facets when using `type`.
+    Also supported are the legacy `x.relation` and `y.relation`, which
+    can be either `"same"` or `"free"` and get remapped to `scales`
+    automatically.
 
-  `angle`
+  - Similarly, `space`, `axes`, `axis.labels`, `switch` and
+    `strip.position` can be used to customise the appearance of faceted
+    plots. See
+    [`ggplot2::facet_wrap()`](https://ggplot2.tidyverse.org/reference/facet_wrap.html)
+    and
+    [`ggplot2::facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html)
+    for the arguments these take.
 
-  :   Default angle of “spokes” is 30. Other potentially useful angles
-      are 45 and 10. Note that the width of the wind speed interval may
-      need adjusting using `width`.
+  - `fontsize` overrides the overall font size of the plot by setting
+    the `text` argument of
+    [`ggplot2::theme()`](https://ggplot2.tidyverse.org/reference/theme.html).
+    It may also be applied proportionately to any `openair` annotations
+    (e.g., N/E/S/W labels on polar coordinate plots).
 
-  `calm.thresh`
+  - Various graphical parameters are also supported: `linewidth`,
+    `linetype`,` shape`, `size`, `border`, and `alpha`. Not all
+    parameters apply to all plots. These can take a single value, or a
+    vector of multiple values - e.g., `shape = c(1, 2)` - which will be
+    recycled to the length of values needed.
 
-  :   By default, conditions are considered to be calm when the wind
-      speed is zero. The user can set a different threshold for calms be
-      setting `calm.thresh` to a higher value. For example,
-      `calm.thresh = 0.5` will identify wind speeds **below** 0.5 as
-      calm.
+  - `lineend`, `linejoin` and `linemitre` tweak the appearance of line
+    plots; see
+    [`ggplot2::geom_line()`](https://ggplot2.tidyverse.org/reference/geom_path.html)
+    for more information.
 
-  `bias.corr`
+  - In polar coordinate plots, `annotate = FALSE` will remove the
+    N/E/S/W labels and any other annotations.
 
-  :   When `angle` does not divide exactly into 360 a bias is introduced
-      in the frequencies when the wind direction is already supplied
-      rounded to the nearest 10 degrees, as is often the case. For
-      example, if `angle = 22.5`, N, E, S, W will include 3 wind sectors
-      and all other angles will be two. A bias correction can made to
-      correct for this problem. A simple method according to
-      Applequist (2012) is used to adjust the frequencies.
+- Other:
 
-  `grid.line`
-
-  :   Grid line interval to use. If `NULL`, as in default, this is
-      assigned based on the available data range. However, it can also
-      be forced to a specific value, e.g. `grid.line = 10`. `grid.line`
-      can also be a list to control the interval, line type and colour.
-      For example
-      `grid.line = list(value = 10, lty = 5, col = "purple")`.
-
-  `width`
-
-  :   For paddle = TRUE, the adjustment factor for width of wind speed
-      intervals. For example, width = 1.5 will make the paddle width 1.5
-      times wider.
-
-  `max.freq`
-
-  :   Controls the scaling used by setting the maximum value for the
-      radial limits. This is useful to ensure several plots use the same
-      radial limits.
-
-  `dig.lab`
-
-  :   The number of significant figures at which scientific number
-      formatting is used in break point and key labelling. Default 5.
-
-  `include.lowest`
-
-  :   Logical. If `FALSE` (the default), the first interval will be left
-      exclusive and right inclusive. If `TRUE`, the first interval will
-      be left and right inclusive. Passed to the `include.lowest`
-      argument of [`cut()`](https://rdrr.io/r/base/cut.html).
-
-  `statistic`
-
-  :   The `statistic` to be applied to each data bin in the plot.
-      Options currently include “prop.count”, “prop.mean” and
-      “abs.count”. The default “prop.count” sizes bins according to the
-      proportion of the frequency of measurements. Similarly,
-      “prop.mean” sizes bins according to their relative contribution to
-      the mean. “abs.count” provides the absolute count of measurements
-      in each bin.
-
-  `annotate`
-
-  :   If `TRUE` then the percentage calm and mean values are printed in
-      each panel together with a description of the statistic below the
-      plot. If `FALSE` then only the statistic will be printed.
-
-  `border`
-
-  :   Border colour for shaded areas. Default is no border.
-
-  `ws`
-
-  :   The name of the column in `mydata` representing the wind speed.
-      Defaults to `"ws"`.
-
-  `wd`
-
-  :   The name of the column in `mydata` representing the decimal wind
-      direction, 0 to 360 where 0/360 are North and 180 is South.
-      Defaults to `"wd"`.
-
-  `type`
-
-  :   Character string(s) defining how data should be split/conditioned
-      before plotting. `"default"` produces a single panel using the
-      entire dataset. Any other options will split the plot into
-      different panels - a roughly square grid of panels if one `type`
-      is given, or a 2D matrix of panels if two `types` are given.
-      `type` is always passed to
-      [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md),
-      and can therefore be any of:
-
-      - A built-in type defined in
-        [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md)
-        (e.g., `"season"`, `"year"`, `"weekday"`, etc.). For example,
-        `type = "season"` will split the plot into four panels, one for
-        each season.
-
-      - The name of a numeric column in `mydata`, which will be split
-        into `n.levels` quantiles (defaulting to 4).
-
-      - The name of a character or factor column in `mydata`, which will
-        be used as-is. Commonly this could be a variable like `"site"`
-        to ensure data from different monitoring sites are handled and
-        presented separately. It could equally be any arbitrary column
-        created by the user (e.g., whether a nearby possible pollutant
-        source is active or not).
-
-      Most `openair` plotting functions can take two `type` arguments.
-      If two are given, the first is used for the columns and the second
-      for the rows.
-
-  `cols`
-
-  :   Colours to use for plotting. Can be a pre-set palette (e.g.,
-      `"turbo"`, `"viridis"`, `"tol"`, `"Dark2"`, etc.) or a
-      user-defined vector of R colours (e.g.,
-      `c("yellow", "green", "blue", "black")` - see
-      [`colours()`](https://rdrr.io/r/grDevices/colors.html) for a full
-      list) or hex-codes (e.g., `c("#30123B", "#9CF649", "#7A0403")`).
-      Alternatively, can be a list of arguments to control the colour
-      palette more closely (e.g., `palette`, `direction`, `alpha`,
-      etc.). See
-      [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
-      and
-      [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
-      for more details.
-
-  `angle.scale`
-
-  :   In radial plots (e.g.,
-      [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md)),
-      the radial scale is drawn directly on the plot itself. While
-      suitable defaults have been chosen, sometimes the placement of the
-      scale may interfere with an interesting feature. `angle.scale` can
-      take any value between `0` and `360` to place the scale at a
-      different angle, or `FALSE` to move it to the side of the plots.
-
-  `offset`
-
-  :   `offset` controls the size of the 'hole' in the middle and is
-      expressed on a scale of `0` to `100`, where `0` is no hole and
-      `100` is a hole that takes up the entire plotting area.
-
-  `auto.text`
-
-  :   Either `TRUE` (default) or `FALSE`. If `TRUE` titles and axis
-      labels will automatically try and format pollutant names and units
-      properly, e.g., by subscripting the "2" in "NO2". Passed to
-      [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md).
+  arguments passed on to
+  [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md).
 
 ## Value
 
