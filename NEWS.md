@@ -8,7 +8,7 @@
 
 - `strip.position`, `x.relation`, and `y.relation` are now no longer function-level arguments and are handled via `...`. 
 
-- The `labels` argument (as paired with `breaks`) is deprecated. If used (now passed through `...`) it will be automatically mapped to its new place in the `breakOpts()` function.
+- The `labels` argument (as paired with `breaks`) is deprecated. If passed through `...` it will be automatically mapped to its new place in the `breakOpts()` function.
 
 ## New Features
 

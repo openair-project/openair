@@ -90,16 +90,6 @@ resolve_break_opts <- function(x, extra.args, ...) {
   # get the defaults, overriding anything function-specific with ...
   default_opts <- breakOpts(...)
 
-  # warn if labels is in extra.args
-  if ("labels" %in% names(extra.args)) {
-    cli::cli_warn(
-      "{.arg labels} should now be provided to the {.arg breaks} argument \\
-      via {.fun openair::breakOpts}.",
-      .frequency = "regularly",
-      .frequency_id = "openair_labels_extra_args"
-    )
-  }
-
   # if numeric, use default strategy
   if (is.numeric(x)) {
     return(breakOpts(
