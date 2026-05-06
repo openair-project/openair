@@ -472,6 +472,11 @@ variationPlot <- function(
   lwds <- recycle_to_length(extra.args$linewidth, nlevels(mydata$group))
   shps <- recycle_to_length(extra.args$shape, nlevels(mydata$group))
 
+  # drop missing values if x is a factor; allows for 'free' x-axis
+  if (!is.numeric(mydata$x) && !is.ordered(mydata$x)) {
+    mydata <- tidyr::drop_na(mydata, "mid")
+  }
+
   # construct plot
   thePlot <-
     ggplot2::ggplot(mydata, ggplot2::aes(x = .data$x)) +
@@ -671,7 +676,8 @@ variationPlot <- function(
     thePlot <- thePlot +
       ggplot2::scale_x_discrete(
         labels = \(x) label_openair(x, auto_text = auto.text),
-        drop = FALSE
+        # if user is fixing the x-scales, don't drop x-axis
+        drop = (extra.args$scales %||% "fixed") %in% c("free_x", "free")
       )
   }
 
