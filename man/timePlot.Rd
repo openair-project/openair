@@ -27,6 +27,7 @@ timePlot(
   ref.y = NULL,
   key.columns = NULL,
   key.position = "bottom",
+  key.title = NULL,
   name.pol = pollutant,
   date.breaks = 7,
   date.format = NULL,
@@ -208,6 +209,9 @@ number of categories.}
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}
+
+\item{key.title}{Used to set the title of the legend. The legend title is
+passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 
 \item{name.pol}{This option can be used to give alternative names for the
 variables plotted. Instead of taking the column headings as names, the user

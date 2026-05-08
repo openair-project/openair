@@ -192,6 +192,7 @@ timePlot <- function(
   ref.y = NULL,
   key.columns = NULL,
   key.position = "bottom",
+  key.title = NULL,
   name.pol = pollutant,
   date.breaks = 7,
   date.format = NULL,
@@ -441,12 +442,17 @@ timePlot <- function(
     "variable"
   }
   # legend title
-  legend_title <- if (group_is_col) {
-    quickText(group, auto.text)
-  } else if (colour_by_type) {
-    quickText(type_colour_col, auto.text)
+  if (missing(key.title)) {
+    legend_title <-
+      if (group_is_col) {
+        quickText(group, auto.text)
+      } else if (colour_by_type) {
+        quickText(type_colour_col, auto.text)
+      } else {
+        NULL
+      }
   } else {
-    NULL
+    legend_title <- key.title
   }
 
   # built plot
