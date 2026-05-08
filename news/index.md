@@ -238,6 +238,9 @@
   [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
   is now `"right"`.
 
+- [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
+  has gained the `key.title` argument.
+
 ### Bug Fixes
 
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)

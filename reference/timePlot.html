@@ -89,6 +89,7 @@ together in as compact a way as possible.</p>
 <span>  ref.y <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  key.columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
+<span>  key.title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  name.pol <span class="op">=</span> <span class="va">pollutant</span>,</span>
 <span>  date.breaks <span class="op">=</span> <span class="fl">7</span>,</span>
 <span>  date.format <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -304,6 +305,11 @@ number of categories.</p></dd>
 <dd><p>Location where the legend is to be placed. Allowed
 arguments include <code>"top"</code>, <code>"right"</code>, <code>"bottom"</code>, <code>"left"</code> and <code>"none"</code>,
 the last of which removes the legend entirely.</p></dd>
+
+
+<dt id="arg-key-title">key.title<a class="anchor" aria-label="anchor" href="#arg-key-title"></a></dt>
+<dd><p>Used to set the title of the legend. The legend title is
+passed to <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></dd>
 
 
 <dt id="arg-name-pol">name.pol<a class="anchor" aria-label="anchor" href="#arg-name-pol"></a></dt>

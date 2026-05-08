@@ -30,6 +30,7 @@ timePlot(
   ref.y = NULL,
   key.columns = NULL,
   key.position = "bottom",
+  key.title = NULL,
   name.pol = pollutant,
   date.breaks = 7,
   date.format = NULL,
@@ -281,6 +282,12 @@ timePlot(
   Location where the legend is to be placed. Allowed arguments include
   `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`, the last of
   which removes the legend entirely.
+
+- key.title:
+
+  Used to set the title of the legend. The legend title is passed to
+  [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+  if `auto.text = TRUE`.
 
 - name.pol:
 
