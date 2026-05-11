@@ -296,6 +296,9 @@
 - `name.pol` will now correctly map onto the names of `pollutant`s in
   [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md).
 
+- [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
+  now respects `cols` when `ws2` and `wd2` are provided.
+
 ## openair 3.0.0
 
 CRAN release: 2026-04-02
