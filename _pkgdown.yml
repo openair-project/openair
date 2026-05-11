@@ -1,16 +1,13 @@
 url: https://openair-project.github.io/openair/
 template:
   package: openairpkgdown
-
 reference:
 - title: Data
   desc: In-built data to demonstrate openair functions.
   contents: mydata
-  
 - title: Import
   desc: Import tidy air quality data from the UK and Europe.
   contents: has_concept("import functions")
-  
 - title: Directional Analysis
 - subtitle: Polar Analysis
   desc: Examine the relationship between wind speed, wind direction and pollutant
@@ -19,15 +16,12 @@ reference:
 - subtitle: Trajectory Analysis
   desc: Analyse and visualise HYSPLIT trajectory files.
   contents: has_concept("trajectory analysis functions")
-  
 - title: Time Series and Trends
   desc: Examine how pollutant concentrations change with time.
   contents: has_concept("time series and trend functions")
-  
 - title: Model Evaluation
   desc: Compare models against measurements and models against other models.
   contents: has_concept("model evaluation functions")
-  
 - title: Other Plots
   desc: Additional plotting functions for visualising air quality data.
   contents:
@@ -35,7 +29,6 @@ reference:
   - variationPlot
   - scatterPlot
   - corPlot
-
 - title: Plot Utilities
 - subtitle: Colours
   desc: Functions for defining colour schemes and colour options for openair plots.
@@ -44,13 +37,12 @@ reference:
   - openSchemes
   - colourOpts
 - subtitle: Other Plot Utilities
-  desc: Other functions to help with controlling openair plots. 
+  desc: Other functions to help with controlling openair plots.
   contents:
   - quickText
   - windflowOpts
   - refOpts
   - breakOpts
-
 - title: Data Utilities
 - subtitle: Smoothing Functions
   desc: Tools for smoothing data for plotting or analysis
@@ -73,3 +65,4 @@ reference:
   - selectRunning
   - splitByDate
   - timeAverage
+
