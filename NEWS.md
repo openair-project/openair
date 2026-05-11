@@ -122,6 +122,8 @@
 
 - `name.pol` will now correctly map onto the names of `pollutant`s in `timeVariation()`.
 
+- `windRose()` now respects `cols` when `ws2` and `wd2` are provided.
+
 # openair 3.0.0
 
 ## Dependency Changes

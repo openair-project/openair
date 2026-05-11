@@ -141,6 +141,37 @@
 #' \dontrun{
 #' windRose(mydata, angle = 10, width = 0.2, grid.line = 1)
 #' }
+#'
+#' \dontrun{
+#' #' # example of comparing 2 met sites
+#' # first we will make some new ws/wd data with a postive bias
+#' mydata$ws2 <- mydata$ws + 2 * rnorm(nrow(mydata)) + 1
+#' mydata$wd2 <- mydata$wd + 30 * rnorm(nrow(mydata)) + 30
+#'
+#' # need to correct negative wd
+#' id <- which(mydata$wd2 < 0)
+#' mydata$wd2[id] <- mydata$wd2[id] + 360
+#'
+#' # results show postive bias in wd and ws
+#' windRose(mydata, ws = "ws", wd = "wd", ws2 = "ws2", wd2 = "wd2")
+#'
+#' ## add some wd bias to some nighttime hours
+#' id <- which(as.numeric(format(mydata$date, "%H")) %in% c(23, 1, 2, 3, 4, 5))
+#' mydata$wd2[id] <- mydata$wd[id] + 30 * rnorm(length(id)) + 120
+#' id <- which(mydata$wd2 < 0)
+#' mydata$wd2[id] <- mydata$wd2[id] + 360
+#'
+#' windRose(
+#'   mydata,
+#'   ws = "ws",
+#'   wd = "wd",
+#'   ws2 = "ws2",
+#'   wd2 = "wd2",
+#'   breaks = c(-11, -2, -1, -0.5, 0.5, 1, 2, 11),
+#'   cols = "vik",
+#'   type = "daylight"
+#' )
+#' }
 windRose <- function(
   mydata,
   ws = "ws",
@@ -291,9 +322,6 @@ windRose <- function(
     # Reference wd/ws retained for binning — do not overwrite them
     vars <- c(wd, ws, ".ws_bias", ".wd_bias")
 
-    if (missing(cols)) {
-      cols <- c("steelblue3", "white", "tomato2")
-    }
     seg <- 1
   }
 
@@ -399,10 +427,10 @@ windRose <- function(
     }
 
     # Diverging colour scale (expect cols to be length-3 low/mid/high)
-    diff_colors <- if (length(cols) >= 3) {
-      cols[c(1, ceiling(length(cols) / 2), length(cols))]
+    if (missing(cols)) {
+      cols <- c("steelblue3", "white", "tomato2")
     } else {
-      c("steelblue3", "white", "tomato2")
+      cols <- openair::openColors(cols, n = 3L)
     }
 
     fill_guide <- if (key.position == "none") {
@@ -481,9 +509,9 @@ windRose <- function(
       ) +
       scale_x_compass() +
       ggplot2::scale_fill_gradient2(
-        low = diff_colors[1],
-        mid = diff_colors[2],
-        high = diff_colors[3],
+        low = cols[1],
+        mid = cols[2],
+        high = cols[3],
         midpoint = 0,
         name = quickText(
           key.title,
@@ -1045,35 +1073,6 @@ windRose <- function(
 #' # source apportionment plot - contribution to mean
 #' \dontrun{
 #' pollutionRose(mydata, pollutant = "pm10", type = "year", statistic = "prop.mean")
-#'
-#' # example of comparing 2 met sites
-#' # first we will make some new ws/wd data with a postive bias
-#' mydata$ws2 <- mydata$ws + 2 * rnorm(nrow(mydata)) + 1
-#' mydata$wd2 <- mydata$wd + 30 * rnorm(nrow(mydata)) + 30
-#'
-#' # need to correct negative wd
-#' id <- which(mydata$wd2 < 0)
-#' mydata$wd2[id] <- mydata$wd2[id] + 360
-#'
-#' # results show postive bias in wd and ws
-#' pollutionRose(mydata, ws = "ws", wd = "wd", ws2 = "ws2", wd2 = "wd2")
-#'
-#' ## add some wd bias to some nighttime hours
-#' id <- which(as.numeric(format(mydata$date, "%H")) %in% c(23, 1, 2, 3, 4, 5))
-#' mydata$wd2[id] <- mydata$wd[id] + 30 * rnorm(length(id)) + 120
-#' id <- which(mydata$wd2 < 0)
-#' mydata$wd2[id] <- mydata$wd2[id] + 360
-#'
-#' pollutionRose(
-#'   mydata,
-#'   ws = "ws",
-#'   wd = "wd",
-#'   ws2 = "ws2",
-#'   wd2 = "wd2",
-#'   breaks = c(-11, -2, -1, -0.5, 0.5, 1, 2, 11),
-#'   cols = c("dodgerblue4", "white", "firebrick"),
-#'   type = "daylight"
-#' )
 #' }
 pollutionRose <- function(
   mydata,

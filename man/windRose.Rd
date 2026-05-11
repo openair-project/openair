@@ -268,6 +268,37 @@ windRose(mydata, type = "year")
 \dontrun{
 windRose(mydata, angle = 10, width = 0.2, grid.line = 1)
 }
+
+\dontrun{
+#' # example of comparing 2 met sites
+# first we will make some new ws/wd data with a postive bias
+mydata$ws2 <- mydata$ws + 2 * rnorm(nrow(mydata)) + 1
+mydata$wd2 <- mydata$wd + 30 * rnorm(nrow(mydata)) + 30
+
+# need to correct negative wd
+id <- which(mydata$wd2 < 0)
+mydata$wd2[id] <- mydata$wd2[id] + 360
+
+# results show postive bias in wd and ws
+windRose(mydata, ws = "ws", wd = "wd", ws2 = "ws2", wd2 = "wd2")
+
+## add some wd bias to some nighttime hours
+id <- which(as.numeric(format(mydata$date, "\%H")) \%in\% c(23, 1, 2, 3, 4, 5))
+mydata$wd2[id] <- mydata$wd[id] + 30 * rnorm(length(id)) + 120
+id <- which(mydata$wd2 < 0)
+mydata$wd2[id] <- mydata$wd2[id] + 360
+
+windRose(
+  mydata,
+  ws = "ws",
+  wd = "wd",
+  ws2 = "ws2",
+  wd2 = "wd2",
+  breaks = c(-11, -2, -1, -0.5, 0.5, 1, 2, 11),
+  cols = "vik",
+  type = "daylight"
+)
+}
 }
 \references{
 Applequist, S, 2012: Wind Rose Bias Correction. J. Appl. Meteor.
