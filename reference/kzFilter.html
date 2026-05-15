@@ -82,12 +82,12 @@ shrinks the window near those breaks to preserve sharp features.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">kzFilter</span><span class="op">(</span></span>
 <span>  <span class="va">mydata</span>,</span>
 <span>  pollutant <span class="op">=</span> <span class="st">"o3"</span>,</span>
-<span>  m <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25L</span>, <span class="fl">169L</span>, <span class="fl">721L</span>, <span class="fl">8761L</span><span class="op">)</span>,</span>
+<span>  m <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3L</span>, <span class="fl">13L</span>, <span class="fl">107L</span>, <span class="fl">721L</span>, <span class="fl">8761L</span><span class="op">)</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">5L</span>,</span>
-<span>  data.thresh <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  data.thresh <span class="op">=</span> <span class="fl">0.25</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  components <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  comp.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"short"</span>, <span class="st">"synoptic"</span>, <span class="st">"intermediate"</span>, <span class="st">"seasonal"</span>, <span class="st">"trend"</span><span class="op">)</span>,</span>
+<span>  comp.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sub_day"</span>, <span class="st">"diurnal"</span>, <span class="st">"synoptic"</span>, <span class="st">"intermediate"</span>, <span class="st">"seasonal"</span>, <span class="st">"trend"</span><span class="op">)</span>,</span>
 <span>  to_narrow <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span>
@@ -95,13 +95,13 @@ shrinks the window near those breaks to preserve sharp features.</p>
 <span><span class="fu">kzaFilter</span><span class="op">(</span></span>
 <span>  <span class="va">mydata</span>,</span>
 <span>  pollutant <span class="op">=</span> <span class="st">"o3"</span>,</span>
-<span>  m <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25L</span>, <span class="fl">169L</span>, <span class="fl">721L</span>, <span class="fl">8761L</span><span class="op">)</span>,</span>
+<span>  m <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3L</span>, <span class="fl">13L</span>, <span class="fl">107L</span>, <span class="fl">721L</span>, <span class="fl">8761L</span><span class="op">)</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">5L</span>,</span>
 <span>  sensitivity <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  data.thresh <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  components <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  comp.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"short"</span>, <span class="st">"synoptic"</span>, <span class="st">"intermediate"</span>, <span class="st">"seasonal"</span>, <span class="st">"trend"</span><span class="op">)</span>,</span>
+<span>  comp.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sub_day"</span>, <span class="st">"diurnal"</span>, <span class="st">"synoptic"</span>, <span class="st">"intermediate"</span>, <span class="st">"seasonal"</span>, <span class="st">"trend"</span><span class="op">)</span>,</span>
 <span>  to_narrow <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -123,7 +123,7 @@ one pollutant can be supplied as a vector, e.g., <code>pollutant = c("o3", "nox"
 
 <dt id="arg-m">m<a class="anchor" aria-label="anchor" href="#arg-m"></a></dt>
 <dd><p>Integer vector of window sizes (<code>kzFilter()</code>) or maximum window
-sizes (<code>kzaFilter()</code>). Defaults to <code>c(25, 169, 721, 8761)</code> (suited to
+sizes (<code>kzaFilter()</code>). Defaults to <code>c(3, 13, 107, 721, 8761)</code> (suited to
 hourly data). All values must be &gt;= 3. Values of <code>m</code> should be odd; even
 values will produce a symmetric window of <code>m + 1</code> points rather than <code>m</code>.</p></dd>
 
@@ -138,7 +138,7 @@ to detect structural breaks (<code>kzaFilter()</code>).</p></dd>
 <dd><p>Numeric (0–1). Minimum fraction of valid (non-<code>NA</code>)
 values required within a window for a filtered value to be returned;
 otherwise <code>NA</code> is returned. Applies to the actual window size, which is
-smaller near the series edges. Default is <code>0.5</code> (50%).</p></dd>
+smaller near the series edges. Default is <code>0.25</code> (25%).</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
@@ -153,7 +153,7 @@ series.</p></dd>
 
 <dt id="arg-comp-names">comp.names<a class="anchor" aria-label="anchor" href="#arg-comp-names"></a></dt>
 <dd><p>Character vector of names for the component columns. Must
-have length <code>length(m) + 1</code>. Defaults to <code>c("short", "synoptic", "intermediate", "seasonal", "trend")</code> to match the default <code>m</code> values. If
+have length <code>length(m) + 1</code>. Defaults to <code>c("sub_day", "diurnal", "synoptic", "intermediate", "seasonal", "trend")</code> to match the default <code>m</code> values. If
 the length does not match, numbered names (<code>comp_1</code>, <code>comp_2</code>, ...) are
 used with a warning.</p></dd>
 
@@ -187,13 +187,14 @@ columns. When <code>to_narrow = TRUE</code>, a tidy tibble with a <code>componen
 
 
 
-<p>With the default window sizes of 25, 169, 721 and 8761 (suited to hourly
-data), the function returns four intermediate filtered columns and five
-physical components derived by differencing:</p><ul><li><p><strong>short</strong> — daily cycle and short-term variations within it
-(<code>pollutant - kz(a)_25</code>)</p></li>
-<li><p><strong>synoptic</strong> — 2–7 day weather systems (<code>kz(a)_25 - kz(a)_169</code>)</p></li>
+<p>With the default window sizes of 3, 13, 107, 721 and 8761 (suited to
+hourly data), the function returns six intermediate filtered columns and
+six physical components derived by differencing:</p><ul><li><p><strong>sub_day</strong> — Short intra-day variations
+(<code>pollutant - kz(a)_3</code>)</p></li>
+<li><p><strong>diurnal</strong> — daily cycle (<code>kz(a)_3 - kz(a)_13</code>)</p></li>
+<li><p><strong>synoptic</strong> — 1–10 day weather systems (<code>kz(a)_13 - kz(a)_107</code>)</p></li>
 <li><p><strong>intermediate</strong> — weekly to monthly variability
-(<code>kz(a)_169 - kz(a)_721</code>)</p></li>
+(<code>kz(a)_107 - kz(a)_721</code>)</p></li>
 <li><p><strong>seasonal</strong> — monthly to annual variability (<code>kz(a)_721 - kz(a)_8761</code>)</p></li>
 <li><p><strong>trend</strong> — multi-year trend (<code>kz(a)_8761</code>)</p></li>
 </ul></div>
@@ -210,10 +211,11 @@ should be interpreted with caution.</p>
 <code>floor(m / 2)</code> observations. Because the filter is iterated <code>k</code> times (each
 pass consuming the output of the previous one), the total affected zone at
 each end is approximately <code>k * floor(m / 2)</code> observations. With the default
-<code>m = c(25, 169, 721, 8761)</code> and <code>k = 5</code>, the affected zones are roughly 60
-h (~2.5 days), 420 h (~17 days), 1,800 h (~75 days), and 21,900 h (~2.5
-years) at each end respectively. The <code>trend</code> component therefore requires
-at least 5–6 years of data for the interior estimates to be unaffected.</p>
+<code>m = c(3, 13, 107, 721, 8761)</code> and <code>k = 5</code>, the affected zones are roughly 5
+h, 30 h (~1 day), 265 h (~11 days), 1,800 h (~75 days), and 21,900 h
+(~2.5 years) at each end respectively. The <code>trend</code> component therefore
+requires at least 5–6 years of data for the interior estimates to be
+unaffected.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -224,7 +226,7 @@ at least 5–6 years of data for the interior estimates to be unaffected.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Default: 4 window sizes, 5 descriptively named components returned</span></span></span>
+<span class="r-in"><span><span class="co"># Default: 5 window sizes, 6 descriptively named components returned</span></span></span>
 <span class="r-in"><span><span class="va">mydata</span> <span class="op">&lt;-</span> <span class="fu">kzFilter</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"nox"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Tidy long format</span></span></span>
@@ -235,7 +237,7 @@ at least 5–6 years of data for the interior estimates to be unaffected.</p>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Default: 4 window sizes, 5 descriptively named components returned</span></span></span>
+<span class="r-in"><span><span class="co"># Default: 5 window sizes, 6 descriptively named components returned</span></span></span>
 <span class="r-in"><span><span class="va">mydata</span> <span class="op">&lt;-</span> <span class="fu">kzaFilter</span><span class="op">(</span><span class="va">mydata</span>, pollutant <span class="op">=</span> <span class="st">"nox"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Tidy long format</span></span></span>

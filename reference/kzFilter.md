@@ -16,12 +16,12 @@ breaks to preserve sharp features.
 kzFilter(
   mydata,
   pollutant = "o3",
-  m = c(25L, 169L, 721L, 8761L),
+  m = c(3L, 13L, 107L, 721L, 8761L),
   k = 5L,
-  data.thresh = 0.5,
+  data.thresh = 0.25,
   type = "default",
   components = TRUE,
-  comp.names = c("short", "synoptic", "intermediate", "seasonal", "trend"),
+  comp.names = c("sub_day", "diurnal", "synoptic", "intermediate", "seasonal", "trend"),
   to_narrow = FALSE,
   ...
 )
@@ -29,13 +29,13 @@ kzFilter(
 kzaFilter(
   mydata,
   pollutant = "o3",
-  m = c(25L, 169L, 721L, 8761L),
+  m = c(3L, 13L, 107L, 721L, 8761L),
   k = 5L,
   sensitivity = 1,
   data.thresh = 0.5,
   type = "default",
   components = TRUE,
-  comp.names = c("short", "synoptic", "intermediate", "seasonal", "trend"),
+  comp.names = c("sub_day", "diurnal", "synoptic", "intermediate", "seasonal", "trend"),
   to_narrow = FALSE,
   ...
 )
@@ -57,10 +57,10 @@ kzaFilter(
 - m:
 
   Integer vector of window sizes (`kzFilter()`) or maximum window sizes
-  (`kzaFilter()`). Defaults to `c(25, 169, 721, 8761)` (suited to hourly
-  data). All values must be \>= 3. Values of `m` should be odd; even
-  values will produce a symmetric window of `m + 1` points rather than
-  `m`.
+  (`kzaFilter()`). Defaults to `c(3, 13, 107, 721, 8761)` (suited to
+  hourly data). All values must be \>= 3. Values of `m` should be odd;
+  even values will produce a symmetric window of `m + 1` points rather
+  than `m`.
 
 - k:
 
@@ -73,7 +73,7 @@ kzaFilter(
   Numeric (0–1). Minimum fraction of valid (non-`NA`) values required
   within a window for a filtered value to be returned; otherwise `NA` is
   returned. Applies to the actual window size, which is smaller near the
-  series edges. Default is `0.5` (50%).
+  series edges. Default is `0.25` (25%).
 
 - type:
 
@@ -89,9 +89,9 @@ kzaFilter(
 
   Character vector of names for the component columns. Must have length
   `length(m) + 1`. Defaults to
-  `c("short", "synoptic", "intermediate", "seasonal", "trend")` to match
-  the default `m` values. If the length does not match, numbered names
-  (`comp_1`, `comp_2`, ...) are used with a warning.
+  `c("sub_day", "diurnal", "synoptic", "intermediate", "seasonal", "trend")`
+  to match the default `m` values. If the length does not match,
+  numbered names (`comp_1`, `comp_2`, ...) are used with a warning.
 
 - to_narrow:
 
@@ -121,17 +121,18 @@ ordered fast to slow) and a `value` column.
 
 ## Default window sizes
 
-With the default window sizes of 25, 169, 721 and 8761 (suited to hourly
-data), the function returns four intermediate filtered columns and five
-physical components derived by differencing:
+With the default window sizes of 3, 13, 107, 721 and 8761 (suited to
+hourly data), the function returns six intermediate filtered columns and
+six physical components derived by differencing:
 
-- **short** — daily cycle and short-term variations within it
-  (`pollutant - kz(a)_25`)
+- **sub_day** — Short intra-day variations (`pollutant - kz(a)_3`)
 
-- **synoptic** — 2–7 day weather systems (`kz(a)_25 - kz(a)_169`)
+- **diurnal** — daily cycle (`kz(a)_3 - kz(a)_13`)
+
+- **synoptic** — 1–10 day weather systems (`kz(a)_13 - kz(a)_107`)
 
 - **intermediate** — weekly to monthly variability
-  (`kz(a)_169 - kz(a)_721`)
+  (`kz(a)_107 - kz(a)_721`)
 
 - **seasonal** — monthly to annual variability
   (`kz(a)_721 - kz(a)_8761`)
@@ -149,11 +150,11 @@ The affected length at each end of the series for a single filter pass
 is `floor(m / 2)` observations. Because the filter is iterated `k` times
 (each pass consuming the output of the previous one), the total affected
 zone at each end is approximately `k * floor(m / 2)` observations. With
-the default `m = c(25, 169, 721, 8761)` and `k = 5`, the affected zones
-are roughly 60 h (~2.5 days), 420 h (~17 days), 1,800 h (~75 days), and
-21,900 h (~2.5 years) at each end respectively. The `trend` component
-therefore requires at least 5–6 years of data for the interior estimates
-to be unaffected.
+the default `m = c(3, 13, 107, 721, 8761)` and `k = 5`, the affected
+zones are roughly 5 h, 30 h (~1 day), 265 h (~11 days), 1,800 h (~75
+days), and 21,900 h (~2.5 years) at each end respectively. The `trend`
+component therefore requires at least 5–6 years of data for the interior
+estimates to be unaffected.
 
 ## Author
 
@@ -164,7 +165,7 @@ David Carslaw
 ``` r
 
 if (FALSE) { # \dontrun{
-# Default: 4 window sizes, 5 descriptively named components returned
+# Default: 5 window sizes, 6 descriptively named components returned
 mydata <- kzFilter(mydata, pollutant = "nox")
 
 # Tidy long format
@@ -175,7 +176,7 @@ mydata <- kzFilter(mydata, pollutant = "nox", m = 24, k = 5)
 } # }
 
 if (FALSE) { # \dontrun{
-# Default: 4 window sizes, 5 descriptively named components returned
+# Default: 5 window sizes, 6 descriptively named components returned
 mydata <- kzaFilter(mydata, pollutant = "nox")
 
 # Tidy long format
