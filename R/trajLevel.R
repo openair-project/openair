@@ -781,8 +781,14 @@ trajLevel <- function(
         default_crs = crs,
         crs = crs
       ) +
-      ggplot2::scale_x_continuous(breaks = scales::breaks_pretty(grid.nx)) +
-      ggplot2::scale_y_continuous(breaks = scales::breaks_pretty(grid.ny))
+      ggplot2::scale_x_continuous(
+        breaks = scales::breaks_pretty(grid.nx),
+        expand = c(0, 0)
+      ) +
+      ggplot2::scale_y_continuous(
+        breaks = scales::breaks_pretty(grid.ny),
+        expand = c(0, 0)
+      )
   }
 
   # hexbin needs separate handling - everything needs to be set as lat/lng as
