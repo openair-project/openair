@@ -15,6 +15,7 @@ trajLevel(
   percentile = 90,
   lon.inc = 1,
   lat.inc = lon.inc,
+  breaks = NULL,
   min.bin = 1,
   .combine = NULL,
   sigma = 1.5,
@@ -100,6 +101,14 @@ the all trajectories are compared.}
 binning data. If \code{statistic = "hexbin"}, the minimum value out of of
 \code{lon.inc} and \code{lat.inc} is passed to the \code{binwidth} argument of
 \code{\link[ggplot2:geom_hex]{ggplot2::geom_hex()}}.}
+
+\item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
+either take a single number (e.g., \code{breaks = 5}) to split the scale into
+quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
+define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
+details. Note that, in \code{trajLevel()}, each \code{statistic} provides a different
+default break strategy; to override those that bin the limits by default
+(e.g., \code{"frequency"}), pass \code{breaks = NULL} explicitly.}
 
 \item{min.bin}{The minimum number of unique points in a grid cell. Counts
 below \code{min.bin} are set as missing.}
