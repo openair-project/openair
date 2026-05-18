@@ -865,6 +865,7 @@ trajLevel <- function(
       thePlot +
       ggplot2::geom_hex(
         data = original_data,
+        show.legend = TRUE,
         ggplot2::aes(
           x = .data$xgrid,
           y = .data$ygrid,
