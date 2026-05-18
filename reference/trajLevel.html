@@ -72,6 +72,7 @@ data are imported using the <code><a href="importTraj.html">importTraj()</a></co
 <span>  percentile <span class="op">=</span> <span class="fl">90</span>,</span>
 <span>  lon.inc <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  lat.inc <span class="op">=</span> <span class="va">lon.inc</span>,</span>
+<span>  breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  min.bin <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  .combine <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sigma <span class="op">=</span> <span class="fl">1.5</span>,</span>
@@ -170,6 +171,16 @@ the all trajectories are compared.</p></dd>
 binning data. If <code>statistic = "hexbin"</code>, the minimum value out of of
 <code>lon.inc</code> and <code>lat.inc</code> is passed to the <code>binwidth</code> argument of
 <code><a href="https://ggplot2.tidyverse.org/reference/geom_hex.html" class="external-link">ggplot2::geom_hex()</a></code>.</p></dd>
+
+
+<dt id="arg-breaks">breaks<a class="anchor" aria-label="anchor" href="#arg-breaks"></a></dt>
+<dd><p><code>breaks</code> bins a continuous axis into discrete bins. It can
+either take a single number (e.g., <code>breaks = 5</code>) to split the scale into
+quantiles, a vector of numbers (e.g., <code>breaks = c(0, 50, 100, 200, 500</code>) to
+define specific break-points, or a named list. See <code><a href="breakOpts.html">breakOpts()</a></code> for more
+details. Note that, in <code>trajLevel()</code>, each <code>statistic</code> provides a different
+default break strategy; to override those that bin the limits by default
+(e.g., <code>"frequency"</code>), pass <code>breaks = NULL</code> explicitly.</p></dd>
 
 
 <dt id="arg-min-bin">min.bin<a class="anchor" aria-label="anchor" href="#arg-min-bin"></a></dt>

@@ -95,7 +95,7 @@
 <ul><li><p>If <code>breaks</code> doesn’t cover the full range of the data being binned, the maximum and minimum <code>breaks</code> will be overwritten so that it does.</p></li>
 <li><p>If <code>breaks</code> is of length <code>1</code>, the colour range will be split into <code>breaks</code> categories, defaulting to using the same logic as running <code><a href="../reference/cutData.html">cutData()</a></code> on a numeric column.</p></li>
 <li><p><code>breaks</code> can now take a named list, defined using the new <code><a href="../reference/breakOpts.html">breakOpts()</a></code> function. Most significantly, this allows for the method of binning to change for single-value <code>breaks</code> (quantiles, equal range bins, user-defined bin widths, approximate ‘pretty’ breaks and wind direction binning at time of writing).</p></li>
-<li><p><code><a href="../reference/polarPlot.html">polarPlot()</a></code>, <code><a href="../reference/polarAnnulus.html">polarAnnulus()</a></code> and <code><a href="../reference/corPlot.html">corPlot()</a></code> have gained <code>breaks</code>.</p></li>
+<li><p><code><a href="../reference/polarPlot.html">polarPlot()</a></code>, <code><a href="../reference/polarAnnulus.html">polarAnnulus()</a></code>, <code><a href="../reference/corPlot.html">corPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> have gained <code>breaks</code>.</p></li>
 <li><p><code>labels</code> is no longer a top-level argument and can be defined by passing a list to <code>breaks</code>. <code>labels</code> given to <code>...</code> will be converted with a warning.</p></li>
 </ul></li>
 <li>

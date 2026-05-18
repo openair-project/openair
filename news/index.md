@@ -123,9 +123,10 @@
     direction binning at time of writing).
 
   - [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md),
-    [`polarAnnulus()`](https://openair-project.github.io/openair/reference/polarAnnulus.md)
-    and
+    [`polarAnnulus()`](https://openair-project.github.io/openair/reference/polarAnnulus.md),
     [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
+    and
+    [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md)
     have gained `breaks`.
 
   - `labels` is no longer a top-level argument and can be defined by

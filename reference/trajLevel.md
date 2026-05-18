@@ -19,6 +19,7 @@ trajLevel(
   percentile = 90,
   lon.inc = 1,
   lat.inc = lon.inc,
+  breaks = NULL,
   min.bin = 1,
   .combine = NULL,
   sigma = 1.5,
@@ -132,6 +133,19 @@ trajLevel(
   `statistic = "hexbin"`, the minimum value out of of `lon.inc` and
   `lat.inc` is passed to the `binwidth` argument of
   [`ggplot2::geom_hex()`](https://ggplot2.tidyverse.org/reference/geom_hex.html).
+
+- breaks:
+
+  `breaks` bins a continuous axis into discrete bins. It can either take
+  a single number (e.g., `breaks = 5`) to split the scale into
+  quantiles, a vector of numbers (e.g.,
+  `breaks = c(0, 50, 100, 200, 500`) to define specific break-points, or
+  a named list. See
+  [`breakOpts()`](https://openair-project.github.io/openair/reference/breakOpts.md)
+  for more details. Note that, in `trajLevel()`, each `statistic`
+  provides a different default break strategy; to override those that
+  bin the limits by default (e.g., `"frequency"`), pass `breaks = NULL`
+  explicitly.
 
 - min.bin:
 
