@@ -58,7 +58,7 @@
     
     - `breaks` can now take a named list, defined using the new `breakOpts()` function. Most significantly, this allows for the method of binning to change for single-value `breaks` (quantiles, equal range bins, user-defined bin widths, approximate 'pretty' breaks and wind direction binning at time of writing).
     
-    - `polarPlot()`, `polarAnnulus()` and `corPlot()` have gained `breaks`.
+    - `polarPlot()`, `polarAnnulus()`, `corPlot()` and `trajLevel()` have gained `breaks`.
     
     - `labels` is no longer a top-level argument and can be defined by passing a list to `breaks`. `labels` given to `...` will be converted with a warning.
 

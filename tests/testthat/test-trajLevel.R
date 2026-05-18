@@ -39,15 +39,6 @@ test_that("frequency: xgrid and ygrid are rounded to nearest degree (default lon
   expect_true(all(tl$data$ygrid == round(tl$data$ygrid)))
 })
 
-test_that("frequency: 'cuts' factor with expected levels is present", {
-  expect_true("cuts" %in% names(tl$data))
-  expect_true(is.factor(tl$data$cuts))
-  expect_true(all(
-    levels(tl$data$cuts) %in%
-      c("0 to 1", "1 to 5", "5 to 10", "10 to 25", "25 to 100")
-  ))
-})
-
 # --- statistic = "pscf" ------------------------------------------------------
 
 test_that("statistic = 'pscf' returns values in [0, 1]", {
@@ -85,20 +76,6 @@ test_that("statistic = 'cwt' returns non-negative values", {
   )
   non_na <- tl_cwt$data$nox[!is.na(tl_cwt$data$nox)]
   expect_true(all(non_na >= 0))
-})
-
-# --- statistic = "difference" ------------------------------------------------
-
-test_that("statistic = 'difference' produces a cuts factor column", {
-  tl_diff <- trajLevel(
-    traj,
-    pollutant = "nox",
-    statistic = "difference",
-    map = FALSE,
-    plot = FALSE
-  )
-  expect_true("cuts" %in% names(tl_diff$data))
-  expect_true(is.factor(tl_diff$data$cuts))
 })
 
 # --- lon.inc / lat.inc -------------------------------------------------------
