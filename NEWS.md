@@ -124,6 +124,8 @@
 
 - `windRose()` now respects `cols` when `ws2` and `wd2` are provided.
 
+- `xlim` is now correctly passed to the coordinates of `trajLevel()`.
+
 # openair 3.0.0
 
 ## Dependency Changes

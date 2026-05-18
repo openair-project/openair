@@ -648,7 +648,7 @@ trajLevel <- function(
 
   # get bbox - axis limits
   bbox <- sf::st_bbox(out_data_sf)
-  extra.args$xlim <- extra.args$xilm %||% unname(bbox[c(1, 3)])
+  extra.args$xlim <- extra.args$xlim %||% unname(bbox[c(1, 3)])
   extra.args$ylim <- extra.args$ylim %||% unname(bbox[c(2, 4)])
 
   # base plot & themes
