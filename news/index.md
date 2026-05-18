@@ -299,6 +299,9 @@
 - [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
   now respects `cols` when `ws2` and `wd2` are provided.
 
+- `xlim` is now correctly passed to the coordinates of
+  [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md).
+
 ## openair 3.0.0
 
 CRAN release: 2026-04-02
