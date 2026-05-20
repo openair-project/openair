@@ -91,12 +91,6 @@
 #' @param x.inc,y.inc The x/y-interval to be used for binning data when `method
 #'   = "level"`.
 #'
-#' @param limits For `method = "level"` the function does its best to choose
-#'   sensible limits automatically. However, there are circumstances when the
-#'   user will wish to set different ones. The limits are set in the form
-#'   `c(lower, upper)`, so `limits = c(0, 100)` would force the plot limits to
-#'   span 0-100.
-#'
 #' @param k Smoothing parameter supplied to `gam` for fitting a smooth surface
 #'   when `method = "level"`.
 #'
@@ -129,9 +123,7 @@
 #'   values - e.g., `shape = c(1, 2)` - which will be recycled to the length of
 #'   values needed.
 #'
-#'   - For `method = "hexbin"` a log-scale fill is applied by default;
-#'   pass `trans = NULL` to disable or provide custom `trans` and `inv`
-#'   transform functions. `bins` controls the number of bins.
+#'   - For `method = "hexbin"`, `bins` controls the number of bins.
 #'
 #'   - `date.format` controls the format of date-time x-axes.
 #'
@@ -238,6 +230,7 @@ scatterPlot <- function(
   x.inc = NULL,
   y.inc = NULL,
   limits = NULL,
+  trans = FALSE,
   windflow = NULL,
   ref.x = NULL,
   ref.y = NULL,
@@ -326,6 +319,7 @@ scatterPlot <- function(
       key.title = key.title,
       key.columns = key.columns,
       limits = limits,
+      trans = trans,
       k = k,
       auto.text = auto.text,
       xlab = xlab,
@@ -352,6 +346,7 @@ scatterPlot <- function(
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
+      trans = trans,
       auto.text = auto.text,
       xlab = xlab,
       ylab = ylab,
@@ -379,6 +374,7 @@ scatterPlot <- function(
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
+      trans = trans,
       k = k,
       dist = dist,
       auto.text = auto.text,
@@ -402,6 +398,7 @@ scatterPlot <- function(
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
+      trans = trans,
       auto.text = auto.text,
       xlab = xlab,
       ylab = ylab,
@@ -530,8 +527,8 @@ scatter_scatter <- function(
   key.position,
   key.title,
   key.columns,
-
   limits,
+  trans,
   k,
   auto.text,
   xlab,
@@ -622,6 +619,7 @@ scatter_scatter <- function(
         guide = ggplot2::guide_colorbar(
           position = key.position
         ),
+        transform = get_scale_transform(trans %||% "identity"),
         aesthetics = c("colour", "fill")
       ) +
       ggplot2::labs(
@@ -880,7 +878,7 @@ scatter_hexbin <- function(
   ref.x,
   ref.y,
   key.position,
-
+  trans,
   auto.text,
   xlab,
   ylab,
@@ -894,23 +892,11 @@ scatter_hexbin <- function(
 
   myColors <- resolve_colour_opts(cols, 200)
 
-  ## hexbin fill transform (default: log; trans = NULL → none)
-  hex_transform <- if (
-    "trans" %in% names(extra.args) && is.null(extra.args$trans)
-  ) {
-    "identity"
-  } else if ("trans" %in% names(extra.args) && is.function(extra.args$trans)) {
-    inv_fn <- extra.args$inv %||% function(x) x
-    scales::new_transform("hex_custom", extra.args$trans, inv_fn)
-  } else {
-    "log"
-  }
-
   plt <- ggplot2::ggplot(mydata, ggplot2::aes(x = .data[[x]], y = .data[[y]])) +
     ggplot2::geom_hex(bins = extra.args$bins %||% 30, colour = border) +
     ggplot2::scale_fill_gradientn(
       colors = myColors,
-      transform = hex_transform,
+      transform = get_scale_transform(trans %||% "log10"),
       labels = scales::label_number(accuracy = 1),
       guide = ggplot2::guide_colorbar(
         position = key.position
@@ -1017,7 +1003,7 @@ scatter_level <- function(
   ref.x,
   ref.y,
   key.position,
-
+  trans,
   k,
   dist,
   auto.text,
@@ -1112,7 +1098,8 @@ scatter_level <- function(
       na.value = "transparent",
       guide = ggplot2::guide_colorbar(
         position = key.position
-      )
+      ),
+      transform = get_scale_transform(trans %||% "identity")
     ) +
     ggplot2::labs(
       fill = quickText(z, auto.text)
@@ -1266,7 +1253,7 @@ scatter_density <- function(
   ref.x,
   ref.y,
   key.position,
-
+  trans,
   auto.text,
   xlab,
   ylab,
@@ -1301,7 +1288,8 @@ scatter_density <- function(
       na.value = "transparent",
       guide = ggplot2::guide_colorbar(
         position = key.position
-      )
+      ),
+      transform = get_scale_transform(trans %||% "identity")
     ) +
     ggplot2::labs(
       fill = "intensity"

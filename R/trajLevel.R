@@ -171,7 +171,9 @@ trajLevel <- function(
   percentile = 90,
   lon.inc = 1.0,
   lat.inc = lon.inc,
+  limits = NULL,
   breaks = NULL,
+  trans = FALSE,
   min.bin = 1,
   .combine = NULL,
   sigma = 1.5,
@@ -809,7 +811,8 @@ trajLevel <- function(
         colours = resolve_colour_opts(cols, 100),
         oob = scales::oob_squish,
         na.value = NA,
-        limits = extra.args$limits
+        limits = limits,
+        transform = get_scale_transform(trans)
       )
   }
 
@@ -908,13 +911,17 @@ trajLevel <- function(
       ggplot2::scale_alpha_identity()
 
     if (missing(breaks)) {
+      if (missing(trans)) {
+        trans <- scales::transform_log10()
+      }
+
       thePlot <-
         thePlot +
         ggplot2::scale_fill_stepsn(
-          transform = scales::transform_log10(),
           colors = resolve_colour_opts(cols, 100),
           n.breaks = 15,
-          limits = c(min.bin, NA)
+          limits = c(min.bin, NA),
+          transform = get_scale_transform(trans)
         ) +
         ggplot2::guides(
           fill = ggplot2::guide_colorsteps(show.limits = TRUE)
@@ -925,7 +932,7 @@ trajLevel <- function(
           colours = resolve_colour_opts(cols, 100),
           oob = scales::oob_squish,
           na.value = NA,
-          limits = extra.args$limits
+          limits = limits
         )
     } else {
       thePlot <- thePlot +

@@ -242,6 +242,37 @@ scale_x_compass <- function(
   )
 }
 
+# turn a 'trans' argument into a ggplot2 scale transformer
+get_scale_transform <- function(
+  transform,
+  default = scales::transform_log10()
+) {
+  if (inherits(transform, "transform")) {
+    return(transform)
+  }
+
+  if (rlang::is_function(transform)) {
+    if (inherits(transform, "transform")) {
+      return(transform)
+    }
+  }
+
+  if (rlang::is_logical(transform)) {
+    if (transform) {
+      return(default)
+    } else {
+      return(scales::transform_identity())
+    }
+  }
+
+  if (rlang::is_character(transform)) {
+    return(eval(parse(text = paste0("scales::transform_", transform, "()"))))
+  }
+
+  cli::cli_abort(
+    "{.arg trans} must be logical, a string, or a {.pkg scales} 'transform' object."
+  )
+}
 
 # Layers ------------------------------------------------------------------
 

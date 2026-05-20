@@ -113,6 +113,7 @@ corPlot <- function(
   triangle = c("both", "upper", "lower"),
   diagonal = TRUE,
   breaks = NULL,
+  trans = FALSE,
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
@@ -501,7 +502,8 @@ corPlot <- function(
       ggplot2::scale_fill_gradientn(
         colours = resolve_colour_opts(cols, n = 100),
         limits = c(-1, 1),
-        oob = scales::oob_squish
+        oob = scales::oob_squish,
+        transform = get_scale_transform(trans)
       ) +
       ggplot2::guides(
         fill = ggplot2::guide_colorbar(

@@ -15,8 +15,8 @@ polarFreq(
   grid.line = 5,
   limits = NULL,
   breaks = NULL,
+  trans = "sqrt",
   cols = "default",
-  trans = TRUE,
   type = "default",
   min.bin = 1,
   ws.upper = NA,
@@ -68,7 +68,12 @@ an interval of 0.5 may be more appropriate.}
 
 \item{grid.line}{Radial spacing of grid lines.}
 
-\item{limits}{The limits of the colour bar (e.g., \code{c(0, 100)}).}
+\item{limits}{The limits of the colour scale, in the form \code{c(lower, upper)}.
+For example, \code{limits = c(0, 100)} will set the colour scale to be between
+\code{0} and \code{100}. Values greater than \code{100} will be coloured as if they were
+\code{100}, and those lower than \code{0} will be coloured as if they were \code{0}.
+\code{limits} can be wider than the range of the data, which can be useful for
+ensuring multiple plots share the same colour scale.}
 
 \item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
 either take a single number (e.g., \code{breaks = 5}) to split the scale into
@@ -76,18 +81,26 @@ quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
 define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
 details.}
 
+\item{trans}{Should a transformation be applied to the colour scale? If the
+distribution of data is skewed, the default scale may be dominated by a few
+high values, so a log or square-root transform may mean the whole colour
+scale is better presented on the plot. Can be:
+\itemize{
+\item \code{FALSE}, which performs no transform.
+\item \code{TRUE}, which uses an appropriate transform for the plot type (usually
+\code{"log10"}).
+\item A \code{scales} 'transform' object (e.g., \code{\link[scales:transform_log10]{scales::transform_log10()}}).
+\item A character string corresponding to a \code{scales} transform function. Useful
+options include \code{"sqrt"}, \code{"log10"}, \code{"log2"}, \code{"log1p"}, \code{"pseudo_log"}
+and \code{"reverse"}.
+}}
+
 \item{cols}{Colours to use for plotting. Can be a pre-set palette (e.g.,
 \code{"turbo"}, \code{"viridis"}, \code{"tol"}, \code{"Dark2"}, etc.) or a user-defined vector
 of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
 \code{\link[=colours]{colours()}} for a full list) or hex-codes (e.g., \code{c("#30123B", "#9CF649", "#7A0403")}). Alternatively, can be a list of arguments to control the
 colour palette more closely (e.g., \code{palette}, \code{direction}, \code{alpha}, etc.).
 See \code{\link[=openColours]{openColours()}} and \code{\link[=colourOpts]{colourOpts()}} for more details.}
-
-\item{trans}{Should a transformation be applied? Sometimes when producing
-plots of this kind they can be dominated by a few high points. The default
-therefore is \code{TRUE} and a square-root transform is applied. This results in
-a non-linear scale and (usually) a better representation of the
-distribution. If set to \code{FALSE} a linear scale is used.}
 
 \item{type}{Character string(s) defining how data should be split/conditioned
 before plotting. \code{"default"} produces a single panel using the entire
@@ -264,9 +277,13 @@ polarFreq(mydata, breaks = c(0, 10, 50, 100, 250, 500, 700))
 
 # source contribution plot and use of offset option
 \dontrun{
-polarFreq(mydata,
+polarFreq(
+  mydata,
   pollutant = "pm25",
-  statistic = "weighted.mean", offset = 50, ws.int = 25, trans = FALSE
+  statistic = "weighted.mean",
+  offset = 50,
+  ws.int = 25,
+  trans = FALSE
 )
 }
 }

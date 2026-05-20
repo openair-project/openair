@@ -53,20 +53,12 @@
 #'   Note that for options other than `"frequency"`, it is necessary to also
 #'   provide the name of a `pollutant`.
 #'
-#' @param limits The limits of the colour bar (e.g., `c(0, 100)`).
-#'
 #' @param ws.int Wind speed interval assumed. In some cases e.g. a low met mast,
 #'   an interval of 0.5 may be more appropriate.
 #'
 #' @param wd.nint Number of intervals of wind direction.
 #'
 #' @param grid.line Radial spacing of grid lines.
-#'
-#' @param trans Should a transformation be applied? Sometimes when producing
-#'   plots of this kind they can be dominated by a few high points. The default
-#'   therefore is `TRUE` and a square-root transform is applied. This results in
-#'   a non-linear scale and (usually) a better representation of the
-#'   distribution. If set to `FALSE` a linear scale is used.
 #'
 #' @param ws.upper A user-defined upper wind speed to use. This is useful for
 #'   ensuring a consistent scale between different plots. For example, to always
@@ -123,9 +115,13 @@
 #'
 #' # source contribution plot and use of offset option
 #' \dontrun{
-#' polarFreq(mydata,
+#' polarFreq(
+#'   mydata,
 #'   pollutant = "pm25",
-#'   statistic = "weighted.mean", offset = 50, ws.int = 25, trans = FALSE
+#'   statistic = "weighted.mean",
+#'   offset = 50,
+#'   ws.int = 25,
+#'   trans = FALSE
 #' )
 #' }
 polarFreq <- function(
@@ -139,8 +135,8 @@ polarFreq <- function(
   grid.line = 5,
   limits = NULL,
   breaks = NULL,
+  trans = "sqrt",
   cols = "default",
-  trans = TRUE,
   type = "default",
   min.bin = 1,
   ws.upper = NA,
@@ -211,11 +207,6 @@ polarFreq <- function(
       "x" = "No {.field pollutant} chosen",
       "i" = "Please choose a {.field pollutant}, e.g., {.code pollutant = 'nox'}"
     ))
-  }
-
-  # over-ride transform if breaks supplied
-  if (!(any(is.null(break_opts$breaks)) || anyNA(break_opts$breaks))) {
-    trans <- FALSE
   }
 
   # replace weighted.mean with a nicer label
@@ -404,7 +395,10 @@ polarFreq <- function(
       thePlot +
       ggplot2::scale_fill_gradientn(
         colours = resolve_colour_opts(cols, 100),
-        transform = ifelse(trans, "sqrt", "identity"),
+        transform = get_scale_transform(
+          trans,
+          default = scales::transform_sqrt()
+        ),
         oob = scales::oob_squish,
         breaks = scales::pretty_breaks(6),
         limits = limits

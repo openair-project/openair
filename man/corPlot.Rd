@@ -16,6 +16,7 @@ corPlot(
   triangle = c("both", "upper", "lower"),
   diagonal = TRUE,
   breaks = NULL,
+  trans = FALSE,
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
@@ -92,6 +93,20 @@ either take a single number (e.g., \code{breaks = 5}) to split the scale into
 quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
 define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
 details.}
+
+\item{trans}{Should a transformation be applied to the colour scale? If the
+distribution of data is skewed, the default scale may be dominated by a few
+high values, so a log or square-root transform may mean the whole colour
+scale is better presented on the plot. Can be:
+\itemize{
+\item \code{FALSE}, which performs no transform.
+\item \code{TRUE}, which uses an appropriate transform for the plot type (usually
+\code{"log10"}).
+\item A \code{scales} 'transform' object (e.g., \code{\link[scales:transform_log10]{scales::transform_log10()}}).
+\item A character string corresponding to a \code{scales} transform function. Useful
+options include \code{"sqrt"}, \code{"log10"}, \code{"log2"}, \code{"log1p"}, \code{"pseudo_log"}
+and \code{"reverse"}.
+}}
 
 \item{cols}{Colours to use for plotting. Can be a pre-set palette (e.g.,
 \code{"turbo"}, \code{"viridis"}, \code{"tol"}, \code{"Dark2"}, etc.) or a user-defined vector

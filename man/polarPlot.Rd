@@ -12,6 +12,8 @@ polarPlot(
   type = "default",
   statistic = "mean",
   limits = NULL,
+  breaks = NULL,
+  trans = FALSE,
   exclude.missing = TRUE,
   uncertainty = FALSE,
   percentile = NA,
@@ -25,7 +27,6 @@ polarPlot(
   force.positive = TRUE,
   k = 100,
   normalise = FALSE,
-  breaks = NULL,
   key.title = paste(statistic, pollutant, sep = " "),
   key.position = "right",
   auto.text = TRUE,
@@ -148,11 +149,32 @@ method the uncertainties in \code{x} and \code{y} are used in the
 determination of the slope. The uncertainties are provided by
 \code{x_error} and \code{y_error} --- see below.}}
 
-\item{limits}{The function does its best to choose sensible limits
-automatically. However, there are circumstances when the user will wish to
-set different ones. An example would be a series of plots showing each year
-of data separately. The limits are set in the form \code{c(lower, upper)}, so
-\code{limits = c(0, 100)} would force the plot limits to span 0-100.}
+\item{limits}{The limits of the colour scale, in the form \code{c(lower, upper)}.
+For example, \code{limits = c(0, 100)} will set the colour scale to be between
+\code{0} and \code{100}. Values greater than \code{100} will be coloured as if they were
+\code{100}, and those lower than \code{0} will be coloured as if they were \code{0}.
+\code{limits} can be wider than the range of the data, which can be useful for
+ensuring multiple plots share the same colour scale.}
+
+\item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
+either take a single number (e.g., \code{breaks = 5}) to split the scale into
+quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
+define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
+details.}
+
+\item{trans}{Should a transformation be applied to the colour scale? If the
+distribution of data is skewed, the default scale may be dominated by a few
+high values, so a log or square-root transform may mean the whole colour
+scale is better presented on the plot. Can be:
+\itemize{
+\item \code{FALSE}, which performs no transform.
+\item \code{TRUE}, which uses an appropriate transform for the plot type (usually
+\code{"log10"}).
+\item A \code{scales} 'transform' object (e.g., \code{\link[scales:transform_log10]{scales::transform_log10()}}).
+\item A character string corresponding to a \code{scales} transform function. Useful
+options include \code{"sqrt"}, \code{"log10"}, \code{"log2"}, \code{"log1p"}, \code{"pseudo_log"}
+and \code{"reverse"}.
+}}
 
 \item{exclude.missing}{Setting this option to \code{TRUE} (the default) removes
 points from the plot that are too far from the original data. The smoothing
@@ -263,12 +285,6 @@ mean value. This is done \emph{after} fitting the smooth surface. This option is
 particularly useful if one is interested in the patterns of concentrations
 for several pollutants on different scales e.g. NOx and CO. Often useful if
 more than one \code{pollutant} is chosen.}
-
-\item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
-either take a single number (e.g., \code{breaks = 5}) to split the scale into
-quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
-define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
-details.}
 
 \item{key.title}{Used to set the title of the legend. The legend title is
 passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}

@@ -53,9 +53,6 @@
 #'   three values are determined by recursion; if more than three values are
 #'   supplied, only the first three are used.
 #'
-#' @param limits The colour scale range to use when generating the
-#'   [trendLevel()] plot.
-#'
 #' @param min.bin The minimum number of records required in a bin to show a
 #'   value. Bins with fewer than `min.bin` records are set to `NA`. The default
 #'   is 1, i.e., all bins with no records are set to `NA`. Setting `min.bin` to
@@ -135,12 +132,13 @@ trendLevel <- function(
   n.levels = c(10, 10, 4),
   windflow = NULL,
   limits = NULL,
+  breaks = NULL,
+  trans = FALSE,
   min.bin = 1,
   cols = "default",
   auto.text = TRUE,
   key.title = paste("use.stat.name", pollutant, sep = " "),
   key.position = "right",
-  breaks = NULL,
   statistic = c(
     "mean",
     "max",
@@ -579,7 +577,8 @@ trendLevel <- function(
         colours = resolve_colour_opts(cols, 100),
         na.value = col.na,
         oob = scales::oob_squish,
-        limit = limits
+        limit = limits,
+        transform = get_scale_transform(trans)
       ) +
       ggplot2::guides(
         fill = ggplot2::guide_colorbar(
