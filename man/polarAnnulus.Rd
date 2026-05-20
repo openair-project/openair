@@ -15,6 +15,8 @@ polarAnnulus(
   statistic = "mean",
   percentile = NA,
   limits = NULL,
+  breaks = NULL,
+  trans = FALSE,
   cols = "default",
   col.na = "grey",
   offset = 50,
@@ -25,7 +27,6 @@ polarAnnulus(
   force.positive = TRUE,
   k = c(20, 10),
   normalise = FALSE,
-  breaks = NULL,
   key.title = paste(statistic, pollutant, sep = " "),
   key.position = "right",
   auto.text = TRUE,
@@ -122,6 +123,21 @@ set different ones. An example would be a series of plots showing each year
 of data separately. The limits are set in the form \code{c(lower, upper)}, so
 \code{limits = c(0, 100)} would force the plot limits to span 0-100.}
 
+\item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
+either take a single number (e.g., \code{breaks = 5}) to split the scale into
+quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
+define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
+details.}
+
+\item{trans}{Should a transformation be applied to the colour scale? If the
+distribution of data is skewed, the default scale may be dominated by a few
+high values, so a log or square-root transform may mean the whole colour
+scale is better presented on the plot. Options include \code{"identity"} (i.e.,
+a linear scale), \code{"sqrt"}, \code{"log10"}, \code{"log2"}, \code{"log1p"}, \code{"pseudo_log"}
+and \code{"reverse"}. \code{FALSE} is equivalent to \code{"identity"} and \code{TRUE} will use
+an appropriate default transform for the plot (usually \code{"log10"}). See the
+\code{scales} package for more information.}
+
 \item{cols}{Colours to use for plotting. Can be a pre-set palette (e.g.,
 \code{"turbo"}, \code{"viridis"}, \code{"tol"}, \code{"Dark2"}, etc.) or a user-defined vector
 of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
@@ -185,12 +201,6 @@ mean value. This is done \emph{after} fitting the smooth surface. This option is
 particularly useful if one is interested in the patterns of concentrations
 for several pollutants on different scales e.g. NOx and CO. Often useful if
 more than one \code{pollutant} is chosen.}
-
-\item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
-either take a single number (e.g., \code{breaks = 5}) to split the scale into
-quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
-define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
-details.}
 
 \item{key.title}{Used to set the title of the legend. The legend title is
 passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}

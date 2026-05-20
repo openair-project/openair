@@ -83,6 +83,22 @@
 #'   expressed on a scale of `0` to `100`, where `0` is no hole and `100` is a
 #'   hole that takes up the entire plotting area.
 #'
+#' @param trans Should a transformation be applied to the colour scale? If the
+#'   distribution of data is skewed, the default scale may be dominated by a few
+#'   high values, so a log or square-root transform may mean the whole colour
+#'   scale is better presented on the plot. Can be:
+#'
+#'   - `FALSE`, which performs no transform.
+#'
+#'   - `TRUE`, which uses an appropriate transform for the plot type (usually
+#'   `"log10"`).
+#'
+#'   - A `scales` 'transform' object (e.g., [scales::transform_log10()]).
+#'
+#'   - A character string corresponding to a `scales` transform function. Useful
+#'   options include `"sqrt"`, `"log10"`, `"log2"`, `"log1p"`, `"pseudo_log"`
+#'   and `"reverse"`.
+#'
 #' @param key.position Location where the legend is to be placed. Allowed
 #'   arguments include `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`,
 #'   the last of which removes the legend entirely.

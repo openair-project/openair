@@ -360,6 +360,8 @@ polarPlot <-
     type = "default",
     statistic = "mean",
     limits = NULL,
+    breaks = NULL,
+    trans = FALSE,
     exclude.missing = TRUE,
     uncertainty = FALSE,
     percentile = NA,
@@ -373,7 +375,6 @@ polarPlot <-
     force.positive = TRUE,
     k = 100,
     normalise = FALSE,
-    breaks = NULL,
     key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
     auto.text = TRUE,
@@ -964,7 +965,8 @@ polarPlot <-
               aesthetics = c("fill", "colour"),
               oob = scales::oob_squish,
               na.value = col.na,
-              limits = limits
+              limits = limits,
+              trans = get_scale_transform(trans)
             ),
             ggplot2::guides(
               fill = ggplot2::guide_colorbar(

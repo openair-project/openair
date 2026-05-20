@@ -188,6 +188,8 @@ calendarPlot <-
     windflow = NULL,
     cols = "heat",
     limits = NULL,
+    breaks = NULL,
+    trans = FALSE,
     lim = NULL,
     col.lim = c("grey30", "black"),
     col.na = "white",
@@ -195,7 +197,6 @@ calendarPlot <-
     cex.lim = c(0.6, 0.9),
     cex.date = 0.6,
     digits = 0,
-    breaks = NULL,
     w.shift = 0,
     w.abbr.len = 1,
     remove.empty = TRUE,
@@ -601,7 +602,8 @@ calendarPlot <-
           colours = resolve_colour_opts(cols, 100),
           na.value = col.na,
           oob = scales::oob_squish,
-          limit = limits
+          limit = limits,
+          transform = get_scale_transform(trans)
         ) +
         ggplot2::guides(
           fill = ggplot2::guide_colorbar(

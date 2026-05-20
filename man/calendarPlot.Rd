@@ -17,6 +17,8 @@ calendarPlot(
   windflow = NULL,
   cols = "heat",
   limits = NULL,
+  breaks = NULL,
+  trans = FALSE,
   lim = NULL,
   col.lim = c("grey30", "black"),
   col.na = "white",
@@ -24,7 +26,6 @@ calendarPlot(
   cex.lim = c(0.6, 0.9),
   cex.date = 0.6,
   digits = 0,
-  breaks = NULL,
   w.shift = 0,
   w.abbr.len = 1,
   remove.empty = TRUE,
@@ -106,6 +107,21 @@ range of the data for all plots of interest. For example, if one plot had
 data covering 0--60 and another 0--100, then set \code{limits = c(0, 100)}. Note
 that data will be ignored if outside the limits range.}
 
+\item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
+either take a single number (e.g., \code{breaks = 5}) to split the scale into
+quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
+define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
+details.}
+
+\item{trans}{Should a transformation be applied to the colour scale? If the
+distribution of data is skewed, the default scale may be dominated by a few
+high values, so a log or square-root transform may mean the whole colour
+scale is better presented on the plot. Options include \code{"identity"} (i.e.,
+a linear scale), \code{"sqrt"}, \code{"log10"}, \code{"log2"}, \code{"log1p"}, \code{"pseudo_log"}
+and \code{"reverse"}. \code{FALSE} is equivalent to \code{"identity"} and \code{TRUE} will use
+an appropriate default transform for the plot (usually \code{"log10"}). See the
+\code{scales} package for more information.}
+
 \item{lim}{A threshold value to help differentiate values above and below
 \code{lim}. It is used when \code{annotate = "value"}. See next few options for
 control over the labels used.}
@@ -129,12 +145,6 @@ the text above \code{lim}.}
 
 \item{digits}{The number of digits used to display concentration values when
 \code{annotate = "value"}.}
-
-\item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
-either take a single number (e.g., \code{breaks = 5}) to split the scale into
-quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
-define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
-details.}
 
 \item{w.shift}{Controls the order of the days of the week. By default the
 plot shows Saturday first (\code{w.shift = 0}). To change this so that it starts

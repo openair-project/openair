@@ -62,6 +62,8 @@
     
     - `labels` is no longer a top-level argument and can be defined by passing a list to `breaks`. `labels` given to `...` will be converted with a warning.
 
+- All functions which take `breaks` also now contain the `trans` argument to perform scale transforms on continuous colour scales. This can take `FALSE` (no scale transform), `TRUE` (an appropriate default transform - usually `"log10"`), or a `{scales}` transform object (or string shorthand).
+
 - Refinements to colours in `{openair}`:
 
     - `openColours()` gains `direction`, `alpha`, `begin`, `end`, `lightness` and `saturation` for better control over colour palettes.

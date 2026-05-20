@@ -15,7 +15,9 @@ trajLevel(
   percentile = 90,
   lon.inc = 1,
   lat.inc = lon.inc,
+  limits = NULL,
   breaks = NULL,
+  trans = FALSE,
   min.bin = 1,
   .combine = NULL,
   sigma = 1.5,
@@ -109,6 +111,15 @@ define specific break-points, or a named list. See \code{\link[=breakOpts]{break
 details. Note that, in \code{trajLevel()}, each \code{statistic} provides a different
 default break strategy; to override those that bin the limits by default
 (e.g., \code{"frequency"}), pass \code{breaks = NULL} explicitly.}
+
+\item{trans}{Should a transformation be applied to the colour scale? If the
+distribution of data is skewed, the default scale may be dominated by a few
+high values, so a log or square-root transform may mean the whole colour
+scale is better presented on the plot. Options include \code{"identity"} (i.e.,
+a linear scale), \code{"sqrt"}, \code{"log10"}, \code{"log2"}, \code{"log1p"}, \code{"pseudo_log"}
+and \code{"reverse"}. \code{FALSE} is equivalent to \code{"identity"} and \code{TRUE} will use
+an appropriate default transform for the plot (usually \code{"log10"}). See the
+\code{scales} package for more information.}
 
 \item{min.bin}{The minimum number of unique points in a grid cell. Counts
 below \code{min.bin} are set as missing.}

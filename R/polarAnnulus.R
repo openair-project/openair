@@ -142,6 +142,8 @@ polarAnnulus <-
     statistic = "mean",
     percentile = NA,
     limits = NULL,
+    breaks = NULL,
+    trans = FALSE,
     cols = "default",
     col.na = "grey",
     offset = 50,
@@ -152,7 +154,6 @@ polarAnnulus <-
     force.positive = TRUE,
     k = c(20, 10),
     normalise = FALSE,
-    breaks = NULL,
     key.title = paste(statistic, pollutant, sep = " "),
     key.position = "right",
     auto.text = TRUE,
@@ -633,7 +634,8 @@ polarAnnulus <-
               aesthetics = c("colour", "fill"),
               limits = limits,
               breaks = scales::breaks_pretty(6),
-              na.value = col.na
+              na.value = col.na,
+              transform = get_scale_transform(trans)
             ),
             ggplot2::guides(
               fill = ggplot2::guide_colorbar(

@@ -14,12 +14,13 @@ trendLevel(
   n.levels = c(10, 10, 4),
   windflow = NULL,
   limits = NULL,
+  breaks = NULL,
+  trans = FALSE,
   min.bin = 1,
   cols = "default",
   auto.text = TRUE,
   key.title = paste("use.stat.name", pollutant, sep = " "),
   key.position = "right",
-  breaks = NULL,
   statistic = c("mean", "max", "min", "median", "frequency", "sum", "sd", "percentile"),
   percentile = 95,
   stat.args = NULL,
@@ -64,6 +65,21 @@ etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
 \item{limits}{The colour scale range to use when generating the
 \code{\link[=trendLevel]{trendLevel()}} plot.}
 
+\item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
+either take a single number (e.g., \code{breaks = 5}) to split the scale into
+quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
+define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
+details.}
+
+\item{trans}{Should a transformation be applied to the colour scale? If the
+distribution of data is skewed, the default scale may be dominated by a few
+high values, so a log or square-root transform may mean the whole colour
+scale is better presented on the plot. Options include \code{"identity"} (i.e.,
+a linear scale), \code{"sqrt"}, \code{"log10"}, \code{"log2"}, \code{"log1p"}, \code{"pseudo_log"}
+and \code{"reverse"}. \code{FALSE} is equivalent to \code{"identity"} and \code{TRUE} will use
+an appropriate default transform for the plot (usually \code{"log10"}). See the
+\code{scales} package for more information.}
+
 \item{min.bin}{The minimum number of records required in a bin to show a
 value. Bins with fewer than \code{min.bin} records are set to \code{NA}. The default
 is 1, i.e., all bins with no records are set to \code{NA}. Setting \code{min.bin} to
@@ -87,12 +103,6 @@ passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}
-
-\item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
-either take a single number (e.g., \code{breaks = 5}) to split the scale into
-quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to
-define specific break-points, or a named list. See \code{\link[=breakOpts]{breakOpts()}} for more
-details.}
 
 \item{statistic}{The statistic to apply when aggregating the data; default is
 the mean. Can be one of \code{"mean"}, \code{"max"}, \code{"min"}, \code{"median"},
