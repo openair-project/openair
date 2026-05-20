@@ -1,33 +1,83 @@
-# signifinder (1.12.0)
+# signifinder ()
 
-* GitHub: <https://github.com/CaluraLab/signifinder>
-* Email: <mailto:stefania.pirrotta@phd.unipd.it>
+* GitHub: <https://github.com/openair-project/openair>
+* Email: <mailto:david.carslaw@york.ac.uk>
 
 Run `revdepcheck::revdep_details(, "signifinder")` for more info
 
-## Newly broken
+## Error before installation
 
-*   checking running R code from vignettes ...
-     ```
-       'signifinder.Rmd' using 'UTF-8'... failed
-      ERROR
-     Errors in running code in vignettes:
-     when running code in 'signifinder.Rmd'
-       ...
-     
-     > set.seed(21)
-     
-     > heatmapSignPlot(data = ovse, whichSign = highest_correlated, 
-     +     clusterBySign = paste0("ConsensusOV_Chen_", c("IMR", "DIF", 
-     +         "PRO", "M ..." ... [TRUNCATED] 
-     
-       When sourcing 'signifinder.R':
-     Error: invalid 'yscale' in viewport
-     Execution halted
-     ```
+### Devel
 
-## In both
+```
 
-*   R CMD check timed out
+  There are binary versions available but the source versions are later:
+              binary source needs_compilation
+AnnotationDbi 1.73.1 1.74.0             FALSE
+KEGGREST      1.51.1 1.52.0             FALSE
+
+package 'abind' successfully unpacked and MD5 sums checked
+package 'AIMS' successfully unpacked and MD5 sums checked
+package 'amap' successfully unpacked and MD5 sums checked
+package 'annotate' successfully unpacked and MD5 sums checked
+...
+package 'biocmake' successfully unpacked and MD5 sums checked
+package 'BiocManager' successfully unpacked and MD5 sums checked
+package 'BiocParallel' successfully unpacked and MD5 sums checked
+package 'BiocSingular' successfully unpacked and MD5 sums checked
+package 'biomaRt' successfully unpacked and MD5 sums checked
+package 'Biostrings' successfully unpacked and MD5 sums checked
+package 'bit' successfully unpacked and MD5 sums checked
+package 'bit64' successfully unpacked and MD5 sums checked
+package 'bitops' successfully unpacked and MD5 sums checked
+package 'blob' successfully unpacked and MD5 sums checked
 
 
+Warning in download.packages(pkgs, destdir = tmpd, available = available,  :
+  download of package 'mime' failed
+Warning in download.packages(pkgs, destdir = tmpd, available = available,  :
+  download of package 'mime' failed
+Warning: cannot remove prior installation of package 'amap'
+Warning: cannot remove prior installation of package 'amap'
+Warning: restored 'amap'
+Warning: restored 'amap'
+
+
+```
+### CRAN
+
+```
+
+  There are binary versions available but the source versions are later:
+              binary source needs_compilation
+AnnotationDbi 1.73.1 1.74.0             FALSE
+KEGGREST      1.51.1 1.52.0             FALSE
+
+package 'abind' successfully unpacked and MD5 sums checked
+package 'AIMS' successfully unpacked and MD5 sums checked
+package 'amap' successfully unpacked and MD5 sums checked
+package 'annotate' successfully unpacked and MD5 sums checked
+...
+package 'biocmake' successfully unpacked and MD5 sums checked
+package 'BiocManager' successfully unpacked and MD5 sums checked
+package 'BiocParallel' successfully unpacked and MD5 sums checked
+package 'BiocSingular' successfully unpacked and MD5 sums checked
+package 'biomaRt' successfully unpacked and MD5 sums checked
+package 'Biostrings' successfully unpacked and MD5 sums checked
+package 'bit' successfully unpacked and MD5 sums checked
+package 'bit64' successfully unpacked and MD5 sums checked
+package 'bitops' successfully unpacked and MD5 sums checked
+package 'blob' successfully unpacked and MD5 sums checked
+
+
+Warning in download.packages(pkgs, destdir = tmpd, available = available,  :
+  download of package 'mime' failed
+Warning in download.packages(pkgs, destdir = tmpd, available = available,  :
+  download of package 'mime' failed
+Warning: cannot remove prior installation of package 'amap'
+Warning: cannot remove prior installation of package 'amap'
+Warning: restored 'amap'
+Warning: restored 'amap'
+
+
+```
