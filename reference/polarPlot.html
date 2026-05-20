@@ -78,6 +78,8 @@ concentrations are calculated for wind speed-direction ‘bins’ (e.g.
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  statistic <span class="op">=</span> <span class="st">"mean"</span>,</span>
 <span>  limits <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  trans <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  exclude.missing <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  uncertainty <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  percentile <span class="op">=</span> <span class="cn">NA</span>,</span>
@@ -91,7 +93,6 @@ concentrations are calculated for wind speed-direction ‘bins’ (e.g.
 <span>  force.positive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">100</span>,</span>
 <span>  normalise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  key.title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">statistic</span>, <span class="va">pollutant</span>, sep <span class="op">=</span> <span class="st">" "</span><span class="op">)</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -221,11 +222,34 @@ determination of the slope. The uncertainties are provided by
 
 
 <dt id="arg-limits">limits<a class="anchor" aria-label="anchor" href="#arg-limits"></a></dt>
-<dd><p>The function does its best to choose sensible limits
-automatically. However, there are circumstances when the user will wish to
-set different ones. An example would be a series of plots showing each year
-of data separately. The limits are set in the form <code>c(lower, upper)</code>, so
-<code>limits = c(0, 100)</code> would force the plot limits to span 0-100.</p></dd>
+<dd><p>The limits of the colour scale, in the form <code>c(lower, upper)</code>.
+For example, <code>limits = c(0, 100)</code> will set the colour scale to be between
+<code>0</code> and <code>100</code>. Values greater than <code>100</code> will be coloured as if they were
+<code>100</code>, and those lower than <code>0</code> will be coloured as if they were <code>0</code>.
+<code>limits</code> can be wider than the range of the data, which can be useful for
+ensuring multiple plots share the same colour scale.</p></dd>
+
+
+<dt id="arg-breaks">breaks<a class="anchor" aria-label="anchor" href="#arg-breaks"></a></dt>
+<dd><p><code>breaks</code> bins a continuous axis into discrete bins. It can
+either take a single number (e.g., <code>breaks = 5</code>) to split the scale into
+quantiles, a vector of numbers (e.g., <code>breaks = c(0, 50, 100, 200, 500</code>) to
+define specific break-points, or a named list. See <code><a href="breakOpts.html">breakOpts()</a></code> for more
+details.</p></dd>
+
+
+<dt id="arg-trans">trans<a class="anchor" aria-label="anchor" href="#arg-trans"></a></dt>
+<dd><p>Should a transformation be applied to the colour scale? If the
+distribution of data is skewed, the default scale may be dominated by a few
+high values, so a log or square-root transform may mean the whole colour
+scale is better presented on the plot. Can be:</p><ul><li><p><code>FALSE</code>, which performs no transform.</p></li>
+<li><p><code>TRUE</code>, which uses an appropriate transform for the plot type (usually
+<code>"log10"</code>).</p></li>
+<li><p>A <code>scales</code> 'transform' object (e.g., <code><a href="https://scales.r-lib.org/reference/transform_log.html" class="external-link">scales::transform_log10()</a></code>).</p></li>
+<li><p>A character string corresponding to a <code>scales</code> transform function. Useful
+options include <code>"sqrt"</code>, <code>"log10"</code>, <code>"log2"</code>, <code>"log1p"</code>, <code>"pseudo_log"</code>
+and <code>"reverse"</code>.</p></li>
+</ul></dd>
 
 
 <dt id="arg-exclude-missing">exclude.missing<a class="anchor" aria-label="anchor" href="#arg-exclude-missing"></a></dt>
@@ -360,14 +384,6 @@ mean value. This is done <em>after</em> fitting the smooth surface. This option 
 particularly useful if one is interested in the patterns of concentrations
 for several pollutants on different scales e.g. NOx and CO. Often useful if
 more than one <code>pollutant</code> is chosen.</p></dd>
-
-
-<dt id="arg-breaks">breaks<a class="anchor" aria-label="anchor" href="#arg-breaks"></a></dt>
-<dd><p><code>breaks</code> bins a continuous axis into discrete bins. It can
-either take a single number (e.g., <code>breaks = 5</code>) to split the scale into
-quantiles, a vector of numbers (e.g., <code>breaks = c(0, 50, 100, 200, 500</code>) to
-define specific break-points, or a named list. See <code><a href="breakOpts.html">breakOpts()</a></code> for more
-details.</p></dd>
 
 
 <dt id="arg-key-title">key.title<a class="anchor" aria-label="anchor" href="#arg-key-title"></a></dt>

@@ -295,7 +295,7 @@ an
 [openair](https://openair-project.github.io/openair/reference/openair-package.md)
 object. The components of `timeVariation()` are named after `panels`.
 `main.plot` is a
-[patchwork](https://rdrr.io/pkg/patchwork/man/patchwork-package.html)
+[patchwork](https://patchwork.data-imaginist.com/reference/patchwork-package.html)
 assembly.
 
 ## Details

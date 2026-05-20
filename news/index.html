@@ -98,6 +98,7 @@
 <li><p><code><a href="../reference/polarPlot.html">polarPlot()</a></code>, <code><a href="../reference/polarAnnulus.html">polarAnnulus()</a></code>, <code><a href="../reference/corPlot.html">corPlot()</a></code> and <code><a href="../reference/trajLevel.html">trajLevel()</a></code> have gained <code>breaks</code>.</p></li>
 <li><p><code>labels</code> is no longer a top-level argument and can be defined by passing a list to <code>breaks</code>. <code>labels</code> given to <code>...</code> will be converted with a warning.</p></li>
 </ul></li>
+<li><p>All functions which take <code>breaks</code> also now contain the <code>trans</code> argument to perform scale transforms on continuous colour scales. This can take <code>FALSE</code> (no scale transform), <code>TRUE</code> (an appropriate default transform - usually <code>"log10"</code>), or a <a href="https://scales.r-lib.org" class="external-link">scales</a> transform object (or string shorthand).</p></li>
 <li>
 <p>Refinements to colours in <a href="https://openair-project.github.io/openair/">openair</a>:</p>
 <ul><li><p><code><a href="../reference/openColours.html">openColours()</a></code> gains <code>direction</code>, <code>alpha</code>, <code>begin</code>, <code>end</code>, <code>lightness</code> and <code>saturation</code> for better control over colour palettes.</p></li>

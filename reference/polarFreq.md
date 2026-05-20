@@ -19,8 +19,8 @@ polarFreq(
   grid.line = 5,
   limits = NULL,
   breaks = NULL,
+  trans = "sqrt",
   cols = "default",
-  trans = TRUE,
   type = "default",
   min.bin = 1,
   ws.upper = NA,
@@ -94,7 +94,12 @@ polarFreq(
 
 - limits:
 
-  The limits of the colour bar (e.g., `c(0, 100)`).
+  The limits of the colour scale, in the form `c(lower, upper)`. For
+  example, `limits = c(0, 100)` will set the colour scale to be between
+  `0` and `100`. Values greater than `100` will be coloured as if they
+  were `100`, and those lower than `0` will be coloured as if they were
+  `0`. `limits` can be wider than the range of the data, which can be
+  useful for ensuring multiple plots share the same colour scale.
 
 - breaks:
 
@@ -105,6 +110,25 @@ polarFreq(
   a named list. See
   [`breakOpts()`](https://openair-project.github.io/openair/reference/breakOpts.md)
   for more details.
+
+- trans:
+
+  Should a transformation be applied to the colour scale? If the
+  distribution of data is skewed, the default scale may be dominated by
+  a few high values, so a log or square-root transform may mean the
+  whole colour scale is better presented on the plot. Can be:
+
+  - `FALSE`, which performs no transform.
+
+  - `TRUE`, which uses an appropriate transform for the plot type
+    (usually `"log10"`).
+
+  - A `scales` 'transform' object (e.g.,
+    [`scales::transform_log10()`](https://scales.r-lib.org/reference/transform_log.html)).
+
+  - A character string corresponding to a `scales` transform function.
+    Useful options include `"sqrt"`, `"log10"`, `"log2"`, `"log1p"`,
+    `"pseudo_log"` and `"reverse"`.
 
 - cols:
 
@@ -120,14 +144,6 @@ polarFreq(
   and
   [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
   for more details.
-
-- trans:
-
-  Should a transformation be applied? Sometimes when producing plots of
-  this kind they can be dominated by a few high points. The default
-  therefore is `TRUE` and a square-root transform is applied. This
-  results in a non-linear scale and (usually) a better representation of
-  the distribution. If set to `FALSE` a linear scale is used.
 
 - type:
 
@@ -380,9 +396,13 @@ polarFreq(mydata, breaks = c(0, 10, 50, 100, 250, 500, 700))
 
 # source contribution plot and use of offset option
 if (FALSE) { # \dontrun{
-polarFreq(mydata,
+polarFreq(
+  mydata,
   pollutant = "pm25",
-  statistic = "weighted.mean", offset = 50, ws.int = 25, trans = FALSE
+  statistic = "weighted.mean",
+  offset = 50,
+  ws.int = 25,
+  trans = FALSE
 )
 } # }
 ```

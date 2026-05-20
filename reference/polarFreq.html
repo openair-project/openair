@@ -78,8 +78,8 @@ using a range of commonly used statistics.</p>
 <span>  grid.line <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  limits <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  trans <span class="op">=</span> <span class="st">"sqrt"</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"default"</span>,</span>
-<span>  trans <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  min.bin <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  ws.upper <span class="op">=</span> <span class="cn">NA</span>,</span>
@@ -148,7 +148,12 @@ an interval of 0.5 may be more appropriate.</p></dd>
 
 
 <dt id="arg-limits">limits<a class="anchor" aria-label="anchor" href="#arg-limits"></a></dt>
-<dd><p>The limits of the colour bar (e.g., <code>c(0, 100)</code>).</p></dd>
+<dd><p>The limits of the colour scale, in the form <code>c(lower, upper)</code>.
+For example, <code>limits = c(0, 100)</code> will set the colour scale to be between
+<code>0</code> and <code>100</code>. Values greater than <code>100</code> will be coloured as if they were
+<code>100</code>, and those lower than <code>0</code> will be coloured as if they were <code>0</code>.
+<code>limits</code> can be wider than the range of the data, which can be useful for
+ensuring multiple plots share the same colour scale.</p></dd>
 
 
 <dt id="arg-breaks">breaks<a class="anchor" aria-label="anchor" href="#arg-breaks"></a></dt>
@@ -159,6 +164,20 @@ define specific break-points, or a named list. See <code><a href="breakOpts.html
 details.</p></dd>
 
 
+<dt id="arg-trans">trans<a class="anchor" aria-label="anchor" href="#arg-trans"></a></dt>
+<dd><p>Should a transformation be applied to the colour scale? If the
+distribution of data is skewed, the default scale may be dominated by a few
+high values, so a log or square-root transform may mean the whole colour
+scale is better presented on the plot. Can be:</p><ul><li><p><code>FALSE</code>, which performs no transform.</p></li>
+<li><p><code>TRUE</code>, which uses an appropriate transform for the plot type (usually
+<code>"log10"</code>).</p></li>
+<li><p>A <code>scales</code> 'transform' object (e.g., <code><a href="https://scales.r-lib.org/reference/transform_log.html" class="external-link">scales::transform_log10()</a></code>).</p></li>
+<li><p>A character string corresponding to a <code>scales</code> transform function. Useful
+options include <code>"sqrt"</code>, <code>"log10"</code>, <code>"log2"</code>, <code>"log1p"</code>, <code>"pseudo_log"</code>
+and <code>"reverse"</code>.</p></li>
+</ul></dd>
+
+
 <dt id="arg-cols">cols<a class="anchor" aria-label="anchor" href="#arg-cols"></a></dt>
 <dd><p>Colours to use for plotting. Can be a pre-set palette (e.g.,
 <code>"turbo"</code>, <code>"viridis"</code>, <code>"tol"</code>, <code>"Dark2"</code>, etc.) or a user-defined vector
@@ -166,14 +185,6 @@ of R colours (e.g., <code>c("yellow", "green", "blue", "black")</code> - see
 <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> for a full list) or hex-codes (e.g., <code>c("#30123B", "#9CF649", "#7A0403")</code>). Alternatively, can be a list of arguments to control the
 colour palette more closely (e.g., <code>palette</code>, <code>direction</code>, <code>alpha</code>, etc.).
 See <code><a href="openColours.html">openColours()</a></code> and <code><a href="colourOpts.html">colourOpts()</a></code> for more details.</p></dd>
-
-
-<dt id="arg-trans">trans<a class="anchor" aria-label="anchor" href="#arg-trans"></a></dt>
-<dd><p>Should a transformation be applied? Sometimes when producing
-plots of this kind they can be dominated by a few high points. The default
-therefore is <code>TRUE</code> and a square-root transform is applied. This results in
-a non-linear scale and (usually) a better representation of the
-distribution. If set to <code>FALSE</code> a linear scale is used.</p></dd>
 
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
@@ -381,9 +392,13 @@ has fine control over both the range, interval and colour.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># source contribution plot and use of offset option</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="fu">polarFreq</span><span class="op">(</span><span class="va">mydata</span>,</span></span>
+<span class="r-in"><span><span class="fu">polarFreq</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mydata</span>,</span></span>
 <span class="r-in"><span>  pollutant <span class="op">=</span> <span class="st">"pm25"</span>,</span></span>
-<span class="r-in"><span>  statistic <span class="op">=</span> <span class="st">"weighted.mean"</span>, offset <span class="op">=</span> <span class="fl">50</span>, ws.int <span class="op">=</span> <span class="fl">25</span>, trans <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span>  statistic <span class="op">=</span> <span class="st">"weighted.mean"</span>,</span></span>
+<span class="r-in"><span>  offset <span class="op">=</span> <span class="fl">50</span>,</span></span>
+<span class="r-in"><span>  ws.int <span class="op">=</span> <span class="fl">25</span>,</span></span>
+<span class="r-in"><span>  trans <span class="op">=</span> <span class="cn">FALSE</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>

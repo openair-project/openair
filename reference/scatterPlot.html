@@ -94,6 +94,7 @@ shown.</p>
 <span>  x.inc <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  y.inc <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  limits <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  trans <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  windflow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref.x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref.y <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -298,11 +299,26 @@ can be useful for checking linearity once logged.</p></dd>
 
 
 <dt id="arg-limits">limits<a class="anchor" aria-label="anchor" href="#arg-limits"></a></dt>
-<dd><p>For <code>method = "level"</code> the function does its best to choose
-sensible limits automatically. However, there are circumstances when the
-user will wish to set different ones. The limits are set in the form
-<code>c(lower, upper)</code>, so <code>limits = c(0, 100)</code> would force the plot limits to
-span 0-100.</p></dd>
+<dd><p>The limits of the colour scale, in the form <code>c(lower, upper)</code>.
+For example, <code>limits = c(0, 100)</code> will set the colour scale to be between
+<code>0</code> and <code>100</code>. Values greater than <code>100</code> will be coloured as if they were
+<code>100</code>, and those lower than <code>0</code> will be coloured as if they were <code>0</code>.
+<code>limits</code> can be wider than the range of the data, which can be useful for
+ensuring multiple plots share the same colour scale.</p></dd>
+
+
+<dt id="arg-trans">trans<a class="anchor" aria-label="anchor" href="#arg-trans"></a></dt>
+<dd><p>Should a transformation be applied to the colour scale? If the
+distribution of data is skewed, the default scale may be dominated by a few
+high values, so a log or square-root transform may mean the whole colour
+scale is better presented on the plot. Can be:</p><ul><li><p><code>FALSE</code>, which performs no transform.</p></li>
+<li><p><code>TRUE</code>, which uses an appropriate transform for the plot type (usually
+<code>"log10"</code>).</p></li>
+<li><p>A <code>scales</code> 'transform' object (e.g., <code><a href="https://scales.r-lib.org/reference/transform_log.html" class="external-link">scales::transform_log10()</a></code>).</p></li>
+<li><p>A character string corresponding to a <code>scales</code> transform function. Useful
+options include <code>"sqrt"</code>, <code>"log10"</code>, <code>"log2"</code>, <code>"log1p"</code>, <code>"pseudo_log"</code>
+and <code>"reverse"</code>.</p></li>
+</ul></dd>
 
 
 <dt id="arg-windflow">windflow<a class="anchor" aria-label="anchor" href="#arg-windflow"></a></dt>
@@ -374,9 +390,7 @@ coordinate plots).</p></li>
 apply to all plots. These can take a single value, or a vector of multiple
 values - e.g., <code>shape = c(1, 2)</code> - which will be recycled to the length of
 values needed.</p></li>
-<li><p>For <code>method = "hexbin"</code> a log-scale fill is applied by default;
-pass <code>trans = NULL</code> to disable or provide custom <code>trans</code> and <code>inv</code>
-transform functions. <code>bins</code> controls the number of bins.</p></li>
+<li><p>For <code>method = "hexbin"</code>, <code>bins</code> controls the number of bins.</p></li>
 <li><p><code>date.format</code> controls the format of date-time x-axes.</p></li>
 </ul></dd>
 

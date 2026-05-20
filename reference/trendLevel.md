@@ -24,12 +24,13 @@ trendLevel(
   n.levels = c(10, 10, 4),
   windflow = NULL,
   limits = NULL,
+  breaks = NULL,
+  trans = FALSE,
   min.bin = 1,
   cols = "default",
   auto.text = TRUE,
   key.title = paste("use.stat.name", pollutant, sep = " "),
   key.position = "right",
-  breaks = NULL,
   statistic = c("mean", "max", "min", "median", "frequency", "sum", "sd", "percentile"),
   percentile = 95,
   stat.args = NULL,
@@ -89,7 +90,41 @@ trendLevel(
 
 - limits:
 
-  The colour scale range to use when generating the `trendLevel()` plot.
+  The limits of the colour scale, in the form `c(lower, upper)`. For
+  example, `limits = c(0, 100)` will set the colour scale to be between
+  `0` and `100`. Values greater than `100` will be coloured as if they
+  were `100`, and those lower than `0` will be coloured as if they were
+  `0`. `limits` can be wider than the range of the data, which can be
+  useful for ensuring multiple plots share the same colour scale.
+
+- breaks:
+
+  `breaks` bins a continuous axis into discrete bins. It can either take
+  a single number (e.g., `breaks = 5`) to split the scale into
+  quantiles, a vector of numbers (e.g.,
+  `breaks = c(0, 50, 100, 200, 500`) to define specific break-points, or
+  a named list. See
+  [`breakOpts()`](https://openair-project.github.io/openair/reference/breakOpts.md)
+  for more details.
+
+- trans:
+
+  Should a transformation be applied to the colour scale? If the
+  distribution of data is skewed, the default scale may be dominated by
+  a few high values, so a log or square-root transform may mean the
+  whole colour scale is better presented on the plot. Can be:
+
+  - `FALSE`, which performs no transform.
+
+  - `TRUE`, which uses an appropriate transform for the plot type
+    (usually `"log10"`).
+
+  - A `scales` 'transform' object (e.g.,
+    [`scales::transform_log10()`](https://scales.r-lib.org/reference/transform_log.html)).
+
+  - A character string corresponding to a `scales` transform function.
+    Useful options include `"sqrt"`, `"log10"`, `"log2"`, `"log1p"`,
+    `"pseudo_log"` and `"reverse"`.
 
 - min.bin:
 
@@ -132,16 +167,6 @@ trendLevel(
   Location where the legend is to be placed. Allowed arguments include
   `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`, the last of
   which removes the legend entirely.
-
-- breaks:
-
-  `breaks` bins a continuous axis into discrete bins. It can either take
-  a single number (e.g., `breaks = 5`) to split the scale into
-  quantiles, a vector of numbers (e.g.,
-  `breaks = c(0, 50, 100, 200, 500`) to define specific break-points, or
-  a named list. See
-  [`breakOpts()`](https://openair-project.github.io/openair/reference/breakOpts.md)
-  for more details.
 
 - statistic:
 

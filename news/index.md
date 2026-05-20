@@ -133,6 +133,13 @@
     passing a list to `breaks`. `labels` given to `...` will be
     converted with a warning.
 
+- All functions which take `breaks` also now contain the `trans`
+  argument to perform scale transforms on continuous colour scales. This
+  can take `FALSE` (no scale transform), `TRUE` (an appropriate default
+  transform - usually `"log10"`), or a
+  [scales](https://scales.r-lib.org) transform object (or string
+  shorthand).
+
 - Refinements to colours in
   [openair](https://openair-project.github.io/openair/):
 

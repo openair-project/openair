@@ -19,6 +19,7 @@ corPlot(
   triangle = c("both", "upper", "lower"),
   diagonal = TRUE,
   breaks = NULL,
+  trans = FALSE,
   cols = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
@@ -130,6 +131,25 @@ corPlot(
   a named list. See
   [`breakOpts()`](https://openair-project.github.io/openair/reference/breakOpts.md)
   for more details.
+
+- trans:
+
+  Should a transformation be applied to the colour scale? If the
+  distribution of data is skewed, the default scale may be dominated by
+  a few high values, so a log or square-root transform may mean the
+  whole colour scale is better presented on the plot. Can be:
+
+  - `FALSE`, which performs no transform.
+
+  - `TRUE`, which uses an appropriate transform for the plot type
+    (usually `"log10"`).
+
+  - A `scales` 'transform' object (e.g.,
+    [`scales::transform_log10()`](https://scales.r-lib.org/reference/transform_log.html)).
+
+  - A character string corresponding to a `scales` transform function.
+    Useful options include `"sqrt"`, `"log10"`, `"log2"`, `"log1p"`,
+    `"pseudo_log"` and `"reverse"`.
 
 - cols:
 

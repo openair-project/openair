@@ -35,6 +35,7 @@ scatterPlot(
   x.inc = NULL,
   y.inc = NULL,
   limits = NULL,
+  trans = FALSE,
   windflow = NULL,
   ref.x = NULL,
   ref.y = NULL,
@@ -266,11 +267,31 @@ scatterPlot(
 
 - limits:
 
-  For `method = "level"` the function does its best to choose sensible
-  limits automatically. However, there are circumstances when the user
-  will wish to set different ones. The limits are set in the form
-  `c(lower, upper)`, so `limits = c(0, 100)` would force the plot limits
-  to span 0-100.
+  The limits of the colour scale, in the form `c(lower, upper)`. For
+  example, `limits = c(0, 100)` will set the colour scale to be between
+  `0` and `100`. Values greater than `100` will be coloured as if they
+  were `100`, and those lower than `0` will be coloured as if they were
+  `0`. `limits` can be wider than the range of the data, which can be
+  useful for ensuring multiple plots share the same colour scale.
+
+- trans:
+
+  Should a transformation be applied to the colour scale? If the
+  distribution of data is skewed, the default scale may be dominated by
+  a few high values, so a log or square-root transform may mean the
+  whole colour scale is better presented on the plot. Can be:
+
+  - `FALSE`, which performs no transform.
+
+  - `TRUE`, which uses an appropriate transform for the plot type
+    (usually `"log10"`).
+
+  - A `scales` 'transform' object (e.g.,
+    [`scales::transform_log10()`](https://scales.r-lib.org/reference/transform_log.html)).
+
+  - A character string corresponding to a `scales` transform function.
+    Useful options include `"sqrt"`, `"log10"`, `"log2"`, `"log1p"`,
+    `"pseudo_log"` and `"reverse"`.
 
 - windflow:
 
@@ -363,9 +384,7 @@ scatterPlot(
     vector of multiple values - e.g., `shape = c(1, 2)` - which will be
     recycled to the length of values needed.
 
-  - For `method = "hexbin"` a log-scale fill is applied by default; pass
-    `trans = NULL` to disable or provide custom `trans` and `inv`
-    transform functions. `bins` controls the number of bins.
+  - For `method = "hexbin"`, `bins` controls the number of bins.
 
   - `date.format` controls the format of date-time x-axes.
 
