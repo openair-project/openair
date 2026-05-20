@@ -31,6 +31,7 @@ scatterPlot(
   x.inc = NULL,
   y.inc = NULL,
   limits = NULL,
+  trans = FALSE,
   windflow = NULL,
   ref.x = NULL,
   ref.y = NULL,
@@ -199,6 +200,20 @@ user will wish to set different ones. The limits are set in the form
 \code{c(lower, upper)}, so \code{limits = c(0, 100)} would force the plot limits to
 span 0-100.}
 
+\item{trans}{Should a transformation be applied to the colour scale? If the
+distribution of data is skewed, the default scale may be dominated by a few
+high values, so a log or square-root transform may mean the whole colour
+scale is better presented on the plot. Can be:
+\itemize{
+\item \code{FALSE}, which performs no transform.
+\item \code{TRUE}, which uses an appropriate transform for the plot type (usually
+\code{"log10"}).
+\item A \code{scales} 'transform' object (e.g., \code{\link[scales:transform_log10]{scales::transform_log10()}}).
+\item A character string corresponding to a \code{scales} transform function. Useful
+options include \code{"sqrt"}, \code{"log10"}, \code{"log2"}, \code{"log1p"}, \code{"pseudo_log"}
+and \code{"reverse"}.
+}}
+
 \item{windflow}{If \code{TRUE}, the vector-averaged wind speed and direction will
 be plotted using arrows. Alternatively, can be a list of arguments to
 control the appearance of the arrows (colour, linewidth, alpha value,
@@ -253,9 +268,7 @@ coordinate plots).
 apply to all plots. These can take a single value, or a vector of multiple
 values - e.g., \code{shape = c(1, 2)} - which will be recycled to the length of
 values needed.
-\item For \code{method = "hexbin"} a log-scale fill is applied by default;
-pass \code{trans = NULL} to disable or provide custom \code{trans} and \code{inv}
-transform functions. \code{bins} controls the number of bins.
+\item For \code{method = "hexbin"}, \code{bins} controls the number of bins.
 \item \code{date.format} controls the format of date-time x-axes.
 }}
 }
