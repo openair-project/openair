@@ -70,13 +70,6 @@
 #'   provide the associated `ws` or `wd` and not the maximum/minimum daily `ws`
 #'   or `wd`.
 #'
-#' @param limits Use this option to manually set the colour scale limits. This
-#'   is useful in the case when there is a need for two or more plots and a
-#'   consistent scale is needed on each. Set the limits to cover the maximum
-#'   range of the data for all plots of interest. For example, if one plot had
-#'   data covering 0--60 and another 0--100, then set `limits = c(0, 100)`. Note
-#'   that data will be ignored if outside the limits range.
-#'
 #' @param lim A threshold value to help differentiate values above and below
 #'   `lim`. It is used when `annotate = "value"`. See next few options for
 #'   control over the labels used.

@@ -63,11 +63,12 @@ possible pollutant source is active or not).
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
 given, the first is used for the columns and the second for the rows.}
 
-\item{limits}{The function does its best to choose sensible limits
-automatically. However, there are circumstances when the user will wish to
-set different ones. An example would be a series of plots showing each year
-of data separately. The limits are set in the form \code{c(lower, upper)}, so
-\code{limits = c(0, 100)} would force the plot limits to span 0-100.}
+\item{limits}{The limits of the colour scale, in the form \code{c(lower, upper)}.
+For example, \code{limits = c(0, 100)} will set the colour scale to be between
+\code{0} and \code{100}. Values greater than \code{100} will be coloured as if they were
+\code{100}, and those lower than \code{0} will be coloured as if they were \code{0}.
+\code{limits} can be wider than the range of the data, which can be useful for
+ensuring multiple plots share the same colour scale.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units

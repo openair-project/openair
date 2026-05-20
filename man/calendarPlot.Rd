@@ -100,12 +100,12 @@ of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
 colour palette more closely (e.g., \code{palette}, \code{direction}, \code{alpha}, etc.).
 See \code{\link[=openColours]{openColours()}} and \code{\link[=colourOpts]{colourOpts()}} for more details.}
 
-\item{limits}{Use this option to manually set the colour scale limits. This
-is useful in the case when there is a need for two or more plots and a
-consistent scale is needed on each. Set the limits to cover the maximum
-range of the data for all plots of interest. For example, if one plot had
-data covering 0--60 and another 0--100, then set \code{limits = c(0, 100)}. Note
-that data will be ignored if outside the limits range.}
+\item{limits}{The limits of the colour scale, in the form \code{c(lower, upper)}.
+For example, \code{limits = c(0, 100)} will set the colour scale to be between
+\code{0} and \code{100}. Values greater than \code{100} will be coloured as if they were
+\code{100}, and those lower than \code{0} will be coloured as if they were \code{0}.
+\code{limits} can be wider than the range of the data, which can be useful for
+ensuring multiple plots share the same colour scale.}
 
 \item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
 either take a single number (e.g., \code{breaks = 5}) to split the scale into

@@ -91,12 +91,6 @@
 #' @param x.inc,y.inc The x/y-interval to be used for binning data when `method
 #'   = "level"`.
 #'
-#' @param limits For `method = "level"` the function does its best to choose
-#'   sensible limits automatically. However, there are circumstances when the
-#'   user will wish to set different ones. The limits are set in the form
-#'   `c(lower, upper)`, so `limits = c(0, 100)` would force the plot limits to
-#'   span 0-100.
-#'
 #' @param k Smoothing parameter supplied to `gam` for fitting a smooth surface
 #'   when `method = "level"`.
 #'

@@ -53,9 +53,6 @@
 #'   three values are determined by recursion; if more than three values are
 #'   supplied, only the first three are used.
 #'
-#' @param limits The colour scale range to use when generating the
-#'   [trendLevel()] plot.
-#'
 #' @param min.bin The minimum number of records required in a bin to show a
 #'   value. Bins with fewer than `min.bin` records are set to `NA`. The default
 #'   is 1, i.e., all bins with no records are set to `NA`. Setting `min.bin` to

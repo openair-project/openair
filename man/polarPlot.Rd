@@ -149,11 +149,12 @@ method the uncertainties in \code{x} and \code{y} are used in the
 determination of the slope. The uncertainties are provided by
 \code{x_error} and \code{y_error} --- see below.}}
 
-\item{limits}{The function does its best to choose sensible limits
-automatically. However, there are circumstances when the user will wish to
-set different ones. An example would be a series of plots showing each year
-of data separately. The limits are set in the form \code{c(lower, upper)}, so
-\code{limits = c(0, 100)} would force the plot limits to span 0-100.}
+\item{limits}{The limits of the colour scale, in the form \code{c(lower, upper)}.
+For example, \code{limits = c(0, 100)} will set the colour scale to be between
+\code{0} and \code{100}. Values greater than \code{100} will be coloured as if they were
+\code{100}, and those lower than \code{0} will be coloured as if they were \code{0}.
+\code{limits} can be wider than the range of the data, which can be useful for
+ensuring multiple plots share the same colour scale.}
 
 \item{breaks}{\code{breaks} bins a continuous axis into discrete bins. It can
 either take a single number (e.g., \code{breaks = 5}) to split the scale into

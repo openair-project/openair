@@ -82,6 +82,13 @@ etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
 expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a
 hole that takes up the entire plotting area.}
 
+\item{limits}{The limits of the colour scale, in the form \code{c(lower, upper)}.
+For example, \code{limits = c(0, 100)} will set the colour scale to be between
+\code{0} and \code{100}. Values greater than \code{100} will be coloured as if they were
+\code{100}, and those lower than \code{0} will be coloured as if they were \code{0}.
+\code{limits} can be wider than the range of the data, which can be useful for
+ensuring multiple plots share the same colour scale.}
+
 \item{trans}{Should a transformation be applied to the colour scale? If the
 distribution of data is skewed, the default scale may be dominated by a few
 high values, so a log or square-root transform may mean the whole colour

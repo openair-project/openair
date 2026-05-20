@@ -194,11 +194,12 @@ can be useful for checking linearity once logged.}
 
 \item{x.inc, y.inc}{The x/y-interval to be used for binning data when \code{method = "level"}.}
 
-\item{limits}{For \code{method = "level"} the function does its best to choose
-sensible limits automatically. However, there are circumstances when the
-user will wish to set different ones. The limits are set in the form
-\code{c(lower, upper)}, so \code{limits = c(0, 100)} would force the plot limits to
-span 0-100.}
+\item{limits}{The limits of the colour scale, in the form \code{c(lower, upper)}.
+For example, \code{limits = c(0, 100)} will set the colour scale to be between
+\code{0} and \code{100}. Values greater than \code{100} will be coloured as if they were
+\code{100}, and those lower than \code{0} will be coloured as if they were \code{0}.
+\code{limits} can be wider than the range of the data, which can be useful for
+ensuring multiple plots share the same colour scale.}
 
 \item{trans}{Should a transformation be applied to the colour scale? If the
 distribution of data is skewed, the default scale may be dominated by a few

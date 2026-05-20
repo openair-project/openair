@@ -141,12 +141,6 @@
 #'   determination of the slope. The uncertainties are provided by
 #'   `x_error` and `y_error` --- see below.}
 #'
-#' @param limits The function does its best to choose sensible limits
-#'   automatically. However, there are circumstances when the user will wish to
-#'   set different ones. An example would be a series of plots showing each year
-#'   of data separately. The limits are set in the form `c(lower, upper)`, so
-#'   `limits = c(0, 100)` would force the plot limits to span 0-100.
-#'
 #' @param exclude.missing Setting this option to `TRUE` (the default) removes
 #'   points from the plot that are too far from the original data. The smoothing
 #'   routines will produce predictions at points where no data exist i.e. they
