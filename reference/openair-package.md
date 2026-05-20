@@ -98,7 +98,7 @@ Authors:
 - David Carslaw <david.carslaw@york.ac.uk>
   ([ORCID](https://orcid.org/0000-0003-0991-950X))
 
-- Jack Davison <jack.davison@ricardo.com>
+- Jack Davison <jack.davison@wsp.com>
   ([ORCID](https://orcid.org/0000-0003-2653-6615))
 
 - Karl Ropkins <K.Ropkins@its.leeds.ac.uk>
