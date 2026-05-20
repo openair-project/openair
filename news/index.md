@@ -2,6 +2,8 @@
 
 ## openair 3.1.0
 
+CRAN release: 2026-05-20
+
 ### Dependency Changes
 
 - [openair](https://openair-project.github.io/openair/) now suggests
