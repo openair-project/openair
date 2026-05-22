@@ -18,7 +18,7 @@ tc <- trajCluster(traj, n.cluster = 3, plot = FALSE)
 
 test_that("trajCluster returns an openair object with data and call", {
   expect_s3_class(tc, "openair")
-  expect_true(all(c("data", "call") %in% names(tc)))
+  expect_true(all(c("data", "plot", "call") %in% names(tc)))
 })
 
 test_that("$data is a list with traj and results elements", {

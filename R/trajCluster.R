@@ -261,6 +261,7 @@ trajCluster <- function(
         results = dplyr::left_join(newdata, clusters, by = c("cluster", type)),
         subsets = c("traj", "results")
       ),
+      plot = thePlot,
       call = match.call()
     )
   class(output) <- "openair"

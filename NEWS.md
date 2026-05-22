@@ -4,6 +4,8 @@
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.
 
+- `trajCluster()` now returns its plot as well as its data and the function call.
+
 # openair 3.1.0
 
 ## Dependency Changes
