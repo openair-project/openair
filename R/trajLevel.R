@@ -462,28 +462,6 @@ trajLevel <- function(
     id <- which(mydata$N <= (n / 2))
     mydata[id, pollutant] <- mydata[id, pollutant] * 0.15
 
-    if (smooth) {
-      mydata <-
-        map_type(
-          mydata,
-          type = type,
-          \(x) smooth_trajgrid(x, z = pollutant),
-          .include_default = TRUE
-        )
-    }
-
-    # default is no cuts in the data
-    if (!missing(breaks)) {
-      break_opts <- resolve_break_opts(breaks, extra.args)
-      mydata <- dplyr::mutate(
-        mydata,
-        {{ pollutant }} := cut_plot_breaks(
-          .data[[pollutant]],
-          opts = break_opts
-        )
-      )
-    }
-
     # prep output data
     out_data <- dplyr::ungroup(mydata) |>
       dplyr::select(-dplyr::any_of(c("date", "count"))) |>
@@ -493,6 +471,28 @@ trajLevel <- function(
         percentile = percentile,
         .before = dplyr::everything()
       )
+
+    if (smooth) {
+      out_data <-
+        map_type(
+          out_data,
+          type = type,
+          \(x) smooth_trajgrid(x, z = pollutant),
+          .include_default = TRUE
+        )
+    }
+
+    # default is no cuts in the data
+    if (!missing(breaks)) {
+      break_opts <- resolve_break_opts(breaks, extra.args)
+      out_data <- dplyr::mutate(
+        out_data,
+        {{ pollutant }} := cut_plot_breaks(
+          .data[[pollutant]],
+          opts = break_opts
+        )
+      )
+    }
   }
 
   # simplified quantitative transport bias analysis  ------------------------
@@ -569,7 +569,10 @@ trajLevel <- function(
       dplyr::select(
         -dplyr::any_of(c("lat_rnd", "lon_rnd", "Q", "Q_c", "SQTBA"))
       ) |>
-      dplyr::relocate(dplyr::any_of("count"), .before = pollutant) |>
+      dplyr::relocate(
+        dplyr::any_of("count"),
+        .before = dplyr::all_of(pollutant)
+      ) |>
       dplyr::relocate("xgrid", .before = "ygrid") |>
       dplyr::mutate(
         statistic = statistic,

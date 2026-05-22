@@ -8,9 +8,91 @@ skip_if_not_installed("rnaturalearthdata")
 traj <- importTraj() |>
   selectByDate(month = 1)
 
-traj$nox <- randu$x[seq_along(traj$pressure)]
+traj$nox <- sample(randu$x, replace = TRUE, size = nrow(traj))
 
 tl <- trajLevel(traj, map = FALSE, plot = FALSE)
+tl_s <- trajLevel(traj, map = FALSE, plot = FALSE, smooth = 2)
+
+tl_cwt <- trajLevel(
+  traj,
+  pollutant = "nox",
+  statistic = "cwt",
+  map = FALSE,
+  plot = FALSE
+)
+tl_cwt_s <- trajLevel(
+  traj,
+  pollutant = "nox",
+  statistic = "cwt",
+  map = FALSE,
+  plot = FALSE,
+  smooth = TRUE
+)
+
+tl_pscf <- trajLevel(
+  traj,
+  pollutant = "nox",
+  statistic = "pscf",
+  map = FALSE,
+  plot = FALSE
+)
+tl_pscf_s <- trajLevel(
+  traj,
+  pollutant = "nox",
+  statistic = "pscf",
+  map = FALSE,
+  plot = FALSE,
+  smooth = TRUE
+)
+
+tl_hexbin <- trajLevel(
+  traj,
+  pollutant = "nox",
+  statistic = "hexbin",
+  map = FALSE,
+  plot = FALSE
+)
+tl_hexbin_s <- trajLevel(
+  traj,
+  pollutant = "nox",
+  statistic = "hexbin",
+  map = FALSE,
+  plot = FALSE,
+  smooth = TRUE
+)
+
+tl_difference <- trajLevel(
+  traj,
+  pollutant = "nox",
+  statistic = "difference",
+  map = FALSE,
+  plot = FALSE
+)
+tl_difference_s <- trajLevel(
+  traj,
+  pollutant = "nox",
+  statistic = "difference",
+  map = FALSE,
+  plot = FALSE,
+  smooth = TRUE
+)
+
+tl_sqtba <- trajLevel(
+  traj,
+  pollutant = "nox",
+  statistic = "sqtba",
+  map = FALSE,
+  plot = FALSE
+)
+tl_sqtba_s <- trajLevel(
+  traj,
+  pollutant = "nox",
+  statistic = "sqtba",
+  map = FALSE,
+  plot = FALSE,
+  smooth = TRUE
+)
+
 
 # --- Return value structure --------------------------------------------------
 
@@ -42,38 +124,14 @@ test_that("frequency: xgrid and ygrid are rounded to nearest degree (default lon
 # --- statistic = "pscf" ------------------------------------------------------
 
 test_that("statistic = 'pscf' returns values in [0, 1]", {
-  tl_pscf <- trajLevel(
-    traj,
-    pollutant = "nox",
-    statistic = "pscf",
-    map = FALSE,
-    plot = FALSE
-  )
   non_na <- tl_pscf$data$nox[!is.na(tl_pscf$data$nox)]
   expect_true(all(non_na >= 0 & non_na <= 1))
-})
-
-test_that("statistic = 'pscf' $data has a percentile column", {
-  tl_pscf <- trajLevel(
-    traj,
-    pollutant = "nox",
-    statistic = "pscf",
-    map = FALSE,
-    plot = FALSE
-  )
   expect_true("percentile" %in% names(tl_pscf$data))
 })
 
 # --- statistic = "cwt" -------------------------------------------------------
 
 test_that("statistic = 'cwt' returns non-negative values", {
-  tl_cwt <- trajLevel(
-    traj,
-    pollutant = "nox",
-    statistic = "cwt",
-    map = FALSE,
-    plot = FALSE
-  )
   non_na <- tl_cwt$data$nox[!is.na(tl_cwt$data$nox)]
   expect_true(all(non_na >= 0))
 })
