@@ -2,6 +2,11 @@
 
 ## openair (development version)
 
+### Bug Fixes
+
+- `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an
+  error.
+
 ## openair 3.1.0
 
 CRAN release: 2026-05-20
