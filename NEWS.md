@@ -10,6 +10,8 @@
 
 - `trajCluster()` now returns its plot as well as its data and the function call.
 
+- `importMeta()` will no longer return `end_date` as a character column if `year` is not given, and will no longer return the `start_year` and `end_year` columns if it is.
+
 # openair 3.1.0
 
 ## Dependency Changes

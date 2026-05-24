@@ -495,22 +495,38 @@ read_wsp_meta <- function(url, all, year, pollutant) {
   # sort out ratified to (not needed in LMAM data)
   if ("ratified_to" %in% names(meta)) {
     meta$ratified_to <-
-      lubridate::ymd(meta$ratified_to, tz = "GMT", quiet = TRUE)
+      lubridate::ymd(
+        meta$ratified_to,
+        tz = lubridate::tz(meta$start_date),
+        quiet = TRUE
+      )
   }
+
+  # format end_date - set "ongoing" to current date
+  id <- which(meta$end_date == "ongoing")
+  meta$end_date[id] <- as.character(Sys.Date())
+  meta$end_date <- lubridate::as_datetime(
+    meta$end_date,
+    tz = lubridate::tz(meta$start_date)
+  )
 
   # select year or period when sites were open
   if (!is.null(year)) {
-    # format end_date - set "ongoing" to current date
-    meta$end_date[which(meta$end_date == "ongoing")] <-
-      as.character(Sys.Date())
-    meta$end_year <- lubridate::year(as.Date(meta$end_date))
+    meta$end_year <- lubridate::year(meta$end_date)
+    meta$end_date[id] <- NA
     meta$start_year <- lubridate::year(meta$start_date)
     meta <-
       dplyr::filter(
         meta,
         .data$start_year <= min(year) &
           .data$end_year >= max(year)
+      ) |>
+      dplyr::select(
+        -"end_year",
+        -"start_year"
       )
+  } else {
+    meta$end_date[id] <- NA
   }
 
   # change some variable names
