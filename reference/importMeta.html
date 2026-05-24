@@ -67,7 +67,21 @@ as the code used in functions like <code><a href="importUKAQ.html">importUKAQ()<
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">importMeta</span><span class="op">(</span>source <span class="op">=</span> <span class="st">"aurn"</span>, all <span class="op">=</span> <span class="cn">FALSE</span>, year <span class="op">=</span> <span class="cn">NA</span>, duplicate <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">importMeta</span><span class="op">(</span></span>
+<span>  source <span class="op">=</span> <span class="st">"aurn"</span>,</span>
+<span>  year <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  pollutant <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  code <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  site <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  site_type <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lat <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  lng <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  crs <span class="op">=</span> <span class="fl">4326</span>,</span>
+<span>  max_dist <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  max_n <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  all <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  duplicate <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -84,9 +98,63 @@ through openair. Available networks include:</p><ul><li><p><code>"aurn"</code>, 
 <li><p><code>"local"</code>,  Locally managed air quality networks in England.</p></li>
 <li><p><code>"imperial"</code>, Imperial College London (formerly King's College London) networks.</p></li>
 <li><p><code>"europe"</code>, European AirBase/e-reporting data.</p></li>
-</ul><p>There are two additional options provided for convenience:</p><ul><li><p><code>"ukaq"</code> will return metadata for all networks for which data is imported by <code><a href="importUKAQ.html">importUKAQ()</a></code> (i.e., AURN, AQE, SAQN, WAQN, NI, and the local networks).</p></li>
-<li><p><code>"all"</code> will import all available metadata (i.e., <code>"ukaq"</code> plus <code>"imperial"</code> and <code>"europe"</code>).</p></li>
+</ul><p>There are two additional options provided for convenience:</p><ul><li><p><code>"ukaq"</code> will return metadata for all networks for which data is
+imported by <code><a href="importUKAQ.html">importUKAQ()</a></code> (i.e., AURN, AQE, SAQN, WAQN, NI, and the local
+networks).</p></li>
+<li><p><code>"all"</code> will import all available metadata (i.e., <code>"ukaq"</code> plus
+<code>"imperial"</code> and <code>"europe"</code>).</p></li>
 </ul></dd>
+
+
+<dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
+<dd><p>If a single year is selected, only sites that were open at some
+point in that year are returned. If <code>all = TRUE</code> only sites that measured a
+particular pollutant in that year are returned. Year can also be a sequence
+e.g. <code>year = 2010:2020</code> or of length 2 e.g. <code>year = c(2010, 2020)</code>, which
+will return only sites that were open over the duration.</p></dd>
+
+
+<dt id="arg-pollutant">pollutant<a class="anchor" aria-label="anchor" href="#arg-pollutant"></a></dt>
+<dd><p>Character vectors used to search the metadata for the
+specified <code>source</code>s. <code>pollutant</code> is case-insensitive. For example,
+<code>pollutant = c("nox", "o3")</code> will return sites which measure <em>either</em> NOx
+<em>or</em> O3. Can also take the shorthand <code>"hc"</code>, will returns all hydrocarbons.
+Similar to <code>code</code>, values are matched exactly (e.g., <code>pollutant = "no"</code>
+will only return NO and not NO2 or NOx). Note that <code>pollutant</code> only applies
+to networks available through <code><a href="importUKAQ.html">importUKAQ()</a></code>.</p></dd>
+
+
+<dt id="arg-site-code-site-type">site, code, site_type<a class="anchor" aria-label="anchor" href="#arg-site-code-site-type"></a></dt>
+<dd><p>Character vectors used to search the metadata for
+the specified <code>source</code>s. All of <code>code</code>, <code>site</code> and <code>site_type</code> are
+case-insensitive. <code>code</code> and <code>site_type</code> are matched exactly, but <code>site</code> is
+'pattern matched' - e.g., <code>site = "Sunderland"</code> and <code>source = "aurn"</code> will
+return data for <code>"Sunderland"</code>, <code>"Sunderland Silksworth"</code> and <code>"Sunderland Wessington Way"</code> (plus any future sites with the string <code>"Sunderland"</code> in
+their name).</p></dd>
+
+
+<dt id="arg-lat-lng">lat, lng<a class="anchor" aria-label="anchor" href="#arg-lat-lng"></a></dt>
+<dd><p>Decimal latitude (<code>lat</code>) and longitude (<code>lng</code>) (or other Y/X
+coordinate if using a different <code>crs</code>). If provided, the data will be
+returned with a <code>distance_km</code> column displaying the distance of each
+station from the target coordinate. The data will also be automatically
+sorted by this column.</p></dd>
+
+
+<dt id="arg-crs">crs<a class="anchor" aria-label="anchor" href="#arg-crs"></a></dt>
+<dd><p>The coordinate reference system (CRS) of the data, passed to
+<code><a href="https://r-spatial.github.io/sf/reference/st_crs.html" class="external-link">sf::st_crs()</a></code>. By default this is <a href="https://epsg.io/4326" class="external-link">EPSG:4326</a>, the
+CRS associated with the commonly used latitude and longitude coordinates.
+Different coordinate systems can be specified using <code>crs</code> (e.g., <code>crs = 27700</code> for the British National Grid). Note that non-lat/lng coordinate
+systems will be re-projected to EPSG:4326 for comparison with the site
+metadata.</p></dd>
+
+
+<dt id="arg-max-dist-max-n">max_dist, max_n<a class="anchor" aria-label="anchor" href="#arg-max-dist-max-n"></a></dt>
+<dd><p>If <code>lat</code> and <code>lng</code> are provided, <code>max_dist</code> and <code>max_n</code>
+further filter the metadata. <code>max_dist</code> defines a maximum distance from the
+target coordinate in kilometers, and <code>max_n</code> a maximum number of sites to
+be returned. <code>max_n</code> is applied after <code>max_dist</code>.</p></dd>
 
 
 <dt id="arg-all">all<a class="anchor" aria-label="anchor" href="#arg-all"></a></dt>
@@ -94,15 +162,6 @@ through openair. Available networks include:</p><ul><li><p><code>"aurn"</code>, 
 longitude and site type are imported. Setting <code>all = TRUE</code> will import all
 available meta data and provide details (when available) or the individual
 pollutants measured at each site.</p></dd>
-
-
-<dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
-<dd><p>If a single year is selected, only sites that were open at some
-point in that year are returned. If <code>all = TRUE</code> only sites that
-measured a particular pollutant in that year are returned. Year can also be
-a sequence e.g. <code>year = 2010:2020</code> or of length 2 e.g. <code>year = c(2010, 2020)</code>, which will return only sites that were open over the
-duration. Note that <code>year</code> is ignored when the <code>source</code> is either
-<code>"imperial"</code> or <code>"europe"</code>.</p></dd>
 
 
 <dt id="arg-duplicate">duplicate<a class="anchor" aria-label="anchor" href="#arg-duplicate"></a></dt>
@@ -113,34 +172,84 @@ default argument, <code>FALSE</code>, drops duplicate sites. <code>TRUE</code> w
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data frame with meta data.</p>
+    <p>A data frame</p>
     </div>
     <div class="section level2">
-    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>This function imports site meta data from several networks in the UK and
+    <h2 id="available-networks">Available Networks<a class="anchor" aria-label="anchor" href="#available-networks"></a></h2>
+
+
+
+<p>This function imports site meta data from several networks in the UK and
 Europe:</p><ul><li><p><code>"aurn"</code>,  The <a href="https://uk-air.defra.gov.uk/" class="external-link">UK Automatic Urban and Rural Network</a>.</p></li>
 <li><p><code>"aqe"</code>,  The <a href="https://www.airqualityengland.co.uk/" class="external-link">Air Quality England Network</a>.</p></li>
 <li><p><code>"saqn"</code>,  The <a href="https://www.scottishairquality.scot/" class="external-link">Scottish Air Quality Network</a>.</p></li>
 <li><p><code>"waqn"</code>,  The <a href="https://airquality.gov.wales/" class="external-link">Welsh Air Quality Network</a>.</p></li>
 <li><p><code>"ni"</code>,  The <a href="https://www.airqualityni.co.uk/" class="external-link">Northern Ireland Air Quality Network</a>.</p></li>
-<li><p><code>"local"</code>,  <a href="https://uk-air.defra.gov.uk/networks/network-info?view=nondefraaqmon" class="external-link">Locally managed</a> air quality networks in England.</p></li>
+<li><p><code>"local"</code>,  <a href="https://uk-air.defra.gov.uk/networks/network-info?view=nondefraaqmon" class="external-link">Locally managed</a>
+air quality networks in England.</p></li>
 <li><p><code>"imperial"</code>,  Imperial College London (formerly King's College London) networks.</p></li>
 <li><p><code>"europe"</code>,  Hourly European data (Air Quality e-Reporting) based on a
-simplified version of the <code>{saqgetr}</code> package.</p></li>
-</ul><p>By default, the function will return the site latitude, longitude and site
+simplified version of the <code>{saqgetr}</code> package. Note that this data is only
+available until February 2024; see <code><a href="importEurope.html">importEurope()</a></code> for more information.</p></li>
+</ul></div>
+    <div class="section level2">
+    <h2 id="order-of-operations">Order of Operations<a class="anchor" aria-label="anchor" href="#order-of-operations"></a></h2>
+
+
+
+<p>This function contains various arguments which allow the user to filter the
+metadata before it is returned. These arguments are applied in the
+following order:</p><ul><li><p><code>source</code></p></li>
+<li><p><code>year</code></p></li>
+<li><p><code>pollutant</code> (where possible)</p></li>
+<li><p><code>code</code></p></li>
+<li><p><code>site</code></p></li>
+<li><p><code>site_type</code></p></li>
+<li><p><code>max_dist</code></p></li>
+<li><p><code>max_n</code></p></li>
+</ul><p>Note that <code>max_n</code> is not <em>always</em> the number of rows returned by the
+function; it is the maximum number of possible sites to be returned. If
+<code>all = TRUE</code>, multiple rows will be present per site. Further, if previous
+filtering steps mean that fewer than <code>max_n</code> sites are remaining in the
+data, <code>max_n</code> will have no effect.</p>
+<p>If the combination of arguments provided results in the removal of all
+sites, this function will return an empty dataframe with a warning.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="data-dictionary">Data Dictionary<a class="anchor" aria-label="anchor" href="#data-dictionary"></a></h2>
+
+
+
+<p>By default, the function will return the site latitude, longitude and site
 type. If the option <code>all = TRUE</code> is used, much more detailed information is
-returned. The following metadata columns are available in the complete dataset:</p><ul><li><p><strong>source</strong>: The network with which the site is associated. Note that some monitoring sites are part of multiple networks (e.g., the AURN &amp; SAQN) so the same site may feature twice under different sources.</p></li>
-<li><p><strong>code</strong>: The site code, used to import data from specific sites of interest.</p></li>
+returned. The following metadata columns are available in the complete
+dataset:</p><ul><li><p><strong>source</strong>: The network with which the site is associated. Note that
+some monitoring sites are part of multiple networks (e.g., the AURN &amp; SAQN)
+so the same site may feature twice under different sources.</p></li>
+<li><p><strong>code</strong>: The site code, used to import data from specific sites of
+interest.</p></li>
 <li><p><strong>site</strong>: The site name, which is more human-readable than the site code.</p></li>
-<li><p><strong>site_type</strong>: A description of the site environment. Read more at <a href="https://uk-air.defra.gov.uk/networks/site-types" class="external-link">https://uk-air.defra.gov.uk/networks/site-types</a>.</p></li>
-<li><p><strong>latitude</strong> and <strong>longitude</strong>: The coordinates of the monitoring station, using the World Geodetic System (<a href="https://epsg.io/4326" class="external-link">https://epsg.io/4326</a>).</p></li>
-<li><p><strong>start_date</strong> and <strong>end_date</strong>: The opening and closing dates of the monitoring station. If <code>by_pollutant = TRUE</code>, these dates are instead the first and last dates at which specific pollutants were measured. A missing value, <code>NA</code>, indicates that monitoring is ongoing.</p></li>
-<li><p><strong>ratified_to</strong>: The date to which data has been ratified (i.e., 'quality checked'). Data after this date is subject to change.</p></li>
-<li><p><strong>zone</strong> and <strong>agglomeration</strong>: The UK is divided into agglomeration zones (large urban areas) and non-agglomeration zones for air quality assessment, which are given in these columns.</p></li>
-<li><p><strong>local_authority</strong>: The local authority in which the monitoring station is found.</p></li>
-<li><p><strong>provider</strong> and <strong>code</strong>: The specific provider of the locally managed dataset (e.g., <code>"londonair"</code>).</p></li>
-</ul><p>Thanks go to Trevor Davies (Ricardo), Dr Stuart Grange (EMPA) and Dr Ben
-Barratt (KCL) and  for making these data available.</p>
+<li><p><strong>site_type</strong>: A description of the site environment.</p></li>
+<li><p><strong>latitude</strong> and <strong>longitude</strong>: The coordinates of the monitoring
+station, using the World Geodetic System (<a href="https://epsg.io/4326" class="external-link">https://epsg.io/4326</a>).</p></li>
+<li><p><strong>start_date</strong> and <strong>end_date</strong>: The opening and closing dates of the
+monitoring station. If <code>by_pollutant = TRUE</code>, these dates are instead the
+first and last dates at which specific pollutants were measured. A missing
+value, <code>NA</code>, indicates that monitoring is ongoing.</p></li>
+<li><p><strong>ratified_to</strong>: The date to which data has been ratified
+(i.e., 'quality checked'). Data after this date is subject to change.</p></li>
+<li><p><strong>zone</strong> and <strong>agglomeration</strong>: The UK is divided into agglomeration
+zones (large urban areas) and non-agglomeration zones for air quality
+assessment, which are given in these columns.</p></li>
+<li><p><strong>local_authority</strong>: The local authority in which the monitoring station
+is found.</p></li>
+<li><p><strong>provider</strong> and <strong>code</strong>: The specific provider of the locally
+managed dataset (e.g., <code>"londonair"</code>).</p></li>
+</ul></div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Thanks go to Trevor Davies (WSP), Dr Stuart Grange (EMPA) and Dr
+Ben Barratt (Imperial College) for making these data available.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -157,22 +266,31 @@ visualise site metadata on an interactive map.</p>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>David Carslaw</p>
+<p>Jack Davison</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># basic info:</span></span></span>
+<span class="r-in"><span><span class="co"># Get information for the AURN</span></span></span>
 <span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu">importMeta</span><span class="op">(</span>source <span class="op">=</span> <span class="st">"aurn"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># more detailed information:</span></span></span>
+<span class="r-in"><span><span class="co"># More detailed information</span></span></span>
 <span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu">importMeta</span><span class="op">(</span>source <span class="op">=</span> <span class="st">"aurn"</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># from the Scottish Air Quality Network:</span></span></span>
-<span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu">importMeta</span><span class="op">(</span>source <span class="op">=</span> <span class="st">"saqn"</span>, all <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># From the AURN and SAQN</span></span></span>
+<span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu">importMeta</span><span class="op">(</span>source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"aurn"</span>, <span class="st">"saqn"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># from multiple networks:</span></span></span>
-<span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu">importMeta</span><span class="op">(</span>source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"aurn"</span>, <span class="st">"aqe"</span>, <span class="st">"local"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Sites in the UK measuring SO2 or CO</span></span></span>
+<span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu">importMeta</span><span class="op">(</span>source <span class="op">=</span> <span class="st">"ukaq"</span>, pollutant <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"so2"</span>, <span class="st">"co"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># English sites within 5km of Buckingham Palace</span></span></span>
+<span class="r-in"><span><span class="va">meta</span> <span class="op">&lt;-</span> <span class="fu">importMeta</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  source <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"aurn"</span>, <span class="st">"aqe"</span>, <span class="st">"local"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  lat <span class="op">=</span> <span class="fl">51.50101</span>,</span></span>
+<span class="r-in"><span>  lng <span class="op">=</span> <span class="op">-</span><span class="fl">0.141563</span>,</span></span>
+<span class="r-in"><span>  max_dist <span class="op">=</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

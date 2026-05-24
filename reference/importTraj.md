@@ -67,9 +67,9 @@ importTraj(site = "london", year = 2009, local = NA, progress = TRUE)
 - local:
 
   File path to .RData trajectory files run by user and not stored on the
-  Ricardo web server. These files would have been generated from the
-  Hysplit trajectory code shown in the appendix of the openair manual.
-  An example would be `local = 'c:/users/david/TrajFiles/'`.
+  WSP web server. These files would have been generated from the Hysplit
+  trajectory code shown in the appendix of the openair manual. An
+  example would be `local = 'C:/Users/David/TrajFiles/'`.
 
 - progress:
 

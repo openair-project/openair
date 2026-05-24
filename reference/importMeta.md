@@ -12,7 +12,21 @@ Additional information may optionally be returned.
 ## Usage
 
 ``` r
-importMeta(source = "aurn", all = FALSE, year = NA, duplicate = FALSE)
+importMeta(
+  source = "aurn",
+  year = NULL,
+  pollutant = NULL,
+  code = NULL,
+  site = NULL,
+  site_type = NULL,
+  lat = NULL,
+  lng = NULL,
+  crs = 4326,
+  max_dist = NULL,
+  max_n = NULL,
+  all = FALSE,
+  duplicate = FALSE
+)
 ```
 
 ## Arguments
@@ -49,13 +63,6 @@ importMeta(source = "aurn", all = FALSE, year = NA, duplicate = FALSE)
   - `"all"` will import all available metadata (i.e., `"ukaq"` plus
     `"imperial"` and `"europe"`).
 
-- all:
-
-  When `all = FALSE` only the site code, site name, latitude and
-  longitude and site type are imported. Setting `all = TRUE` will import
-  all available meta data and provide details (when available) or the
-  individual pollutants measured at each site.
-
 - year:
 
   If a single year is selected, only sites that were open at some point
@@ -63,8 +70,61 @@ importMeta(source = "aurn", all = FALSE, year = NA, duplicate = FALSE)
   particular pollutant in that year are returned. Year can also be a
   sequence e.g. `year = 2010:2020` or of length 2 e.g.
   `year = c(2010, 2020)`, which will return only sites that were open
-  over the duration. Note that `year` is ignored when the `source` is
-  either `"imperial"` or `"europe"`.
+  over the duration.
+
+- pollutant:
+
+  Character vectors used to search the metadata for the specified
+  `source`s. `pollutant` is case-insensitive. For example,
+  `pollutant = c("nox", "o3")` will return sites which measure *either*
+  NOx *or* O3. Can also take the shorthand `"hc"`, will returns all
+  hydrocarbons. Similar to `code`, values are matched exactly (e.g.,
+  `pollutant = "no"` will only return NO and not NO2 or NOx). Note that
+  `pollutant` only applies to networks available through
+  [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md).
+
+- site, code, site_type:
+
+  Character vectors used to search the metadata for the specified
+  `source`s. All of `code`, `site` and `site_type` are case-insensitive.
+  `code` and `site_type` are matched exactly, but `site` is 'pattern
+  matched' - e.g., `site = "Sunderland"` and `source = "aurn"` will
+  return data for `"Sunderland"`, `"Sunderland Silksworth"` and
+  `"Sunderland Wessington Way"` (plus any future sites with the string
+  `"Sunderland"` in their name).
+
+- lat, lng:
+
+  Decimal latitude (`lat`) and longitude (`lng`) (or other Y/X
+  coordinate if using a different `crs`). If provided, the data will be
+  returned with a `distance_km` column displaying the distance of each
+  station from the target coordinate. The data will also be
+  automatically sorted by this column.
+
+- crs:
+
+  The coordinate reference system (CRS) of the data, passed to
+  [`sf::st_crs()`](https://r-spatial.github.io/sf/reference/st_crs.html).
+  By default this is [EPSG:4326](https://epsg.io/4326), the CRS
+  associated with the commonly used latitude and longitude coordinates.
+  Different coordinate systems can be specified using `crs` (e.g.,
+  `crs = 27700` for the British National Grid). Note that non-lat/lng
+  coordinate systems will be re-projected to EPSG:4326 for comparison
+  with the site metadata.
+
+- max_dist, max_n:
+
+  If `lat` and `lng` are provided, `max_dist` and `max_n` further filter
+  the metadata. `max_dist` defines a maximum distance from the target
+  coordinate in kilometers, and `max_n` a maximum number of sites to be
+  returned. `max_n` is applied after `max_dist`.
+
+- all:
+
+  When `all = FALSE` only the site code, site name, latitude and
+  longitude and site type are imported. Setting `all = TRUE` will import
+  all available meta data and provide details (when available) or the
+  individual pollutants measured at each site.
 
 - duplicate:
 
@@ -75,9 +135,9 @@ importMeta(source = "aurn", all = FALSE, year = NA, duplicate = FALSE)
 
 ## Value
 
-A data frame with meta data.
+A data frame
 
-## Details
+## Available Networks
 
 This function imports site meta data from several networks in the UK and
 Europe:
@@ -105,7 +165,43 @@ Europe:
   networks.
 
 - `"europe"`, Hourly European data (Air Quality e-Reporting) based on a
-  simplified version of the `{saqgetr}` package.
+  simplified version of the `{saqgetr}` package. Note that this data is
+  only available until February 2024; see
+  [`importEurope()`](https://openair-project.github.io/openair/reference/importEurope.md)
+  for more information.
+
+## Order of Operations
+
+This function contains various arguments which allow the user to filter
+the metadata before it is returned. These arguments are applied in the
+following order:
+
+- `source`
+
+- `year`
+
+- `pollutant` (where possible)
+
+- `code`
+
+- `site`
+
+- `site_type`
+
+- `max_dist`
+
+- `max_n`
+
+Note that `max_n` is not *always* the number of rows returned by the
+function; it is the maximum number of possible sites to be returned. If
+`all = TRUE`, multiple rows will be present per site. Further, if
+previous filtering steps mean that fewer than `max_n` sites are
+remaining in the data, `max_n` will have no effect.
+
+If the combination of arguments provided results in the removal of all
+sites, this function will return an empty dataframe with a warning.
+
+## Data Dictionary
 
 By default, the function will return the site latitude, longitude and
 site type. If the option `all = TRUE` is used, much more detailed
@@ -122,8 +218,7 @@ the complete dataset:
 - **site**: The site name, which is more human-readable than the site
   code.
 
-- **site_type**: A description of the site environment. Read more at
-  <https://uk-air.defra.gov.uk/networks/site-types>.
+- **site_type**: A description of the site environment.
 
 - **latitude** and **longitude**: The coordinates of the monitoring
   station, using the World Geodetic System (<https://epsg.io/4326>).
@@ -146,8 +241,10 @@ the complete dataset:
 - **provider** and **code**: The specific provider of the locally
   managed dataset (e.g., `"londonair"`).
 
-Thanks go to Trevor Davies (Ricardo), Dr Stuart Grange (EMPA) and Dr Ben
-Barratt (KCL) and for making these data available.
+## References
+
+Thanks go to Trevor Davies (WSP), Dr Stuart Grange (EMPA) and Dr Ben
+Barratt (Imperial College) for making these data available.
 
 ## See also
 
@@ -166,20 +263,30 @@ Other import functions:
 
 David Carslaw
 
+Jack Davison
+
 ## Examples
 
 ``` r
 if (FALSE) { # \dontrun{
-# basic info:
+# Get information for the AURN
 meta <- importMeta(source = "aurn")
 
-# more detailed information:
+# More detailed information
 meta <- importMeta(source = "aurn", all = TRUE)
 
-# from the Scottish Air Quality Network:
-meta <- importMeta(source = "saqn", all = TRUE)
+# From the AURN and SAQN
+meta <- importMeta(source = c("aurn", "saqn"))
 
-# from multiple networks:
-meta <- importMeta(source = c("aurn", "aqe", "local"))
+# Sites in the UK measuring SO2 or CO
+meta <- importMeta(source = "ukaq", pollutant = c("so2", "co"))
+
+# English sites within 5km of Buckingham Palace
+meta <- importMeta(
+  source = c("aurn", "aqe", "local"),
+  lat = 51.50101,
+  lng = -0.141563,
+  max_dist = 5
+)
 } # }
 ```
