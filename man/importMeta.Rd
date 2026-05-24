@@ -4,7 +4,21 @@
 \alias{importMeta}
 \title{Import monitoring site meta data for UK and European networks}
 \usage{
-importMeta(source = "aurn", all = FALSE, year = NA, duplicate = FALSE)
+importMeta(
+  source = "aurn",
+  year = NULL,
+  pollutant = NULL,
+  code = NULL,
+  site = NULL,
+  site_type = NULL,
+  lat = NULL,
+  lng = NULL,
+  crs = 4326,
+  max_dist = NULL,
+  max_n = NULL,
+  all = FALSE,
+  duplicate = FALSE
+)
 }
 \arguments{
 \item{source}{One or more air quality networks for which data is available
@@ -22,28 +36,63 @@ through openair. Available networks include:
 
 There are two additional options provided for convenience:
 \itemize{
-\item \code{"ukaq"} will return metadata for all networks for which data is imported by \code{\link[=importUKAQ]{importUKAQ()}} (i.e., AURN, AQE, SAQN, WAQN, NI, and the local networks).
-\item \code{"all"} will import all available metadata (i.e., \code{"ukaq"} plus \code{"imperial"} and \code{"europe"}).
+\item \code{"ukaq"} will return metadata for all networks for which data is
+imported by \code{\link[=importUKAQ]{importUKAQ()}} (i.e., AURN, AQE, SAQN, WAQN, NI, and the local
+networks).
+\item \code{"all"} will import all available metadata (i.e., \code{"ukaq"} plus
+\code{"imperial"} and \code{"europe"}).
 }}
+
+\item{year}{If a single year is selected, only sites that were open at some
+point in that year are returned. If \code{all = TRUE} only sites that measured a
+particular pollutant in that year are returned. Year can also be a sequence
+e.g. \code{year = 2010:2020} or of length 2 e.g. \code{year = c(2010, 2020)}, which
+will return only sites that were open over the duration.}
+
+\item{pollutant}{Character vectors used to search the metadata for the
+specified \code{source}s. \code{pollutant} is case-insensitive. For example,
+\code{pollutant = c("nox", "o3")} will return sites which measure \emph{either} NOx
+\emph{or} O3. Can also take the shorthand \code{"hc"}, will returns all hydrocarbons.
+Similar to \code{code}, values are matched exactly (e.g., \code{pollutant = "no"}
+will only return NO and not NO2 or NOx). Note that \code{pollutant} only applies
+to networks available through \code{\link[=importUKAQ]{importUKAQ()}}.}
+
+\item{site, code, site_type}{Character vectors used to search the metadata for
+the specified \code{source}s. All of \code{code}, \code{site} and \code{site_type} are
+case-insensitive. \code{code} and \code{site_type} are matched exactly, but \code{site} is
+'pattern matched' - e.g., \code{site = "Sunderland"} and \code{source = "aurn"} will
+return data for \code{"Sunderland"}, \code{"Sunderland Silksworth"} and \code{"Sunderland Wessington Way"} (plus any future sites with the string \code{"Sunderland"} in
+their name).}
+
+\item{lat, lng}{Decimal latitude (\code{lat}) and longitude (\code{lng}) (or other Y/X
+coordinate if using a different \code{crs}). If provided, the data will be
+returned with a \code{distance_km} column displaying the distance of each
+station from the target coordinate. The data will also be automatically
+sorted by this column.}
+
+\item{crs}{The coordinate reference system (CRS) of the data, passed to
+\code{\link[sf:st_crs]{sf::st_crs()}}. By default this is \href{https://epsg.io/4326}{EPSG:4326}, the
+CRS associated with the commonly used latitude and longitude coordinates.
+Different coordinate systems can be specified using \code{crs} (e.g., \code{crs = 27700} for the British National Grid). Note that non-lat/lng coordinate
+systems will be re-projected to EPSG:4326 for comparison with the site
+metadata.}
+
+\item{max_dist, max_n}{If \code{lat} and \code{lng} are provided, \code{max_dist} and \code{max_n}
+further filter the metadata. \code{max_dist} defines a maximum distance from the
+target coordinate in kilometers, and \code{max_n} a maximum number of sites to
+be returned. \code{max_n} is applied after \code{max_dist}.}
 
 \item{all}{When \code{all = FALSE} only the site code, site name, latitude and
 longitude and site type are imported. Setting \code{all = TRUE} will import all
 available meta data and provide details (when available) or the individual
 pollutants measured at each site.}
 
-\item{year}{If a single year is selected, only sites that were open at some
-point in that year are returned. If \code{all = TRUE} only sites that
-measured a particular pollutant in that year are returned. Year can also be
-a sequence e.g. \code{year = 2010:2020} or of length 2 e.g. \code{year = c(2010, 2020)}, which will return only sites that were open over the
-duration. Note that \code{year} is ignored when the \code{source} is either
-\code{"imperial"} or \code{"europe"}.}
-
 \item{duplicate}{Some UK air quality sites are part of multiple networks, so
 could appear more than once when \code{source} is a vector of two or more. The
 default argument, \code{FALSE}, drops duplicate sites. \code{TRUE} will return them.}
 }
 \value{
-A data frame with meta data.
+A data frame
 }
 \description{
 Function to import meta data for air quality monitoring sites. By default,
@@ -51,7 +100,9 @@ the function will return the site latitude, longitude and site type, as well
 as the code used in functions like \code{\link[=importUKAQ]{importUKAQ()}}, \code{\link[=importImperial]{importImperial()}} and
 \code{\link[=importEurope]{importEurope()}}. Additional information may optionally be returned.
 }
-\details{
+\section{Available Networks}{
+
+
 This function imports site meta data from several networks in the UK and
 Europe:
 \itemize{
@@ -60,45 +111,101 @@ Europe:
 \item \code{"saqn"},  The \href{https://www.scottishairquality.scot/}{Scottish Air Quality Network}.
 \item \code{"waqn"},  The \href{https://airquality.gov.wales/}{Welsh Air Quality Network}.
 \item \code{"ni"},  The \href{https://www.airqualityni.co.uk/}{Northern Ireland Air Quality Network}.
-\item \code{"local"},  \href{https://uk-air.defra.gov.uk/networks/network-info?view=nondefraaqmon}{Locally managed} air quality networks in England.
+\item \code{"local"},  \href{https://uk-air.defra.gov.uk/networks/network-info?view=nondefraaqmon}{Locally managed}
+air quality networks in England.
 \item \code{"imperial"},  Imperial College London (formerly King's College London) networks.
 \item \code{"europe"},  Hourly European data (Air Quality e-Reporting) based on a
-simplified version of the \code{{saqgetr}} package.
+simplified version of the \code{{saqgetr}} package. Note that this data is only
+available until February 2024; see \code{\link[=importEurope]{importEurope()}} for more information.
 }
+}
+
+\section{Order of Operations}{
+
+
+This function contains various arguments which allow the user to filter the
+metadata before it is returned. These arguments are applied in the
+following order:
+\itemize{
+\item \code{source}
+\item \code{year}
+\item \code{pollutant} (where possible)
+\item \code{code}
+\item \code{site}
+\item \code{site_type}
+\item \code{max_dist}
+\item \code{max_n}
+}
+
+Note that \code{max_n} is not \emph{always} the number of rows returned by the
+function; it is the maximum number of possible sites to be returned. If
+\code{all = TRUE}, multiple rows will be present per site. Further, if previous
+filtering steps mean that fewer than \code{max_n} sites are remaining in the
+data, \code{max_n} will have no effect.
+
+If the combination of arguments provided results in the removal of all
+sites, this function will return an empty dataframe with a warning.
+}
+
+\section{Data Dictionary}{
+
 
 By default, the function will return the site latitude, longitude and site
 type. If the option \code{all = TRUE} is used, much more detailed information is
-returned. The following metadata columns are available in the complete dataset:
+returned. The following metadata columns are available in the complete
+dataset:
 \itemize{
-\item \strong{source}: The network with which the site is associated. Note that some monitoring sites are part of multiple networks (e.g., the AURN & SAQN) so the same site may feature twice under different sources.
-\item \strong{code}: The site code, used to import data from specific sites of interest.
+\item \strong{source}: The network with which the site is associated. Note that
+some monitoring sites are part of multiple networks (e.g., the AURN & SAQN)
+so the same site may feature twice under different sources.
+\item \strong{code}: The site code, used to import data from specific sites of
+interest.
 \item \strong{site}: The site name, which is more human-readable than the site code.
-\item \strong{site_type}: A description of the site environment. Read more at \url{https://uk-air.defra.gov.uk/networks/site-types}.
-\item \strong{latitude} and \strong{longitude}: The coordinates of the monitoring station, using the World Geodetic System (\url{https://epsg.io/4326}).
-\item \strong{start_date} and \strong{end_date}: The opening and closing dates of the monitoring station. If \code{by_pollutant = TRUE}, these dates are instead the first and last dates at which specific pollutants were measured. A missing value, \code{NA}, indicates that monitoring is ongoing.
-\item \strong{ratified_to}: The date to which data has been ratified (i.e., 'quality checked'). Data after this date is subject to change.
-\item \strong{zone} and \strong{agglomeration}: The UK is divided into agglomeration zones (large urban areas) and non-agglomeration zones for air quality assessment, which are given in these columns.
-\item \strong{local_authority}: The local authority in which the monitoring station is found.
-\item \strong{provider} and \strong{code}: The specific provider of the locally managed dataset (e.g., \code{"londonair"}).
+\item \strong{site_type}: A description of the site environment.
+\item \strong{latitude} and \strong{longitude}: The coordinates of the monitoring
+station, using the World Geodetic System (\url{https://epsg.io/4326}).
+\item \strong{start_date} and \strong{end_date}: The opening and closing dates of the
+monitoring station. If \code{by_pollutant = TRUE}, these dates are instead the
+first and last dates at which specific pollutants were measured. A missing
+value, \code{NA}, indicates that monitoring is ongoing.
+\item \strong{ratified_to}: The date to which data has been ratified
+(i.e., 'quality checked'). Data after this date is subject to change.
+\item \strong{zone} and \strong{agglomeration}: The UK is divided into agglomeration
+zones (large urban areas) and non-agglomeration zones for air quality
+assessment, which are given in these columns.
+\item \strong{local_authority}: The local authority in which the monitoring station
+is found.
+\item \strong{provider} and \strong{code}: The specific provider of the locally
+managed dataset (e.g., \code{"londonair"}).
+}
 }
 
-Thanks go to Trevor Davies (Ricardo), Dr Stuart Grange (EMPA) and Dr Ben
-Barratt (KCL) and  for making these data available.
-}
 \examples{
 \dontrun{
-# basic info:
+# Get information for the AURN
 meta <- importMeta(source = "aurn")
 
-# more detailed information:
+# More detailed information
 meta <- importMeta(source = "aurn", all = TRUE)
 
-# from the Scottish Air Quality Network:
-meta <- importMeta(source = "saqn", all = TRUE)
+# From the AURN and SAQN
+meta <- importMeta(source = c("aurn", "saqn"))
 
-# from multiple networks:
-meta <- importMeta(source = c("aurn", "aqe", "local"))
+# Sites in the UK measuring SO2 or CO
+meta <- importMeta(source = "ukaq", pollutant = c("so2", "co"))
+
+# English sites within 5km of Buckingham Palace
+meta <- importMeta(
+  source = c("aurn", "aqe", "local"),
+  lat = 51.50101,
+  lng = -0.141563,
+  max_dist = 5
+)
 }
+}
+\references{
+Thanks go to Trevor Davies (WSP), Dr Stuart Grange (EMPA) and Dr
+Ben Barratt (Imperial College) for making these data available.
 }
 \seealso{
 the \code{networkMap()} function from the \code{openairmaps} package which can
@@ -114,5 +221,7 @@ Other import functions:
 }
 \author{
 David Carslaw
+
+Jack Davison
 }
 \concept{import functions}
