@@ -97,10 +97,10 @@
 #'   use `year = c(1990, 1995, 2000)` for example.
 #'
 #' @param local File path to .RData trajectory files run by user and
-#' not stored on the Ricardo web server. These files would have been
+#' not stored on the WSP web server. These files would have been
 #' generated from the Hysplit trajectory code shown in the appendix
 #' of the openair manual. An example would be `local =
-#' 'c:/users/david/TrajFiles/'`.
+#' 'C:/Users/David/TrajFiles/'`.
 #' @export
 #' @return Returns a data frame with pre-calculated back trajectories.
 #' @author David Carslaw

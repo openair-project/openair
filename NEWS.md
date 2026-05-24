@@ -1,5 +1,9 @@
 # openair (development version)
 
+## New Features
+
+- `importMeta()` can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.
+
 ## Bug Fixes
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.

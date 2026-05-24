@@ -54,9 +54,9 @@ yw         \tab Yarner Wood                  \tab  50.59760 \tab  -3.716510 \tab
 use \code{year = c(1990, 1995, 2000)} for example.}
 
 \item{local}{File path to .RData trajectory files run by user and
-not stored on the Ricardo web server. These files would have been
+not stored on the WSP web server. These files would have been
 generated from the Hysplit trajectory code shown in the appendix
-of the openair manual. An example would be \code{local = 'c:/users/david/TrajFiles/'}.}
+of the openair manual. An example would be \code{local = 'C:/Users/David/TrajFiles/'}.}
 
 \item{progress}{Show a progress bar when many receptors/years are being
 imported? Defaults to \code{TRUE}.}

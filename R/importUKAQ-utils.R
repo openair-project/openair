@@ -1,4 +1,4 @@
-#' worker function that downloads data from a range of networks run by Ricardo
+#' worker function that downloads data from a range of networks run by WSP
 #' @noRd
 readUKAQData <-
   function(
