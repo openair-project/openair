@@ -16,6 +16,11 @@
 - [`trajCluster()`](https://openair-project.github.io/openair/reference/trajCluster.md)
   now returns its plot as well as its data and the function call.
 
+- [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md)
+  will no longer return `end_date` as a character column if `year` is
+  not given, and will no longer return the `start_year` and `end_year`
+  columns if it is.
+
 ## openair 3.1.0
 
 CRAN release: 2026-05-20
