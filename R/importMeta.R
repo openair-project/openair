@@ -221,10 +221,6 @@ importMeta <-
     all = FALSE,
     duplicate = FALSE
   ) {
-    if (!is.null(year) && is.na(year)) {
-      year <- NULL
-    }
-
     # ensure lower case
     source <- tolower(source)
 
@@ -578,8 +574,8 @@ read_wsp_meta <- function(url, all, year, pollutant) {
           "t2BUTENE",
           "t2PENTEN",
           "TOLUENE"
-          )
         )
+      )
       pollutant <- pollutant[pollutant != "hc"]
     }
 
