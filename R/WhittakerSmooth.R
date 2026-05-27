@@ -112,10 +112,10 @@ WhittakerSmooth <- function(
   # error if duplicate dates
   check_duplicate_rows(mydata, type, fn = cli::cli_abort)
 
-  # replace NaN with NA to avoid issues in C++ code
+  # replace NaN/Inf/-Inf with NA to avoid propagation through the C++ solver
   mydata <- mydata |>
     dplyr::mutate(dplyr::across(dplyr::where(is.numeric), \(x) {
-      ifelse(is.nan(x), NA, x)
+      ifelse(!is.finite(x), NA, x)
     }))
 
   # function to perform rolling / baseline
@@ -144,16 +144,39 @@ WhittakerSmooth <- function(
       } else {
         # new behaviour: baseline + corrected via whittaker_baseline
         p_val <- if (length(p) == 1) p else p[i]
-        out <- whittaker_baseline(
-          mydata[[current_poll]],
-          lambda = lambda,
-          d = d,
-          p = p_val
-        )
+
+        y <- mydata[[current_poll]]
+        n_full <- length(y)
+        valid <- which(!is.na(y))
+
         base_name <- paste0(current_poll, "_baseline")
         corr_name <- paste0(current_poll, "_increment")
-        mydata[[base_name]] <- out[[1]] # baseline
-        mydata[[corr_name]] <- out[[2]] # increment
+
+        if (length(valid) == 0L) {
+          # no valid data at all: both columns are NA
+          mydata[[base_name]] <- rep(NA_real_, n_full)
+          mydata[[corr_name]] <- rep(NA_real_, n_full)
+        } else {
+          # trim to valid data range to avoid unconstrained boundary extrapolation
+          i_start <- min(valid)
+          i_end <- max(valid)
+          y_trimmed <- y[i_start:i_end]
+
+          out <- whittaker_baseline(
+            y_trimmed,
+            lambda = lambda,
+            d = d,
+            p = p_val
+          )
+
+          baseline_full <- rep(NA_real_, n_full)
+          increment_full <- rep(NA_real_, n_full)
+          baseline_full[i_start:i_end] <- out[[1]]
+          increment_full[i_start:i_end] <- out[[2]]
+
+          mydata[[base_name]] <- baseline_full
+          mydata[[corr_name]] <- increment_full
+        }
       }
     }
 
