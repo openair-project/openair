@@ -12,6 +12,10 @@
 
 - `importMeta()` will no longer return `end_date` as a character column if `year` is not given, and will no longer return the `start_year` and `end_year` columns if it is.
 
+- Add components when single `m` provided to `kzFilter`.
+
+- Harden `WhittakerSmooth` when trailing / leading `NA` or all `NA`.
+
 # openair 3.1.0
 
 ## Dependency Changes
