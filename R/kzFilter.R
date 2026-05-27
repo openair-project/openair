@@ -174,7 +174,7 @@ kzFilter <- function(
         filt_cols[i] <- col_name
       }
 
-      if (components && length(m) > 1L) {
+      if (components) {
         n <- length(m)
         for (j in seq_len(n + 1L)) {
           comp_name <- if (multi_poll) {
@@ -207,7 +207,7 @@ kzFilter <- function(
     mydata$default <- NULL
   }
 
-  if (to_narrow && components && length(m) > 1L) {
+  if (to_narrow && components) {
     actual_comp_cols <- if (multi_poll) {
       as.vector(outer(comp.names, pollutant, paste, sep = "_"))
     } else {
@@ -310,7 +310,7 @@ kzaFilter <- function(
         filt_cols[i] <- col_name
       }
 
-      if (components && length(m) > 1L) {
+      if (components) {
         n <- length(m)
         for (j in seq_len(n + 1L)) {
           comp_name <- if (multi_poll) {
@@ -343,7 +343,7 @@ kzaFilter <- function(
     mydata$default <- NULL
   }
 
-  if (to_narrow && components && length(m) > 1L) {
+  if (to_narrow && components) {
     actual_comp_cols <- if (multi_poll) {
       as.vector(outer(comp.names, pollutant, paste, sep = "_"))
     } else {
