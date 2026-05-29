@@ -28,6 +28,12 @@
   [`WhittakerSmooth()`](https://openair-project.github.io/openair/reference/WhittakerSmooth.md)
   when trailing / leading `NA` or all `NA`.
 
+- [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+  overall titles, subtitles and captions are now centred by default, in
+  line with all other
+  [openair](https://openair-project.github.io/openair/) plotting
+  functions.
+
 ## openair 3.1.0
 
 CRAN release: 2026-05-20
