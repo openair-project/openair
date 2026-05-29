@@ -363,7 +363,12 @@ timeVariation <- function(
       patchwork::plot_annotation(
         title = overall.title,
         subtitle = overall.subtitle,
-        caption = overall.caption
+        caption = overall.caption,
+        theme = ggplot2::theme(
+          plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
+          plot.subtitle = ggplot2::element_text(hjust = 0.5),
+          plot.caption = ggplot2::element_text(hjust = 0.5, face = "bold")
+        )
       ) &
       theme_openair(key.position, extra.args = extra.args) &
       ggplot2::theme(

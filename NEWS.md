@@ -16,6 +16,8 @@
 
 - Harden `WhittakerSmooth()` when trailing / leading `NA` or all `NA`.
 
+- `timeVariation()` overall titles, subtitles and captions are now centred by default, in line with all other `{openair}` plotting functions.
+
 # openair 3.1.0
 
 ## Dependency Changes
