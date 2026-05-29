@@ -21,9 +21,12 @@
   not given, and will no longer return the `start_year` and `end_year`
   columns if it is.
 
-- Add components when single `m` provided to `kzFilter`.
+- Add components when single `m` provided to
+  [`kzFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md).
 
-- Harden `WhittakerSmooth` when trailing / leading `NA` or all `NA`.
+- Harden
+  [`WhittakerSmooth()`](https://openair-project.github.io/openair/reference/WhittakerSmooth.md)
+  when trailing / leading `NA` or all `NA`.
 
 ## openair 3.1.0
 
