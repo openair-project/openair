@@ -63,6 +63,7 @@ timeProp <- function(
   avg.time = "day",
   type = "default",
   cols = "Set1",
+  theme = "classic",
   normalise = FALSE,
   ref.x = NULL,
   ref.y = NULL,
@@ -76,6 +77,11 @@ timeProp <- function(
   key = NULL,
   ...
 ) {
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "qual")
+  }
+
   # extra.args setup
   extra.args <- capture_dots(...)
 
@@ -278,7 +284,12 @@ timeProp <- function(
       tag = extra.args$tag,
       fill = quickText(key.title, auto.text = auto.text)
     ) +
-    theme_openair(key.position, extra.args = extra.args) +
+    theme_openair(
+      theme = theme,
+      coord = "cartesian",
+      key.position,
+      extra.args = extra.args
+    ) +
     get_facet(
       type,
       extra.args,

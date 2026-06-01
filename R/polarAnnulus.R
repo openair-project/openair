@@ -146,6 +146,7 @@ polarAnnulus <-
     trans = FALSE,
     cols = "default",
     col.na = "grey",
+    theme = "classic",
     offset = 50,
     angle.scale = 0,
     min.bin = 1,
@@ -163,6 +164,14 @@ polarAnnulus <-
   ) {
     # check key.position
     key.position <- check_key_position(key.position, key)
+
+    # default colour based on theme
+    if (missing(cols)) {
+      cols <- get_theme_cols(cols, theme, "seq")
+    }
+    if (missing(col.na)) {
+      col.na <- get_theme_col_na(col.na, theme)
+    }
 
     # check statistic value is valid
     statistic <- tolower(statistic)
@@ -591,7 +600,9 @@ polarAnnulus <-
         inner_radius = c(offset / 100, 1) * 0.475
       ) +
       scale_x_compass() +
-      theme_openair_radial(
+      theme_openair(
+        theme = theme,
+        coord = "radial",
         key.position,
         extra.args = extra.args,
         panel.ontop = TRUE
@@ -668,7 +679,8 @@ polarAnnulus <-
           extra.args$annotate %||% TRUE,
           if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
           0
-        )
+        ),
+        theme = theme
       ) +
       get_facet(
         type = type,

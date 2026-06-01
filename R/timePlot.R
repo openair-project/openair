@@ -183,6 +183,7 @@ timePlot <- function(
   date.pad = FALSE,
   type = "default",
   cols = "brewer1",
+  theme = "classic",
   log = FALSE,
   windflow = NULL,
   smooth = FALSE,
@@ -203,6 +204,11 @@ timePlot <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "qual")
+  }
 
   # Args setup
   extra.args <- capture_dots(...)
@@ -487,6 +493,8 @@ timePlot <- function(
     ) +
     layer_ref(ref = ref.y, which = "y", type = "numeric") +
     theme_openair(
+      theme = theme,
+      coord = "cartesian",
       key.position = ifelse(n_groups == 1, "none", key.position),
       extra.args = extra.args
     ) +

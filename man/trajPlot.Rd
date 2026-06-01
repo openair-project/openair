@@ -12,6 +12,7 @@ trajPlot(
   type = "default",
   group = NULL,
   cols = "default",
+  theme = "classic",
   crs = 4326,
   map = TRUE,
   map.res = "medium",
@@ -76,6 +77,30 @@ of R colours (e.g., \code{c("yellow", "green", "blue", "black")} - see
 \code{\link[=colours]{colours()}} for a full list) or hex-codes (e.g., \code{c("#30123B", "#9CF649", "#7A0403")}). Alternatively, can be a list of arguments to control the
 colour palette more closely (e.g., \code{palette}, \code{direction}, \code{alpha}, etc.).
 See \code{\link[=openColours]{openColours()}} and \code{\link[=colourOpts]{colourOpts()}} for more details.}
+
+\item{theme}{A string representing an overall plot theme, defaulting to
+\code{"classic"}. This option makes sweeping changes to non-data plot features
+such as fonts, colours, line widths, and so on, and may also change default
+arguments like \code{cols} if not set by the user. Options include:
+\itemize{
+\item \code{"classic"}, a lattice-inspired theme resembling the traditional
+\code{openair} look, with structured panels and visible gridlines.
+\item \code{"dark"}, a dark-background variant of the classic theme, designed for
+presentations and low-light viewing, using high-contrast text and colour
+palettes optimised for visibility against dark panels.
+\item \code{"modern"}, a minimalist, contemporary theme inspired by tools such as
+Plotly and Observable Plot, with reduced visual clutter, horizontal
+emphasis in gridlines, a clean legend style, and typography suited to
+dashboards and reports.
+\item \code{"soft"}, a low-contrast, publication-focused theme with warm
+background tones, subtle gridlines, and gently desaturated colours,
+designed for reports, print output, and visually dense plots where a calmer
+appearance improves readability.
+\item \code{"print"}, a greyscale-focused theme optimised for black-and-white
+reproduction, with stronger structural elements such as clearer gridlines
+and axis definitions to ensure good contrast and readability in printed or
+photocopied outputs.
+}}
 
 \item{crs}{The coordinate reference system to use for plotting. Defaults to
 \code{4326}, which is the WGS84 geographic coordinate system, the standard,

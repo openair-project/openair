@@ -132,6 +132,7 @@ polarCluster <-
     n.clusters = 6,
     after = NA,
     cols = "Paired",
+    theme = "classic",
     angle.scale = 315,
     units = x,
     auto.text = TRUE,
@@ -141,6 +142,11 @@ polarCluster <-
   ) {
     # avoid R check annoyances
     u <- v <- z <- strip <- strip.left <- NULL
+
+    # default colour based on theme
+    if (missing(cols)) {
+      cols <- get_theme_cols(cols, theme, "qual")
+    }
 
     # add id for later merging
     mydata <- dplyr::mutate(mydata, .id = seq_len(nrow(mydata)))
@@ -319,7 +325,9 @@ polarCluster <-
         ),
         drop = FALSE
       ) +
-      theme_openair_radial(
+      theme_openair(
+        theme = theme,
+        coord = "radial",
         key.position %||% "right",
         extra.args = extra.args,
         panel.ontop = TRUE
@@ -329,7 +337,8 @@ polarCluster <-
           extra.args$annotate %||% TRUE,
           if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
           0
-        )
+        ),
+        theme = theme
       ) +
       ggplot2::labs(
         color = "Cluster",

@@ -213,6 +213,7 @@ TaylorDiagram <- function(
   normalise = FALSE,
   pos.cor = NULL,
   cols = "brewer1",
+  theme = "classic",
   rms.col = "darkgoldenrod",
   cor.col = "black",
   arrow.lwd = 3,
@@ -228,6 +229,11 @@ TaylorDiagram <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "qual")
+  }
 
   # extra.args setup
   extra.args <- capture_dots(...)
@@ -564,7 +570,9 @@ TaylorDiagram <- function(
       breaks = scales::pretty_breaks(6),
       expand = ggplot2::expansion()
     ) +
-    theme_openair_radial(
+    theme_openair(
+      theme = theme,
+      coord = "radial",
       key.position = key.position,
       extra.args,
       panel.ontop = FALSE

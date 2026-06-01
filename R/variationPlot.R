@@ -108,6 +108,7 @@ variationPlot <- function(
   local.tz = NULL,
   ci = TRUE,
   cols = "hue",
+  theme = "classic",
   alpha = 0.4,
   key.position = "top",
   key.columns = NULL,
@@ -122,6 +123,11 @@ variationPlot <- function(
     } else {
       conf.int <- c(0.95)
     }
+  }
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "qual")
   }
 
   # validate inputs
@@ -480,7 +486,12 @@ variationPlot <- function(
   # construct plot
   thePlot <-
     ggplot2::ggplot(mydata, ggplot2::aes(x = .data$x)) +
-    theme_openair(key.position = key.position, extra.args = extra.args) +
+    theme_openair(
+      theme = theme,
+      coord = "cartesian",
+      key.position = key.position,
+      extra.args = extra.args
+    ) +
     get_facet(
       if (all(type == "default")) "default" else type_cols,
       extra.args,

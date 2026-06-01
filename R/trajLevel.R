@@ -161,43 +161,44 @@
 #' )
 #' }
 trajLevel <- function(
-  mydata,
-  lon = "lon",
-  lat = "lat",
-  pollutant = "height",
-  type = "default",
-  smooth = FALSE,
-  statistic = "frequency",
-  percentile = 90,
-  lon.inc = 1.0,
-  lat.inc = lon.inc,
-  limits = NULL,
-  breaks = NULL,
-  trans = FALSE,
-  min.bin = 1,
-  .combine = NULL,
-  sigma = 1.5,
-  cols = "default",
-  crs = 4326,
-  map = TRUE,
-  map.res = "medium",
-  map.fill = TRUE,
-  map.cols = "grey40",
-  map.border = "black",
-  map.alpha = 0.3,
-  map.lwd = 1,
-  map.lty = 1,
-  grid.col = "deepskyblue",
-  grid.nx = 9,
-  grid.ny = grid.nx,
-  origin = TRUE,
-  key.title = NULL,
-  key.position = "right",
-  key.columns = NULL,
-  auto.text = TRUE,
-  plot = TRUE,
-  key = NULL,
-  ...
+    mydata,
+    lon = "lon",
+    lat = "lat",
+    pollutant = "height",
+    type = "default",
+    smooth = FALSE,
+    statistic = "frequency",
+    percentile = 90,
+    lon.inc = 1.0,
+    lat.inc = lon.inc,
+    limits = NULL,
+    breaks = NULL,
+    trans = FALSE,
+    min.bin = 1,
+    .combine = NULL,
+    sigma = 1.5,
+    cols = "default",
+    theme = "classic",
+    crs = 4326,
+    map = TRUE,
+    map.res = "medium",
+    map.fill = TRUE,
+    map.cols = "grey40",
+    map.border = "black",
+    map.alpha = 0.3,
+    map.lwd = 1,
+    map.lty = 1,
+    grid.col = "deepskyblue",
+    grid.nx = 9,
+    grid.ny = grid.nx,
+    origin = TRUE,
+    key.title = NULL,
+    key.position = "right",
+    key.columns = NULL,
+    auto.text = TRUE,
+    plot = TRUE,
+    key = NULL,
+    ...
 ) {
   rlang::check_installed(c("sf", "rnaturalearth"))
   if (!map.res %in% c(10, 50, 110, "small", "medium", "large")) {
@@ -205,9 +206,33 @@ trajLevel <- function(
       "{.arg map.res} must be one of {10}/'large', {50}/'medium' or {110}/'small'."
     )
   }
-
+  
   # check key.position
   key.position <- check_key_position(key.position, key)
+  
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "seq")
+  }
+  map_defaults <- get_theme_map(theme)
+  if (missing(map.cols)) {
+    map.cols <- map_defaults$fill
+  }
+  if (missing(map.border)) {
+    map.border <- map_defaults$border
+  }
+  if (missing(map.lwd)) {
+    map.lwd <- map_defaults$lwd
+  }
+  if (missing(map.lty)) {
+    map.lty <- map_defaults$lty
+  }
+  if (missing(map.alpha)) {
+    map.alpha <- map_defaults$alpha
+  }
+  if (missing(grid.col)) {
+    grid.col <- map_defaults$grid
+  }
 
   # checks
   statistic <- tolower(statistic)
@@ -718,7 +743,9 @@ trajLevel <- function(
 
   # base plot & themes
   thePlot <- ggplot2::ggplot(data = out_data_sf) +
-    theme_openair_sf(
+    theme_openair(
+      theme = theme,
+      coord = "sf",
       key.position,
       extra.args = extra.args,
       grid.col = grid.col

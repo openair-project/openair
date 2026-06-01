@@ -221,6 +221,7 @@ scatterPlot <- function(
   ci = TRUE,
   mod.line = FALSE,
   cols = "hue",
+  theme = "classic",
   plot.type = "p",
   key.title = group,
   key.columns = 1,
@@ -243,6 +244,11 @@ scatterPlot <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "seq")
+  }
 
   ## extra args
   extra.args <- capture_dots(...)
@@ -837,6 +843,8 @@ scatter_scatter <- function(
   ## theme + labels + strip control
   plt <- plt +
     theme_openair(
+      theme = theme,
+      coord = "cartesian",
       key.position = if (n_groups == 1L && !has_z) "none" else key.position,
       extra.args = extra.args
     ) +
@@ -962,7 +970,12 @@ scatter_hexbin <- function(
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    theme_openair(key.position = key.position, extra.args = extra.args) +
+    theme_openair(
+      theme = theme,
+      coord = "cartesian",
+      key.position = key.position,
+      extra.args = extra.args
+    ) +
     ggplot2::labs(
       x = xlab,
       y = ylab,
@@ -1119,11 +1132,15 @@ scatter_level <- function(
       type,
       extra.args,
       auto.text = auto.text,
-
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    theme_openair(key.position = key.position, extra.args = extra.args) +
+    theme_openair(
+      theme = theme,
+      coord = "cartesian",
+      key.position = key.position,
+      extra.args = extra.args
+    ) +
     ggplot2::labs(
       x = xlab,
       y = ylab,
@@ -1313,7 +1330,12 @@ scatter_density <- function(
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    theme_openair(key.position = key.position, extra.args = extra.args) +
+    theme_openair(
+      theme = theme,
+      coord = "cartesian",
+      key.position = key.position,
+      extra.args = extra.args
+    ) +
     ggplot2::labs(
       x = xlab,
       y = ylab,

@@ -184,6 +184,7 @@ windRose <- function(
   calm.thresh = 0,
   bias.corr = TRUE,
   cols = "default",
+  theme = "classic",
   grid.line = NULL,
   width = 0.9,
   seg = 0.9,
@@ -208,6 +209,11 @@ windRose <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "seq")
+  }
 
   # greyscale handling
   if (length(cols) == 1 && cols == "greyscale") {
@@ -454,7 +460,12 @@ windRose <- function(
 
     thePlot <-
       ggplot2::ggplot(diff_results) +
-      theme_openair_radial(key.position, extra.args = extra.args) +
+      theme_openair(
+        theme = theme,
+        coord = "radial",
+        key.position = key.position,
+        extra.args = extra.args
+      ) +
       ggplot2::theme(
         panel.grid.major.y = ggplot2::element_line(
           colour = grid.col,
@@ -575,7 +586,8 @@ windRose <- function(
             3
           } else {
             extra.args$fontsize / 3
-          }
+          },
+          theme = theme
         )
     }
 
@@ -818,8 +830,10 @@ windRose <- function(
         y = .data$value
       )
     ) +
-    theme_openair_radial(
-      key.position,
+    theme_openair(
+      theme = theme,
+      coord = "radial",
+      key.position = key.position,
       extra.args = extra.args,
       panel.ontop = normalise
     ) +
@@ -982,7 +996,8 @@ windRose <- function(
   if (annotate) {
     thePlot <- thePlot +
       annotate_compass_points(
-        size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3
+        size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
+        theme = theme
       )
   }
 

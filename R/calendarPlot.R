@@ -180,6 +180,7 @@ calendarPlot <-
     annotate = "date",
     windflow = NULL,
     cols = "heat",
+    theme = "classic",
     limits = NULL,
     breaks = NULL,
     trans = FALSE,
@@ -254,6 +255,14 @@ calendarPlot <-
     # check key.position
     key.position <- check_key_position(key.position, key)
 
+    # default colour based on theme
+    if (missing(cols)) {
+      cols <- get_theme_cols(cols, theme, "seq")
+    }
+    if (missing(col.na)) {
+      col.na <- get_theme_col_na(col.na, theme)
+    }
+    
     # check w.shift
     if (w.shift < 0 || w.shift > 6) {
       cli::cli_abort("{.field w.shift} should be between {0} and {6}.")
@@ -542,7 +551,12 @@ calendarPlot <-
         drop = remove.empty
       ) +
       ggplot2::coord_cartesian(expand = FALSE, ratio = 1) +
-      theme_openair(key.position = key.position, extra.args = extra.args) +
+      theme_openair(
+        theme = theme,
+        coord = "cartesian",
+        key.position = key.position,
+        extra.args = extra.args
+      ) +
       ggplot2::theme(
         axis.ticks = ggplot2::element_blank(),
         axis.text.y = ggplot2::element_blank()

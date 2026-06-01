@@ -137,6 +137,7 @@ polarFreq <- function(
   breaks = NULL,
   trans = "sqrt",
   cols = "default",
+  theme = "classic",
   type = "default",
   min.bin = 1,
   ws.upper = NA,
@@ -152,6 +153,11 @@ polarFreq <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "seq")
+  }
 
   # extract necessary data
   vars <- c(wd, ws)
@@ -344,7 +350,9 @@ polarFreq <- function(
       breaks = seq(0, max.ws, by = grid.line),
       expand = ggplot2::expansion(c(0, 0.1))
     ) +
-    theme_openair_radial(
+    theme_openair(
+      theme = theme,
+      coord = "radial",
       key.position = key.position,
       extra.args = extra.args,
       panel.ontop = TRUE
@@ -440,7 +448,8 @@ polarFreq <- function(
         extra.args$annotate %||% TRUE,
         if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
         0
-      )
+      ),
+      theme = theme
     )
 
   if (plot) {

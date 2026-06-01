@@ -112,6 +112,7 @@ conditionalQuantile <- function(
   bins = 31,
   min.bin = c(10, 20),
   cols = "YlOrRd",
+  theme = "classic",
   key.columns = 2,
   key.position = "bottom",
   auto.text = TRUE,
@@ -121,6 +122,11 @@ conditionalQuantile <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "seq")
+  }
 
   if (length(type) > 2) {
     cli::cli_abort("Only two types can be used with this function")
@@ -382,7 +388,12 @@ conditionalQuantile <- function(
       auto.text,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    theme_openair(key.position, extra.args = extra.args) +
+    theme_openair(
+      theme = theme,
+      coord = "cartesian",
+      key.position,
+      extra.args = extra.args
+    ) +
     ggplot2::labs(
       color = NULL,
       fill = NULL,

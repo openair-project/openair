@@ -15,6 +15,7 @@ conditionalEval(
   statistic = "MB",
   cols = "YlOrRd",
   col.var = "Set1",
+  theme = "classic",
   var.names = NULL,
   auto.text = TRUE,
   plot = TRUE,
@@ -76,6 +77,30 @@ See \code{\link[=openColours]{openColours()}} and \code{\link[=colourOpts]{colou
 
 \item{col.var}{Colours for the additional variables. See \code{openColours}
 for more details.}
+
+\item{theme}{A string representing an overall plot theme, defaulting to
+\code{"classic"}. This option makes sweeping changes to non-data plot features
+such as fonts, colours, line widths, and so on, and may also change default
+arguments like \code{cols} if not set by the user. Options include:
+\itemize{
+\item \code{"classic"}, a lattice-inspired theme resembling the traditional
+\code{openair} look, with structured panels and visible gridlines.
+\item \code{"dark"}, a dark-background variant of the classic theme, designed for
+presentations and low-light viewing, using high-contrast text and colour
+palettes optimised for visibility against dark panels.
+\item \code{"modern"}, a minimalist, contemporary theme inspired by tools such as
+Plotly and Observable Plot, with reduced visual clutter, horizontal
+emphasis in gridlines, a clean legend style, and typography suited to
+dashboards and reports.
+\item \code{"soft"}, a low-contrast, publication-focused theme with warm
+background tones, subtle gridlines, and gently desaturated colours,
+designed for reports, print output, and visually dense plots where a calmer
+appearance improves readability.
+\item \code{"print"}, a greyscale-focused theme optimised for black-and-white
+reproduction, with stronger structural elements such as clearer gridlines
+and axis definitions to ensure good contrast and readability in printed or
+photocopied outputs.
+}}
 
 \item{var.names}{Variable names to be shown in the legend for \code{var.obs}
 and \code{var.mod}.}

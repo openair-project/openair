@@ -96,6 +96,7 @@ smoothTrend <- function(
   autocor = FALSE,
   type = "default",
   cols = "brewer1",
+  theme = "classic",
   ref.x = NULL,
   ref.y = NULL,
   key.columns = 1,
@@ -112,6 +113,11 @@ smoothTrend <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "qual")
+  }
 
   # extra.args setup
   extra.args <- capture_dots(...)
@@ -311,7 +317,12 @@ smoothTrend <- function(
     ) +
     layer_ref(ref = ref.x, "x", "datetime", tz = lubridate::tz(newdata$date)) +
     layer_ref(ref = ref.y, "y", "numeric") +
-    theme_openair(key.position, extra.args = extra.args) +
+    theme_openair(
+      theme = theme,
+      coord = "cartesian",
+      key.position,
+      extra.args = extra.args
+    ) +
     ggplot2::scale_fill_manual(
       values = resolve_colour_opts(
         cols,

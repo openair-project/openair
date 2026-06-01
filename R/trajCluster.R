@@ -64,77 +64,83 @@
 #' traj <- trajCluster(traj, method = "Angle", type = "season", n.cluster = 4)
 #' }
 trajCluster <- function(
-  traj,
-  method = "Euclid",
-  n.cluster = 5,
-  type = "default",
-  split.after = FALSE,
-  by.type = FALSE,
-  crs = 4326,
-  cols = "Set1",
-  plot = TRUE,
-  ...
+    traj,
+    method = "Euclid",
+    n.cluster = 5,
+    type = "default",
+    split.after = FALSE,
+    by.type = FALSE,
+    crs = 4326,
+    cols = "Set1",
+    theme = "classic",
+    plot = TRUE,
+    ...
 ) {
   rlang::check_installed(c("sf", "rnaturalearthdata"))
-
+  
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "qual")
+  }
+  
   if (tolower(method) == "euclid") {
     method <- "distEuclid"
   } else {
     method <- "distAngle"
   }
-
+  
   # remove any missing lat/lon
   traj <- dplyr::filter(traj, !is.na(.data$lat), !is.na(.data$lon))
-
+  
   # check to see if all back trajectories are the same length
   traj <- dplyr::mutate(traj, traj_len = length(.data$date), .by = "date")
-
+  
   if (length(unique(traj$traj_len)) > 1) {
     ux <- unique(traj$traj_len)
     nmax <- ux[which.max(tabulate(match(traj$traj_len, ux)))]
     traj <- dplyr::filter(traj, .data$traj_len == nmax)
   }
-
+  
   calcTraj <- function(traj) {
     # make sure ordered correctly
     traj <- traj[order(traj$date, traj$hour.inc), ]
-
+    
     # length of back trajectories
     traj <- dplyr::mutate(traj, len = length(.data$date), .by = "date")
-
+    
     # find length of back trajectories
     # 96-hour back trajectories with origin: length should be 97
     n <- max(abs(traj$hour.inc)) + 1
-
+    
     traj <- dplyr::filter(traj, .data$len == n)
     len <- nrow(traj) / n
-
+    
     ## lat/lon input matrices
     x <- matrix(traj$lon, nrow = n)
     y <- matrix(traj$lat, nrow = n)
-
+    
     z <- matrix(0, nrow = n, ncol = len)
     res <- matrix(0, nrow = len, ncol = len)
-
+    
     if (method == "distEuclid") {
       res <- distEuclid(x, y)
     }
-
+    
     if (method == "distAngle") {
       res <- distAngle(x, y)
     }
-
+    
     res[is.na(res)] <- 0 ## possible for some to be NA if trajectory does not move between two hours?
-
+    
     dist.res <- stats::as.dist(res)
     clusters <- cluster::pam(dist.res, n.cluster)
     cluster <- rep(clusters$clustering, each = n)
     traj$cluster <- as.character(paste("C", cluster, sep = ""))
     traj
   }
-
+  
   ## this bit decides whether to separately calculate trajectories for each level of type
-
+  
   if (split.after) {
     traj$default <- "default"
     traj <- map_type(
@@ -151,24 +157,24 @@ trajCluster <- function(
       fun = calcTraj
     )
   }
-
+  
   # calculate the mean trajectories by cluster
   vars <- c("lat", "lon", "date", "cluster", "hour.inc", type)
   vars2 <- c("cluster", "hour.inc", type)
-
+  
   newdata <- traj |>
     dplyr::select(dplyr::all_of(vars)) |>
     dplyr::summarise(
       dplyr::across(dplyr::everything(), mean),
       .by = dplyr::all_of(vars2)
     )
-
+  
   # count observations in each cluster/type
   clusters <- dplyr::count(
     traj,
     dplyr::across(dplyr::all_of(c(type, "cluster")))
   )
-
+  
   # make each panel add up to 100
   if (by.type) {
     clusters <- clusters |>
@@ -180,14 +186,14 @@ trajCluster <- function(
     clusters <- clusters |>
       dplyr::mutate(freq = 100 * .data$n / sum(.data$n))
   }
-
+  
   # round to 1 decimal place
   clusters$freq <- round(clusters$freq, digits = 1)
-
+  
   # make sure date is in correct format
   class(newdata$date) <- class(traj$date)
   attr(newdata$date, "tzone") <- "GMT"
-
+  
   # create plot
   thePlot <-
     newdata |>
@@ -198,6 +204,7 @@ trajCluster <- function(
       crs = crs,
       cols = cols,
       type = type,
+      theme = theme,
       ...,
       plot = FALSE
     ) |>
@@ -205,14 +212,14 @@ trajCluster <- function(
     ggplot2::guides(
       color = ggplot2::guide_legend(reverse = FALSE)
     )
-
+  
   # get the ends of the lines
   line_ends <-
     newdata |>
     dplyr::slice_head(n = 1, by = dplyr::all_of(c("cluster", type))) |>
     sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
     sf::st_transform(crs = crs)
-
+  
   # if they're all the same, its a forward trajectory, get other end
   if (nrow(dplyr::distinct(line_ends, .data$geometry)) == 1) {
     line_ends <-
@@ -221,7 +228,7 @@ trajCluster <- function(
       sf::st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
       sf::st_transform(crs = crs)
   }
-
+  
   # get labels per cluster/type
   line_ends <-
     line_ends |>
@@ -232,13 +239,13 @@ trajCluster <- function(
     dplyr::mutate(
       label = scales::label_percent(accuracy = 0.1, scale = 1)(.data$freq)
     )
-
+  
   # extract coordinates to avoid st_point_on_surface warning in geom_sf_text
   line_ends_coords <-
     line_ends |>
     dplyr::bind_cols(sf::st_coordinates(line_ends) |> dplyr::as_tibble()) |>
     sf::st_drop_geometry()
-
+  
   # add to plot
   thePlot <-
     thePlot +
@@ -247,12 +254,12 @@ trajCluster <- function(
       ggplot2::aes(x = .data$X, y = .data$Y, label = .data$label),
       nudge_y = 1
     )
-
+  
   # plot if requested
   if (plot) {
     plot(thePlot)
   }
-
+  
   # create output with plot
   output <-
     list(

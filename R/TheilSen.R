@@ -190,6 +190,7 @@ TheilSen <- function(
   text.col = "darkgreen",
   slope.text = NULL,
   cols = NULL,
+  theme = "classic",
   auto.text = TRUE,
   autocor = FALSE,
   slope.percent = FALSE,
@@ -625,7 +626,12 @@ build_theilsen_plot <- function(
       vjust = 1,
       fontface = "bold"
     ) +
-    theme_openair("none", extra.args) +
+    theme_openair(
+      theme = theme,
+      coord = "cartesian",
+      key.position = "none",
+      extra.args
+    ) +
     get_facet(
       type,
       extra.args,
