@@ -18,6 +18,8 @@
 
 - `timeVariation()` overall titles, subtitles and captions are now centred by default, in line with all other `{openair}` plotting functions.
 
+- Clustering using `polarCluster()` wrong clustered more data frame columns than necessary. The update should revert results to previous behaviour.
+
 # openair 3.1.0
 
 ## Dependency Changes
