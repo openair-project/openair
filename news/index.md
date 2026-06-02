@@ -34,6 +34,11 @@
   [openair](https://openair-project.github.io/openair/) plotting
   functions.
 
+- Clustering using
+  [`polarCluster()`](https://openair-project.github.io/openair/reference/polarCluster.md)
+  wrong clustered more data frame columns than necessary. The update
+  should revert results to previous behaviour.
+
 ## openair 3.1.0
 
 CRAN release: 2026-05-20
