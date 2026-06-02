@@ -65,20 +65,16 @@ theme_openair <- function(
 
   theme <- ggplot2::`%+replace%`(theme, extra_theme)
 
-  theme <- ggplot2::`%+replace%`(theme, set_extra_fontsize(extra.args))
+  if ("fontsize" %in% names(extra.args)) {
+    theme <- ggplot2::`%+replace%`(
+      theme,
+      ggplot2::theme(
+        text = ggplot2::element_text(size = extra.args$fontsize)
+      )
+    )
+  }
 
   theme
-}
-
-# handle "fontsize" arg - used in theme_openair
-set_extra_fontsize <- function(extra.args) {
-  if ("fontsize" %in% names(extra.args)) {
-    ggplot2::theme(
-      text = ggplot2::element_text(size = extra.args$fontsize)
-    )
-  } else {
-    ggplot2::theme()
-  }
 }
 
 # check if the user has set a theme
@@ -946,11 +942,8 @@ theme_openair_soft_sf <- function(
 theme_openair_print <- function(key.position) {
   if (user_has_set_theme()) {
     return(
-      list(
-        ggplot2::theme(
-          legend.position = key.position
-        ),
-        fontsize
+      ggplot2::theme(
+        legend.position = key.position
       )
     )
   }

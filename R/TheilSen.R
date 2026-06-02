@@ -313,7 +313,8 @@ TheilSen <- function(
     ref.y = ref.y,
     auto.text = auto.text,
     date.breaks = date.breaks,
-    date.format = date.format
+    date.format = date.format,
+    theme = theme
   )
 
   if (plot) {
@@ -528,7 +529,8 @@ build_theilsen_plot <- function(
   ref.y,
   auto.text,
   date.breaks,
-  date.format
+  date.format,
+  theme
 ) {
   slope_var <- if (slope.percent) "slope.percent" else "slope"
   lower_var <- if (slope.percent) "lower.percent" else "lower"

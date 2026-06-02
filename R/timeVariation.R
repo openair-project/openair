@@ -168,46 +168,46 @@
 #' )
 #' }
 timeVariation <- function(
-    mydata,
-    pollutant = "nox",
-    panels = c(
-      "hour.weekday",
-      "hour",
-      "month",
-      "weekday"
-    ),
-    local.tz = NULL,
-    normalise = FALSE,
-    xlab = NULL,
-    name.pol = NULL,
-    type = "default",
-    group = NULL,
-    difference = FALSE,
-    statistic = "mean",
-    conf.int = NULL,
-    B = 100,
-    ci = TRUE,
-    cols = "hue",
-    theme = "classic",
-    ref.y = NULL,
-    key = NULL,
-    key.columns = NULL,
-    key.position = "top",
-    panel.gap = 1.5,
-    auto.text = TRUE,
-    alpha = 0.4,
-    plot = TRUE,
-    ...
+  mydata,
+  pollutant = "nox",
+  panels = c(
+    "hour.weekday",
+    "hour",
+    "month",
+    "weekday"
+  ),
+  local.tz = NULL,
+  normalise = FALSE,
+  xlab = NULL,
+  name.pol = NULL,
+  type = "default",
+  group = NULL,
+  difference = FALSE,
+  statistic = "mean",
+  conf.int = NULL,
+  B = 100,
+  ci = TRUE,
+  cols = "hue",
+  theme = "classic",
+  ref.y = NULL,
+  key = NULL,
+  key.columns = NULL,
+  key.position = "top",
+  panel.gap = 1.5,
+  auto.text = TRUE,
+  alpha = 0.4,
+  plot = TRUE,
+  ...
 ) {
   # default colour based on theme
   if (missing(cols)) {
     cols <- get_theme_cols(cols, theme, "qual")
   }
-  
+
   if (length(type) > 1) {
     cli::cli_abort("Only one 'type' permitted.")
   }
-  
+
   if (length(panels) == 1) {
     cli::cli_warn(
       c(
@@ -216,9 +216,9 @@ timeVariation <- function(
       )
     )
   }
-  
+
   extra.args <- capture_dots(...)
-  
+
   # month.last deprecation
   if ("month.last" %in% names(extra.args)) {
     if (isTRUE(extra.args$month.last)) {
@@ -230,7 +230,7 @@ timeVariation <- function(
     }
     extra.args$month.last <- NULL
   }
-  
+
   # label controls
   # xlab handled in formals and code because unique
   extra.args$ylab <- quickText(
@@ -244,7 +244,7 @@ timeVariation <- function(
     extra.args$caption %||% create_varplot_sub_text(statistic, conf.int),
     auto.text
   )
-  
+
   # if user supplies separate ylims for each plot
   if ("ylim" %in% names(extra.args)) {
     if (is.list(extra.args$ylim)) {
@@ -261,7 +261,7 @@ timeVariation <- function(
     ylim_list <- rep(list(c(NA, NA)), length(panels))
   }
   extra.args$ylim <- NULL
-  
+
   # handle xlabs
   if (is.null(xlab)) {
     panels_xlabs <- rep(list(NULL), length(panels))
@@ -273,7 +273,7 @@ timeVariation <- function(
     }
     panels_xlabs <- xlab
   }
-  
+
   # title for overall and individual plots
   overall.title <- extra.args$title
   extra.args$title <- ""
@@ -281,7 +281,7 @@ timeVariation <- function(
   extra.args$subtitle <- ""
   overall.caption <- extra.args$caption
   extra.args$caption <- ""
-  
+
   # get the xvars and facets for each panel
   panels_x <- list()
   panels_facet <- list()
@@ -295,7 +295,7 @@ timeVariation <- function(
       panels_facet <- append(panels_facet, list(NULL))
     }
   }
-  
+
   outputs <-
     purrr::map(
       .x = seq_along(panels),
@@ -328,35 +328,35 @@ timeVariation <- function(
           plot = FALSE,
           xlab = panels_xlabs[[i]]
         )
-        
+
         args <- append(args, extra.args)
-        
+
         if (i == 1) {
           args$nrow <- 1L
           args$ncol <- NULL
         }
-        
+
         do.call(variationPlot, args)
       }
     )
-  
+
   # extract plots from outputs
   plots <- outputs |> purrr::map("plot") |> stats::setNames(panels)
   datum <- outputs |> purrr::map("data") |> stats::setNames(panels)
-  
+
   # add reference if requested
   if (!is.null(ref.y)) {
     plots <- purrr::map(plots, \(plt) {
       plt + layer_ref(ref = ref.y, which = "y", type = "numeric")
     })
   }
-  
+
   # if more than one plot, use patchwork to combine
   if (length(plots) > 1) {
     # number of plots in assembly
     n_plots <- length(plots)
     n_lower_plots <- n_plots - 1
-    
+
     # each bottom plot gets one panel
     bottom_layout <-
       do.call(
@@ -365,19 +365,18 @@ timeVariation <- function(
           patchwork::area(t = 2, b = 2, l = x, r = x)
         })
       )
-    
+
     # top row covers whole width
     layout <- c(
       patchwork::area(t = 1, b = 1, l = 1, r = n_lower_plots),
       bottom_layout
     )
-    
+
     # assemble patchwork
     thePlot <-
       patchwork::wrap_plots(
         plots,
         design = layout,
-        bottom,
         heights = c(0.4, 0.6)
       ) +
       patchwork::plot_layout(guides = "collect") &
@@ -405,7 +404,7 @@ timeVariation <- function(
   } else {
     thePlot <- plots[[1]]
   }
-  
+
   # control key
   if (rlang::is_logical(key)) {
     if (key) {
@@ -414,11 +413,11 @@ timeVariation <- function(
       thePlot <- thePlot & ggplot2::theme(legend.position = "none")
     }
   }
-  
+
   if (plot) {
     plot(thePlot)
   }
-  
+
   output <- list(
     plot = append(plots, list(subsets = panels)),
     data = append(datum, list(subsets = panels)),
@@ -426,6 +425,6 @@ timeVariation <- function(
     main.plot = thePlot
   )
   class(output) <- "openair"
-  
+
   invisible(output)
 }

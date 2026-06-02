@@ -87,11 +87,11 @@ timeProp <- function(
 
   # label controls
   extra.args$title <- quickText(extra.args$title %||% "", auto.text)
-  extra.args$subtitle <- quickText(
-    extra.args$subtitle %||% "contribution weighted by mean",
+  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
+  extra.args$caption <- quickText(
+    extra.args$caption %||% "\ncontribution weighted by mean",
     auto.text
   )
-  extra.args$caption <- quickText(extra.args$caption %||% "", auto.text)
   extra.args$tag <- quickText(extra.args$tag, auto.text)
   extra.args$xlab <- quickText(extra.args$xlab %||% "date", auto.text)
   extra.args$ylab <- quickText(
