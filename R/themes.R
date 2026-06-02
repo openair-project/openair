@@ -42,7 +42,7 @@ theme_openair <- function(
       "sf" = theme_openair_modern_sf
     )
   }
-  
+
   if (theme == "soft") {
     fun <- switch(
       coord,
@@ -51,7 +51,7 @@ theme_openair <- function(
       "sf" = theme_openair_soft_sf
     )
   }
-  
+
   if (theme == "print") {
     fun <- switch(
       coord,
@@ -60,13 +60,13 @@ theme_openair <- function(
       "sf" = theme_openair_print_sf
     )
   }
-  
+
   theme <- fun(key.position, ...)
-  
+
   theme <- ggplot2::`%+replace%`(theme, extra_theme)
-  
+
   theme <- ggplot2::`%+replace%`(theme, set_extra_fontsize(extra.args))
-  
+
   theme
 }
 
@@ -91,11 +91,11 @@ get_theme_cols <- function(cols, theme, type) {
   if (ggplot2::is_theme(theme)) {
     theme <- "classic"
   }
-  
+
   if (theme == "classic") {
     return(cols)
   }
-  
+
   .theme_palettes <- list(
     modern = list(
       qual = "observable",
@@ -114,7 +114,7 @@ get_theme_cols <- function(cols, theme, type) {
       seq = "greyscale"
     )
   )
-  
+
   .theme_palettes[[theme]][[type]]
 }
 
@@ -167,7 +167,7 @@ get_theme_map <- function(theme) {
       alpha = 0.8
     ),
     print = list(
-      fill = "grey85",
+      fill = "white",
       border = "grey40",
       grid = "#9CA3AF",
       lwd = 0.6,
@@ -776,7 +776,7 @@ theme_openair_soft <- function(key.position) {
         colour = axis_col
       ),
       plot.caption = ggplot2::element_text(
-        hjust = 1,
+        hjust = 0.5,
         colour = axis_col
       ),
 
@@ -911,7 +911,7 @@ theme_openair_soft_sf <- function(
         colour = axis_col
       ),
       plot.caption = ggplot2::element_text(
-        hjust = 1,
+        hjust = 0.5,
         colour = axis_col
       ),
 
@@ -1055,7 +1055,7 @@ theme_openair_print_radial <- function(
       axis.text.x = ggplot2::element_text(colour = text_col),
       axis.text.y = ggplot2::element_text(colour = axis_col),
 
-      panel.background = ggplot2::element_rect(fill = "white", colour = NA),
+      panel.background = ggplot2::element_rect(fill = "transparent"),
       panel.ontop = panel.ontop
     )
   )
@@ -1077,7 +1077,7 @@ theme_openair_print_sf <- function(
   text_col <- "#111827"
 
   ggplot2::`%+replace%`(
-    ggplot2::theme_bw(base_size = 11),
+    theme_openair_print(key.position),
     ggplot2::theme(
       panel.grid = ggplot2::element_line(
         colour = grid.col,
@@ -1099,7 +1099,7 @@ theme_openair_print_sf <- function(
 
       text = ggplot2::element_text(colour = text_col),
 
-      panel.background = ggplot2::element_rect(fill = "white"),
+      panel.background = ggplot2::element_rect(fill = "transparent"),
       panel.ontop = FALSE,
 
       legend.position = key.position,
