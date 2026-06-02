@@ -8,7 +8,13 @@ theme_openair <- function(
   extra.args,
   ...
 ) {
-  theme <- rlang::arg_match(theme)
+  if (ggplot2::is_theme(theme)) {
+    extra_theme <- theme
+    theme <- "classic"
+  } else {
+    extra_theme <- ggplot2::theme()
+    theme <- rlang::arg_match(theme)
+  }
 
   if (theme == "classic") {
     fun <- switch(
@@ -45,7 +51,7 @@ theme_openair <- function(
       "sf" = theme_openair_soft_sf
     )
   }
-
+  
   if (theme == "print") {
     fun <- switch(
       coord,
@@ -54,21 +60,21 @@ theme_openair <- function(
       "sf" = theme_openair_print_sf
     )
   }
-
+  
   theme <- fun(key.position, ...)
-
+  
+  theme <- ggplot2::`%+replace%`(theme, extra_theme)
+  
   theme <- ggplot2::`%+replace%`(theme, set_extra_fontsize(extra.args))
-
+  
   theme
 }
 
 # handle "fontsize" arg - used in theme_openair
 set_extra_fontsize <- function(extra.args) {
   if ("fontsize" %in% names(extra.args)) {
-    list(
-      ggplot2::theme(
-        text = ggplot2::element_text(size = extra.args$fontsize)
-      )
+    ggplot2::theme(
+      text = ggplot2::element_text(size = extra.args$fontsize)
     )
   } else {
     ggplot2::theme()
@@ -82,10 +88,14 @@ user_has_set_theme <- function() {
 
 # theme colours
 get_theme_cols <- function(cols, theme, type) {
+  if (ggplot2::is_theme(theme)) {
+    theme <- "classic"
+  }
+  
   if (theme == "classic") {
     return(cols)
   }
-
+  
   .theme_palettes <- list(
     modern = list(
       qual = "observable",
@@ -104,11 +114,14 @@ get_theme_cols <- function(cols, theme, type) {
       seq = "greyscale"
     )
   )
-
+  
   .theme_palettes[[theme]][[type]]
 }
 
 get_theme_col_na <- function(col.na, theme) {
+  if (ggplot2::is_theme(theme)) {
+    theme <- "classic"
+  }
   if (theme == "dark") {
     return("black")
   } else {
@@ -117,6 +130,9 @@ get_theme_col_na <- function(col.na, theme) {
 }
 
 get_theme_map <- function(theme) {
+  if (ggplot2::is_theme(theme)) {
+    theme <- "classic"
+  }
   .theme_maps <- list(
     classic = list(
       fill = "grey80",
@@ -194,6 +210,7 @@ theme_openair_classic <- function(key.position) {
       plot.subtitle = ggplot2::element_text(hjust = 0.5),
       plot.caption = ggplot2::element_text(hjust = 0.5, face = "bold"),
       plot.margin = ggplot2::rel(4),
+      legend.key = ggplot2::element_blank(),
       legend.frame = ggplot2::element_rect(
         fill = NA,
         color = "black",

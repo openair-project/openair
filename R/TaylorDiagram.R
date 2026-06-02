@@ -128,7 +128,7 @@
 #' \dontrun{
 #' library(dplyr)
 #'
-#' dummy model data for 2003
+#' # dummy model data for 2003
 #' dat <- selectByDate(mydata, year = 2003) |>
 #'   transmute(date, obs = nox, mod = nox, month = as.integer(format(date, "%m")))
 #'
@@ -205,39 +205,39 @@
 #' TaylorDiagram(mod.dat, obs = "obs", mod = "mod", group = c("model", "month"))
 #' }
 TaylorDiagram <- function(
-  mydata,
-  obs = "obs",
-  mod = "mod",
-  group = NULL,
-  type = "default",
-  normalise = FALSE,
-  pos.cor = NULL,
-  cols = "brewer1",
-  theme = "classic",
-  rms.col = "darkgoldenrod",
-  cor.col = "black",
-  arrow.lwd = 3,
-  annotate = "centred\nRMS error",
-  text.obs = "observed",
-  key.title = group,
-  key.columns = 1,
-  key.position = "right",
-  auto.text = TRUE,
-  plot = TRUE,
-  key = NULL,
-  ...
+    mydata,
+    obs = "obs",
+    mod = "mod",
+    group = NULL,
+    type = "default",
+    normalise = FALSE,
+    pos.cor = NULL,
+    cols = "brewer1",
+    theme = "classic",
+    rms.col = "darkgoldenrod",
+    cor.col = "black",
+    arrow.lwd = 3,
+    annotate = "centred\nRMS error",
+    text.obs = "observed",
+    key.title = group,
+    key.columns = 1,
+    key.position = "right",
+    auto.text = TRUE,
+    plot = TRUE,
+    key = NULL,
+    ...
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
-
+  
   # default colour based on theme
   if (missing(cols)) {
     cols <- get_theme_cols(cols, theme, "qual")
   }
-
+  
   # extra.args setup
   extra.args <- capture_dots(...)
-
+  
   # label controls
   extra.args$xlab <- quickText(
     extra.args$xlab %||%
@@ -264,26 +264,26 @@ TaylorDiagram <- function(
   extra.args$shape <- extra.args$shape %||% 20
   extra.args$size <- extra.args$size %||% 2
   extra.args$fontsize <- extra.args$fontsize %||% 11
-
+  
   # check to see if two data sets are present
   combine <- FALSE
-
+  
   # if mod is of length 2, then we want to show the change in model performance
   # from the first to the second
   if (length(mod) == 2) {
     combine <- TRUE
   }
-
+  
   # set up variables to be used in the function
   if (any(type %in% dateTypes)) {
     vars <- c("date", obs, mod)
   } else {
     vars <- c(obs, mod)
   }
-
+  
   # assume two groups do not exist
   twoGrp <- FALSE
-
+  
   # check that group is not also in type because this will cause problems with
   # the way the data are processed
   if (!missing(group)) {
@@ -291,9 +291,9 @@ TaylorDiagram <- function(
       cli::cli_abort("Can't have {.arg group} also in {.arg type}.")
     }
   }
-
+  
   mydata <- cutData(mydata, type, ...)
-
+  
   if (missing(group)) {
     if ((!"group" %in% type) && (!"group" %in% c(obs, mod))) {
       mydata$group <- factor("modelled")
@@ -304,18 +304,18 @@ TaylorDiagram <- function(
     # means that group is there
     mydata <- cutData(mydata, group, ...)
   }
-
+  
   # if group is present, need to add that list of variables unless it is
   # a pre-defined date-based one
   if (!missing(group)) {
     npol <- length(unique((mydata[[group[1]]])))
-
+    
     # if group is of length 2
     if (length(group) == 2L) {
       twoGrp <- TRUE
       grp1 <- group[1]
       grp2 <- group[2]
-
+      
       if (missing(key.title)) {
         key.title <- grp1
       }
@@ -328,23 +328,23 @@ TaylorDiagram <- function(
       orig_group <- group
       group <- "newgrp"
     }
-
+    
     if (group %in% dateTypes || any(type %in% dateTypes)) {
       vars <- unique(c(vars, "date", group))
     } else {
       vars <- unique(c(vars, group))
     }
   }
-
+  
   # data checks, for base and new data if necessary
   mydata <- checkPrep(mydata, vars, type)
-
+  
   # check mod and obs are numbers
   mydata <- check_numeric(mydata, vars = c(obs, mod))
-
+  
   # remove missing data
   mydata <- stats::na.omit(mydata)
-
+  
   # function to calculate stats for TD
   calcStats <- function(mydata, obs = obs, mod = mod) {
     R <- stats::cor(mydata[[obs]], mydata[[mod]], use = "pairwise")
@@ -354,13 +354,13 @@ TaylorDiagram <- function(
       sd.mod <- sd.mod / sd.obs
       sd.obs <- 1
     }
-
+    
     res <- data.frame(R, sd.obs, sd.mod)
     res
   }
-
+  
   vars <- c(group, type)
-
+  
   results <-
     map_type(
       mydata,
@@ -368,10 +368,10 @@ TaylorDiagram <- function(
       fun = \(x) calcStats(x, obs = obs, mod = mod[1]),
       .include_default = TRUE
     )
-
+  
   # handle quadrants
   positive_only <- pos.cor %||% !any(sign(results$R) == -1)
-
+  
   # if two sets of model data are present, then calculate the stats for the
   # second set and combine with the first. This will allow us to show the change
   # in model performance from the first to the second.
@@ -383,7 +383,7 @@ TaylorDiagram <- function(
         fun = \(x) calcStats(x, obs = obs, mod = mod[2]),
         .include_default = TRUE
       )
-
+    
     results <-
       dplyr::bind_rows(
         dplyr::mutate(results, taylor_mod_id = mod[1]),
@@ -393,13 +393,13 @@ TaylorDiagram <- function(
         taylor_mod_id = factor(.data$taylor_mod_id, mod)
       )
   }
-
+  
   # if no group to plot, then add a dummy one to make xyplot work
   if (is.null(group)) {
     results$MyGroupVar <- factor("MyGroupVar")
     group <- "MyGroupVar"
   }
-
+  
   # calculate the grid for the centred-RMS contours. This is done by calculating
   # the centred-RMS error for a grid of correlation and standard deviation
   # values. The grid is calculated separately for each panel (i.e. each
@@ -413,26 +413,26 @@ TaylorDiagram <- function(
         crmse <- function(o, m, r) {
           sqrt(o^2 + m^2 - 2 * o * m * r)
         }
-
+        
         nicerange <- pretty(c(results$sd.obs, results$sd.mod))
-
+        
         if (positive_only) {
           cor <- seq(0, 1, 0.01)
         } else {
           cor <- seq(-1, 1, 0.01)
         }
-
+        
         crmse_grid <-
           expand.grid(
             m = pretty(c(0, nicerange), n = 50),
             cor = cor
           ) |>
           dplyr::mutate(crmse = crmse(o = df$sd.obs[1], .data$m, .data$cor))
-
+        
         return(crmse_grid)
       }
     )
-
+  
   # contour functions
   if (rlang::is_installed("geomtextpath")) {
     contour_fun <- geomtextpath::geom_textcontour
@@ -446,7 +446,7 @@ TaylorDiagram <- function(
     )
     contour_fun <- ggplot2::geom_contour
   }
-
+  
   # restore original groups
   if (group == "newgrp") {
     results <-
@@ -464,14 +464,14 @@ TaylorDiagram <- function(
   } else {
     results$newgrp <- results[[group]]
   }
-
+  
   # ensure correct number of shapes
   shapes <- extra.args$shape
   while (length(shapes) <= nlevels(results[[group]])) {
     shapes <- c(shapes, shapes)
   }
   shapes <- shapes[1:nlevels(results[[group]])]
-
+  
   # plot configuration based on quadrants
   if (positive_only) {
     x_breaks <- c(seq(0.1, 0.9, 0.1), 0.95, 0.99)
@@ -488,15 +488,15 @@ TaylorDiagram <- function(
     cor_y <- I(0.95)
     cor_angle <- 0
   }
-
+  
   # guides
   legend_guide <-
     ggplot2::guide_legend(
       ncol = if (missing(key.columns)) NULL else key.columns
     )
-
+  
   # plotting
-  thePlot <-
+  panelthePlot <-
     ggplot2::ggplot(
       results,
       ggplot2::aes(x = .data$R, y = .data$sd.mod)

@@ -101,7 +101,9 @@ See \code{\link[=openColours]{openColours()}} and \code{\link[=colourOpts]{colou
 \item{theme}{A string representing an overall plot theme, defaulting to
 \code{"classic"}. This option makes sweeping changes to non-data plot features
 such as fonts, colours, line widths, and so on, and may also change default
-arguments like \code{cols} if not set by the user. Options include:
+arguments like \code{cols} if not set by the user. Can also take a
+\code{\link[ggplot2:theme]{ggplot2::theme()}} object, which will be used to modify the \code{"classic"}
+theme. Pre-set options include:
 \itemize{
 \item \code{"classic"}, a lattice-inspired theme resembling the traditional
 \code{openair} look, with structured panels and visible gridlines.
@@ -253,7 +255,7 @@ site from the data first e.g. \code{subset(mydata, site == "Harwell")}.
 \dontrun{
 library(dplyr)
 
-dummy model data for 2003
+# dummy model data for 2003
 dat <- selectByDate(mydata, year = 2003) |>
   transmute(date, obs = nox, mod = nox, month = as.integer(format(date, "\%m")))
 
