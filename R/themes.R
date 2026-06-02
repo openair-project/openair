@@ -437,7 +437,7 @@ theme_openair_dark_radial <- function(
       axis.line.x.bottom = ggplot2::element_line(colour = grid_major),
 
       panel.grid.major.x = ggplot2::element_line(
-        colour = "#4FC3F7",
+        colour = grid_major,
         linewidth = 0.4
       ),
       panel.grid.major.y = ggplot2::element_line(
