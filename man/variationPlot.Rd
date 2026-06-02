@@ -135,7 +135,11 @@ appearance improves readability.
 reproduction, with stronger structural elements such as clearer gridlines
 and axis definitions to ensure good contrast and readability in printed or
 photocopied outputs.
-}}
+}
+
+Please note that if a global theme is set with \code{\link[ggplot2:theme_set]{ggplot2::theme_set()}} to
+anything other than the default \code{\link[ggplot2:theme_grey]{ggplot2::theme_grey()}} then this option
+will be ignored.}
 
 \item{alpha}{The alpha transparency used for plotting confidence intervals.
 \code{0} is fully transparent and 1 is opaque. The default is \code{0.4}.}

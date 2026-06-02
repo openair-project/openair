@@ -274,7 +274,11 @@ appearance improves readability.
 reproduction, with stronger structural elements such as clearer gridlines
 and axis definitions to ensure good contrast and readability in printed or
 photocopied outputs.
-}}
+}
+
+Please note that if a global theme is set with \code{\link[ggplot2:theme_set]{ggplot2::theme_set()}} to
+anything other than the default \code{\link[ggplot2:theme_grey]{ggplot2::theme_grey()}} then this option
+will be ignored.}
     \item{\code{breaks}}{\code{breaks} bins a continuous axis into discrete bins. It can
 either take a single number (e.g., \code{breaks = 5}) to split the scale into
 quantiles, a vector of numbers (e.g., \verb{breaks = c(0, 50, 100, 200, 500}) to

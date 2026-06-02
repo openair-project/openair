@@ -247,7 +247,11 @@ appearance improves readability.
 reproduction, with stronger structural elements such as clearer gridlines
 and axis definitions to ensure good contrast and readability in printed or
 photocopied outputs.
-}}
+}
+
+Please note that if a global theme is set with \code{\link[ggplot2:theme_set]{ggplot2::theme_set()}} to
+anything other than the default \code{\link[ggplot2:theme_grey]{ggplot2::theme_grey()}} then this option
+will be ignored.}
 
 \item{weights}{At the edges of the plot there may only be a few data points
 in each wind speed-direction interval, which could in some situations

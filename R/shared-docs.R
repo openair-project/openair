@@ -70,6 +70,10 @@
 #'   and axis definitions to ensure good contrast and readability in printed or
 #'   photocopied outputs.
 #'
+#'   Please note that if a global theme is set with [ggplot2::theme_set()] to
+#'   anything other than the default [ggplot2::theme_grey()] then this option
+#'   will be ignored.
+#'
 #' @param date.breaks Number of major x-axis intervals to use. The function will
 #'   try and choose a sensible number of dates/times as well as formatting the
 #'   date/time appropriately to the range being considered. The user can

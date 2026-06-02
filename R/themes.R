@@ -42,7 +42,7 @@ theme_openair <- function(
       "sf" = theme_openair_modern_sf
     )
   }
-
+  
   if (theme == "soft") {
     fun <- switch(
       coord,
