@@ -190,7 +190,7 @@ TheilSen <- function(
   text.col = "darkgreen",
   slope.text = NULL,
   cols = NULL,
-  theme = "classic",
+  theme = "default",
   auto.text = TRUE,
   autocor = FALSE,
   slope.percent = FALSE,

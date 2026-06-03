@@ -108,7 +108,7 @@ variationPlot <- function(
   local.tz = NULL,
   ci = TRUE,
   cols = "hue",
-  theme = "classic",
+  theme = "default",
   alpha = 0.4,
   key.position = "top",
   key.columns = NULL,

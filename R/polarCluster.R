@@ -132,7 +132,7 @@ polarCluster <-
     n.clusters = 6,
     after = NA,
     cols = "Paired",
-    theme = "classic",
+    theme = "default",
     angle.scale = 315,
     units = x,
     auto.text = TRUE,

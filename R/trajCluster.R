@@ -72,7 +72,7 @@ trajCluster <- function(
   by.type = FALSE,
   crs = 4326,
   cols = "Set1",
-  theme = "classic",
+  theme = "default",
   plot = TRUE,
   ...
 ) {

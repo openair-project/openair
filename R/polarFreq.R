@@ -137,7 +137,7 @@ polarFreq <- function(
   breaks = NULL,
   trans = "sqrt",
   cols = "default",
-  theme = "classic",
+  theme = "default",
   type = "default",
   min.bin = 1,
   ws.upper = NA,

@@ -360,7 +360,7 @@ polarPlot <-
     uncertainty = FALSE,
     percentile = NA,
     cols = "default",
-    theme = "classic",
+    theme = "default",
     weights = c(0.25, 0.5, 0.75),
     min.bin = 1,
     col.na = "grey",

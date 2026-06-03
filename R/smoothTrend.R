@@ -96,7 +96,7 @@ smoothTrend <- function(
   autocor = FALSE,
   type = "default",
   cols = "brewer1",
-  theme = "classic",
+  theme = "default",
   ref.x = NULL,
   ref.y = NULL,
   key.columns = 1,

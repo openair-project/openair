@@ -15,7 +15,7 @@ conditionalEval(
   statistic = "MB",
   cols = "YlOrRd",
   col.var = "Set1",
-  theme = "classic",
+  theme = "default",
   var.names = NULL,
   auto.text = TRUE,
   plot = TRUE,
@@ -79,15 +79,15 @@ See \code{\link[=openColours]{openColours()}} and \code{\link[=colourOpts]{colou
 for more details.}
 
 \item{theme}{A string representing an overall plot theme, defaulting to
-\code{"classic"}. This option makes sweeping changes to non-data plot features
+\code{"default"}. This option makes sweeping changes to non-data plot features
 such as fonts, colours, line widths, and so on, and may also change default
 arguments like \code{cols} if not set by the user. Can also take a
-\code{\link[ggplot2:theme]{ggplot2::theme()}} object, which will be used to modify the \code{"classic"}
+\code{\link[ggplot2:theme]{ggplot2::theme()}} object, which will be used to modify the \code{"default"}
 theme. Pre-set options include:
 \itemize{
-\item \code{"classic"}, a lattice-inspired theme resembling the traditional
+\item \code{"default"}, a lattice-inspired theme resembling the traditional
 \code{openair} look, with structured panels and visible gridlines.
-\item \code{"dark"}, a dark-background variant of the classic theme, designed for
+\item \code{"dark"}, a dark-background variant of the default theme, designed for
 presentations and low-light viewing, using high-contrast text and colour
 palettes optimised for visibility against dark panels.
 \item \code{"modern"}, a minimalist, contemporary theme inspired by tools such as

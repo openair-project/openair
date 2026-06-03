@@ -63,7 +63,7 @@ timeProp <- function(
   avg.time = "day",
   type = "default",
   cols = "Set1",
-  theme = "classic",
+  theme = "default",
   normalise = FALSE,
   ref.x = NULL,
   ref.y = NULL,

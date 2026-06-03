@@ -221,7 +221,7 @@ scatterPlot <- function(
   ci = TRUE,
   mod.line = FALSE,
   cols = "hue",
-  theme = "classic",
+  theme = "default",
   plot.type = "p",
   key.title = group,
   key.columns = 1,

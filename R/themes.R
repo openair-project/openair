@@ -2,28 +2,28 @@
 
 # helper to get the correct theme function
 theme_openair <- function(
-  theme = c("classic", "dark", "modern", "soft", "print"),
+  theme = c("default", "dark", "modern", "soft", "print"),
   coord = c("cartesian", "radial", "sf"),
   key.position,
   extra.args,
   ...
 ) {
-  theme <- theme %||% "classic"
+  theme <- theme %||% "default"
 
   if (ggplot2::is_theme(theme)) {
     extra_theme <- theme
-    theme <- "classic"
+    theme <- "default"
   } else {
     extra_theme <- ggplot2::theme()
     theme <- rlang::arg_match(theme)
   }
 
-  if (theme == "classic") {
+  if (theme == "default") {
     fun <- switch(
       coord,
-      "cartesian" = theme_openair_classic,
-      "radial" = theme_openair_classic_radial,
-      "sf" = theme_openair_classic_sf
+      "cartesian" = theme_openair_default,
+      "radial" = theme_openair_default_radial,
+      "sf" = theme_openair_default_sf
     )
   }
 
@@ -86,13 +86,13 @@ user_has_set_theme <- function() {
 
 # theme colours
 get_theme_cols <- function(cols, theme, type) {
-  theme <- theme %||% "classic"
+  theme <- theme %||% "default"
 
   if (ggplot2::is_theme(theme)) {
-    theme <- "classic"
+    theme <- "default"
   }
 
-  if (theme == "classic") {
+  if (theme == "default") {
     return(cols)
   }
 
@@ -103,7 +103,7 @@ get_theme_cols <- function(cols, theme, type) {
     ),
     dark = list(
       qual = "okabeito",
-      seq = colourOpts("batlowW", begin = 0.15, end = 1)
+      seq = colourOpts("batlow", begin = 0.15, end = 1)
     ),
     soft = list(
       qual = "tol.muted",
@@ -119,10 +119,10 @@ get_theme_cols <- function(cols, theme, type) {
 }
 
 get_theme_col_na <- function(col.na, theme) {
-  theme <- theme %||% "classic"
+  theme <- theme %||% "default"
 
   if (ggplot2::is_theme(theme)) {
-    theme <- "classic"
+    theme <- "default"
   }
   if (theme == "dark") {
     return("black")
@@ -132,13 +132,13 @@ get_theme_col_na <- function(col.na, theme) {
 }
 
 get_theme_map <- function(theme) {
-  theme <- theme %||% "classic"
+  theme <- theme %||% "default"
 
   if (ggplot2::is_theme(theme)) {
-    theme <- "classic"
+    theme <- "default"
   }
   .theme_maps <- list(
-    classic = list(
+    default = list(
       fill = "grey85",
       border = "grey40",
       grid = "deepskyblue",
@@ -182,12 +182,12 @@ get_theme_map <- function(theme) {
   .theme_maps[[theme]]
 }
 
-# Classic -----------------------------------------------------------------
+# default -----------------------------------------------------------------
 # Makes ggplot2 look like the old openair lattice plots.
 # The reference theme — structured, familiar, no surprises.
 # Centred titles, framed legend, white strip backgrounds, black panel border.
 
-theme_openair_classic <- function(key.position) {
+theme_openair_default <- function(key.position) {
   if (user_has_set_theme()) {
     return(ggplot2::theme(
       legend.position = key.position,
@@ -217,7 +217,7 @@ theme_openair_classic <- function(key.position) {
       panel.spacing = ggplot2::rel(2),
 
       # === GRID ===
-      # Both directions, light grey — classic lattice default
+      # Both directions, light grey — default lattice default
       panel.grid.major = ggplot2::element_line(
         colour = "grey85",
         linewidth = 0.3
@@ -231,7 +231,7 @@ theme_openair_classic <- function(key.position) {
       axis.title = ggplot2::element_text(colour = "black"),
 
       # === FACETS ===
-      # White strip background with black border — classic lattice strip style
+      # White strip background with black border — default lattice strip style
       strip.background = ggplot2::element_rect(
         fill = "white",
         colour = "black",
@@ -244,7 +244,7 @@ theme_openair_classic <- function(key.position) {
       ),
 
       # === TEXT ===
-      # Centred titles throughout — the classic/dark convention
+      # Centred titles throughout — the default/dark convention
       plot.title = ggplot2::element_text(
         hjust = 0.5,
         face = "bold"
@@ -258,7 +258,7 @@ theme_openair_classic <- function(key.position) {
       ),
 
       # === LEGEND ===
-      # Framed legend is the most distinctive classic feature —
+      # Framed legend is the most distinctive default feature —
       # thin black box around the colourbar, no background fill
       legend.position = key.position,
       legend.background = ggplot2::element_blank(),
@@ -281,16 +281,16 @@ theme_openair_classic <- function(key.position) {
   )
 }
 
-theme_openair_classic_radial <- function(
+theme_openair_default_radial <- function(
   key.position,
   panel.ontop = FALSE
 ) {
   if (user_has_set_theme()) {
-    return(theme_openair_classic(key.position))
+    return(theme_openair_default(key.position))
   }
 
   ggplot2::`%+replace%`(
-    theme_openair_classic(key.position),
+    theme_openair_default(key.position),
     ggplot2::theme(
       # === GRID ===
       # Spokes dark and solid, rings dashed and light —
@@ -343,13 +343,13 @@ theme_openair_classic_radial <- function(
   )
 }
 
-theme_openair_classic_sf <- function(key.position, grid.col) {
+theme_openair_default_sf <- function(key.position, grid.col) {
   if (user_has_set_theme()) {
-    return(theme_openair_classic(key.position))
+    return(theme_openair_default(key.position))
   }
 
   ggplot2::`%+replace%`(
-    theme_openair_classic(key.position),
+    theme_openair_default(key.position),
     ggplot2::theme(
       # === GRID ===
       # Dashed graticule in the caller-supplied colour (typically deepskyblue)
@@ -360,7 +360,7 @@ theme_openair_classic_sf <- function(key.position, grid.col) {
       ),
 
       # === AXES ===
-      # Coordinate labels coloured to match the graticule — classic openair map style
+      # Coordinate labels coloured to match the graticule — default openair map style
       axis.ticks = ggplot2::element_blank(),
       axis.text = ggplot2::element_text(
         colour = grid.col,
@@ -445,7 +445,7 @@ theme_openair_dark <- function(key.position) {
       # === TEXT ===
       text = ggplot2::element_text(colour = text_col),
 
-      # Centred titles — consistent with classic, suits dark mode's symmetry
+      # Centred titles — consistent with default, suits dark mode's symmetry
       plot.title = ggplot2::element_text(
         hjust = 0.5,
         face = "bold",
@@ -1119,7 +1119,7 @@ theme_openair_print <- function(key.position) {
       axis.title = ggplot2::element_text(colour = text_col, face = "bold"),
 
       # === FACETS ===
-      # Grey fill with black border — classic journal facet style
+      # Grey fill with black border — default journal facet style
       strip.background = ggplot2::element_rect(
         fill = strip_col,
         colour = "black",

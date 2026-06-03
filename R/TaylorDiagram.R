@@ -213,7 +213,7 @@ TaylorDiagram <- function(
   normalise = FALSE,
   pos.cor = NULL,
   cols = "brewer1",
-  theme = "classic",
+  theme = "default",
   rms.col = "darkgoldenrod",
   cor.col = "black",
   arrow.lwd = 3,

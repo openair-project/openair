@@ -183,7 +183,7 @@ timePlot <- function(
   date.pad = FALSE,
   type = "default",
   cols = "brewer1",
-  theme = "classic",
+  theme = "default",
   log = FALSE,
   windflow = NULL,
   smooth = FALSE,

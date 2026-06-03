@@ -114,7 +114,7 @@ percentileRose <- function(
   smooth = FALSE,
   method = "default",
   cols = "default",
-  theme = "classic",
+  theme = "default",
   angle = 10,
   mean = TRUE,
   mean.lty = 1,

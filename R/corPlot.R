@@ -115,7 +115,7 @@ corPlot <- function(
   breaks = NULL,
   trans = FALSE,
   cols = "default",
-  theme = "classic",
+  theme = "default",
   r.thresh = 0.8,
   text.col = c("black", "black"),
   key.title = NULL,

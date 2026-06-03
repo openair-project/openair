@@ -188,7 +188,7 @@ timeVariation <- function(
   B = 100,
   ci = TRUE,
   cols = "hue",
-  theme = "classic",
+  theme = "default",
   ref.y = NULL,
   key = NULL,
   key.columns = NULL,

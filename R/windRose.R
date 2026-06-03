@@ -184,7 +184,7 @@ windRose <- function(
   calm.thresh = 0,
   bias.corr = TRUE,
   cols = "default",
-  theme = "classic",
+  theme = "default",
   grid.line = NULL,
   width = 0.9,
   seg = 0.9,

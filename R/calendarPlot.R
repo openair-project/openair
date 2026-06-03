@@ -180,7 +180,7 @@ calendarPlot <-
     annotate = "date",
     windflow = NULL,
     cols = "heat",
-    theme = "classic",
+    theme = "default",
     limits = NULL,
     breaks = NULL,
     trans = FALSE,

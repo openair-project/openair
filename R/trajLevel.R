@@ -178,7 +178,7 @@ trajLevel <- function(
   .combine = NULL,
   sigma = 1.5,
   cols = "default",
-  theme = "classic",
+  theme = "default",
   crs = 4326,
   map = TRUE,
   map.res = "medium",

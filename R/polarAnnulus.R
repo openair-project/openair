@@ -146,7 +146,7 @@ polarAnnulus <-
     trans = FALSE,
     cols = "default",
     col.na = "grey",
-    theme = "classic",
+    theme = "default",
     offset = 50,
     angle.scale = 0,
     min.bin = 1,

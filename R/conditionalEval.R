@@ -106,7 +106,7 @@ conditionalEval <- function(
   statistic = "MB",
   cols = "YlOrRd",
   col.var = "Set1",
-  theme = "classic",
+  theme = "default",
   var.names = NULL,
   auto.text = TRUE,
   plot = TRUE,

@@ -112,7 +112,7 @@ conditionalQuantile <- function(
   bins = 31,
   min.bin = c(10, 20),
   cols = "YlOrRd",
-  theme = "classic",
+  theme = "default",
   key.columns = 2,
   key.position = "bottom",
   auto.text = TRUE,
