@@ -8,9 +8,9 @@
   non-data plot aesthetic features, such as gridlines and fonts. The
   following options are provided:
 
-  - `"classic"`: the default `openair` theme.
+  - `"default"`: the default `openair` theme.
 
-  - `"dark"`: a dark-background variant of the classic theme for
+  - `"dark"`: a dark-background variant of the default theme for
     presentations and low-light viewing.
 
   - `"modern"`: a minimalist, dashboard-style theme with reduced clutter
@@ -25,7 +25,7 @@
 
   - Any
     [`ggplot2::theme()`](https://ggplot2.tidyverse.org/reference/theme.html)
-    object, which will be used to modify the `"classic"` theme.
+    object, which will be used to modify the `"default"` theme.
 
 - [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md)
   can now filter by site code, site name, site type, pollutants

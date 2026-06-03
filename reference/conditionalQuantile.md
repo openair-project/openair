@@ -16,7 +16,7 @@ conditionalQuantile(
   bins = 31,
   min.bin = c(10, 20),
   cols = "YlOrRd",
-  theme = "classic",
+  theme = "default",
   key.columns = 2,
   key.position = "bottom",
   auto.text = TRUE,
@@ -99,18 +99,18 @@ conditionalQuantile(
 - theme:
 
   A string representing an overall plot theme, defaulting to
-  `"classic"`. This option makes sweeping changes to non-data plot
+  `"default"`. This option makes sweeping changes to non-data plot
   features such as fonts, colours, line widths, and so on, and may also
   change default arguments like `cols` if not set by the user. Can also
   take a
   [`ggplot2::theme()`](https://ggplot2.tidyverse.org/reference/theme.html)
-  object, which will be used to modify the `"classic"` theme. Pre-set
+  object, which will be used to modify the `"default"` theme. Pre-set
   options include:
 
-  - `"classic"`, a lattice-inspired theme resembling the traditional
+  - `"default"`, a lattice-inspired theme resembling the traditional
     `openair` look, with structured panels and visible gridlines.
 
-  - `"dark"`, a dark-background variant of the classic theme, designed
+  - `"dark"`, a dark-background variant of the default theme, designed
     for presentations and low-light viewing, using high-contrast text
     and colour palettes optimised for visibility against dark panels.
 

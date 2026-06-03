@@ -83,7 +83,7 @@ data.</p>
 <span>  avg.time <span class="op">=</span> <span class="st">"day"</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"Set1"</span>,</span>
-<span>  theme <span class="op">=</span> <span class="st">"classic"</span>,</span>
+<span>  theme <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  normalise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ref.x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref.y <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -164,13 +164,13 @@ See <code><a href="openColours.html">openColours()</a></code> and <code><a href=
 
 <dt id="arg-theme">theme<a class="anchor" aria-label="anchor" href="#arg-theme"></a></dt>
 <dd><p>A string representing an overall plot theme, defaulting to
-<code>"classic"</code>. This option makes sweeping changes to non-data plot features
+<code>"default"</code>. This option makes sweeping changes to non-data plot features
 such as fonts, colours, line widths, and so on, and may also change default
 arguments like <code>cols</code> if not set by the user. Can also take a
-<code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code> object, which will be used to modify the <code>"classic"</code>
-theme. Pre-set options include:</p><ul><li><p><code>"classic"</code>, a lattice-inspired theme resembling the traditional
+<code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code> object, which will be used to modify the <code>"default"</code>
+theme. Pre-set options include:</p><ul><li><p><code>"default"</code>, a lattice-inspired theme resembling the traditional
 <code>openair</code> look, with structured panels and visible gridlines.</p></li>
-<li><p><code>"dark"</code>, a dark-background variant of the classic theme, designed for
+<li><p><code>"dark"</code>, a dark-background variant of the default theme, designed for
 presentations and low-light viewing, using high-contrast text and colour
 palettes optimised for visibility against dark panels.</p></li>
 <li><p><code>"modern"</code>, a minimalist, contemporary theme inspired by tools such as
