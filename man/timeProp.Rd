@@ -95,19 +95,20 @@ palettes optimised for visibility against dark panels.
 Plotly and Observable Plot, with reduced visual clutter, horizontal
 emphasis in gridlines, a clean legend style, and typography suited to
 dashboards and reports.
-\item \code{"soft"}, a low-contrast, publication-focused theme with warm
+\item \code{"soft"}, a low-contrast, 'editorial' theme with warm
 background tones, subtle gridlines, and gently desaturated colours,
-designed for reports, print output, and visually dense plots where a calmer
-appearance improves readability.
-\item \code{"print"}, a greyscale-focused theme optimised for black-and-white
+designed for reports and publication-style figures, particularly where a
+calmer appearance improves readability.
+\item \code{"print"}, a strictly greyscale theme optimised for black-and-white
 reproduction, with stronger structural elements such as clearer gridlines
 and axis definitions to ensure good contrast and readability in printed or
 photocopied outputs.
 }
 
 Please note that if a global theme is set with \code{\link[ggplot2:theme_set]{ggplot2::theme_set()}} to
-anything other than the default \code{\link[ggplot2:theme_grey]{ggplot2::theme_grey()}} then this option
-will be ignored.}
+anything other than the default \code{\link[ggplot2:theme_grey]{ggplot2::theme_grey()}}, the selected
+openair theme will not be fully applied; instead, only minimal adjustments
+(such as legend positioning) will be made.}
 
 \item{normalise}{If \code{normalise = TRUE} then each time interval is scaled to
 100. This is helpful to show the relative (percentage) contribution of the
