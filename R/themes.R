@@ -8,6 +8,8 @@ theme_openair <- function(
   extra.args,
   ...
 ) {
+  theme <- theme %||% "classic"
+
   if (ggplot2::is_theme(theme)) {
     extra_theme <- theme
     theme <- "classic"
@@ -84,6 +86,8 @@ user_has_set_theme <- function() {
 
 # theme colours
 get_theme_cols <- function(cols, theme, type) {
+  theme <- theme %||% "classic"
+
   if (ggplot2::is_theme(theme)) {
     theme <- "classic"
   }
@@ -115,6 +119,8 @@ get_theme_cols <- function(cols, theme, type) {
 }
 
 get_theme_col_na <- function(col.na, theme) {
+  theme <- theme %||% "classic"
+
   if (ggplot2::is_theme(theme)) {
     theme <- "classic"
   }
@@ -126,6 +132,8 @@ get_theme_col_na <- function(col.na, theme) {
 }
 
 get_theme_map <- function(theme) {
+  theme <- theme %||% "classic"
+
   if (ggplot2::is_theme(theme)) {
     theme <- "classic"
   }

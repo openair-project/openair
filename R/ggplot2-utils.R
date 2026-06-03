@@ -137,6 +137,10 @@ annotate_compass_points <- function(
   theme,
   labels = c("N", "E", "S", "W")
 ) {
+  theme <- theme %||% "classic"
+  if (ggplot2::is_theme(theme)) {
+    theme <- "classic"
+  }
   if (theme == "dark") {
     colour <- "white"
   } else {
