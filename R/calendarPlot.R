@@ -262,7 +262,7 @@ calendarPlot <-
     if (missing(col.na)) {
       col.na <- get_theme_col_na(col.na, theme)
     }
-    
+
     # check w.shift
     if (w.shift < 0 || w.shift > 6) {
       cli::cli_abort("{.field w.shift} should be between {0} and {6}.")

@@ -169,7 +169,7 @@ trendLevel <- function(
   if (missing(col.na)) {
     col.na <- get_theme_col_na(col.na, theme)
   }
-  
+
   # capture dots
   extra.args <- capture_dots(...)
 
