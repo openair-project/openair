@@ -73,6 +73,7 @@ function very flexible.</p>
 <span>  normalise <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  pos.cor <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cols <span class="op">=</span> <span class="st">"brewer1"</span>,</span>
+<span>  theme <span class="op">=</span> <span class="st">"classic"</span>,</span>
 <span>  rms.col <span class="op">=</span> <span class="st">"darkgoldenrod"</span>,</span>
 <span>  cor.col <span class="op">=</span> <span class="st">"black"</span>,</span>
 <span>  arrow.lwd <span class="op">=</span> <span class="fl">3</span>,</span>
@@ -170,6 +171,35 @@ of R colours (e.g., <code>c("yellow", "green", "blue", "black")</code> - see
 <code><a href="https://rdrr.io/r/grDevices/colors.html" class="external-link">colours()</a></code> for a full list) or hex-codes (e.g., <code>c("#30123B", "#9CF649", "#7A0403")</code>). Alternatively, can be a list of arguments to control the
 colour palette more closely (e.g., <code>palette</code>, <code>direction</code>, <code>alpha</code>, etc.).
 See <code><a href="openColours.html">openColours()</a></code> and <code><a href="colourOpts.html">colourOpts()</a></code> for more details.</p></dd>
+
+
+<dt id="arg-theme">theme<a class="anchor" aria-label="anchor" href="#arg-theme"></a></dt>
+<dd><p>A string representing an overall plot theme, defaulting to
+<code>"classic"</code>. This option makes sweeping changes to non-data plot features
+such as fonts, colours, line widths, and so on, and may also change default
+arguments like <code>cols</code> if not set by the user. Can also take a
+<code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code> object, which will be used to modify the <code>"classic"</code>
+theme. Pre-set options include:</p><ul><li><p><code>"classic"</code>, a lattice-inspired theme resembling the traditional
+<code>openair</code> look, with structured panels and visible gridlines.</p></li>
+<li><p><code>"dark"</code>, a dark-background variant of the classic theme, designed for
+presentations and low-light viewing, using high-contrast text and colour
+palettes optimised for visibility against dark panels.</p></li>
+<li><p><code>"modern"</code>, a minimalist, contemporary theme inspired by tools such as
+Plotly and Observable Plot, with reduced visual clutter, horizontal
+emphasis in gridlines, a clean legend style, and typography suited to
+dashboards and reports.</p></li>
+<li><p><code>"soft"</code>, a low-contrast, 'editorial' theme with warm
+background tones, subtle gridlines, and gently desaturated colours,
+designed for reports and publication-style figures, particularly where a
+calmer appearance improves readability.</p></li>
+<li><p><code>"print"</code>, a strictly greyscale theme optimised for black-and-white
+reproduction, with stronger structural elements such as clearer gridlines
+and axis definitions to ensure good contrast and readability in printed or
+photocopied outputs.</p></li>
+</ul><p>Please note that if a global theme is set with <code><a href="https://ggplot2.tidyverse.org/reference/get_theme.html" class="external-link">ggplot2::theme_set()</a></code> to
+anything other than the default <code><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">ggplot2::theme_grey()</a></code>, the selected
+openair theme will not be fully applied; instead, only minimal adjustments
+(such as legend positioning) will be made.</p></dd>
 
 
 <dt id="arg-rms-col">rms.col<a class="anchor" aria-label="anchor" href="#arg-rms-col"></a></dt>
@@ -329,7 +359,89 @@ diagram. J.  Geophys. Res., 106, 7183-7192, 2001 (also see PCMDI Report 55).</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># in the examples below, most effort goes into making some artificial data</span></span></span>
+<span class="r-in"><span><span class="co"># the function itself can be run very simply</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># dummy model data for 2003</span></span></span>
+<span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="selectByDate.html">selectByDate</a></span><span class="op">(</span><span class="va">mydata</span>, year <span class="op">=</span> <span class="fl">2003</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html" class="external-link">transmute</a></span><span class="op">(</span><span class="va">date</span>, obs <span class="op">=</span> <span class="va">nox</span>, mod <span class="op">=</span> <span class="va">nox</span>, month <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">date</span>, <span class="st">"%m"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># now make mod worse by adding bias and noise according to the month</span></span></span>
+<span class="r-in"><span><span class="co"># do this for 3 different models</span></span></span>
+<span class="r-in"><span><span class="va">mod1</span> <span class="op">&lt;-</span> <span class="va">dat</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    mod <span class="op">=</span> <span class="va">mod</span> <span class="op">+</span> <span class="fl">10</span> <span class="op">*</span> <span class="va">month</span> <span class="op">+</span> <span class="fl">10</span> <span class="op">*</span> <span class="va">month</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    model <span class="op">=</span> <span class="st">"model 1"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="co"># lag the results to make the correlation coefficient worse without affecting the sd</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>mod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">mod</span><span class="op">[</span><span class="fl">5</span><span class="op">:</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">]</span>, <span class="va">mod</span><span class="op">[</span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">3</span><span class="op">)</span><span class="op">:</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">mod2</span> <span class="op">&lt;-</span> <span class="va">dat</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    mod <span class="op">=</span> <span class="va">mod</span> <span class="op">+</span> <span class="fl">7</span> <span class="op">*</span> <span class="va">month</span> <span class="op">+</span> <span class="fl">7</span> <span class="op">*</span> <span class="va">month</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    model <span class="op">=</span> <span class="st">"model 2"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">mod3</span> <span class="op">&lt;-</span> <span class="va">dat</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    mod <span class="op">=</span> <span class="va">mod</span> <span class="op">+</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">month</span> <span class="op">+</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">month</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    model <span class="op">=</span> <span class="st">"model 3"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">mod.dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">mod1</span>, <span class="va">mod2</span>, <span class="va">mod3</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># basic Taylor plot</span></span></span>
+<span class="r-in"><span><span class="fu">TaylorDiagram</span><span class="op">(</span><span class="va">mod.dat</span>, obs <span class="op">=</span> <span class="st">"obs"</span>, mod <span class="op">=</span> <span class="st">"mod"</span>, group <span class="op">=</span> <span class="st">"model"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Taylor plot by season</span></span></span>
+<span class="r-in"><span><span class="fu">TaylorDiagram</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mod.dat</span>,</span></span>
+<span class="r-in"><span>  obs <span class="op">=</span> <span class="st">"obs"</span>,</span></span>
+<span class="r-in"><span>  mod <span class="op">=</span> <span class="st">"mod"</span>,</span></span>
+<span class="r-in"><span>  group <span class="op">=</span> <span class="st">"model"</span>,</span></span>
+<span class="r-in"><span>  type <span class="op">=</span> <span class="st">"season"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># now show how to evaluate model improvement (or otherwise)</span></span></span>
+<span class="r-in"><span><span class="va">mod1a</span> <span class="op">&lt;-</span> <span class="va">dat</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    mod <span class="op">=</span> <span class="va">mod</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">month</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">month</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    model <span class="op">=</span> <span class="st">"model 1"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">mod2a</span> <span class="op">&lt;-</span> <span class="va">mod2</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>mod <span class="op">=</span> <span class="va">mod</span> <span class="op">*</span> <span class="fl">1.3</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">mod3a</span> <span class="op">&lt;-</span> <span class="va">dat</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    mod <span class="op">=</span> <span class="va">mod</span> <span class="op">+</span> <span class="fl">10</span> <span class="op">*</span> <span class="va">month</span> <span class="op">+</span> <span class="fl">10</span> <span class="op">*</span> <span class="va">month</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html" class="external-link">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    model <span class="op">=</span> <span class="st">"model 3"</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># now we have a data frame with 3 models, 1 set of observations</span></span></span>
+<span class="r-in"><span><span class="co"># and two sets of model predictions (mod and mod2)</span></span></span>
+<span class="r-in"><span><span class="va">mod.dat</span> <span class="op">&lt;-</span> <span class="va">mod.dat</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>mod2 <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">mod1a</span>, <span class="va">mod2a</span>, <span class="va">mod3a</span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html" class="external-link">pull</a></span><span class="op">(</span><span class="va">mod</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># do for all models</span></span></span>
+<span class="r-in"><span><span class="fu">TaylorDiagram</span><span class="op">(</span><span class="va">mod.dat</span>, obs <span class="op">=</span> <span class="st">"obs"</span>, mod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mod"</span>, <span class="st">"mod2"</span><span class="op">)</span>, group <span class="op">=</span> <span class="st">"model"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># all models, by season</span></span></span>
+<span class="r-in"><span><span class="fu">TaylorDiagram</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mod.dat</span>,</span></span>
+<span class="r-in"><span>  obs <span class="op">=</span> <span class="st">"obs"</span>,</span></span>
+<span class="r-in"><span>  mod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mod"</span>, <span class="st">"mod2"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  group <span class="op">=</span> <span class="st">"model"</span>,</span></span>
+<span class="r-in"><span>  type <span class="op">=</span> <span class="st">"season"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># consider two groups (model/month). In this case all months are shown by</span></span></span>
+<span class="r-in"><span><span class="co"># model but are only differentiated by model.</span></span></span>
+<span class="r-in"><span><span class="fu">TaylorDiagram</span><span class="op">(</span><span class="va">mod.dat</span>, obs <span class="op">=</span> <span class="st">"obs"</span>, mod <span class="op">=</span> <span class="st">"mod"</span>, group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"model"</span>, <span class="st">"month"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+</code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

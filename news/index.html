@@ -56,7 +56,15 @@
 <div class="section level3">
 <h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
 <ul><li>
-<code><a href="../reference/importMeta.html">importMeta()</a></code> can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.</li>
+<p>All plots gain the <code>theme</code> argument to provide a convenient way to set non-data plot aesthetic features, such as gridlines and fonts. The following options are provided:</p>
+<ul><li><p><code>"classic"</code>: the default <code>openair</code> theme.</p></li>
+<li><p><code>"dark"</code>: a dark-background variant of the classic theme for presentations and low-light viewing.</p></li>
+<li><p><code>"modern"</code>: a minimalist, dashboard-style theme with reduced clutter and horizontal grid emphasis.</p></li>
+<li><p><code>"soft"</code>: a low-contrast, publication-focused theme with warm tones and gently muted colours for reports and dense plots.</p></li>
+<li><p><code>"print"</code>: a greyscale-first theme optimised for black-and-white output, with stronger structural elements for improved readability when printed.</p></li>
+<li><p>Any <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code> object, which will be used to modify the <code>"classic"</code> theme.</p></li>
+</ul></li>
+<li><p><code><a href="../reference/importMeta.html">importMeta()</a></code> can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>

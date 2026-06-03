@@ -26,6 +26,7 @@ scatterPlot(
   ci = TRUE,
   mod.line = FALSE,
   cols = "hue",
+  theme = "classic",
   plot.type = "p",
   key.title = group,
   key.columns = 1,
@@ -230,6 +231,46 @@ scatterPlot(
   and
   [`colourOpts()`](https://openair-project.github.io/openair/reference/colourOpts.md)
   for more details.
+
+- theme:
+
+  A string representing an overall plot theme, defaulting to
+  `"classic"`. This option makes sweeping changes to non-data plot
+  features such as fonts, colours, line widths, and so on, and may also
+  change default arguments like `cols` if not set by the user. Can also
+  take a
+  [`ggplot2::theme()`](https://ggplot2.tidyverse.org/reference/theme.html)
+  object, which will be used to modify the `"classic"` theme. Pre-set
+  options include:
+
+  - `"classic"`, a lattice-inspired theme resembling the traditional
+    `openair` look, with structured panels and visible gridlines.
+
+  - `"dark"`, a dark-background variant of the classic theme, designed
+    for presentations and low-light viewing, using high-contrast text
+    and colour palettes optimised for visibility against dark panels.
+
+  - `"modern"`, a minimalist, contemporary theme inspired by tools such
+    as Plotly and Observable Plot, with reduced visual clutter,
+    horizontal emphasis in gridlines, a clean legend style, and
+    typography suited to dashboards and reports.
+
+  - `"soft"`, a low-contrast, 'editorial' theme with warm background
+    tones, subtle gridlines, and gently desaturated colours, designed
+    for reports and publication-style figures, particularly where a
+    calmer appearance improves readability.
+
+  - `"print"`, a strictly greyscale theme optimised for black-and-white
+    reproduction, with stronger structural elements such as clearer
+    gridlines and axis definitions to ensure good contrast and
+    readability in printed or photocopied outputs.
+
+  Please note that if a global theme is set with
+  [`ggplot2::theme_set()`](https://ggplot2.tidyverse.org/reference/get_theme.html)
+  to anything other than the default
+  [`ggplot2::theme_grey()`](https://ggplot2.tidyverse.org/reference/ggtheme.html),
+  the selected openair theme will not be fully applied; instead, only
+  minimal adjustments (such as legend positioning) will be made.
 
 - plot.type:
 
