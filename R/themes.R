@@ -99,15 +99,15 @@ get_theme_cols <- function(cols, theme, type) {
     ),
     dark = list(
       qual = "okabeito",
-      seq = "batlowK"
+      seq = colourOpts("batlowW", begin = 0.15, end = 1)
     ),
     soft = list(
       qual = "tol.muted",
       seq = "lipari"
     ),
     print = list(
-      qual = colourOpts("greyscale", begin = 0.2, end = 0.8),
-      seq = colourOpts("greyscale", begin = 0.1, end = 0.9)
+      qual = colourOpts("grayC", begin = 0.1, end = 0.9),
+      seq = colourOpts("grayC", begin = 0.1, end = 0.9)
     )
   )
 
@@ -163,7 +163,7 @@ get_theme_map <- function(theme) {
       alpha = 0.8
     ),
     print = list(
-      fill = "grey90",
+      fill = "grey95",
       border = "black",
       grid = "grey60",
       lwd = 1,
@@ -459,7 +459,7 @@ theme_openair_dark <- function(key.position) {
       legend.position = key.position,
       legend.background = ggplot2::element_rect(
         fill = panel_bg,
-        colour = grid_col,
+        colour = NA,
         linewidth = 0.4
       ),
       legend.key = ggplot2::element_rect(fill = panel_bg, colour = NA),
@@ -1147,7 +1147,7 @@ theme_openair_print <- function(key.position) {
       legend.position = key.position,
       legend.background = ggplot2::element_rect(
         fill = "white",
-        colour = "black",
+        colour = NA,
         linewidth = 0.4
       ),
       legend.key = ggplot2::element_blank(),
