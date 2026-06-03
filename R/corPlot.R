@@ -115,6 +115,7 @@ corPlot <- function(
   breaks = NULL,
   trans = FALSE,
   cols = "default",
+  theme = "classic",
   r.thresh = 0.8,
   text.col = c("black", "black"),
   key.title = NULL,
@@ -126,6 +127,11 @@ corPlot <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "seq")
+  }
 
   if (length(type) > 1) {
     cli::cli_abort(
@@ -450,7 +456,12 @@ corPlot <- function(
       auto.text = auto.text,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    theme_openair(key.position, extra.args = extra.args) +
+    theme_openair(
+      theme = theme,
+      coord = "cartesian",
+      key.position,
+      extra.args = extra.args
+    ) +
     ggplot2::theme(panel.grid = ggplot2::element_blank(), aspect.ratio = 1) +
     x_axis_scale(
       labels = label_openair(

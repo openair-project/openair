@@ -2,6 +2,20 @@
 
 ## New Features
 
+- All plots gain the `theme` argument to provide a convenient way to set non-data plot aesthetic features, such as gridlines and fonts. The following options are provided:
+
+    - `"classic"`: the default `openair` theme.
+
+    - `"dark"`: a dark-background variant of the classic theme for presentations and low-light viewing.
+
+    - `"modern"`: a minimalist, dashboard-style theme with reduced clutter and horizontal grid emphasis.
+
+    - `"soft"`: a low-contrast, publication-focused theme with warm tones and gently muted colours for reports and dense plots.
+
+    - `"print"`: a greyscale-first theme optimised for black-and-white output, with stronger structural elements for improved readability when printed.
+    
+    - Any `ggplot2::theme()` object, which will be used to modify the `"classic"` theme.
+
 - `importMeta()` can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.
 
 ## Bug Fixes

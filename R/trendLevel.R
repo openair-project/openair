@@ -136,6 +136,7 @@ trendLevel <- function(
   trans = FALSE,
   min.bin = 1,
   cols = "default",
+  theme = "classic",
   auto.text = TRUE,
   key.title = paste("use.stat.name", pollutant, sep = " "),
   key.position = "right",
@@ -161,6 +162,15 @@ trendLevel <- function(
   # check key.position
   key.position <- check_key_position(key.position, key)
 
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "seq")
+  }
+  if (missing(col.na)) {
+    col.na <- get_theme_col_na(col.na, theme)
+  }
+
+  # capture dots
   extra.args <- capture_dots(...)
 
   # deal with breaks
@@ -505,7 +515,12 @@ trendLevel <- function(
       show.legend = TRUE
     ) +
     ggplot2::coord_cartesian(clip = "off", expand = FALSE) +
-    theme_openair(key.position, extra.args = extra.args) +
+    theme_openair(
+      theme = theme,
+      coord = "cartesian",
+      key.position,
+      extra.args = extra.args
+    ) +
     ggplot2::labs(
       x = quickText(extra.args$xlab %||% x, auto.text = auto.text),
       y = quickText(extra.args$ylab %||% y, auto.text = auto.text),

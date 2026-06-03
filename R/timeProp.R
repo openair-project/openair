@@ -63,6 +63,7 @@ timeProp <- function(
   avg.time = "day",
   type = "default",
   cols = "Set1",
+  theme = "classic",
   normalise = FALSE,
   ref.x = NULL,
   ref.y = NULL,
@@ -76,16 +77,21 @@ timeProp <- function(
   key = NULL,
   ...
 ) {
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "qual")
+  }
+
   # extra.args setup
   extra.args <- capture_dots(...)
 
   # label controls
   extra.args$title <- quickText(extra.args$title %||% "", auto.text)
-  extra.args$subtitle <- quickText(
-    extra.args$subtitle %||% "contribution weighted by mean",
+  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
+  extra.args$caption <- quickText(
+    extra.args$caption %||% "\ncontribution weighted by mean",
     auto.text
   )
-  extra.args$caption <- quickText(extra.args$caption %||% "", auto.text)
   extra.args$tag <- quickText(extra.args$tag, auto.text)
   extra.args$xlab <- quickText(extra.args$xlab %||% "date", auto.text)
   extra.args$ylab <- quickText(
@@ -278,7 +284,12 @@ timeProp <- function(
       tag = extra.args$tag,
       fill = quickText(key.title, auto.text = auto.text)
     ) +
-    theme_openair(key.position, extra.args = extra.args) +
+    theme_openair(
+      theme = theme,
+      coord = "cartesian",
+      key.position,
+      extra.args = extra.args
+    ) +
     get_facet(
       type,
       extra.args,

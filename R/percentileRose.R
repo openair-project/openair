@@ -114,6 +114,7 @@ percentileRose <- function(
   smooth = FALSE,
   method = "default",
   cols = "default",
+  theme = "classic",
   angle = 10,
   mean = TRUE,
   mean.lty = 1,
@@ -132,6 +133,11 @@ percentileRose <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "seq")
+  }
 
   # calculate percentiles or just show mean?
   if (is.na(percentile[1])) {
@@ -520,7 +526,9 @@ percentileRose <- function(
       limits = c(0, ifelse(is.null(intervals), NA, max(intervals))),
       breaks = intervals %||% scales::breaks_pretty()
     ) +
-    theme_openair_radial(
+    theme_openair(
+      theme = theme,
+      coord = "radial",
       key.position = key.position,
       extra.args = extra.args,
       panel.ontop = TRUE
@@ -615,7 +623,8 @@ percentileRose <- function(
         extra.args$annotate %||% TRUE,
         if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
         0
-      )
+      ),
+      theme = theme
     )
 
   if (plot) {

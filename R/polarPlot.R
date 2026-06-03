@@ -360,6 +360,7 @@ polarPlot <-
     uncertainty = FALSE,
     percentile = NA,
     cols = "default",
+    theme = "classic",
     weights = c(0.25, 0.5, 0.75),
     min.bin = 1,
     col.na = "grey",
@@ -453,6 +454,14 @@ polarPlot <-
 
     # check key.position
     key.position <- check_key_position(key.position, key)
+
+    # default colour based on theme
+    if (missing(cols)) {
+      cols <- get_theme_cols(cols, theme, "seq")
+    }
+    if (missing(col.na)) {
+      col.na <- get_theme_col_na(col.na, theme)
+    }
 
     # extra.args setup
     extra.args <- capture_dots(...)
@@ -978,7 +987,9 @@ polarPlot <-
           )
         }
       } +
-      theme_openair_radial(
+      theme_openair(
+        theme = theme,
+        coord = "radial",
         key.position,
         extra.args = extra.args,
         panel.ontop = TRUE
@@ -988,7 +999,8 @@ polarPlot <-
           extra.args$annotate,
           if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
           0
-        )
+        ),
+        theme = theme
       ) +
       ggplot2::labs(
         fill = legend_title,

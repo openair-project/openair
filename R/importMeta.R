@@ -443,7 +443,11 @@ importMeta <-
         # = TRUE
         max_n_sites <-
           meta |>
-          dplyr::distinct(source, code, distance_km) |>
+          dplyr::distinct(
+            .data[["source"]],
+            .data[["code"]],
+            .data[["distance_km"]]
+          ) |>
           dplyr::slice_min(
             order_by = .data$distance_km,
             n = max_n,

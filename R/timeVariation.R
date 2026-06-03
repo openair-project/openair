@@ -188,6 +188,7 @@ timeVariation <- function(
   B = 100,
   ci = TRUE,
   cols = "hue",
+  theme = "classic",
   ref.y = NULL,
   key = NULL,
   key.columns = NULL,
@@ -198,6 +199,11 @@ timeVariation <- function(
   plot = TRUE,
   ...
 ) {
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "qual")
+  }
+
   if (length(type) > 1) {
     cli::cli_abort("Only one 'type' permitted.")
   }
@@ -312,6 +318,7 @@ timeVariation <- function(
           local.tz = local.tz,
           ci = ci,
           cols = cols,
+          theme = theme,
           alpha = alpha,
           key.position = key.position,
           key.columns = key.columns,
@@ -346,17 +353,30 @@ timeVariation <- function(
 
   # if more than one plot, use patchwork to combine
   if (length(plots) > 1) {
-    # "bottom row"
-    bottom <- patchwork::wrap_plots(
-      plots[-1],
-      nrow = 1
+    # number of plots in assembly
+    n_plots <- length(plots)
+    n_lower_plots <- n_plots - 1
+
+    # each bottom plot gets one panel
+    bottom_layout <-
+      do.call(
+        c,
+        sapply(seq_len(n_lower_plots), \(x) {
+          patchwork::area(t = 2, b = 2, l = x, r = x)
+        })
+      )
+
+    # top row covers whole width
+    layout <- c(
+      patchwork::area(t = 1, b = 1, l = 1, r = n_lower_plots),
+      bottom_layout
     )
 
+    # assemble patchwork
     thePlot <-
       patchwork::wrap_plots(
-        plots[[1]],
-        bottom,
-        ncol = 1,
+        plots,
+        design = layout,
         heights = c(0.4, 0.6)
       ) +
       patchwork::plot_layout(guides = "collect") &
@@ -370,7 +390,12 @@ timeVariation <- function(
           plot.caption = ggplot2::element_text(hjust = 0.5, face = "bold")
         )
       ) &
-      theme_openair(key.position, extra.args = extra.args) &
+      theme_openair(
+        theme = theme,
+        coord = "cartesian",
+        key.position,
+        extra.args = extra.args
+      ) &
       ggplot2::theme(
         panel.spacing = ggplot2::rel(panel.gap),
         plot.margin = ggplot2::unit(rep(0.25, 4), "cm"),

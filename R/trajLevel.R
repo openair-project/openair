@@ -178,6 +178,7 @@ trajLevel <- function(
   .combine = NULL,
   sigma = 1.5,
   cols = "default",
+  theme = "classic",
   crs = 4326,
   map = TRUE,
   map.res = "medium",
@@ -208,6 +209,30 @@ trajLevel <- function(
 
   # check key.position
   key.position <- check_key_position(key.position, key)
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "seq")
+  }
+  map_defaults <- get_theme_map(theme)
+  if (missing(map.cols)) {
+    map.cols <- map_defaults$fill
+  }
+  if (missing(map.border)) {
+    map.border <- map_defaults$border
+  }
+  if (missing(map.lwd)) {
+    map.lwd <- map_defaults$lwd
+  }
+  if (missing(map.lty)) {
+    map.lty <- map_defaults$lty
+  }
+  if (missing(map.alpha)) {
+    map.alpha <- map_defaults$alpha
+  }
+  if (missing(grid.col)) {
+    grid.col <- map_defaults$grid
+  }
 
   # checks
   statistic <- tolower(statistic)
@@ -718,7 +743,9 @@ trajLevel <- function(
 
   # base plot & themes
   thePlot <- ggplot2::ggplot(data = out_data_sf) +
-    theme_openair_sf(
+    theme_openair(
+      theme = theme,
+      coord = "sf",
       key.position,
       extra.args = extra.args,
       grid.col = grid.col

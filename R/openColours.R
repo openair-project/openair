@@ -592,6 +592,13 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   if (end == 1) {
     end <- 0.9
   }
+
+  # if only one colour needed, give grey50
+  if (n == 1) {
+    begin <- 0.5
+    end <- 0.5
+  }
+
   cols <- grDevices::grey(seq(end, begin, length.out = n))
   .finalise(cols, direction, alpha, lightness, saturation)
 }

@@ -190,6 +190,7 @@ TheilSen <- function(
   text.col = "darkgreen",
   slope.text = NULL,
   cols = NULL,
+  theme = "classic",
   auto.text = TRUE,
   autocor = FALSE,
   slope.percent = FALSE,
@@ -312,7 +313,8 @@ TheilSen <- function(
     ref.y = ref.y,
     auto.text = auto.text,
     date.breaks = date.breaks,
-    date.format = date.format
+    date.format = date.format,
+    theme = theme
   )
 
   if (plot) {
@@ -527,7 +529,8 @@ build_theilsen_plot <- function(
   ref.y,
   auto.text,
   date.breaks,
-  date.format
+  date.format,
+  theme
 ) {
   slope_var <- if (slope.percent) "slope.percent" else "slope"
   lower_var <- if (slope.percent) "lower.percent" else "lower"
@@ -625,7 +628,12 @@ build_theilsen_plot <- function(
       vjust = 1,
       fontface = "bold"
     ) +
-    theme_openair("none", extra.args) +
+    theme_openair(
+      theme = theme,
+      coord = "cartesian",
+      key.position = "none",
+      extra.args
+    ) +
     get_facet(
       type,
       extra.args,

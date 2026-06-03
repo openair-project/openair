@@ -131,6 +131,7 @@ trajPlot <- function(
   type = "default",
   group = NULL,
   cols = "default",
+  theme = "classic",
   crs = 4326,
   map = TRUE,
   map.res = "medium",
@@ -162,6 +163,30 @@ trajPlot <- function(
 
   # check key.position
   key.position <- check_key_position(key.position, key)
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "seq")
+  }
+  map_defaults <- get_theme_map(theme)
+  if (missing(map.cols)) {
+    map.cols <- map_defaults$fill
+  }
+  if (missing(map.border)) {
+    map.border <- map_defaults$border
+  }
+  if (missing(map.lwd)) {
+    map.lwd <- map_defaults$lwd
+  }
+  if (missing(map.lty)) {
+    map.lty <- map_defaults$lty
+  }
+  if (missing(map.alpha)) {
+    map.alpha <- map_defaults$alpha
+  }
+  if (missing(grid.col)) {
+    grid.col <- map_defaults$grid
+  }
 
   # favour group over pollutant - set a flag to see if `cutData()` is needed
   group_is_pollutant <- !is.null(pollutant) && is.null(group)
@@ -289,7 +314,9 @@ trajPlot <- function(
 
   # base plot & themes
   thePlot <- ggplot2::ggplot() +
-    theme_openair_sf(
+    theme_openair(
+      theme = theme,
+      coord = "sf",
       key.position,
       extra.args = extra.args,
       grid.col = grid.col
@@ -369,7 +396,7 @@ trajPlot <- function(
       thePlot +
       ggplot2::scale_color_manual(
         values = resolve_colour_opts(
-          ifelse(n_cols == 1, "grey20", cols),
+          cols,
           n = n_cols
         ),
         drop = FALSE,

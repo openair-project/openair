@@ -72,10 +72,16 @@ trajCluster <- function(
   by.type = FALSE,
   crs = 4326,
   cols = "Set1",
+  theme = "classic",
   plot = TRUE,
   ...
 ) {
   rlang::check_installed(c("sf", "rnaturalearthdata"))
+
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "qual")
+  }
 
   if (tolower(method) == "euclid") {
     method <- "distEuclid"
@@ -198,6 +204,7 @@ trajCluster <- function(
       crs = crs,
       cols = cols,
       type = type,
+      theme = theme,
       ...,
       plot = FALSE
     ) |>

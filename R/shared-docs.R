@@ -41,6 +41,40 @@
 #'   colour palette more closely (e.g., `palette`, `direction`, `alpha`, etc.).
 #'   See [openColours()] and [colourOpts()] for more details.
 #'
+#' @param theme A string representing an overall plot theme, defaulting to
+#'   `"classic"`. This option makes sweeping changes to non-data plot features
+#'   such as fonts, colours, line widths, and so on, and may also change default
+#'   arguments like `cols` if not set by the user. Can also take a
+#'   [ggplot2::theme()] object, which will be used to modify the `"classic"`
+#'   theme. Pre-set options include:
+#'
+#'   - `"classic"`, a lattice-inspired theme resembling the traditional
+#'   `openair` look, with structured panels and visible gridlines.
+#'
+#'   - `"dark"`, a dark-background variant of the classic theme, designed for
+#'   presentations and low-light viewing, using high-contrast text and colour
+#'   palettes optimised for visibility against dark panels.
+#'
+#'   - `"modern"`, a minimalist, contemporary theme inspired by tools such as
+#'   Plotly and Observable Plot, with reduced visual clutter, horizontal
+#'   emphasis in gridlines, a clean legend style, and typography suited to
+#'   dashboards and reports.
+#'
+#'   - `"soft"`, a low-contrast, 'editorial' theme with warm
+#'   background tones, subtle gridlines, and gently desaturated colours,
+#'   designed for reports and publication-style figures, particularly where a
+#'   calmer appearance improves readability.
+#'
+#'   - `"print"`, a strictly greyscale theme optimised for black-and-white
+#'   reproduction, with stronger structural elements such as clearer gridlines
+#'   and axis definitions to ensure good contrast and readability in printed or
+#'   photocopied outputs.
+#'
+#'   Please note that if a global theme is set with [ggplot2::theme_set()] to
+#'   anything other than the default [ggplot2::theme_grey()], the selected
+#'   openair theme will not be fully applied; instead, only minimal adjustments
+#'   (such as legend positioning) will be made.
+#'
 #' @param date.breaks Number of major x-axis intervals to use. The function will
 #'   try and choose a sensible number of dates/times as well as formatting the
 #'   date/time appropriately to the range being considered. The user can

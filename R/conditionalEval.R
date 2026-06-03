@@ -106,11 +106,17 @@ conditionalEval <- function(
   statistic = "MB",
   cols = "YlOrRd",
   col.var = "Set1",
+  theme = "classic",
   var.names = NULL,
   auto.text = TRUE,
   plot = TRUE,
   ...
 ) {
+  # default colour based on theme
+  if (missing(cols)) {
+    cols <- get_theme_cols(cols, theme, "seq")
+  }
+
   the_stats <- c("MB", "NMB", "r", "COE", "MGE", "NMGE", "RMSE", "FAC2")
 
   if (length(type) > 1) {
@@ -255,7 +261,12 @@ conditionalEval <- function(
         auto.text,
         wd.res = extra.args$wd.res %||% 8
       ) +
-      theme_openair(key.position = "bottom", extra.args = extra.args) +
+      theme_openair(
+        theme = theme,
+        coord = "cartesian",
+        key.position = "bottom",
+        extra.args = extra.args
+      ) +
       ggplot2::guides(
         fill = ggplot2::guide_legend(direction = "vertical")
       ) +
@@ -424,7 +435,12 @@ conditionalEval <- function(
         limits = c(y_lo, y_hi)
       ) +
       right_facet +
-      theme_openair("bottom", extra.args = extra.args) +
+      theme_openair(
+        theme = theme,
+        coord = "cartesian",
+        key.position = "bottom",
+        extra.args = extra.args
+      ) +
       ggplot2::labs(
         x = quickText(extra.args$xlab, auto.text),
         y = quickText(extra.args$ylab, auto.text),
