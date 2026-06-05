@@ -351,6 +351,13 @@ timeVariation <- function(
     })
   }
 
+  # check groups are consistent
+  datum_groups <- datum |> purrr::map("group") |> purrr::map(levels)
+  group_check <- all(sapply(datum_groups, identical, datum_groups[[1]]))
+  if (!group_check) {
+    cli::cli_abort("Groups are inconsistent between panels.")
+  }
+
   # if more than one plot, use patchwork to combine
   if (length(plots) > 1) {
     # number of plots in assembly
@@ -379,7 +386,6 @@ timeVariation <- function(
         design = layout,
         heights = c(0.4, 0.6)
       ) +
-      patchwork::plot_layout(guides = "collect") &
       patchwork::plot_annotation(
         title = overall.title,
         subtitle = overall.subtitle,
@@ -393,14 +399,18 @@ timeVariation <- function(
       theme_openair(
         theme = theme,
         coord = "cartesian",
-        key.position,
+        key.position = key.position,
         extra.args = extra.args
       ) &
       ggplot2::theme(
         panel.spacing = ggplot2::rel(panel.gap),
-        plot.margin = ggplot2::unit(rep(0.25, 4), "cm"),
-        legend.position = key.position
+        plot.margin = ggplot2::unit(rep(0.25, 4), "cm")
       )
+
+    # remove legends besides the first one
+    for (i in seq(2, length(thePlot), 1)) {
+      thePlot[[i]] <- thePlot[[i]] + ggplot2::theme(legend.position = "none")
+    }
   } else {
     thePlot <- plots[[1]]
   }
