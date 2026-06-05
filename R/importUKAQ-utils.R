@@ -35,15 +35,23 @@ readUKAQData <-
 
     # suppress warnings for now - unequal factors, harmless
     if (is.null(thedata)) {
-      cli::cli_abort(
-        "No data to import for {.arg site} {.field {site}} and {.arg year} {.field {year}} from {.arg source} {.field {source}}."
-      )
+      if (verbose) {
+        cli::cli_warn(
+          "No data to import for {.arg site} {.field {site}} and {.arg year} {.field {year}} from {.arg source} {.field {source}}."
+        )
+      }
+      return(NULL)
     }
 
     # Return if no data
     if (nrow(thedata) == 0) {
-      return()
-    } ## no data
+      if (verbose) {
+        cli::cli_warn(
+          "No data to import for {.arg site} {.field {site}} and {.arg year} {.field {year}} from {.arg source} {.field {source}}."
+        )
+      }
+      return(NULL)
+    }
 
     # change names
     names(thedata) <- tolower(names(thedata))
@@ -529,7 +537,7 @@ guess_source <- function(site) {
 
     cli::cli_abort(
       c(
-        "x" = "Unknown site codes detected. Please ensure all site codes can be found in {.fun importMeta}.",
+        "x" = "Unknown site codes detected. Please ensure all site codes can be found in {.fun openair::importMeta}.",
         "i" = "Unknown site codes: {ambiguous_codes}"
       )
     )
@@ -564,7 +572,7 @@ guess_source <- function(site) {
           .data$site,
           "' from the source: '",
           .data$source,
-          "'.)"
+          "')"
         )
       ) |>
       dplyr::pull(.data$str)

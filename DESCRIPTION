@@ -43,10 +43,12 @@ Imports:
     tidyr,
     utils
 Suggests:
+    carrier,
     geomtextpath,
     KernSmooth,
     knitr,
     legendry (>= 0.2.4),
+    mirai,
     quantreg,
     rmarkdown,
     rnaturalearth,
@@ -57,10 +59,10 @@ LinkingTo:
     Rcpp
 ByteCompile: true
 Config/Needs/website: openair-project/openairpkgdown
+Config/roxygen2/version: 8.0.0
 Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-GB
 LazyData: yes
 LazyLoad: yes
 Roxygen: list(markdown = TRUE)
-Config/roxygen2/version: 8.0.0
