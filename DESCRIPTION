@@ -34,7 +34,7 @@ Imports:
     methods,
     mgcv,
     patchwork,
-    purrr (>= 1.0.0),
+    purrr (>= 1.1.0),
     Rcpp,
     readr,
     rlang,
