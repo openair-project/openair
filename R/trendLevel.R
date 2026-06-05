@@ -521,6 +521,10 @@ trendLevel <- function(
       key.position,
       extra.args = extra.args
     ) +
+    ggplot2::theme(
+      panel.grid.major = ggplot2::element_blank(),
+      panel.grid.minor = ggplot2::element_blank()
+    ) +
     ggplot2::labs(
       x = quickText(extra.args$xlab %||% x, auto.text = auto.text),
       y = quickText(extra.args$ylab %||% y, auto.text = auto.text),
