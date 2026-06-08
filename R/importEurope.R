@@ -42,7 +42,7 @@ importEurope <- function(
   # warn/error w/ deprecation
   msg <-
     c(
-      "!" = "{.fun importEurope} has been discontinued and cannot import data after February 2024.",
+      "!" = "{.fun openair::importEurope} has been discontinued and cannot import data after February 2024.",
       "i" = "Consider using the EEA Air Quality Download Service instead {.url https://eeadmz1-downloads-webapp.azurewebsites.net/}"
     )
   if (any(year > 2024)) {
