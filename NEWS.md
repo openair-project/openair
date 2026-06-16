@@ -18,6 +18,8 @@
 
 - `importMeta()` can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.
 
+- Added `distributionPlot()`, which flexibly plots histograms and density functions to examine the 'shape' of the distribution of numeric data.
+
 ## Bug Fixes
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.
