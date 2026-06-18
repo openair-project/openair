@@ -11,14 +11,13 @@ distributionPlot(
   binwidth = NULL,
   bins = 30,
   position = NULL,
+  log = FALSE,
   group = "default",
   type = "default",
   cols = "hue",
   theme = "default",
   key.title = group,
   key.position = "top",
-  log.x = FALSE,
-  log.y = FALSE,
   ref.x = NULL,
   ref.y = NULL,
   auto.text = TRUE,
@@ -47,6 +46,13 @@ the y-axis to show a percentage rather than an absolute count or density
 estimate. Not used when \code{method = "ecdf"}, which must be \code{"identity"}. Note
 that density functions will use 'count' over 'density' for non-identity
 \code{position}s.}
+
+\item{log}{Should the x-axis appear on a log scale? The default is \code{FALSE}.
+If \code{TRUE} a well-formatted log10 scale is used.}
+
+\item{group}{This sets the grouping variable to be used. For example, if a
+data frame had a column \code{site} setting \code{group = "site"} will plot all sites
+together in each panel. Passed to \code{\link[=cutData]{cutData()}}.}
 
 \item{type}{Character string(s) defining how data should be split/conditioned
 before plotting. \code{"default"} produces a single panel using the entire

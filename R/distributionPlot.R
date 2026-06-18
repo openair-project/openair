@@ -14,6 +14,13 @@
 #'
 #' @param pollutant Name of the pollutant(s) to plot contained in `mydata`.
 #'
+#' @param group This sets the grouping variable to be used. For example, if a
+#'   data frame had a column `site` setting `group = "site"` will plot all sites
+#'   together in each panel. Passed to [cutData()].
+#'
+#' @param log Should the x-axis appear on a log scale? The default is `FALSE`.
+#'   If `TRUE` a well-formatted log10 scale is used.
+#'
 #' @param method One of: `"histogram"`, `"freqpoly"`, `"density"`, or `"ecdf"`.
 #'   Note that `"freqpoly"` is effectively a line chart equivalent of a
 #'   histogram, and may appear less cluttered with many groups.
@@ -63,14 +70,13 @@ distributionPlot <- function(
   binwidth = NULL,
   bins = 30,
   position = NULL,
+  log = FALSE,
   group = "default",
   type = "default",
   cols = "hue",
   theme = "default",
   key.title = group,
   key.position = "top",
-  log.x = FALSE,
-  log.y = FALSE,
   ref.x = NULL,
   ref.y = NULL,
   auto.text = TRUE,
@@ -93,10 +99,9 @@ distributionPlot <- function(
     )
   }
 
-  # ECDF restricts certain parameters
+  # restrictions to certain parameters
   if (method == "ecdf") {
     position <- "identity"
-    log.y = FALSE
   }
 
   # default colour based on theme
@@ -285,7 +290,6 @@ distributionPlot <- function(
         0,
         ifelse((position %||% "default") == "fill", 0, 0.1)
       )),
-      transform = ifelse(log.y, "log10", "identity"),
       labels = if ((position %||% "default") == "fill") {
         scales::label_percent()
       } else {
@@ -294,7 +298,7 @@ distributionPlot <- function(
     ) +
     ggplot2::scale_x_continuous(
       expand = ggplot2::expansion(),
-      transform = ifelse(log.x, "log10", "identity")
+      transform = ifelse(log, "log10", "identity")
     ) +
     layer_ref(ref = ref.x, which = "x", type = "numeric") +
     layer_ref(ref = ref.y, which = "y", type = "numeric") +
