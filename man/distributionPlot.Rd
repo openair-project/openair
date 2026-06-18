@@ -42,10 +42,11 @@ defaulting to \code{30}. \code{bins} is overridden by \code{binwidth}.}
 \item{position}{A string representing a \code{ggplot2} "position" - see
 \code{\link[ggplot2:position_identity]{ggplot2::position_identity()}} and similar functions. When \code{NULL}, will use
 \code{"stack"} for histograms and \code{"identity"} for other methods. Also useful is
-\code{"fill"} in conjunction with the \code{group} argument and \code{"histogram"}
-\code{method} which will 'normalise' the y-axis to show a percentage rather than
-an absolute count or density estimate. Not used when \code{method = "ecdf"},
-which must be \code{"identity"}.}
+\code{"fill"} in conjunction with the \code{group} argument which will 'normalise'
+the y-axis to show a percentage rather than an absolute count or density
+estimate. Not used when \code{method = "ecdf"}, which must be \code{"identity"}. Note
+that density functions will use 'count' over 'density' for non-identity
+\code{position}s.}
 
 \item{type}{Character string(s) defining how data should be split/conditioned
 before plotting. \code{"default"} produces a single panel using the entire

@@ -25,10 +25,11 @@
 #' @param position A string representing a `ggplot2` "position" - see
 #'   [ggplot2::position_identity()] and similar functions. When `NULL`, will use
 #'   `"stack"` for histograms and `"identity"` for other methods. Also useful is
-#'   `"fill"` in conjunction with the `group` argument and `"histogram"`
-#'   `method` which will 'normalise' the y-axis to show a percentage rather than
-#'   an absolute count or density estimate. Not used when `method = "ecdf"`,
-#'   which must be `"identity"`.
+#'   `"fill"` in conjunction with the `group` argument which will 'normalise'
+#'   the y-axis to show a percentage rather than an absolute count or density
+#'   estimate. Not used when `method = "ecdf"`, which must be `"identity"`. Note
+#'   that density functions will use 'count' over 'density' for non-identity
+#'   `position`s.
 #'
 #' @export
 #' @return an [openair][openair-package] object
@@ -77,21 +78,18 @@ distributionPlot <- function(
   ...
 ) {
   method <- rlang::arg_match(method, multiple = FALSE)
+  if (!is.null(position)) {
+    position <- rlang::arg_match(
+      position,
+      values = c("identity", "stack", "fill"),
+      multiple = FALSE
+    )
+  }
 
   if (length(pollutant) > 1 && length(type) > 2) {
     cli::cli_abort(
       "In {.fun openair::distributionPlot}, cannot have more than one \
       {.arg pollutant} and have two {.arg type}s."
-    )
-  }
-
-  if (
-    method == "density" && (position %||% "identity") %in% c("stack", "fill")
-  ) {
-    cli::cli_warn(
-      "Using {.val {position}} position with {.val density} method can \ 
-      produce misleading results, as density curves are independently \
-      normalised per group."
     )
   }
 
@@ -115,7 +113,8 @@ distributionPlot <- function(
       dplyr::case_when(
         method == "ecdf" ~ "ECDF",
         (position %||% "identity") == "fill" ~ "Proportion",
-        method == "density" ~ "Density",
+        (method == "density" &&
+          (position %||% "identity") == "identity") ~ "Density",
         .default = "Count"
       ),
     auto.text
@@ -203,14 +202,28 @@ distributionPlot <- function(
   }
 
   if (method == "density") {
-    geom_dist <- ggplot2::geom_density(
-      ggplot2::aes(
+    position <- position %||% "identity"
+    if (position %in% c("stack", "fill")) {
+      density_aes <- ggplot2::aes(
+        y = ggplot2::after_stat(.data$count),
         color = .data$group,
         fill = ggplot2::after_scale(ggplot2::alpha(
           .data$colour,
           extra.args$alpha %||% 0.25
         ))
-      ),
+      )
+    } else {
+      density_aes <- ggplot2::aes(
+        color = .data$group,
+        fill = ggplot2::after_scale(ggplot2::alpha(
+          .data$colour,
+          extra.args$alpha %||% 0.25
+        ))
+      )
+    }
+
+    geom_dist <- ggplot2::geom_density(
+      mapping = density_aes,
       position = (position %||% "identity"),
       linewidth = extra.args$linewidth,
       linetype = extra.args$linetype,
