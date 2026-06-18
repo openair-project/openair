@@ -1,34 +1,33 @@
 #' Plot the distribution of a variable with conditioning
 #'
-#' This function plots the distribution of a pollutant or other variable as
-#' either a histogram or a kenel density estimate function. The former is often
-#' more easily interpretable and shows the 'real data' (albeit binned), but can
-#' easily get cluttered with lots of different groups and is heavily dependent
-#' on your choice of bin width. The latter appears 'cleaner' with many
-#' overlapping groups, but can be more challenging to interpret and represents a
-#' smoothed density function which may extend beyond the bounds of the input
-#' data.
+#' This function plots the distribution of one or more pollutants or other
+#' variables as a histogram, kernel density estimate function, or empirical
+#' cumulative distribution function. The choice of method comes with trade-offs;
+#' for example, histograms are often more easily interpretable but can easily
+#' get cluttered and are heavily dependent on bin width, whereas density
+#' functions appear 'cleaner' with many overlapping groups, but can be more
+#' challenging to interpret.
 #'
 #' @inheritParams shared_openair_params
-#' @inheritParams timePlot
 #'
-#' @param mydata A data frame to plot.
+#' @param mydata A data frame.
 #'
 #' @param pollutant Name of the pollutant(s) to plot contained in `mydata`.
 #'
-#' @param method One of `"histogram"` (the default) or `"density"`.
+#' @param method One of: `"histogram"`, `"freqpoly"`, `"density"`, or `"ecdf"`.
+#'   Note that `"freqpoly"` is effectively a line chart equivalent of a
+#'   histogram, and may appear less cluttered with many groups.
 #'
-#' @param binwidth,bins Used when `method = "histogram"`. `binwidth` sets the
-#'   width of the bins. `bins` sets teh number of bins, defaulting to `30`.
-#'   `bins` is overriden by `binwidth`. This has no effect wehn `method =
-#'   "density"`.
+#' @param binwidth,bins Used when `method = "histogram"` or `"freqpoly"`.
+#'   `binwidth` sets the width of the bins. `bins` sets the number of bins,
+#'   defaulting to `30`. `bins` is overridden by `binwidth`.
 #'
 #' @param position A string representing a `ggplot2` "position" - see
 #'   [ggplot2::position_identity()] and similar functions. When `NULL`, will use
 #'   `"stack"` for histograms and `"identity"` for density functions. Also
 #'   useful is `"fill"` in conjunction with the `group` argument which will
 #'   'normalise' the y-axis to show a percentage rather than an absolute count
-#'   or density estimate.
+#'   or density estimate. Not used when `method = "ecdf"`.
 #'
 #' @export
 #' @return an [openair][openair-package] object
@@ -58,16 +57,16 @@
 distributionPlot <- function(
   mydata,
   pollutant = "nox",
-  method = c("histogram", "density"),
+  method = c("histogram", "freqpoly", "density", "ecdf"),
   binwidth = NULL,
-  bins = NULL,
+  bins = 30,
   position = NULL,
   group = "default",
   type = "default",
-  cols = "brewer1",
+  cols = "hue",
   theme = "default",
   key.title = group,
-  key.position = "right",
+  key.position = "top",
   log.x = FALSE,
   log.y = FALSE,
   ref.x = NULL,
@@ -78,11 +77,17 @@ distributionPlot <- function(
 ) {
   method <- rlang::arg_match(method, multiple = FALSE)
 
-  if (length(pollutant) > 1 && group != "default") {
+  if (length(pollutant) > 1 && length(type) > 2) {
     cli::cli_abort(
-      "In {.fun openair::distributionPlot}, cannot use {.arg group} and \\
-      have more than one {.arg pollutant}."
+      "In {.fun openair::distributionPlot}, cannot have more than one \\
+      {.arg pollutant} and have two {.arg type}s."
     )
+  }
+
+  # ECDF restricts certain parameters
+  if (method == "ecdf") {
+    position <- "identity"
+    log.y = FALSE
   }
 
   # default colour based on theme
@@ -97,7 +102,8 @@ distributionPlot <- function(
   extra.args$ylab <- quickText(
     extra.args$ylab %||%
       dplyr::case_when(
-        position == "fill" ~ "Proportion",
+        method == "ecdf" ~ "ECDF",
+        (position %||% "identity") == "fill" ~ "Proportion",
         method == "density" ~ "Density",
         .default = "Count"
       ),
@@ -107,9 +113,9 @@ distributionPlot <- function(
     extra.args$xlab %||% paste(pollutant, collapse = ", "),
     auto.text
   )
-  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
-  extra.args$caption <- quickText(extra.args$caption %||% "", auto.text)
+  extra.args$title <- quickText(extra.args$title, auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
+  extra.args$caption <- quickText(extra.args$caption, auto.text)
   extra.args$tag <- quickText(extra.args$tag, auto.text)
 
   extra.args$linetype <- extra.args$linetype %||% 1
@@ -117,7 +123,6 @@ distributionPlot <- function(
 
   # check & cut data
   vars <- c(pollutant)
-
   if (any(c(type, group) %in% dateTypes)) {
     vars <- c(vars, "date")
   }
@@ -132,28 +137,41 @@ distributionPlot <- function(
   # data checks
   # need special handling of cutData as `drop` needs to be passed separately
   mydata <- checkPrep(mydata, vars, c(type, group), remove.calm = FALSE) |>
-    cutData(type = type, names = "type", ...) |>
-    cutData(type = group, names = "group", ...)
-
-  # standardise column names based on what is being grouped by
-  if (group == "default") {
-    mydata$group <- NULL
-    mydata <- tidyr::pivot_longer(
-      mydata,
+    tidyr::pivot_longer(
       cols = dplyr::all_of(pollutant),
-      names_to = "group",
+      names_to = "pollutant",
       values_to = "x"
     ) |>
-      dplyr::mutate(
-        group = factor(.data[["group"]], levels = pollutant)
-      )
-    if (missing(key.title)) {
-      key.title <- NULL
-    }
-  } else {
-    names(mydata)[names(mydata) == pollutant] <- "x"
+    dplyr::mutate(pollutant = factor(.data$pollutant, levels = {{ pollutant }}))
+
+  # if there's more than one pollutant, it needs adding to 'type'
+  if (length(pollutant) > 1L) {
+    type <- c("pollutant", type)
   }
 
+  # how many 'types' are we working with?
+  type_cols <- "type"
+  if (length(type) == 2) {
+    type_cols <- c("type_y", "type_x")
+  }
+  if (length(type) > 2) {
+    cli::cli_abort("Only a maximum of two {.arg type}s can be used.")
+  }
+
+  # if group is default, colour by pollutant
+  if (group == "default") {
+    group <- "pollutant"
+    if (missing(key.title)) key.title <- NULL
+  }
+
+  # cut data to prep columns
+  mydata <-
+    mydata |>
+    cutData(type = type, names = type_cols, ...) |>
+    cutData(type = group, names = "group", ...) |>
+    dplyr::select(-"pollutant")
+
+  # geometries
   if (method == "histogram") {
     geom_dist <- ggplot2::geom_histogram(
       ggplot2::aes(
@@ -163,7 +181,7 @@ distributionPlot <- function(
           extra.args$alpha %||% 0.25
         ))
       ),
-      position = position %||% "stack",
+      position = (position %||% "stack"),
       linewidth = extra.args$linewidth,
       linetype = extra.args$linetype,
       bins = bins,
@@ -182,10 +200,44 @@ distributionPlot <- function(
           extra.args$alpha %||% 0.25
         ))
       ),
-      position = position %||% "identity",
+      position = (position %||% "identity"),
       linewidth = extra.args$linewidth,
       linetype = extra.args$linetype,
       trim = FALSE,
+      na.rm = TRUE,
+      show.legend = dplyr::n_distinct(mydata$group) > 1
+    )
+  }
+
+  if (method == "freqpoly") {
+    geom_dist <- ggplot2::geom_freqpoly(
+      ggplot2::aes(
+        color = .data$group
+      ),
+      position = (position %||% "identity"),
+      linewidth = extra.args$linewidth,
+      linetype = extra.args$linetype,
+      lineend = extra.args$lineend %||% "butt",
+      linejoin = extra.args$linejoin %||% "round",
+      linemitre = extra.args$linemitre %||% 10,
+      bins = bins,
+      binwidth = binwidth,
+      na.rm = TRUE,
+      show.legend = dplyr::n_distinct(mydata$group) > 1
+    )
+  }
+
+  if (method == "ecdf") {
+    geom_dist <- ggplot2::stat_ecdf(
+      ggplot2::aes(
+        color = .data$group
+      ),
+      position = "identity",
+      linewidth = extra.args$linewidth,
+      linetype = extra.args$linetype,
+      lineend = extra.args$lineend %||% "butt",
+      linejoin = extra.args$linejoin %||% "round",
+      linemitre = extra.args$linemitre %||% 10,
       na.rm = TRUE,
       show.legend = dplyr::n_distinct(mydata$group) > 1
     )
@@ -200,36 +252,40 @@ distributionPlot <- function(
       key.position = key.position,
       extra.args = extra.args
     ) +
-    coord_cartesian(
+    ggplot2::coord_cartesian(
       xlim = extra.args$xlim,
       ylim = extra.args$ylim
     ) +
-    scale_y_continuous(
+    ggplot2::scale_y_continuous(
       expand = ggplot2::expansion(c(
         0,
-        ifelse(position %||% "default" == "fill", 0, 0.1)
+        ifelse((position %||% "default") == "fill", 0, 0.1)
       )),
       transform = ifelse(log.y, "log10", "identity"),
-      labels = if (position %||% "default" == "fill") {
+      labels = if ((position %||% "default") == "fill") {
         scales::label_percent()
       } else {
         scales::label_comma()
       }
     ) +
-    scale_x_continuous(
+    ggplot2::scale_x_continuous(
       expand = ggplot2::expansion(),
       transform = ifelse(log.x, "log10", "identity")
     ) +
     layer_ref(ref = ref.x, which = "x", type = "numeric") +
     layer_ref(ref = ref.y, which = "y", type = "numeric") +
     get_facet(
-      type = ifelse(type == "default", "default", "type"),
+      type = if (all(type == "default")) {
+        "default"
+      } else {
+        type_cols[type != "default"]
+      },
       extra.args = extra.args,
       auto.text = auto.text,
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    labs(
+    ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
       color = quickText(key.title, auto.text),
