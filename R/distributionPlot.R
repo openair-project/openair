@@ -24,10 +24,11 @@
 #'
 #' @param position A string representing a `ggplot2` "position" - see
 #'   [ggplot2::position_identity()] and similar functions. When `NULL`, will use
-#'   `"stack"` for histograms and `"identity"` for density functions. Also
-#'   useful is `"fill"` in conjunction with the `group` argument which will
-#'   'normalise' the y-axis to show a percentage rather than an absolute count
-#'   or density estimate. Not used when `method = "ecdf"`.
+#'   `"stack"` for histograms and `"identity"` for other methods. Also useful is
+#'   `"fill"` in conjunction with the `group` argument and `"histogram"`
+#'   `method` which will 'normalise' the y-axis to show a percentage rather than
+#'   an absolute count or density estimate. Not used when `method = "ecdf"`,
+#'   which must be `"identity"`.
 #'
 #' @export
 #' @return an [openair][openair-package] object
@@ -79,8 +80,18 @@ distributionPlot <- function(
 
   if (length(pollutant) > 1 && length(type) > 2) {
     cli::cli_abort(
-      "In {.fun openair::distributionPlot}, cannot have more than one \\
+      "In {.fun openair::distributionPlot}, cannot have more than one \
       {.arg pollutant} and have two {.arg type}s."
+    )
+  }
+
+  if (
+    method == "density" && (position %||% "identity") %in% c("stack", "fill")
+  ) {
+    cli::cli_warn(
+      "Using {.val {position}} position with {.val density} method can \ 
+      produce misleading results, as density curves are independently \
+      normalised per group."
     )
   }
 
