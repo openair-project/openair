@@ -7,16 +7,16 @@
 distributionPlot(
   mydata,
   pollutant = "nox",
-  method = c("histogram", "density"),
+  method = c("histogram", "freqpoly", "density", "ecdf"),
   binwidth = NULL,
-  bins = NULL,
+  bins = 30,
   position = NULL,
   group = "default",
   type = "default",
-  cols = "brewer1",
+  cols = "hue",
   theme = "default",
   key.title = group,
-  key.position = "right",
+  key.position = "top",
   log.x = FALSE,
   log.y = FALSE,
   ref.x = NULL,
@@ -27,38 +27,24 @@ distributionPlot(
 )
 }
 \arguments{
-\item{mydata}{A data frame to plot.}
+\item{mydata}{A data frame.}
 
 \item{pollutant}{Name of the pollutant(s) to plot contained in \code{mydata}.}
 
-\item{method}{One of \code{"histogram"} (the default) or \code{"density"}.}
+\item{method}{One of: \code{"histogram"}, \code{"freqpoly"}, \code{"density"}, or \code{"ecdf"}.
+Note that \code{"freqpoly"} is effectively a line chart equivalent of a
+histogram, and may appear less cluttered with many groups.}
 
-\item{binwidth, bins}{Used when \code{method = "histogram"}. \code{binwidth} sets the
-width of the bins. \code{bins} sets teh number of bins, defaulting to \code{30}.
-\code{bins} is overriden by \code{binwidth}. This has no effect wehn \code{method = "density"}.}
+\item{binwidth, bins}{Used when \code{method = "histogram"} or \code{"freqpoly"}.
+\code{binwidth} sets the width of the bins. \code{bins} sets the number of bins,
+defaulting to \code{30}. \code{bins} is overridden by \code{binwidth}.}
 
 \item{position}{A string representing a \code{ggplot2} "position" - see
 \code{\link[ggplot2:position_identity]{ggplot2::position_identity()}} and similar functions. When \code{NULL}, will use
 \code{"stack"} for histograms and \code{"identity"} for density functions. Also
 useful is \code{"fill"} in conjunction with the \code{group} argument which will
 'normalise' the y-axis to show a percentage rather than an absolute count
-or density estimate.}
-
-\item{group}{Controls how multiple lines/series are grouped. Three options
-are available:
-\itemize{
-\item \code{FALSE} (default): each pollutant is plotted in its own panel with its
-own scale.
-\item \code{TRUE}: all pollutants are plotted together on the same panel and scale,
-coloured by pollutant name.
-\item A character string giving the name of a column in \code{mydata} (e.g.
-\code{group = "site"} or \code{group = "pollutant"}): lines are coloured by the
-values in that column. With a single \code{pollutant} all groups appear in one
-panel; with multiple \code{pollutant}s each pollutant gets its own panel and
-lines within each panel are coloured by the group column. This is
-particularly useful for long-format data where multiple species are stored
-in one column.
-}}
+or density estimate. Not used when \code{method = "ecdf"}.}
 
 \item{type}{Character string(s) defining how data should be split/conditioned
 before plotting. \code{"default"} produces a single panel using the entire
@@ -184,14 +170,13 @@ labels and any other annotations.
 an \link[=openair-package]{openair} object
 }
 \description{
-This function plots the distribution of a pollutant or other variable as
-either a histogram or a kenel density estimate function. The former is often
-more easily interpretable and shows the 'real data' (albeit binned), but can
-easily get cluttered with lots of different groups and is heavily dependent
-on your choice of bin width. The latter appears 'cleaner' with many
-overlapping groups, but can be more challenging to interpret and represents a
-smoothed density function which may extend beyond the bounds of the input
-data.
+This function plots the distribution of one or more pollutants or other
+variables as a histogram, kernel density estimate function, or empirical
+cumulative distribution function. The choice of method comes with trade-offs;
+for example, histograms are often more easily interpretable but can easily
+get cluttered and are heavily dependent on bin width, whereas density
+functions appear 'cleaner' with many overlapping groups, but can be more
+challenging to interpret.
 }
 \examples{
 distributionPlot(mydata, pollutant = "no2", group = "season")
@@ -200,16 +185,19 @@ distributionPlot(mydata, pollutant = "no2", group = "season")
 distributionPlot(
   mydata,
   pollutant = "no2",
-  group = "season",
-  method = "density"
+  group = "weekend",
+  method = "density",
+  cols = "tol"
 )
 
 distributionPlot(
   mydata,
   pollutant = "no2",
-  group = "season",
+  group = "wd",
   position = "fill",
-  alpha = 0.75
+  wd.res = 4,
+  alpha = 0.75,
+  cols = "tol"
 )
 }
 }
