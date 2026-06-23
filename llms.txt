@@ -237,6 +237,8 @@ Additional plotting functions for visualising air quality data.
   : Plot heat maps of atmospheric composition data
 - [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
   : Variation Plot
+- [`distributionPlot()`](https://openair-project.github.io/openair/reference/distributionPlot.md)
+  : Plot the distribution of a variable with conditioning
 - [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
   : Flexible scatter plots
 - [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md)
