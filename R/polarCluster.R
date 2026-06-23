@@ -223,7 +223,12 @@ polarCluster <-
     make.clust <- function(i, results.grid) {
       i <- n.clusters[i]
       dat.orig <- results.grid
-      clusters <- cluster::pam(results.grid[, c("u", "v", "z")], i, stand = TRUE, pamonce = 3)
+      clusters <- cluster::pam(
+        results.grid[, c("u", "v", "z")],
+        i,
+        stand = TRUE,
+        pamonce = 3
+      )
       dat.orig$cluster <- clusters$clustering
       dat.orig$nclust <- paste(i, "clusters")
       dat.orig
