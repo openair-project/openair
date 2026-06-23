@@ -23,6 +23,7 @@ timePlot(
   cols = "brewer1",
   theme = "default",
   log = FALSE,
+  step = FALSE,
   windflow = NULL,
   smooth = FALSE,
   smooth_k = NULL,
@@ -264,6 +265,15 @@ timePlot(
   plotting data for several different pollutants that exist on very
   different scales. It is therefore useful to use `log = TRUE` together
   with `group = TRUE`.
+
+- step:
+
+  If `TRUE`, will create a "stairstep" plot which more clearly
+  highlights where changes occur. This is likely most useful for low
+  resolution data or for multi-day measurement techniques (e.g.,
+  diffusion tubes). Can also be any of `"vh"`, `"hv"` or `"mid"`, passed
+  to the `direction` argument of
+  [`ggplot2::geom_step()`](https://ggplot2.tidyverse.org/reference/geom_path.html).
 
 - windflow:
 

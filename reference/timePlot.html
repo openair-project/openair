@@ -82,6 +82,7 @@ together in as compact a way as possible.</p>
 <span>  cols <span class="op">=</span> <span class="st">"brewer1"</span>,</span>
 <span>  theme <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  step <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  windflow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  smooth <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  smooth_k <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -281,6 +282,14 @@ openair theme will not be fully applied; instead, only minimal adjustments
 If <code>TRUE</code> a well-formatted log10 scale is used. This can be useful for
 plotting data for several different pollutants that exist on very different
 scales. It is therefore useful to use <code>log = TRUE</code> together with <code>group = TRUE</code>.</p></dd>
+
+
+<dt id="arg-step">step<a class="anchor" aria-label="anchor" href="#arg-step"></a></dt>
+<dd><p>If <code>TRUE</code>, will create a "stairstep" plot which more clearly
+highlights where changes occur. This is likely most useful for low
+resolution data or for multi-day measurement techniques (e.g., diffusion
+tubes). Can also be any of <code>"vh"</code>, <code>"hv"</code> or <code>"mid"</code>, passed to the
+<code>direction</code> argument of <code><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">ggplot2::geom_step()</a></code>.</p></dd>
 
 
 <dt id="arg-windflow">windflow<a class="anchor" aria-label="anchor" href="#arg-windflow"></a></dt>
