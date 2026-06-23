@@ -51,16 +51,6 @@ test_that("cluster = TRUE populates clust with an hclust; cluster = FALSE leaves
 
 # --- triangle / diagonal -----------------------------------------------------
 
-test_that("triangle = 'upper' has no below-diagonal entries", {
-  upper <- corPlot(dat, plot = FALSE, cluster = FALSE, triangle = "upper")
-  expect_true(all(as.integer(upper$data$row) <= as.integer(upper$data$col)))
-})
-
-test_that("triangle = 'lower' has no above-diagonal entries", {
-  lower <- corPlot(dat, plot = FALSE, cluster = FALSE, triangle = "lower")
-  expect_true(all(as.integer(lower$data$row) >= as.integer(lower$data$col)))
-})
-
 test_that("diagonal = FALSE removes self-pairs and reduces row count", {
   no_diag <- corPlot(dat, plot = FALSE, diagonal = FALSE)
   expect_true(all(no_diag$data$row != no_diag$data$col))

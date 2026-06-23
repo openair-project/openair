@@ -87,7 +87,7 @@ distributionPlot <- function(
   if (!is.null(position)) {
     position <- rlang::arg_match(
       position,
-      values = c("identity", "stack", "fill"),
+      values = c("identity", "stack", "fill", "dodge"),
       multiple = FALSE
     )
   }
@@ -101,6 +101,9 @@ distributionPlot <- function(
 
   # restrictions to certain parameters
   if (method == "ecdf") {
+    position <- "identity"
+  }
+  if (method == "density" && position == "dodge") {
     position <- "identity"
   }
 
@@ -134,7 +137,7 @@ distributionPlot <- function(
   extra.args$tag <- quickText(extra.args$tag, auto.text)
 
   extra.args$linetype <- extra.args$linetype %||% 1
-  extra.args$linewidth <- extra.args$linewidth %||% 0.75
+  extra.args$linewidth <- extra.args$linewidth %||% 0.5
 
   # check & cut data
   vars <- c(pollutant)
@@ -188,54 +191,83 @@ distributionPlot <- function(
 
   # geometries
   if (method == "histogram") {
-    geom_dist <- ggplot2::geom_histogram(
-      ggplot2::aes(
-        color = .data$group,
-        fill = ggplot2::after_scale(ggplot2::alpha(
-          .data$colour,
-          extra.args$alpha %||% 0.25
-        ))
-      ),
-      position = (position %||% "stack"),
-      linewidth = extra.args$linewidth,
-      linetype = extra.args$linetype,
-      bins = bins,
-      binwidth = binwidth,
-      na.rm = TRUE,
-      show.legend = dplyr::n_distinct(mydata$group) > 1
-    )
+    if ("border" %in% names(extra.args)) {
+      geom_dist <- ggplot2::geom_histogram(
+        ggplot2::aes(fill = .data$group),
+        color = extra.args$border,
+        alpha = extra.args$alpha %||% 0.25,
+        position = (position %||% "stack"),
+        linewidth = extra.args$linewidth,
+        linetype = extra.args$linetype,
+        bins = bins,
+        binwidth = binwidth,
+        na.rm = TRUE,
+        show.legend = dplyr::n_distinct(mydata$group) > 1
+      )
+    } else {
+      geom_dist <- ggplot2::geom_histogram(
+        ggplot2::aes(
+          color = .data$group,
+          fill = ggplot2::after_scale(ggplot2::alpha(
+            .data$colour,
+            extra.args$alpha %||% 0.25
+          ))
+        ),
+        position = (position %||% "stack"),
+        linewidth = extra.args$linewidth,
+        linetype = extra.args$linetype,
+        bins = bins,
+        binwidth = binwidth,
+        na.rm = TRUE,
+        show.legend = dplyr::n_distinct(mydata$group) > 1
+      )
+    }
   }
 
   if (method == "density") {
     position <- position %||% "identity"
-    if (position %in% c("stack", "fill")) {
-      density_aes <- ggplot2::aes(
-        y = ggplot2::after_stat(.data$count),
-        color = .data$group,
-        fill = ggplot2::after_scale(ggplot2::alpha(
-          .data$colour,
-          extra.args$alpha %||% 0.25
-        ))
+
+    if ("border" %in% names(extra.args)) {
+      geom_dist <- ggplot2::geom_density(
+        mapping = ggplot2::aes(
+          y = ggplot2::after_stat(.data[[ifelse(
+            position %in% c("stack", "fill"),
+            "density",
+            "count"
+          )]]),
+          fill = .data$group
+        ),
+        color = extra.args$border,
+        alpha = extra.args$alpha %||% 0.25,
+        position = (position %||% "identity"),
+        linewidth = extra.args$linewidth,
+        linetype = extra.args$linetype,
+        trim = FALSE,
+        na.rm = TRUE,
+        show.legend = dplyr::n_distinct(mydata$group) > 1
       )
     } else {
-      density_aes <- ggplot2::aes(
-        color = .data$group,
-        fill = ggplot2::after_scale(ggplot2::alpha(
-          .data$colour,
-          extra.args$alpha %||% 0.25
-        ))
+      geom_dist <- ggplot2::geom_density(
+        mapping = ggplot2::aes(
+          y = ggplot2::after_stat(.data[[ifelse(
+            position %in% c("stack", "fill"),
+            "density",
+            "count"
+          )]]),
+          color = .data$group,
+          fill = ggplot2::after_scale(ggplot2::alpha(
+            .data$colour,
+            extra.args$alpha %||% 0.25
+          ))
+        ),
+        position = (position %||% "identity"),
+        linewidth = extra.args$linewidth,
+        linetype = extra.args$linetype,
+        trim = FALSE,
+        na.rm = TRUE,
+        show.legend = dplyr::n_distinct(mydata$group) > 1
       )
     }
-
-    geom_dist <- ggplot2::geom_density(
-      mapping = density_aes,
-      position = (position %||% "identity"),
-      linewidth = extra.args$linewidth,
-      linetype = extra.args$linetype,
-      trim = FALSE,
-      na.rm = TRUE,
-      show.legend = dplyr::n_distinct(mydata$group) > 1
-    )
   }
 
   if (method == "freqpoly") {
@@ -316,7 +348,6 @@ distributionPlot <- function(
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
-      color = quickText(key.title, auto.text),
       title = extra.args$title,
       subtitle = extra.args$subtitle,
       caption = extra.args$caption,
@@ -327,9 +358,11 @@ distributionPlot <- function(
         cols,
         dplyr::n_distinct(mydata$group)
       ),
+      name = quickText(key.title, auto.text),
       breaks = levels(mydata$group),
       labels = \(x) label_openair(x, auto_text = auto.text),
-      drop = FALSE
+      drop = FALSE,
+      aesthetics = c("colour", "fill")
     )
 
   # outputs
