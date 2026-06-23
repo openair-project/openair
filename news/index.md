@@ -62,6 +62,12 @@
   wrong clustered more data frame columns than necessary. The update
   should revert results to previous behaviour.
 
+- Plotting functions (e.g.,
+  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md))
+  now work with ‘grouped’ tbls created with
+  [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
+  by automatically ungrouping input data.
+
 ## openair 3.1.0
 
 CRAN release: 2026-05-20
