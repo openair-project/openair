@@ -20,6 +20,8 @@
 
 - Added `distributionPlot()`, which flexibly plots histograms and density functions to examine the 'shape' of the distribution of numeric data.
 
+- `timePlot()` gains the `step` argument which causes a "stairstep" plot to be created instead of a traditional line chart. This is likely most useful for low resolution or 'multi-day' (e.g., diffusion tube) data.
+
 ## Bug Fixes
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.

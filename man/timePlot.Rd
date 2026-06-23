@@ -20,6 +20,7 @@ timePlot(
   cols = "brewer1",
   theme = "default",
   log = FALSE,
+  step = FALSE,
   windflow = NULL,
   smooth = FALSE,
   smooth_k = NULL,
@@ -203,6 +204,12 @@ openair theme will not be fully applied; instead, only minimal adjustments
 If \code{TRUE} a well-formatted log10 scale is used. This can be useful for
 plotting data for several different pollutants that exist on very different
 scales. It is therefore useful to use \code{log = TRUE} together with \code{group = TRUE}.}
+
+\item{step}{If \code{TRUE}, will create a "stairstep" plot which more clearly
+highlights where changes occur. This is likely most useful for low
+resolution data or for multi-day measurement techniques (e.g., diffusion
+tubes). Can also be any of \code{"vh"}, \code{"hv"} or \code{"mid"}, passed to the
+\code{direction} argument of \code{\link[ggplot2:geom_step]{ggplot2::geom_step()}}.}
 
 \item{windflow}{If \code{TRUE}, the vector-averaged wind speed and direction will
 be plotted using arrows. Alternatively, can be a list of arguments to
