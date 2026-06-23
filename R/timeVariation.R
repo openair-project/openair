@@ -211,8 +211,8 @@ timeVariation <- function(
   if (length(panels) == 1) {
     cli::cli_warn(
       c(
-        "!" = "Instead of setting {.arg panel} to a single variable, use {.fun openair::plotVariation}.",
-        "i" = 'i.e., {.code plotVariation(..., x = "{panels}")}'
+        "!" = "Instead of setting {.arg panels} to a single variable, use {.fun openair::variationPlot}.",
+        "i" = 'i.e., {.code variationPlot(..., x = "{panels}")}'
       )
     )
   }

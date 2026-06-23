@@ -22,6 +22,9 @@ checkPrep <- function(
   remove.neg = TRUE,
   wd = "wd"
 ) {
+  # ensure data is ungrouped
+  mydata <- dplyr::ungroup(mydata)
+
   # deal with conditioning variable if present, if user-defined, must exist in
   # data pre-defined types existing conditioning variables that only depend on
   # date (which is checked)

@@ -34,6 +34,8 @@
 
 - Clustering using `polarCluster()` wrong clustered more data frame columns than necessary. The update should revert results to previous behaviour.
 
+- Plotting functions (e.g., `timeVariation()`) now work with 'grouped' tbls created with `dplyr::group_by()` by automatically ungrouping input data.
+
 # openair 3.1.0
 
 ## Dependency Changes
