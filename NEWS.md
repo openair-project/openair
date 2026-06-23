@@ -18,6 +18,8 @@
 
 - `importMeta()` can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.
 
+- `timePlot()` gains the `step` argument which causes a "stairstep" plot to be created instead of a traditional line chart. This is likely most useful for low resolution or 'multi-day' (e.g., diffusion tube) data.
+
 ## Bug Fixes
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.

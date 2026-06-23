@@ -75,6 +75,12 @@
 #'   irregular data, set to `FALSE`. Note, this should not be set for `type`
 #'   other than `default`.
 #'
+#' @param step If `TRUE`, will create a "stairstep" plot which more clearly
+#'   highlights where changes occur. This is likely most useful for low
+#'   resolution data or for multi-day measurement techniques (e.g., diffusion
+#'   tubes). Can also be any of `"vh"`, `"hv"` or `"mid"`, passed to the
+#'   `direction` argument of [ggplot2::geom_step()].
+#'
 #' @param log Should the y-axis appear on a log scale? The default is `FALSE`.
 #'   If `TRUE` a well-formatted log10 scale is used. This can be useful for
 #'   plotting data for several different pollutants that exist on very different
@@ -169,7 +175,7 @@
 #' # 2-week average of O3 concentrations
 #' timePlot(mydata, pollutant = "o3", avg.time = "2 week")
 #' }
-#'
+#' 
 timePlot <- function(
   mydata,
   pollutant = "nox",
@@ -185,6 +191,7 @@ timePlot <- function(
   cols = "brewer1",
   theme = "default",
   log = FALSE,
+  step = FALSE,
   windflow = NULL,
   smooth = FALSE,
   smooth_k = NULL,
@@ -461,6 +468,20 @@ timePlot <- function(
     legend_title <- key.title
   }
 
+  if (rlang::is_logical(step)) {
+    use_step <- step
+    step_direction <- "hv"
+  } else {
+    use_step <- TRUE
+    step_direction <- rlang::arg_match(step, c("hv", "vh", "mid"))
+  }
+
+  if (use_step) {
+    geom <- function(...) ggplot2::geom_step(..., direction = step_direction)
+  } else {
+    geom <- ggplot2::geom_line
+  }
+
   # built plot
   thePlot <-
     ggplot2::ggplot(
@@ -473,7 +494,7 @@ timePlot <- function(
         linetype = .data[[aes_col]]
       )
     ) +
-    ggplot2::geom_line(
+    geom(
       ggplot2::aes(linewidth = .data[[aes_col]]),
       lineend = extra.args$lineend %||% "butt",
       linejoin = extra.args$linejoin %||% "round",
