@@ -275,8 +275,8 @@ openColours <- function(
     if (length(scheme) > 1L && any(scheme %in% .all_schemes)) {
       cli::cli_abort(
         c(
-          "x" = "Please provide {.strong either} 1 {.fun openColours} palette {.emph or} a vector of valid R colours.",
-          "i" = "See {.code ?openColours} for a list of palettes."
+          "x" = "Please provide {.strong either} 1 {.fun openair::openColours} palette {.emph or} a vector of valid R colours.",
+          "i" = "See {.fun openair::openSchemes} for a list of palettes."
         ),
         call = NULL
       )
@@ -285,7 +285,7 @@ openColours <- function(
     if (!all(check)) {
       cli::cli_abort(
         c(
-          "x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openColours} palettes: {.field {names(check[!check])}}"
+          "x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openair::openColours} palettes: {.field {names(check[!check])}}"
         ),
         call = NULL
       )
