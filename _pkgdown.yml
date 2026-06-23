@@ -27,6 +27,7 @@ reference:
   contents:
   - trendLevel
   - variationPlot
+  - distributionPlot
   - scatterPlot
   - corPlot
 - title: Plot Utilities
