@@ -103,7 +103,7 @@ distributionPlot <- function(
   if (method == "ecdf") {
     position <- "identity"
   }
-  if (method == "density" && position == "dodge") {
+  if (method == "density" && (position %||% "identity") == "dodge") {
     position <- "identity"
   }
 
