@@ -32,7 +32,7 @@
   measured, and the distance from a given coordinate.
 
 - Added
-  [`distributionPlot()`](https://openair-project.github.io/openair/reference/distributionPlot.md),
+  [`distPlot()`](https://openair-project.github.io/openair/reference/distPlot.md),
   which flexibly plots histograms and density functions to examine the
   ‘shape’ of the distribution of numeric data.
 
