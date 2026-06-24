@@ -42,10 +42,10 @@
 #' @return an [openair][openair-package] object
 #' @author Jack Davison
 #' @examples
-#' distributionPlot(mydata, pollutant = "no2", group = "season")
+#' distPlot(mydata, pollutant = "no2", group = "season")
 #'
 #' \dontrun{
-#' distributionPlot(
+#' distPlot(
 #'   mydata,
 #'   pollutant = "no2",
 #'   group = "weekend",
@@ -53,7 +53,7 @@
 #'   cols = "tol"
 #' )
 #'
-#' distributionPlot(
+#' distPlot(
 #'   mydata,
 #'   pollutant = "no2",
 #'   group = "wd",
@@ -63,7 +63,7 @@
 #'   cols = "tol"
 #' )
 #' }
-distributionPlot <- function(
+distPlot <- function(
   mydata,
   pollutant = "nox",
   method = c("histogram", "freqpoly", "density", "ecdf"),
@@ -94,7 +94,7 @@ distributionPlot <- function(
 
   if (length(pollutant) > 1 && length(type) > 2) {
     cli::cli_abort(
-      "In {.fun openair::distributionPlot}, cannot have more than one \
+      "In {.fun openair::distPlot}, cannot have more than one \
       {.arg pollutant} and have two {.arg type}s."
     )
   }
