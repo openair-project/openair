@@ -175,7 +175,7 @@
 #' # 2-week average of O3 concentrations
 #' timePlot(mydata, pollutant = "o3", avg.time = "2 week")
 #' }
-#' 
+#'
 timePlot <- function(
   mydata,
   pollutant = "nox",

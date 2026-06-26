@@ -368,7 +368,7 @@ openColors <- openColours
 #'
 #' @export
 openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
-  palette_type = rlang::arg_match(
+  palette_type <- rlang::arg_match(
     palette_type,
     c("seq", "div", "qual"),
     multiple = TRUE
