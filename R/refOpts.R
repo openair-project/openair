@@ -24,6 +24,12 @@
 #' @param linewidth Numeric value specifying the width of the lines. Default is
 #'   1.
 #'
+#' @param label,label_size,label_colour,label_color `label` takes character
+#'   string to add a direct label to the reference line. For `ref.x` this will
+#'   be on the right hand side of the plot, and for `ref.y` this will be on top.
+#'   `label_size` and `label_colour` set label aesethetics, with the latter
+#'   defaulting to `colour` if not set.
+#'
 #' @return A list of options that can be passed to the `ref.x` or `ref.y`
 #'   arguments of functions like [timePlot()].
 #'
@@ -50,8 +56,12 @@ refOpts <- function(
   alpha = 1,
   colour = "black",
   linetype = 1,
-  linewidth = 1,
-  color = NULL
+  linewidth = 0.6,
+  label = NULL,
+  label_size = 10,
+  label_colour = NULL,
+  color = NULL,
+  label_color = NULL
 ) {
   if (missing(colour) && !is.null(color)) {
     colour <- color
@@ -61,7 +71,10 @@ refOpts <- function(
     alpha = alpha,
     colour = colour,
     linetype = linetype,
-    linewidth = linewidth
+    linewidth = linewidth,
+    label = label,
+    label_size = label_size,
+    label_colour = label_colour %||% label_color %||% colour
   )
 }
 
@@ -125,25 +138,46 @@ layer_ref <- function(
   # recycle aesthetics if needed
   alpha <- recycle_to_length(ref$alpha %||% 1, n)
   colour <- recycle_to_length(ref$colour %||% ref$col %||% "black", n)
-  linetype <- recycle_to_length(ref$linetype %||% ref$lty %||% 1, n)
+  linetype <- recycle_to_length(ref$linetype %||% ref$lty %||% 0.6, n)
   linewidth <- recycle_to_length(ref$linewidth %||% ref$lwd %||% 0.5, n)
+  label_size <- recycle_to_length(ref$label_size %||% 10, n)
+  label_colour <- recycle_to_length(ref$label_colour %||% 10, n)
+
+  label <- ref$label
+  use_label <- any(!is.null(label))
+  if (use_label) {
+    if (length(label) != n) {
+      cli::cli_abort("One {.arg label} needed per {.arg intercept}.")
+    }
+    rlang::check_installed(
+      "legendry",
+      reason = "to add labels to reference lines.",
+      version = "0.3.0"
+    )
+  }
 
   # choose appropriate function
   if (which == "x") {
-    fun <- \(intercept, ...) {
+    geom_fun <- \(intercept, ...) {
       ggplot2::geom_vline(xintercept = intercept, ..., inherit.aes = FALSE)
     }
+    annotate_fun <- \(intercept, label, ...) {
+      legendry::annotate_top(aesthetic = intercept, label = label, ...)
+    }
   } else if (which == "y") {
-    fun <- \(intercept, ...) {
+    geom_fun <- \(intercept, ...) {
       ggplot2::geom_hline(yintercept = intercept, ..., inherit.aes = FALSE)
+    }
+    annotate_fun <- \(intercept, label, ...) {
+      legendry::annotate_right(aesthetic = intercept, label = label, ...)
     }
   }
 
   # Build list of geoms
-  purrr::pmap(
+  geoms <- purrr::pmap(
     .l = list(intercept, alpha, colour, linetype, linewidth),
     .f = function(intercept, alpha, colour, linetype, linewidth) {
-      fun(
+      geom_fun(
         intercept = intercept,
         alpha = alpha,
         colour = colour,
@@ -152,4 +186,20 @@ layer_ref <- function(
       )
     }
   )
+
+  if (use_label) {
+    return(append(
+      geoms,
+      annotate_fun(
+        intercept = intercept,
+        label = label,
+        size = label_size,
+        colour = label_colour,
+        linetype = linetype,
+        linewidth = linewidth
+      )
+    ))
+  } else {
+    return(geoms)
+  }
 }

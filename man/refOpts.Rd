@@ -9,8 +9,12 @@ refOpts(
   alpha = 1,
   colour = "black",
   linetype = 1,
-  linewidth = 1,
-  color = NULL
+  linewidth = 0.6,
+  label = NULL,
+  label_size = 10,
+  label_colour = NULL,
+  color = NULL,
+  label_color = NULL
 )
 }
 \arguments{
@@ -32,6 +36,12 @@ dashed) or a string (e.g., "solid", "dashed"). Default is 1 (solid).}
 
 \item{linewidth}{Numeric value specifying the width of the lines. Default is
 1.}
+
+\item{label, label_size, label_colour, label_color}{\code{label} takes character
+string to add a direct label to the reference line. For \code{ref.x} this will
+be on the right hand side of the plot, and for \code{ref.y} this will be on top.
+\code{label_size} and \code{label_colour} set label aesethetics, with the latter
+defaulting to \code{colour} if not set.}
 }
 \value{
 A list of options that can be passed to the \code{ref.x} or \code{ref.y}
