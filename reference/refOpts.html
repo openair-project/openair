@@ -72,8 +72,12 @@ arguments will be recycled to be equal to that length.</p>
 <span>  alpha <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  colour <span class="op">=</span> <span class="st">"black"</span>,</span>
 <span>  linetype <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  linewidth <span class="op">=</span> <span class="fl">1</span>,</span>
-<span>  color <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  linewidth <span class="op">=</span> <span class="fl">0.6</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label_size <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  label_colour <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  color <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label_color <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -108,6 +112,14 @@ dashed) or a string (e.g., "solid", "dashed"). Default is 1 (solid).</p></dd>
 <dt id="arg-linewidth">linewidth<a class="anchor" aria-label="anchor" href="#arg-linewidth"></a></dt>
 <dd><p>Numeric value specifying the width of the lines. Default is
 1.</p></dd>
+
+
+<dt id="arg-label-label-size-label-colour-label-color">label, label_size, label_colour, label_color<a class="anchor" aria-label="anchor" href="#arg-label-label-size-label-colour-label-color"></a></dt>
+<dd><p><code>label</code> takes character
+string to add a direct label to the reference line. For <code>ref.x</code> this will
+be on the right hand side of the plot, and for <code>ref.y</code> this will be on top.
+<code>label_size</code> and <code>label_colour</code> set label aesethetics, with the latter
+defaulting to <code>colour</code> if not set.</p></dd>
 
 </dl></div>
     <div class="section level2">

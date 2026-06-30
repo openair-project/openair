@@ -36,6 +36,12 @@
   which flexibly plots histograms and density functions to examine the
   ‘shape’ of the distribution of numeric data.
 
+- [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  gains the `label`, `label_size` and `label_colo(u)r` arguments. These
+  options require the [legendry](https://teunbrand.github.io/legendry/)
+  package and add direct labels to the reference lines on the opposite
+  side to the numeric axes.
+
 - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
   gains the `step` argument which causes a “stairstep” plot to be
   created instead of a traditional line chart. This is likely most

@@ -14,8 +14,12 @@ refOpts(
   alpha = 1,
   colour = "black",
   linetype = 1,
-  linewidth = 1,
-  color = NULL
+  linewidth = 0.6,
+  label = NULL,
+  label_size = 10,
+  label_colour = NULL,
+  color = NULL,
+  label_color = NULL
 )
 ```
 
@@ -51,6 +55,13 @@ refOpts(
 - linewidth:
 
   Numeric value specifying the width of the lines. Default is 1.
+
+- label, label_size, label_colour, label_color:
+
+  `label` takes character string to add a direct label to the reference
+  line. For `ref.x` this will be on the right hand side of the plot, and
+  for `ref.y` this will be on top. `label_size` and `label_colour` set
+  label aesethetics, with the latter defaulting to `colour` if not set.
 
 ## Value
 
