@@ -751,7 +751,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
       "#A0DFB9FF",
       "#DEF5E5FF"
     ),
-    gaf.seq = c("#12436D", "#2073BC", "#6BACE6"),
+    gaf.seq = c("#092135", "#12436D", "#2073BC", "#6BACE6", "#ADD1F1"),
     bam = c(
       '#65024B',
       '#9E3C85',
