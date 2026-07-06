@@ -47,6 +47,11 @@
   created instead of a traditional line chart. This is likely most
   useful for low resolution or ‘multi-day’ (e.g., diffusion tube) data.
 
+- The `"gaf.seq"` palette in
+  [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+  has been updated to reflect updated guidance from the UK Government
+  Analysis Function.
+
 ### Bug Fixes
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an
