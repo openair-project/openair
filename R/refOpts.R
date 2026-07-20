@@ -92,7 +92,7 @@ layer_ref <- function(
 
   # if ref is just a value, use that as the intercept
   if (!is.list(ref)) {
-    ref <- list(intercept = ref)
+    ref <- refOpts(intercept = ref)
   }
 
   # look for intercept, v and h (latter two legacy values)
