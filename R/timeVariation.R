@@ -238,8 +238,8 @@ timeVariation <- function(
       ifelse(normalise, "normalised level", toString(pollutant)),
     auto.text
   )
-  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
+  extra.args$title <- quickText(extra.args$title, auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
   extra.args$caption <- quickText(
     extra.args$caption %||% create_varplot_sub_text(statistic, conf.int),
     auto.text
@@ -275,11 +275,25 @@ timeVariation <- function(
   }
 
   # title for overall and individual plots
-  overall.title <- extra.args$title
+  overall.title <- if (identical(extra.args$title, expression(paste()))) {
+    NULL
+  } else {
+    extra.args$title
+  }
   extra.args$title <- ""
-  overall.subtitle <- extra.args$subtitle
+
+  overall.subtitle <- if (identical(extra.args$subtitle, expression(paste()))) {
+    NULL
+  } else {
+    extra.args$subtitle
+  }
   extra.args$subtitle <- ""
-  overall.caption <- extra.args$caption
+
+  overall.caption <- if (identical(extra.args$caption, expression(paste()))) {
+    NULL
+  } else {
+    extra.args$caption
+  }
   extra.args$caption <- ""
 
   # get the xvars and facets for each panel
