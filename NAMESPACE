@@ -78,7 +78,9 @@ export(variationPlot)
 export(windRose)
 export(windflowOpts)
 importFrom(Rcpp,evalCpp)
-importFrom(rlang,"%||%")
-importFrom(rlang,":=")
-importFrom(rlang,.data)
+importFrom(rlang,
+  "%||%",
+  ":=",
+  .data
+)
 useDynLib(openair, .registration = TRUE)
