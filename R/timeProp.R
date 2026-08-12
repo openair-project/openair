@@ -67,7 +67,8 @@ timeProp <- function(
   normalise = FALSE,
   ref.x = NULL,
   ref.y = NULL,
-  key.columns = 1,
+  key.columns = NULL,
+  key.rows = NULL,
   key.position = "right",
   key.title = proportion,
   date.breaks = 7,
@@ -258,11 +259,8 @@ timeProp <- function(
             key.position
           )
         ),
-        ncol = if (key.position %in% c("left", "right")) {
-          NULL
-        } else {
-          dplyr::n_distinct(results[[proportion]])
-        }
+        ncol = key.columns,
+        nrow = key.rows
       )
     ) +
     x_scale_fun(

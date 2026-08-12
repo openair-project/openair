@@ -112,6 +112,7 @@ variationPlot <- function(
   alpha = 0.4,
   key.position = "top",
   key.columns = NULL,
+  key.rows = NULL,
   name.pol = NULL,
   auto.text = TRUE,
   plot = TRUE,
@@ -524,7 +525,7 @@ variationPlot <- function(
         label_openair(poll_labels, auto_text = auto.text),
         levels(mydata$group)
       ),
-      guide = ggplot2::guide_legend(ncol = key.columns),
+      guide = ggplot2::guide_legend(ncol = key.columns, nrow = key.rows),
       aesthetics = c("fill", "colour"),
       drop = FALSE
     ) +
@@ -534,7 +535,7 @@ variationPlot <- function(
         label_openair(poll_labels, auto_text = auto.text),
         levels(mydata$group)
       ),
-      guide = ggplot2::guide_legend(ncol = key.columns),
+      guide = ggplot2::guide_legend(ncol = key.columns, nrow = key.rows),
       drop = FALSE
     ) +
     ggplot2::scale_linewidth_manual(
@@ -543,7 +544,7 @@ variationPlot <- function(
         label_openair(poll_labels, auto_text = auto.text),
         levels(mydata$group)
       ),
-      guide = ggplot2::guide_legend(ncol = key.columns),
+      guide = ggplot2::guide_legend(ncol = key.columns, nrow = key.rows),
       drop = FALSE
     ) +
     ggplot2::scale_shape_manual(
@@ -552,7 +553,7 @@ variationPlot <- function(
         label_openair(poll_labels, auto_text = auto.text),
         levels(mydata$group)
       ),
-      guide = ggplot2::guide_legend(ncol = key.columns),
+      guide = ggplot2::guide_legend(ncol = key.columns, nrow = key.rows),
       drop = FALSE
     ) +
     ggplot2::guides(

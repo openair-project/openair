@@ -18,6 +18,8 @@ distPlot(
   theme = "default",
   key.title = group,
   key.position = "top",
+  key.columns = NULL,
+  key.rows = NULL,
   ref.x = NULL,
   ref.y = NULL,
   auto.text = TRUE,
@@ -120,6 +122,11 @@ passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}
+
+\item{key.columns, key.rows}{Number of columns or rows to be used in a
+categorical legend. With many categories a single column can make to key
+too wide. The user can thus choose to use several columns by setting
+\code{key.columns} to be less than the number of categories.}
 
 \item{ref.x}{Either a single value or values representing the x axis
 intercepts to draw lines, or a list such as that provided by \code{\link[=refOpts]{refOpts()}} to

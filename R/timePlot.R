@@ -199,6 +199,7 @@ timePlot <- function(
   ref.x = NULL,
   ref.y = NULL,
   key.columns = NULL,
+  key.rows = NULL,
   key.position = "bottom",
   key.title = NULL,
   name.pol = pollutant,
@@ -434,15 +435,8 @@ timePlot <- function(
           key.position
         )
       ),
-      ncol = if (missing(key.columns)) {
-        if (key.position %in% c("left", "right")) {
-          1
-        } else {
-          n_groups
-        }
-      } else {
-        key.columns
-      }
+      ncol = key.columns,
+      nrow = key.rows
     )
 
   # aesthetic column: group column name when group is a string, the type column
