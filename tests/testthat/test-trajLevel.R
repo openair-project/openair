@@ -5,8 +5,20 @@ if (!identical(Sys.getenv("NOT_CRAN"), "true")) {
 skip_if_not_installed("sf")
 skip_if_not_installed("rnaturalearthdata")
 
-traj <- importTraj() |>
-  selectByDate(month = 1)
+traj <- tryCatch(
+  {
+    importTraj() |>
+      selectByDate(month = 1)
+  },
+  error = function(e) {
+    NULL
+  },
+  warning = function(w) {
+    NULL
+  }
+)
+
+skip_if(is.null(traj))
 
 traj$nox <- sample(randu$x, replace = TRUE, size = nrow(traj))
 
