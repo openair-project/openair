@@ -314,8 +314,16 @@ corPlot <- function(
             )
         } else {
           hc <- NULL
-          cor_matrix_df$x <- factor(cor_matrix_df$x)
-          cor_matrix_df$y <- factor(cor_matrix_df$y)
+          cor_matrix_df$x <- factor(
+            cor_matrix_df$x,
+            levels = vars,
+            labels = paste(tag, vars, sep = "___")
+          )
+          cor_matrix_df$y <- factor(
+            cor_matrix_df$y,
+            levels = vars,
+            labels = paste(tag, vars, sep = "___")
+          )
         }
 
         return(
