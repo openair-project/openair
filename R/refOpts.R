@@ -144,7 +144,7 @@ layer_ref <- function(
   label_colour <- recycle_to_length(ref$label_colour %||% 10, n)
 
   label <- ref$label
-  use_label <- any(!is.null(label))
+  use_label <- !all(is.null(label))
   if (use_label) {
     if (length(label) != n) {
       cli::cli_abort("One {.arg label} needed per {.arg intercept}.")
