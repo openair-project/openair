@@ -16,11 +16,13 @@
     
     - Any `ggplot2::theme()` object, which will be used to modify the `"default"` theme.
 
-- `importMeta()` can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.
-
 - Added `distPlot()`, which flexibly plots histograms and density functions to examine the 'shape' of the distribution of numeric data.
 
+- `importMeta()` can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.
+
 - `refOpts()` gains the `label`, `label_size` and `label_colo(u)r` arguments. These options require the `{legendry}` package and add direct labels to the reference lines on the opposite side to the numeric axes.
+
+- `key.columns` now defaults to `NULL` in most functions, which will use `ggplot2`'s logic for the number of columns. `key.rows` has also been added.
 
 - `timePlot()` gains the `step` argument which causes a "stairstep" plot to be created instead of a traditional line chart. This is likely most useful for low resolution or 'multi-day' (e.g., diffusion tube) data.
 
@@ -43,6 +45,8 @@
 - Clustering using `polarCluster()` wrong clustered more data frame columns than necessary. The update should revert results to previous behaviour.
 
 - Plotting functions (e.g., `timeVariation()`) now work with 'grouped' tbls created with `dplyr::group_by()` by automatically ungrouping input data.
+
+- `corPlot(cluster = FALSE)` will no longer raise a missing data error, and the `data` object will be appropriately constructed.
 
 # openair 3.1.0
 

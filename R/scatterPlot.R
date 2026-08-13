@@ -224,7 +224,8 @@ scatterPlot <- function(
   theme = "default",
   plot.type = "p",
   key.title = group,
-  key.columns = 1,
+  key.columns = NULL,
+  key.rows = NULL,
   key.position = "right",
   log.x = FALSE,
   log.y = FALSE,
@@ -325,6 +326,7 @@ scatterPlot <- function(
       key.position = key.position,
       key.title = key.title,
       key.columns = key.columns,
+      key.rows = key.rows,
       limits = limits,
       trans = trans,
       k = k,
@@ -538,6 +540,7 @@ scatter_scatter <- function(
   key.position,
   key.title,
   key.columns,
+  key.rows,
   limits,
   trans,
   k,
@@ -663,6 +666,7 @@ scatter_scatter <- function(
 
     theGuide <- ggplot2::guide_legend(
       ncol = key.columns,
+      nrow = key.rows,
       theme = ggplot2::theme(
         legend.title.position = if (key.position %in% c("left", "right")) {
           "top"

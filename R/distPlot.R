@@ -77,6 +77,8 @@ distPlot <- function(
   theme = "default",
   key.title = group,
   key.position = "top",
+  key.columns = NULL,
+  key.rows = NULL,
   ref.x = NULL,
   ref.y = NULL,
   auto.text = TRUE,
@@ -362,7 +364,8 @@ distPlot <- function(
       breaks = levels(mydata$group),
       labels = \(x) label_openair(x, auto_text = auto.text),
       drop = FALSE,
-      aesthetics = c("colour", "fill")
+      aesthetics = c("colour", "fill"),
+      guide = ggplot2::guide_legend(ncol = key.columns, nrow = key.rows)
     )
 
   # outputs
