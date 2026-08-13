@@ -82,6 +82,7 @@
 <li><p>Clustering using <code><a href="../reference/polarCluster.html">polarCluster()</a></code> wrong clustered more data frame columns than necessary. The update should revert results to previous behaviour.</p></li>
 <li><p>Plotting functions (e.g., <code><a href="../reference/timeVariation.html">timeVariation()</a></code>) now work with ‘grouped’ tbls created with <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by()</a></code> by automatically ungrouping input data.</p></li>
 <li><p><code>corPlot(cluster = FALSE)</code> will no longer raise a missing data error, and the <code>data</code> object will be appropriately constructed.</p></li>
+<li><p><code>calendarPlot(annotate = "value", ...)</code> now correctly works when <code>breaks</code> is not <code>NULL</code>.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
