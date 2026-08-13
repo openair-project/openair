@@ -494,6 +494,7 @@ calendarPlot <-
 
     # handle breaks
     categorical <- !is.null(break_opts$breaks)
+    mydata$conc.labs <- mydata$conc.mat
     mydata$conc.mat <- cut_plot_breaks(
       mydata$conc.mat,
       break_opts
@@ -660,9 +661,9 @@ calendarPlot <-
       lim <- lim %||% Inf
       thePlot <- thePlot +
         ggplot2::geom_text(
-          data = dplyr::filter(newdata, .data$conc.mat < lim),
+          data = dplyr::filter(newdata, .data$conc.labs < lim),
           ggplot2::aes(
-            label = round(.data[["conc.mat"]], digits = digits)
+            label = round(.data[["conc.labs"]], digits = digits)
           ),
           size = cex.lim[1] * 11,
           size.unit = "pt",
@@ -670,9 +671,9 @@ calendarPlot <-
           color = col.lim[ifelse(is.infinite(lim), 2, 1)]
         ) +
         ggplot2::geom_text(
-          data = dplyr::filter(newdata, .data$conc.mat >= lim),
+          data = dplyr::filter(newdata, .data$conc.labs >= lim),
           ggplot2::aes(
-            label = round(.data[["conc.mat"]], digits = digits)
+            label = round(.data[["conc.labs"]], digits = digits)
           ),
           size = cex.lim[2] * 11,
           size.unit = "pt",
@@ -698,7 +699,7 @@ calendarPlot <-
     # return
     output <- list(
       plot = thePlot,
-      data = newdata,
+      data = newdata |> dplyr::select(-dplyr::any_of("conc.labs")),
       call = match.call()
     )
     class(output) <- "openair"

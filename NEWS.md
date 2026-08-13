@@ -48,6 +48,8 @@
 
 - `corPlot(cluster = FALSE)` will no longer raise a missing data error, and the `data` object will be appropriately constructed.
 
+- `calendarPlot(annotate = "value", ...)` now correctly works when `breaks` is not `NULL`.
+
 # openair 3.1.0
 
 ## Dependency Changes
