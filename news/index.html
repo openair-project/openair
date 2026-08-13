@@ -64,9 +64,10 @@
 <li><p><code>"print"</code>: a greyscale-first theme optimised for black-and-white output, with stronger structural elements for improved readability when printed.</p></li>
 <li><p>Any <code><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">ggplot2::theme()</a></code> object, which will be used to modify the <code>"default"</code> theme.</p></li>
 </ul></li>
-<li><p><code><a href="../reference/importMeta.html">importMeta()</a></code> can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.</p></li>
 <li><p>Added <code><a href="../reference/distPlot.html">distPlot()</a></code>, which flexibly plots histograms and density functions to examine the ‘shape’ of the distribution of numeric data.</p></li>
+<li><p><code><a href="../reference/importMeta.html">importMeta()</a></code> can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.</p></li>
 <li><p><code><a href="../reference/refOpts.html">refOpts()</a></code> gains the <code>label</code>, <code>label_size</code> and <code>label_colo(u)r</code> arguments. These options require the <a href="https://teunbrand.github.io/legendry/" class="external-link">legendry</a> package and add direct labels to the reference lines on the opposite side to the numeric axes.</p></li>
+<li><p><code>key.columns</code> now defaults to <code>NULL</code> in most functions, which will use <code>ggplot2</code>’s logic for the number of columns. <code>key.rows</code> has also been added.</p></li>
 <li><p><code><a href="../reference/timePlot.html">timePlot()</a></code> gains the <code>step</code> argument which causes a “stairstep” plot to be created instead of a traditional line chart. This is likely most useful for low resolution or ‘multi-day’ (e.g., diffusion tube) data.</p></li>
 <li><p>The <code>"gaf.seq"</code> palette in <code><a href="../reference/openColours.html">openColours()</a></code> has been updated to reflect updated guidance from the UK Government Analysis Function.</p></li>
 </ul></div>
@@ -80,6 +81,7 @@
 <li><p><code><a href="../reference/timeVariation.html">timeVariation()</a></code> overall titles, subtitles and captions are now centred by default, in line with all other <a href="https://openair-project.github.io/openair/">openair</a> plotting functions.</p></li>
 <li><p>Clustering using <code><a href="../reference/polarCluster.html">polarCluster()</a></code> wrong clustered more data frame columns than necessary. The update should revert results to previous behaviour.</p></li>
 <li><p>Plotting functions (e.g., <code><a href="../reference/timeVariation.html">timeVariation()</a></code>) now work with ‘grouped’ tbls created with <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by()</a></code> by automatically ungrouping input data.</p></li>
+<li><p><code>corPlot(cluster = FALSE)</code> will no longer raise a missing data error, and the <code>data</code> object will be appropriately constructed.</p></li>
 </ul></div>
 </div>
     <div class="section level2">

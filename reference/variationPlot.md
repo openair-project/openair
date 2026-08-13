@@ -31,6 +31,7 @@ variationPlot(
   alpha = 0.4,
   key.position = "top",
   key.columns = NULL,
+  key.rows = NULL,
   name.pol = NULL,
   auto.text = TRUE,
   plot = TRUE,
@@ -216,12 +217,12 @@ variationPlot(
   `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`, the last of
   which removes the legend entirely.
 
-- key.columns:
+- key.columns, key.rows:
 
-  Number of columns to be used in a categorical legend. With many
-  categories a single column can make to key too wide. The user can thus
-  choose to use several columns by setting `key.columns` to be less than
-  the number of categories.
+  Number of columns or rows to be used in a categorical legend. With
+  many categories a single column can make to key too wide. The user can
+  thus choose to use several columns by setting `key.columns` to be less
+  than the number of categories.
 
 - name.pol:
 

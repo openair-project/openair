@@ -18,6 +18,7 @@ conditionalQuantile(
   cols = "YlOrRd",
   theme = "default",
   key.columns = 2,
+  key.rows = NULL,
   key.position = "bottom",
   auto.text = TRUE,
   plot = TRUE,
@@ -136,12 +137,12 @@ conditionalQuantile(
   the selected openair theme will not be fully applied; instead, only
   minimal adjustments (such as legend positioning) will be made.
 
-- key.columns:
+- key.columns, key.rows:
 
-  Number of columns to be used in a categorical legend. With many
-  categories a single column can make to key too wide. The user can thus
-  choose to use several columns by setting `key.columns` to be less than
-  the number of categories.
+  Number of columns or rows to be used in a categorical legend. With
+  many categories a single column can make to key too wide. The user can
+  thus choose to use several columns by setting `key.columns` to be less
+  than the number of categories.
 
 - key.position:
 

@@ -27,20 +27,24 @@
     [`ggplot2::theme()`](https://ggplot2.tidyverse.org/reference/theme.html)
     object, which will be used to modify the `"default"` theme.
 
-- [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md)
-  can now filter by site code, site name, site type, pollutants
-  measured, and the distance from a given coordinate.
-
 - Added
   [`distPlot()`](https://openair-project.github.io/openair/reference/distPlot.md),
   which flexibly plots histograms and density functions to examine the
   ‘shape’ of the distribution of numeric data.
+
+- [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md)
+  can now filter by site code, site name, site type, pollutants
+  measured, and the distance from a given coordinate.
 
 - [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
   gains the `label`, `label_size` and `label_colo(u)r` arguments. These
   options require the [legendry](https://teunbrand.github.io/legendry/)
   package and add direct labels to the reference lines on the opposite
   side to the numeric axes.
+
+- `key.columns` now defaults to `NULL` in most functions, which will use
+  `ggplot2`’s logic for the number of columns. `key.rows` has also been
+  added.
 
 - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
   gains the `step` argument which causes a “stairstep” plot to be
@@ -88,6 +92,9 @@
   now work with ‘grouped’ tbls created with
   [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
   by automatically ungrouping input data.
+
+- `corPlot(cluster = FALSE)` will no longer raise a missing data error,
+  and the `data` object will be appropriately constructed.
 
 ## openair 3.1.0
 

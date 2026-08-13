@@ -29,7 +29,8 @@ scatterPlot(
   theme = "default",
   plot.type = "p",
   key.title = group,
-  key.columns = 1,
+  key.columns = NULL,
+  key.rows = NULL,
   key.position = "right",
   log.x = FALSE,
   log.y = FALSE,
@@ -283,12 +284,12 @@ scatterPlot(
   [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
   if `auto.text = TRUE`.
 
-- key.columns:
+- key.columns, key.rows:
 
-  Number of columns to be used in a categorical legend. With many
-  categories a single column can make to key too wide. The user can thus
-  choose to use several columns by setting `key.columns` to be less than
-  the number of categories.
+  Number of columns or rows to be used in a categorical legend. With
+  many categories a single column can make to key too wide. The user can
+  thus choose to use several columns by setting `key.columns` to be less
+  than the number of categories.
 
 - key.position:
 

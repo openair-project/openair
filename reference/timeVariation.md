@@ -34,6 +34,7 @@ timeVariation(
   ref.y = NULL,
   key = NULL,
   key.columns = NULL,
+  key.rows = NULL,
   key.position = "top",
   panel.gap = 1.5,
   auto.text = TRUE,
@@ -237,12 +238,12 @@ timeVariation(
   plots allowing the extraction of a single plot *with* key. If `key` is
   `FALSE`, no key is shown for any plot.
 
-- key.columns:
+- key.columns, key.rows:
 
-  Number of columns to be used in a categorical legend. With many
-  categories a single column can make to key too wide. The user can thus
-  choose to use several columns by setting `key.columns` to be less than
-  the number of categories.
+  Number of columns or rows to be used in a categorical legend. With
+  many categories a single column can make to key too wide. The user can
+  thus choose to use several columns by setting `key.columns` to be less
+  than the number of categories.
 
 - key.position:
 

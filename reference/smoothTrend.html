@@ -75,7 +75,8 @@
 <span>  theme <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  ref.x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ref.y <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  key.columns <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  key.columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  key.rows <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
 <span>  name.pol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  date.breaks <span class="op">=</span> <span class="fl">7</span>,</span>
@@ -262,11 +263,11 @@ customise the colour/width/type/etc. of each line. See <code><a href="refOpts.ht
 details.</p></dd>
 
 
-<dt id="arg-key-columns">key.columns<a class="anchor" aria-label="anchor" href="#arg-key-columns"></a></dt>
-<dd><p>Number of columns to be used in a categorical legend. With
-many categories a single column can make to key too wide. The user can thus
-choose to use several columns by setting <code>key.columns</code> to be less than the
-number of categories.</p></dd>
+<dt id="arg-key-columns-key-rows">key.columns, key.rows<a class="anchor" aria-label="anchor" href="#arg-key-columns-key-rows"></a></dt>
+<dd><p>Number of columns or rows to be used in a
+categorical legend. With many categories a single column can make to key
+too wide. The user can thus choose to use several columns by setting
+<code>key.columns</code> to be less than the number of categories.</p></dd>
 
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>

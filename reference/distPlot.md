@@ -25,6 +25,8 @@ distPlot(
   theme = "default",
   key.title = group,
   key.position = "top",
+  key.columns = NULL,
+  key.rows = NULL,
   ref.x = NULL,
   ref.y = NULL,
   auto.text = TRUE,
@@ -175,6 +177,13 @@ distPlot(
   Location where the legend is to be placed. Allowed arguments include
   `"top"`, `"right"`, `"bottom"`, `"left"` and `"none"`, the last of
   which removes the legend entirely.
+
+- key.columns, key.rows:
+
+  Number of columns or rows to be used in a categorical legend. With
+  many categories a single column can make to key too wide. The user can
+  thus choose to use several columns by setting `key.columns` to be less
+  than the number of categories.
 
 - ref.x:
 
