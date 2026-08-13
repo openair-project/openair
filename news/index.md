@@ -99,6 +99,12 @@
 - `calendarPlot(annotate = "value", ...)` now correctly works when
   `breaks` is not `NULL`.
 
+- [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
+  and
+  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+  will no longer plot a caption referencing an irrelevant confidence
+  interval if `ci = FALSE`.
+
 ## openair 3.1.0
 
 CRAN release: 2026-05-20

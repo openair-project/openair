@@ -83,6 +83,7 @@
 <li><p>Plotting functions (e.g., <code><a href="../reference/timeVariation.html">timeVariation()</a></code>) now work with ‘grouped’ tbls created with <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by()</a></code> by automatically ungrouping input data.</p></li>
 <li><p><code>corPlot(cluster = FALSE)</code> will no longer raise a missing data error, and the <code>data</code> object will be appropriately constructed.</p></li>
 <li><p><code>calendarPlot(annotate = "value", ...)</code> now correctly works when <code>breaks</code> is not <code>NULL</code>.</p></li>
+<li><p><code><a href="../reference/variationPlot.html">variationPlot()</a></code> and <code><a href="../reference/timeVariation.html">timeVariation()</a></code> will no longer plot a caption referencing an irrelevant confidence interval if <code>ci = FALSE</code>.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
