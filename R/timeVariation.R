@@ -242,7 +242,7 @@ timeVariation <- function(
   extra.args$title <- quickText(extra.args$title, auto.text)
   extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
   extra.args$caption <- quickText(
-    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int),
+    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int, ci),
     auto.text
   )
 

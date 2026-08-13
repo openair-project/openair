@@ -154,7 +154,7 @@ variationPlot <- function(
   extra.args$title <- quickText(extra.args$title %||% "", auto.text)
   extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
   extra.args$caption <- quickText(
-    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int),
+    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int, ci),
     auto.text
   )
   extra.args$tag <- quickText(extra.args$tag, auto.text)
@@ -749,7 +749,11 @@ validate_varplot_inputs <- function(
 
 
 # sub heading stat info
-create_varplot_sub_text <- function(statistic, conf.int) {
+create_varplot_sub_text <- function(statistic, conf.int, ci) {
+  if (!ci) {
+    return(NULL)
+  }
+
   if (statistic == "mean") {
     ci_str <- paste(paste0(100 * conf.int, "%"), collapse = " and ")
     return(paste0("mean and ", ci_str, " confidence interval in mean"))
