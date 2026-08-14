@@ -105,6 +105,8 @@
   will no longer plot a caption referencing an irrelevant confidence
   interval if `ci = FALSE`.
 
+- Restored functionality of `polarPlot(upper=)`.
+
 ## openair 3.1.0
 
 CRAN release: 2026-05-20
