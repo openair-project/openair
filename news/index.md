@@ -107,6 +107,9 @@
 
 - Restored functionality of `polarPlot(upper=)`.
 
+- `timePlot(group=)` will not error if `avg.time = "default"` and
+  `group` is a ‘date’ option (e.g., `"season"`).
+
 ## openair 3.1.0
 
 CRAN release: 2026-05-20
