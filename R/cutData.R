@@ -194,6 +194,15 @@ cutData <- function(
     }
   }
 
+  if (any(type == "daylight") && (missing(latitude) || missing(longitude))) {
+    cli::cli_warn(
+      c(
+        "!" = "{.field type} 'daylight' used without setting {.field latitude} and/or {.field longitude}.",
+        "i" = "Using a {.field latitude} of {latitude} and {.field longitude} of {longitude}."
+      )
+    )
+  }
+
   cut_data <- function(x, name = NULL, type = "default") {
     if (is.null(names)) {
       name <- type

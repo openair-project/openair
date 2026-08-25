@@ -28,6 +28,8 @@
 
 - The `"gaf.seq"` palette in `openColours()` has been updated to reflect updated guidance from the UK Government Analysis Function.
 
+- `cutData(type = "daylight")` (and therefore any use of `type = "daylight"` and/or `group = "daylight"`) will now warn if `latitude` and/or `longitude` are not also provided.
+
 ## Bug Fixes
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.
