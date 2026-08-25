@@ -657,6 +657,11 @@ prepare_timeplot_data <- function(
   }
   mydata <- cutData(mydata, type, names = names, ...)
 
+  # ensure date groups are cut before duplicate checking
+  if (is.character(group) && !group %in% names(mydata)) {
+    mydata <- cutData(mydata, group, ...)
+  }
+
   # check for duplicates - can't really have duplicate data in a timeplot
   # when group is a column, duplicate check must also split by that column
   if (avg.time == "default") {
@@ -717,8 +722,6 @@ time_average_timeplot_data <- function(
         ...
       )
     }
-  } else if (is.character(group)) {
-    mydata <- cutData(mydata, type = group, ...)
   }
 
   # timeAverage drops type if default
