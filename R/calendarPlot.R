@@ -543,7 +543,7 @@ calendarPlot <-
         ),
         size = cex.lim[1] * 11,
         fontface = font.lim[1],
-        size.unit = "pt",
+        size.unit = "pt"
       ) +
       get_facet(
         type,

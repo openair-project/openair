@@ -768,11 +768,11 @@ cut_vec_daylight <- function(
 
   mean.obliq.ecliptic.deg <- 23 +
     (26 +
-      ((21.448 -
+      (21.448 -
         julian.century *
           (46.815 +
             julian.century *
-              (0.00059 - julian.century * 0.001813)))) /
+              (0.00059 - julian.century * 0.001813))) /
         60) /
       60
 

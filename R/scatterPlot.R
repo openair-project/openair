@@ -803,7 +803,7 @@ scatter_scatter <- function(
             mapping = ggplot2::aes(
               x = I(0.025),
               y = I(.data$y),
-              label = .data$label,
+              label = .data$label
             ),
             hjust = 0,
             vjust = 1,
