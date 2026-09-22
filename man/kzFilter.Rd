@@ -9,7 +9,7 @@ kzFilter(
   mydata,
   pollutant = "o3",
   m = c(3L, 13L, 107L, 721L, 8761L),
-  k = 5L,
+  k = ifelse(m == 8761L, 3L, 5L),
   data.thresh = 0.25,
   type = "default",
   components = TRUE,
@@ -22,7 +22,7 @@ kzaFilter(
   mydata,
   pollutant = "o3",
   m = c(3L, 13L, 107L, 721L, 8761L),
-  k = 5L,
+  k = ifelse(m == 8761L, 3L, 5L),
   sensitivity = 1,
   data.thresh = 0.5,
   type = "default",
@@ -44,9 +44,12 @@ sizes (\code{\link[=kzaFilter]{kzaFilter()}}). Defaults to \code{c(3, 13, 107, 7
 hourly data). All values must be >= 3. Values of \code{m} should be odd; even
 values will produce a symmetric window of \code{m + 1} points rather than \code{m}.}
 
-\item{k}{Integer. The number of iterations applied at each window size
-(\code{\link[=kzFilter]{kzFilter()}}) or the number of iterations for the baseline KZ filter used
-to detect structural breaks (\code{\link[=kzaFilter]{kzaFilter()}}).}
+\item{k}{Integer vector of iteration counts, one per value of \code{m} (a single
+value is recycled across all \code{m}). Controls the number of iterations
+applied at each window size (\code{\link[=kzFilter]{kzFilter()}}), or the number of iterations
+for the baseline KZ filter used to detect structural breaks
+(\code{\link[=kzaFilter]{kzaFilter()}}). By default, \code{k = 5} for every window size except \code{m = 8761}, which uses \code{k = 3} (a large \code{k} at this window size is
+unnecessarily costly and over-smooths the trend component).}
 
 \item{data.thresh}{Numeric (0--1). Minimum fraction of valid (non-\code{NA})
 values required within a window for a filtered value to be returned;
@@ -121,11 +124,11 @@ The affected length at each end of the series for a single filter pass is
 \code{floor(m / 2)} observations. Because the filter is iterated \code{k} times (each
 pass consuming the output of the previous one), the total affected zone at
 each end is approximately \code{k * floor(m / 2)} observations. With the default
-\code{m = c(3, 13, 107, 721, 8761)} and \code{k = 5}, the affected zones are roughly 5
-h, 30 h (~1 day), 265 h (~11 days), 1,800 h (~75 days), and 21,900 h
-(~2.5 years) at each end respectively. The \code{trend} component therefore
-requires at least 5–6 years of data for the interior estimates to be
-unaffected.
+\code{m = c(3, 13, 107, 721, 8761)} and \code{k = c(5, 5, 5, 5, 3)}, the affected
+zones are roughly 5 h, 30 h (~1 day), 265 h (~11 days), 1,800 h (~75
+days), and 13,140 h (~1.5 years) at each end respectively. The \code{trend}
+component therefore requires at least 3 years of data for the interior
+estimates to be unaffected.
 }
 
 \examples{

@@ -28,6 +28,8 @@
 
 - The `"gaf.seq"` palette in `openColours()` has been updated to reflect updated guidance from the UK Government Analysis Function.
 
+- `kzFilter()` and `kzaFilter()` now accept a vector for `k`, allowing a different number of iterations to be set for each `m` window size (a single value is still recycled across all `m`). By default, `k = 5` for every window size except `m = 8761`, which now uses `k = 3`.
+
 - `cutData(type = "daylight")` (and therefore any use of `type = "daylight"` and/or `group = "daylight"`) will now warn if `latitude` and/or `longitude` are not also provided.
 
 ## Bug Fixes

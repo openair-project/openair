@@ -40,11 +40,11 @@
 #'   `floor(m / 2)` observations. Because the filter is iterated `k` times (each
 #'   pass consuming the output of the previous one), the total affected zone at
 #'   each end is approximately `k * floor(m / 2)` observations. With the default
-#'   `m = c(3, 13, 107, 721, 8761)` and `k = 5`, the affected zones are roughly 5
-#'   h, 30 h (~1 day), 265 h (~11 days), 1,800 h (~75 days), and 21,900 h
-#'   (~2.5 years) at each end respectively. The `trend` component therefore
-#'   requires at least 5–6 years of data for the interior estimates to be
-#'   unaffected.
+#'   `m = c(3, 13, 107, 721, 8761)` and `k = c(5, 5, 5, 5, 3)`, the affected
+#'   zones are roughly 5 h, 30 h (~1 day), 265 h (~11 days), 1,800 h (~75
+#'   days), and 13,140 h (~1.5 years) at each end respectively. The `trend`
+#'   component therefore requires at least 3 years of data for the interior
+#'   estimates to be unaffected.
 #'
 #' @param mydata A data frame containing a `date` field in `Date` or `POSIXct`
 #'   format. The input time series must be regular, e.g., hourly or daily.
@@ -58,9 +58,13 @@
 #'   hourly data). All values must be >= 3. Values of `m` should be odd; even
 #'   values will produce a symmetric window of `m + 1` points rather than `m`.
 #'
-#' @param k Integer. The number of iterations applied at each window size
-#'   ([kzFilter()]) or the number of iterations for the baseline KZ filter used
-#'   to detect structural breaks ([kzaFilter()]).
+#' @param k Integer vector of iteration counts, one per value of `m` (a single
+#'   value is recycled across all `m`). Controls the number of iterations
+#'   applied at each window size ([kzFilter()]), or the number of iterations
+#'   for the baseline KZ filter used to detect structural breaks
+#'   ([kzaFilter()]). By default, `k = 5` for every window size except `m =
+#'   8761`, which uses `k = 3` (a large `k` at this window size is
+#'   unnecessarily costly and over-smooths the trend component).
 #'
 #' @param data.thresh Numeric (0--1). Minimum fraction of valid (non-`NA`)
 #'   values required within a window for a filtered value to be returned;
@@ -111,7 +115,7 @@ kzFilter <- function(
   mydata,
   pollutant = "o3",
   m = c(3L, 13L, 107L, 721L, 8761L),
-  k = 5L,
+  k = ifelse(m == 8761L, 3L, 5L),
   data.thresh = 0.25,
   type = "default",
   components = TRUE,
@@ -128,6 +132,18 @@ kzFilter <- function(
 ) {
   if (any(m < 3L)) {
     cli::cli_abort("All values of {.arg m} must be at least {.val {3L}}.")
+  }
+
+  if (length(k) == 1L) {
+    k <- rep(k, length(m))
+  }
+  if (length(k) != length(m)) {
+    cli::cli_abort(
+      "{.arg k} must have length {.val {1}} or {.val {length(m)}} (the length of {.arg m}), not {.val {length(k)}}."
+    )
+  }
+  if (any(k < 1L)) {
+    cli::cli_abort("All values of {.arg k} must be at least {.val {1L}}.")
   }
 
   for (p in pollutant) {
@@ -168,7 +184,7 @@ kzFilter <- function(
         mydata[[col_name]] <- kz_cpp(
           mydata[[p]],
           as.integer(m[i]),
-          as.integer(k),
+          as.integer(k[i]),
           as.numeric(data.thresh)
         )
         filt_cols[i] <- col_name
@@ -249,7 +265,7 @@ kzaFilter <- function(
   mydata,
   pollutant = "o3",
   m = c(3L, 13L, 107L, 721L, 8761L),
-  k = 5L,
+  k = ifelse(m == 8761L, 3L, 5L),
   sensitivity = 1.0,
   data.thresh = 0.5,
   type = "default",
@@ -265,6 +281,18 @@ kzaFilter <- function(
   to_narrow = FALSE,
   ...
 ) {
+  if (length(k) == 1L) {
+    k <- rep(k, length(m))
+  }
+  if (length(k) != length(m)) {
+    cli::cli_abort(
+      "{.arg k} must have length {.val {1}} or {.val {length(m)}} (the length of {.arg m}), not {.val {length(k)}}."
+    )
+  }
+  if (any(k < 1L)) {
+    cli::cli_abort("All values of {.arg k} must be at least {.val {1L}}.")
+  }
+
   for (p in pollutant) {
     if (!p %in% names(mydata)) {
       cli::cli_abort("Column {.field {p}} not found in {.arg mydata}.")
@@ -303,7 +331,7 @@ kzaFilter <- function(
         mydata[[col_name]] <- kza_cpp(
           mydata[[p]],
           as.integer(m[i]),
-          as.integer(k),
+          as.integer(k[i]),
           as.numeric(sensitivity),
           as.numeric(data.thresh)
         )
