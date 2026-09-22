@@ -83,7 +83,7 @@ shrinks the window near those breaks to preserve sharp features.</p>
 <span>  <span class="va">mydata</span>,</span>
 <span>  pollutant <span class="op">=</span> <span class="st">"o3"</span>,</span>
 <span>  m <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3L</span>, <span class="fl">13L</span>, <span class="fl">107L</span>, <span class="fl">721L</span>, <span class="fl">8761L</span><span class="op">)</span>,</span>
-<span>  k <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">m</span> <span class="op">==</span> <span class="fl">8761L</span>, <span class="fl">3L</span>, <span class="fl">5L</span><span class="op">)</span>,</span>
 <span>  data.thresh <span class="op">=</span> <span class="fl">0.25</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
 <span>  components <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -96,7 +96,7 @@ shrinks the window near those breaks to preserve sharp features.</p>
 <span>  <span class="va">mydata</span>,</span>
 <span>  pollutant <span class="op">=</span> <span class="st">"o3"</span>,</span>
 <span>  m <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3L</span>, <span class="fl">13L</span>, <span class="fl">107L</span>, <span class="fl">721L</span>, <span class="fl">8761L</span><span class="op">)</span>,</span>
-<span>  k <span class="op">=</span> <span class="fl">5L</span>,</span>
+<span>  k <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">m</span> <span class="op">==</span> <span class="fl">8761L</span>, <span class="fl">3L</span>, <span class="fl">5L</span><span class="op">)</span>,</span>
 <span>  sensitivity <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  data.thresh <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  type <span class="op">=</span> <span class="st">"default"</span>,</span>
@@ -129,9 +129,12 @@ values will produce a symmetric window of <code>m + 1</code> points rather than 
 
 
 <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
-<dd><p>Integer. The number of iterations applied at each window size
-(<code>kzFilter()</code>) or the number of iterations for the baseline KZ filter used
-to detect structural breaks (<code>kzaFilter()</code>).</p></dd>
+<dd><p>Integer vector of iteration counts, one per value of <code>m</code> (a single
+value is recycled across all <code>m</code>). Controls the number of iterations
+applied at each window size (<code>kzFilter()</code>), or the number of iterations
+for the baseline KZ filter used to detect structural breaks
+(<code>kzaFilter()</code>). By default, <code>k = 5</code> for every window size except <code>m = 8761</code>, which uses <code>k = 3</code> (a large <code>k</code> at this window size is
+unnecessarily costly and over-smooths the trend component).</p></dd>
 
 
 <dt id="arg-data-thresh">data.thresh<a class="anchor" aria-label="anchor" href="#arg-data-thresh"></a></dt>
@@ -211,11 +214,11 @@ should be interpreted with caution.</p>
 <code>floor(m / 2)</code> observations. Because the filter is iterated <code>k</code> times (each
 pass consuming the output of the previous one), the total affected zone at
 each end is approximately <code>k * floor(m / 2)</code> observations. With the default
-<code>m = c(3, 13, 107, 721, 8761)</code> and <code>k = 5</code>, the affected zones are roughly 5
-h, 30 h (~1 day), 265 h (~11 days), 1,800 h (~75 days), and 21,900 h
-(~2.5 years) at each end respectively. The <code>trend</code> component therefore
-requires at least 5–6 years of data for the interior estimates to be
-unaffected.</p>
+<code>m = c(3, 13, 107, 721, 8761)</code> and <code>k = c(5, 5, 5, 5, 3)</code>, the affected
+zones are roughly 5 h, 30 h (~1 day), 265 h (~11 days), 1,800 h (~75
+days), and 13,140 h (~1.5 years) at each end respectively. The <code>trend</code>
+component therefore requires at least 3 years of data for the interior
+estimates to be unaffected.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
