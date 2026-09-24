@@ -20,9 +20,23 @@
     
     - Any `ggplot2::theme()` object, which will be used to modify the `"default"` theme.
 
+- Added `distPlot()`, which flexibly plots histograms and density functions to examine the 'shape' of the distribution of numeric data.
+
 - `importUKAQ()` will now import files in parallel if `mirai::daemons()` are set. This will significantly speed up importing large amounts of data.
 
 - `importMeta()` can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.
+
+- `refOpts()` gains the `label`, `label_size` and `label_colo(u)r` arguments. These options require the `{legendry}` package and add direct labels to the reference lines on the opposite side to the numeric axes.
+
+- `key.columns` now defaults to `NULL` in most functions, which will use `ggplot2`'s logic for the number of columns. `key.rows` has also been added.
+
+- `timePlot()` gains the `step` argument which causes a "stairstep" plot to be created instead of a traditional line chart. This is likely most useful for low resolution or 'multi-day' (e.g., diffusion tube) data.
+
+- The `"gaf.seq"` palette in `openColours()` has been updated to reflect updated guidance from the UK Government Analysis Function.
+
+- `kzFilter()` and `kzaFilter()` now accept a vector for `k`, allowing a different number of iterations to be set for each `m` window size (a single value is still recycled across all `m`). By default, `k = 5` for every window size except `m = 8761`, which now uses `k = 3`.
+
+- `cutData(type = "daylight")` (and therefore any use of `type = "daylight"` and/or `group = "daylight"`) will now warn if `latitude` and/or `longitude` are not also provided.
 
 ## Bug Fixes
 
@@ -39,6 +53,18 @@
 - `timeVariation()` overall titles, subtitles and captions are now centred by default, in line with all other `{openair}` plotting functions.
 
 - Clustering using `polarCluster()` wrong clustered more data frame columns than necessary. The update should revert results to previous behaviour.
+
+- Plotting functions (e.g., `timeVariation()`) now work with 'grouped' tbls created with `dplyr::group_by()` by automatically ungrouping input data.
+
+- `corPlot(cluster = FALSE)` will no longer raise a missing data error, and the `data` object will be appropriately constructed.
+
+- `calendarPlot(annotate = "value", ...)` now correctly works when `breaks` is not `NULL`.
+
+- `variationPlot()` and `timeVariation()` will no longer plot a caption referencing an irrelevant confidence interval if `ci = FALSE`.
+
+- Restored functionality of `polarPlot(upper=)`.
+
+- `timePlot(group=)` will not error if `avg.time = "default"` and `group` is a 'date' option (e.g., `"season"`).
 
 # openair 3.1.0
 

@@ -99,7 +99,8 @@ smoothTrend <- function(
   theme = "default",
   ref.x = NULL,
   ref.y = NULL,
-  key.columns = 1,
+  key.columns = NULL,
+  key.rows = NULL,
   key.position = "bottom",
   name.pol = NULL,
   date.breaks = 7,
@@ -243,15 +244,8 @@ smoothTrend <- function(
           key.position
         )
       ),
-      ncol = if (key.position %in% c("left", "right")) {
-        key.columns
-      } else {
-        if (missing(key.columns)) {
-          dplyr::n_distinct(newdata$variable)
-        } else {
-          key.columns
-        }
-      }
+      ncol = key.columns,
+      nrow = key.rows
     )
 
   # create plot

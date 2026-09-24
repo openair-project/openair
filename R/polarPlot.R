@@ -563,11 +563,14 @@ polarPlot <-
     # if upper ws not set, set it to the max to display all information
     max.ws <- max(mydata[[x]], na.rm = TRUE)
     min.ws <- min(mydata[[x]], na.rm = TRUE)
-    clip <- TRUE # used for removing data where ws > upper
 
     if (is.na(upper)) {
       upper <- max.ws
+      rlim <- c(NA, NA)
       clip <- FALSE
+    } else {
+      rlim <- c(NA, upper)
+      clip <- TRUE
     }
 
     # resolution deprecated, int is resolution of GAM surface predictions over int * int grid
@@ -929,7 +932,7 @@ polarPlot <-
       ) +
       ggplot2::ggproto(
         NULL,
-        ggplot2::coord_radial(r.axis.inside = angle.scale),
+        ggplot2::coord_radial(r.axis.inside = angle.scale, rlim = rlim),
         inner_radius = c(0, 1) * 0.475
       ) +
       scale_x_compass() +

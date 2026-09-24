@@ -24,6 +24,7 @@ timeVariation(
   ref.y = NULL,
   key = NULL,
   key.columns = NULL,
+  key.rows = NULL,
   key.position = "top",
   panel.gap = 1.5,
   auto.text = TRUE,
@@ -165,10 +166,10 @@ just to use one for a report. If \code{key} is \code{TRUE}, a key is added to al
 plots allowing the extraction of a single plot \emph{with} key. If \code{key} is
 \code{FALSE}, no key is shown for any plot.}
 
-\item{key.columns}{Number of columns to be used in a categorical legend. With
-many categories a single column can make to key too wide. The user can thus
-choose to use several columns by setting \code{key.columns} to be less than the
-number of categories.}
+\item{key.columns, key.rows}{Number of columns or rows to be used in a
+categorical legend. With many categories a single column can make to key
+too wide. The user can thus choose to use several columns by setting
+\code{key.columns} to be less than the number of categories.}
 
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},

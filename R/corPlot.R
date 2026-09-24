@@ -314,8 +314,16 @@ corPlot <- function(
             )
         } else {
           hc <- NULL
-          cor_matrix_df$x <- factor(cor_matrix_df$x)
-          cor_matrix_df$y <- factor(cor_matrix_df$y)
+          cor_matrix_df$x <- factor(
+            cor_matrix_df$x,
+            levels = vars,
+            labels = paste(tag, vars, sep = "___")
+          )
+          cor_matrix_df$y <- factor(
+            cor_matrix_df$y,
+            levels = vars,
+            labels = paste(tag, vars, sep = "___")
+          )
         }
 
         return(
@@ -625,19 +633,10 @@ corPlot <- function(
   names(newdata)[names(newdata) == "z"] <- "cor"
   names(newdata)[names(newdata) == "x"] <- "row"
   names(newdata)[names(newdata) == "y"] <- "col"
-  levels(newdata$row) <-
-    gsub(
-      pattern = unique(paste(paste0(plotdata$tag, "___"), collapse = "|")),
-      replacement = "",
-      levels(newdata$row)
-    )
-  levels(newdata$col) <-
-    gsub(
-      pattern = unique(paste(paste0(plotdata$tag, "___"), collapse = "|")),
-      replacement = "",
-      levels(newdata$col)
-    )
-  newdata <- dplyr::select(newdata, -"tag", -dplyr::any_of(type))
+  newdata <-
+    tidyr::separate(newdata, "row", sep = "___", into = c("type1", "row")) |>
+    tidyr::separate("col", sep = "___", into = c("type2", "col")) |>
+    dplyr::select(-"type1", -"type2", -"tag")
 
   # main handling
   output <-

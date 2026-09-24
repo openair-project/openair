@@ -22,6 +22,7 @@ variationPlot(
   alpha = 0.4,
   key.position = "top",
   key.columns = NULL,
+  key.rows = NULL,
   name.pol = NULL,
   auto.text = TRUE,
   plot = TRUE,
@@ -149,10 +150,10 @@ openair theme will not be fully applied; instead, only minimal adjustments
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
 the last of which removes the legend entirely.}
 
-\item{key.columns}{Number of columns to be used in a categorical legend. With
-many categories a single column can make to key too wide. The user can thus
-choose to use several columns by setting \code{key.columns} to be less than the
-number of categories.}
+\item{key.columns, key.rows}{Number of columns or rows to be used in a
+categorical legend. With many categories a single column can make to key
+too wide. The user can thus choose to use several columns by setting
+\code{key.columns} to be less than the number of categories.}
 
 \item{name.pol}{This option can be used to give alternative names for the
 variables plotted. Instead of taking the column headings as names, the user

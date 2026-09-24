@@ -112,6 +112,7 @@ variationPlot <- function(
   alpha = 0.4,
   key.position = "top",
   key.columns = NULL,
+  key.rows = NULL,
   name.pol = NULL,
   auto.text = TRUE,
   plot = TRUE,
@@ -153,7 +154,7 @@ variationPlot <- function(
   extra.args$title <- quickText(extra.args$title %||% "", auto.text)
   extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
   extra.args$caption <- quickText(
-    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int),
+    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int, ci),
     auto.text
   )
   extra.args$tag <- quickText(extra.args$tag, auto.text)
@@ -524,7 +525,7 @@ variationPlot <- function(
         label_openair(poll_labels, auto_text = auto.text),
         levels(mydata$group)
       ),
-      guide = ggplot2::guide_legend(ncol = key.columns),
+      guide = ggplot2::guide_legend(ncol = key.columns, nrow = key.rows),
       aesthetics = c("fill", "colour"),
       drop = FALSE
     ) +
@@ -534,7 +535,7 @@ variationPlot <- function(
         label_openair(poll_labels, auto_text = auto.text),
         levels(mydata$group)
       ),
-      guide = ggplot2::guide_legend(ncol = key.columns),
+      guide = ggplot2::guide_legend(ncol = key.columns, nrow = key.rows),
       drop = FALSE
     ) +
     ggplot2::scale_linewidth_manual(
@@ -543,7 +544,7 @@ variationPlot <- function(
         label_openair(poll_labels, auto_text = auto.text),
         levels(mydata$group)
       ),
-      guide = ggplot2::guide_legend(ncol = key.columns),
+      guide = ggplot2::guide_legend(ncol = key.columns, nrow = key.rows),
       drop = FALSE
     ) +
     ggplot2::scale_shape_manual(
@@ -552,7 +553,7 @@ variationPlot <- function(
         label_openair(poll_labels, auto_text = auto.text),
         levels(mydata$group)
       ),
-      guide = ggplot2::guide_legend(ncol = key.columns),
+      guide = ggplot2::guide_legend(ncol = key.columns, nrow = key.rows),
       drop = FALSE
     ) +
     ggplot2::guides(
@@ -748,7 +749,11 @@ validate_varplot_inputs <- function(
 
 
 # sub heading stat info
-create_varplot_sub_text <- function(statistic, conf.int) {
+create_varplot_sub_text <- function(statistic, conf.int, ci) {
+  if (!ci) {
+    return(NULL)
+  }
+
   if (statistic == "mean") {
     ci_str <- paste(paste0(100 * conf.int, "%"), collapse = " and ")
     return(paste0("mean and ", ci_str, " confidence interval in mean"))

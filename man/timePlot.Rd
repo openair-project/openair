@@ -20,6 +20,7 @@ timePlot(
   cols = "brewer1",
   theme = "default",
   log = FALSE,
+  step = FALSE,
   windflow = NULL,
   smooth = FALSE,
   smooth_k = NULL,
@@ -27,6 +28,7 @@ timePlot(
   ref.x = NULL,
   ref.y = NULL,
   key.columns = NULL,
+  key.rows = NULL,
   key.position = "bottom",
   key.title = NULL,
   name.pol = pollutant,
@@ -204,6 +206,12 @@ If \code{TRUE} a well-formatted log10 scale is used. This can be useful for
 plotting data for several different pollutants that exist on very different
 scales. It is therefore useful to use \code{log = TRUE} together with \code{group = TRUE}.}
 
+\item{step}{If \code{TRUE}, will create a "stairstep" plot which more clearly
+highlights where changes occur. This is likely most useful for low
+resolution data or for multi-day measurement techniques (e.g., diffusion
+tubes). Can also be any of \code{"vh"}, \code{"hv"} or \code{"mid"}, passed to the
+\code{direction} argument of \code{\link[ggplot2:geom_step]{ggplot2::geom_step()}}.}
+
 \item{windflow}{If \code{TRUE}, the vector-averaged wind speed and direction will
 be plotted using arrows. Alternatively, can be a list of arguments to
 control the appearance of the arrows (colour, linewidth, alpha value,
@@ -233,10 +241,10 @@ intercepts to draw lines, or a list such as that provided by \code{\link[=refOpt
 customise the colour/width/type/etc. of each line. See \code{\link[=refOpts]{refOpts()}} for more
 details.}
 
-\item{key.columns}{Number of columns to be used in a categorical legend. With
-many categories a single column can make to key too wide. The user can thus
-choose to use several columns by setting \code{key.columns} to be less than the
-number of categories.}
+\item{key.columns, key.rows}{Number of columns or rows to be used in a
+categorical legend. With many categories a single column can make to key
+too wide. The user can thus choose to use several columns by setting
+\code{key.columns} to be less than the number of categories.}
 
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},

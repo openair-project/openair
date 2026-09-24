@@ -271,7 +271,8 @@ openColours <- function(
   direction[direction == 0] <- 1
 
   # user-supplied colour vectors
-  if (length(scheme) > 1L || !scheme %in% .all_schemes) {
+  # NB: WSP palette not for wider use so remains undocumented
+  if (length(scheme) > 1L || !scheme %in% c(.all_schemes, "wsp", "wsp2")) {
     if (length(scheme) > 1L && any(scheme %in% .all_schemes)) {
       cli::cli_abort(
         c(
@@ -333,7 +334,7 @@ openColours <- function(
       lightness,
       saturation
     )
-  } else if (scheme %in% names(.qual_schemes)) {
+  } else if (scheme %in% c(names(.qual_schemes), "wsp", "wsp2")) {
     .qualPalette(n_out, scheme, direction, alpha, lightness, saturation)
   }
 
@@ -368,7 +369,7 @@ openColors <- openColours
 #'
 #' @export
 openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
-  palette_type = rlang::arg_match(
+  palette_type <- rlang::arg_match(
     palette_type,
     c("seq", "div", "qual"),
     multiple = TRUE
@@ -751,7 +752,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
       "#A0DFB9FF",
       "#DEF5E5FF"
     ),
-    gaf.seq = c("#12436D", "#2073BC", "#6BACE6"),
+    gaf.seq = c("#092135", "#12436D", "#2073BC", "#6BACE6", "#ADD1F1"),
     bam = c(
       '#65024B',
       '#9E3C85',
@@ -1360,6 +1361,30 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
       "#97BBF5",
       "#9C6B4E",
       "#9498A0"
+    ),
+    wsp = c(
+      "#1594FD",
+      "#F35B05",
+      "#FFD10A",
+      "#496C1A",
+      "#B16F4F",
+      "#162E76",
+      "#C33900",
+      "#FEA513",
+      "#224807",
+      "#4C2C00"
+    ),
+    wsp2 = c(
+      "#1594FD",
+      "#162E76",
+      "#F35B05",
+      "#C33900",
+      "#FFD10A",
+      "#FEA513",
+      "#496C1A",
+      "#224807",
+      "#B16F4F",
+      "#4C2C00"
     )
   )
 

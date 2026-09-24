@@ -114,6 +114,7 @@ conditionalQuantile <- function(
   cols = "YlOrRd",
   theme = "default",
   key.columns = 2,
+  key.rows = NULL,
   key.position = "bottom",
   auto.text = TRUE,
   plot = TRUE,
@@ -264,7 +265,8 @@ conditionalQuantile <- function(
   hist_obs <- hist_data[hist_data$hist_type == "observed", ]
 
   key_guide <- ggplot2::guide_legend(
-    ncol = key.columns
+    ncol = key.columns,
+    nrow = key.rows
   )
 
   # build plot

@@ -220,7 +220,8 @@ TaylorDiagram <- function(
   annotate = "centred\nRMS error",
   text.obs = "observed",
   key.title = group,
-  key.columns = 1,
+  key.columns = NULL,
+  key.rows = NULL,
   key.position = "right",
   auto.text = TRUE,
   plot = TRUE,
@@ -490,10 +491,7 @@ TaylorDiagram <- function(
   }
 
   # guides
-  legend_guide <-
-    ggplot2::guide_legend(
-      ncol = if (missing(key.columns)) NULL else key.columns
-    )
+  legend_guide <- ggplot2::guide_legend(ncol = key.columns, nrow = key.rows)
 
   # plotting
   thePlot <-

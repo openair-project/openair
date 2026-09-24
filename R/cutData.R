@@ -194,6 +194,15 @@ cutData <- function(
     }
   }
 
+  if (any(type == "daylight") && (missing(latitude) || missing(longitude))) {
+    cli::cli_warn(
+      c(
+        "!" = "{.field type} 'daylight' used without setting {.field latitude} and/or {.field longitude}.",
+        "i" = "Using a {.field latitude} of {latitude} and {.field longitude} of {longitude}."
+      )
+    )
+  }
+
   cut_data <- function(x, name = NULL, type = "default") {
     if (is.null(names)) {
       name <- type
@@ -768,11 +777,11 @@ cut_vec_daylight <- function(
 
   mean.obliq.ecliptic.deg <- 23 +
     (26 +
-      ((21.448 -
+      (21.448 -
         julian.century *
           (46.815 +
             julian.century *
-              (0.00059 - julian.century * 0.001813)))) /
+              (0.00059 - julian.century * 0.001813))) /
         60) /
       60
 

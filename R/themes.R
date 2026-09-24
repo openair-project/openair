@@ -632,13 +632,16 @@ theme_openair_modern <- function(key.position) {
   }
 
   grid_col <- "#E5E7EB" # cool grey gridlines
-  axis_col <- "#9CA3AF" # muted labels
+  axis_col <- "#767b85" # muted labels
   xline_col <- "#1F2937" # near-black baseline — the structural anchor
   text_col <- "#111827"
 
   ggplot2::`%+replace%`(
     ggplot2::theme_minimal(base_size = 11),
     ggplot2::theme(
+      plot.title.position = "plot",
+      plot.caption.position = "plot",
+
       # === GRID ===
       # Horizontal only — the x baseline does the structural work instead
       panel.grid.major.y = ggplot2::element_line(
@@ -662,7 +665,7 @@ theme_openair_modern <- function(key.position) {
       axis.text.x = ggplot2::element_text(colour = text_col),
       axis.text.y = ggplot2::element_text(colour = axis_col), # muted — gridlines do the reading
       axis.title.x = ggplot2::element_text(colour = text_col, face = "bold"),
-      axis.title.y = ggplot2::element_text(colour = axis_col),
+      axis.title.y = ggplot2::element_text(colour = axis_col, angle = 90),
 
       # === FACETS ===
       # No background box — just a bold label, clean separator

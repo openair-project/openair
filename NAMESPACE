@@ -29,6 +29,7 @@ export(cutData)
 export(datePad)
 export(distAngle)
 export(distEuclid)
+export(distPlot)
 export(importADMS)
 export(importAQE)
 export(importAURN)
@@ -77,7 +78,9 @@ export(variationPlot)
 export(windRose)
 export(windflowOpts)
 importFrom(Rcpp,evalCpp)
-importFrom(rlang,"%||%")
-importFrom(rlang,":=")
-importFrom(rlang,.data)
+importFrom(rlang,
+  "%||%",
+  ":=",
+  .data
+)
 useDynLib(openair, .registration = TRUE)

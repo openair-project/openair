@@ -148,7 +148,8 @@ trajPlot <- function(
   origin = TRUE,
   key.title = group,
   key.position = "right",
-  key.columns = 1,
+  key.columns = NULL,
+  key.rows = NULL,
   auto.text = TRUE,
   plot = TRUE,
   key = NULL,
@@ -413,15 +414,8 @@ trajPlot <- function(
             ),
             legend.text.position = key.position
           ),
-          ncol = if (missing(key.columns)) {
-            if (key.position %in% c("left", "right")) {
-              NULL
-            } else {
-              n_cols
-            }
-          } else {
-            key.columns
-          }
+          ncol = key.columns,
+          nrow = key.rows
         )
       )
 

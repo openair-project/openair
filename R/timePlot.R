@@ -75,6 +75,12 @@
 #'   irregular data, set to `FALSE`. Note, this should not be set for `type`
 #'   other than `default`.
 #'
+#' @param step If `TRUE`, will create a "stairstep" plot which more clearly
+#'   highlights where changes occur. This is likely most useful for low
+#'   resolution data or for multi-day measurement techniques (e.g., diffusion
+#'   tubes). Can also be any of `"vh"`, `"hv"` or `"mid"`, passed to the
+#'   `direction` argument of [ggplot2::geom_step()].
+#'
 #' @param log Should the y-axis appear on a log scale? The default is `FALSE`.
 #'   If `TRUE` a well-formatted log10 scale is used. This can be useful for
 #'   plotting data for several different pollutants that exist on very different
@@ -185,6 +191,7 @@ timePlot <- function(
   cols = "brewer1",
   theme = "default",
   log = FALSE,
+  step = FALSE,
   windflow = NULL,
   smooth = FALSE,
   smooth_k = NULL,
@@ -192,6 +199,7 @@ timePlot <- function(
   ref.x = NULL,
   ref.y = NULL,
   key.columns = NULL,
+  key.rows = NULL,
   key.position = "bottom",
   key.title = NULL,
   name.pol = pollutant,
@@ -427,15 +435,8 @@ timePlot <- function(
           key.position
         )
       ),
-      ncol = if (missing(key.columns)) {
-        if (key.position %in% c("left", "right")) {
-          1
-        } else {
-          n_groups
-        }
-      } else {
-        key.columns
-      }
+      ncol = key.columns,
+      nrow = key.rows
     )
 
   # aesthetic column: group column name when group is a string, the type column
@@ -461,6 +462,20 @@ timePlot <- function(
     legend_title <- key.title
   }
 
+  if (rlang::is_logical(step)) {
+    use_step <- step
+    step_direction <- "hv"
+  } else {
+    use_step <- TRUE
+    step_direction <- rlang::arg_match(step, c("hv", "vh", "mid"))
+  }
+
+  if (use_step) {
+    geom <- function(...) ggplot2::geom_step(..., direction = step_direction)
+  } else {
+    geom <- ggplot2::geom_line
+  }
+
   # built plot
   thePlot <-
     ggplot2::ggplot(
@@ -473,7 +488,7 @@ timePlot <- function(
         linetype = .data[[aes_col]]
       )
     ) +
-    ggplot2::geom_line(
+    geom(
       ggplot2::aes(linewidth = .data[[aes_col]]),
       lineend = extra.args$lineend %||% "butt",
       linejoin = extra.args$linejoin %||% "round",
@@ -642,6 +657,11 @@ prepare_timeplot_data <- function(
   }
   mydata <- cutData(mydata, type, names = names, ...)
 
+  # ensure date groups are cut before duplicate checking
+  if (is.character(group) && !group %in% names(mydata)) {
+    mydata <- cutData(mydata, group, ...)
+  }
+
   # check for duplicates - can't really have duplicate data in a timeplot
   # when group is a column, duplicate check must also split by that column
   if (avg.time == "default") {
@@ -702,8 +722,6 @@ time_average_timeplot_data <- function(
         ...
       )
     }
-  } else if (is.character(group)) {
-    mydata <- cutData(mydata, type = group, ...)
   }
 
   # timeAverage drops type if default

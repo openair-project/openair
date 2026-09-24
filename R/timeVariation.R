@@ -192,6 +192,7 @@ timeVariation <- function(
   ref.y = NULL,
   key = NULL,
   key.columns = NULL,
+  key.rows = NULL,
   key.position = "top",
   panel.gap = 1.5,
   auto.text = TRUE,
@@ -211,8 +212,8 @@ timeVariation <- function(
   if (length(panels) == 1) {
     cli::cli_warn(
       c(
-        "!" = "Instead of setting {.arg panel} to a single variable, use {.fun openair::plotVariation}.",
-        "i" = 'i.e., {.code plotVariation(..., x = "{panels}")}'
+        "!" = "Instead of setting {.arg panels} to a single variable, use {.fun openair::variationPlot}.",
+        "i" = 'i.e., {.code variationPlot(..., x = "{panels}")}'
       )
     )
   }
@@ -238,10 +239,10 @@ timeVariation <- function(
       ifelse(normalise, "normalised level", toString(pollutant)),
     auto.text
   )
-  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
+  extra.args$title <- quickText(extra.args$title, auto.text)
+  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
   extra.args$caption <- quickText(
-    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int),
+    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int, ci),
     auto.text
   )
 
@@ -275,11 +276,25 @@ timeVariation <- function(
   }
 
   # title for overall and individual plots
-  overall.title <- extra.args$title
+  overall.title <- if (identical(extra.args$title, expression(paste()))) {
+    NULL
+  } else {
+    extra.args$title
+  }
   extra.args$title <- ""
-  overall.subtitle <- extra.args$subtitle
+
+  overall.subtitle <- if (identical(extra.args$subtitle, expression(paste()))) {
+    NULL
+  } else {
+    extra.args$subtitle
+  }
   extra.args$subtitle <- ""
-  overall.caption <- extra.args$caption
+
+  overall.caption <- if (identical(extra.args$caption, expression(paste()))) {
+    NULL
+  } else {
+    extra.args$caption
+  }
   extra.args$caption <- ""
 
   # get the xvars and facets for each panel
@@ -322,6 +337,7 @@ timeVariation <- function(
           alpha = alpha,
           key.position = key.position,
           key.columns = key.columns,
+          key.rows = key.rows,
           name.pol = name.pol,
           auto.text = auto.text,
           ylim = ylim_list[[i]],
@@ -349,6 +365,13 @@ timeVariation <- function(
     plots <- purrr::map(plots, \(plt) {
       plt + layer_ref(ref = ref.y, which = "y", type = "numeric")
     })
+  }
+
+  # check groups are consistent
+  datum_groups <- datum |> purrr::map("group") |> purrr::map(levels)
+  group_check <- all(sapply(datum_groups, identical, datum_groups[[1]]))
+  if (!group_check) {
+    cli::cli_abort("Groups are inconsistent between panels.")
   }
 
   # if more than one plot, use patchwork to combine
@@ -379,7 +402,6 @@ timeVariation <- function(
         design = layout,
         heights = c(0.4, 0.6)
       ) +
-      patchwork::plot_layout(guides = "collect") &
       patchwork::plot_annotation(
         title = overall.title,
         subtitle = overall.subtitle,
@@ -393,14 +415,18 @@ timeVariation <- function(
       theme_openair(
         theme = theme,
         coord = "cartesian",
-        key.position,
+        key.position = key.position,
         extra.args = extra.args
       ) &
       ggplot2::theme(
         panel.spacing = ggplot2::rel(panel.gap),
-        plot.margin = ggplot2::unit(rep(0.25, 4), "cm"),
-        legend.position = key.position
+        plot.margin = ggplot2::unit(rep(0.25, 4), "cm")
       )
+
+    # remove legends besides the first one
+    for (i in seq(2, length(thePlot), 1)) {
+      thePlot[[i]] <- thePlot[[i]] + ggplot2::theme(legend.position = "none")
+    }
   } else {
     thePlot <- plots[[1]]
   }

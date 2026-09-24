@@ -195,6 +195,7 @@ trajLevel <- function(
   key.title = NULL,
   key.position = "right",
   key.columns = NULL,
+  key.rows = NULL,
   auto.text = TRUE,
   plot = TRUE,
   key = NULL,
@@ -814,15 +815,8 @@ trajLevel <- function(
             ),
             legend.text.position = key.position
           ),
-          ncol = if (missing(key.columns)) {
-            if (key.position %in% c("left", "right")) {
-              NULL
-            } else {
-              dplyr::n_distinct(levels(out_data_sf[[pollutant]]))
-            }
-          } else {
-            key.columns
-          }
+          ncol = key.columns,
+          nrow = key.rows
         )
       )
   }
@@ -981,15 +975,8 @@ trajLevel <- function(
               ),
               legend.text.position = key.position
             ),
-            ncol = if (missing(key.columns)) {
-              if (key.position %in% c("left", "right")) {
-                NULL
-              } else {
-                dplyr::n_distinct(levels(out_data_sf[[pollutant]]))
-              }
-            } else {
-              key.columns
-            }
+            ncol = key.columns,
+            nrow = key.rows
           )
         )
     }
