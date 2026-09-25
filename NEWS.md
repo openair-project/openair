@@ -60,6 +60,8 @@
 
 - `timePlot(group=)` will not error if `avg.time = "default"` and `group` is a 'date' option (e.g., `"season"`).
 
+- `timeAverage()` will no longer report duplicate dates when `start.date` and `end.date` are already in `mydata`.
+
 # openair 3.1.0
 
 ## Dependency Changes

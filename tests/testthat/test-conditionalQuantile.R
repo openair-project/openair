@@ -130,17 +130,17 @@ test_that("higher min.bin produces more NAs in the outer quantile columns", {
 
 # --- type conditioning -------------------------------------------------------
 
-test_that("type = 'daylight' produces two rows in $data", {
+test_that("type = 'weekend' produces two rows in $data", {
   cq_season <- conditionalQuantile(
     syn,
     obs = "obs",
     mod = "mod",
     bins = 10,
-    type = "daylight",
+    type = "weekend",
     plot = FALSE
   )
-  expect_true("daylight" %in% names(cq_season$data))
-  expect_equal(length(cq_season$data$daylight), 2L)
+  expect_true("weekend" %in% names(cq_season$data))
+  expect_equal(length(cq_season$data$weekend), 2L)
 })
 
 # --- Input validation --------------------------------------------------------

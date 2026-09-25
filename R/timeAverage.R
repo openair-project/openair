@@ -457,18 +457,37 @@ validate_timeaverage_inputs <- function(data.thresh, percentile, statistic) {
 bind_start_and_end_dates <- function(mydata, type, start.date, end.date, TZ) {
   if (!is.na(start.date)) {
     firstLine <- data.frame(date = as.POSIXct(start.date, tz = TZ))
-    firstLine[type] <- mydata[1, type]
-    mydata <- dplyr::bind_rows(firstLine, mydata)
+    mydata <- map_type(
+      mydata,
+      type = type,
+      fun = \(df) {
+        newline <- firstLine
+        newline[type] <- df[1, type]
+        if (!any(df$date == newline$date)) {
+          df <- dplyr::bind_rows(newline, df)
+        }
+        df
+      }
+    )
   }
 
   if (!is.na(end.date)) {
     lastLine <- data.frame(date = as.POSIXct(end.date, tz = TZ))
-    lastLine[type] <- mydata[1, type]
-    mydata <- dplyr::bind_rows(mydata, lastLine)
+    mydata <- map_type(
+      mydata,
+      type = type,
+      fun = \(df) {
+        newline <- lastLine
+        newline[type] <- df[1, type]
+        if (!any(df$date == newline$date)) {
+          df <- dplyr::bind_rows(df, newline)
+        }
+        df
+      }
+    )
   }
 
   # check this is necessary
-  # mydata$date <- as.POSIXct(format(mydata$date), tz = TZ)
   mydata$date <- lubridate::as_datetime(mydata$date, tz = TZ)
 
   return(mydata)

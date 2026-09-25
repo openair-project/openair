@@ -133,14 +133,14 @@ test_that("two mod values produce two rows (one per mod)", {
 # type conditioning
 # =============================================================================
 
-test_that("type = 'daylight' produces two rows in $data", {
+test_that("type = 'weekend' produces two rows in $data", {
   td_s <- TaylorDiagram(
     syn,
     obs = "obs",
     mod = "mod1",
-    type = "daylight",
+    type = "weekend",
     plot = FALSE
   )
   expect_equal(nrow(td_s$data), 2L)
-  expect_true("daylight" %in% names(td_s$data))
+  expect_true("weekend" %in% names(td_s$data))
 })

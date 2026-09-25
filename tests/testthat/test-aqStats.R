@@ -9,11 +9,25 @@ dat2 <- selectByDate(mydata, year = 2002:2003)
 # Run each configuration once and reuse across tests
 result_no2 <- aqStats(dat, pollutant = "no2", progress = FALSE)
 result_pm10 <- aqStats(dat, pollutant = "pm10", progress = FALSE)
-result_o3 <- aqStats(dat, pollutant = "o3", progress = FALSE)
-result_multi_long <- aqStats(dat2, pollutant = c("no2", "o3"), progress = FALSE)
+result_o3 <- aqStats(
+  dat,
+  pollutant = "o3",
+  latitude = 50,
+  longitude = 0,
+  progress = FALSE
+)
+result_multi_long <- aqStats(
+  dat2,
+  pollutant = c("no2", "o3"),
+  latitude = 50,
+  longitude = 0,
+  progress = FALSE
+)
 result_multi_wide <- aqStats(
   dat2,
   pollutant = c("no2", "o3"),
+  latitude = 50,
+  longitude = 0,
   transpose = TRUE,
   progress = FALSE
 )
