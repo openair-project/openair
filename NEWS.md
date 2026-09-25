@@ -26,6 +26,8 @@
     
     - Gains the `method` argument, which defaults to `"line"` to use the current behaviour but can now also be `"band"` to draw shaded regions rather than single lines. See `refOpts()` for more details. 
 
+- `variationPlot()` gains the `ref.y` argument.
+
 - `key.columns` now defaults to `NULL` in most functions, which will use `ggplot2`'s logic for the number of columns. `key.rows` has also been added.
 
 - `timePlot()` gains the `step` argument which causes a "stairstep" plot to be created instead of a traditional line chart. This is likely most useful for low resolution or 'multi-day' (e.g., diffusion tube) data.
