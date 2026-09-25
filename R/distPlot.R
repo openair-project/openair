@@ -334,8 +334,18 @@ distPlot <- function(
       expand = ggplot2::expansion(),
       transform = ifelse(log, "log10", "identity")
     ) +
-    layer_ref(ref = ref.x, which = "x", type = "numeric") +
-    layer_ref(ref = ref.y, which = "y", type = "numeric") +
+    layer_ref(
+      ref = ref.x,
+      which = "x",
+      type = "numeric",
+      other_type = "numeric"
+    ) +
+    layer_ref(
+      ref = ref.y,
+      which = "y",
+      type = "numeric",
+      other_type = "numeric"
+    ) +
     get_facet(
       type = if (all(type == "default")) {
         "default"
@@ -367,17 +377,17 @@ distPlot <- function(
       aesthetics = c("colour", "fill"),
       guide = ggplot2::guide_legend(ncol = key.columns, nrow = key.rows)
     )
-
+  
   # outputs
   if (plot) {
     plot(thePlot)
   }
-
+  
   output <- list(
     plot = thePlot,
     data = mydata,
     call = match.call()
   )
-
+  
   invisible(output)
 }

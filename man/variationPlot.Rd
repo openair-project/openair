@@ -20,6 +20,7 @@ variationPlot(
   cols = "hue",
   theme = "default",
   alpha = 0.4,
+  ref.y = NULL,
   key.position = "top",
   key.columns = NULL,
   key.rows = NULL,
@@ -145,6 +146,11 @@ openair theme will not be fully applied; instead, only minimal adjustments
 
 \item{alpha}{The alpha transparency used for plotting confidence intervals.
 \code{0} is fully transparent and 1 is opaque. The default is \code{0.4}.}
+
+\item{ref.y}{Either a single value or values representing the y axis
+intercepts to draw lines, or a list such as that provided by \code{\link[=refOpts]{refOpts()}} to
+customise the colour/width/type/etc. of each line. See \code{\link[=refOpts]{refOpts()}} for more
+details.}
 
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},

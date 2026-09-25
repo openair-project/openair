@@ -829,8 +829,8 @@ scatter_scatter <- function(
 
   ## reference lines
   plt <- plt +
-    .layer_ref_scatter(ref.x, "x", mydata[[x]]) +
-    .layer_ref_scatter(ref.y, "y", mydata[[y]])
+    .layer_ref_scatter(ref.x, "x", mydata[[x]], mydata[[x]]) +
+    .layer_ref_scatter(ref.y, "y", mydata[[y]], mydata[[y]])
 
   ## axis scales
   plt <- plt +
@@ -967,8 +967,8 @@ scatter_hexbin <- function(
   }
 
   plt <- plt +
-    .layer_ref_scatter(ref.x, "x", mydata[[x]]) +
-    .layer_ref_scatter(ref.y, "y", mydata[[y]]) +
+    .layer_ref_scatter(ref.x, "x", mydata[[x]], mydata[[y]]) +
+    .layer_ref_scatter(ref.y, "y", mydata[[y]], mydata[[x]]) +
     .scatter_x_scale(log.x, x, mydata, extra.args) +
     .scatter_y_scale(log.y, y, mydata, extra.args) +
     gg_coord_limits(extra.args) +
@@ -1134,8 +1134,8 @@ scatter_level <- function(
   }
 
   plt <- plt +
-    .layer_ref_scatter(ref.x, "x", mydata$xgrid) +
-    .layer_ref_scatter(ref.y, "y", mydata$ygrid) +
+    .layer_ref_scatter(ref.x, "x", mydata$xgrid, mydata$ygrid) +
+    .layer_ref_scatter(ref.y, "y", mydata$ygrid, mydata$xgrid) +
     .scatter_x_scale(log.x, "xgrid", mydata, extra.args) +
     .scatter_y_scale(log.y, "ygrid", mydata, extra.args) +
     gg_coord_limits(extra.args) +
@@ -1329,8 +1329,8 @@ scatter_density <- function(
   }
 
   plt <- plt +
-    .layer_ref_scatter(ref.x, "x", mydata[["x"]]) +
-    .layer_ref_scatter(ref.y, "y", mydata[["y"]]) +
+    .layer_ref_scatter(ref.x, "x", mydata[["x"]], mydata[["y"]]) +
+    .layer_ref_scatter(ref.y, "y", mydata[["y"]], mydata[["x"]]) +
     .scatter_x_scale(log.x, "x", grid_data, extra.args) +
     .scatter_y_scale(log.y, "y", grid_data, extra.args) +
     gg_coord_limits(extra.args) +
@@ -1633,25 +1633,33 @@ compute_lm_labels <- function(
 }
 
 # handle ref layers for scatterplot
-.layer_ref_scatter <- function(ref, which, vec) {
+.layer_ref_scatter <- function(ref, which, vec, vec2) {
+  tz <- NULL
   if (lubridate::is.POSIXct(vec)) {
-    layer_ref(
-      ref,
-      which,
-      type = "datetime",
-      tz = lubridate::tz(vec)
-    )
-  } else if (lubridate::is.Date(vec)) {
-    layer_ref(
-      ref,
-      which,
-      type = "date"
-    )
-  } else {
-    layer_ref(
-      ref,
-      which,
-      type = "numeric"
-    )
+    tz <- lubridate::tz(vec)
+  } else if (lubridate::is.POSIXct(vec2)) {
+    tz <- lubridate::tz(vec2)
   }
+
+  type <- "numeric"
+  if (lubridate::is.POSIXct(vec)) {
+    type <- "datetime"
+  } else if (lubridate::is.Date(vec)) {
+    type <- "date"
+  }
+
+  other <- "numeric"
+  if (lubridate::is.POSIXct(vec2)) {
+    other <- "datetime"
+  } else if (lubridate::is.Date(vec2)) {
+    other <- "date"
+  }
+
+  layer_ref(
+    ref,
+    which,
+    type = type,
+    other_type = other,
+    tz = tz
+  )
 }

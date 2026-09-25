@@ -335,6 +335,7 @@ timeVariation <- function(
           cols = cols,
           theme = theme,
           alpha = alpha,
+          ref.y = ref.y,
           key.position = key.position,
           key.columns = key.columns,
           key.rows = key.rows,
@@ -359,13 +360,6 @@ timeVariation <- function(
   # extract plots from outputs
   plots <- outputs |> purrr::map("plot") |> stats::setNames(panels)
   datum <- outputs |> purrr::map("data") |> stats::setNames(panels)
-
-  # add reference if requested
-  if (!is.null(ref.y)) {
-    plots <- purrr::map(plots, \(plt) {
-      plt + layer_ref(ref = ref.y, which = "y", type = "numeric")
-    })
-  }
 
   # check groups are consistent
   datum_groups <- datum |> purrr::map("group") |> purrr::map(levels)
