@@ -363,7 +363,13 @@ timeVariation <- function(
   # add reference if requested
   if (!is.null(ref.y)) {
     plots <- purrr::map(plots, \(plt) {
-      plt + layer_ref(ref = ref.y, which = "y", type = "numeric")
+      plt +
+        layer_ref(
+          ref = ref.y,
+          which = "y",
+          type = "numeric",
+          other_type = "numeric"
+        )
     })
   }
 

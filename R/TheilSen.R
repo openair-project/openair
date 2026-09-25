@@ -598,12 +598,15 @@ build_theilsen_plot <- function(
       ref = ref.x,
       which = "x",
       type = x_type,
+      other_type = "numeric",
       tz = lubridate::tz(split.data$date)
     ) +
     layer_ref(
       ref = ref.y,
       which = "y",
-      type = "numeric"
+      type = "numeric",
+      other_type = x_type,
+      tz = lubridate::tz(split.data$date)
     ) +
     ggplot2::geom_text(
       data = res2,

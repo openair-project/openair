@@ -14,7 +14,8 @@ refOpts(
   label_size = 10,
   label_colour = NULL,
   color = NULL,
-  label_color = NULL
+  label_color = NULL,
+  method = c("line", "band")
 )
 }
 \arguments{
@@ -24,24 +25,29 @@ type is provided, it will attempt to be coerced to the correct type using
 \code{\link[=as.numeric]{as.numeric()}}, \code{\link[lubridate:as_date]{lubridate::as_date()}} or \code{\link[lubridate:as_datetime]{lubridate::as_datetime()}},
 respectively.}
 
-\item{alpha}{Numeric value between 0 and 1 specifying the transparency of the
-lines. Default is 1 (fully opaque).}
+\item{alpha}{Numeric value between \code{0} and \code{1} specifying the transparency of
+the lines. Default is \code{1} (fully opaque) for lines and \code{0.1} for bands.}
 
-\item{colour, color}{Colour of the lines. Default is \code{"black"}. \code{colour} and
-\code{color} are interchangeable, but \code{colour} is used preferentially if both
-are given.}
+\item{colour, color}{Colour of the lines and/or bands. Default is \code{"black"}.
+\code{colour} and \code{color} are interchangeable, but \code{colour} is used
+preferentially if both are given.}
 
-\item{linetype}{Line type. Can be an integer (e.g., 1 for solid, 2 for
-dashed) or a string (e.g., "solid", "dashed"). Default is 1 (solid).}
+\item{linetype}{Line type. Can be an integer (e.g., \code{1} for solid, \code{2} for
+dashed) or a string (e.g., \code{"solid"}, \code{"dashed"}). Default is \code{1} (solid).}
 
 \item{linewidth}{Numeric value specifying the width of the lines. Default is
-1.}
+\code{1} for lines and \code{0} for bands.}
 
 \item{label, label_size, label_colour, label_color}{\code{label} takes character
 string to add a direct label to the reference line. For \code{ref.x} this will
 be on the right hand side of the plot, and for \code{ref.y} this will be on top.
-\code{label_size} and \code{label_colour} set label aesethetics, with the latter
+\code{label_size} and \code{label_colour} set label aesthetics, with the latter
 defaulting to \code{colour} if not set.}
+
+\item{method}{One of \code{"line"} or \code{"band"}. The former will create any number
+of horizontal or vertical reference lines at \code{intercept} values. The latter
+will use pairs of \code{intercept} values to create any number of horizontal or
+vertical shaded areas/bands.}
 }
 \value{
 A list of options that can be passed to the \code{ref.x} or \code{ref.y}
@@ -50,8 +56,10 @@ arguments of functions like \code{\link[=timePlot]{timePlot()}}.
 \description{
 This function provides a convenient way to set default options for \code{ref.x} or
 \code{ref.y} layers in \code{openair} plots, which show some form of horizontal or
-vertical reference line. \code{intercept} can be a vector of any length; all other
-arguments will be recycled to be equal to that length.
+vertical reference line or band. \code{intercept} can be a vector of any length
+(for lines) or an even numbered vector representing pairs of bounds (for
+bands); all other arguments besides \code{label} will be recycled to be the
+correct length. Use \code{method} to change between lines and bands.
 }
 \examples{
 # `ref.y` can just be a value to plot
@@ -67,6 +75,17 @@ timePlot(
     colour = c("grey50", "blue"),
     linetype = c(2, 1),
     linewidth = c(1, 2)
+  )
+)
+
+# use the 'bands' method for shaded areas
+timePlot(
+  mydata,
+  avg.time = "month",
+  ref.y = refOpts(
+    c(200, 225, 250, 275),
+    colour = c("purple", "green"),
+    method = "band"
   )
 )
 }
