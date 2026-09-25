@@ -1,5 +1,9 @@
 # openair (development version)
 
+## Dependency Changes
+
+- `{openair}` now suggests `{mirai}` and `{carrier}`.
+
 ## New Features
 
 - All plots gain the `theme` argument to provide a convenient way to set non-data plot aesthetic features, such as gridlines and fonts. The following options are provided:
@@ -17,6 +21,8 @@
     - Any `ggplot2::theme()` object, which will be used to modify the `"default"` theme.
 
 - Added `distPlot()`, which flexibly plots histograms and density functions to examine the 'shape' of the distribution of numeric data.
+
+- `importUKAQ()` will now import files in parallel if `mirai::daemons()` are set. This will significantly speed up importing large amounts of data.
 
 - `importMeta()` can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.
 

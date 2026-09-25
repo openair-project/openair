@@ -34,7 +34,7 @@ Imports:
     methods,
     mgcv,
     patchwork,
-    purrr (>= 1.0.0),
+    purrr (>= 1.1.0),
     Rcpp,
     readr,
     rlang,
@@ -43,10 +43,12 @@ Imports:
     tidyr,
     utils
 Suggests:
+    carrier,
     geomtextpath,
     KernSmooth,
     knitr,
     legendry (>= 0.3.0),
+    mirai,
     quantreg,
     rmarkdown,
     rnaturalearth,
