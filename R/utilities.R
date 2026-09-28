@@ -160,9 +160,19 @@ check_duplicate_rows <- function(mydata, type = NULL, fn = cli::cli_warn) {
 #'
 #' @param fun The function to apply; should be a function of a dataframe.
 #'
+#' @param ... Other objects passed to [purrr::in_parallel()] for
+#'   `.allow_parallel`.
+#'
 #' @param .include_default If `default` is the only `type`, should any of the
 #'   splitting actually happen? If `FALSE`, no `default` column will be
 #'   returned.
+#'
+#' @param .allow_parallel If `TRUE`, `mirai` can be used to run the map in
+#'   parallel.
+#'
+#' @param .row_bind Bind rows? Sometimes you might not want to do this - e.g.,
+#'   to return a list of different objects. Defaults to `TRUE` as that's by and
+#'   large the most common situation in `openair`.
 #'
 #' @param .progress Show a progress bar?
 #'
@@ -175,7 +185,9 @@ map_type <- function(
   mydata,
   type,
   fun,
+  ...,
   .include_default = FALSE,
+  .allow_parallel = FALSE,
   .row_bind = TRUE,
   .progress = FALSE
 ) {
@@ -183,16 +195,34 @@ map_type <- function(
     return(fun(mydata))
   }
 
-  out <-
-    purrr::map(
-      .x = split(mydata, mydata[type], drop = TRUE),
-      .f = function(df) {
-        out <- fun(df)
-        out[type] <- df[1, type, drop = TRUE]
-        return(out)
-      },
-      .progress = .progress
-    )
+  if (.allow_parallel && rlang::is_installed("mirai")) {
+    out <-
+      purrr::map(
+        .x = split(mydata, mydata[type], drop = TRUE),
+        .f = purrr::in_parallel(
+          function(df) {
+            out <- fun(df)
+            out[type] <- df[1, type, drop = TRUE]
+            return(out)
+          },
+          fun = fun,
+          type = type,
+          ...
+        ),
+        .progress = .progress
+      )
+  } else {
+    out <-
+      purrr::map(
+        .x = split(mydata, mydata[type], drop = TRUE),
+        .f = function(df) {
+          out <- fun(df)
+          out[type] <- df[1, type, drop = TRUE]
+          return(out)
+        },
+        .progress = .progress
+      )
+  }
 
   if (.row_bind) {
     out <-

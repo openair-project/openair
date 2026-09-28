@@ -420,7 +420,7 @@ importKCL <-
   ) {
     cli::cli_warn(
       c(
-        "i" = "{.fun importKCL} has been superseded by, and is equivalent to, {.fun importImperial}. {.strong Please use {.fun importImperial} going forward.}"
+        "i" = "{.fun openair::importKCL} has been superseded by, and is equivalent to, {.fun openair::importImperial}. \\{.strong Please use {.fun openair::importImperial} going forward.}"
       ),
       .frequency = "regularly",
       .frequency_id = "imperial"

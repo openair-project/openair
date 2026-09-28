@@ -85,15 +85,46 @@
 #'   No corrections have been made to the PM2.5 data. The volatile component of
 #'   FDMS PM2.5 (where available) is shown in the 'v2.5' column.
 #'
+#' @section Parallel Processing:
+#'
+#'   If you are importing a lot of data, this can take a long while. This is
+#'   because each combination of year and site (or just year for annual,
+#'   monthly, or DAQI data) requires downloading a separate data file from WSP's
+#'   online data directory, and the time each download takes can quickly add up.
+#'   The `importUKAQ()` function can use parallel processing to speed
+#'   downloading up, powered by the capable `{mirai}` package.
+#'
+#'   If users have any `{mirai}` "daemons" set, `importUKAQ()` will download
+#'   files in parallel. The greatest benefits will be seen if you spawn as many
+#'   daemons as you have cores on your machine, although one fewer than the
+#'   available cores is often a good rule of thumb. Your mileage may vary,
+#'   however, and naturally spawning more daemons than station-year combinations
+#'   will lead to diminishing returns.
+#'
+#'   ```
+#'   # set workers - once per session
+#'   mirai::daemons(4)
+#'
+#'   # import lots of data - NB: no change in the import function!
+#'   london_aq <- importUKAQ(site = "my1", year = 1980:2025)
+#'   ```
+#'
+#'   As the air quality data files are written as RData and RDS file types,
+#'   reading them into R is already very quick. Users are therefore likely to
+#'   see the most benefit when importing large amounts of data, e.g., entire
+#'   networks of hourly data, or many years of individual sites.
+#'
 #' @param site Site code of the site to import, e.g., `"my1"` is Marylebone
 #'   Road. Site codes can be discovered through the use of [importMeta()].
 #'   Several sites can be imported at once. For example, `site = c("my1",
 #'   "nott")` imports both Marylebone Road and Nottingham. Sites from different
 #'   networks can be imported through also providing multiple `source`s. Site
 #'   codes can be upper or lower case.
+#'
 #' @param year Year(s) to import. To import a series of years use, e.g.,
 #'   `2000:2020`. To import several specific years use `year = c(2000, 2010,
 #'   2020)`.
+#'
 #' @param source The network to which the `site`(s) belong. The default, `NULL`,
 #'   allows [importUKAQ()] to guess the correct `source`, preferring national
 #'   networks over locally managed networks. Alternatively, users can define a
@@ -107,6 +138,7 @@
 #'   - `"waqn"`,  The Welsh Air Quality Network.
 #'   - `"ni"`,  The Northern Ireland Air Quality Network.
 #'   - `"local"`,  Locally managed air quality networks in England.
+#'
 #' @param data_type The type of data to be returned, defaulting to `"hourly"`
 #'   data. Alternative data types include:
 #'   - `"daily"`: Daily average data.
@@ -120,35 +152,44 @@
 #'   [here](https://www.gov.uk/government/publications/health-effects-of-air-pollution)
 #'   for more details of how the index is defined. Note that this `data_type` is
 #'   not available for locally managed monitoring networks.
+#'
 #' @param pollutant Pollutants to import. If omitted will import all pollutants
 #'   from a site. To import only NOx and NO2 for example use `pollutant =
 #'   c("nox", "no2")`. Pollutant names can be upper or lower case.
+#'
 #' @param hc Include hydrocarbon measurements in the imported data? Defaults to
 #'   `FALSE` as most users will not be interested in using hydrocarbon data.
+#'
 #' @param meta Append metadata columns to data for each selected `site`?
 #'   Defaults to `FALSE`. Columns are defined using `meta_columns`.
+#'
 #' @param meta_columns The specific columns to append when `meta = TRUE`.
 #'   Defaults to site type, latitude and longitude. Can be any of `"site_type"`,
 #'   `"latitude"`, `"longitude"`, `"zone"`, `"agglomeration"`, and
 #'   `"local_authority"` (as well as `"provider"` for locally managed data). See
 #'   [importMeta()] for more complete information.
+#'
 #' @param meteo Append modelled meteorological data, if available? Defaults to
 #'   `TRUE`, which will return wind speed (`ws`), wind direction (`wd`) and
 #'   ambient temperature (`air_temp`). The variables are calculated from using
 #'   the WRF model run by WSP and are available for most but not all networks.
 #'   Setting `meteo = FALSE` is useful if you have other meteorological data to
 #'   use in preference, for example from the `worldmet` package.
+#'
 #' @param ratified Append `qc` column(s) to hourly data indicating whether each
 #'   species was ratified (i.e., quality-checked)?  Defaults to `FALSE`.
+#'
 #' @param to_narrow Return the data in a "narrow"/"long"/"tidy" format? By
 #'   default the returned data is "wide" and has a column for each
 #'   pollutant/variable. When `to_narrow = TRUE` the data are returned with a
 #'   column identifying the pollutant name and a column containing the
 #'   corresponding concentration/statistic. Defaults to `FALSE`.
+#'
 #' @param verbose Print messages to the console if hourly data cannot be
 #'   imported? Default is `FALSE`. `TRUE` is useful for debugging as the
 #'   specific `year`(s), `site`(s) and `source`(s) which cannot be imported will
 #'   be returned.
+#'
 #' @param progress Show a progress bar when many sites/years are being imported?
 #'   Defaults to `TRUE`.
 #'
@@ -311,15 +352,45 @@ importUKAQ <-
       files <- unique(files)
 
       # import statistics
-      aq_data <- purrr::pmap(
-        tidyr::crossing(tidyr::nesting(files, source), year),
-        readSummaryData,
-        data_type = data_type,
-        to_narrow = to_narrow,
-        hc = hc,
-        .progress = ifelse(progress, "Importing Statistics", FALSE)
-      ) |>
-        purrr::list_rbind()
+      if (rlang::is_installed("mirai")) {
+        aq_data <- purrr::pmap(
+          tidyr::crossing(tidyr::nesting(files, source), year),
+          purrr::in_parallel(
+            \(files, source, year) {
+              readSummaryData(
+                files = files,
+                year = year,
+                source = source,
+                data_type = data_type,
+                to_narrow = to_narrow,
+                hc = hc
+              )
+            },
+            data_type = data_type,
+            to_narrow = to_narrow,
+            hc = hc,
+            readSummaryData = readSummaryData
+          ),
+          .progress = ifelse(progress, "Importing Statistics", FALSE)
+        ) |>
+          purrr::list_rbind()
+      } else {
+        aq_data <- purrr::pmap(
+          tidyr::crossing(tidyr::nesting(files, source), year),
+          \(files, source, year) {
+            readSummaryData(
+              files = files,
+              year = year,
+              source = source,
+              data_type = data_type,
+              to_narrow = to_narrow,
+              hc = hc
+            )
+          },
+          .progress = ifelse(progress, "Importing Statistics", FALSE)
+        ) |>
+          purrr::list_rbind()
+      }
 
       if (nrow(aq_data) == 0) {
         cli::cli_abort(
@@ -346,13 +417,30 @@ importUKAQ <-
       files <- unique(files)
 
       # import DAQI
-      aq_data <-
-        purrr::pmap(
-          tidyr::crossing(tidyr::nesting(files, source), year),
-          readDAQI,
-          .progress = ifelse(progress, "Importing DAQI", FALSE)
-        ) |>
-        purrr::list_rbind()
+      if (rlang::is_installed("mirai")) {
+        aq_data <-
+          purrr::pmap(
+            tidyr::crossing(tidyr::nesting(files, source), year),
+            purrr::in_parallel(
+              \(files, source, year) {
+                readDAQI(files = files, year = year, source = source)
+              },
+              readDAQI = readDAQI
+            ),
+            .progress = ifelse(progress, "Importing DAQI", FALSE)
+          ) |>
+          purrr::list_rbind()
+      } else {
+        aq_data <-
+          purrr::pmap(
+            tidyr::crossing(tidyr::nesting(files, source), year),
+            \(files, source, year) {
+              readDAQI(files = files, year = year, source = source)
+            },
+            .progress = ifelse(progress, "Importing DAQI", FALSE)
+          ) |>
+          purrr::list_rbind()
+      }
 
       if (nrow(aq_data) == 0) {
         cli::cli_abort(
@@ -415,27 +503,58 @@ importUKAQ <-
           tidyr::crossing(year = year)
       }
 
-      aq_data <-
-        purrr::pmap(
-          .l = site_info,
-          .f = purrr::possibly(
-            ~ readUKAQData(
-              site = ..1,
-              lmam_subfolder = ..4,
-              year = ..5,
-              data_type,
+      if (rlang::is_installed("mirai")) {
+        aq_data <-
+          purrr::pmap(
+            .l = site_info,
+            .f = purrr::in_parallel(
+              \(code, source, url_data, pcode, year) {
+                readUKAQData(
+                  site = code,
+                  lmam_subfolder = pcode,
+                  year = year,
+                  data_type = data_type,
+                  pollutant = pollutant,
+                  hc = hc,
+                  to_narrow = to_narrow,
+                  source = source,
+                  url_data = url_data,
+                  verbose = verbose
+                )
+              },
+              readUKAQData = readUKAQData,
+              to_narrow = to_narrow,
+              data_type = data_type,
               pollutant = pollutant,
               hc = hc,
               to_narrow = to_narrow,
-              source = ..2,
-              url_data = ..3,
               verbose = verbose
             ),
-            quiet = !verbose
-          ),
-          .progress = ifelse(progress, "Importing AQ Data", FALSE)
-        ) |>
-        purrr::list_rbind()
+            .progress = ifelse(progress, "Importing AQ Data", FALSE)
+          ) |>
+          purrr::list_rbind()
+      } else {
+        aq_data <-
+          purrr::pmap(
+            .l = site_info,
+            .f = \(code, source, url_data, pcode, year) {
+              readUKAQData(
+                site = code,
+                lmam_subfolder = pcode,
+                year = year,
+                data_type = data_type,
+                pollutant = pollutant,
+                hc = hc,
+                to_narrow = to_narrow,
+                source = source,
+                url_data = url_data,
+                verbose = verbose
+              )
+            },
+            .progress = ifelse(progress, "Importing AQ Data", FALSE)
+          ) |>
+          purrr::list_rbind()
+      }
 
       if (nrow(aq_data) == 0) {
         cli::cli_abort(

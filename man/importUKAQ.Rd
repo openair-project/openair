@@ -189,6 +189,36 @@ No corrections have been made to the PM2.5 data. The volatile component of
 FDMS PM2.5 (where available) is shown in the 'v2.5' column.
 }
 
+\section{Parallel Processing}{
+
+
+If you are importing a lot of data, this can take a long while. This is
+because each combination of year and site (or just year for annual,
+monthly, or DAQI data) requires downloading a separate data file from WSP's
+online data directory, and the time each download takes can quickly add up.
+The \code{importUKAQ()} function can use parallel processing to speed
+downloading up, powered by the capable \code{{mirai}} package.
+
+If users have any \code{{mirai}} "daemons" set, \code{importUKAQ()} will download
+files in parallel. The greatest benefits will be seen if you spawn as many
+daemons as you have cores on your machine, although one fewer than the
+available cores is often a good rule of thumb. Your mileage may vary,
+however, and naturally spawning more daemons than station-year combinations
+will lead to diminishing returns.
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# set workers - once per session
+mirai::daemons(4)
+
+# import lots of data - NB: no change in the import function!
+london_aq <- importUKAQ(site = "my1", year = 1980:2025)
+}\if{html}{\out{</div>}}
+
+As the air quality data files are written as RData and RDS file types,
+reading them into R is already very quick. Users are therefore likely to
+see the most benefit when importing large amounts of data, e.g., entire
+networks of hourly data, or many years of individual sites.
+}
+
 \examples{
 \dontrun{
 # import a single site from the AURN
