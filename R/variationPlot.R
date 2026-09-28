@@ -110,6 +110,7 @@ variationPlot <- function(
   cols = "hue",
   theme = "default",
   alpha = 0.4,
+  ref.y = NULL,
   key.position = "top",
   key.columns = NULL,
   key.rows = NULL,
@@ -692,6 +693,15 @@ variationPlot <- function(
         drop = (extra.args$scales %||% "fixed") %in% c("free_x", "free")
       )
   }
+
+  thePlot <-
+    thePlot +
+    layer_ref(
+      ref = ref.y,
+      which = "y",
+      type = "numeric",
+      other_type = "numeric"
+    )
 
   if (plot) {
     plot(thePlot)

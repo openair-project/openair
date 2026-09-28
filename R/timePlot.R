@@ -177,87 +177,87 @@
 #' }
 #'
 timePlot <- function(
-  mydata,
-  pollutant = "nox",
-  group = FALSE,
-  stack = FALSE,
-  normalise = NULL,
-  avg.time = "default",
-  data.thresh = 0,
-  statistic = "mean",
-  percentile = NA,
-  date.pad = FALSE,
-  type = "default",
-  cols = "brewer1",
-  theme = "default",
-  log = FALSE,
-  step = FALSE,
-  windflow = NULL,
-  smooth = FALSE,
-  smooth_k = NULL,
-  ci = TRUE,
-  ref.x = NULL,
-  ref.y = NULL,
-  key.columns = NULL,
-  key.rows = NULL,
-  key.position = "bottom",
-  key.title = NULL,
-  name.pol = pollutant,
-  date.breaks = 7,
-  date.format = NULL,
-  auto.text = TRUE,
-  plot = TRUE,
-  key = NULL,
-  ...
+    mydata,
+    pollutant = "nox",
+    group = FALSE,
+    stack = FALSE,
+    normalise = NULL,
+    avg.time = "default",
+    data.thresh = 0,
+    statistic = "mean",
+    percentile = NA,
+    date.pad = FALSE,
+    type = "default",
+    cols = "brewer1",
+    theme = "default",
+    log = FALSE,
+    step = FALSE,
+    windflow = NULL,
+    smooth = FALSE,
+    smooth_k = NULL,
+    ci = TRUE,
+    ref.x = NULL,
+    ref.y = NULL,
+    key.columns = NULL,
+    key.rows = NULL,
+    key.position = "bottom",
+    key.title = NULL,
+    name.pol = pollutant,
+    date.breaks = 7,
+    date.format = NULL,
+    auto.text = TRUE,
+    plot = TRUE,
+    key = NULL,
+    ...
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
-
+  
   # default colour based on theme
   if (missing(cols)) {
     cols <- get_theme_cols(cols, theme, "qual")
   }
-
+  
   # Args setup
   extra.args <- capture_dots(...)
-
+  
   # detect if group is a column name rather than a boolean
   group_is_col <- is.character(group) && length(group) == 1
-
+  
   # warning messages and other checks
   if (length(percentile) > 1 && length(pollutant) > 1) {
     cli::cli_abort(
       "Only one {.arg pollutant} allowed when considering more than one {.arg percentile}."
     )
   }
-
+  
   if (stack && length(type) > 1) {
     cli::cli_abort(
       "Cannot {.arg stack} and have more than one {.arg type}."
     )
   }
-
+  
   if (
     isFALSE(group) &&
-      length(type) > 1 &&
-      (length(pollutant) > 1 || length(percentile) > 1)
+    length(type) > 1 &&
+    (length(pollutant) > 1 || length(percentile) > 1)
   ) {
     cli::cli_abort(
       "{.arg group} cannot be {FALSE} and have more than one {.arg type}."
     )
   }
-
+  
   if (length(type) > 2) {
     cli::cli_abort(
       "Cannot have more than 2 {.arg type}s."
     )
   }
-
+  
   if (!missing(statistic) && missing(avg.time)) {
     cli::cli_inform("No {.field avg.time} specified; using 'month'.")
     avg.time <- "month"
   }
-
+  
   if (group_is_col) {
     if (!group %in% names(mydata) && !group %in% dateTypes) {
       cli::cli_abort("Column {.val {group}} not found in {.arg mydata}.")
@@ -273,13 +273,13 @@ timePlot <- function(
       )
     }
   }
-
+  
   # ensure windflow is a list
   windflow <- resolve_windflow_opts(windflow)
-
+  
   # style controls
   extra.args$shape <- extra.args$shape %||% NA
-
+  
   # check & cut data
   prepped <- prepare_timeplot_data(
     mydata = mydata,
@@ -293,7 +293,7 @@ timePlot <- function(
   )
   mydata <- prepped$data
   type <- prepped$type
-
+  
   # time average & reshape data
   mydata <- time_average_timeplot_data(
     mydata = mydata,
@@ -309,15 +309,15 @@ timePlot <- function(
   )
   pollutant <- mydata$pollutant
   mydata <- mydata$data
-
+  
   # normalise data (if required)
   mydata <- normalise_timeplot_data(mydata, normalise = normalise)
-
+  
   # need to group pollutants if conditioning
   if (avg.time != "default" && length(percentile) > 1L && missing(group)) {
     group <- TRUE
   }
-
+  
   # label controls
   extra.args$title <- quickText(extra.args$title, auto.text)
   extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
@@ -333,7 +333,7 @@ timePlot <- function(
       ),
     auto.text
   )
-
+  
   # if stacking of plots by year is needed
   if (stack || all(type == "year")) {
     mydata$year <- as.character(lubridate::year(mydata$date))
@@ -344,14 +344,14 @@ timePlot <- function(
     lubridate::year(mydata$date) <- lubridate::year(mydata$date)[1]
     date.format <- date.format %||% "%b"
   }
-
+  
   # make sure order is correct
   mydata$variable <- factor(
     mydata$variable,
     levels = pollutant,
     labels = name.pol
   )
-
+  
   # x-axis scale function
   if (lubridate::is.Date(mydata$date)) {
     x_type <- "date"
@@ -360,10 +360,10 @@ timePlot <- function(
     x_type <- "datetime"
     x_scale_fun <- ggplot2::scale_x_datetime
   }
-
+  
   # number of distinct pollutants (for faceting)
   npol <- length(unique(mydata$variable))
-
+  
   # when a single pollutant is plotted with type conditioning, colour by the
   # type column so each facet gets a distinct colour
   colour_by_type <- !group_is_col &&
@@ -375,7 +375,7 @@ timePlot <- function(
   } else {
     NULL
   }
-
+  
   # number of groups used for colour/linetype/linewidth aesthetics
   if (group_is_col) {
     group_levels <- unique(as.character(mydata[[group]]))
@@ -386,45 +386,45 @@ timePlot <- function(
   } else {
     n_groups <- npol
   }
-
+  
   extra.args$linetype <- recycle_to_length(extra.args$linetype %||% 1, n_groups)
   extra.args$linewidth <- recycle_to_length(
     extra.args$linewidth %||% 0.5,
     n_groups
   )
-
+  
   use_shape <- !all(is.na(extra.args$shape))
   if (use_shape) {
     extra.args$shape <- recycle_to_length(extra.args$shape, n_groups)
   }
-
+  
   # stack vertically
   if (
     is.null(extra.args$nrow) &&
-      is.null(extra.args$ncol) &&
-      !isTRUE(group) &&
-      !stack &&
-      all(type == "default")
+    is.null(extra.args$ncol) &&
+    !isTRUE(group) &&
+    !stack &&
+    all(type == "default")
   ) {
     extra.args$ncol <- 1L
     extra.args$nrow <- npol
   }
-
+  
   # deal with type
   # when group is a string, !isTRUE(group) is TRUE, so multiple pollutants
   # still get their own panels (coloured by the group column within each)
   if (!isTRUE(group) && npol > 1) {
     type <- c(type, "variable")
   }
-
+  
   if (stack) {
     type <- c(type, "year")
   }
-
+  
   if (length(type) > 1) {
     type <- type[type != "default"]
   }
-
+  
   theGuide <-
     ggplot2::guide_legend(
       reverse = key.position %in% c("left", "right"),
@@ -438,7 +438,7 @@ timePlot <- function(
       ncol = key.columns,
       nrow = key.rows
     )
-
+  
   # aesthetic column: group column name when group is a string, the type column
   # when colouring by type (single pollutant + conditioning), else "variable"
   aes_col <- if (group_is_col) {
@@ -461,7 +461,7 @@ timePlot <- function(
   } else {
     legend_title <- key.title
   }
-
+  
   if (rlang::is_logical(step)) {
     use_step <- step
     step_direction <- "hv"
@@ -469,13 +469,13 @@ timePlot <- function(
     use_step <- TRUE
     step_direction <- rlang::arg_match(step, c("hv", "vh", "mid"))
   }
-
+  
   if (use_step) {
     geom <- function(...) ggplot2::geom_step(..., direction = step_direction)
   } else {
     geom <- ggplot2::geom_line
   }
-
+  
   # built plot
   thePlot <-
     ggplot2::ggplot(
@@ -504,9 +504,16 @@ timePlot <- function(
       ref = ref.x,
       which = "x",
       type = x_type,
+      other_type = "numeric",
       tz = lubridate::tz(mydata$date)
     ) +
-    layer_ref(ref = ref.y, which = "y", type = "numeric") +
+    layer_ref(
+      ref = ref.y,
+      which = "y",
+      type = "numeric",
+      other_type = x_type,
+      tz = lubridate::tz(mydata$date)
+    ) +
     theme_openair(
       theme = theme,
       coord = "cartesian",
@@ -582,7 +589,7 @@ timePlot <- function(
       linewidth = theGuide,
       shape = if (use_shape) theGuide else "none"
     )
-
+  
   if (stack) {
     thePlot <-
       thePlot +
@@ -590,7 +597,7 @@ timePlot <- function(
         panel.spacing.y = ggplot2::unit(0, "cm")
       )
   }
-
+  
   if (smooth) {
     smooth_formula <- if (!is.null(smooth_k)) {
       stats::as.formula(paste0("y ~ s(x, k = ", smooth_k, ")"))
@@ -600,35 +607,35 @@ timePlot <- function(
     thePlot <- thePlot +
       ggplot2::stat_smooth(method = "gam", formula = smooth_formula, se = ci)
   }
-
+  
   if (windflow$windflow) {
     thePlot <-
       thePlot +
       layer_windflow_opts(data = NULL, windflow_opts = windflow)
   }
-
+  
   # output
   if (plot) {
     plot(thePlot)
   }
-
+  
   output <- list(plot = thePlot, data = mydata, call = match.call())
   class(output) <- "openair"
-
+  
   invisible(output)
 }
 
 #' Prepare data for the timeplot function
 #' @noRd
 prepare_timeplot_data <- function(
-  mydata,
-  pollutant,
-  type,
-  avg.time,
-  date.pad,
-  windflow,
-  group = FALSE,
-  ...
+    mydata,
+    pollutant,
+    type,
+    avg.time,
+    date.pad,
+    windflow,
+    group = FALSE,
+    ...
 ) {
   # determine necessary variables
   vars <- c("date", pollutant)
@@ -640,15 +647,15 @@ prepare_timeplot_data <- function(
       vars <- unique(c(vars, group))
     }
   }
-
+  
   # standard data checks
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-
+  
   # pad out any missing date/times so that line don't extend between areas of missing data
   if (date.pad) {
     mydata <- datePad(mydata, type = type)
   }
-
+  
   # cut data
   names <- type
   if (windflow$windflow) {
@@ -656,19 +663,19 @@ prepare_timeplot_data <- function(
     names[names == "wd"] <- "wd_type"
   }
   mydata <- cutData(mydata, type, names = names, ...)
-
+  
   # ensure date groups are cut before duplicate checking
   if (is.character(group) && !group %in% names(mydata)) {
     mydata <- cutData(mydata, group, ...)
   }
-
+  
   # check for duplicates - can't really have duplicate data in a timeplot
   # when group is a column, duplicate check must also split by that column
   if (avg.time == "default") {
     check_type <- if (is.character(group)) c(type, group) else type
     check_duplicate_rows(mydata, check_type, fn = cli::cli_abort)
   }
-
+  
   # return data
   return(list(data = mydata, type = names))
 }
@@ -676,27 +683,27 @@ prepare_timeplot_data <- function(
 #' timeAverage and reshape timeplot data
 #' @noRd
 time_average_timeplot_data <- function(
-  mydata,
-  pollutant,
-  type,
-  statistic,
-  avg.time,
-  data.thresh,
-  percentile,
-  windflow,
-  group = FALSE,
-  ...
+    mydata,
+    pollutant,
+    type,
+    statistic,
+    avg.time,
+    data.thresh,
+    percentile,
+    windflow,
+    group = FALSE,
+    ...
 ) {
   # when group is a column name, average within each group separately
   avg_type <- if (is.character(group)) c(type, group) else type
-
+  
   # average the data if necessary (default does nothing)
   if (avg.time != "default") {
     # deal with multiple percentile values
-
+    
     if (length(percentile) > 1) {
       prefix <- paste(pollutant, "percentile ")
-
+      
       mydata <-
         calcPercentile(
           mydata,
@@ -708,7 +715,7 @@ time_average_timeplot_data <- function(
           prefix = prefix,
           ...
         )
-
+      
       pollutant <- paste0(prefix, percentile)
     } else {
       mydata <- timeAverage(
@@ -723,16 +730,16 @@ time_average_timeplot_data <- function(
       )
     }
   }
-
+  
   # timeAverage drops type if default
   if (any(type == "default")) {
     mydata$default <- "default"
   }
-
+  
   # need to flag if ws/wd are being plotted *and* used for windflow
   flag_wind_pollutant <- windflow$windflow &&
     ("ws" %in% c(type, pollutant) || "wd" %in% c(type, pollutant))
-
+  
   # retain ws/wd if needed later
   if (flag_wind_pollutant) {
     # only select what is being pivoted, as it will need joining back on
@@ -740,7 +747,7 @@ time_average_timeplot_data <- function(
     met_vars <- met_vars[met_vars %in% pollutant]
     met_data <- dplyr::select(mydata, dplyr::any_of(c("date", met_vars)))
   }
-
+  
   # reshape
   mydata <-
     tidyr::pivot_longer(
@@ -749,7 +756,7 @@ time_average_timeplot_data <- function(
       names_to = "variable",
       values_to = "value"
     )
-
+  
   # bind on ws/wd if needed for windflow
   if (flag_wind_pollutant) {
     mydata <- dplyr::left_join(
@@ -759,7 +766,7 @@ time_average_timeplot_data <- function(
     ) |>
       dplyr::relocate(dplyr::any_of(c("ws", "wd")), .after = "date")
   }
-
+  
   # need to return pollutant as it can change
   return(list(
     data = mydata,
@@ -776,12 +783,12 @@ normalise_timeplot_data <-
       mydata,
       variable = factor(.data$variable, levels = unique(.data$variable))
     )
-
+    
     # if normalise isn't given, just return the data
     if (is.null(normalise)) {
       return(mydata)
     }
-
+    
     # handle normalisation
     if (normalise == "mean") {
       mydata <-
@@ -797,14 +804,14 @@ normalise_timeplot_data <-
         format = "%d/%m/%Y",
         tz = "GMT"
       ))
-
+      
       if (is.na(target_date)) {
         cli::cli_abort(c(
           "x" = "Provided {.field normalise} option not recognised.",
           "i" = "{.field normalise} must be either 'mean' or a string in the format 'DD/MM/YYYY'."
         ))
       }
-
+      
       # find nearest values to each date
       target_date_values <-
         tidyr::drop_na(mydata) |>
@@ -815,7 +822,7 @@ normalise_timeplot_data <-
           by = "variable"
         ) |>
         dplyr::select("variable", "target_value" = "value")
-
+      
       # scale value to 100 at specific date
       mydata <-
         mydata |>
@@ -828,7 +835,7 @@ normalise_timeplot_data <-
         ) |>
         dplyr::select(-"target_value")
     }
-
+    
     # return input data
     return(mydata)
   }

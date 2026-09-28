@@ -228,12 +228,15 @@ timeProp <- function(
       ref = ref.x,
       which = "x",
       type = x_type,
+      other_type = "numeric",
       tz = lubridate::tz(results$xleft)
     ) +
     layer_ref(
       ref = ref.y,
       which = "y",
-      type = "numeric"
+      type = "numeric",
+      other_type = x_type,
+      tz = lubridate::tz(results$xleft)
     ) +
     ggplot2::scale_fill_manual(
       values = resolve_colour_opts(

@@ -309,8 +309,20 @@ smoothTrend <- function(
       linejoin = extra.args$linejoin %||% "round",
       linemitre = extra.args$linemitre %||% 10
     ) +
-    layer_ref(ref = ref.x, "x", "datetime", tz = lubridate::tz(newdata$date)) +
-    layer_ref(ref = ref.y, "y", "numeric") +
+    layer_ref(
+      ref = ref.x,
+      which = "x",
+      type = "datetime",
+      other_type = "numeric",
+      tz = lubridate::tz(newdata$date)
+    ) +
+    layer_ref(
+      ref = ref.y,
+      which = "y",
+      type = "numeric",
+      other_type = "datetime",
+      tz = lubridate::tz(newdata$date)
+    ) +
     theme_openair(
       theme = theme,
       coord = "cartesian",
