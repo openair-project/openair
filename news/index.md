@@ -37,10 +37,22 @@
   measured, and the distance from a given coordinate.
 
 - [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
-  gains the `label`, `label_size` and `label_colo(u)r` arguments. These
-  options require the [legendry](https://teunbrand.github.io/legendry/)
-  package and add direct labels to the reference lines on the opposite
-  side to the numeric axes.
+  refinements:
+
+  - Gains the `label`, `label_size` and `label_colo(u)r` arguments.
+    These options require the
+    [legendry](https://teunbrand.github.io/legendry/) package and add
+    direct labels to the reference lines on the opposite side to the
+    numeric axes.
+
+  - Gains the `method` argument, which defaults to `"line"` to use the
+    current behaviour but can now also be `"band"` to draw shaded
+    regions rather than single lines. See
+    [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+    for more details.
+
+- [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
+  gains the `ref.y` argument.
 
 - `key.columns` now defaults to `NULL` in most functions, which will use
   `ggplot2`’s logic for the number of columns. `key.rows` has also been

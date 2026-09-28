@@ -29,6 +29,7 @@ variationPlot(
   cols = "hue",
   theme = "default",
   alpha = 0.4,
+  ref.y = NULL,
   key.position = "top",
   key.columns = NULL,
   key.rows = NULL,
@@ -210,6 +211,15 @@ variationPlot(
 
   The alpha transparency used for plotting confidence intervals. `0` is
   fully transparent and 1 is opaque. The default is `0.4`.
+
+- ref.y:
+
+  Either a single value or values representing the y axis intercepts to
+  draw lines, or a list such as that provided by
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  to customise the colour/width/type/etc. of each line. See
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
+  for more details.
 
 - key.position:
 
