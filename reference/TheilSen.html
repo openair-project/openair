@@ -97,7 +97,7 @@ day of the week or a certain time of day are unexpected.</p>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  autocor <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  slope.percent <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  date.breaks <span class="op">=</span> <span class="fl">7</span>,</span>
+<span>  date.breaks <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  date.format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  silent <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -290,10 +290,12 @@ monthly or annual values are considered.</p></dd>
 
 
 <dt id="arg-date-breaks">date.breaks<a class="anchor" aria-label="anchor" href="#arg-date-breaks"></a></dt>
-<dd><p>Number of major x-axis intervals to use. The function will
-try and choose a sensible number of dates/times as well as formatting the
-date/time appropriately to the range being considered. The user can
-override this behaviour by adjusting the value of <code>date.breaks</code> up or down.</p></dd>
+<dd><p>Either a number of major x-axis intervals to use, or a
+character string giving the distance between breaks like <code>"2 weeks"</code>, or
+<code>"10 years"</code>. Valid specifications are <code>"sec"</code>, <code>"min"</code>, <code>"hour"</code>, <code>"day"</code>,
+<code>"week"</code>, <code>"month"</code> or <code>"year"</code>, optionally followed by <code>"s"</code>. If
+<code>date.breaks</code> is given a character string, it is recommended to also set
+<code>date.format</code> as this will automatically default to <code>"%Y-%m-%d"</code>.</p></dd>
 
 
 <dt id="arg-date-format">date.format<a class="anchor" aria-label="anchor" href="#arg-date-format"></a></dt>

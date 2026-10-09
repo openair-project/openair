@@ -77,6 +77,7 @@
 <li><p>The <code>"gaf.seq"</code> palette in <code><a href="../reference/openColours.html">openColours()</a></code> has been updated to reflect updated guidance from the UK Government Analysis Function.</p></li>
 <li><p><code><a href="../reference/kzFilter.html">kzFilter()</a></code> and <code><a href="../reference/kzFilter.html">kzaFilter()</a></code> now accept a vector for <code>k</code>, allowing a different number of iterations to be set for each <code>m</code> window size (a single value is still recycled across all <code>m</code>). By default, <code>k = 5</code> for every window size except <code>m = 8761</code>, which now uses <code>k = 3</code>.</p></li>
 <li><p><code>cutData(type = "daylight")</code> (and therefore any use of <code>type = "daylight"</code> and/or <code>group = "daylight"</code>) will now warn if <code>latitude</code> and/or <code>longitude</code> are not also provided.</p></li>
+<li><p><code>date.breaks</code> in functions like <code><a href="../reference/timePlot.html">timePlot()</a></code> can now take a character string, in line with the <code>date_breaks</code> argument of functions like <code><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">ggplot2::scale_x_datetime()</a></code>. The default value of <code>date.breaks</code> is now <code>NULL</code>.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>

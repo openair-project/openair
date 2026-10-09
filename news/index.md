@@ -80,6 +80,13 @@
   `type = "daylight"` and/or `group = "daylight"`) will now warn if
   `latitude` and/or `longitude` are not also provided.
 
+- `date.breaks` in functions like
+  [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
+  can now take a character string, in line with the `date_breaks`
+  argument of functions like
+  [`ggplot2::scale_x_datetime()`](https://ggplot2.tidyverse.org/reference/scale_date.html).
+  The default value of `date.breaks` is now `NULL`.
+
 ### Bug Fixes
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an
