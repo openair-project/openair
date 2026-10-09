@@ -377,17 +377,17 @@ distPlot <- function(
       aesthetics = c("colour", "fill"),
       guide = ggplot2::guide_legend(ncol = key.columns, nrow = key.rows)
     )
-  
+
   # outputs
   if (plot) {
     plot(thePlot)
   }
-  
+
   output <- list(
     plot = thePlot,
     data = mydata,
     call = match.call()
   )
-  
+
   invisible(output)
 }

@@ -194,7 +194,7 @@ TheilSen <- function(
   auto.text = TRUE,
   autocor = FALSE,
   slope.percent = FALSE,
-  date.breaks = 7,
+  date.breaks = NULL,
   date.format = NULL,
   plot = TRUE,
   silent = FALSE,
@@ -644,11 +644,30 @@ build_theilsen_plot <- function(
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    x_scale_fun(
-      breaks = scales::breaks_pretty(date.breaks),
-      date_labels = date.format %||% ggplot2::waiver(),
-      limits = extra.args$xlim
-    ) +
+    {
+      if (is.null(date.breaks)) {
+        x_scale_fun(
+          date_labels = date.format %||% ggplot2::waiver(),
+          limits = extra.args$xlim
+        )
+      } else if (is.character(date.breaks)) {
+        x_scale_fun(
+          date_breaks = date.breaks,
+          date_labels = date.format %||% ggplot2::waiver(),
+          limits = extra.args$xlim
+        )
+      } else if (is.numeric(date.breaks)) {
+        x_scale_fun(
+          breaks = scales::breaks_pretty(date.breaks),
+          date_labels = date.format %||% ggplot2::waiver(),
+          limits = extra.args$xlim
+        )
+      } else {
+        cli::cli_abort(
+          "{.arg date.breaks} must be a single number, a single character, or `NULL`."
+        )
+      }
+    } +
     ggplot2::scale_y_continuous(limits = extra.args$ylim) +
     ggplot2::labs(
       x = extra.args$xlab,

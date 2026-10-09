@@ -103,7 +103,7 @@ smoothTrend <- function(
   key.rows = NULL,
   key.position = "bottom",
   name.pol = NULL,
-  date.breaks = 7,
+  date.breaks = NULL,
   date.format = NULL,
   auto.text = TRUE,
   ci = TRUE,
@@ -385,12 +385,33 @@ smoothTrend <- function(
       }),
       drop = FALSE
     ) +
-    ggplot2::scale_x_datetime(
-      breaks = scales::breaks_pretty(date.breaks),
-      date_labels = date.format %||% ggplot2::waiver(),
-      limits = extra.args$xlim,
-      expand = ggplot2::expansion(c(0.02, 0.02))
-    ) +
+    {
+      if (is.null(date.breaks)) {
+        ggplot2::scale_x_datetime(
+          date_labels = date.format %||% ggplot2::waiver(),
+          limits = extra.args$xlim,
+          expand = ggplot2::expansion(c(0.02, 0.02))
+        )
+      } else if (is.character(date.breaks)) {
+        ggplot2::scale_x_datetime(
+          date_breaks = date.breaks,
+          date_labels = date.format %||% ggplot2::waiver(),
+          limits = extra.args$xlim,
+          expand = ggplot2::expansion(c(0.02, 0.02))
+        )
+      } else if (is.numeric(date.breaks)) {
+        ggplot2::scale_x_datetime(
+          breaks = scales::breaks_pretty(date.breaks),
+          date_labels = date.format %||% ggplot2::waiver(),
+          limits = extra.args$xlim,
+          expand = ggplot2::expansion(c(0.02, 0.02))
+        )
+      } else {
+        cli::cli_abort(
+          "{.arg date.breaks} must be a single number, a single character, or `NULL`."
+        )
+      }
+    } +
     ggplot2::scale_y_continuous(
       limits = extra.args$ylim
     ) +
