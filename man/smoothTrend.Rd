@@ -25,7 +25,7 @@ smoothTrend(
   key.rows = NULL,
   key.position = "bottom",
   name.pol = NULL,
-  date.breaks = 7,
+  date.breaks = NULL,
   date.format = NULL,
   auto.text = TRUE,
   ci = TRUE,
@@ -201,10 +201,12 @@ can supply replacements. For example, if a column had the name "nox" and
 the user wanted a different description, then setting \code{name.pol = "nox before change"} can be used. If more than one pollutant is plotted then use
 \code{c} e.g. \code{name.pol = c("nox here", "o3 there")}.}
 
-\item{date.breaks}{Number of major x-axis intervals to use. The function will
-try and choose a sensible number of dates/times as well as formatting the
-date/time appropriately to the range being considered. The user can
-override this behaviour by adjusting the value of \code{date.breaks} up or down.}
+\item{date.breaks}{Either a number of major x-axis intervals to use, or a
+character string giving the distance between breaks like \code{"2 weeks"}, or
+\code{"10 years"}. Valid specifications are \code{"sec"}, \code{"min"}, \code{"hour"}, \code{"day"},
+\code{"week"}, \code{"month"} or \code{"year"}, optionally followed by \code{"s"}. If
+\code{date.breaks} is given a character string, it is recommended to also set
+\code{date.format} as this will automatically default to \code{"\%Y-\%m-\%d"}.}
 
 \item{date.format}{This option controls the date format on the x-axis. A
 sensible format is chosen by default, but the user can set \code{date.format} to

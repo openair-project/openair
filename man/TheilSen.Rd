@@ -28,7 +28,7 @@ TheilSen(
   auto.text = TRUE,
   autocor = FALSE,
   slope.percent = FALSE,
-  date.breaks = 7,
+  date.breaks = NULL,
   date.format = NULL,
   plot = TRUE,
   silent = FALSE,
@@ -179,10 +179,12 @@ is therefore able to deal with partial years. There can be slight
 differences in the \%/yr trend estimate therefore, depending on whether
 monthly or annual values are considered.}
 
-\item{date.breaks}{Number of major x-axis intervals to use. The function will
-try and choose a sensible number of dates/times as well as formatting the
-date/time appropriately to the range being considered. The user can
-override this behaviour by adjusting the value of \code{date.breaks} up or down.}
+\item{date.breaks}{Either a number of major x-axis intervals to use, or a
+character string giving the distance between breaks like \code{"2 weeks"}, or
+\code{"10 years"}. Valid specifications are \code{"sec"}, \code{"min"}, \code{"hour"}, \code{"day"},
+\code{"week"}, \code{"month"} or \code{"year"}, optionally followed by \code{"s"}. If
+\code{date.breaks} is given a character string, it is recommended to also set
+\code{date.format} as this will automatically default to \code{"\%Y-\%m-\%d"}.}
 
 \item{date.format}{This option controls the date format on the x-axis. A
 sensible format is chosen by default, but the user can set \code{date.format} to

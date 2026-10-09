@@ -65,7 +65,7 @@ theme_openair <- function(
 
   theme <- fun(key.position, ...)
 
-  theme <- ggplot2::`%+replace%`(theme, extra_theme)
+  theme <- theme + extra_theme
 
   if ("fontsize" %in% names(extra.args)) {
     theme <- ggplot2::`%+replace%`(

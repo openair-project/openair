@@ -71,10 +71,12 @@ anything other than the default \code{\link[ggplot2:theme_grey]{ggplot2::theme_g
 openair theme will not be fully applied; instead, only minimal adjustments
 (such as legend positioning) will be made.}
 
-\item{date.breaks}{Number of major x-axis intervals to use. The function will
-try and choose a sensible number of dates/times as well as formatting the
-date/time appropriately to the range being considered. The user can
-override this behaviour by adjusting the value of \code{date.breaks} up or down.}
+\item{date.breaks}{Either a number of major x-axis intervals to use, or a
+character string giving the distance between breaks like \code{"2 weeks"}, or
+\code{"10 years"}. Valid specifications are \code{"sec"}, \code{"min"}, \code{"hour"}, \code{"day"},
+\code{"week"}, \code{"month"} or \code{"year"}, optionally followed by \code{"s"}. If
+\code{date.breaks} is given a character string, it is recommended to also set
+\code{date.format} as this will automatically default to \code{"\%Y-\%m-\%d"}.}
 
 \item{date.format}{This option controls the date format on the x-axis. A
 sensible format is chosen by default, but the user can set \code{date.format} to

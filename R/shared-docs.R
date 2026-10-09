@@ -75,10 +75,12 @@
 #'   openair theme will not be fully applied; instead, only minimal adjustments
 #'   (such as legend positioning) will be made.
 #'
-#' @param date.breaks Number of major x-axis intervals to use. The function will
-#'   try and choose a sensible number of dates/times as well as formatting the
-#'   date/time appropriately to the range being considered. The user can
-#'   override this behaviour by adjusting the value of `date.breaks` up or down.
+#' @param date.breaks Either a number of major x-axis intervals to use, or a
+#'   character string giving the distance between breaks like `"2 weeks"`, or
+#'   `"10 years"`. Valid specifications are `"sec"`, `"min"`, `"hour"`, `"day"`,
+#'   `"week"`, `"month"` or `"year"`, optionally followed by `"s"`. If
+#'   `date.breaks` is given a character string, it is recommended to also set
+#'   `date.format` as this will automatically default to `"%Y-%m-%d"`.
 #'
 #' @param date.format This option controls the date format on the x-axis. A
 #'   sensible format is chosen by default, but the user can set `date.format` to

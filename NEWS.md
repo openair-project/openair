@@ -38,6 +38,8 @@
 
 - `cutData(type = "daylight")` (and therefore any use of `type = "daylight"` and/or `group = "daylight"`) will now warn if `latitude` and/or `longitude` are not also provided.
 
+- `date.breaks` in functions like `timePlot()` can now take a character string, in line with the `date_breaks` argument of functions like `ggplot2::scale_x_datetime()`. The default value of `date.breaks` is now `NULL`.
+
 ## Bug Fixes
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.

@@ -71,7 +71,7 @@ timeProp <- function(
   key.rows = NULL,
   key.position = "right",
   key.title = proportion,
-  date.breaks = 7,
+  date.breaks = NULL,
   date.format = NULL,
   auto.text = TRUE,
   plot = TRUE,
@@ -190,10 +190,6 @@ timeProp <- function(
   # make sure we know order of data frame for adding other dates
   results <- dplyr::arrange(results, dplyr::pick(dplyr::all_of(type)), "date")
 
-  # set limits, if not set by user
-  xlim <- extra.args$xlim %||% NULL
-  ylim <- extra.args$ylim %||% NULL
-
   # check key.position
   key.position <- check_key_position(key.position, key)
 
@@ -266,14 +262,35 @@ timeProp <- function(
         nrow = key.rows
       )
     ) +
-    x_scale_fun(
-      breaks = scales::breaks_pretty(date.breaks),
-      date_labels = date.format %||% ggplot2::waiver(),
-      limits = xlim,
-      expand = ggplot2::expansion()
-    ) +
+    {
+      if (is.null(date.breaks)) {
+        x_scale_fun(
+          date_labels = date.format %||% ggplot2::waiver(),
+          limits = extra.args$xlim,
+          expand = ggplot2::expansion()
+        )
+      } else if (is.character(date.breaks)) {
+        x_scale_fun(
+          date_breaks = date.breaks,
+          date_labels = date.format %||% ggplot2::waiver(),
+          limits = extra.args$xlim,
+          expand = ggplot2::expansion()
+        )
+      } else if (is.numeric(date.breaks)) {
+        x_scale_fun(
+          breaks = scales::breaks_pretty(date.breaks),
+          date_labels = date.format %||% ggplot2::waiver(),
+          limits = extra.args$xlim,
+          expand = ggplot2::expansion()
+        )
+      } else {
+        cli::cli_abort(
+          "{.arg date.breaks} must be a single number, a single character, or `NULL`."
+        )
+      }
+    } +
     ggplot2::scale_y_continuous(
-      limits = ylim,
+      limits = extra.args$ylim,
       expand = ggplot2::expansion(if (normalise) c(0, 0) else c(0, 0.1))
     ) +
     ggplot2::labs(
