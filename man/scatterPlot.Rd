@@ -303,7 +303,8 @@ apply to all plots. These can take a single value, or a vector of multiple
 values - e.g., \code{shape = c(1, 2)} - which will be recycled to the length of
 values needed.
 \item For \code{method = "hexbin"}, \code{bins} controls the number of bins.
-\item \code{date.format} controls the format of date-time x-axes.
+\item \code{date.breaks} and \code{date.format} control the breaks and format of date
+and date-time x-axes. See \code{\link[=timePlot]{timePlot()}} for details.
 }}
 }
 \value{

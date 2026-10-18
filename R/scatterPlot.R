@@ -125,7 +125,8 @@
 #'
 #'   - For `method = "hexbin"`, `bins` controls the number of bins.
 #'
-#'   - `date.format` controls the format of date-time x-axes.
+#'   - `date.breaks` and `date.format` control the breaks and format of date
+#'   and date-time x-axes. See [timePlot()] for details.
 #'
 #' @export
 #' @return an [openair][openair-package] object
@@ -1425,17 +1426,12 @@ scatter_density <- function(
     x_vals <- mydata[[x_col]]
     is_date <- inherits(x_vals, c("Date", "POSIXct", "POSIXlt"))
     if (is_date) {
-      if (inherits(x_vals, "Date")) {
-        ggplot2::scale_x_date(
-          labels = extra.args$date.format %||% ggplot2::waiver(),
-          expand = ggplot2::expansion(mult = c(0.02, 0.02))
-        )
-      } else {
-        ggplot2::scale_x_datetime(
-          date_labels = extra.args$date.format %||% ggplot2::waiver(),
-          expand = ggplot2::expansion(mult = c(0.02, 0.02))
-        )
-      }
+      scale_x_openair_date(
+        date.breaks = extra.args$date.breaks,
+        date.format = extra.args$date.format,
+        type = if (inherits(x_vals, "Date")) "date" else "datetime",
+        expand = ggplot2::expansion(mult = c(0.02, 0.02))
+      )
     } else {
       ggplot2::scale_x_continuous(
         expand = ggplot2::expansion(mult = c(0.02, 0.02))

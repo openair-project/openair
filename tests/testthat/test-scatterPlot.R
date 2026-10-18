@@ -153,3 +153,25 @@ test_that("invalid method raises an error", {
     regexp = "method"
   )
 })
+
+# --- Date x-axes -------------------------------------------------------------
+
+test_that("date.format and date.breaks work with Date and POSIXct x-axes", {
+  dat_date <- dat_day
+  dat_date$date <- as.Date(dat_date$date)
+
+  for (input in list(dat_date, dat_day)) {
+    sp_date <- scatterPlot(
+      input,
+      x = "date",
+      y = "nox",
+      date.format = "%d %b",
+      date.breaks = "1 week",
+      plot = FALSE
+    )
+    built <- ggplot2::ggplot_build(sp_date$plot)
+    labels <- built$layout$panel_params[[1]]$x$get_labels()
+    labels <- labels[!is.na(labels)]
+    expect_true(all(grepl("^[0-9]{2} Jan$", labels)))
+  }
+})
