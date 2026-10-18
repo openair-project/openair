@@ -85,6 +85,9 @@ distPlot <- function(
   plot = TRUE,
   ...
 ) {
+  # check key.position
+  key.position <- check_key_position(key.position, key = NULL)
+
   method <- rlang::arg_match(method, multiple = FALSE)
   if (!is.null(position)) {
     position <- rlang::arg_match(

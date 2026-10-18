@@ -119,6 +119,9 @@ variationPlot <- function(
   plot = TRUE,
   ...
 ) {
+  # check key.position
+  key.position <- check_key_position(key.position, key = NULL)
+
   if (is.null(conf.int)) {
     if (statistic == "median") {
       conf.int <- c(0.75, 0.95)
