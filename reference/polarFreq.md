@@ -29,6 +29,8 @@ polarFreq(
   offset = 10,
   border.col = "transparent",
   key.title = paste(statistic, pollutant, sep = " "),
+  key.columns = NULL,
+  key.rows = NULL,
   key.position = "right",
   auto.text = TRUE,
   plot = TRUE,
@@ -258,6 +260,13 @@ polarFreq(
   Used to set the title of the legend. The legend title is passed to
   [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
   if `auto.text = TRUE`.
+
+- key.columns, key.rows:
+
+  Number of columns or rows to be used in a categorical legend. With
+  many categories a single column or row can make the key fit poorly in
+  the plot. The user can thus choose to use several columns by setting
+  `key.columns` to be less than the number of categories.
 
 - key.position:
 

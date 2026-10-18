@@ -90,6 +90,8 @@ wind speed.</p>
 <span>  max.freq <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  paddle <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  key.title <span class="op">=</span> <span class="st">"(m/s)"</span>,</span>
+<span>  key.columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  key.rows <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"bottom"</span>,</span>
 <span>  dig.lab <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>  include.lowest <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -274,6 +276,13 @@ style spokes. If <code>FALSE</code> plots rose using 'wedge' style spokes.</p></
 <dt id="arg-key-title">key.title<a class="anchor" aria-label="anchor" href="#arg-key-title"></a></dt>
 <dd><p>Used to set the title of the legend. The legend title is
 passed to <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></dd>
+
+
+<dt id="arg-key-columns-key-rows">key.columns, key.rows<a class="anchor" aria-label="anchor" href="#arg-key-columns-key-rows"></a></dt>
+<dd><p>Number of columns or rows to be used in a
+categorical legend. With many categories a single column or row can make
+the key fit poorly in the plot. The user can thus choose to use several
+columns by setting <code>key.columns</code> to be less than the number of categories.</p></dd>
 
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>

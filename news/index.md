@@ -57,6 +57,17 @@
 - `key.columns` now defaults to `NULL` in most functions, which will use
   `ggplot2`’s logic for the number of columns. `key.rows` has also been
   added.
+  [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md),
+  [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md),
+  [`percentileRose()`](https://openair-project.github.io/openair/reference/percentileRose.md),
+  [`polarAnnulus()`](https://openair-project.github.io/openair/reference/polarAnnulus.md),
+  [`polarFreq()`](https://openair-project.github.io/openair/reference/polarFreq.md),
+  [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md),
+  [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
+  and
+  [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
+  gain both arguments, which apply when their legend shows binned
+  values.
 
 - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
   gains the `step` argument which causes a “stairstep” plot to be

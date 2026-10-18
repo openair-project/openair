@@ -204,9 +204,9 @@ TaylorDiagram(
 - key.columns, key.rows:
 
   Number of columns or rows to be used in a categorical legend. With
-  many categories a single column can make to key too wide. The user can
-  thus choose to use several columns by setting `key.columns` to be less
-  than the number of categories.
+  many categories a single column or row can make the key fit poorly in
+  the plot. The user can thus choose to use several columns by setting
+  `key.columns` to be less than the number of categories.
 
 - key.position:
 

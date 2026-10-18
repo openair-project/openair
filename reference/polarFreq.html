@@ -88,6 +88,8 @@ using a range of commonly used statistics.</p>
 <span>  offset <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  border.col <span class="op">=</span> <span class="st">"transparent"</span>,</span>
 <span>  key.title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">statistic</span>, <span class="va">pollutant</span>, sep <span class="op">=</span> <span class="st">" "</span><span class="op">)</span>,</span>
+<span>  key.columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  key.rows <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  key.position <span class="op">=</span> <span class="st">"right"</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -276,6 +278,13 @@ bin. The default is transparent. Another useful choice sometimes is
 <dt id="arg-key-title">key.title<a class="anchor" aria-label="anchor" href="#arg-key-title"></a></dt>
 <dd><p>Used to set the title of the legend. The legend title is
 passed to <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></dd>
+
+
+<dt id="arg-key-columns-key-rows">key.columns, key.rows<a class="anchor" aria-label="anchor" href="#arg-key-columns-key-rows"></a></dt>
+<dd><p>Number of columns or rows to be used in a
+categorical legend. With many categories a single column or row can make
+the key fit poorly in the plot. The user can thus choose to use several
+columns by setting <code>key.columns</code> to be less than the number of categories.</p></dd>
 
 
 <dt id="arg-key-position">key.position<a class="anchor" aria-label="anchor" href="#arg-key-position"></a></dt>
