@@ -75,6 +75,41 @@ get_facet <- function(
   fun
 }
 
+# Guides ------------------------------------------------------------------
+
+# ggplot2 legend, colourbar or coloursteps with openair's title/text placement.
+# Titles sit above legends placed on the left/right. High values should sit at
+# the top of a left/right key and at the right of a top/bottom key; continuous
+# guides already do this, so `reverse = TRUE` is only applied to left/right
+# legends, and should be used where a legend shows binned (e.g., `breaks`)
+# values. `...` is passed to the guide function (e.g., `ncol`, `nrow`,
+# `override.aes`).
+guide_openair <- function(
+  key.position,
+  type = c("legend", "colourbar", "coloursteps"),
+  reverse = FALSE,
+  ...
+) {
+  type <- rlang::arg_match(type)
+  is_side <- key.position %in% c("left", "right")
+
+  theme <- ggplot2::theme(
+    legend.title.position = if (is_side) "top" else key.position,
+    legend.text.position = key.position
+  )
+
+  switch(
+    type,
+    legend = ggplot2::guide_legend(
+      reverse = reverse && is_side,
+      theme = theme,
+      ...
+    ),
+    colourbar = ggplot2::guide_colourbar(theme = theme, ...),
+    coloursteps = ggplot2::guide_coloursteps(theme = theme, ...)
+  )
+}
+
 # Scales ------------------------------------------------------------------
 
 # ggplot2 scale for radial plots

@@ -26,6 +26,8 @@ percentileRose(
   offset = 0,
   auto.text = TRUE,
   key.title = NULL,
+  key.columns = NULL,
+  key.rows = NULL,
   key.position = "bottom",
   plot = TRUE,
   key = NULL,
@@ -154,6 +156,11 @@ properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickTe
 
 \item{key.title}{Used to set the title of the legend. The legend title is
 passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
+
+\item{key.columns, key.rows}{Number of columns or rows to be used in a
+categorical legend. With many categories a single column or row can make
+the key fit poorly in the plot. The user can thus choose to use several
+columns by setting \code{key.columns} to be less than the number of categories.}
 
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},

@@ -97,9 +97,9 @@ openair theme will not be fully applied; instead, only minimal adjustments
 (such as legend positioning) will be made.}
 
 \item{key.columns, key.rows}{Number of columns or rows to be used in a
-categorical legend. With many categories a single column can make to key
-too wide. The user can thus choose to use several columns by setting
-\code{key.columns} to be less than the number of categories.}
+categorical legend. With many categories a single column or row can make
+the key fit poorly in the plot. The user can thus choose to use several
+columns by setting \code{key.columns} to be less than the number of categories.}
 
 \item{key.position}{Location where the legend is to be placed. Allowed
 arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},

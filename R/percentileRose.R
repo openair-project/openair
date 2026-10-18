@@ -126,6 +126,8 @@ percentileRose <- function(
   offset = 0,
   auto.text = TRUE,
   key.title = NULL,
+  key.columns = NULL,
+  key.rows = NULL,
   key.position = "bottom",
   plot = TRUE,
   key = NULL,
@@ -133,12 +135,12 @@ percentileRose <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
-
+  
   # default colour based on theme
   if (missing(cols)) {
     cols <- get_theme_cols(cols, theme, "seq")
   }
-
+  
   # calculate percentiles or just show mean?
   if (is.na(percentile[1])) {
     mean.only <- TRUE
@@ -146,7 +148,7 @@ percentileRose <- function(
   } else {
     mean.only <- FALSE
   }
-
+  
   if (tolower(method) == "cpf") {
     mean <- FALSE
     if (length(percentile) > 1) {
@@ -155,12 +157,12 @@ percentileRose <- function(
       )
     }
   }
-
+  
   vars <- c(wd, pollutant)
   if (any(type %in% dateTypes)) {
     vars <- c(vars, "date")
   }
-
+  
   # check to see if ws is in the data and is calm (need to remove as no wd)
   if (ws %in% names(mydata)) {
     id <- which(mydata[[ws]] == 0 & mydata[[wd]] == 0)
@@ -168,18 +170,18 @@ percentileRose <- function(
       mydata <- mydata[-id, ]
     }
   }
-
+  
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE, wd = wd)
-
+  
   ## round wd
   mydata[[wd]] <- angle * ceiling(mydata[[wd]] / angle - 0.5)
-
+  
   # when it generates angle at 0 and 360, make all 360
   if (0 %in% mydata[[wd]]) {
     id <- which(mydata[[wd]] == 0)
     mydata[[wd]][id] <- 360
   }
-
+  
   ## make sure all wds are present
   ids <- which(!seq(angle, 360, by = angle) %in% unique(mydata[[wd]]))
   if (length(ids) > 0 && !smooth) {
@@ -190,15 +192,15 @@ percentileRose <- function(
     }
     mydata <- rbind(mydata, extra)
   }
-
+  
   ## need lowest value if shading
   if (fill) {
     percentile <- unique(c(0, percentile))
   }
-
+  
   # number of pollutants
   npol <- length(pollutant)
-
+  
   # if more than one pollutant, need to stack the data and set type = "variable"
   # this case is most relevent for model-measurement compasrions where data are in columns
   # Can also do more than one pollutant and a single type that is not "default", in which
@@ -209,7 +211,7 @@ percentileRose <- function(
       type <- type[1]
     }
     ## use pollutants as conditioning variables
-
+    
     mydata <- tidyr::gather(
       mydata,
       key = "variable",
@@ -224,52 +226,52 @@ percentileRose <- function(
       type <- c(type, "variable")
     }
   }
-
+  
   # extra.args setup
   extra.args <- capture_dots(...)
-
+  
   # label controls
   extra.args$xlab <- quickText(extra.args$xlab, auto.text)
   extra.args$ylab <- quickText(extra.args$ylab, auto.text)
   extra.args$title <- quickText(extra.args$title, auto.text)
   extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
   extra.args$tag <- quickText(extra.args$tag, auto.text)
-
+  
   # separate handling for being overwritten
   if ("caption" %in% names(extra.args)) {
     extra.args$caption <- quickText(extra.args$caption, auto.text)
   }
-
+  
   extra.args$linewidth <- extra.args$linewidth %||% 2
-
+  
   # check if key.header / key.footer are being used
   key.title <- check_key_header(key.title, extra.args)
-
+  
   id <- which(is.na(mydata[, wd]))
   if (length(id) > 0) {
     mydata <- mydata[-id, ]
   }
-
+  
   prepare.grid <- function(mydata, overall.lower, overall.upper) {
     overall.lower <- mydata$lower[1]
     overall.upper <- mydata$upper[1]
-
+    
     # add zero wind angle = same as 360 for cyclic spline
     ids <- which(mydata[, wd] == 360)
-
+    
     if (length(ids) > 0) {
       zero.wd <- mydata[ids, ]
       zero.wd[, wd] <- 0
       mydata <- dplyr::bind_rows(mydata, zero.wd)
     }
-
+    
     mod.percentiles <- function(i, mydata, overall.lower, overall.upper) {
       ## need to work out how many knots to use in smooth
       thedata <- subset(percentiles, percentile == i)
-
+      
       if (smooth) {
         min.dat <- min(thedata)
-
+        
         ## fit a spline through the data; making sure it goes through each wd value
         spline.res <- stats::spline(
           x = thedata[[wd]],
@@ -277,13 +279,13 @@ percentileRose <- function(
           n = 361,
           method = "natural"
         )
-
+        
         pred <- data.frame(percentile = i, wd = 0:360, pollutant = spline.res$y)
         names(pred)[2] <- wd
-
+        
         ## don't let interpolated percentile be lower than data
         pred$pollutant[pred$pollutant < min.dat] <- min.dat
-
+        
         ## only plot where there are valid wd (smooth_ids pre-computed once per group)
         pred$pollutant[-smooth_ids] <- min(c(
           0,
@@ -298,14 +300,14 @@ percentileRose <- function(
         dat1$id <- 2 * seq_len(nrow(dat1)) - 1
         dat2$id <- 2 * seq_len(nrow(dat2))
         thedata <- rbind(dat1, dat2)
-
+        
         thedata <- thedata[order(thedata$id), ]
         thedata$pollutant <- thedata[[eval(pollutant)]]
         pred <- thedata
       }
       pred
     }
-
+    
     if (method == "default") {
       ## calculate percentiles
       percentiles <- mydata |>
@@ -320,7 +322,7 @@ percentileRose <- function(
         dplyr::group_by(.data[[wd]]) |>
         dplyr::mutate(percentile = percentile)
     }
-
+    
     if (tolower(method) == "cpf") {
       percentiles1 <- mydata |>
         dplyr::group_by(.data[[wd]]) |>
@@ -328,25 +330,25 @@ percentileRose <- function(
           dplyr::where(is.numeric),
           ~ length(which(.x < overall.lower)) / length(.x)
         ))
-
+      
       percentiles1$percentile <- min(percentile)
-
+      
       percentiles2 <- mydata |>
         dplyr::group_by(.data[[wd]]) |>
         dplyr::summarise(dplyr::across(
           dplyr::where(is.numeric),
           ~ length(which(.x > upper)) / length(.x)
         ))
-
+      
       percentiles2$percentile <- max(percentile)
-
+      
       if (fill) {
         percentiles <- rbind(percentiles1, percentiles2)
       } else {
         percentiles <- percentiles2
       }
     }
-
+    
     ## pre-compute valid wd index set once — wind directions are constant across
     ## all percentile levels so there is no need to recompute inside the loop
     if (smooth) {
@@ -357,37 +359,37 @@ percentileRose <- function(
       smooth_ids <- unique(do.call(c, smooth_ids))
       smooth_ids[smooth_ids < 0] <- smooth_ids[smooth_ids < 0] + 360
     }
-
+    
     results <-
       purrr::map(
         .x = percentile,
         .f = \(x) mod.percentiles(x, overall.lower, overall.upper)
       ) |>
       dplyr::bind_rows()
-
+    
     ## calculate mean; assume a percentile of 999 to flag it later
-
+    
     percentiles <- mydata |>
       dplyr::group_by(.data[[wd]]) |>
       dplyr::summarise(dplyr::across(
         dplyr::where(is.numeric),
         ~ mean(.x, na.rm = TRUE)
       ))
-
+    
     percentiles$percentile <- 999
-
+    
     Mean <- purrr::map(999, mod.percentiles) |>
       purrr::list_rbind()
-
+    
     ## return both percentile and mean results together to avoid a second
     ## map_type pass (which would recompute everything from scratch)
     results$stat_type <- "percentile"
     Mean$stat_type <- "mean"
     dplyr::bind_rows(results, Mean)
   }
-
+  
   mydata <- cutData(mydata, type, ...)
-
+  
   # overall.lower and overall.upper are the OVERALL upper/lower percentiles, but
   # pollutant specific
   if (npol > 1) {
@@ -421,7 +423,7 @@ percentileRose <- function(
       )
     )
   }
-
+  
   all_grid_results <-
     map_type(
       mydata,
@@ -429,13 +431,13 @@ percentileRose <- function(
       fun = prepare.grid,
       .include_default = TRUE
     )
-
+  
   results.grid <- dplyr::filter(
     all_grid_results,
     .data$stat_type == "percentile"
   ) |>
     dplyr::select(-"stat_type")
-
+  
   sub <- NULL
   if (method == "cpf") {
     ## useful labelling
@@ -454,21 +456,21 @@ percentileRose <- function(
       ")"
     )
   }
-
+  
   if (mean) {
     Mean <- dplyr::filter(all_grid_results, .data$stat_type == "mean") |>
       dplyr::select(-"stat_type")
-
+    
     results.grid <- dplyr::bind_rows(results.grid, Mean)
   }
-
+  
   # labels for factor levels
   if (fill) {
     fct_labels <- get_labels_from_breaks(percentile)
   } else {
     fct_labels <- as.character(percentile)
   }
-
+  
   # arrange data for plotting and make percentile a factor with appropriate
   # labels
   if (method == "cpf") {
@@ -494,21 +496,14 @@ percentileRose <- function(
         )
       )
   }
-
-  legend_guide <-
-    ggplot2::guide_legend(
-      reverse = key.position %in% c("left", "right"),
-      theme = ggplot2::theme(
-        legend.title.position = ifelse(
-          key.position %in% c("left", "right"),
-          "top",
-          key.position
-        ),
-        legend.text.position = key.position
-      ),
-      nrow = if (key.position %in% c("left", "right")) NULL else 1
-    )
-
+  
+  legend_guide <- guide_openair(
+    key.position,
+    reverse = TRUE,
+    ncol = key.columns,
+    nrow = key.rows
+  )
+  
   thePlot <-
     plot_data |>
     dplyr::filter(percentile != "Mean") |>

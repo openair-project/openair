@@ -142,40 +142,40 @@ polarCluster <-
   ) {
     # avoid R check annoyances
     u <- v <- z <- strip <- strip.left <- NULL
-
+    
     # default colour based on theme
     if (missing(cols)) {
       cols <- get_theme_cols(cols, theme, "qual")
     }
-
+    
     # add id for later merging
     mydata <- dplyr::mutate(mydata, .id = seq_len(nrow(mydata)))
-
+    
     if (is.data.frame(after)) {
       after <- dplyr::mutate(after, .id = seq_len(nrow(after)))
       data.orig.after <- after
     }
-
+    
     data.orig <-
       mydata # keep original data so cluster can be merged with it
     type <- "default"
     vars <- c("wd", x, pollutant)
     vars <- c(vars, "date", ".id")
-
+    
     mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-
+    
     if (is.data.frame(after)) {
       after <- checkPrep(after, vars, type, remove.calm = FALSE)
     }
-
+    
     max.x <- ceiling(max(mydata[, x], na.rm = TRUE))
     min.ws <- floor(min(mydata[[x]], na.rm = TRUE))
     upper <- max.x
-
+    
     min.scale <- floor(min(mydata[[x]], na.rm = TRUE))
-
+    
     extra.args <- capture_dots(...)
-
+    
     # label controls
     extra.args$xlab <- quickText(extra.args$xlab, auto.text)
     extra.args$ylab <- quickText(extra.args$ylab, auto.text)
@@ -183,7 +183,7 @@ polarCluster <-
     extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
     extra.args$caption <- quickText(extra.args$caption, auto.text)
     extra.args$tag <- quickText(extra.args$tag, auto.text)
-
+    
     # if considering differences
     if (is.data.frame(after)) {
       results.grid <- polarDiff(
@@ -194,7 +194,7 @@ polarCluster <-
         cluster = TRUE,
         ...
       )$data
-
+      
       results.grid$z <- results.grid[[pollutant]]
       results.grid$x <- sqrt(results.grid$u^2 + results.grid$v^2)
     } else {
@@ -207,7 +207,7 @@ polarCluster <-
         ...
       )$data
     }
-
+    
     # remove missing because we don't want to find clusters for those points
     # saves a lot on computation
     results.grid <- stats::na.omit(results.grid)
@@ -216,10 +216,10 @@ polarCluster <-
       results.grid,
       dplyr::all_of(cols_to_keep)
     )
-
+    
     # sequence of u or v, based on unique values that already exist
     uv.id <- with(results.grid, sort(unique(c(u, v))))
-
+    
     make.clust <- function(i, results.grid) {
       i <- n.clusters[i]
       dat.orig <- results.grid
@@ -233,7 +233,7 @@ polarCluster <-
       dat.orig$nclust <- paste(i, "clusters")
       dat.orig
     }
-
+    
     results.grid <-
       purrr::map(
         .x = seq_along(n.clusters),
@@ -241,25 +241,25 @@ polarCluster <-
         results.grid = results.grid
       ) |>
       purrr::list_rbind()
-
+    
     results.grid$nclust <-
       ordered(results.grid$nclust, levels = paste(n.clusters, "clusters"))
-
+    
     # auto scaling
     nlev <- max(n.clusters) + 1
     breaks <- c(0, 1:max(n.clusters))
     nlev2 <- length(breaks)
     col <- resolve_colour_opts(cols, (nlev2 - 1))
     col.scale <- breaks
-
+    
     myform <- stats::formula("cluster ~ u * v | nclust")
-
+    
     # find ids of u and v if only one cluster used
     if (length(n.clusters) == 1L) {
       # find indices in u-v space
       results.grid$u.id <- findInterval(results.grid$u, uv.id)
       results.grid$v.id <- findInterval(results.grid$v, uv.id)
-
+      
       # build cluster lookup matrix once (some cells missing due to exclude.missing in polarPlot)
       mat.dim <- max(results.grid[, c("u.id", "v.id")])
       clust_mat <- matrix(NA, ncol = mat.dim, nrow = mat.dim)
@@ -267,7 +267,7 @@ polarCluster <-
         results.grid$u.id,
         results.grid$v.id
       )] <- results.grid$cluster
-
+      
       # map a data frame's observations to clusters via u-v grid lookup
       map_to_clusters <- function(df) {
         df <- stats::na.omit(df)
@@ -281,7 +281,7 @@ polarCluster <-
         df$cluster <- as.factor(clust_mat[cbind(df$u.id, df$v.id)])
         dplyr::select(df, "date", "cluster", ".id")
       }
-
+      
       mydata <- stats::na.omit(mydata)
       results <- dplyr::left_join(
         data.orig,
@@ -289,7 +289,7 @@ polarCluster <-
         by = c(".id", "date")
       )
       myform <- stats::formula("cluster ~ u * v")
-
+      
       if (is.data.frame(after)) {
         after <- dplyr::left_join(
           data.orig.after,
@@ -298,9 +298,9 @@ polarCluster <-
         )
       }
     }
-
+    
     key.position <- extra.args$key.position %||% "right"
-
+    
     # plot clusters
     thePlot <-
       results.grid |>
@@ -361,43 +361,36 @@ polarCluster <-
         wd.res = extra.args$wd.res %||% 8
       ) +
       ggplot2::guides(
-        colour = ggplot2::guide_legend(
-          override.aes = list(size = 5),
-          theme = ggplot2::theme(
-            legend.title.position = ifelse(
-              key.position %in% c("left", "right"),
-              "top",
-              key.position
-            ),
-            legend.text.position = key.position
-          )
+        colour = guide_openair(
+          key.position,
+          override.aes = list(size = 5)
         )
       )
-
+    
     # output
     if (plot) {
       plot(thePlot)
     }
-
+    
     out_data <- results
     # currently conflicts with length(n.clusters) > 1 - resolve
     if (is.function(out_data)) {
       out_data <- NULL
     }
-
+    
     # change cluster output to C1, C2 etc
     if ("cluster" %in% names(out_data)) {
       out_data$cluster <- paste0("C", out_data$cluster)
       out_data$cluster[out_data$cluster == "CNA"] <- NA_character_
     }
-
+    
     if (is.data.frame(after) && "cluster" %in% names(after)) {
       after$cluster <- paste0("C", after$cluster)
       after$cluster[after$cluster == "CNA"] <- NA_character_
     }
-
+    
     # print the stats but only for cluster of length 1
-
+    
     var_mean <- paste0("mean_", pollutant)
     var_percent <- paste0(pollutant, "_percent")
 

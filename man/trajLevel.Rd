@@ -242,9 +242,9 @@ arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} a
 the last of which removes the legend entirely.}
 
 \item{key.columns, key.rows}{Number of columns or rows to be used in a
-categorical legend. With many categories a single column can make to key
-too wide. The user can thus choose to use several columns by setting
-\code{key.columns} to be less than the number of categories.}
+categorical legend. With many categories a single column or row can make
+the key fit poorly in the plot. The user can thus choose to use several
+columns by setting \code{key.columns} to be less than the number of categories.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units

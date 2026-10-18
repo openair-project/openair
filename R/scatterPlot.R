@@ -204,53 +204,53 @@
 #' )
 #' }
 scatterPlot <- function(
-  mydata,
-  x = "nox",
-  y = "no2",
-  z = NA,
-  method = "scatter",
-  group = NA,
-  avg.time = "default",
-  data.thresh = 0,
-  statistic = "mean",
-  percentile = NA,
-  type = "default",
-  smooth = FALSE,
-  spline = FALSE,
-  linear = FALSE,
-  ci = TRUE,
-  mod.line = FALSE,
-  cols = "hue",
-  theme = "default",
-  plot.type = "p",
-  key.title = group,
-  key.columns = NULL,
-  key.rows = NULL,
-  key.position = "right",
-  log.x = FALSE,
-  log.y = FALSE,
-  x.inc = NULL,
-  y.inc = NULL,
-  limits = NULL,
-  trans = FALSE,
-  windflow = NULL,
-  ref.x = NULL,
-  ref.y = NULL,
-  k = NA,
-  dist = 0.02,
-  auto.text = TRUE,
-  plot = TRUE,
-  key = NULL,
-  ...
+    mydata,
+    x = "nox",
+    y = "no2",
+    z = NA,
+    method = "scatter",
+    group = NA,
+    avg.time = "default",
+    data.thresh = 0,
+    statistic = "mean",
+    percentile = NA,
+    type = "default",
+    smooth = FALSE,
+    spline = FALSE,
+    linear = FALSE,
+    ci = TRUE,
+    mod.line = FALSE,
+    cols = "hue",
+    theme = "default",
+    plot.type = "p",
+    key.title = group,
+    key.columns = NULL,
+    key.rows = NULL,
+    key.position = "right",
+    log.x = FALSE,
+    log.y = FALSE,
+    x.inc = NULL,
+    y.inc = NULL,
+    limits = NULL,
+    trans = FALSE,
+    windflow = NULL,
+    ref.x = NULL,
+    ref.y = NULL,
+    k = NA,
+    dist = 0.02,
+    auto.text = TRUE,
+    plot = TRUE,
+    key = NULL,
+    ...
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
-
+  
   # default colour based on theme
   if (missing(cols)) {
     cols <- get_theme_cols(cols, theme, "seq")
   }
-
+  
   ## extra args
   extra.args <- capture_dots(...)
   extra.args$size <- extra.args$size %||% 1
@@ -258,7 +258,7 @@ scatterPlot <- function(
   extra.args$linetype <- extra.args$linetype %||% 1
   extra.args$alpha <- extra.args$alpha %||% NA
   extra.args$border <- extra.args$border %||% NA
-
+  
   ## validate
   if (is.na(z) && method == "level") {
     cli::cli_abort(
@@ -270,10 +270,10 @@ scatterPlot <- function(
   }
   rlang::arg_match(method, c("scatter", "hexbin", "level", "density"))
   rlang::arg_match(plot.type, c("p", "l", "b", "s", "S", "spline"))
-
+  
   ## handle windflow
   windflow <- resolve_windflow_opts(windflow)
-
+  
   ## axis labels / title
   xlab <- quickText(extra.args$xlab %||% x, auto.text)
   ylab <- quickText(extra.args$ylab %||% y, auto.text)
@@ -281,7 +281,7 @@ scatterPlot <- function(
   subtitle <- quickText(extra.args$subtitle, auto.text)
   caption <- quickText(extra.args$caption, auto.text)
   tag <- quickText(extra.args$tag, auto.text)
-
+  
   ## prepare data
   mydata <- prepare_scatter_data(
     mydata = mydata,
@@ -299,7 +299,7 @@ scatterPlot <- function(
     log.y = log.y,
     ...
   )
-
+  
   ## dispatch to method
   out <- switch(
     method,
@@ -421,11 +421,11 @@ scatterPlot <- function(
       extra.args = extra.args
     )
   )
-
+  
   if (plot) {
     print(out$plot)
   }
-
+  
   output <- list(plot = out$plot, data = out$data, call = match.call())
   class(output) <- "openair"
   invisible(output)
@@ -437,24 +437,24 @@ scatterPlot <- function(
 #' Prepare data for scatterPlot
 #' @noRd
 prepare_scatter_data <- function(
-  mydata,
-  x,
-  y,
-  z,
-  group,
-  type,
-  avg.time,
-  data.thresh,
-  statistic,
-  percentile,
-  windflow,
-  log.x,
-  log.y,
-  ...
+    mydata,
+    x,
+    y,
+    z,
+    group,
+    type,
+    avg.time,
+    data.thresh,
+    statistic,
+    percentile,
+    windflow,
+    log.x,
+    log.y,
+    ...
 ) {
   ## types needed for time averaging
   types <- if (!is.na(group)) c(type, group) else type
-
+  
   ## time average if needed
   if (avg.time != "default") {
     mydata <- cutData(mydata, types, ...)
@@ -470,14 +470,14 @@ prepare_scatter_data <- function(
       data.thresh = data.thresh
     )
   }
-
+  
   ## build required variable list
   vars <- if (any(type %in% dateTypes) || avg.time != "default") {
     c("date", x, y)
   } else {
     c(x, y)
   }
-
+  
   if (!is.na(group)) {
     if (
       group %in% dateTypes || avg.time != "default" || any(type %in% dateTypes)
@@ -491,16 +491,16 @@ prepare_scatter_data <- function(
       vars <- unique(c(vars, group))
     }
   }
-
+  
   if (windflow$windflow) {
     vars <- unique(c(vars, "wd", "ws"))
   }
   if (!is.na(z)) {
     vars <- c(vars, z)
   }
-
+  
   mydata <- checkPrep(mydata, unique(vars), type)
-
+  
   ## filter for log scales (require strictly positive)
   if (log.x) {
     mydata <- mydata[!is.na(mydata[[x]]) & mydata[[x]] > 0, ]
@@ -508,7 +508,7 @@ prepare_scatter_data <- function(
   if (log.y) {
     mydata <- mydata[!is.na(mydata[[y]]) & mydata[[y]] > 0, ]
   }
-
+  
   mydata
 }
 
@@ -518,50 +518,50 @@ prepare_scatter_data <- function(
 #' Build ggplot for method = "scatter"
 #' @noRd
 scatter_scatter <- function(
-  mydata,
-  x,
-  y,
-  z,
-  group,
-  type,
-  cols,
-  theme,
-  plot.type,
-  smooth,
-  spline,
-  linear,
-  ci,
-  mod.line,
-  windflow,
-  log.x,
-  log.y,
-  ref.x,
-  ref.y,
-  key.position,
-  key.title,
-  key.columns,
-  key.rows,
-  limits,
-  trans,
-  k,
-  auto.text,
-  xlab,
-  ylab,
-  title = title,
-  subtitle = subtitle,
-  caption = caption,
-  tag = tag,
-  extra.args
+    mydata,
+    x,
+    y,
+    z,
+    group,
+    type,
+    cols,
+    theme,
+    plot.type,
+    smooth,
+    spline,
+    linear,
+    ci,
+    mod.line,
+    windflow,
+    log.x,
+    log.y,
+    ref.x,
+    ref.y,
+    key.position,
+    key.title,
+    key.columns,
+    key.rows,
+    limits,
+    trans,
+    k,
+    auto.text,
+    xlab,
+    ylab,
+    title = title,
+    subtitle = subtitle,
+    caption = caption,
+    tag = tag,
+    extra.args
 ) {
   has_z <- !is.na(z)
   has_group <- !is.na(group)
-
+  
   ## cut data for conditioning and group
   mydata <- cutData(mydata, type)
   if (has_group) {
     mydata <- cutData(mydata, group)
   }
-
+  
   ## colour palette info
   if (has_z) {
     ## continuous z overrides group
@@ -578,12 +578,12 @@ scatter_scatter <- function(
     group_var <- NULL
     group_levels <- "all"
   }
-
+  
   myColors <- resolve_colour_opts(cols, n_groups)
-
+  
   ## panel column names for LM labels and facet
   panel_cols <- setdiff(type, "default")
-
+  
   ## point size / alpha
   pt_size <- extra.args$size %||% 1
   pt_alpha <- extra.args$alpha %||% NA
@@ -597,10 +597,10 @@ scatter_scatter <- function(
     })
   ln_width <- extra.args$linewidth %||% 1
   ln_type <- extra.args$linetype %||% 1
-
+  
   ## base plot
   plt <- ggplot2::ggplot(mydata, ggplot2::aes(x = .data[[x]], y = .data[[y]]))
-
+  
   ## add points / lines based on plot.type and colour mode
   if (has_z) {
     z_aes <- ggplot2::aes(color = .data[[z]])
@@ -615,7 +615,7 @@ scatter_scatter <- function(
         ln_type,
         extra.args = extra.args
       )
-
+    
     ## continuous colour scale for z
     if (is.null(limits)) {
       z_limits <- NULL
@@ -655,27 +655,21 @@ scatter_scatter <- function(
         ln_type,
         extra.args = extra.args
       )
-
+    
     shape_vals <- if (!is.null(pt_shape)) {
       rep_len(pt_shape, n_groups)
     } else {
       seq_len(n_groups) %% 25 + 1L
     }
-
+    
     pol_name <- sapply(group_levels, function(x) quickText(x, auto.text))
-
-    theGuide <- ggplot2::guide_legend(
+    
+    theGuide <- guide_openair(
+      key.position,
       ncol = key.columns,
-      nrow = key.rows,
-      theme = ggplot2::theme(
-        legend.title.position = if (key.position %in% c("left", "right")) {
-          "top"
-        } else {
-          key.position
-        }
-      )
+      nrow = key.rows
     )
-
+    
     plt <- plt +
       ggplot2::scale_color_manual(
         values = myColors,

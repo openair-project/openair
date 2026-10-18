@@ -123,45 +123,47 @@
 #' )
 #' }
 trendLevel <- function(
-  mydata,
-  pollutant = "nox",
-  x = "month",
-  y = "hour",
-  type = "default",
-  rotate.axis = c(90, 0),
-  n.levels = c(10, 10, 4),
-  windflow = NULL,
-  limits = NULL,
-  breaks = NULL,
-  trans = FALSE,
-  min.bin = 1,
-  cols = "default",
-  theme = "default",
-  auto.text = TRUE,
-  key.title = paste("use.stat.name", pollutant, sep = " "),
-  key.position = "right",
-  statistic = c(
-    "mean",
-    "max",
-    "min",
-    "median",
-    "frequency",
-    "sum",
-    "sd",
-    "percentile"
-  ),
-  percentile = 95,
-  stat.args = NULL,
-  stat.safe.mode = TRUE,
-  drop.unused.types = TRUE,
-  col.na = "white",
-  plot = TRUE,
-  key = NULL,
-  ...
+    mydata,
+    pollutant = "nox",
+    x = "month",
+    y = "hour",
+    type = "default",
+    rotate.axis = c(90, 0),
+    n.levels = c(10, 10, 4),
+    windflow = NULL,
+    limits = NULL,
+    breaks = NULL,
+    trans = FALSE,
+    min.bin = 1,
+    cols = "default",
+    theme = "default",
+    auto.text = TRUE,
+    key.title = paste("use.stat.name", pollutant, sep = " "),
+    key.columns = NULL,
+    key.rows = NULL,
+    key.position = "right",
+    statistic = c(
+      "mean",
+      "max",
+      "min",
+      "median",
+      "frequency",
+      "sum",
+      "sd",
+      "percentile"
+    ),
+    percentile = 95,
+    stat.args = NULL,
+    stat.safe.mode = TRUE,
+    drop.unused.types = TRUE,
+    col.na = "white",
+    plot = TRUE,
+    key = NULL,
+    ...
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
-
+  
   # default colour based on theme
   if (missing(cols)) {
     cols <- get_theme_cols(cols, theme, "seq")
@@ -169,13 +171,13 @@ trendLevel <- function(
   if (missing(col.na)) {
     col.na <- get_theme_col_na(col.na, theme)
   }
-
+  
   # capture dots
   extra.args <- capture_dots(...)
-
+  
   # deal with breaks
   break_opts <- resolve_break_opts(breaks, extra.args)
-
+  
   # check length of x
   if (length(x) > 1) {
     x <- x[1]
@@ -186,7 +188,7 @@ trendLevel <- function(
       )
     )
   }
-
+  
   # check length of y
   if (length(y) > 1) {
     y <- y[1]
@@ -197,7 +199,7 @@ trendLevel <- function(
       )
     )
   }
-
+  
   # check length of type
   if (length(type) > 2) {
     type <- type[1:2]
@@ -208,7 +210,7 @@ trendLevel <- function(
       )
     )
   }
-
+  
   # ensure x, y and type are unique
   vars <- c(pollutant, x, y, type)
   if (length(vars) != length(unique(vars))) {
@@ -219,23 +221,23 @@ trendLevel <- function(
       )
     )
   }
-
+  
   # make sure windflow is a list
   # lower the default range - good for heatmap plots
   windflow <- resolve_windflow_opts(windflow, range = c(0.01, 0.5))
-
+  
   if (
     windflow$windflow &&
-      (x %in%
-        c("ws", "wd") ||
-        y %in% c("ws", "wd") ||
-        any(type %in% c("ws", "wd")))
+    (x %in%
+     c("ws", "wd") ||
+     y %in% c("ws", "wd") ||
+     any(type %in% c("ws", "wd")))
   ) {
     cli::cli_abort(
       "In {.fun openair::trendLevel}, cannot use {.arg windflow} and have {.arg x}, {.arg y} and/or {.arg type} be 'ws' or 'wd'."
     )
   }
-
+  
   # number vector handling
   ls.check.fun <- function(vector, vector.name, len) {
     if (!is.numeric(vector)) {
@@ -249,7 +251,7 @@ trendLevel <- function(
       # use current default
       vector <- eval(formals(trendLevel)[[vector.name]])
     }
-
+    
     if (length(vector) < len) {
       vector <- rep(vector, len)[1:len]
     }
@@ -258,29 +260,29 @@ trendLevel <- function(
   }
   rotate.axis <- ls.check.fun(rotate.axis, "rotate.axis", 2)
   n.levels <- ls.check.fun(n.levels, "n.levels", 3)
-
+  
   # statistic handling
   if (is.character(statistic) || is.function(statistic)) {
     if (is.character(statistic)) {
       # hardcoded statistic options
       statistic <- rlang::arg_match(statistic)
       stat.name <- statistic
-
+      
       if (statistic == "mean") {
         stat.fun <- mean
         stat.args <- list(na.rm = TRUE)
       }
-
+      
       if (statistic == "median") {
         stat.fun <- stats::median
         stat.args <- list(na.rm = TRUE)
       }
-
+      
       if (statistic == "sd") {
         stat.fun <- stats::sd
         stat.args <- list(na.rm = TRUE)
       }
-
+      
       if (statistic == "max") {
         stat.fun <- function(x, ...) {
           if (all(is.na(x))) {
@@ -291,7 +293,7 @@ trendLevel <- function(
         }
         stat.args <- list(na.rm = TRUE)
       }
-
+      
       if (statistic == "min") {
         stat.fun <- function(x, ...) {
           if (all(is.na(x))) {
@@ -302,7 +304,7 @@ trendLevel <- function(
         }
         stat.args <- list(na.rm = TRUE)
       }
-
+      
       if (statistic == "sum") {
         stat.fun <- function(x, ...) {
           if (all(is.na(x))) {
@@ -313,7 +315,7 @@ trendLevel <- function(
         }
         stat.args <- list(na.rm = TRUE)
       }
-
+      
       if (statistic == "frequency") {
         stat.fun <- function(x, ...) {
           if (all(is.na(x))) {
@@ -324,7 +326,7 @@ trendLevel <- function(
         }
         stat.args <- NULL
       }
-
+      
       if (statistic == "percentile") {
         if (percentile < 0 || percentile > 100) {
           cli::cli_abort("{.field percentile} outside {0}-{100}.")
@@ -334,7 +336,7 @@ trendLevel <- function(
           stats::quantile(x, probs = probs, names = FALSE, ...)
         }
         stat.args <- list(na.rm = TRUE)
-
+        
         lastnum <- substr(percentile, nchar(percentile), nchar(percentile))
         numend <- dplyr::recode_values(
           lastnum,
@@ -343,18 +345,18 @@ trendLevel <- function(
           "3" ~ "rd",
           default = "th"
         )
-
+        
         stat.name <- paste0(percentile, numend, " Perc.")
       }
     } else {
       # user defined function handling
       # default unnamed stats to 'level'
-
+      
       stat.name <- substitute(statistic)
       if (length(stat.name) != 1) {
         stat.name <- "level"
       }
-
+      
       if (stat.safe.mode) {
         stat.fun <- function(x, ...) {
           if (all(is.na(x))) NA else statistic(x, ...)[1]
@@ -373,7 +375,7 @@ trendLevel <- function(
       )
     )
   }
-
+  
   # checkPrep
   temp <- c(pollutant)
   if (x %in% dateTypes || y %in% dateTypes || any(type %in% dateTypes)) {
@@ -382,10 +384,10 @@ trendLevel <- function(
   if (windflow$windflow) {
     temp <- c(temp, "ws", "wd")
   }
-
+  
   # all of x, y, temp need to be handled as type here
   mydata <- checkPrep(mydata, temp, type = c(x, y, type), remove.calm = FALSE)
-
+  
   # if using windflow, need the u & v components of wind
   if (windflow$windflow) {
     mydata <- mydata |>
@@ -397,7 +399,7 @@ trendLevel <- function(
         -c("ws", "wd")
       )
   }
-
+  
   # cutData
   # different n.levels for axis and type, axes get `is.axis = TRUE`
   newdata <-
@@ -405,7 +407,7 @@ trendLevel <- function(
     cutData(x, n.levels = n.levels[1], is.axis = TRUE, ...) |>
     cutData(y, n.levels = n.levels[2], is.axis = TRUE, ...) |>
     cutData(type, n.levels = n.levels[3], drop = "outside", ...)
-
+  
   # ensure valid combinations present within panels
   newdata <-
     map_type(
@@ -422,19 +424,19 @@ trendLevel <- function(
           dplyr::select(-"x_var", -"y_var")
       }
     )
-
+  
   # select only pollutant and axis/facet columns
   newdata <- dplyr::select(
     newdata,
     dplyr::any_of(c(pollutant, x, y, type, "wind_u", "wind_v"))
   )
-
+  
   # apply statistic
   calc_stat <- function(x) {
     args <- append(stat.args, list(x = x))
     rlang::exec(stat.fun, !!!args)
   }
-
+  
   # NB: don't overwrite `pollutant` initially so that `n` is still valid
   newdata_poll <-
     newdata |>
@@ -444,7 +446,7 @@ trendLevel <- function(
       .by = dplyr::all_of(c(x, y, type))
     )
   names(newdata_poll)[names(newdata_poll) == "poll_avg"] <- pollutant
-
+  
   # if using windflow, calculate mean wind_u and wind_v for each bin
   if (windflow$windflow) {
     newdata_met <- newdata |>
@@ -453,7 +455,7 @@ trendLevel <- function(
         wind_v = mean(.data[["wind_v"]], na.rm = TRUE),
         .by = dplyr::all_of(c(x, y, type))
       )
-
+    
     newdata <-
       dplyr::left_join(
         newdata_poll,
@@ -463,7 +465,7 @@ trendLevel <- function(
   } else {
     newdata <- newdata_poll
   }
-
+  
   # if using windflow, convert wind_u and wind_v back into ws & wd
   if (windflow$windflow) {
     newdata <- newdata |>
@@ -473,7 +475,7 @@ trendLevel <- function(
       ) |>
       dplyr::select(-c("wind_u", "wind_v"))
   }
-
+  
   # remove bins with fewer than min.bin records
   vars <- c(pollutant)
   if (windflow$windflow) {
@@ -486,20 +488,20 @@ trendLevel <- function(
       \(x) ifelse(.data$n < min.bin, NA, x)
     )
   )
-
+  
   # sub out 'use.stat.name' with stat.name
   key.title <- gsub("use.stat.name", stat.name, key.title)
-
+  
   # check if key.header / key.footer are being used
   key.title <- check_key_header(key.title, extra.args)
-
+  
   # handle breaks
   categorical <- !is.null(break_opts$breaks)
   newdata[[pollutant]] <- cut_plot_breaks(
     newdata[[pollutant]],
     break_opts
   )
-
+  
   # construct plot
   thePlot <-
     ggplot2::ggplot(
@@ -547,7 +549,7 @@ trendLevel <- function(
       drop = drop.unused.types,
       wd.res = extra.args$wd.res %||% 8
     )
-
+  
   # make key full width/height
   if (key.position %in% c("left", "right")) {
     thePlot <- thePlot +
@@ -563,7 +565,7 @@ trendLevel <- function(
         legend.key.spacing.x = ggplot2::unit(0, "cm")
       )
   }
-
+  
   # colours
   if (categorical) {
     thePlot <-
@@ -578,17 +580,11 @@ trendLevel <- function(
         drop = FALSE
       ) +
       ggplot2::guides(
-        fill = ggplot2::guide_legend(
-          reverse = key.position %in% c("left", "right"),
-          theme = ggplot2::theme(
-            legend.title.position = ifelse(
-              key.position %in% c("left", "right"),
-              "top",
-              key.position
-            ),
-            legend.text.position = key.position
-          ),
-          nrow = if (key.position %in% c("left", "right")) NULL else 1
+        fill = guide_openair(
+          key.position,
+          reverse = TRUE,
+          nrow = key.rows,
+          ncol = key.columns
         )
       )
   } else {
@@ -602,24 +598,15 @@ trendLevel <- function(
         transform = get_scale_transform(trans)
       ) +
       ggplot2::guides(
-        fill = ggplot2::guide_colorbar(
-          theme = ggplot2::theme(
-            legend.title.position = ifelse(
-              key.position %in% c("left", "right"),
-              "top",
-              key.position
-            ),
-            legend.text.position = key.position
-          )
-        )
+        fill = guide_openair(key.position, type = "colourbar")
       )
   }
-
+  
   if (windflow$windflow) {
     thePlot <- thePlot +
       layer_windflow_opts(newdata, windflow)
   }
-
+  
   if (plot) {
     plot(thePlot)
   }

@@ -119,6 +119,8 @@ corPlot <- function(
   r.thresh = 0.8,
   text.col = c("black", "black"),
   key.title = NULL,
+  key.columns = NULL,
+  key.rows = NULL,
   key.position = "right",
   auto.text = TRUE,
   plot = TRUE,
@@ -127,30 +129,30 @@ corPlot <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
-
+  
   # default colour based on theme
   if (missing(cols)) {
     cols <- get_theme_cols(cols, theme, "seq")
   }
-
+  
   if (length(type) > 1) {
     cli::cli_abort(
       "Only one {.arg type} is permitted in {.fun openair::corPlot}"
     )
   }
-
+  
   # extra.args setup
   extra.args <- capture_dots(...)
-
+  
   # deal with breaks
   break_opts <- resolve_break_opts(breaks, extra.args)
-
+  
   # fix the scales arg
   extra.args$scales <- extra.args$scales %||% "free"
-
+  
   # check if key.header / key.footer are being used
   key.title <- check_key_header(key.title, extra.args)
-
+  
   # deprecated lower arg
   if ("lower" %in% names(extra.args)) {
     cli::cli_warn(
@@ -161,7 +163,7 @@ corPlot <- function(
     )
     triangle <- "upper"
   }
-
+  
   # label controls
   extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
   extra.args$ylab <- quickText(extra.args$ylab %||% NULL, auto.text)
@@ -169,28 +171,28 @@ corPlot <- function(
   extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
   extra.args$caption <- quickText(extra.args$caption, auto.text)
   extra.args$tag <- quickText(extra.args$tag, auto.text)
-
+  
   # check triangle is set properly
   triangle <- rlang::arg_match(triangle)
   annotate <- rlang::arg_match(annotate)
-
+  
   # if not clustering or type isn't default, can't add dendrogram
   if (!cluster || !all(type == "default")) {
     dendrogram <- FALSE
   }
-
+  
   # null and all cases
   if (is.null(pollutants) || any(pollutants == "all")) {
     pollutants <- names(mydata)
   }
-
+  
   # keep date if about
   pollutants <- if ("date" %in% names(mydata)) {
     unique(c("date", pollutants))
   } else {
     unique(c(pollutants))
   }
-
+  
   # check input data
   mydata <- checkPrep(
     mydata,
@@ -198,10 +200,10 @@ corPlot <- function(
     type = type,
     remove.calm = FALSE
   )
-
+  
   # cut data depending on type
   mydata <- cutData(mydata, type, ...)
-
+  
   # remove variables where all are NA, or values are constant
   # done per-type to remove, e.g., lat/lng
   mydata <-
@@ -215,15 +217,15 @@ corPlot <- function(
       },
       .include_default = TRUE
     )
-
+  
   # proper names of labelling
   pollutants <- names(mydata[, sapply(mydata, is.numeric)])
-
+  
   # if insufficient number of variables, stop
   if (length(pollutants) < 2) {
     cli::cli_abort("Need at least two valid numeric fields to compare.")
   }
-
+  
   # create plot data
   cor_data <-
     map_type(
@@ -232,25 +234,25 @@ corPlot <- function(
       \(df) {
         # get types to bind to data
         types_df <- dplyr::distinct(df[type])
-
+        
         # the tag - gives unique tag levels based on type
         tag <-
           types_df |>
           dplyr::mutate(dplyr::across(dplyr::everything(), as.character)) |>
           unlist() |>
           paste(collapse = "___")
-
+        
         # select chosen pollutants
         df <- dplyr::select(df, dplyr::all_of(pollutants))
-
+        
         # extra check for empty/constant columns
         df <- df[, sapply(df, function(x) {
           dplyr::n_distinct(x, na.rm = TRUE) > 1L
         })]
-
+        
         # variables
         vars <- names(df)
-
+        
         # create grid of all pollutants vs all others
         cor_matrix_df <-
           expand.grid(x = vars, y = vars, stringsAsFactors = FALSE) |>
@@ -281,7 +283,7 @@ corPlot <- function(
           ) |>
           # drop unnecessary test column
           dplyr::select(-"test")
-
+        
         # clustering
         if (cluster) {
           # create a matrix
@@ -289,16 +291,16 @@ corPlot <- function(
             df |>
             dplyr::select(dplyr::all_of(vars)) |>
             stats::cor(use = use, method = method)
-
+          
           # cluster the matrix
           hc <- stats::hclust(
             stats::as.dist(1 - cor_matrix),
             method = "complete"
           )
-
+          
           # get a new variable order
           var_order <- hc$labels[hc$order]
-
+          
           # turn x/y into factor - labels are the pollutant plus the type tag
           cor_matrix_df$x <-
             factor(
@@ -325,7 +327,7 @@ corPlot <- function(
             labels = paste(tag, vars, sep = "___")
           )
         }
-
+        
         return(
           list(
             data = cor_matrix_df |>
@@ -337,19 +339,19 @@ corPlot <- function(
       .include_default = TRUE,
       .row_bind = FALSE
     )
-
+  
   # get plotting data out of returned object
   plotdata <-
     purrr::map(cor_data, "data") |>
     dplyr::bind_rows()
-
+  
   # if clustering, grab the first
   if (cluster) {
     hc <- purrr::map(cor_data, "hc")[[1]]
   } else {
     hc <- NULL
   }
-
+  
   # remove certain cells based on triangle/diagonal args
   if (triangle == "upper") {
     plotdata <- dplyr::filter(
@@ -369,7 +371,7 @@ corPlot <- function(
       as.numeric(.data$x) != as.numeric(.data$y)
     )
   }
-
+  
   # need to turn the matrix into a bigger grid of polygons for drawing angled
   # ellipses
   ellipse_data <-
@@ -405,7 +407,7 @@ corPlot <- function(
       xe = .data$xe + as.numeric(.data$x),
       ye = .data$ye + as.numeric(.data$y)
     )
-
+  
   # need different scales if we're using dendrograms
   if (dendrogram) {
     rlang::check_installed("legendry", version = "0.2.4")
@@ -423,7 +425,7 @@ corPlot <- function(
       ggplot2::scale_y_continuous(breaks = seq_along(levels(plotdata$y)), ...)
     }
   }
-
+  
   # strip tags away
   remove_tag <- function(x) {
     for (i in unique(paste0(plotdata$tag, "___"))) {
@@ -436,14 +438,14 @@ corPlot <- function(
     }
     x
   }
-
+  
   # handle breaks
   categorical <- !is.null(break_opts$breaks)
   ellipse_data$cor <- cut_plot_breaks(
     ellipse_data$cor,
     break_opts
   )
-
+  
   # construct plot
   thePlot <-
     ellipse_data |>
@@ -494,7 +496,7 @@ corPlot <- function(
       tag = extra.args$tag,
       fill = key.title
     )
-
+  
   if (categorical) {
     thePlot <-
       thePlot +
@@ -503,16 +505,11 @@ corPlot <- function(
         drop = FALSE
       ) +
       ggplot2::guides(
-        fill = ggplot2::guide_legend(
+        fill = guide_openair(
+          key.position,
           reverse = TRUE,
-          theme = ggplot2::theme(
-            legend.title.position = ifelse(
-              key.position %in% c("left", "right"),
-              "top",
-              key.position
-            ),
-            legend.text.position = key.position
-          )
+          ncol = key.columns,
+          nrow = key.rows
         )
       )
   } else {
@@ -525,19 +522,10 @@ corPlot <- function(
         transform = get_scale_transform(trans)
       ) +
       ggplot2::guides(
-        fill = ggplot2::guide_colorbar(
-          theme = ggplot2::theme(
-            legend.title.position = ifelse(
-              key.position %in% c("left", "right"),
-              "top",
-              key.position
-            ),
-            legend.text.position = key.position
-          )
-        )
+        fill = guide_openair(key.position, type = "colourbar")
       )
   }
-
+  
   # if dendrogram, need to use legendry to switch dendro to the opposite side of
   # the plot. else just use the base ggplot2 guides to check overlaps
   if (dendrogram) {

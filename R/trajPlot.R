@@ -124,36 +124,36 @@
 #' )
 #' }
 trajPlot <- function(
-  mydata,
-  lon = "lon",
-  lat = "lat",
-  pollutant = NULL,
-  type = "default",
-  group = NULL,
-  cols = "default",
-  theme = "default",
-  crs = 4326,
-  map = TRUE,
-  map.res = "medium",
-  map.fill = TRUE,
-  map.cols = "grey40",
-  map.border = "black",
-  map.alpha = 0.4,
-  map.lwd = 1,
-  map.lty = 1,
-  grid.col = "deepskyblue",
-  grid.nx = 9,
-  grid.ny = grid.nx,
-  npoints = 12,
-  origin = TRUE,
-  key.title = group,
-  key.position = "right",
-  key.columns = NULL,
-  key.rows = NULL,
-  auto.text = TRUE,
-  plot = TRUE,
-  key = NULL,
-  ...
+    mydata,
+    lon = "lon",
+    lat = "lat",
+    pollutant = NULL,
+    type = "default",
+    group = NULL,
+    cols = "default",
+    theme = "default",
+    crs = 4326,
+    map = TRUE,
+    map.res = "medium",
+    map.fill = TRUE,
+    map.cols = "grey40",
+    map.border = "black",
+    map.alpha = 0.4,
+    map.lwd = 1,
+    map.lty = 1,
+    grid.col = "deepskyblue",
+    grid.nx = 9,
+    grid.ny = grid.nx,
+    npoints = 12,
+    origin = TRUE,
+    key.title = group,
+    key.position = "right",
+    key.columns = NULL,
+    key.rows = NULL,
+    auto.text = TRUE,
+    plot = TRUE,
+    key = NULL,
+    ...
 ) {
   rlang::check_installed(c("sf", "rnaturalearth"))
   if (!map.res %in% c(10, 50, 110, "small", "medium", "large")) {
@@ -161,10 +161,10 @@ trajPlot <- function(
       "{.arg map.res} must be one of {10}/'large', {50}/'medium' or {110}/'small'."
     )
   }
-
+  
   # check key.position
   key.position <- check_key_position(key.position, key)
-
+  
   # default colour based on theme
   if (missing(cols)) {
     cols <- get_theme_cols(cols, theme, "seq")
@@ -188,14 +188,14 @@ trajPlot <- function(
   if (missing(grid.col)) {
     grid.col <- map_defaults$grid
   }
-
+  
   # favour group over pollutant - set a flag to see if `cutData()` is needed
   group_is_pollutant <- !is.null(pollutant) && is.null(group)
   group <- group %||% pollutant
-
+  
   # variables needed in trajectory plots
   vars <- c("date", "date2", "lat", "lon", "hour.inc", pollutant)
-
+  
   # if group is present, need to add that list of variables unless it is a
   # pre-defined date-based one
   if (!is.null(group)) {
@@ -210,36 +210,36 @@ trajPlot <- function(
       vars <- unique(c(vars, group))
     }
   }
-
+  
   # check data and prepare for plotting
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
   mydata <- cutData(mydata, type = type, ...)
-
+  
   # prepare group, unless `pollutant` is being used
   if (!group_is_pollutant) {
     mydata <- cutData(mydata, type = group, is.axis = TRUE)
   }
-
+  
   # if no group at all, need a dummy group
   if (is.null(group)) {
     mydata$theGroup <- factor("(all)")
     group <- "theGroup"
   }
-
+  
   # remove any rows with missing lat/lon
   mydata <- dplyr::filter(mydata, !is.na(lat), !is.na(lon))
-
+  
   # slect only full length trajectories
   mydata <- mydata[order(mydata$date, mydata$hour.inc), ]
-
+  
   # length of back mydataectories
   mydata$len <- stats::ave(mydata$lat, mydata$date, FUN = length)
-
+  
   # find length of back trajectories, choose most frequent
   # so that partial trajectories are not plotted
   n <- as.numeric(names(which.max(table(abs(mydata$len)))))
   mydata <- dplyr::filter(mydata, .data$len == n)
-
+  
   # ensure there are no duplicate trajectories in dataframe
   count_check <-
     dplyr::count(
@@ -254,10 +254,10 @@ trajPlot <- function(
       )
     )
   }
-
+  
   # extra.args
   extra.args <- capture_dots(...)
-
+  
   # aspect, size
   extra.args$plot.type <- extra.args$plot.type %||% "l"
   extra.args$size <- extra.args$size %||% 1
@@ -269,20 +269,20 @@ trajPlot <- function(
   extra.args$subtitle <- extra.args$subtitle %||% NULL
   extra.args$caption <- extra.args$caption %||% NULL
   extra.args$alpha <- extra.args$alpha %||% 1
-
+  
   # convert traj data to simple features
   sf_points <- sf::st_as_sf(mydata, coords = c("lon", "lat"), crs = 4326) |>
     sf::st_transform(crs = crs)
-
+  
   # get origin
   sf_origins <- dplyr::filter(sf_points, .data$hour.inc == 0) |>
     dplyr::distinct(dplyr::across(dplyr::all_of(c("geometry", type, group))))
-
+  
   # get bbox - axis limits
   bbox <- sf::st_bbox(sf_points)
   extra.args$xlim <- extra.args$xlim %||% unname(bbox[c(1, 3)])
   extra.args$ylim <- extra.args$ylim %||% unname(bbox[c(2, 4)])
-
+  
   # create lines from points, grouped by date and type (and group if present)
   sf_lines <- sf_points |>
     dplyr::group_by(dplyr::across(dplyr::all_of(c(
@@ -293,18 +293,18 @@ trajPlot <- function(
     dplyr::summarise(do_union = FALSE) |>
     dplyr::ungroup() |>
     sf::st_cast("LINESTRING")
-
+  
   # get points every npoints hours
   sf_points <- dplyr::filter(
     sf_points,
     .data$hour.inc %% npoints == 0
   )
-
+  
   # if plot.type is points, remove lines
   if (extra.args$plot.type == "p") {
     sf_lines <- utils::head(sf_lines, n = 0)
   }
-
+  
   # to allow for basemaps to be multicoloured, we need to work out the number of
   # panels in the plot
   n_types <- c()
@@ -312,7 +312,7 @@ trajPlot <- function(
     n_types <- c(n_types, nlevels(sf_lines[[i]]))
   }
   n_types <- purrr::reduce(n_types, .f = `*`)
-
+  
   # base plot & themes
   thePlot <- ggplot2::ggplot() +
     theme_openair(
@@ -337,7 +337,7 @@ trajPlot <- function(
       tag = quickText(extra.args$tag, auto.text),
       colour = quickText(key.title, auto.text)
     )
-
+  
   # add map if requested
   if (map) {
     thePlot <- thePlot +
@@ -353,7 +353,7 @@ trajPlot <- function(
         map.lty = map.lty
       )
   }
-
+  
   for (i in unique(sf_lines$date)) {
     # add lines/points - needs to be done before setting coordinates
     thePlot <- thePlot +
@@ -371,13 +371,13 @@ trajPlot <- function(
         alpha = extra.args$alpha
       )
   }
-
+  
   # add origin point if requested
   if (origin) {
     thePlot <- thePlot +
       ggplot2::geom_sf(data = sf_origins)
   }
-
+  
   # axis scales
   thePlot <-
     thePlot +
@@ -389,7 +389,7 @@ trajPlot <- function(
     ) +
     ggplot2::scale_x_continuous(breaks = scales::breaks_pretty(grid.nx)) +
     ggplot2::scale_y_continuous(breaks = scales::breaks_pretty(grid.ny))
-
+  
   # colours
   if (is.factor(mydata[[group]])) {
     n_cols <- dplyr::n_distinct(levels(mydata[[group]]))
@@ -404,21 +404,13 @@ trajPlot <- function(
         labels = \(x) label_openair(x, auto_text = auto.text)
       ) +
       ggplot2::guides(
-        colour = ggplot2::guide_legend(
-          reverse = key.position %in% c("left", "right"),
-          theme = ggplot2::theme(
-            legend.title.position = ifelse(
-              key.position %in% c("left", "right"),
-              "top",
-              key.position
-            ),
-            legend.text.position = key.position
-          ),
+        colour = guide_openair(
+          key.position,
           ncol = key.columns,
           nrow = key.rows
         )
       )
-
+    
     if (n_cols <= 1) {
       thePlot <- thePlot + ggplot2::guides(color = ggplot2::guide_none())
     }
@@ -437,18 +429,9 @@ trajPlot <- function(
         }
       ) +
       ggplot2::guides(
-        colour = ggplot2::guide_colorbar(
-          theme = ggplot2::theme(
-            legend.title.position = ifelse(
-              key.position %in% c("left", "right"),
-              "top",
-              key.position
-            ),
-            legend.text.position = key.position
-          )
-        )
+        colour = guide_openair(key.position, type = "colourbar")
       )
-
+    
     if (key.position %in% c("left", "right")) {
       thePlot <- thePlot +
         ggplot2::theme(

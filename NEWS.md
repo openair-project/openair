@@ -28,7 +28,7 @@
 
 - `variationPlot()` gains the `ref.y` argument.
 
-- `key.columns` now defaults to `NULL` in most functions, which will use `ggplot2`'s logic for the number of columns. `key.rows` has also been added.
+- `key.columns` now defaults to `NULL` in most functions, which will use `ggplot2`'s logic for the number of columns. `key.rows` has also been added. `calendarPlot()`, `corPlot()`, `percentileRose()`, `polarAnnulus()`, `polarFreq()`, `polarPlot()`, `trendLevel()` and `windRose()` gain both arguments, which apply when their legend shows binned values.
 
 - `timePlot()` gains the `step` argument which causes a "stairstep" plot to be created instead of a traditional line chart. This is likely most useful for low resolution or 'multi-day' (e.g., diffusion tube) data.
 
