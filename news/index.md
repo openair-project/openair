@@ -96,7 +96,8 @@
   can now take a character string, in line with the `date_breaks`
   argument of functions like
   [`ggplot2::scale_x_datetime()`](https://ggplot2.tidyverse.org/reference/scale_date.html).
-  The default value of `date.breaks` is now `NULL`.
+  It may also take `NULL`, which will use
+  [ggplot2](https://ggplot2.tidyverse.org) defaults.
 
 ### Bug Fixes
 

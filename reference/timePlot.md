@@ -35,7 +35,7 @@ timePlot(
   key.position = "bottom",
   key.title = NULL,
   name.pol = pollutant,
-  date.breaks = NULL,
+  date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
   plot = TRUE,

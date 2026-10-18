@@ -35,7 +35,7 @@ TheilSen(
   auto.text = TRUE,
   autocor = FALSE,
   slope.percent = FALSE,
-  date.breaks = NULL,
+  date.breaks = 7,
   date.format = NULL,
   plot = TRUE,
   silent = FALSE,
