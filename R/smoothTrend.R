@@ -114,15 +114,15 @@ smoothTrend <- function(
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key)
-  
+
   # default colour based on theme
   if (missing(cols)) {
     cols <- get_theme_cols(cols, theme, "qual")
   }
-  
+
   # extra.args setup
   extra.args <- capture_dots(...)
-  
+
   # validation checks
   if (length(pollutant) > 1 && length(percentile) > 1) {
     cli::cli_warn(
@@ -130,7 +130,7 @@ smoothTrend <- function(
     )
     percentile <- percentile[1]
   }
-  
+
   # set stat to percentile if user provides some
   if (!missing(percentile) && statistic != "percentile") {
     cli::cli_inform(
@@ -138,13 +138,13 @@ smoothTrend <- function(
     )
     statistic <- "percentile"
   }
-  
+
   # Style controls w/ defaults
   extra.args$linetype <- extra.args$linetype %||% 1L
   extra.args$linewidth <- extra.args$linewidth %||% 1L
   extra.args$shape <- extra.args$shape %||% 1L
   extra.args$size <- extra.args$size %||% 5L
-  
+
   # label controls
   extra.args$title <- quickText(extra.args$title %||% "", auto.text)
   extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
@@ -155,15 +155,15 @@ smoothTrend <- function(
     auto.text
   )
   extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
-  
+
   # find time interval
   # need this because if user has a data capture threshold, need to know
   # original time interval. better to do this before conditioning
   interval <- find_time_interval(mydata$date)
-  
+
   # equivalent number of days, used to refine interval for month/year
   days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) / 24 / 3600
-  
+
   # better interval, most common interval in a year
   interval <-
     dplyr::recode_values(
@@ -172,7 +172,7 @@ smoothTrend <- function(
       c(365, 366) ~ "year",
       default = interval
     )
-  
+
   # prepare data
   mydata <-
     prepare_smoothtrend_data(
@@ -187,10 +187,10 @@ smoothTrend <- function(
       progress = progress,
       ...
     )
-  
+
   # set new variables
   vars <- c(type, "variable")
-  
+
   # prep data for modelling
   newdata <-
     map_type(
@@ -205,7 +205,7 @@ smoothTrend <- function(
       },
       .include_default = TRUE
     )
-  
+
   # fit a smooth model
   fit <-
     map_type(
@@ -225,17 +225,17 @@ smoothTrend <- function(
       },
       .include_default = TRUE
     )
-  
+
   # set fit date to be POSIXct for plotting
   class(fit$date) <- c("POSIXct", "POSIXt")
-  
+
   # create a guide for both fill and colour using openair styling
   color_guide <- guide_openair(
     key.position,
     ncol = key.columns,
     nrow = key.rows
   )
-  
+
   # create plot
   thePlot <-
     ggplot2::ggplot(mapping = ggplot2::aes(x = .data$date)) +

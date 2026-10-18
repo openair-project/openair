@@ -59,12 +59,15 @@ selectByDate <- function(
 ) {
   # 1. Basic Checks
   if (!"date" %in% names(mydata)) {
-    stop("The input data frame must contain a column named 'date'.")
+    cli::cli_abort("{.arg mydata} must contain a {.field date} column.")
   }
 
   # Check if date is strictly Date or POSIXt (POSIXct/POSIXlt)
   if (!inherits(mydata$date, "Date") && !inherits(mydata$date, "POSIXt")) {
-    stop("The 'date' column must be in Date or POSIXct format.")
+    cli::cli_abort(
+      "{.field mydata$date} must be in {.cls Date} or {.cls POSIXct} format, \\
+      not {.obj_type_friendly {mydata$date}}."
+    )
   }
 
   # 2. Filter by Date Range (Start/End)
@@ -80,7 +83,7 @@ selectByDate <- function(
     )
 
     if (is.na(start_date)) {
-      stop("Could not parse 'start' date format.")
+      cli::cli_abort("Could not parse {.arg start} date '{start}'.")
     }
     mydata <- dplyr::filter(mydata, date >= start_date)
   }
@@ -94,7 +97,7 @@ selectByDate <- function(
     )
 
     if (is.na(end_date)) {
-      stop("Could not parse 'end' date format.")
+      cli::cli_abort("Could not parse {.arg end} date '{end}'.")
     }
 
     # If input is just a date (e.g. "2023-01-01"), include the full day (until 23:59:59)
@@ -122,7 +125,11 @@ selectByDate <- function(
       clean_input <- substr(tolower(month), 1, 3)
       target_months <- lookup[clean_input]
 
-      if (anyNA(target_months)) stop("Invalid month name provided.")
+      if (anyNA(target_months)) {
+        cli::cli_abort(
+          "Invalid {.arg month} name{?s}: {.val {month[is.na(target_months)]}}."
+        )
+      }
     }
 
     # Perform integer dplyr::filter (fast)
@@ -174,7 +181,9 @@ selectByDate <- function(
         mapped <- wday_lookup[clean_specific]
 
         if (anyNA(mapped)) {
-          stop("Invalid day name provided.")
+          cli::cli_abort(
+            "Invalid {.arg day} name{?s}: {.val {specific[is.na(mapped)]}}."
+          )
         }
         target_wdays <- c(target_wdays, mapped)
       }

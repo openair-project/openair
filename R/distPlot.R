@@ -375,7 +375,7 @@ distPlot <- function(
       labels = \(x) label_openair(x, auto_text = auto.text),
       drop = FALSE,
       aesthetics = c("colour", "fill"),
-      guide = ggplot2::guide_legend(ncol = key.columns, nrow = key.rows)
+      guide = guide_openair(key.position, ncol = key.columns, nrow = key.rows)
     )
 
   # outputs

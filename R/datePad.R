@@ -59,7 +59,7 @@ datePad <- function(
     return(mydata)
   }
   if (!"date" %in% names(mydata)) {
-    stop("Dataframe must contain a 'date' column.")
+    cli::cli_abort("{.arg mydata} must contain a {.field date} column.")
   }
 
   # 1. Detect Native Interval (The resolution of the INPUT data)

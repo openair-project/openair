@@ -479,7 +479,6 @@ cut_vec_weekday <- function(x, is.axis, start.day, drop) {
   } else if (drop == "none") {
     levels <- levels
   } else if (drop == "outside") {
-    levels
     x_range <- range(unique(as.numeric(x)))
     levels_int <- seq(x_range[1], x_range[2], by = 1L)
     levels <- levels[levels_int]
@@ -707,8 +706,8 @@ cut_vec_dst <- function(x, local.tz, drop) {
 # checking
 cut_vec_daylight <- function(
   x,
-  latitude = 51.522393,
-  longitude = -0.154700,
+  latitude,
+  longitude,
   ...,
   drop
 ) {

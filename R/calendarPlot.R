@@ -216,12 +216,12 @@ calendarPlot <-
       annotate <- "none"
       windflow <- windflowOpts(range = c(0.01, 0.5), linewidth = 0.75)
     }
-    
+
     # can't have three types
     if (length(type) >= 3L) {
       cli::cli_abort("{.arg type} must be length 1 or 2.")
     }
-    
+
     # if 2 types provided, one must be "month", and use that to work out the
     # rows/cols assignment
     if (length(type) == 2L) {
@@ -230,9 +230,9 @@ calendarPlot <-
           "In {.fun openair::calendarPlot}, at least one {.arg type} must be 'month'."
         )
       }
-      
+
       months_as_rows <- which(type == "month") == 1
-      
+
       type <- unique(type[type != "month"])
     } else {
       # if one type, replace "month" with default and assume months as rows
@@ -240,9 +240,9 @@ calendarPlot <-
       type <- unique(type)
       months_as_rows <- FALSE
     }
-    
+
     annotate <- rlang::arg_match(annotate, c("date", "value", "none"))
-    
+
     # resolve windflow
     windflow <- resolve_windflow_opts(
       windflow,
@@ -253,10 +253,10 @@ calendarPlot <-
     if (windflow$windflow) {
       annotate <- "none"
     }
-    
+
     # check key.position
     key.position <- check_key_position(key.position, key)
-    
+
     # default colour based on theme
     if (missing(cols)) {
       cols <- get_theme_cols(cols, theme, "seq")
@@ -264,18 +264,18 @@ calendarPlot <-
     if (missing(col.na)) {
       col.na <- get_theme_col_na(col.na, theme)
     }
-    
+
     # check w.shift
     if (w.shift < 0 || w.shift > 6) {
       cli::cli_abort("{.field w.shift} should be between {0} and {6}.")
     }
-    
+
     # extra args
     extra.args <- capture_dots(...)
-    
+
     # if no axes set, use all_x for a nice default
     extra.args$axes <- extra.args$axes %||% "all_x"
-    
+
     # label controls
     extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
     extra.args$ylab <- quickText(extra.args$ylab %||% NULL, auto.text)
@@ -283,13 +283,13 @@ calendarPlot <-
     extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
     extra.args$caption <- quickText(extra.args$caption, auto.text)
     extra.args$tag <- quickText(extra.args$tag, auto.text)
-    
+
     # resolve breaks
     break_opts <- resolve_break_opts(breaks, extra.args)
-    
+
     # check if key.header / key.footer are being used
     key.title <- check_key_header(key.title, extra.args)
-    
+
     if ("col.arrow" %in% names(extra.args)) {
       cli::cli_warn(
         c(
@@ -300,7 +300,7 @@ calendarPlot <-
       windflow$colour <- extra.args$col.arrow
       extra.args$col.arrow <- NULL
     }
-    
+
     # check a single year
     if (missing(year) && type != "year") {
       unique_years <- unique(lubridate::year(mydata$date))
@@ -314,12 +314,12 @@ calendarPlot <-
         )
       }
     }
-    
+
     # if type is year, don't show years
     if (type == "year") {
       show.year <- FALSE
     }
-    
+
     # filter and check data
     mydata <- prepare_calendar_data(
       mydata,
@@ -330,12 +330,12 @@ calendarPlot <-
       windflow = windflow,
       ...
     )
-    
+
     # need to replace type if "wd" to retain "wd" col
     if (type == "wd") {
       type <- "wd_cuts"
     }
-    
+
     # all the days in the period - to be bound later
     all_dates <- seq(
       lubridate::as_date(lubridate::floor_date(min(mydata$date), "month")),
@@ -343,7 +343,7 @@ calendarPlot <-
         1,
       by = "day"
     )
-    
+
     # if statistic is max/min we want the corresponding ws/wd for the pollutant,
     # not simply the max ws/wd
     if (statistic %in% c("max", "min")) {
@@ -352,7 +352,7 @@ calendarPlot <-
       } else if (statistic == "min") {
         which.fun <- which.min
       }
-      
+
       # max ws/wd for hour with max pollutant value
       maxes <- mydata |>
         dplyr::mutate(date = lubridate::as_date(.data$date)) |>
@@ -360,7 +360,7 @@ calendarPlot <-
           which.fun(.data[[pollutant]]),
           .by = dplyr::all_of(c("date", type))
         )
-      
+
       # averaged data, make sure Date format (max returns POSIXct)
       mydata <- timeAverage(
         mydata,
@@ -371,11 +371,11 @@ calendarPlot <-
         ...
       ) |>
         dplyr::mutate(date = lubridate::as_date(.data$date))
-      
+
       if (type == "default") {
         mydata <- cutData(mydata, type, ...)
       }
-      
+
       # replace with parallel max
       mydata <- dplyr::left_join(
         dplyr::select(mydata, !dplyr::any_of(c("ws", "wd"))),
@@ -393,10 +393,10 @@ calendarPlot <-
         percentile = percentile,
         ...
       )
-      
+
       mydata$date <- lubridate::as_date(mydata$date)
     }
-    
+
     # make sure all days are available
     if (type == "year") {
       mydata <-
@@ -410,7 +410,7 @@ calendarPlot <-
       if (type == "default") {
         mydata <- cutData(mydata, "default")
       }
-      
+
       mydata <-
         dplyr::left_join(
           data.frame(date = all_dates) |>
@@ -419,7 +419,7 @@ calendarPlot <-
           by = c("date", type)
         )
     }
-    
+
     # split by year-month, and set 'type' to this
     if (show.year) {
       mydata <- dplyr::mutate(
@@ -435,18 +435,18 @@ calendarPlot <-
         years = format(.data$date, "%Y"),
         cuts = ordered(.data$cuts, levels = unique(.data$cuts))
       )
-      
+
       # check duplicates
       verify_duplicates <-
         mydata |>
         dplyr::count(.data$cuts, .data$years) |>
         dplyr::add_count(.data$cuts, name = "month_counts")
-      
+
       # if any duplicates, set show.year = TRUE
       if (
         (any(verify_duplicates$month_counts > 1L) ||
-         dplyr::n_distinct(verify_duplicates$years) > 1L) &&
-        type != "year"
+          dplyr::n_distinct(verify_duplicates$years) > 1L) &&
+          type != "year"
       ) {
         mydata <- dplyr::mutate(
           mydata,
@@ -454,17 +454,17 @@ calendarPlot <-
           cuts = ordered(.data$cuts, levels = unique(.data$cuts))
         )
       }
-      
+
       mydata <- dplyr::select(mydata, -"years")
     }
-    
+
     # type is always "cuts"
     if (months_as_rows) {
       type <- c("cuts", type[type != "default"])
     } else {
       type <- c(type[type != "default"], "cuts")
     }
-    
+
     # drop empty months?
     if (remove.empty) {
       mydata <- mydata |>
@@ -475,15 +475,15 @@ calendarPlot <-
         dplyr::filter(!.data$empty) |>
         dplyr::ungroup()
     }
-    
+
     # snapshot data for later
     original_data <- mydata
-    
+
     # timeAverage will pad-out missing months
     if (!is.null(month)) {
       mydata <- selectByDate(mydata, month = month)
     }
-    
+
     # transform data into a calendar grid
     mydata <- map_type(
       mydata,
@@ -493,7 +493,7 @@ calendarPlot <-
     ) |>
       # retain actual numerical value (retain for categorical scales)
       dplyr::mutate(value = .data$conc.mat)
-    
+
     # handle breaks
     categorical <- !is.null(break_opts$breaks)
     mydata$conc.labs <- mydata$conc.mat
@@ -501,7 +501,7 @@ calendarPlot <-
       mydata$conc.mat,
       break_opts
     )
-    
+
     # add in ws and wd if there
     newdata <-
       dplyr::left_join(
@@ -512,16 +512,16 @@ calendarPlot <-
         ),
         by = c("date", type[type != "cuts"])
       )
-    
+
     # get weekday abbreviation for axis
     weekday.abb <-
       substr(format(ISOdate(2000, 1, 2:8), "%A"), 1, w.abbr.len)[
         ((6:12) +
-           w.shift) %%
+          w.shift) %%
           7 +
           1
       ]
-    
+
     thePlot <-
       ggplot2::ggplot(
         newdata,
@@ -577,7 +577,7 @@ calendarPlot <-
         labels = weekday.abb,
         breaks = 1:7
       )
-    
+
     # colours
     if (categorical) {
       thePlot <-

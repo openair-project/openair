@@ -223,7 +223,7 @@ timeAverage <- function(
 
   if (statistic == "percentile" && is.na(percentile)) {
     cli::cli_abort(
-      "No {percentile} value supplied."
+      "No {.arg percentile} value supplied."
     )
   }
 

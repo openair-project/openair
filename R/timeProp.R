@@ -106,17 +106,17 @@ timeProp <- function(
 
   # check the data
   mydata <- checkPrep(mydata, vars, c(type, proportion), remove.calm = FALSE)
-  
+
   # cut data
   mydata <- cutData(mydata, c(type, proportion), ...)
-  
+
   # time zone of input data
   tzone <- attr(mydata$date, "tzone")
-  
+
   # groups for dplyr
   group_1 <- c("xleft", "xright", type)
   group_2 <- c(type, "xleft", "xright", proportion)
-  
+
   # calculate left and right extremes of each bar, add the most common
   # non-zero time interval to left to get right
   if (avg.time == "season") {
@@ -142,7 +142,7 @@ timeProp <- function(
           stats::median(diff(.data$xleft)[diff(.data$xleft) != 0])
       )
   }
-  
+
   # summarise by proportion, type etc
   results <-
     results |>
@@ -174,7 +174,7 @@ timeProp <- function(
       date = .data$xleft,
       .by = dplyr::all_of(group_1)
     )
-  
+
   # normalise to 100 if needed
   if (normalise) {
     results <-
@@ -186,13 +186,13 @@ timeProp <- function(
         .by = dplyr::all_of(c(type, "date"))
       )
   }
-  
+
   # make sure we know order of data frame for adding other dates
   results <- dplyr::arrange(results, dplyr::pick(dplyr::all_of(type)), "date")
-  
+
   # check key.position
   key.position <- check_key_position(key.position, key)
-  
+
   # x-axis scale function
   if (lubridate::is.Date(results$xleft)) {
     x_type <- "date"
@@ -201,7 +201,7 @@ timeProp <- function(
     x_type <- "datetime"
     x_scale_fun <- ggplot2::scale_x_datetime
   }
-  
+
   # plot
   thePlot <-
     ggplot2::ggplot(

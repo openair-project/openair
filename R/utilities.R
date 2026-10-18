@@ -22,16 +22,16 @@ dateTypes <- c(
 
 # get date components
 get_first_year <- function(dat) {
-  as.numeric(format(min(sort(dat, na.last = TRUE)), "%Y"))
+  as.numeric(format(min(dat, na.rm = TRUE), "%Y"))
 }
 get_last_year <- function(dat) {
-  as.numeric(format(max(sort(dat, na.last = TRUE)), "%Y"))
+  as.numeric(format(max(dat, na.rm = TRUE), "%Y"))
 }
 get_first_month <- function(dat) {
-  as.numeric(format(min(sort(dat, na.last = TRUE)), "%m"))
+  as.numeric(format(min(dat, na.rm = TRUE), "%m"))
 }
 get_last_month <- function(dat) {
-  as.numeric(format(max(sort(dat, na.last = TRUE)), "%m"))
+  as.numeric(format(max(dat, na.rm = TRUE), "%m"))
 }
 
 #' Find the dominant time interval in a vector of dates/times

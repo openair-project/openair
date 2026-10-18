@@ -166,7 +166,7 @@ polarAnnulus <-
   ) {
     # check key.position
     key.position <- check_key_position(key.position, key)
-    
+
     # default colour based on theme
     if (missing(cols)) {
       cols <- get_theme_cols(cols, theme, "seq")
@@ -174,7 +174,7 @@ polarAnnulus <-
     if (missing(col.na)) {
       col.na <- get_theme_col_na(col.na, theme)
     }
-    
+
     # check statistic value is valid
     statistic <- tolower(statistic)
     statistic <- rlang::arg_match(
@@ -190,20 +190,20 @@ polarAnnulus <-
         "cpf"
       )
     )
-    
+
     # check period value is valid
     period <- tolower(period)
     period <- rlang::arg_match(period, c("hour", "weekday", "season", "trend"))
-    
+
     # check other inputs
-    if (statistic == "percentile" && is.na(percentile & statistic != "cpf")) {
-      cli::cli_warn("{.arg percentile} value missing,  using 50")
+    if (statistic == "percentile" && is.na(percentile)) {
+      cli::cli_warn("{.arg percentile} value missing, using 50")
       percentile <- 50
     }
-    
+
     # extract variables of interest
     vars <- c(wd, "date", pollutant)
-    
+
     if (period == "trend" && "season" %in% type) {
       cli::cli_abort(
         "Cannot have same {.arg type} as {'season'} and {.arg period} as {'trend'}."
@@ -212,28 +212,28 @@ polarAnnulus <-
     if (length(type) > 2) {
       cli::cli_abort("Cannot have more than two {.arg types}.")
     }
-    
+
     # extra.args setup
     extra.args <- capture_dots(...)
-    
+
     # label controls
     extra.args$xlab <- quickText(extra.args$xlab, auto.text)
     extra.args$ylab <- quickText(extra.args$ylab, auto.text)
     extra.args$title <- quickText(extra.args$title, auto.text)
     extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
     extra.args$tag <- quickText(extra.args$tag, auto.text)
-    
+
     # deal with breaks
     break_opts <- resolve_break_opts(breaks, extra.args)
-    
+
     # separate handling for being overwritten
     if ("caption" %in% names(extra.args)) {
       extra.args$caption <- quickText(extra.args$caption, auto.text)
     }
-    
+
     # check data
     mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-    
+
     # if more than one pollutant, need to stack the data and set type = "variable"
     # this case is most relevent for model-measurement compasrions where data are in columns
     if (length(pollutant) > 1) {
@@ -248,24 +248,24 @@ polarAnnulus <-
       pollutant <- "value"
       type <- "variable"
     }
-    
+
     # add extra wds - reduces discontinuity at 0/360
     zero.wd <- dplyr::filter(mydata, .data[[wd]] == 360)
-    
+
     if (nrow(zero.wd) > 0) {
       zero.wd[[wd]] <- 0
       mydata <- rbind(mydata, zero.wd)
     }
-    
+
     # remove NAs
     mydata <- stats::na.omit(mydata)
     mydata <- cutData(mydata, type, ...)
-    
+
     # convert to local time
     if (!is.null(local.tz)) {
       attr(mydata$date, "tzone") <- local.tz
     }
-    
+
     # for resolution of grid plotting (default = 0.2; fine = 0.1)
     if (resolution == "normal") {
       int <- 0.2
@@ -276,16 +276,16 @@ polarAnnulus <-
     if (resolution == "ultra.fine") {
       int <- 0.05
     } # very large files!
-    
+
     len.int <- 20 / int + 1 # number of x and y points to make up surfacexb
-    
+
     # for CPF
     Pval <- stats::quantile(
       mydata[[pollutant]],
       probs = percentile / 100,
       na.rm = TRUE
     )
-    
+
     # handle caption
     sub <- NULL
     if (extra.args$annotate %||% TRUE) {
@@ -300,7 +300,7 @@ polarAnnulus <-
       } else {
         sub <- NULL
       }
-      
+
       sub <- paste(
         list(
           "hour" = "Radial axis shows hour of the day",
@@ -311,16 +311,16 @@ polarAnnulus <-
         sub,
         sep = "\n"
       )
-      
+
       sub <- quickText(sub, auto.text = auto.text)
     }
-    
+
     prepare.grid <- function(mydata) {
       # for padding to beginning of first year, end of last year
       if (date.pad) {
         min.year <- as.numeric(format(min(mydata$date, na.rm = TRUE), "%Y"))
         max.year <- as.numeric(format(max(mydata$date, na.rm = TRUE), "%Y"))
-        
+
         all.dates <- data.frame(
           date = seq(
             ISOdate(min.year, 1, 1, 0, 0, 0, tz = "GMT"),
@@ -328,10 +328,10 @@ polarAnnulus <-
             by = "hour"
           )
         )
-        
+
         all.dates <- data.frame(date = all.dates)
       }
-      
+
       # different date components, others available
       if (period == "trend") {
         if (date.pad) {
@@ -341,7 +341,7 @@ polarAnnulus <-
           trend2 <- year + day / 366
           min.trend <- min(trend2, na.rm = TRUE)
           max.trend <- max(trend2, na.rm = TRUE)
-          
+
           # actual data
           day <- as.numeric(format(mydata$date, "%j"))
           year <- as.numeric(format(mydata$date, "%Y"))
@@ -354,7 +354,7 @@ polarAnnulus <-
           max.trend <- max(trend, na.rm = TRUE)
         }
       }
-      
+
       if (period == "weekday") {
         hour <- as.numeric(format(mydata$date, "%H"))
         weekday <- as.numeric(format(mydata$date, "%w"))
@@ -362,44 +362,44 @@ polarAnnulus <-
         min.trend <- 0
         max.trend <- 7
       }
-      
+
       if (period == "season") {
         week <- as.numeric(format(mydata$date, "%W"))
         trend <- week
         min.trend <- 0
         max.trend <- 53
       }
-      
+
       if (period == "hour") {
         hour <- as.numeric(format(mydata$date, "%H"))
         trend <- hour
         min.trend <- 0
         max.trend <- 23
       }
-      
+
       trend <- 10 * (trend - min.trend) / (max.trend - min.trend)
-      
+
       mydata <- cbind(mydata, trend)
-      
+
       time.seq <- seq(0, 10, length = 24)
-      
+
       wd_seq <- seq(from = 0, to = 360, 10) # wind directions from 10 to 360
       ws.wd <- expand.grid(time.seq = time.seq, wd = wd_seq)
-      
+
       # identify which ws and wd bins the data belong
       wd.cut <- cut(
         mydata[[wd]],
         seq(0, 360, length = 38),
         include.lowest = TRUE
       )
-      
+
       # divide-up the data for the annulus
       time.cut <- cut(
         mydata$trend,
         seq(0, 10, length = 25),
         include.lowest = TRUE
       )
-      
+
       binned <- switch(
         statistic,
         frequency = tapply(
@@ -447,46 +447,46 @@ polarAnnulus <-
           }
         )
       )
-      
+
       binned <- as.vector(binned)
-      
+
       # frequency - remove points with freq < min.bin
       bin.len <- tapply(mydata[, pollutant], list(time.cut, wd.cut), length)
       binned.len <- as.vector(bin.len)
-      
+
       ids <- which(binned.len < min.bin)
       binned[ids] <- NA
-      
+
       # data to predict over
       time.seq <- ws.wd$time.seq
       wd_seq <- ws.wd$wd
-      
+
       input.data <- expand.grid(
         time.seq = seq(0, 10, length = len.int),
         wd = seq(0, 360, length = len.int)
       )
       # Smoothing
-      
+
       # run GAM to make a smooth surface
       if (force.positive) {
         n <- 0.5
       } else {
         n <- 1
       }
-      
+
       input <- data.frame(binned, time.seq, wd = wd_seq)
-      
+
       # note use of cyclic smooth for the wind direction component
       Mgam <- mgcv::gam(
         binned^n ~ te(time.seq, wd, k = k, bs = c("tp", "cc")),
         data = input
       )
-      
+
       pred <- mgcv::predict.gam(Mgam, input.data)
       pred <- pred^(1 / n)
-      
+
       input.data <- cbind(input.data, pred)
-      
+
       if (exclude.missing) {
         # exclude predictions too far from data (from mgcv)
         x <- seq(0, 10, length = len.int)
@@ -494,7 +494,7 @@ polarAnnulus <-
         res <- len.int
         wsp <- rep(x, res)
         wdp <- rep(y, rep(res, res))
-        
+
         # data with gaps caused by min.bin
         all.data <- stats::na.omit(data.frame(
           time.seq = ws.wd$time.seq,
@@ -505,14 +505,14 @@ polarAnnulus <-
           all.data,
           mgcv::exclude.too.far(wsp, wdp, time.seq, wd, dist = 0.03)
         )
-        
+
         input.data$pred[ind] <- NA
       }
-      
+
       # back-transform time axis to original scale
       input.data$time.seq <- min.trend +
         (input.data$time.seq / 10) * (max.trend - min.trend)
-      
+
       if (period == "trend") {
         year_part <- floor(input.data$time.seq)
         day_part <- round((input.data$time.seq - year_part) * 366)
@@ -521,12 +521,12 @@ polarAnnulus <-
           format = "%Y-%j"
         )
       }
-      
+
       names(input.data)[names(input.data) == "time.seq"] <- period
-      
+
       input.data
     }
-    
+
     # create grid for each type and bind together
     results.grid <- map_type(
       mydata,
@@ -535,7 +535,7 @@ polarAnnulus <-
       .include_default = TRUE
     ) |>
       dplyr::tibble()
-    
+
     # normalise by divining by mean conditioning value if needed
     if (normalise) {
       results.grid <-
@@ -544,12 +544,12 @@ polarAnnulus <-
           pred = .data$pred / mean(.data$pred, na.rm = TRUE),
           .by = dplyr::all_of(type)
         )
-      
+
       key_footer <- "normalised level"
     } else {
       key_footer <- paste(pollutant, collapse = ", ")
     }
-    
+
     # key.title handling
     if (missing(key.title)) {
       key_header <- statistic
@@ -570,17 +570,17 @@ polarAnnulus <-
       }
       key.title <- paste(key_header, key_footer)
     }
-    
+
     # check if key.header / key.footer are being used
     key.title <- check_key_header(key.title, extra.args)
-    
+
     # handle breaks
     categorical <- !is.null(break_opts$breaks)
     results.grid$pred <- cut_plot_breaks(
       results.grid$pred,
       break_opts
     )
-    
+
     # plotting
     thePlot <-
       ggplot2::ggplot(

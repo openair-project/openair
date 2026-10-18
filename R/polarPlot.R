@@ -386,21 +386,19 @@ polarPlot <-
     key = NULL,
     ...
   ) {
-    if (
-      statistic == "percentile" && is.na(percentile[1] && statistic != "cpf")
-    ) {
-      warning("percentile value missing, using 50")
+    if (statistic == "percentile" && is.na(percentile[1])) {
+      cli::cli_warn("{.arg percentile} value missing, using 50.")
       percentile <- 50
     }
-    
+
     if (statistic == "cpf" && is.na(percentile[1])) {
-      warning("percentile value missing, using 75")
+      cli::cli_warn("{.arg percentile} value missing, using 75.")
       percentile <- 75
     }
-    
+
     # Allow for period notation
     statistic <- gsub("\\.| ", "_", statistic)
-    
+
     # Build vector for many checks
     correlation_stats <- c(
       "r",
@@ -414,49 +412,53 @@ polarPlot <-
       "Spearman",
       "york_slope"
     )
-    
+
     if (statistic %in% correlation_stats && length(pollutant) != 2) {
-      stop("Correlation statistic requires two pollutants.")
+      cli::cli_abort(
+        "Correlation {.arg statistic} '{statistic}' requires two pollutants."
+      )
     }
-    
+
     if (length(type) > 2) {
-      stop("Maximum number of types is 2.")
+      cli::cli_abort("Maximum number of {.arg type}s is 2.")
     }
-    
+
     # can't have conditioning here
     if (uncertainty) {
       type <- "default"
     }
-    
+
     if (uncertainty && length(pollutant) > 1) {
-      stop("Can only have one pollutant when uncertainty = TRUE")
+      cli::cli_abort(
+        "Can only have one {.arg pollutant} when {.code uncertainty = TRUE}."
+      )
     }
-    
+
     if (
       !statistic %in%
-      c(
-        "mean",
-        "median",
-        "frequency",
-        "max",
-        "stdev",
-        "weighted_mean",
-        "percentile",
-        "cpf",
-        "nwr",
-        correlation_stats
-      )
+        c(
+          "mean",
+          "median",
+          "frequency",
+          "max",
+          "stdev",
+          "weighted_mean",
+          "percentile",
+          "cpf",
+          "nwr",
+          correlation_stats
+        )
     ) {
-      stop("statistic '", statistic, "' not recognised.")
+      cli::cli_abort("{.arg statistic} '{statistic}' not recognised.")
     }
-    
+
     if (length(weights) != 3) {
-      stop("weights should be of length 3.")
+      cli::cli_abort("{.arg weights} should be of length 3.")
     }
-    
+
     # check key.position
     key.position <- check_key_position(key.position, key)
-    
+
     # default colour based on theme
     if (missing(cols)) {
       cols <- get_theme_cols(cols, theme, "seq")
@@ -464,11 +466,11 @@ polarPlot <-
     if (missing(col.na)) {
       col.na <- get_theme_col_na(col.na, theme)
     }
-    
+
     # extra.args setup
     extra.args <- capture_dots(...)
     col.na <- extra.args$mis.col %||% col.na
-    
+
     # label controls
     extra.args$xlab <- quickText(extra.args$xlab, auto.text)
     extra.args$ylab <- quickText(extra.args$ylab, auto.text)
@@ -476,71 +478,73 @@ polarPlot <-
     extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
     extra.args$tag <- quickText(extra.args$tag, auto.text)
     extra.args$annotate <- extra.args$annotate %||% TRUE
-    
+
     # deal with breaks
     break_opts <- resolve_break_opts(breaks, extra.args)
-    
+
     # separate handling for being overwritten
     if ("caption" %in% names(extra.args)) {
       extra.args$caption <- quickText(extra.args$caption, auto.text)
     }
-    
+
     # if clustering, return lower resolution plot
     extra.args$cluster <- if ("cluster" %in% names(extra.args)) {
       TRUE
     } else {
       FALSE
     }
-    
+
     # need to initialise key_header & key_footer for later combination
     key_header <- statistic
     key_footer <- paste(pollutant, collapse = ", ")
-    
+
     # extract variables of interest
     vars <- c(wd, x, pollutant)
-    
+
     if (statistic == "york_slope") {
       vars <- c(vars, x_error, y_error)
     }
-    
+
     if (any(type %in% dateTypes)) {
       vars <- c(vars, "date")
     }
-    
+
     mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
-    
+
     mydata <- stats::na.omit(mydata)
-    
+
     # check to see if a high proportion of the data is negative
     if (
       length(which(mydata[pollutant] < 0)) / nrow(mydata) > 0.1 &&
-      force.positive
+        force.positive
     ) {
-      warning(">10% negative data detected, set force.positive = FALSE?")
+      cli::cli_warn(
+        ">10% negative data detected, set {.code force.positive = FALSE}?"
+      )
     }
-    
+
     # scale data by subtracting the min value this helps with dealing
     # with negative data on radial axis (starts from zero, always
     # positive)
-    
+
     # return radial scale as attribute "radial_scale" on returned data for external plotting
     radial_scale <- range(mydata[[x]])
-    
+
     mydata[[x]] <- mydata[[x]] - min(mydata[[x]], na.rm = TRUE)
-    
+
     # if more than one pollutant, need to stack the data and set type =
     # "variable" this case is most relevent for model-measurement
     # compasrions where data are in columns Can also do more than one
     # pollutant and a single type that is not "default", in which case
     # pollutant becomes a conditioning variable
-    
+
     # if statistic is 'r' we need the data for two pollutants in columns
     if (length(pollutant) > 1 && !statistic %in% correlation_stats) {
       if (length(type) > 1) {
         cli::cli_warn("Only {.arg type} = '{type[1]}' will be used.")
         type <- type[1]
       }
-      
+
       # use pollutants as conditioning variables
       mydata <- tidyr::gather(
         mydata,
@@ -551,21 +555,21 @@ polarPlot <-
       )
       # now set pollutant to "value"
       pollutant <- "value"
-      
+
       if (type == "default") {
         type <- "variable"
       } else {
         type <- c(type, "variable")
       }
     }
-    
+
     # cutData depending on type
     mydata <- cutData(mydata, type, ...)
-    
+
     # if upper ws not set, set it to the max to display all information
     max.ws <- max(mydata[[x]], na.rm = TRUE)
     min.ws <- min(mydata[[x]], na.rm = TRUE)
-    
+
     if (is.na(upper)) {
       upper <- max.ws
       rlim <- c(NA, NA)
@@ -574,12 +578,12 @@ polarPlot <-
       rlim <- c(NA, upper)
       clip <- TRUE
     }
-    
+
     # resolution deprecated, int is resolution of GAM surface predictions over int * int grid
     # 51 works well with bilinear interpolation of results
-    
+
     int <- 51
-    
+
     # binning wd data properly
     # use 10 degree binning of wd if already binned, else 5
     if (all(mydata[[wd]] %% 10 == 0, na.rm = TRUE)) {
@@ -587,43 +591,43 @@ polarPlot <-
     } else {
       if (toupper(statistic) == "NWR") wd.int <- 2 else wd.int <- 5 # how to split wd
     }
-    
+
     if (toupper(statistic) == "NWR") {
       ws_bins <- 40
     } else {
       ws_bins <- 30
     }
-    
+
     if (statistic == "nwr") {
       k <- 200
     } # limit any smoothing
-    
+
     ws.seq <- seq(min.ws, max.ws, length = ws_bins)
     wd.seq <- seq(from = wd.int, to = 360, by = wd.int) # wind directions from wd.int to 360
     ws.wd <- expand.grid(x = ws.seq, wd = wd.seq)
-    
+
     u <- with(ws.wd, x * sin(pi * wd / 180)) # convert to polar coords
     v <- with(ws.wd, x * cos(pi * wd / 180))
-    
+
     # data to predict over
     input.data <- expand.grid(
       u = seq(-upper, upper, length = int),
       v = seq(-upper, upper, length = int)
     )
-    
+
     # Pval is only set in the CPF branch; initialise to NULL so it always exists
     Pval <- NULL
-    
+
     if (statistic == "cpf") {
       # can be interval of percentiles or a single (threshold)
       if (length(percentile) > 1) {
         statistic <- "cpfi" # CPF interval
-        
+
         if (length(percentile) == 3) {
           # in this case there is a trim value as a proprtion of the mean
           # if this value <0 use absolute values as range
           Mean <- mean(mydata[[pollutant]], na.rm = TRUE)
-          
+
           if (percentile[3] < 0) {
             Pval <- percentile[1:2]
           } else {
@@ -632,7 +636,7 @@ polarPlot <-
                 mydata[[pollutant]],
                 mydata[[pollutant]] >=
                   Mean *
-                  percentile[3]
+                    percentile[3]
               ),
               probs = percentile[1:2] / 100,
               na.rm = TRUE
@@ -645,7 +649,7 @@ polarPlot <-
             na.rm = TRUE
           )
         }
-        
+
         sub <- paste0(
           "CPF (",
           format(Pval[1], digits = 2),
@@ -659,7 +663,7 @@ polarPlot <-
           probs = percentile / 100,
           na.rm = TRUE
         )
-        
+
         sub <- paste0(
           "CPF at the ",
           percentile,
@@ -671,14 +675,14 @@ polarPlot <-
       }
     } else if (
       formula.label &&
-      grepl("slope|intercept", statistic) &&
-      length(pollutant) == 2
+        grepl("slope|intercept", statistic) &&
+        length(pollutant) == 2
     ) {
       sub <- paste0("Formula: ", pollutant[1], " = m.", pollutant[2], " + c")
     } else {
       sub <- NULL
     }
-    
+
     # define radial axis
     if (extra.args$annotate) {
       # label radial axis
@@ -688,7 +692,7 @@ polarPlot <-
         sep = "\n"
       ))
     }
-    
+
     # Thin wrapper — delegates to polar_prepare_grid() with all dependencies
     # passed explicitly rather than captured from the enclosing scope.
     prepare.grid <- function(mydata) {
@@ -724,7 +728,7 @@ polarPlot <-
         cluster = extra.args$cluster
       )
     }
-    
+
     # if min.bin >1 show the missing data. Work this out by running twice:
     # first time with no missings, second with min.bin.
     # Plot one surface on top of the other.
@@ -738,9 +742,9 @@ polarPlot <-
           prepare.grid,
           .include_default = TRUE
         )
-      
+
       min.bin <- tmp
-      
+
       res <-
         map_type(
           mydata,
@@ -748,7 +752,7 @@ polarPlot <-
           prepare.grid,
           .include_default = TRUE
         )
-      
+
       res$miss <- res1$z
     } else {
       res <- map_type(
@@ -758,18 +762,18 @@ polarPlot <-
         .include_default = TRUE
       )
     }
-    
+
     # with CPF make sure not >1 due to surface fitting
     if (any(res$z > 1, na.rm = TRUE) && statistic %in% c("cpf", "cpfi")) {
       id <- which(res$z > 1)
       res$z[id] <- 1
     }
-    
+
     # remove wind speeds > upper to make a circle
     if (clip) {
       res$z[(res$u^2 + res$v^2)^0.5 > upper] <- NA
     }
-    
+
     # normalise by divining by mean conditioning value if needed
     if (normalise) {
       res <- dplyr::mutate(
@@ -777,30 +781,30 @@ polarPlot <-
         z = .data$z / mean(.data$z, na.rm = TRUE),
         .by = dplyr::all_of(type)
       )
-      
+
       key_footer <- "normalised level"
     }
-    
+
     # correlation notation
     if (statistic %in% c("r", "Pearson", "Spearman")) {
       key_footer <- paste0("corr(", pollutant[1], ", ", pollutant[2], ")")
-      
+
       # make sure smoothing does not results in r>1 or <-1
       # sometimes happens with little data at edges
       id <- which(res$z > 1)
       if (length(id) > 0) {
         res$z[id] <- 1
       }
-      
+
       id <- which(res$z < -1)
       if (length(id) > 0) res$z[id] <- -1
     }
-    
+
     # if regression, set key_footer to 'm' (slope)
     if (grepl("slope|intercept", statistic) && length(pollutant) == 2) {
       key_footer <- "m"
     }
-    
+
     # Labels for correlation and regression, keep lower case like other labels
     if (missing(key.title)) {
       if (key_header == "nwr") {
@@ -812,51 +816,51 @@ polarPlot <-
       if (key_header == "percentile") {
         key_header <- c(paste0(percentile, "th"), "percentile")
       }
-      
+
       if ("cpf" %in% key_header) {
         key_header <- c("CPF probability")
       }
-      
+
       if (statistic %in% c("r", "Pearson")) {
         key_header <- ("Pearson correlation")
       }
-      
+
       if (statistic == "Spearman") {
         key_header <- "Spearman correlation"
       }
-      
+
       if (statistic == "robust_slope") {
         key_header <- "robust slope"
       }
-      
+
       if (statistic == "robust_intercept") {
         key_header <- "robust intercept"
       }
-      
+
       if (statistic == "york_slope") {
         key_header <- "York regression slope"
       }
-      
+
       if (statistic == "quantile_slope") {
         key_header <- paste0("quantile slope (tau: ", tau, ")")
       }
-      
+
       if (statistic == "quantile_intercept") {
         key_header <- paste0("quantile intercept (tau: ", tau, ")")
       }
     }
-    
+
     # special handling of nrow/ncol for uncertainty
     if (uncertainty && is.null(extra.args$nrow) && is.null(extra.args$ncol)) {
       extra.args$ncol <- 3L
       extra.args$nrow <- 1L
     }
-    
+
     # if uncertainty = TRUE, change type for plotting (3 panels)
     if (uncertainty) {
       type <- "uncertainty"
     }
-    
+
     # Format legend title
     if (missing(key.title)) {
       key.title <- paste(
@@ -865,13 +869,13 @@ polarPlot <-
         sep = ifelse(key.position %in% c("top", "bottom"), " ", "\n")
       )
     }
-    
+
     # check if key.header / key.footer are being used
     key.title <- check_key_header(key.title, extra.args)
-    
+
     # run through
     legend_title <- quickText(key.title, auto.text)
-    
+
     # restore to polar coordinates
     plot_data <-
       res |>
@@ -880,12 +884,12 @@ polarPlot <-
         wd = 270 - atan2(.data$v, .data$u) * (180 / pi),
         wd = (wd + 180) %% 360
       )
-    
+
     # if not exclude missing, ensure a 'circular' plot limited by `upper`
     if (!exclude.missing) {
       plot_data <- dplyr::filter(plot_data, .data$x <= upper)
     }
-    
+
     # if using the min.bin arg, just drop missing z that's also missing "miss".
     # otherwise drop all of missing z
     if ("miss" %in% names(plot_data)) {
@@ -897,7 +901,7 @@ polarPlot <-
     } else {
       plot_data <- tidyr::drop_na(plot_data, "z")
     }
-    
+
     # restore scale pre-normalisation
     plot_data <-
       dplyr::mutate(
@@ -908,19 +912,19 @@ polarPlot <-
           from = c(0, diff(radial_scale))
         )
       )
-    
+
     # Normalise limits: must be NULL or a numeric vector of length 2
     if (!is.null(limits) && !(is.numeric(limits) && length(limits) == 2)) {
       limits <- NULL
     }
-    
+
     # handle breaks
     categorical <- !is.null(break_opts$breaks)
     plot_data$z <- cut_plot_breaks(
       plot_data$z,
       break_opts
     )
-    
+
     # make plot
     thePlot <-
       plot_data |>
