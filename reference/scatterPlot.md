@@ -428,7 +428,10 @@ scatterPlot(
 
   - For `method = "hexbin"`, `bins` controls the number of bins.
 
-  - `date.format` controls the format of date-time x-axes.
+  - `date.breaks` and `date.format` control the breaks and format of
+    date and date-time x-axes. See
+    [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
+    for details.
 
 ## Value
 
