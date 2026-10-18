@@ -71,7 +71,7 @@ timeProp <- function(
   key.rows = NULL,
   key.position = "right",
   key.title = proportion,
-  date.breaks = NULL,
+  date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
   plot = TRUE,

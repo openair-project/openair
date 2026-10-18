@@ -103,7 +103,7 @@ smoothTrend <- function(
   key.rows = NULL,
   key.position = "bottom",
   name.pol = NULL,
-  date.breaks = NULL,
+  date.breaks = 7,
   date.format = NULL,
   auto.text = TRUE,
   ci = TRUE,
