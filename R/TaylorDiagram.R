@@ -491,7 +491,11 @@ TaylorDiagram <- function(
   }
 
   # guides
-  legend_guide <- ggplot2::guide_legend(ncol = key.columns, nrow = key.rows)
+  legend_guide <- guide_openair(
+    key.position,
+    ncol = key.columns,
+    nrow = key.rows
+  )
 
   # plotting
   thePlot <-
