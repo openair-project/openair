@@ -210,8 +210,10 @@ windRose <- function(
   # check key.position
   key.position <- check_key_position(key.position, key)
 
-  # default colour based on theme
-  if (missing(cols)) {
+  # default colour based on theme; record missingness first as `missing()` is
+  # unreliable once `cols` has been reassigned
+  cols_missing <- missing(cols)
+  if (cols_missing) {
     cols <- get_theme_cols(cols, theme, "seq")
   }
 
@@ -433,7 +435,7 @@ windRose <- function(
     }
 
     # Diverging colour scale (expect cols to be length-3 low/mid/high)
-    if (missing(cols)) {
+    if (cols_missing) {
       cols <- c("steelblue3", "white", "tomato2")
     } else {
       cols <- openair::openColors(cols, n = 3L)

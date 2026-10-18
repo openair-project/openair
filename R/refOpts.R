@@ -127,6 +127,9 @@ layer_ref <- function(
     ref <- refOpts(intercept = ref)
   }
 
+  # plain lists (e.g., legacy `list(h = 10)`) may not define a method
+  ref$method <- ref$method %||% "line"
+
   # look for intercept, v and h (latter two legacy values)
   intercept <- ref$intercept %||% ref$h %||% ref$v
   n <- length(intercept)
@@ -196,10 +199,13 @@ layer_ref <- function(
   n_needed <- ifelse(ref$method == "band", n / 2, n)
   alpha <- recycle_to_length(ref$alpha %||% 1, n_needed)
   colour <- recycle_to_length(ref$colour %||% ref$col %||% "black", n_needed)
-  linetype <- recycle_to_length(ref$linetype %||% ref$lty %||% 0.6, n_needed)
-  linewidth <- recycle_to_length(ref$linewidth %||% ref$lwd %||% 0.5, n_needed)
+  linetype <- recycle_to_length(ref$linetype %||% ref$lty %||% 1, n_needed)
+  linewidth <- recycle_to_length(ref$linewidth %||% ref$lwd %||% 0.6, n_needed)
   label_size <- recycle_to_length(ref$label_size %||% 10, n_needed)
-  label_colour <- recycle_to_length(ref$label_colour %||% 10, n_needed)
+  label_colour <- recycle_to_length(
+    ref$label_colour %||% ref$colour %||% ref$col %||% "black",
+    n_needed
+  )
 
   label <- ref$label
   use_label <- !all(is.null(label))

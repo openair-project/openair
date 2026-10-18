@@ -70,6 +70,16 @@
 
 - `timeAverage()` will no longer report duplicate dates when `start.date` and `end.date` are already in `mydata`.
 
+- Wind direction data in tibbles (e.g., `mydata` or data from `importUKAQ()`) are now checked and cleaned consistently with `data.frame` inputs. Previously, `wd` values outside 0-360 were not removed and, where relevant, calms were not removed and `wd` was not rounded for tibble inputs. This may change outputs for some functions.
+
+- `ref.x` and `ref.y` accept plain lists (e.g., `list(h = 10)`) as well as `refOpts()`. Plain lists also now default to a solid line, and labels default to the line colour.
+
+- `timePlot(windflow = TRUE)` no longer duplicates rows when `ws` or `wd` is a `pollutant` and `type` or `group` is also used.
+
+- `selectByDate()` now interprets `start` and `end` in the time zone of `mydata$date` rather than UTC.
+
+- `windRose()` now uses a diverging blue-white-red palette by default when comparing two sets of met data with `ws2` and `wd2`.
+
 # openair 3.1.0
 
 ## Dependency Changes
