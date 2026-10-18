@@ -764,7 +764,9 @@ time_average_timeplot_data <- function(
     # only select what is being pivoted, as it will need joining back on
     met_vars <- c("ws", "wd")
     met_vars <- met_vars[met_vars %in% pollutant]
-    met_data <- dplyr::select(mydata, dplyr::any_of(c("date", met_vars)))
+    # join keys must include type/group columns, else rows are duplicated
+    met_keys <- intersect(c("date", avg_type), names(mydata))
+    met_data <- dplyr::select(mydata, dplyr::all_of(c(met_keys, met_vars)))
   }
 
   # reshape
@@ -781,7 +783,7 @@ time_average_timeplot_data <- function(
     mydata <- dplyr::left_join(
       mydata,
       met_data,
-      by = dplyr::join_by("date")
+      by = met_keys
     ) |>
       dplyr::relocate(dplyr::any_of(c("ws", "wd")), .after = "date")
   }

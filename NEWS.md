@@ -74,6 +74,8 @@
 
 - `ref.x` and `ref.y` accept plain lists (e.g., `list(h = 10)`) as well as `refOpts()`. Plain lists also now default to a solid line, and labels default to the line colour.
 
+- `timePlot(windflow = TRUE)` no longer duplicates rows when `ws` or `wd` is a `pollutant` and `type` or `group` is also used.
+
 - `selectByDate()` now interprets `start` and `end` in the time zone of `mydata$date` rather than UTC.
 
 - `windRose()` now uses a diverging blue-white-red palette by default when comparing two sets of met data with `ws2` and `wd2`.
