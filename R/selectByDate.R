@@ -68,10 +68,14 @@ selectByDate <- function(
   }
 
   # 2. Filter by Date Range (Start/End)
+  # parse in the time zone of the data so that boundaries are local times
+  data_tz <- lubridate::tz(mydata$date)
+
   if (!is.null(start)) {
     start_date <- lubridate::parse_date_time(
       start,
       orders = c("dmy_HM", "dmy_HMS", "ymd_HM", "ymd_HMS", "dmy", "mdy", "ymd"),
+      tz = data_tz,
       quiet = TRUE
     )
 
@@ -85,6 +89,7 @@ selectByDate <- function(
     end_date <- lubridate::parse_date_time(
       end,
       orders = c("dmy_HM", "dmy_HMS", "ymd_HM", "ymd_HMS", "dmy", "mdy", "ymd"),
+      tz = data_tz,
       quiet = TRUE
     )
 
