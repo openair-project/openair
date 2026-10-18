@@ -537,13 +537,7 @@ build_theilsen_plot <- function(
   upper_var <- if (slope.percent) "upper.percent" else "upper"
   units_str <- if (slope.percent) "%" else "units"
 
-  if (lubridate::is.Date(split.data$date)) {
-    x_type <- "date"
-    x_scale_fun <- ggplot2::scale_x_date
-  } else {
-    x_type <- "datetime"
-    x_scale_fun <- ggplot2::scale_x_datetime
-  }
+  x_type <- if (lubridate::is.Date(split.data$date)) "date" else "datetime"
 
   ggplot2::ggplot() +
     ggplot2::geom_line(
@@ -644,30 +638,12 @@ build_theilsen_plot <- function(
       drop = FALSE,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    {
-      if (is.null(date.breaks)) {
-        x_scale_fun(
-          date_labels = date.format %||% ggplot2::waiver(),
-          limits = extra.args$xlim
-        )
-      } else if (is.character(date.breaks)) {
-        x_scale_fun(
-          date_breaks = date.breaks,
-          date_labels = date.format %||% ggplot2::waiver(),
-          limits = extra.args$xlim
-        )
-      } else if (is.numeric(date.breaks)) {
-        x_scale_fun(
-          breaks = scales::breaks_pretty(date.breaks),
-          date_labels = date.format %||% ggplot2::waiver(),
-          limits = extra.args$xlim
-        )
-      } else {
-        cli::cli_abort(
-          "{.arg date.breaks} must be a single number, a single character, or `NULL`."
-        )
-      }
-    } +
+    scale_x_openair_date(
+      date.breaks = date.breaks,
+      date.format = date.format,
+      type = x_type,
+      limits = extra.args$xlim
+    ) +
     ggplot2::scale_y_continuous(limits = extra.args$ylim) +
     ggplot2::labs(
       x = extra.args$xlab,

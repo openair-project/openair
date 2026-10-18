@@ -193,14 +193,8 @@ timeProp <- function(
   # check key.position
   key.position <- check_key_position(key.position, key)
 
-  # x-axis scale function
-  if (lubridate::is.Date(results$xleft)) {
-    x_type <- "date"
-    x_scale_fun <- ggplot2::scale_x_date
-  } else {
-    x_type <- "datetime"
-    x_scale_fun <- ggplot2::scale_x_datetime
-  }
+  # x-axis scale type
+  x_type <- if (lubridate::is.Date(results$xleft)) "date" else "datetime"
 
   # plot
   thePlot <-
@@ -251,33 +245,13 @@ timeProp <- function(
         nrow = key.rows
       )
     ) +
-    {
-      if (is.null(date.breaks)) {
-        x_scale_fun(
-          date_labels = date.format %||% ggplot2::waiver(),
-          limits = extra.args$xlim,
-          expand = ggplot2::expansion()
-        )
-      } else if (is.character(date.breaks)) {
-        x_scale_fun(
-          date_breaks = date.breaks,
-          date_labels = date.format %||% ggplot2::waiver(),
-          limits = extra.args$xlim,
-          expand = ggplot2::expansion()
-        )
-      } else if (is.numeric(date.breaks)) {
-        x_scale_fun(
-          breaks = scales::breaks_pretty(date.breaks),
-          date_labels = date.format %||% ggplot2::waiver(),
-          limits = extra.args$xlim,
-          expand = ggplot2::expansion()
-        )
-      } else {
-        cli::cli_abort(
-          "{.arg date.breaks} must be a single number, a single character, or `NULL`."
-        )
-      }
-    } +
+    scale_x_openair_date(
+      date.breaks = date.breaks,
+      date.format = date.format,
+      type = x_type,
+      expand = ggplot2::expansion(c(0, 0)),
+      limits = extra.args$xlim
+    ) +
     ggplot2::scale_y_continuous(
       limits = extra.args$ylim,
       expand = ggplot2::expansion(if (normalise) c(0, 0) else c(0, 0.1))

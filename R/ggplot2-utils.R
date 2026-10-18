@@ -133,6 +133,52 @@ scale_x_compass <- function(
   )
 }
 
+# ggplot2 date/datetime x-axis scale using openair's `date.breaks` and
+# `date.format` arguments. `date.breaks` can be `NULL` (ggplot2 defaults), a
+# number (the approximate number of breaks) or a string giving the distance
+# between breaks (e.g., "2 weeks"). `...` is passed to the scale function (e.g.,
+# `limits`, `expand`).
+scale_x_openair_date <- function(
+  date.breaks = NULL,
+  date.format = NULL,
+  type = c("datetime", "date"),
+  expand = ggplot2::expansion(c(0.02, 0.02)),
+  ...,
+  call = rlang::caller_env()
+) {
+  type <- rlang::arg_match(type)
+  scale_fun <- switch(
+    type,
+    datetime = ggplot2::scale_x_datetime,
+    date = ggplot2::scale_x_date
+  )
+
+  breaks_args <- if (is.null(date.breaks)) {
+    list()
+  } else if (rlang::is_string(date.breaks)) {
+    list(date_breaks = date.breaks)
+  } else if (
+    rlang::is_scalar_double(date.breaks) ||
+      rlang::is_scalar_integer(date.breaks)
+  ) {
+    list(breaks = scales::breaks_pretty(date.breaks))
+  } else {
+    cli::cli_abort(
+      "{.arg date.breaks} must be a single number, a single character, or \\
+      {.code NULL}, not {.obj_type_friendly {date.breaks}}.",
+      call = call
+    )
+  }
+
+  rlang::exec(
+    scale_fun,
+    !!!breaks_args,
+    date_labels = date.format %||% ggplot2::waiver(),
+    expand = expand,
+    ...
+  )
+}
+
 # turn a 'trans' argument into a ggplot2 scale transformer
 get_scale_transform <- function(
   transform,

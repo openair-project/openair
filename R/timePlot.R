@@ -352,14 +352,8 @@ timePlot <- function(
     labels = name.pol
   )
 
-  # x-axis scale function
-  if (lubridate::is.Date(mydata$date)) {
-    x_type <- "date"
-    x_scale_fun <- ggplot2::scale_x_date
-  } else {
-    x_type <- "datetime"
-    x_scale_fun <- ggplot2::scale_x_datetime
-  }
+  # x-axis scale type
+  x_type <- if (lubridate::is.Date(mydata$date)) "date" else "datetime"
 
   # number of distinct pollutants (for faceting)
   npol <- length(unique(mydata$variable))
@@ -536,30 +530,11 @@ timePlot <- function(
       xlim = extra.args$xlim,
       ylim = extra.args$ylim
     ) +
-    {
-      if (is.null(date.breaks)) {
-        x_scale_fun(
-          date_labels = date.format %||% ggplot2::waiver(),
-          expand = ggplot2::expansion(c(0.025, 0.025))
-        )
-      } else if (is.character(date.breaks)) {
-        x_scale_fun(
-          date_breaks = date.breaks,
-          date_labels = date.format %||% ggplot2::waiver(),
-          expand = ggplot2::expansion(c(0.025, 0.025))
-        )
-      } else if (is.numeric(date.breaks)) {
-        x_scale_fun(
-          breaks = scales::breaks_pretty(date.breaks),
-          date_labels = date.format %||% ggplot2::waiver(),
-          expand = ggplot2::expansion(c(0.025, 0.025))
-        )
-      } else {
-        cli::cli_abort(
-          "{.arg date.breaks} must be a single number, a single character, or `NULL`."
-        )
-      }
-    } +
+    scale_x_openair_date(
+      date.breaks = date.breaks,
+      date.format = date.format,
+      type = x_type
+    ) +
     ggplot2::scale_y_continuous(
       expand = if (is.null(extra.args$ylim)) {
         ggplot2::expansion(mult = c(0.1, 0.1))

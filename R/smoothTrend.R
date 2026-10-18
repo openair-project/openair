@@ -373,33 +373,12 @@ smoothTrend <- function(
       }),
       drop = FALSE
     ) +
-    {
-      if (is.null(date.breaks)) {
-        ggplot2::scale_x_datetime(
-          date_labels = date.format %||% ggplot2::waiver(),
-          limits = extra.args$xlim,
-          expand = ggplot2::expansion(c(0.02, 0.02))
-        )
-      } else if (is.character(date.breaks)) {
-        ggplot2::scale_x_datetime(
-          date_breaks = date.breaks,
-          date_labels = date.format %||% ggplot2::waiver(),
-          limits = extra.args$xlim,
-          expand = ggplot2::expansion(c(0.02, 0.02))
-        )
-      } else if (is.numeric(date.breaks)) {
-        ggplot2::scale_x_datetime(
-          breaks = scales::breaks_pretty(date.breaks),
-          date_labels = date.format %||% ggplot2::waiver(),
-          limits = extra.args$xlim,
-          expand = ggplot2::expansion(c(0.02, 0.02))
-        )
-      } else {
-        cli::cli_abort(
-          "{.arg date.breaks} must be a single number, a single character, or `NULL`."
-        )
-      }
-    } +
+    scale_x_openair_date(
+      date.breaks = date.breaks,
+      date.format = date.format,
+      type = "datetime",
+      limits = extra.args$xlim
+    ) +
     ggplot2::scale_y_continuous(
       limits = extra.args$ylim
     ) +
