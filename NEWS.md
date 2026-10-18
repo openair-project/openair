@@ -70,6 +70,10 @@
 
 - `timeAverage()` will no longer report duplicate dates when `start.date` and `end.date` are already in `mydata`.
 
+- Wind direction data in tibbles (e.g., `mydata` or data from `importUKAQ()`) are now checked and cleaned consistently with `data.frame` inputs. Previously, `wd` values outside 0-360 were not removed and, where relevant, calms were not removed and `wd` was not rounded for tibble inputs. This may change outputs for some functions.
+
+- `windRose()` now uses a diverging blue-white-red palette by default when comparing two sets of met data with `ws2` and `wd2`.
+
 # openair 3.1.0
 
 ## Dependency Changes
