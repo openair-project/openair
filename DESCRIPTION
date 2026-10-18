@@ -48,6 +48,7 @@ Suggests:
     knitr,
     legendry (>= 0.3.0),
     quantreg,
+    RColorBrewer,
     rmarkdown,
     rnaturalearth,
     sf,

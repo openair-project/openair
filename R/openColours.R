@@ -1,3 +1,69 @@
+# ColorBrewer palette names; colours themselves come from {RColorBrewer}
+.brewer_div_schemes <- c(
+  "BrBG",
+  "PiYG",
+  "PRGn",
+  "PuOr",
+  "RdBu",
+  "RdGy",
+  "RdYlBu",
+  "RdYlGn",
+  "Spectral"
+)
+
+.brewer_qual_schemes <- c(
+  "Accent",
+  "Dark2",
+  "Paired",
+  "Pastel1",
+  "Pastel2",
+  "Set1",
+  "Set2",
+  "Set3"
+)
+
+.brewer_seq_schemes <- c(
+  "Blues",
+  "BuGn",
+  "BuPu",
+  "GnBu",
+  "Greens",
+  "Greys",
+  "Oranges",
+  "OrRd",
+  "PuBu",
+  "PuBuGn",
+  "PuRd",
+  "Purples",
+  "RdPu",
+  "Reds",
+  "YlGn",
+  "YlGnBu",
+  "YlOrBr",
+  "YlOrRd"
+)
+
+names(.brewer_div_schemes) <- .brewer_div_schemes
+names(.brewer_qual_schemes) <- .brewer_qual_schemes
+names(.brewer_seq_schemes) <- .brewer_seq_schemes
+
+.brewer_schemes <- c(
+  .brewer_div_schemes,
+  .brewer_qual_schemes,
+  .brewer_seq_schemes
+)
+
+# maximum number of colours in each ColorBrewer palette
+qualnum <- stats::setNames(
+  c(8L, 8L, 12L, 9L, 8L, 9L, 8L, 12L),
+  .brewer_qual_schemes
+)
+maxcolors <- c(
+  stats::setNames(rep(11L, length(.brewer_div_schemes)), .brewer_div_schemes),
+  qualnum,
+  stats::setNames(rep(9L, length(.brewer_seq_schemes)), .brewer_seq_schemes)
+)
+
 # Qualitative palette definitions and their maximum lengths
 .qual_schemes <- c(
   "okabeito" = 9,
@@ -509,6 +575,33 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   })
 }
 
+#' Get a ColorBrewer palette from {RColorBrewer}, applying begin/end (sequential
+#' palettes only), direction and alpha
+#' @noRd
+.brewer_pal <- function(n, name, direction = 1, alpha = 1, begin = 0, end = 1) {
+  rlang::check_installed(
+    "RColorBrewer",
+    reason = "to use ColorBrewer palettes."
+  )
+
+  # ColorBrewer palettes have between 3 and `maxcolors` colours
+  n <- min(max(n, 3L), maxcolors[[name]])
+  cols <- RColorBrewer::brewer.pal(n, name)
+
+  # begin/end: subset the input colours then interpolate back to n
+  if (name %in% .brewer_seq_schemes && (begin != 0 || end != 1)) {
+    indices <- round(1 + (length(cols) - 1) * c(begin, end))
+    cols <- cols[indices[1]:indices[2]]
+    cols <- grDevices::colorRampPalette(cols)(n)
+  }
+
+  if (direction == -1) {
+    cols <- rev(cols)
+  }
+
+  paste0(substr(cols, 1, 7), sprintf("%02X", round(alpha * 255)))
+}
+
 #' Brewer palette dispatcher
 #' @noRd
 .brewerPalette <- function(
@@ -523,7 +616,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
 ) {
   max_n <- maxcolors[[scheme]]
   if (n >= 3L && n <= max_n) {
-    brewer.pal(
+    .brewer_pal(
       n,
       scheme,
       direction = direction,
@@ -532,15 +625,13 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
       alpha = alpha
     )
   } else {
-    base_cols <- suppressWarnings(
-      brewer.pal(
-        max_n,
-        scheme,
-        direction = direction,
-        begin = begin,
-        end = end,
-        alpha = alpha
-      )
+    base_cols <- .brewer_pal(
+      max_n,
+      scheme,
+      direction = direction,
+      begin = begin,
+      end = end,
+      alpha = alpha
     )
     # alpha already baked in — strip before ramp, reapply after
     cols <- grDevices::colorRampPalette(
@@ -620,13 +711,37 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
 
   cols <- switch(
     scheme,
+    # reversed ColorBrewer "Spectral", inlined so defaults need no Suggests
     default = {
       interpolate <- "spline"
-      rev(brewer.pal(11, "Spectral"))
+      c(
+        "#5E4FA2",
+        "#3288BD",
+        "#66C2A5",
+        "#ABDDA4",
+        "#E6F598",
+        "#FFFFBF",
+        "#FEE08B",
+        "#FDAE61",
+        "#F46D43",
+        "#D53E4F",
+        "#9E0142"
+      )
     },
+    # ColorBrewer "YlOrRd"
     heat = {
       interpolate <- "spline"
-      brewer.pal(9, "YlOrRd")
+      c(
+        "#FFFFCC",
+        "#FFEDA0",
+        "#FED976",
+        "#FEB24C",
+        "#FD8D3C",
+        "#FC4E2A",
+        "#E31A1C",
+        "#BD0026",
+        "#800026"
+      )
     },
     increment = c(
       "#B0FFF1",
