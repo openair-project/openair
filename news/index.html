@@ -95,6 +95,11 @@
 <li><p>Restored functionality of <code>polarPlot(upper=)</code>.</p></li>
 <li><p><code>timePlot(group=)</code> will not error if <code>avg.time = "default"</code> and <code>group</code> is a ‘date’ option (e.g., <code>"season"</code>).</p></li>
 <li><p><code><a href="../reference/timeAverage.html">timeAverage()</a></code> will no longer report duplicate dates when <code>start.date</code> and <code>end.date</code> are already in <code>mydata</code>.</p></li>
+<li><p>Wind direction data in tibbles (e.g., <code>mydata</code> or data from <code><a href="../reference/importUKAQ.html">importUKAQ()</a></code>) are now checked and cleaned consistently with <code>data.frame</code> inputs. Previously, <code>wd</code> values outside 0-360 were not removed and, where relevant, calms were not removed and <code>wd</code> was not rounded for tibble inputs. This may change outputs for some functions.</p></li>
+<li><p><code>ref.x</code> and <code>ref.y</code> accept plain lists (e.g., <code>list(h = 10)</code>) as well as <code><a href="../reference/refOpts.html">refOpts()</a></code>. Plain lists also now default to a solid line, and labels default to the line colour.</p></li>
+<li><p><code>timePlot(windflow = TRUE)</code> no longer duplicates rows when <code>ws</code> or <code>wd</code> is a <code>pollutant</code> and <code>type</code> or <code>group</code> is also used.</p></li>
+<li><p><code><a href="../reference/selectByDate.html">selectByDate()</a></code> now interprets <code>start</code> and <code>end</code> in the time zone of <code>mydata$date</code> rather than UTC.</p></li>
+<li><p><code><a href="../reference/windRose.html">windRose()</a></code> now uses a diverging blue-white-red palette by default when comparing two sets of met data with <code>ws2</code> and <code>wd2</code>.</p></li>
 </ul></div>
 </div>
     <div class="section level2">
