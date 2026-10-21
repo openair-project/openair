@@ -40,6 +40,8 @@
 
 - `date.breaks` in functions like `timePlot()` can now take a character string, in line with the `date_breaks` argument of functions like `ggplot2::scale_x_datetime()`. It may also take `NULL`, which will use `{ggplot2}` defaults.
 
+- `{MASS}` (only used for one statistic type in `polarPlot()`) and `{readr}` (only used in the deprecated `importEurope()`) have been moved to Suggests.
+
 ## Bug Fixes
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.

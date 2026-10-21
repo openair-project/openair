@@ -639,6 +639,7 @@ read_imperial_meta <- function(url, all, year) {
 
 # read data from the saqgetr database
 read_saqgetr_meta <- function(url, year) {
+  rlang::check_installed("readr")
   msg <-
     c(
       "!" = "{.fun importEurope} has been discontinued and cannot import \\

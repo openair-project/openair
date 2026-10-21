@@ -39,6 +39,8 @@ importEurope <- function(
   to_narrow = FALSE,
   progress = TRUE
 ) {
+  rlang::check_installed("readr")
+
   # warn/error w/ deprecation
   msg <-
     c(

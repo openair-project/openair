@@ -1385,6 +1385,7 @@ calc_york_stat <- function(thedata, pol_1, pol_2, x_error, y_error) {
 # Weighted robust (M-estimator) regression slope or intercept
 calc_robust_stat <- function(thedata, pol_1, pol_2, statistic) {
   thedata <- data.frame(thedata)
+  rlang::check_installed("MASS")
   fit <- suppressWarnings(
     try(
       MASS::rlm(
