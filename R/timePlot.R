@@ -421,6 +421,7 @@ timePlot <- function(
 
   theGuide <- guide_openair(
     key.position,
+    var_text_position = FALSE,
     ncol = key.columns,
     nrow = key.rows
   )

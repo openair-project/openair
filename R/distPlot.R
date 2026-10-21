@@ -378,7 +378,12 @@ distPlot <- function(
       labels = \(x) label_openair(x, auto_text = auto.text),
       drop = FALSE,
       aesthetics = c("colour", "fill"),
-      guide = guide_openair(key.position, ncol = key.columns, nrow = key.rows)
+      guide = guide_openair(
+        key.position,
+        var_text_position = FALSE,
+        ncol = key.columns,
+        nrow = key.rows
+      )
     )
 
   # outputs

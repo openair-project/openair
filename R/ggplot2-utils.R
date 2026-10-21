@@ -88,14 +88,23 @@ guide_openair <- function(
   key.position,
   type = c("legend", "colourbar", "coloursteps"),
   reverse = FALSE,
+  var_text_position = TRUE,
   ...
 ) {
   type <- rlang::arg_match(type)
   is_side <- key.position %in% c("left", "right")
 
   theme <- ggplot2::theme(
-    legend.title.position = if (is_side) "top" else key.position,
-    legend.text.position = key.position
+    legend.title.position = if (is_side) {
+      "top"
+    } else {
+      key.position
+    },
+    legend.text.position = if (var_text_position || is_side) {
+      key.position
+    } else {
+      NULL
+    }
   )
 
   switch(

@@ -363,6 +363,7 @@ polarCluster <-
       ggplot2::guides(
         colour = guide_openair(
           key.position,
+          var_text_position = FALSE,
           override.aes = list(size = 5)
         )
       )

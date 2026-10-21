@@ -232,6 +232,7 @@ smoothTrend <- function(
   # create a guide for both fill and colour using openair styling
   color_guide <- guide_openair(
     key.position,
+    var_text_position = FALSE,
     ncol = key.columns,
     nrow = key.rows
   )

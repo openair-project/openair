@@ -671,7 +671,8 @@ scatter_scatter <- function(
       key.position,
       reverse = group_is_binned,
       ncol = key.columns,
-      nrow = key.rows
+      nrow = key.rows,
+      var_text_position = FALSE
     )
 
     plt <- plt +
