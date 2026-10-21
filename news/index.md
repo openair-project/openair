@@ -99,6 +99,13 @@
   It may also take `NULL`, which will use
   [ggplot2](https://ggplot2.tidyverse.org) defaults.
 
+- [MASS](http://www.stats.ox.ac.uk/pub/MASS4/) (only used for one
+  statistic type in
+  [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md))
+  and [readr](https://readr.tidyverse.org) (only used in the deprecated
+  [`importEurope()`](https://openair-project.github.io/openair/reference/importEurope.md))
+  have been moved to Suggests.
+
 ### Bug Fixes
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an
