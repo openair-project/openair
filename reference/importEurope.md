@@ -34,7 +34,10 @@ importEurope(
 
 - tz:
 
-  Not used
+  The time zone used to parse the `date` and `date_end` columns, passed
+  to
+  [`lubridate::ymd_hms()`](https://lubridate.tidyverse.org/reference/ymd_hms.html).
+  Defaults to `"UTC"`.
 
 - meta:
 

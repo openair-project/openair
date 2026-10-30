@@ -245,102 +245,114 @@ part of <code>.mop</code> file import.</p>
 <span class="r-in"><span><span class="co"># all current simplify.names operations</span></span></span>
 <span class="r-in"><span><span class="fu">importADMS</span><span class="op">(</span><span class="va">simplify.names</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Simplification operation summary</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> [ADMS =&gt; R =&gt; OPENAIR]:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	1/LMO =&gt; X1.LMO =&gt; RECIP.LMO</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	1/MONIN-OBUKHOV LENGTH =&gt; X1.MONIN.OBUKHOV.LENGTH =&gt; RECIP.LMO</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALBEDO(D) =&gt; ALBEDO.D. =&gt; ALBEDO.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALBEDO (D) =&gt; ALBEDO..D. =&gt; ALBEDO.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALBEDO(DISP) =&gt; ALBEDO.DISP. =&gt; ALBEDO.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALBEDO (DISP) =&gt; ALBEDO..DISP. =&gt; ALBEDO.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALBEDO (DISPERSION AREA) =&gt; ALBEDO..DISPERSION.AREA. =&gt; ALBEDO.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALBEDO(M) =&gt; ALBEDO.M. =&gt; ALBEDO.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALBEDO (M) =&gt; ALBEDO..M. =&gt; ALBEDO.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALBEDO(MET) =&gt; ALBEDO.MET. =&gt; ALBEDO.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALBEDO (MET) =&gt; ALBEDO..MET. =&gt; ALBEDO.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALBEDO (MET SITE) =&gt; ALBEDO..MET.SITE. =&gt; ALBEDO.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALPHA(D) =&gt; ALPHA.D. =&gt; ALPHA.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALPHA (D) =&gt; ALPHA..D. =&gt; ALPHA.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALPHA(DISP) =&gt; ALPHA.DISP. =&gt; ALPHA.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALPHA (DISP) =&gt; ALPHA..DISP. =&gt; ALPHA.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALPHA(M) =&gt; ALPHA.M. =&gt; ALPHA.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALPHA (M) =&gt; ALPHA..M. =&gt; ALPHA.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALPHA(MET) =&gt; ALPHA.MET. =&gt; ALPHA.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ALPHA (MET) =&gt; ALPHA..MET. =&gt; ALPHA.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	BL DEPTH =&gt; BL.DEPTH =&gt; H</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	BOUNDARY LAYER DEPTH =&gt; BOUNDARY.LAYER.DEPTH =&gt; H</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	BUOYANCY FREQUENCY ABOVE BOUNDARY LAYER =&gt; BUOYANCY.FREQUENCY.ABOVE.BOUNDARY.LAYER =&gt; NU</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	CLOUD =&gt; CLOUD =&gt; CL</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	CLOUD AMOUNT (OKTAS) =&gt; CLOUD.AMOUNT..OKTAS. =&gt; CL</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Conc|ppb|NAME|SOURCES|-| RESOLUTION =&gt; Conc.ppb.NAME.SOURCES....RESOLUTION =&gt; NAME.SOURCES.RESOLUTION</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Conc|ppm|NAME|SOURCES|-| RESOLUTION =&gt; Conc.ppm.NAME.SOURCES....RESOLUTION =&gt; NAME.SOURCES.RESOLUTION</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Conc|ug/m3|NAME|SOURCES|-| RESOLUTION =&gt; Conc.ug.m3.NAME.SOURCES....RESOLUTION =&gt; NAME.SOURCES.RESOLUTION</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	NAME.All.sources.1hr =&gt; NAME.All.sources.1hr =&gt; NAME</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	NAME.All.sources.RESOLUTION =&gt; NAME.All.sources.RESOLUTION =&gt; NAME.RESOLUTION</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	NAME.SOURCE.1hr =&gt; NAME.SOURCE.1hr =&gt; NAME.SOURCE</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	D(RELATIVE HUMIDITY)/DZ ABOVE BOUNDARY LAYER (PERCENT/M) =&gt; D.RELATIVE.HUMIDITY..DZ.ABOVE.BOUNDARY.LAYER..PERCENT.M. =&gt; DRHDZU</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	DELTAPHI =&gt; DELTAPHI =&gt; DELTA.WD</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	DELTAT =&gt; DELTAT =&gt; DELTA.T</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	DELTA T =&gt; DELTA.T =&gt; DELTA.T</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	DELTATHETA =&gt; DELTATHETA =&gt; DELTA.THETA</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	DELTA THETA =&gt; DELTA.THETA =&gt; DELTA.THETA</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	DIRN CHANGE =&gt; DIRN.CHANGE =&gt; DELTA.WD</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	DRH/DZ =&gt; DRH.DZ =&gt; DRHDZU</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	GEOSTROPHIC MINUS SURFACE WIND DIRECTION (DEGREES) =&gt; GEOSTROPHIC.MINUS.SURFACE.WIND.DIRECTION..DEGREES. =&gt; DELTA.WD</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	HEAT FLUX =&gt; HEAT.FLUX =&gt; FTHETA0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	INCOMING SOLAR RADIATION =&gt; INCOMING.SOLAR.RADIATION =&gt; K</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	LATENT HEAT FLUX =&gt; LATENT.HEAT.FLUX =&gt; LAMBDAE</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	LAT HT FLUX =&gt; LAT.HT.FLUX =&gt; LAMBDAE</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	MODIFIED PRIESTLEY-TAYLOR PARAMETER (DISPERSION AREA) =&gt; MODIFIED.PRIESTLEY.TAYLOR.PARAMETER..DISPERSION.AREA. =&gt; ALPHA.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	MODIFIED PRIESTLEY-TAYLOR PARAMETER (MET SITE) =&gt; MODIFIED.PRIESTLEY.TAYLOR.PARAMETER..MET.SITE. =&gt; ALPHA.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	N ABOVE BL =&gt; N.ABOVE.BL =&gt; NU</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	PHI =&gt; PHI =&gt; WD</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	PHI0 =&gt; PHI0 =&gt; WD.0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	PHIG =&gt; PHIG =&gt; WD.G</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	PHISEC =&gt; PHISEC =&gt; WD.SEC</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	PRECIP =&gt; PRECIP =&gt; P</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	PRECIPITATION RATE (MM/HOUR) =&gt; PRECIPITATION.RATE..MM.HOUR. =&gt; P</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	R =&gt; R =&gt; ALBEDO.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	RECIPLMO =&gt; RECIPLMO =&gt; RECIP.LMO</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	RELATIVE HUMIDITY ABOVE BOUNDARY LAYER (PERCENT) =&gt; RELATIVE.HUMIDITY.ABOVE.BOUNDARY.LAYER..PERCENT. =&gt; RHU</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	RH ABOVE BL =&gt; RH.ABOVE.BL =&gt; RHU</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	RHUM =&gt; RHUM =&gt; RHU</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ROUGHNESS LENGTH (DISPERSION AREA) =&gt; ROUGHNESS.LENGTH..DISPERSION.AREA. =&gt; Z0.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	ROUGHNESS LENGTH (MET SITE) =&gt; ROUGHNESS.LENGTH..MET.SITE. =&gt; Z0.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	S HUMIDITY =&gt; S.HUMIDITY =&gt; SHU</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	SEA SURFACE TEMPERATURE (C) =&gt; SEA.SURFACE.TEMPERATURE..C. =&gt; TSEA</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	SEA TEMP =&gt; SEA.TEMP =&gt; TSEA</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	SENSIBLE HEAT FLUX =&gt; SENSIBLE.HEAT.FLUX =&gt; FTHETA0</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	SIGMATHETA =&gt; SIGMATHETA =&gt; SIGMA.THETA</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	SIGMA THETA =&gt; SIGMA.THETA =&gt; SIGMA.THETA</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	SIGMA THETA (DEGREES) =&gt; SIGMA.THETA..DEGREES. =&gt; SIGMA.THETA</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	SOLAR RAD =&gt; SOLAR.RAD =&gt; K</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	SPECIFIC HUMIDITY =&gt; SPECIFIC.HUMIDITY =&gt; SHU</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	T0C =&gt; T0C =&gt; TEMP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	TEMPERATURE =&gt; TEMPERATURE =&gt; TEMP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	TEMPERATURE (C) =&gt; TEMPERATURE..C. =&gt; TEMP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	TEMPERATURE JUMP ACROSS BOUNDARY LAYER TOP =&gt; TEMPERATURE.JUMP.ACROSS.BOUNDARY.LAYER.TOP =&gt; DELTA.THETA</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	TEMPERATURE OVER LAND MINUS SEA SURFACE TEMPERATURE =&gt; TEMPERATURE.OVER.LAND.MINUS.SEA.SURFACE.TEMPERATURE =&gt; DELTA.T</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Time(s) =&gt; Time.s. =&gt; Time</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	U =&gt; U =&gt; WS</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	UG =&gt; UG =&gt; WS.G</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	UGSTAR =&gt; UGSTAR =&gt; WS.GSTAR</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	USTAR =&gt; USTAR =&gt; WS.STAR</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	WIND DIRN =&gt; WIND.DIRN =&gt; WD</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	WIND DIRECTION (DEGREES) =&gt; WIND.DIRECTION..DEGREES. =&gt; WD</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	WIND HEIGHT =&gt; WIND.HEIGHT =&gt; WIND.HEIGHT</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	WIND MEASUREMENT HEIGHT =&gt; WIND.MEASUREMENT.HEIGHT =&gt; WIND.HEIGHT</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	WIND SPEED =&gt; WIND.SPEED =&gt; WS</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	X(m) =&gt; X.m. =&gt; X</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Y(m) =&gt; Y.m. =&gt; Y</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Z(m) =&gt; Z.m. =&gt; Z</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Z0(D) =&gt; Z0.D. =&gt; Z0.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Z0 (D) =&gt; Z0..D. =&gt; Z0.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Z0(DISP) =&gt; Z0.DISP. =&gt; Z0.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Z0 (DISP) =&gt; Z0..DISP. =&gt; Z0.DISP</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Z0(M) =&gt; Z0.M. =&gt; Z0.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Z0 (M) =&gt; Z0..M. =&gt; Z0.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Z0(MET) =&gt; Z0.MET. =&gt; Z0.MET</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 	Z0 (MET) =&gt; Z0..MET. =&gt; Z0.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   [ADMS =&gt; R =&gt; OPENAIR]:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   1/LMO =&gt; X1.LMO =&gt; RECIP.LMO</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   1/MONIN-OBUKHOV LENGTH =&gt; X1.MONIN.OBUKHOV.LENGTH =&gt; RECIP.LMO</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALBEDO(D) =&gt; ALBEDO.D. =&gt; ALBEDO.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALBEDO (D) =&gt; ALBEDO..D. =&gt; ALBEDO.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALBEDO(DISP) =&gt; ALBEDO.DISP. =&gt; ALBEDO.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALBEDO (DISP) =&gt; ALBEDO..DISP. =&gt; ALBEDO.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALBEDO (DISPERSION AREA) =&gt; ALBEDO..DISPERSION.AREA. =&gt; ALBEDO.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALBEDO(M) =&gt; ALBEDO.M. =&gt; ALBEDO.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALBEDO (M) =&gt; ALBEDO..M. =&gt; ALBEDO.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALBEDO(MET) =&gt; ALBEDO.MET. =&gt; ALBEDO.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALBEDO (MET) =&gt; ALBEDO..MET. =&gt; ALBEDO.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALBEDO (MET SITE) =&gt; ALBEDO..MET.SITE. =&gt; ALBEDO.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALPHA(D) =&gt; ALPHA.D. =&gt; ALPHA.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALPHA (D) =&gt; ALPHA..D. =&gt; ALPHA.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALPHA(DISP) =&gt; ALPHA.DISP. =&gt; ALPHA.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALPHA (DISP) =&gt; ALPHA..DISP. =&gt; ALPHA.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALPHA(M) =&gt; ALPHA.M. =&gt; ALPHA.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALPHA (M) =&gt; ALPHA..M. =&gt; ALPHA.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALPHA(MET) =&gt; ALPHA.MET. =&gt; ALPHA.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ALPHA (MET) =&gt; ALPHA..MET. =&gt; ALPHA.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   BL DEPTH =&gt; BL.DEPTH =&gt; H</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   BOUNDARY LAYER DEPTH =&gt; BOUNDARY.LAYER.DEPTH =&gt; H</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   BUOYANCY FREQUENCY ABOVE BOUNDARY LAYER =&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   BUOYANCY.FREQUENCY.ABOVE.BOUNDARY.LAYER =&gt; NU</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   CLOUD =&gt; CLOUD =&gt; CL</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   CLOUD AMOUNT (OKTAS) =&gt; CLOUD.AMOUNT..OKTAS. =&gt; CL</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Conc|ppb|NAME|SOURCES|-| RESOLUTION =&gt; Conc.ppb.NAME.SOURCES....RESOLUTION =&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   NAME.SOURCES.RESOLUTION</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Conc|ppm|NAME|SOURCES|-| RESOLUTION =&gt; Conc.ppm.NAME.SOURCES....RESOLUTION =&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   NAME.SOURCES.RESOLUTION</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Conc|ug/m3|NAME|SOURCES|-| RESOLUTION =&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Conc.ug.m3.NAME.SOURCES....RESOLUTION =&gt; NAME.SOURCES.RESOLUTION</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   NAME.All.sources.1hr =&gt; NAME.All.sources.1hr =&gt; NAME</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   NAME.All.sources.RESOLUTION =&gt; NAME.All.sources.RESOLUTION =&gt; NAME.RESOLUTION</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   NAME.SOURCE.1hr =&gt; NAME.SOURCE.1hr =&gt; NAME.SOURCE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   D(RELATIVE HUMIDITY)/DZ ABOVE BOUNDARY LAYER (PERCENT/M) =&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   D.RELATIVE.HUMIDITY..DZ.ABOVE.BOUNDARY.LAYER..PERCENT.M. =&gt; DRHDZU</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   DELTAPHI =&gt; DELTAPHI =&gt; DELTA.WD</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   DELTAT =&gt; DELTAT =&gt; DELTA.T</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   DELTA T =&gt; DELTA.T =&gt; DELTA.T</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   DELTATHETA =&gt; DELTATHETA =&gt; DELTA.THETA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   DELTA THETA =&gt; DELTA.THETA =&gt; DELTA.THETA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   DIRN CHANGE =&gt; DIRN.CHANGE =&gt; DELTA.WD</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   DRH/DZ =&gt; DRH.DZ =&gt; DRHDZU</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   GEOSTROPHIC MINUS SURFACE WIND DIRECTION (DEGREES) =&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   GEOSTROPHIC.MINUS.SURFACE.WIND.DIRECTION..DEGREES. =&gt; DELTA.WD</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   HEAT FLUX =&gt; HEAT.FLUX =&gt; FTHETA0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   INCOMING SOLAR RADIATION =&gt; INCOMING.SOLAR.RADIATION =&gt; K</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   LATENT HEAT FLUX =&gt; LATENT.HEAT.FLUX =&gt; LAMBDAE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   LAT HT FLUX =&gt; LAT.HT.FLUX =&gt; LAMBDAE</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   MODIFIED PRIESTLEY-TAYLOR PARAMETER (DISPERSION AREA) =&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   MODIFIED.PRIESTLEY.TAYLOR.PARAMETER..DISPERSION.AREA. =&gt; ALPHA.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   MODIFIED PRIESTLEY-TAYLOR PARAMETER (MET SITE) =&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   MODIFIED.PRIESTLEY.TAYLOR.PARAMETER..MET.SITE. =&gt; ALPHA.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   N ABOVE BL =&gt; N.ABOVE.BL =&gt; NU</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   PHI =&gt; PHI =&gt; WD</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   PHI0 =&gt; PHI0 =&gt; WD.0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   PHIG =&gt; PHIG =&gt; WD.G</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   PHISEC =&gt; PHISEC =&gt; WD.SEC</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   PRECIP =&gt; PRECIP =&gt; P</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   PRECIPITATION RATE (MM/HOUR) =&gt; PRECIPITATION.RATE..MM.HOUR. =&gt; P</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   R =&gt; R =&gt; ALBEDO.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   RECIPLMO =&gt; RECIPLMO =&gt; RECIP.LMO</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   RELATIVE HUMIDITY ABOVE BOUNDARY LAYER (PERCENT) =&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   RELATIVE.HUMIDITY.ABOVE.BOUNDARY.LAYER..PERCENT. =&gt; RHU</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   RH ABOVE BL =&gt; RH.ABOVE.BL =&gt; RHU</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   RHUM =&gt; RHUM =&gt; RHU</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ROUGHNESS LENGTH (DISPERSION AREA) =&gt; ROUGHNESS.LENGTH..DISPERSION.AREA. =&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Z0.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   ROUGHNESS LENGTH (MET SITE) =&gt; ROUGHNESS.LENGTH..MET.SITE. =&gt; Z0.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   S HUMIDITY =&gt; S.HUMIDITY =&gt; SHU</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   SEA SURFACE TEMPERATURE (C) =&gt; SEA.SURFACE.TEMPERATURE..C. =&gt; TSEA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   SEA TEMP =&gt; SEA.TEMP =&gt; TSEA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   SENSIBLE HEAT FLUX =&gt; SENSIBLE.HEAT.FLUX =&gt; FTHETA0</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   SIGMATHETA =&gt; SIGMATHETA =&gt; SIGMA.THETA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   SIGMA THETA =&gt; SIGMA.THETA =&gt; SIGMA.THETA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   SIGMA THETA (DEGREES) =&gt; SIGMA.THETA..DEGREES. =&gt; SIGMA.THETA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   SOLAR RAD =&gt; SOLAR.RAD =&gt; K</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   SPECIFIC HUMIDITY =&gt; SPECIFIC.HUMIDITY =&gt; SHU</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   T0C =&gt; T0C =&gt; TEMP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   TEMPERATURE =&gt; TEMPERATURE =&gt; TEMP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   TEMPERATURE (C) =&gt; TEMPERATURE..C. =&gt; TEMP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   TEMPERATURE JUMP ACROSS BOUNDARY LAYER TOP =&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   TEMPERATURE.JUMP.ACROSS.BOUNDARY.LAYER.TOP =&gt; DELTA.THETA</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   TEMPERATURE OVER LAND MINUS SEA SURFACE TEMPERATURE =&gt;</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   TEMPERATURE.OVER.LAND.MINUS.SEA.SURFACE.TEMPERATURE =&gt; DELTA.T</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Time(s) =&gt; Time.s. =&gt; Time</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   U =&gt; U =&gt; WS</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   UG =&gt; UG =&gt; WS.G</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   UGSTAR =&gt; UGSTAR =&gt; WS.GSTAR</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   USTAR =&gt; USTAR =&gt; WS.STAR</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   WIND DIRN =&gt; WIND.DIRN =&gt; WD</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   WIND DIRECTION (DEGREES) =&gt; WIND.DIRECTION..DEGREES. =&gt; WD</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   WIND HEIGHT =&gt; WIND.HEIGHT =&gt; WIND.HEIGHT</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   WIND MEASUREMENT HEIGHT =&gt; WIND.MEASUREMENT.HEIGHT =&gt; WIND.HEIGHT</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   WIND SPEED =&gt; WIND.SPEED =&gt; WS</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   X(m) =&gt; X.m. =&gt; X</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Y(m) =&gt; Y.m. =&gt; Y</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Z(m) =&gt; Z.m. =&gt; Z</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Z0(D) =&gt; Z0.D. =&gt; Z0.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Z0 (D) =&gt; Z0..D. =&gt; Z0.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Z0(DISP) =&gt; Z0.DISP. =&gt; Z0.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Z0 (DISP) =&gt; Z0..DISP. =&gt; Z0.DISP</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Z0(M) =&gt; Z0.M. =&gt; Z0.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Z0 (M) =&gt; Z0..M. =&gt; Z0.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Z0(MET) =&gt; Z0.MET. =&gt; Z0.MET</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>   Z0 (MET) =&gt; Z0..MET. =&gt; Z0.MET</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># to see what simplify.names does to adms data series name PHI</span></span></span>
 <span class="r-in"><span><span class="va">new.name</span> <span class="op">&lt;-</span> <span class="fu">importADMS</span><span class="op">(</span><span class="va">simplify.names</span>, names <span class="op">=</span> <span class="st">"PHI"</span><span class="op">)</span></span></span>
