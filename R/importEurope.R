@@ -11,7 +11,8 @@
 #' @param year Year or years to import. To import a sequence of years from 1990
 #'   to 2000 use `year = 1990:2000`. To import several specific years use `year
 #'   = c(1990, 1995, 2000)` for example.
-#' @param tz Not used
+#' @param tz The time zone used to parse the `date` and `date_end` columns,
+#'   passed to [lubridate::ymd_hms()]. Defaults to `"UTC"`.
 #' @param meta Should meta data be returned? If `TRUE` the site type, latitude
 #'   and longitude are returned.
 #' @param to_narrow By default the returned data has a column for each
@@ -141,7 +142,7 @@ get_saq_observations_worker <- function(file, tz) {
 
 
 # Reading function
-read_saq_observations <- function(file, tz = tz, verbose) {
+read_saq_observations <- function(file, tz) {
   # Data types
   col_types <- readr::cols(
     date = readr::col_character(),

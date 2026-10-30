@@ -19,7 +19,8 @@ importEurope(
 \item{year}{Year or years to import. To import a sequence of years from 1990
 to 2000 use \code{year = 1990:2000}. To import several specific years use \code{year = c(1990, 1995, 2000)} for example.}
 
-\item{tz}{Not used}
+\item{tz}{The time zone used to parse the \code{date} and \code{date_end} columns,
+passed to \code{\link[lubridate:ymd_hms]{lubridate::ymd_hms()}}. Defaults to \code{"UTC"}.}
 
 \item{meta}{Should meta data be returned? If \code{TRUE} the site type, latitude
 and longitude are returned.}
