@@ -1213,6 +1213,8 @@ smooth_level_grid <- function(mydata, z, k, dist) {
 #'
 # Copied from grDevices (GPL-2), with attribution
 .smoothScatterCalcDensity <- function(x, nbin, bandwidth, range.x) {
+  rlang::check_installed("KernSmooth", reason = "to use `method = \"density\"`.")
+
   if (length(nbin) == 1) {
     nbin <- c(nbin, nbin)
   }

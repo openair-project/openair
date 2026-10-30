@@ -76,7 +76,7 @@ trajCluster <- function(
   plot = TRUE,
   ...
 ) {
-  rlang::check_installed(c("sf", "rnaturalearthdata"))
+  rlang::check_installed("sf")
 
   # default colour based on theme
   if (missing(cols)) {

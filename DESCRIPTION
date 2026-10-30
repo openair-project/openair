@@ -51,6 +51,7 @@ Suggests:
     readr,
     rmarkdown,
     rnaturalearth,
+    rnaturalearthdata,
     sf,
     spelling,
     testthat (>= 3.0.0)
