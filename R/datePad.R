@@ -69,10 +69,14 @@ datePad <- function(
   # 2. Determine Target Interval
   if (!is.null(interval)) {
     target_interval <- interval
-    if (print.int) message("Target interval (User): ", target_interval)
+    if (print.int) {
+      cli::cli_inform("Target interval (User): {target_interval}")
+    }
   } else {
     target_interval <- native_interval
-    if (print.int) message("Target interval (Auto): ", target_interval)
+    if (print.int) {
+      cli::cli_inform("Target interval (Auto): {target_interval}")
+    }
   }
 
   # 3. Handle Timezones/Dates

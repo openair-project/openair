@@ -1213,13 +1213,16 @@ smooth_level_grid <- function(mydata, z, k, dist) {
 #'
 # Copied from grDevices (GPL-2), with attribution
 .smoothScatterCalcDensity <- function(x, nbin, bandwidth, range.x) {
-  rlang::check_installed("KernSmooth", reason = "to use `method = \"density\"`.")
+  rlang::check_installed(
+    "KernSmooth",
+    reason = "to use `method = \"density\"`."
+  )
 
   if (length(nbin) == 1) {
     nbin <- c(nbin, nbin)
   }
   if (!is.numeric(nbin) || length(nbin) != 2) {
-    stop("'nbin' must be numeric of length 1 or 2")
+    cli::cli_abort("{.arg nbin} must be numeric of length 1 or 2.")
   }
   if (missing(bandwidth)) {
     bandwidth <- diff(apply(
@@ -1234,10 +1237,10 @@ smooth_level_grid <- function(mydata, z, k, dist) {
     bandwidth[bandwidth == 0] <- 1
   } else {
     if (!is.numeric(bandwidth)) {
-      stop("'bandwidth' must be numeric")
+      cli::cli_abort("{.arg bandwidth} must be numeric.")
     }
     if (any(bandwidth <= 0)) {
-      stop("'bandwidth' must be positive")
+      cli::cli_abort("{.arg bandwidth} must be positive.")
     }
   }
 

@@ -145,10 +145,10 @@ importADMS <- function(
     if (startsWith(file.type, ".")) {
       file.type <- substr(file.type, 2, 4)
     } else {
-      stop(
-        "File extension not recognised\n       [If valid ADMS file, try setting file.type to one of: bgd, mop or met]",
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "File extension not recognised.",
+        "i" = "If this is a valid ADMS file, try setting {.arg file.type} to one of {.val {c('bgd', 'mop', 'met', 'pst')}}."
+      ))
     }
   }
 
@@ -206,10 +206,10 @@ importADMS <- function(
     ))
   }
 
-  stop(
-    "File extension not recognised\n       [If valid ADMS file, try setting file.type to one of: bgd, mop, met or pst]",
-    call. = FALSE
-  )
+  cli::cli_abort(c(
+    "File extension not recognised.",
+    "i" = "If this is a valid ADMS file, try setting {.arg file.type} to one of {.val {c('bgd', 'mop', 'met', 'pst')}}."
+  ))
 }
 
 ###############
@@ -233,25 +233,25 @@ importADMSBgd <- function(
   loc.start <- which(tolower(bgd) == "backgroundversion2")
   if (test.file.structure) {
     if (length(loc.start) == 0) {
-      stop(
-        "File not recognised ADMS.bgd structure\n       [please contact openair if valid]",
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "File not recognised as an ADMS {.file .bgd} structure.",
+        "i" = "Please contact {.pkg openair} if this is a valid file."
+      ))
     }
   }
   if (length(loc.start) > 1) {
-    warning(
-      "Multiple possible variable starts, taking last\n       [please contact openair problems encountered]",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "Multiple possible variable starts, taking last.",
+      "i" = "Please contact {.pkg openair} if problems are encountered."
+    ))
     loc.start <- loc.start[length(loc.start)]
   }
   no.var <- suppressWarnings(as.numeric(bgd[loc.start + 1]))[1]
   if (test.file.structure && is.na(no.var)) {
-    stop(
-      "File not recognised ADMS.bgd structure\n       [please contact openair if valid]",
-      call. = FALSE
-    )
+    cli::cli_abort(c(
+      "File not recognised as an ADMS {.file .bgd} structure.",
+      "i" = "Please contact {.pkg openair} if this is a valid file."
+    ))
   }
   variables <- bgd[(loc.start + 2):(loc.start + 1 + no.var)]
 
@@ -269,17 +269,17 @@ importADMSBgd <- function(
 
   units.start <- which(startsWith(bgd, "UNITS:"))
   if (length(units.start) == 0) {
-    warning(
-      "Data units not extracted from ADMS.bgd\n       [please contact file structure if problems encountered]",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "Data units not extracted from ADMS {.file .bgd} file.",
+      "i" = "Please contact {.pkg openair} if problems are encountered."
+    ))
     units <- "units: undefined"
   }
   if (length(units.start) > 1) {
-    warning(
-      "Multiple possible unit starts, taking last\n       [please contact openair problems encountered]",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "Multiple possible unit starts, taking last.",
+      "i" = "Please contact {.pkg openair} if problems are encountered."
+    ))
     units.start <- units.start[length(units.start)]
   }
   units <- bgd[(units.start + 1):(units.start + no.var)]
@@ -290,16 +290,16 @@ importADMSBgd <- function(
   }
   data.start <- which(startsWith(bgd, "DATA:"))
   if (length(data.start) == 0) {
-    stop(
-      "Data start not not located ADMS.bgd\n       [please contact file structure if problems encountered]",
-      call. = FALSE
-    )
+    cli::cli_abort(c(
+      "Data start not located in ADMS {.file .bgd} file.",
+      "i" = "Please contact {.pkg openair} if problems are encountered."
+    ))
   }
   if (length(data.start) > 1) {
-    warning(
-      "Multiple possible data starts, taking last\n       [please contact openair problems encountered]",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "Multiple possible data starts, taking last.",
+      "i" = "Please contact {.pkg openair} if problems are encountered."
+    ))
     data.start <- data.start[length(data.start)]
   }
 
@@ -322,10 +322,10 @@ importADMSBgd <- function(
   date <- as.POSIXct(strptime(date, format = "%Y-%j-%H"), "GMT")
   ans <- cbind(date = date, ans)
   if (length(variables) != ncol(ans) - 4) {
-    warning(
-      "Variable data mismatch, taking shortest\n       [please contact if openair problems encountered]",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "Variable data mismatch, taking shortest.",
+      "i" = "Please contact {.pkg openair} if problems are encountered."
+    ))
     variables <- variables[
       1:min(c(length(variables), ncol(ans) - 4), na.rm = TRUE)
     ]
@@ -344,22 +344,13 @@ importADMSBgd <- function(
   ids <- which(is.na(ans$date))
   if (length(ids) > 0) {
     if (length(ids) == nrow(ans)) {
-      stop(
-        "Invalid date (and time) format requested\n       [compare openair import settings and data structure]",
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "Invalid date (and time) format requested.",
+        "i" = "Compare {.pkg openair} import settings and data structure."
+      ))
     }
     ans <- ans[-ids, ]
-    reply <- paste(
-      "Missing dates detected, removing",
-      length(ids),
-      "line",
-      sep = " "
-    )
-    if (length(ids) > 1) {
-      reply <- paste(reply, "s", sep = "")
-    }
-    warning(reply, call. = FALSE)
+    cli::cli_warn("Missing dates detected, removing {length(ids)} line{?s}.")
   }
   print(unlist(sapply(ans, class)))
   ans
@@ -385,42 +376,42 @@ importADMSMet <- function(
   loc.start <- which(met == "VARIABLES:")
   if (test.file.structure) {
     if (length(loc.start) == 0) {
-      stop(
-        "File not recognised ADMS.met structure\n       [please contact openair if valid]",
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "File not recognised as an ADMS {.file .met} structure.",
+        "i" = "Please contact {.pkg openair} if this is a valid file."
+      ))
     }
   }
   if (length(loc.start) > 1) {
-    warning(
-      "Multiple possible variable starts, taking last\n       [please contact openair problems encountered]",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "Multiple possible variable starts, taking last.",
+      "i" = "Please contact {.pkg openair} if problems are encountered."
+    ))
     loc.start <- loc.start[length(loc.start)]
   }
   variables <- suppressWarnings(as.numeric(met[loc.start + 1]))[1]
   if (test.file.structure && is.na(variables)) {
-    stop(
-      "File not recognised ADMS.met structure\n       [please contact openair if valid]",
-      call. = FALSE
-    )
+    cli::cli_abort(c(
+      "File not recognised as an ADMS {.file .met} structure.",
+      "i" = "Please contact {.pkg openair} if this is a valid file."
+    ))
   }
   variables <- met[(loc.start + 2):(loc.start + 1 + variables)]
 
   data.start <- which(met == "DATA:")
   if (test.file.structure) {
     if (length(data.start) == 0) {
-      stop(
-        "File not recognised ADMS.met structure\n       [please contact openair if valid]",
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "File not recognised as an ADMS {.file .met} structure.",
+        "i" = "Please contact {.pkg openair} if this is a valid file."
+      ))
     }
   }
   if (length(data.start) > 1) {
-    warning(
-      "Multiple possible data starts, taking last\n       [please contact openair if problems encountered]",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "Multiple possible data starts, taking last.",
+      "i" = "Please contact {.pkg openair} if problems are encountered."
+    ))
     data.start <- data.start[length(data.start)]
   }
 
@@ -440,10 +431,10 @@ importADMSMet <- function(
   ## met <- met[, sapply(met, function(x) !all(is.na(x)))]
 
   if (length(variables) != ncol(met)) {
-    warning(
-      "Variable data mismatch, taking shortest\n       [please contact if openair problems encountered]",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "Variable data mismatch, taking shortest.",
+      "i" = "Please contact {.pkg openair} if problems are encountered."
+    ))
     variables <- variables[1:min(c(length(variables), ncol(met)), na.rm = TRUE)]
     met <- met[, seq_along(variables)]
   }
@@ -452,14 +443,10 @@ importADMSMet <- function(
   # multiple year day hour name options
   fun.temp <- function(x, y, z) {
     if (!any(y %in% names(x))) {
-      stop(
-        paste(
-          z,
-          " not extracted\n       [please contact openair if valid file]",
-          sep = ""
-        ),
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "{z} not extracted.",
+        "i" = "Please contact {.pkg openair} if this is a valid file."
+      ))
     }
     ans <- x[, y[y %in% names(x)]]
     if (!is.null(ncol(ans))) {
@@ -500,22 +487,13 @@ importADMSMet <- function(
   ids <- which(is.na(met$date))
   if (length(ids) > 0) {
     if (length(ids) == nrow(met)) {
-      stop(
-        "Invalid date (and time) format requested\n       [compare openair import settings and data structure]",
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "Invalid date (and time) format requested.",
+        "i" = "Compare {.pkg openair} import settings and data structure."
+      ))
     }
     met <- met[-ids, ]
-    reply <- paste(
-      "Missing dates detected, removing",
-      length(ids),
-      "line",
-      sep = " "
-    )
-    if (length(ids) > 1) {
-      reply <- paste(reply, "s", sep = "")
-    }
-    warning(reply, call. = FALSE)
+    cli::cli_warn("Missing dates detected, removing {length(ids)} line{?s}.")
   }
   print(unlist(sapply(met, class)))
   met
@@ -584,10 +562,10 @@ importADMSMop <- function(
   if (test.file.structure) {
     # check for delim columns
     if (length(x.1) == 0 || length(x.2) == 0) {
-      stop(
-        "File not recognised ADMS.mop structure\n       [please contact openair if valid]",
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "File not recognised as an ADMS {.file .mop} structure.",
+        "i" = "Please contact {.pkg openair} if this is a valid file."
+      ))
     }
   }
 
@@ -608,10 +586,10 @@ importADMSMop <- function(
     ans <- ans[, 1:(ncol(ans) - 1)]
   }
   if (ncol(ans) != length(check.names)) {
-    warning(
-      "Unexpected name/data mismatch, handled pragmatically\n       [compare openair import settings and data structure]",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "Unexpected name/data mismatch, handled pragmatically.",
+      "i" = "Compare {.pkg openair} import settings and data structure."
+    ))
   }
 
   if (simplify.names) {
@@ -647,10 +625,10 @@ importADMSMop <- function(
           sep = "."
         )
       } else {
-        warning(
-          "Unexpected add.prefixes option, option treated as FALSE\n       [check openair import settings]",
-          call. = FALSE
-        )
+        cli::cli_warn(c(
+          "Unexpected {.arg add.prefixes} option, treated as {.code FALSE}.",
+          "i" = "Check {.pkg openair} import settings."
+        ))
       }
     }
   }
@@ -692,22 +670,13 @@ importADMSMop <- function(
   ids <- which(is.na(ans$date))
   if (length(ids) > 0) {
     if (length(ids) == nrow(ans)) {
-      stop(
-        "Invalid date (and time) format requested\n       [compare openair import settings and data structure]",
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "Invalid date (and time) format requested.",
+        "i" = "Compare {.pkg openair} import settings and data structure."
+      ))
     }
     ans <- ans[-ids, ]
-    reply <- paste(
-      "Missing dates detected, removing",
-      length(ids),
-      "line",
-      sep = " "
-    )
-    if (length(ids) > 1) {
-      reply <- paste(reply, "s", sep = "")
-    }
-    warning(reply, call. = FALSE)
+    cli::cli_warn("Missing dates detected, removing {length(ids)} line{?s}.")
   }
 
   # add stability
@@ -805,10 +774,10 @@ importADMSPst <- function(
     temp <- c("Hour", "Day", "Year", "Receptor.name")
     test <- temp[temp %in% check.names]
     if (!identical(temp, test)) {
-      stop(
-        "File not recognised ADMS.pst structure\n       [please contact openair if valid]",
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "File not recognised as an ADMS {.file .pst} structure.",
+        "i" = "Please contact {.pkg openair} if this is a valid file."
+      ))
     }
   }
 
@@ -826,10 +795,10 @@ importADMSPst <- function(
 
   # match up data and names
   if (ncol(ans) != length(check.names)) {
-    warning(
-      "Unexpected name/data mismatch, handled pragmatically\n       [compare openair import settings and data structure]",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "Unexpected name/data mismatch, handled pragmatically.",
+      "i" = "Compare {.pkg openair} import settings and data structure."
+    ))
   }
 
   names(ans) <- make.names(check.names, unique = TRUE)
@@ -876,22 +845,13 @@ importADMSPst <- function(
   ids <- which(is.na(ans$date))
   if (length(ids) > 0) {
     if (length(ids) == nrow(ans)) {
-      stop(
-        "Invalid date (and time) format requested\n       [compare openair import settings and data structure]",
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "Invalid date (and time) format requested.",
+        "i" = "Compare {.pkg openair} import settings and data structure."
+      ))
     }
     ans <- ans[-ids, ]
-    reply <- paste(
-      "Missing dates detected, removing",
-      length(ids),
-      "line",
-      sep = " "
-    )
-    if (length(ids) > 1) {
-      reply <- paste(reply, "s", sep = "")
-    }
-    warning(reply, call. = FALSE)
+    cli::cli_warn("Missing dates detected, removing {length(ids)} line{?s}.")
   }
 
   print(unlist(sapply(ans, class)))
@@ -926,11 +886,13 @@ simplifyNamesADMS <- function(names = NULL) {
   # names=NULL returns simplification operation summary
 
   if (is.null(names)) {
-    message("Simplification operation summary")
-    message("[ADMS => R => OPENAIR]:")
+    cli::cli_inform(c(
+      "Simplification operation summary",
+      " " = "[ADMS => R => OPENAIR]:"
+    ))
     fun.temp <- function(x, y, z) {
       temp <- c(y, make.names(y), z)
-      message(paste("\t", paste(temp, collapse = " => "), sep = ""))
+      cli::cli_inform(c(" " = "{paste(temp, collapse = ' => ')}"))
       temp <- data.frame(
         cbind(
           adms.input = temp[1],

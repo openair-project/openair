@@ -398,7 +398,10 @@ importMeta <-
 
     # spatial filtering
     if (!is.null(lat) && !is.null(lng)) {
-      rlang::check_installed("sf", reason = "to filter sites by `lat` and `lng`.")
+      rlang::check_installed(
+        "sf",
+        reason = "to filter sites by `lat` and `lng`."
+      )
       target <- sf::st_as_sf(
         dplyr::tibble(lat = lat, lng = lng),
         coords = c("lng", "lat"),

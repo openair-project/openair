@@ -116,31 +116,32 @@ plot.openair <- function(x, subset = "all", silent = TRUE, ...) {
     return(invisible(NULL))
   }
   if (!silent) {
-    message("\nopenair object created by: \n\t", deparse(x$call), "\n")
+    cli::cli_inform(c(
+      "{.pkg openair} object created by:",
+      " " = "{.code {deparse(x$call)}}"
+    ))
   }
 
   test <- x$plot$subsets
 
   # No subsets — just print the main plot
   if (is.null(test)) {
-    if (!is.null(subset) && subset != "all") {
-      warning(
-        "In plot(...): subset option ignored,",
-        "\n\t[subset requested from openair object without data subsets]",
-        call. = FALSE
-      )
+    if (!is.null(subset) && !any(subset == "all")) {
+      cli::cli_warn(c(
+        "{.arg subset} option ignored.",
+        "i" = "Subset requested from {.pkg openair} object without data subsets."
+      ))
     }
     return(plot(x$plot, ...))
   }
 
   # "all" or NULL — print the assembled patchwork object
-  if (is.null(subset) || subset == "all") {
+  if (is.null(subset) || any(subset == "all")) {
     if (is.null(x$main.plot)) {
-      stop(
-        "In plot(...): bad openair object structure",
-        "\n\t[please contact openair admin if valid]",
-        call. = FALSE
-      )
+      cli::cli_abort(c(
+        "Bad {.pkg openair} object structure.",
+        "i" = "Please contact the {.pkg openair} maintainers if this object is valid."
+      ))
     }
     return(plot(x$main.plot, ...))
   }
@@ -148,23 +149,18 @@ plot.openair <- function(x, subset = "all", silent = TRUE, ...) {
   # Subset requested — validate and resolve to a single subset
   temp <- subset[subset %in% test]
   if (length(temp) < 1) {
-    stop(
-      "In plot(...): requested subset not found",
-      "\n\t[suggest one of: ",
-      paste(test, collapse = ", "),
-      "]",
-      call. = FALSE
-    )
+    cli::cli_abort(c(
+      "Requested {.arg subset} not found.",
+      "i" = "Suggest one of: {.val {test}}."
+    ))
   }
   if (length(temp) < length(subset)) {
-    warning(
-      "In plot(...): multiple subsets requested and some not found, using first valid",
-      call. = FALSE
+    cli::cli_warn(
+      "Multiple subsets requested and some not found, using first valid ({.val {temp[1]}})."
     )
   } else if (length(temp) > 1) {
-    warning(
-      "In plot(...): multiple subsets requested, using first valid",
-      call. = FALSE
+    cli::cli_warn(
+      "Multiple subsets requested, using first valid ({.val {temp[1]}})."
     )
   }
 
@@ -275,54 +271,46 @@ results.openair <- function(object, subset = "all", silent = FALSE, ...) {
   test <- object$data$subsets
 
   if (is.null(test)) {
-    if (!is.null(subset) && subset != "all") {
-      warning(
-        "In results(...): subset option ignored,",
-        "\n\t[subset requested from openair object without data subsets]",
-        call. = FALSE
-      )
+    if (!is.null(subset) && !any(subset == "all")) {
+      cli::cli_warn(c(
+        "{.arg subset} option ignored.",
+        "i" = "Subset requested from {.pkg openair} object without data subsets."
+      ))
     }
     return(object$data)
   }
 
-  if (is.null(subset) || subset == "all") {
+  if (is.null(subset) || any(subset == "all")) {
     if (!silent) {
-      message("contains", length(test), " data frame(s):")
-      message("returning as list")
-      message("\t$", paste(test, collapse = ", $", sep = ", $"), "\n")
+      cli::cli_inform(c(
+        "Returning a list of {length(test)} data frame{?s}:",
+        " " = "{.field {paste0('$', test)}}"
+      ))
     }
     return(object$data[names(object$data) != "subsets"])
   }
 
   temp <- subset[subset %in% test]
   if (length(temp) < 1) {
-    stop(
-      "In results(...): requested subset(s) not found",
-      "\n\t[suggest NULL, all or one or more of available subsets]",
-      "\n\t[available subset(s): ",
-      paste(test, collapse = ", ", sep = ", "),
-      "]",
-      call. = FALSE
-    )
+    cli::cli_abort(c(
+      "Requested {.arg subset} not found.",
+      "i" = "Use {.code NULL}, {.code \"all\"}, or one or more available subsets: {.val {test}}."
+    ))
   }
   if (!silent && length(temp) < length(subset)) {
-    warning(
-      "In results(...): some requested subset(s) not found, so ignored",
-      "\n\t[ignored subset(s): ",
-      paste(subset[subset != temp], collapse = ", ", sep = ", "),
-      "]",
-      "\n\t[available subset(s): ",
-      paste(test, collapse = ", ", sep = ", "),
-      "]",
-      call. = FALSE
-    )
+    cli::cli_warn(c(
+      "Some requested subsets not found, so ignored: {.val {setdiff(subset, temp)}}.",
+      "i" = "Available subsets: {.val {test}}."
+    ))
   }
   if (length(temp) == 1) {
     return(object$data[[temp]])
   } else {
     if (!silent) {
-      message("returning as list of ", length(temp), " data frame(s):")
-      message("\t$", paste(temp, collapse = ", $", sep = ", $"), "\n")
+      cli::cli_inform(c(
+        "Returning a list of {length(temp)} data frame{?s}:",
+        " " = "{.field {paste0('$', temp)}}"
+      ))
     }
     return(object$data[names(object$data) %in% temp])
   }

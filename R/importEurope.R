@@ -96,7 +96,7 @@ importEurope <- function(
     purrr::list_rbind()
 
   if (nrow(df) == 0L) {
-    warning("No data available,")
+    cli::cli_warn("No data available.")
     return()
   }
 
@@ -181,7 +181,7 @@ read_saq_observations <- function(file, tz) {
   )
 
   if (nrow(df) == 0) {
-    warning(paste(basename(file), "is missing."))
+    cli::cli_warn("{.file {basename(file)}} is missing.")
   }
 
   return(df)
@@ -202,9 +202,8 @@ make_saq_observations_wider <- function(df) {
         tidyr::spread("variable", "value")
     },
     error = function(e) {
-      warning(
-        "Duplicated date-site-variable combinations detected, observations have been removed...",
-        call. = FALSE
+      cli::cli_warn(
+        "Duplicated date-site-variable combinations detected, observations have been removed..."
       )
 
       df |>

@@ -128,7 +128,7 @@ importTraj <-
     traj <- NULL
 
     if (length(site) > 1) {
-      stop("Only one site can be imported at a time.")
+      cli::cli_abort("Only one site can be imported at a time.")
     }
     site <- tolower(site)
 
@@ -158,7 +158,7 @@ importTraj <-
           traj
         },
         error = function(ex) {
-          warning(x, "does not exist - ignoring that one.\n")
+          cli::cli_warn(c("i" = "{x} does not exist - ignoring that one."))
           NULL
         },
         finally = {

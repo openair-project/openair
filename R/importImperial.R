@@ -209,7 +209,7 @@ importImperial <-
           x
         },
         error = function(ex) {
-          warning(x, "does not exist - ignoring that one.")
+          cli::cli_warn(c("i" = "{x} does not exist - ignoring that one."))
           NULL
         },
         finally = {
@@ -226,12 +226,12 @@ importImperial <-
       purrr::list_rbind()
 
     if (is.null(thedata)) {
-      warning("No data to import - check site codes and year.", call. = FALSE)
+      cli::cli_warn("No data to import - check site codes and year.")
       return()
     }
 
     if (nrow(thedata) < 1) {
-      warning("No data to import - check site codes and year.", call. = FALSE)
+      cli::cli_warn("No data to import - check site codes and year.")
       return()
     }
 
@@ -344,7 +344,7 @@ importImperial <-
     timeDiff <-
       difftime(Sys.time(), max(thedata$date), units = "days")
     if (timeDiff < 180) {
-      warning("Some of the more recent data may not be ratified.")
+      cli::cli_warn("Some of the more recent data may not be ratified.")
     }
 
     if (meteo) {

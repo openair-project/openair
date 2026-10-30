@@ -135,11 +135,11 @@ FacetWinddir <- ggplot2::ggproto(
     }
 
     if (!all(panels[[1]] %in% layout$PANEL_NAME)) {
-      stop("Wind direction not recognised")
+      cli::cli_abort("Wind direction not recognised.")
     }
 
     if (anyNA(panels[[1]])) {
-      stop("Missing wind directions not allowed")
+      cli::cli_abort("Missing wind directions not allowed.")
     }
 
     names(layout)[names(layout) == "PANEL_NAME"] <- names(panels)

@@ -161,7 +161,12 @@ modStats <- function(
 
   if (!all(matching)) {
     ## not all variables are present
-    stop(cat("Can't find the statistic(s)", statistic[!matching], "\n"))
+    cli::cli_abort(
+      c(
+        "x" = "Can't find the statistic{?s} {.val {statistic[!matching]}}.",
+        "i" = "Available statistics: {.val {theStats}}."
+      )
+    )
   }
 
   ## check the data

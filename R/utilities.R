@@ -110,9 +110,8 @@ check_numeric <- function(mydata, vars) {
     if (!is.numeric(mydata[[vars[i]]])) {
       mydata[[vars[i]]] <- as.numeric(as.character(mydata[[vars[i]]]))
 
-      warning(
-        paste(vars[i], "is not numeric, forcing to numeric..."),
-        call. = FALSE
+      cli::cli_warn(
+        "{.field {vars[i]}} is not numeric, forcing to numeric..."
       )
     }
   }
