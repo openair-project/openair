@@ -95,6 +95,11 @@ test_that("brewer1 is an alias for Set1", {
   expect_equal(openColours("brewer1", 5), openColours("Set1", 5))
 })
 
+test_that("qualitative brewer palettes use the first colours when n < 3", {
+  expect_equal(openColours("Set1", 2), openColours("Set1", 3)[1:2])
+  expect_equal(openColours("Dark2", 1), openColours("Dark2", 3)[1])
+})
+
 test_that("cbPalette is an alias for okabeito", {
   expect_equal(openColours("cbPalette", 5), openColours("okabeito", 5))
 })

@@ -46,6 +46,8 @@
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.
 
+- Qualitative ColorBrewer palettes (e.g., `"brewer1"`/`"Set1"`) in `openColours()` now return their first colours when fewer than three are requested, rather than interpolating between the first and last colours of the palette. For example, `openColours("brewer1", 2)` now gives red and blue rather than red and grey.
+
 - `trajCluster()` now returns its plot as well as its data and the function call.
 
 - `importMeta()` will no longer return `end_date` as a character column if `year` is not given, and will no longer return the `start_year` and `end_year` columns if it is.
