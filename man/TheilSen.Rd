@@ -9,6 +9,7 @@ TheilSen(
   pollutant = "nox",
   deseason = FALSE,
   type = "default",
+  group = NULL,
   avg.time = "month",
   statistic = "mean",
   percentile = NA,
@@ -19,12 +20,15 @@ TheilSen(
   lab.cex = 0.8,
   ref.x = NULL,
   ref.y = NULL,
-  data.col = "cornflowerblue",
-  trend = list(lty = c(1, 5), lwd = c(2, 1), col = c("red", "red")),
-  text.col = "darkgreen",
+  trend = list(linetype = c(1, 5), linewidth = c(1.25, 0.5), alpha = 1),
+  ci = TRUE,
   slope.text = NULL,
-  cols = NULL,
+  cols = "brewer1",
   theme = "default",
+  key.title = group,
+  key.columns = NULL,
+  key.rows = NULL,
+  key.position = "bottom",
   auto.text = TRUE,
   autocor = FALSE,
   slope.percent = FALSE,
@@ -68,6 +72,15 @@ possible pollutant source is active or not).
 Most \code{openair} plotting functions can take two \code{type} arguments. If two are
 given, the first is used for the columns and the second for the rows.}
 
+\item{group}{The grouping variable to use, if any. Setting this to a variable
+in the data frame has the effect of fitting and plotting a separate trend
+for each group in the same panel using different colours, with the trend
+estimates (labelled with each group's name) stacked at the top of each
+panel. If set to a variable that is a
+character or factor, those categories or factor levels will be used
+directly. If set to a numeric variable, it will split that variable in to
+quantiles.}
+
 \item{avg.time}{Can be \dQuote{month} (the default), \dQuote{season} or
 \dQuote{year}. Determines the time over which data should be averaged. Note
 that for \dQuote{year}, six or more years are required. For \dQuote{season}
@@ -94,7 +107,8 @@ trend, choose alpha = 0.01 etc.}
 at. The default is 2.}
 
 \item{lab.frac}{Fraction along the y-axis that the trend information should
-be printed at, default 0.99.}
+be printed at, default 0.99. When \code{group} is used, the trend information
+for each group is stacked downwards from this position.}
 
 \item{lab.cex}{Size of text for trend information.}
 
@@ -108,18 +122,22 @@ intercepts to draw lines, or a list such as that provided by \code{\link[=refOpt
 customise the colour/width/type/etc. of each line. See \code{\link[=refOpts]{refOpts()}} for more
 details.}
 
-\item{data.col}{Colour name for the data}
+\item{trend}{A named list controlling the appearance of the trend line and
+its confidence interval lines. Can contain \code{linetype}, \code{linewidth} and
+\code{alpha}. Each can be a single value, applied to all lines, or two values;
+the first for the main trend line and the second for the confidence
+interval lines. Any options not provided use the defaults, so (e.g.)
+\code{trend = list(linewidth = 2)} only changes the line widths. The colour of
+the lines is set using \code{cols}.}
 
-\item{trend}{list containing information on the line width, line type and
-line colour for the main trend line and confidence intervals respectively.}
-
-\item{text.col}{Colour name for the slope/uncertainty numeric estimates}
+\item{ci}{Should the confidence interval lines of the trend be shown? The
+default is \code{TRUE}.}
 
 \item{slope.text}{The text shown for the slope (default is
 \sQuote{units/year}).}
 
-\item{cols}{Predefined colour scheme, currently only enabled for
-\code{"greyscale"}.}
+\item{cols}{Colours to use for the data, trend lines and trend estimates.
+One colour is used per \code{group}. See \code{\link[=openColours]{openColours()}} for more details.}
 
 \item{theme}{A string representing an overall plot theme, defaulting to
 \code{"default"}. This option makes sweeping changes to non-data plot features
@@ -151,6 +169,18 @@ Please note that if a global theme is set with \code{\link[ggplot2:theme_set]{gg
 anything other than the default \code{\link[ggplot2:theme_grey]{ggplot2::theme_grey()}}, the selected
 openair theme will not be fully applied; instead, only minimal adjustments
 (such as legend positioning) will be made.}
+
+\item{key.title}{Used to set the title of the legend. The legend title is
+passed to \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.}
+
+\item{key.columns, key.rows}{Number of columns or rows to be used in a
+categorical legend. With many categories a single column or row can make
+the key fit poorly in the plot. The user can thus choose to use several
+columns by setting \code{key.columns} to be less than the number of categories.}
+
+\item{key.position}{Location where the legend is to be placed. Allowed
+arguments include \code{"top"}, \code{"right"}, \code{"bottom"}, \code{"left"} and \code{"none"},
+the last of which removes the legend entirely.}
 
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
@@ -292,6 +322,11 @@ TheilSen(mydata, pollutant = "o3", ylab = "o3 (ppb)", alpha = 0.01)
 # trend plot by each of 8 wind sectors
 \dontrun{
 TheilSen(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
+}
+
+# separate trends for weekdays and weekends in the same panel
+\dontrun{
+TheilSen(mydata, pollutant = "nox", group = "weekend")
 }
 
 # and for a subset of data (from year 2000 onwards)

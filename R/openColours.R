@@ -615,7 +615,18 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   saturation
 ) {
   max_n <- maxcolors[[scheme]]
-  if (n >= 3L && n <= max_n) {
+  if (n < 3L && scheme %in% .brewer_qual_schemes) {
+    # qualitative palettes take the first n colours rather than interpolating
+    # between the first and last, which would skip the palette's ordering
+    .brewer_pal(
+      3L,
+      scheme,
+      direction = direction,
+      begin = begin,
+      end = end,
+      alpha = alpha
+    )[seq_len(n)]
+  } else if (n >= 3L && n <= max_n) {
     .brewer_pal(
       n,
       scheme,

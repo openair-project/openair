@@ -42,9 +42,23 @@
 
 - `{MASS}` (only used for one statistic type in `polarPlot()`) and `{readr}` (only used in the deprecated `importEurope()`) have been moved to Suggests.
 
+- `TheilSen()` refinements:
+
+    - Gains the `group` argument, which fits and plots a separate trend for each group in the same panel. The trend estimates for each group are stacked at the top of each panel, each prefixed with the group's name.
+    
+    - Gains the `key.title`, `key.columns`, `key.rows` and `key.position` arguments, which control the legend shown when `group` is used.
+    
+    - Colours are now set using `cols` (defaulting to `"brewer1"`) and respond to `theme`, in line with other `{openair}` functions. The data, trend lines and trend estimates of each group share a single colour. The `data.col` and `text.col` arguments are deprecated; `data.col` will be passed to `cols` with a warning, and `text.col` is ignored with a warning.
+
+    - To distinguish the data from the trend, the data are now drawn as semi-transparent filled points and lines (controlled with `alpha`, `size`, `shape`, `linewidth` and `linetype`), with a bolder trend line. The trend and its confidence interval lines now span the period of the data rather than the full width of the panel. As in `smoothTrend()`, the confidence interval can be turned off with the new `ci` argument.
+    
+    - `trend` now takes `{ggplot2}` names, e.g., `trend = list(linetype = c(1, 5), linewidth = c(1.25, 0.5), alpha = 1)`, where the first value applies to the main trend line and the second to the confidence interval lines. Partial lists are merged with the defaults. The previous `lty` and `lwd` names are still accepted, but `col` is ignored with a warning as colours are now set using `cols`.
+
 ## Bug Fixes
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.
+
+- Qualitative ColorBrewer palettes (e.g., `"brewer1"`/`"Set1"`) in `openColours()` now return their first colours when fewer than three are requested, rather than interpolating between the first and last colours of the palette. For example, `openColours("brewer1", 2)` now gives red and blue rather than red and grey.
 
 - `trajCluster()` now returns its plot as well as its data and the function call.
 
