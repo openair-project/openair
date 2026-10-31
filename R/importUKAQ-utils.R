@@ -7,9 +7,7 @@ readUKAQData <-
     data_type = "hourly",
     pollutant = "all",
     hc = FALSE,
-    ratified = FALSE,
     to_narrow = FALSE,
-    verbose = FALSE,
     source = "aurn",
     url_data,
     lmam_subfolder
@@ -24,16 +22,15 @@ readUKAQData <-
 
     files <- paste0(site, "_", year)
 
-    # Download and load data.
+    # Download and load data, suppressing warnings (e.g., unequal factors,
+    # harmless)
     thedata <-
       suppressWarnings(loadData(
         x = files,
-        verbose = verbose,
         url_data = url_data,
         data_type = data_type
       ))
 
-    # suppress warnings for now - unequal factors, harmless
     if (is.null(thedata)) {
       cli::cli_abort(
         "No data to import for {.arg site} {.field {site}} and {.arg year} {.field {year}} from {.arg source} {.field {source}}."
@@ -159,7 +156,7 @@ readUKAQData <-
 
 #' Define downloading and loading function
 #' @noRd
-loadData <- function(x, verbose, url_data, data_type) {
+loadData <- function(x, url_data, data_type) {
   tryCatch(
     {
       # Build the file name
@@ -212,11 +209,8 @@ loadData <- function(x, verbose, url_data, data_type) {
       return(dat)
     },
     error = function(ex) {
-      # Print a message
-      if (verbose) {
-        cli::cli_warn(c("i" = "{x} does not exist - ignoring that one."))
-        return(NULL)
-      }
+      # readUKAQData() reports missing data
+      NULL
     },
     finally = {
       close(con)
@@ -227,7 +221,7 @@ loadData <- function(x, verbose, url_data, data_type) {
 #' function to read annual or monthly files
 #' @noRd
 readSummaryData <-
-  function(files, year, source, data_type, to_narrow, meta, hc) {
+  function(files, year, source, data_type, to_narrow, hc) {
     fileName <- purrr::map(year, function(x) paste0(files, x, ".rds")) |>
       purrr::list_c()
 
@@ -243,8 +237,13 @@ readSummaryData <-
     names(thedata)[names(thedata) == "NOXasNO2.capture"] <-
       "nox_capture"
     names(thedata) <- tolower(names(thedata))
-    names(thedata) <- gsub(".mean", "", names(thedata))
-    names(thedata) <- gsub(".capture", "_capture", names(thedata))
+    names(thedata) <- gsub(".mean", "", names(thedata), fixed = TRUE)
+    names(thedata) <- gsub(
+      ".capture",
+      "_capture",
+      names(thedata),
+      fixed = TRUE
+    )
 
     if (!hc) {
       thedata <- thedata |>

@@ -82,9 +82,9 @@
 #'   station, using the World Geodetic System (<https://epsg.io/4326>).
 #'
 #' - **start_date** and **end_date**: The opening and closing dates of the
-#'   monitoring station. If `by_pollutant = TRUE`, these dates are instead the
-#'   first and last dates at which specific pollutants were measured. A missing
-#'   value, `NA`, indicates that monitoring is ongoing.
+#'   monitoring station. If `all = TRUE`, these dates are instead the first and
+#'   last dates at which specific pollutants were measured. A missing value,
+#'   `NA`, indicates that monitoring is ongoing.
 #'
 #' - **ratified_to**: The date to which data has been ratified
 #'   (i.e., 'quality checked'). Data after this date is subject to change.
@@ -96,8 +96,9 @@
 #' - **local_authority**: The local authority in which the monitoring station
 #'   is found.
 #'
-#' - **provider** and **code**: The specific provider of the locally
-#'   managed dataset (e.g., `"londonair"`).
+#' - **provider** and **pcode**: The specific provider of the locally
+#'   managed dataset (e.g., `"Londonair"`) and its short code (e.g.,
+#'   `"london"`).
 #'
 #' @param source One or more air quality networks for which data is available
 #'   through openair. Available networks include:
@@ -262,12 +263,10 @@ importMeta <-
           source,
           aurn = "https://uk-air.defra.gov.uk/openair/R_data/AURN_metadata.RData",
           saqn = "https://www.scottishairquality.scot/openair/R_data/SCOT_metadata.RData",
-          saqd = "https://www.scottishairquality.scot/openair/R_data/SCOT_metadata.RData",
           ni = "https://www.airqualityni.co.uk/openair/R_data/NI_metadata.RData",
           waqn = "https://airquality.gov.wales/sites/default/files/openair/R_data/WAQ_metadata.RData",
           aqe = "https://airqualityengland.co.uk/assets/openair/R_data/AQE_metadata.RData",
-          local = "https://uk-air.defra.gov.uk/openair/LMAM/R_data/LMAM_metadata.RData",
-          lmam = "https://uk-air.defra.gov.uk/openair/LMAM/R_data/LMAM_metadata.RData"
+          local = "https://uk-air.defra.gov.uk/openair/LMAM/R_data/LMAM_metadata.RData"
         )
 
         meta <- read_wsp_meta(
@@ -493,8 +492,6 @@ importMeta <-
 
 # Read data from WSP's networks
 read_wsp_meta <- function(url, all, year, pollutant) {
-  tmp <- tempfile()
-
   # load data
   con <- url(url)
   on.exit(close(con))

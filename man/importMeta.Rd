@@ -165,9 +165,9 @@ interest.
 \item \strong{latitude} and \strong{longitude}: The coordinates of the monitoring
 station, using the World Geodetic System (\url{https://epsg.io/4326}).
 \item \strong{start_date} and \strong{end_date}: The opening and closing dates of the
-monitoring station. If \code{by_pollutant = TRUE}, these dates are instead the
-first and last dates at which specific pollutants were measured. A missing
-value, \code{NA}, indicates that monitoring is ongoing.
+monitoring station. If \code{all = TRUE}, these dates are instead the first and
+last dates at which specific pollutants were measured. A missing value,
+\code{NA}, indicates that monitoring is ongoing.
 \item \strong{ratified_to}: The date to which data has been ratified
 (i.e., 'quality checked'). Data after this date is subject to change.
 \item \strong{zone} and \strong{agglomeration}: The UK is divided into agglomeration
@@ -175,8 +175,9 @@ zones (large urban areas) and non-agglomeration zones for air quality
 assessment, which are given in these columns.
 \item \strong{local_authority}: The local authority in which the monitoring station
 is found.
-\item \strong{provider} and \strong{code}: The specific provider of the locally
-managed dataset (e.g., \code{"londonair"}).
+\item \strong{provider} and \strong{pcode}: The specific provider of the locally
+managed dataset (e.g., \code{"Londonair"}) and its short code (e.g.,
+\code{"london"}).
 }
 }
 

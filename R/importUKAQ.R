@@ -448,13 +448,12 @@ importUKAQ <-
               site = ..1,
               lmam_subfolder = ..4,
               year = ..5,
-              data_type,
+              data_type = data_type,
               pollutant = pollutant,
               hc = hc,
               to_narrow = to_narrow,
               source = ..2,
-              url_data = ..3,
-              verbose = verbose
+              url_data = ..3
             ),
             quiet = !verbose
           ),
