@@ -5,8 +5,8 @@
 \title{Import air quality data from European database until February 2024}
 \usage{
 importEurope(
-  site = "debw118",
-  year = 2018,
+  site,
+  year,
   tz = "UTC",
   meta = FALSE,
   to_narrow = FALSE,

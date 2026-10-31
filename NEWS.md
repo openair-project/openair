@@ -1,5 +1,9 @@
 # openair (development version)
 
+## Breaking Changes
+
+- `importUKAQ()` and its wrappers (`importAURN()`, `importAQE()`, `importSAQN()`, `importWAQN()`, `importNI()` and `importLocal()`) no longer have default `site` and `year` arguments, which previously silently imported data for an arbitrary site and year. `year` must now always be provided, and `site` must be provided unless `data_type` is `"annual"`, `"monthly"` or `"daqi"`, in which case omitting it imports all sites. Similarly, `importImperial()`, `importKCL()` and `importEurope()` now require both `site` and `year` to be provided.
+
 ## New Features
 
 - All plots gain the `theme` argument to provide a convenient way to set non-data plot aesthetic features, such as gridlines and fonts. The following options are provided:

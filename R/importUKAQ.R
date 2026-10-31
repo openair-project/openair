@@ -90,7 +90,9 @@
 #'   Several sites can be imported at once. For example, `site = c("my1",
 #'   "nott")` imports both Marylebone Road and Nottingham. Sites from different
 #'   networks can be imported through also providing multiple `source`s. Site
-#'   codes can be upper or lower case.
+#'   codes can be upper or lower case. When `data_type` is `"annual"`,
+#'   `"monthly"` or `"daqi"`, `site` can be omitted to import all sites in the
+#'   given `source`(s).
 #' @param year Year(s) to import. To import a series of years use, e.g.,
 #'   `2000:2020`. To import several specific years use `year = c(2000, 2010,
 #'   2020)`.
@@ -191,8 +193,8 @@
 #' }
 importUKAQ <-
   function(
-    site = "my1",
-    year = 2022,
+    site,
+    year,
     source = NULL,
     data_type = "hourly",
     pollutant = "all",
@@ -240,6 +242,29 @@ importUKAQ <-
       data_type <- "15min"
     }
 
+    # year is always required, but site can be omitted for network-wide
+    # statistics to import all sites
+    rlang::check_required(year)
+
+    if (missing(site)) {
+      if (!data_type %in% c("annual", "monthly", "daqi")) {
+        cli::cli_abort(
+          c(
+            "x" = "{.arg site} must be supplied when {.arg data_type} is '{data_type}'.",
+            "i" = "{.arg site} can only be omitted when {.arg data_type} is 'annual', 'monthly' or 'daqi', to import all sites."
+          )
+        )
+      }
+
+      if (is.null(source)) {
+        cli::cli_abort(
+          "Please provide a {.field source} when {.field data_type} is '{data_type}'."
+        )
+      }
+
+      site <- "all"
+    }
+
     # check sources, allowing for the same aliases as importMeta()
     if (!is.null(source)) {
       source <- tolower(source)
@@ -262,11 +287,6 @@ importUKAQ <-
 
     # guess sources
     if (is.null(source)) {
-      if (data_type %in% c("annual", "monthly", "daqi") && missing(site)) {
-        cli::cli_abort(
-          "Please provide a {.field source} when {.field data_type} is '{data_type}'."
-        )
-      }
       source <- guess_source(site)
     }
 
@@ -329,10 +349,6 @@ importUKAQ <-
 
     # Import Annual / Monthly Stats?
     if (data_type %in% c("annual", "monthly")) {
-      if (missing(site)) {
-        site <- "all"
-      }
-
       # create file paths
       source <- unique(source)
       files <- paste0(url_domain, "summary_", data_type, url_abbr)
@@ -363,9 +379,6 @@ importUKAQ <-
         cli::cli_abort(c(
           "!" = "{.arg data_type} 'DAQI' is not available for locally managed networks"
         ))
-      }
-      if (missing(site)) {
-        site <- "all"
       }
 
       # create file paths
@@ -542,7 +555,9 @@ importUKAQ <-
 #' @param site Site code of the site to import, e.g., `"my1"` is Marylebone
 #'   Road. Site codes can be discovered through the use of [importMeta()].
 #'   Several sites can be imported at once. For example, `site = c("my1",
-#'   "nott")` imports both Marylebone Road and Nottingham.
+#'   "nott")` imports both Marylebone Road and Nottingham. When `data_type` is
+#'   `"annual"`, `"monthly"` or `"daqi"`, `site` can be omitted to import all
+#'   sites in the network.
 #'
 #' @inheritParams importUKAQ
 #' @rdname importUKAQ-wrapper
@@ -551,8 +566,8 @@ importUKAQ <-
 #' @export
 importAURN <-
   function(
-    site = "my1",
-    year = 2009,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     hc = FALSE,
@@ -564,12 +579,6 @@ importAURN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (
-      missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")
-    ) {
-      site <- "all"
-    }
-
     importUKAQ(
       site = site,
       year = year,
@@ -592,8 +601,8 @@ importAURN <-
 #' @export
 importAQE <-
   function(
-    site = "yk13",
-    year = 2018,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     meta = FALSE,
@@ -604,12 +613,6 @@ importAQE <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (
-      missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")
-    ) {
-      site <- "all"
-    }
-
     importUKAQ(
       site = site,
       year = year,
@@ -631,8 +634,8 @@ importAQE <-
 #' @export
 importSAQN <-
   function(
-    site = "gla4",
-    year = 2009,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     meta = FALSE,
@@ -643,12 +646,6 @@ importSAQN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (
-      missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")
-    ) {
-      site <- "all"
-    }
-
     importUKAQ(
       site = site,
       year = year,
@@ -670,8 +667,8 @@ importSAQN <-
 #' @export
 importWAQN <-
   function(
-    site = "card",
-    year = 2018,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     meta = FALSE,
@@ -682,12 +679,6 @@ importWAQN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (
-      missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")
-    ) {
-      site <- "all"
-    }
-
     importUKAQ(
       site = site,
       year = year,
@@ -709,8 +700,8 @@ importWAQN <-
 #' @export
 importNI <-
   function(
-    site = "bel0",
-    year = 2018,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     meta = FALSE,
@@ -721,12 +712,6 @@ importNI <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (
-      missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")
-    ) {
-      site <- "all"
-    }
-
     importUKAQ(
       site = site,
       year = year,
@@ -748,8 +733,8 @@ importNI <-
 #' @export
 importLocal <-
   function(
-    site = "ad1",
-    year = 2018,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     meta = FALSE,
@@ -758,12 +743,6 @@ importLocal <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (
-      missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")
-    ) {
-      site <- "all"
-    }
-
     importUKAQ(
       site = site,
       year = year,

@@ -2,8 +2,8 @@
 #' @noRd
 readUKAQData <-
   function(
-    site = "my1",
-    year = 2009,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     hc = FALSE,

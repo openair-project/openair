@@ -5,8 +5,8 @@
 \title{Import data from the UK Air Pollution Networks}
 \usage{
 importUKAQ(
-  site = "my1",
-  year = 2022,
+  site,
+  year,
   source = NULL,
   data_type = "hourly",
   pollutant = "all",
@@ -25,7 +25,9 @@ importUKAQ(
 Road. Site codes can be discovered through the use of \code{\link[=importMeta]{importMeta()}}.
 Several sites can be imported at once. For example, \code{site = c("my1", "nott")} imports both Marylebone Road and Nottingham. Sites from different
 networks can be imported through also providing multiple \code{source}s. Site
-codes can be upper or lower case.}
+codes can be upper or lower case. When \code{data_type} is \code{"annual"},
+\code{"monthly"} or \code{"daqi"}, \code{site} can be omitted to import all sites in the
+given \code{source}(s).}
 
 \item{year}{Year(s) to import. To import a series of years use, e.g.,
 \code{2000:2020}. To import several specific years use \code{year = c(2000, 2010, 2020)}.}

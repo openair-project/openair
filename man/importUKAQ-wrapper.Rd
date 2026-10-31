@@ -10,8 +10,8 @@
 \title{Import data from individual UK Air Pollution Networks}
 \usage{
 importAURN(
-  site = "my1",
-  year = 2009,
+  site,
+  year,
   data_type = "hourly",
   pollutant = "all",
   hc = FALSE,
@@ -25,8 +25,8 @@ importAURN(
 )
 
 importAQE(
-  site = "yk13",
-  year = 2018,
+  site,
+  year,
   data_type = "hourly",
   pollutant = "all",
   meta = FALSE,
@@ -39,8 +39,8 @@ importAQE(
 )
 
 importSAQN(
-  site = "gla4",
-  year = 2009,
+  site,
+  year,
   data_type = "hourly",
   pollutant = "all",
   meta = FALSE,
@@ -53,8 +53,8 @@ importSAQN(
 )
 
 importWAQN(
-  site = "card",
-  year = 2018,
+  site,
+  year,
   data_type = "hourly",
   pollutant = "all",
   meta = FALSE,
@@ -67,8 +67,8 @@ importWAQN(
 )
 
 importNI(
-  site = "bel0",
-  year = 2018,
+  site,
+  year,
   data_type = "hourly",
   pollutant = "all",
   meta = FALSE,
@@ -81,8 +81,8 @@ importNI(
 )
 
 importLocal(
-  site = "ad1",
-  year = 2018,
+  site,
+  year,
   data_type = "hourly",
   pollutant = "all",
   meta = FALSE,
@@ -95,7 +95,9 @@ importLocal(
 \arguments{
 \item{site}{Site code of the site to import, e.g., \code{"my1"} is Marylebone
 Road. Site codes can be discovered through the use of \code{\link[=importMeta]{importMeta()}}.
-Several sites can be imported at once. For example, \code{site = c("my1", "nott")} imports both Marylebone Road and Nottingham.}
+Several sites can be imported at once. For example, \code{site = c("my1", "nott")} imports both Marylebone Road and Nottingham. When \code{data_type} is
+\code{"annual"}, \code{"monthly"} or \code{"daqi"}, \code{site} can be omitted to import all
+sites in the network.}
 
 \item{year}{Year(s) to import. To import a series of years use, e.g.,
 \code{2000:2020}. To import several specific years use \code{year = c(2000, 2010, 2020)}.}

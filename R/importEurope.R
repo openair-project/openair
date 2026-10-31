@@ -33,13 +33,15 @@
 #' }
 #'
 importEurope <- function(
-  site = "debw118",
-  year = 2018,
+  site,
+  year,
   tz = "UTC",
   meta = FALSE,
   to_narrow = FALSE,
   progress = TRUE
 ) {
+  rlang::check_required(site)
+  rlang::check_required(year)
   rlang::check_installed("readr")
 
   # warn/error w/ deprecation
