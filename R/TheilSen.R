@@ -73,23 +73,37 @@
 #' @param dec.place The number of decimal places to display the trend estimate
 #'   at. The default is 2.
 #'
+#' @param group The grouping variable to use, if any. Setting this to a variable
+#'   in the data frame has the effect of fitting and plotting a separate trend
+#'   for each group in the same panel using different colours, with the trend
+#'   estimates (labelled with each group's name) stacked at the top of each
+#'   panel. If set to a variable that is a
+#'   character or factor, those categories or factor levels will be used
+#'   directly. If set to a numeric variable, it will split that variable in to
+#'   quantiles.
+#'
 #' @param lab.frac Fraction along the y-axis that the trend information should
-#'   be printed at, default 0.99.
+#'   be printed at, default 0.99. When `group` is used, the trend information
+#'   for each group is stacked downwards from this position.
 #'
 #' @param lab.cex Size of text for trend information.
 #'
-#' @param data.col Colour name for the data
+#' @param trend A named list controlling the appearance of the trend line and
+#'   its confidence interval lines. Can contain `linetype`, `linewidth` and
+#'   `alpha`. Each can be a single value, applied to all lines, or two values;
+#'   the first for the main trend line and the second for the confidence
+#'   interval lines. Any options not provided use the defaults, so (e.g.)
+#'   `trend = list(linewidth = 2)` only changes the line widths. The colour of
+#'   the lines is set using `cols`.
 #'
-#' @param trend list containing information on the line width, line type and
-#'   line colour for the main trend line and confidence intervals respectively.
-#'
-#' @param text.col Colour name for the slope/uncertainty numeric estimates
+#' @param ci Should the confidence interval lines of the trend be shown? The
+#'   default is `TRUE`.
 #'
 #' @param slope.text The text shown for the slope (default is
 #'   \sQuote{units/year}).
 #'
-#' @param cols Predefined colour scheme, currently only enabled for
-#'   `"greyscale"`.
+#' @param cols Colours to use for the data, trend lines and trend estimates.
+#'   One colour is used per `group`. See [openColours()] for more details.
 #'
 #' @param autocor Should autocorrelation be considered in the trend uncertainty
 #'   estimates? The default is `FALSE`. Generally, accounting for
@@ -166,6 +180,11 @@
 #' TheilSen(mydata, pollutant = "o3", type = "wd", ylab = "o3 (ppb)")
 #' }
 #'
+#' # separate trends for weekdays and weekends in the same panel
+#' \dontrun{
+#' TheilSen(mydata, pollutant = "nox", group = "weekend")
+#' }
+#'
 #' # and for a subset of data (from year 2000 onwards)
 #' \dontrun{
 #' TheilSen(selectByDate(mydata, year = 2000:2005), pollutant = "o3", ylab = "o3 (ppb)")
@@ -175,6 +194,7 @@ TheilSen <- function(
   pollutant = "nox",
   deseason = FALSE,
   type = "default",
+  group = NULL,
   avg.time = "month",
   statistic = "mean",
   percentile = NA,
@@ -185,12 +205,15 @@ TheilSen <- function(
   lab.cex = 0.8,
   ref.x = NULL,
   ref.y = NULL,
-  data.col = "cornflowerblue",
-  trend = list(lty = c(1, 5), lwd = c(2, 1), col = c("red", "red")),
-  text.col = "darkgreen",
+  trend = list(linetype = c(1, 5), linewidth = c(1.25, 0.75), alpha = 1),
+  ci = TRUE,
   slope.text = NULL,
-  cols = NULL,
+  cols = "brewer1",
   theme = "default",
+  key.title = group,
+  key.columns = NULL,
+  key.rows = NULL,
+  key.position = "bottom",
   auto.text = TRUE,
   autocor = FALSE,
   slope.percent = FALSE,
@@ -203,14 +226,50 @@ TheilSen <- function(
   # 1. Input Checking & Argument Setup
   rlang::arg_match(avg.time, c("year", "month", "season"))
 
-  if (length(cols) == 1 && cols == "greyscale") {
-    trend$col <- c("black", "black")
-    data.col <- "darkgrey"
-    text.col <- "black"
+  # check key.position
+  key.position <- check_key_position(key.position, NULL)
+
+  # default colour based on theme
+  cols_missing <- missing(cols)
+  if (cols_missing) {
+    cols <- get_theme_cols(cols, theme, "qual")
   }
 
   # extra.args setup
   extra.args <- capture_dots(...)
+
+  # deprecated colour arguments
+  if ("data.col" %in% names(extra.args)) {
+    cli::cli_warn(
+      "{.arg data.col} is deprecated. Please use {.arg cols} to set the colour of the data and trend."
+    )
+    if (cols_missing) {
+      cols <- extra.args$data.col
+    }
+  }
+  if ("text.col" %in% names(extra.args)) {
+    cli::cli_warn(
+      "{.arg text.col} is deprecated and will be ignored. The trend estimates now use the colours given by {.arg cols}."
+    )
+  }
+  extra.args[c("data.col", "text.col")] <- NULL
+
+  trend <- resolve_theilsen_trend(trend)
+
+  # validate group
+  if (!is.null(group)) {
+    if (length(group) != 1L) {
+      cli::cli_abort("{.arg group} must be a single variable name.")
+    }
+    if (group %in% type) {
+      cli::cli_abort(
+        "{.arg group} variable {.val {group}} is also used in {.arg type}. Choose one or the other."
+      )
+    }
+  }
+
+  # all variables the data are split by
+  vars <- c(type, group)
 
   # label controls
   extra.args$ylab <- quickText(extra.args$ylab %||% pollutant, auto.text)
@@ -231,12 +290,15 @@ TheilSen <- function(
     interval <- "year"
   }
 
-  mydata <- checkPrep(mydata, c("date", pollutant), type, remove.calm = FALSE)
-  mydata <- cutData(mydata, type, ...)
+  mydata <- checkPrep(mydata, c("date", pollutant), vars, remove.calm = FALSE)
+
+  # numeric groups are binned by cutData() so are treated as ordered in the key
+  group_is_binned <- !is.null(group) && is.numeric(mydata[[group]])
+  mydata <- cutData(mydata, vars, ...)
 
   mydata <- timeAverage(
     mydata,
-    type = type,
+    type = vars,
     avg.time = avg.time,
     statistic = statistic,
     percentile = percentile,
@@ -251,7 +313,7 @@ TheilSen <- function(
 
   # 3. Calculate Theil-Sen statistics (Bootstrap)
   split.data <- mydata |>
-    dplyr::group_by(dplyr::across(dplyr::all_of(type))) |>
+    dplyr::group_by(dplyr::across(dplyr::all_of(vars))) |>
     tidyr::nest() |>
     dplyr::mutate(
       data = purrr::map(
@@ -287,27 +349,33 @@ TheilSen <- function(
   res2 <- dplyr::summarise(
     split.data,
     dplyr::across(dplyr::everything(), ~ mean(.x, na.rm = TRUE)),
-    .by = dplyr::all_of(c(type, "p.stars"))
+    .by = dplyr::all_of(c(vars, "p.stars"))
   ) |>
     tidyr::drop_na()
 
-  percent_data <- add_percentage_change(split.data, type)
-  split.data <- dplyr::left_join(split.data, percent_data, by = type)
-  res2 <- dplyr::left_join(res2, percent_data, by = type)
+  percent_data <- add_percentage_change(split.data, vars)
+  split.data <- dplyr::left_join(split.data, percent_data, by = vars)
+  res2 <- dplyr::left_join(res2, percent_data, by = vars)
 
   # 5. Build and output plot
   thePlot <- build_theilsen_plot(
     split.data = split.data,
     res2 = res2,
     type = type,
+    group = group,
+    group_is_binned = group_is_binned,
     slope.percent = slope.percent,
     dec.place = dec.place,
     slope.text = slope.text,
     lab.cex = lab.cex,
     lab.frac = lab.frac,
-    text.col = text.col,
-    data.col = data.col,
     trend = trend,
+    ci = ci,
+    cols = cols,
+    key.title = key.title,
+    key.columns = key.columns,
+    key.rows = key.rows,
+    key.position = key.position,
     extra.args = extra.args,
     ref.x = ref.x,
     ref.y = ref.y,
@@ -477,6 +545,67 @@ pct_per_year <- function(slope, intercept, date_start, date_end) {
   100 * 365 * (c_end / c_start - 1) / (d_end - d_start)
 }
 
+# Merge user `trend` options with the defaults, mapping the legacy lattice names
+# and recycling each option to length 2 (main trend, confidence lines)
+resolve_theilsen_trend <- function(trend) {
+  if (
+    !rlang::is_list(trend) || (length(trend) > 0 && !rlang::is_named(trend))
+  ) {
+    cli::cli_abort(
+      "{.arg trend} must be a named list, e.g., {.code list(linetype = c(1, 5), linewidth = c(1.25, 0.5))}."
+    )
+  }
+
+  if ("col" %in% names(trend)) {
+    cli::cli_warn(
+      "{.code trend$col} is no longer used and will be ignored. The trend lines now use the colours given by {.arg cols}."
+    )
+  }
+
+  # lattice lwd was previously halved to give the ggplot2 linewidth
+  trend$linetype <- trend$linetype %||% trend$lty
+  if (!is.null(trend$lwd)) {
+    trend$linewidth <- trend$linewidth %||% (trend$lwd / 2)
+  }
+
+  defaults <- list(linetype = c(1, 5), linewidth = c(1.25, 0.75), alpha = 1)
+  purrr::imap(defaults, \(default, nm) rep_len(trend[[nm]] %||% default, 2L))
+}
+
+# Predicted trend and upper/lower confidence lines over the data period of each
+# subset
+build_theilsen_fit <- function(split.data, res2, vars) {
+  date_range <- split.data |>
+    dplyr::filter(!is.na(.data$conc)) |>
+    dplyr::summarise(
+      start = min(.data$date),
+      end = max(.data$date),
+      .by = dplyr::all_of(vars)
+    )
+
+  res2 |>
+    dplyr::select(dplyr::all_of(c(
+      vars,
+      "a",
+      "b",
+      "upper.a",
+      "upper.b",
+      "lower.a",
+      "lower.b"
+    ))) |>
+    dplyr::inner_join(date_range, by = vars) |>
+    dplyr::mutate(
+      date = purrr::map2(.data$start, .data$end, \(s, e) c(s, e))
+    ) |>
+    tidyr::unnest("date") |>
+    dplyr::mutate(
+      x = as.numeric(.data$date),
+      pred = .data$a + .data$b * .data$x,
+      upper = .data$upper.a + .data$upper.b * .data$x,
+      lower = .data$lower.a + .data$lower.b * .data$x
+    )
+}
+
 # Function to calculate Theil-Sen slope estimates, confidence intervals, and p values
 mk_stats <- function(x, y, alpha, autocor, silent) {
   # Run the bootstrap regression on the RAW uncentered data
@@ -516,14 +645,20 @@ build_theilsen_plot <- function(
   split.data,
   res2,
   type,
+  group,
+  group_is_binned,
   slope.percent,
   dec.place,
   slope.text,
   lab.cex,
   lab.frac,
-  text.col,
-  data.col,
   trend,
+  ci,
+  cols,
+  key.title,
+  key.columns,
+  key.rows,
+  key.position,
   extra.args,
   ref.x,
   ref.y,
@@ -539,54 +674,138 @@ build_theilsen_plot <- function(
 
   x_type <- if (lubridate::is.Date(split.data$date)) "date" else "datetime"
 
+  # without a group, use a single dummy group so the plot is built the same way
+  has_group <- !is.null(group)
+  group_var <- group %||% ".group"
+  if (!has_group) {
+    split.data[[group_var]] <- "all"
+    res2[[group_var]] <- "all"
+  }
+
+  group_levels <- levels(as.factor(split.data[[group_var]]))
+  n_groups <- length(group_levels)
+  split.data[[group_var]] <- factor(split.data[[group_var]], group_levels)
+  res2[[group_var]] <- factor(res2[[group_var]], group_levels)
+
+  # trend labels are plotmath strings so that group names are formatted the
+  # same way as in the legend; the group name is included so the labels don't
+  # rely on colour alone
+  trend_text <- paste0(
+    round(res2[[slope_var]], dec.place),
+    " [",
+    round(res2[[lower_var]], dec.place),
+    ", ",
+    round(res2[[upper_var]], dec.place),
+    "] ",
+    slope.text %||% paste0(units_str, "/year"),
+    " ",
+    res2$p.stars
+  )
+  trend_text <- vapply(trend_text, deparse, character(1), USE.NAMES = FALSE)
+  res2$.label <- if (has_group) {
+    group_text <- vapply(
+      as.character(res2[[group_var]]),
+      .fmt_varname,
+      character(1),
+      auto.text = auto.text,
+      USE.NAMES = FALSE
+    )
+    # quickText() pads its output with a trailing space
+    group_text <- sub(" \"\\)$", "\")", group_text)
+    paste0("paste(", group_text, ", ': ', ", trend_text, ")")
+  } else {
+    trend_text
+  }
+  # fontface is ignored by parsed labels, so embolden in plotmath
+  res2$.label <- paste0("bold(", res2$.label, ")")
+
+  # binned groups are reversed in side legends; stack labels in the same order
+  reverse_key <- group_is_binned && key.position %in% c("left", "right")
+
+  # stack trend labels within each panel, one line per group
+  res2 <- dplyr::mutate(
+    res2,
+    .g_idx = dplyr::dense_rank(
+      as.integer(.data[[group_var]]) * if (reverse_key) -1L else 1L
+    ),
+    .by = dplyr::all_of(type)
+  )
+
+  theGuide <- guide_openair(
+    key.position,
+    reverse = group_is_binned,
+    ncol = key.columns,
+    nrow = key.rows,
+    var_text_position = FALSE,
+    override.aes = list(alpha = 1)
+  )
+
+  # trend and confidence lines, drawn over the period of each group's data
+  fit_data <- build_theilsen_fit(split.data, res2, c(type, group_var))
+
   ggplot2::ggplot() +
     ggplot2::geom_line(
       data = split.data,
-      mapping = ggplot2::aes(x = .data$date, y = .data$conc),
-      colour = data.col,
-      linewidth = extra.args$linewidth[1] %||% 0.75,
+      mapping = ggplot2::aes(
+        x = .data$date,
+        y = .data$conc,
+        colour = .data[[group_var]]
+      ),
+      linewidth = extra.args$linewidth[1] %||% 0.5,
       linetype = extra.args$linetype[1] %||% 1,
-      alpha = extra.args$alpha %||% 1,
+      alpha = extra.args$alpha[1] %||% 0.5,
       lineend = extra.args$lineend %||% "butt",
       linejoin = extra.args$linejoin %||% "round",
       linemitre = extra.args$linemitre %||% 10
     ) +
     ggplot2::geom_point(
       data = split.data,
-      mapping = ggplot2::aes(x = .data$date, y = .data$conc),
-      size = extra.args$size[1] %||% 3,
-      shape = extra.args$shape[1] %||% 1,
-      alpha = extra.args$alpha[1] %||% 1,
-      colour = data.col
+      mapping = ggplot2::aes(
+        x = .data$date,
+        y = .data$conc,
+        colour = .data[[group_var]]
+      ),
+      size = extra.args$size[1] %||% 2,
+      shape = extra.args$shape[1] %||% 16,
+      alpha = extra.args$alpha[1] %||% 0.5
     ) +
     ggplot2::geom_point(
       data = dplyr::filter(split.data, .data$imputed),
       mapping = ggplot2::aes(x = .data$date, y = .data$conc),
-      size = extra.args$cex %||% 3,
+      size = extra.args$size[1] %||% 2,
       shape = 21,
       fill = "grey50",
       colour = "grey20"
     ) +
-    ggplot2::geom_abline(
-      data = res2,
-      mapping = ggplot2::aes(intercept = .data$a, slope = .data$b),
-      color = trend$col[1],
-      linewidth = trend$lwd[1] / 2,
-      linetype = trend$lty[1]
-    ) +
-    ggplot2::geom_abline(
-      data = res2,
-      mapping = ggplot2::aes(intercept = .data$upper.a, slope = .data$upper.b),
-      color = trend$col[2],
-      linewidth = trend$lwd[2] / 2,
-      linetype = trend$lty[2]
-    ) +
-    ggplot2::geom_abline(
-      data = res2,
-      mapping = ggplot2::aes(intercept = .data$lower.a, slope = .data$lower.b),
-      color = trend$col[2],
-      linewidth = trend$lwd[2] / 2,
-      linetype = trend$lty[2]
+    {
+      if (ci) {
+        purrr::map(c("upper", "lower"), \(bound) {
+          ggplot2::geom_line(
+            data = fit_data,
+            mapping = ggplot2::aes(
+              x = .data$date,
+              y = .data[[bound]],
+              colour = .data[[group_var]]
+            ),
+            linewidth = trend$linewidth[2],
+            linetype = trend$linetype[2],
+            alpha = trend$alpha[2],
+            show.legend = FALSE
+          )
+        })
+      }
+    } +
+    ggplot2::geom_line(
+      data = fit_data,
+      mapping = ggplot2::aes(
+        x = .data$date,
+        y = .data$pred,
+        colour = .data[[group_var]]
+      ),
+      linewidth = trend$linewidth[1],
+      linetype = trend$linetype[1],
+      alpha = trend$alpha[1],
+      show.legend = FALSE
     ) +
     layer_ref(
       ref = ref.x,
@@ -605,30 +824,29 @@ build_theilsen_plot <- function(
     ggplot2::geom_text(
       data = res2,
       mapping = ggplot2::aes(
-        label = paste(
-          round(.data[[slope_var]], dec.place),
-          " [",
-          round(.data[[lower_var]], dec.place),
-          ", ",
-          round(.data[[upper_var]], dec.place),
-          "] ",
-          slope.text %||% paste0(units_str, "/year"),
-          " ",
-          .data$p.stars,
-          sep = ""
-        )
+        label = .data$.label,
+        colour = .data[[group_var]],
+        vjust = 1 + (.data$.g_idx - 1) * 1.5
       ),
       size = lab.cex * 5,
-      color = text.col,
       y = I(lab.frac),
       x = I(0.5),
-      vjust = 1,
-      fontface = "bold"
+      parse = TRUE,
+      show.legend = FALSE
+    ) +
+    ggplot2::scale_colour_manual(
+      values = resolve_colour_opts(cols, n_groups),
+      breaks = group_levels,
+      labels = lapply(group_levels, \(x) {
+        label_openair(x, auto_text = auto.text)
+      }),
+      drop = FALSE,
+      guide = theGuide
     ) +
     theme_openair(
       theme = theme,
       coord = "cartesian",
-      key.position = "none",
+      key.position = if (has_group) key.position else "none",
       extra.args
     ) +
     get_facet(
@@ -648,6 +866,7 @@ build_theilsen_plot <- function(
     ggplot2::labs(
       x = extra.args$xlab,
       y = extra.args$ylab,
+      colour = quickText(key.title, auto.text),
       title = extra.args$title,
       subtitle = extra.args$subtitle,
       caption = extra.args$caption,
