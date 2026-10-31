@@ -120,7 +120,8 @@ not available for locally managed monitoring networks.
 from a site. To import only NOx and NO2 for example use \code{pollutant = c("nox", "no2")}. Pollutant names can be upper or lower case.}
 
 \item{hc}{Include hydrocarbon measurements in the imported data? Defaults to
-\code{FALSE} as most users will not be interested in using hydrocarbon data.}
+\code{FALSE} as most users will not be interested in using hydrocarbon data.
+Hydrocarbon data are only available for the AURN.}
 
 \item{meta}{Append metadata columns to data for each selected \code{site}?
 Defaults to \code{FALSE}. Columns are defined using \code{meta_columns}.}
@@ -135,11 +136,12 @@ Defaults to site type, latitude and longitude. Can be any of \code{"site_type"},
 \code{TRUE}, which will return wind speed (\code{ws}), wind direction (\code{wd}) and
 ambient temperature (\code{air_temp}). The variables are calculated from using
 the WRF model run by WSP and are available for most but not all networks.
-Setting \code{meteo = FALSE} is useful if you have other meteorological data to
-use in preference, for example from the \code{worldmet} package.}
+They are not available for locally managed networks. Setting \code{meteo = FALSE} is useful if you have other meteorological data to use in
+preference, for example from the \code{worldmet} package.}
 
 \item{ratified}{Append \code{qc} column(s) to hourly data indicating whether each
-species was ratified (i.e., quality-checked)?  Defaults to \code{FALSE}.}
+species was ratified (i.e., quality-checked)?  Defaults to \code{FALSE}.
+Ratification information is not available for locally managed networks.}
 
 \item{to_narrow}{Return the data in a "narrow"/"long"/"tidy" format? By
 default the returned data is "wide" and has a column for each
@@ -163,6 +165,17 @@ and Northern Ireland (NI) Networks, and many "locally managed" monitoring
 networks across England. While \code{\link[=importUKAQ]{importUKAQ()}} allows for data to be imported
 more flexibly, including across multiple monitoring networks, these functions
 are provided for convenience and back-compatibility.
+}
+\details{
+Not every argument is available in every wrapper, as not all data are
+available for every network:
+\itemize{
+\item \code{hc} is only available in \code{\link[=importAURN]{importAURN()}}, as hydrocarbon data are only
+measured by the AURN.
+\item \code{meteo} and \code{ratified} are not available in \code{\link[=importLocal]{importLocal()}}, as neither
+modelled meteorological data nor ratification information are available for
+locally managed networks.
+}
 }
 \section{Importing UK Air Pollution Data}{
 

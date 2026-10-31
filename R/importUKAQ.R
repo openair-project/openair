@@ -125,6 +125,7 @@
 #'   c("nox", "no2")`. Pollutant names can be upper or lower case.
 #' @param hc Include hydrocarbon measurements in the imported data? Defaults to
 #'   `FALSE` as most users will not be interested in using hydrocarbon data.
+#'   Hydrocarbon data are only available for the AURN.
 #' @param meta Append metadata columns to data for each selected `site`?
 #'   Defaults to `FALSE`. Columns are defined using `meta_columns`.
 #' @param meta_columns The specific columns to append when `meta = TRUE`.
@@ -136,10 +137,12 @@
 #'   `TRUE`, which will return wind speed (`ws`), wind direction (`wd`) and
 #'   ambient temperature (`air_temp`). The variables are calculated from using
 #'   the WRF model run by WSP and are available for most but not all networks.
-#'   Setting `meteo = FALSE` is useful if you have other meteorological data to
-#'   use in preference, for example from the `worldmet` package.
+#'   They are not available for locally managed networks. Setting `meteo =
+#'   FALSE` is useful if you have other meteorological data to use in
+#'   preference, for example from the `worldmet` package.
 #' @param ratified Append `qc` column(s) to hourly data indicating whether each
 #'   species was ratified (i.e., quality-checked)?  Defaults to `FALSE`.
+#'   Ratification information is not available for locally managed networks.
 #' @param to_narrow Return the data in a "narrow"/"long"/"tidy" format? By
 #'   default the returned data is "wide" and has a column for each
 #'   pollutant/variable. When `to_narrow = TRUE` the data are returned with a
@@ -417,8 +420,7 @@ importUKAQ <-
         # get pcodes for file paths
         pcodes <-
           importMeta("local", all = TRUE) |>
-          dplyr::distinct(.data$site, .keep_all = TRUE) |>
-          dplyr::select("code", "pcode")
+          dplyr::distinct(dplyr::pick("code", "pcode"))
 
         # get sites and pcodes
         site_info <-
@@ -469,6 +471,12 @@ importUKAQ <-
       }
 
       if (ratified && data_type == "hourly") {
+        if ("local" %in% source) {
+          cli::cli_warn(
+            "Ratification information is not available for locally managed networks; their {.field qc} values will be {.val {NA}}."
+          )
+        }
+
         aq_data <-
           add_ratified(
             aq_data = aq_data,
@@ -519,6 +527,16 @@ importUKAQ <-
 #' more flexibly, including across multiple monitoring networks, these functions
 #' are provided for convenience and back-compatibility.
 #'
+#' Not every argument is available in every wrapper, as not all data are
+#' available for every network:
+#'
+#' - `hc` is only available in [importAURN()], as hydrocarbon data are only
+#' measured by the AURN.
+#'
+#' - `meteo` and `ratified` are not available in [importLocal()], as neither
+#' modelled meteorological data nor ratification information are available for
+#' locally managed networks.
+#'
 #' @inheritSection importUKAQ Importing UK Air Pollution Data
 #'
 #' @param site Site code of the site to import, e.g., `"my1"` is Marylebone
@@ -546,7 +564,9 @@ importAURN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")) {
+    if (
+      missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")
+    ) {
       site <- "all"
     }
 
@@ -584,7 +604,9 @@ importAQE <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")) {
+    if (
+      missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")
+    ) {
       site <- "all"
     }
 
@@ -621,7 +643,9 @@ importSAQN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")) {
+    if (
+      missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")
+    ) {
       site <- "all"
     }
 
@@ -658,7 +682,9 @@ importWAQN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")) {
+    if (
+      missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")
+    ) {
       site <- "all"
     }
 
@@ -695,7 +721,9 @@ importNI <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")) {
+    if (
+      missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")
+    ) {
       site <- "all"
     }
 
@@ -730,7 +758,9 @@ importLocal <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")) {
+    if (
+      missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")
+    ) {
       site <- "all"
     }
 
@@ -741,6 +771,7 @@ importLocal <-
       pollutant = pollutant,
       meta = meta,
       meta_columns = meta_columns,
+      # no modelled met or ratification information for locally managed data
       meteo = TRUE,
       ratified = FALSE,
       to_narrow = to_narrow,

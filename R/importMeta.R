@@ -143,9 +143,9 @@
 #'   to networks available through [importUKAQ()].
 #'
 #' @param lat,lng Decimal latitude (`lat`) and longitude (`lng`) (or other Y/X
-#'   coordinate if using a different `crs`). If provided, the data will be
-#'   returned with a `distance_km` column displaying the distance of each
-#'   station from the target coordinate. The data will also be automatically
+#'   coordinate if using a different `crs`). Both must be single numbers. If
+#'   provided, the data will be returned with a `distance_km` column displaying
+#'   the distance of each station from the target coordinate. The data will also be automatically
 #'   sorted by this column.
 #'
 #' @param crs The coordinate reference system (CRS) of the data, passed to
@@ -159,7 +159,8 @@
 #' @param max_dist,max_n If `lat` and `lng` are provided, `max_dist` and `max_n`
 #'   further filter the metadata. `max_dist` defines a maximum distance from the
 #'   target coordinate in kilometers, and `max_n` a maximum number of sites to
-#'   be returned. `max_n` is applied after `max_dist`.
+#'   be returned. `max_n` is applied after `max_dist`. Both are ignored, with a
+#'   warning, if `lat` and `lng` are not provided.
 #'
 #' @param all When `all = FALSE` only the site code, site name, latitude and
 #'   longitude and site type are imported. Setting `all = TRUE` will import all
@@ -255,6 +256,30 @@ importMeta <-
       ),
       multiple = TRUE
     )
+
+    # check spatial filtering arguments
+    if (xor(is.null(lat), is.null(lng))) {
+      cli::cli_abort(
+        "Both {.arg lat} and {.arg lng} must be provided to filter sites by distance."
+      )
+    }
+
+    if (!is.null(lat)) {
+      if (
+        !is.numeric(lat) ||
+          !is.numeric(lng) ||
+          length(lat) != 1 ||
+          length(lng) != 1
+      ) {
+        cli::cli_abort(
+          "{.arg lat} and {.arg lng} must each be a single number."
+        )
+      }
+    } else if (!is.null(max_dist) || !is.null(max_n)) {
+      cli::cli_warn(
+        "{.arg max_dist} and {.arg max_n} are ignored unless {.arg lat} and {.arg lng} are provided."
+      )
+    }
 
     # function to import any of the source networks
     get_meta <- function(source, all) {
@@ -617,9 +642,14 @@ read_wsp_meta <- function(url, all, year, pollutant) {
   }
 
   # only extract one line per site to make it easier to use file
-  # mostly interested in coordinates
+  # mostly interested in coordinates. Local sites can be listed by more than
+  # one provider so are also distinguished by "pcode"
   if (!all) {
-    meta <- dplyr::distinct(meta, .data$site, .keep_all = TRUE)
+    meta <- dplyr::distinct(
+      meta,
+      dplyr::across(dplyr::any_of(c("code", "pcode"))),
+      .keep_all = TRUE
+    )
   }
 
   return(meta)

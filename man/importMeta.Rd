@@ -65,9 +65,9 @@ return data for \code{"Sunderland"}, \code{"Sunderland Silksworth"} and \code{"S
 their name).}
 
 \item{lat, lng}{Decimal latitude (\code{lat}) and longitude (\code{lng}) (or other Y/X
-coordinate if using a different \code{crs}). If provided, the data will be
-returned with a \code{distance_km} column displaying the distance of each
-station from the target coordinate. The data will also be automatically
+coordinate if using a different \code{crs}). Both must be single numbers. If
+provided, the data will be returned with a \code{distance_km} column displaying
+the distance of each station from the target coordinate. The data will also be automatically
 sorted by this column.}
 
 \item{crs}{The coordinate reference system (CRS) of the data, passed to
@@ -80,7 +80,8 @@ metadata.}
 \item{max_dist, max_n}{If \code{lat} and \code{lng} are provided, \code{max_dist} and \code{max_n}
 further filter the metadata. \code{max_dist} defines a maximum distance from the
 target coordinate in kilometers, and \code{max_n} a maximum number of sites to
-be returned. \code{max_n} is applied after \code{max_dist}.}
+be returned. \code{max_n} is applied after \code{max_dist}. Both are ignored, with a
+warning, if \code{lat} and \code{lng} are not provided.}
 
 \item{all}{When \code{all = FALSE} only the site code, site name, latitude and
 longitude and site type are imported. Setting \code{all = TRUE} will import all

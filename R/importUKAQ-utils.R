@@ -417,8 +417,14 @@ add_meta <- function(source, columns, aq_data) {
 #' Function to add ratified flag to hourly data
 #' @noRd
 add_ratified <- function(aq_data, source, to_narrow) {
-  meta <-
-    importMeta(unique(source), all = TRUE, duplicate = TRUE) |>
+  meta <- importMeta(unique(source), all = TRUE, duplicate = TRUE)
+
+  # locally managed networks have no ratification information
+  if (!"ratified_to" %in% names(meta)) {
+    meta$ratified_to <- as.POSIXct(NA, tz = "GMT")
+  }
+
+  meta <- meta |>
     dplyr::filter(
       .data$code %in% aq_data$code,
       !.data$variable %in%
@@ -433,7 +439,15 @@ add_ratified <- function(aq_data, source, to_narrow) {
         )
     ) |>
     dplyr::select("source", "code", "variable", "ratified_to") |>
-    dplyr::mutate(variable = tolower(.data$variable))
+    dplyr::mutate(variable = tolower(.data$variable)) |>
+    # sites can be listed more than once in a network (e.g., by multiple local
+    # providers)
+    dplyr::distinct(
+      .data$source,
+      .data$code,
+      .data$variable,
+      .keep_all = TRUE
+    )
 
   if (to_narrow) {
     meta <-
