@@ -150,10 +150,11 @@
 #'   pollutant/variable. When `to_narrow = TRUE` the data are returned with a
 #'   column identifying the pollutant name and a column containing the
 #'   corresponding concentration/statistic. Defaults to `FALSE`.
-#' @param verbose Print messages to the console if hourly data cannot be
+#' @param verbose Print a message to the console if any data cannot be
 #'   imported? Default is `FALSE`. `TRUE` is useful for debugging as the
 #'   specific `year`(s), `site`(s) and `source`(s) which cannot be imported will
-#'   be returned.
+#'   be listed. Not used when `data_type` is `"annual"`, `"monthly"` or
+#'   `"daqi"`.
 #' @param progress Show a progress bar when many sites/years are being imported?
 #'   Defaults to `TRUE`.
 #'
@@ -227,14 +228,18 @@ importUKAQ <-
     data_type <- tolower(data_type)
 
     if (length(data_type) != 1 || !data_type %in% allowed_types) {
-      cli::cli_warn(
+      cli::cli_abort(
         c(
-          "!" = "'{data_type}' not recognised. Setting {.arg data_type} to 'hourly'",
-          "i" = "{.arg data_type} should be one of: {allowed_types}"
+          "x" = "{.arg data_type} {.val {data_type}} not recognised.",
+          "i" = "{.arg data_type} should be one of: {.val {allowed_types}}."
         )
       )
+    }
 
-      data_type <- "hourly"
+    if (ratified && data_type != "hourly") {
+      cli::cli_warn(
+        "{.arg ratified} is only available for hourly data, and will be ignored for {.arg data_type} '{data_type}'."
+      )
     }
 
     # handle 15_min for back-compatibility reasons
@@ -469,12 +474,16 @@ importUKAQ <-
               to_narrow = to_narrow,
               source = ..2,
               url_data = ..3
-            ),
-            quiet = !verbose
+            )
           ),
           .progress = ifelse(progress, "Importing AQ Data", FALSE)
-        ) |>
-        purrr::list_rbind()
+        )
+
+      if (verbose) {
+        warn_failed_imports(site_info, imported = !purrr::map_lgl(aq_data, is.null))
+      }
+
+      aq_data <- purrr::list_rbind(aq_data)
 
       if (nrow(aq_data) == 0) {
         cli::cli_abort(

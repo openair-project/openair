@@ -62,6 +62,8 @@
 
     - The `source` column is now always a character vector; previously it was a factor when `source` was guessed.
 
+    - An unrecognised `data_type` now raises an error, rather than a warning and silently importing hourly data instead.
+
     - `ratified = TRUE` no longer errors when importing data from locally managed networks, which have no ratification information. A warning is now raised and their `qc` values are `NA`.
 
 - `importMeta()` now warns and skips any network whose metadata cannot be imported (e.g., if its server is temporarily unavailable) rather than failing completely, only erroring if no metadata can be imported at all. This also means that `importUKAQ()` can still guess the `source` of sites when another network is unavailable.

@@ -533,6 +533,45 @@ filter_site_pollutant <- function(
   return(aq_data)
 }
 
+#' Warn about all of the site/year combinations which could not be imported
+#' @param site_info Data frame of sites, sources and years passed to
+#'   [readUKAQData()]
+#' @param imported Logical vector, the same length as `site_info`, of whether
+#'   each row was imported
+#' @noRd
+warn_failed_imports <- function(site_info, imported) {
+  # sites can be tried in multiple local subfolders, so only count a site/year
+  # as failed if all attempts failed
+  failed <-
+    dplyr::mutate(site_info, imported = imported) |>
+    dplyr::summarise(
+      imported = any(.data$imported),
+      .by = c("source", "code", "year")
+    ) |>
+    dplyr::filter(!.data$imported)
+
+  if (nrow(failed) == 0) {
+    return(invisible())
+  }
+
+  n_failed <- nrow(failed)
+
+  failed <-
+    failed |>
+    dplyr::summarise(
+      year = paste(sort(.data$year), collapse = ", "),
+      .by = c("source", "code")
+    ) |>
+    dplyr::mutate(str = paste0(.data$code, " (", .data$source, "): ", .data$year))
+
+  cli::cli_warn(
+    c(
+      "!" = "Could not import data for {n_failed} site-year combination{?s}:",
+      rlang::set_names(failed$str, "*")
+    )
+  )
+}
+
 #' Helper function to guess the source of UKAQ data
 #' @param site Sites passed to [importUKAQ()]
 #' @noRd
