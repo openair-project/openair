@@ -305,10 +305,36 @@ importMeta <-
       return(meta)
     }
 
-    # import meta data
-    meta <-
-      purrr::map(.x = source, .f = ~ get_meta(source = .x, all = all)) |>
-      purrr::list_rbind() |>
+    # import meta data, warning rather than failing if a network is unavailable
+    meta <- purrr::map(
+      .x = source,
+      .f = function(x) {
+        tryCatch(
+          get_meta(source = x, all = all),
+          error = function(e) {
+            cli::cli_warn(
+              c(
+                "!" = "Could not import metadata for {.arg source} {.val {x}}; it has been skipped.",
+                "i" = "The network's server may be temporarily unavailable."
+              ),
+              parent = e
+            )
+            NULL
+          }
+        )
+      }
+    )
+
+    if (all(purrr::map_lgl(meta, is.null))) {
+      cli::cli_abort(
+        c(
+          "x" = "Could not import metadata for any {.arg source}.",
+          "i" = "Check your internet connection or try again later."
+        )
+      )
+    }
+
+    meta <- purrr::list_rbind(meta) |>
       dplyr::tibble()
 
     if (nrow(meta) == 0) {
@@ -471,8 +497,8 @@ read_wsp_meta <- function(url, all, year, pollutant) {
 
   # load data
   con <- url(url)
+  on.exit(close(con))
   meta <- get(load(con))
-  close(con)
 
   # manipulate data
   meta <- dplyr::rename(
@@ -605,8 +631,8 @@ read_wsp_meta <- function(url, all, year, pollutant) {
 # read metadata from Imperial College London
 read_imperial_meta <- function(url, all, year) {
   con <- url(url)
+  on.exit(close(con))
   meta <- get(load(con))
-  close(con)
 
   ## rename to match imported names e.g. importKCL
   meta <- dplyr::rename(

@@ -44,6 +44,22 @@
 
 ## Bug Fixes
 
+- `importUKAQ()` and its wrappers (e.g., `importAURN()`) are more robust to user input:
+
+    - `pollutant` is now genuinely case-insensitive for all `data_type`s; previously, e.g., `pollutant = "NO2"` silently returned no pollutant data for hourly data.
+
+    - `source` is now case-insensitive, accepts the same aliases as `importMeta()`, and raises an informative error if an unknown network is provided rather than failing silently.
+
+    - `data_type` is now case-insensitive.
+
+    - `pollutant` now matches pollutants exactly when `data_type` is `"annual"`, `"monthly"` or `"daqi"`, consistent with other `data_type`s. Previously, partial matching meant that, e.g., `pollutant = "no"` also returned NO2 and NOx. Capture rates, derived statistics (e.g., `"o3.daily.max.8hour"`) and gravimetric PM measurements are still returned alongside their pollutant.
+
+    - `ratified = TRUE` now correctly flags data for sites which are part of multiple networks (e.g., both the AURN and SAQN) when they are imported from more than one `source`.
+
+    - The `source` column is now always a character vector; previously it was a factor when `source` was guessed.
+
+- `importMeta()` now warns and skips any network whose metadata cannot be imported (e.g., if its server is temporarily unavailable) rather than failing completely, only erroring if no metadata can be imported at all. This also means that `importUKAQ()` can still guess the `source` of sites when another network is unavailable.
+
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.
 
 - `trajCluster()` now returns its plot as well as its data and the function call.

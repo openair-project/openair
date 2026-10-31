@@ -102,6 +102,13 @@ readUKAQData <-
 
     # if particular pollutants have been selected
     if (pollutant[1] != "all") {
+      # also keep gravimetric PM measurements (in daily data)
+      gr_pollutant <- paste0(
+        "gr_",
+        pollutant[pollutant %in% c("pm10", "pm2.5")]
+      )
+      pollutant <- c(pollutant, gr_pollutant)
+
       thedata <-
         dplyr::select(
           thedata,
@@ -162,9 +169,11 @@ loadData <- function(x, verbose, url_data, data_type) {
         ".RData"
       )
 
-      # Load the rdata object
+      # Load the rdata object into its own environment so that only its
+      # contents are found by get()/exists()
       con <- url(fileName)
-      load(con)
+      data_env <- new.env()
+      load(con, envir = data_env)
 
       # Find appropriate extension per `data_type`
       x <- switch(
@@ -182,11 +191,13 @@ loadData <- function(x, verbose, url_data, data_type) {
       x2 <- gsub("_daily_mean", "_daily", x)
 
       # Reasign
-      dat <- get(x)
+      dat <- get(x, envir = data_env, inherits = FALSE)
 
       # if there are two daily data frames to combine
-      if (data_type == "daily" && exists(x2)) {
-        dat2 <- get(x2)
+      if (
+        data_type == "daily" && exists(x2, envir = data_env, inherits = FALSE)
+      ) {
+        dat2 <- get(x2, envir = data_env, inherits = FALSE)
         dat <- dplyr::left_join(dat, dat2, by = c("date", "site", "code"))
 
         lookup <- c(gr_pm2.5 = "GR2.5", gr_pm10 = "GR10")
@@ -386,18 +397,19 @@ add_meta <- function(source, columns, aq_data) {
       duplicate = TRUE
     )
 
+  # join by code only, as site names can differ between data and metadata
   meta_data <- dplyr::distinct(
     meta_data,
     .data[["source"]],
-    .data[["site"]],
+    .data[["code"]],
     .keep_all = TRUE
   ) |>
-    dplyr::select("source", "site", "code", dplyr::all_of(columns))
+    dplyr::select("source", "code", dplyr::all_of(columns))
 
   aq_data <- dplyr::left_join(
     aq_data,
     meta_data,
-    by = c("source", "code", "site")
+    by = c("source", "code")
   )
 
   return(aq_data)
@@ -407,7 +419,7 @@ add_meta <- function(source, columns, aq_data) {
 #' @noRd
 add_ratified <- function(aq_data, source, to_narrow) {
   meta <-
-    importMeta(unique(source), all = TRUE) |>
+    importMeta(unique(source), all = TRUE, duplicate = TRUE) |>
     dplyr::filter(
       .data$code %in% aq_data$code,
       !.data$variable %in%
@@ -477,18 +489,30 @@ filter_site_pollutant <- function(
 
   # if pollutant isn't "all", filter pollutants
   if (any(pollutant != "all")) {
-    polls <- paste(
-      c("source", "uka_code", "code", "site", "date", "pollutant", pollutant),
-      collapse = "|"
-    )
+    pollutant <- tolower(pollutant)
+
+    # match pollutants exactly, but keep their capture rates, gravimetric
+    # measurements and any derived statistics (e.g., "o3_capture" and
+    # "o3.daily.max.8hour" for "o3", or "gr10" and "gr_pm10" for "pm10")
+    prefixes <- paste0(pollutant, ".")
+    match_pollutant <- function(x) {
+      x <- sub("_capture$", "", tolower(x))
+      x <- sub("^gr_?(pm)?", "pm", x)
+      is_derived <- purrr::map_lgl(x, ~ any(startsWith(.x, prefixes)))
+      x %in% pollutant | is_derived
+    }
+
     if (data_type != "daqi") {
       if (to_narrow) {
-        aq_data <- aq_data[grepl(polls, aq_data$species, ignore.case = TRUE), ]
+        aq_data <- aq_data[match_pollutant(aq_data$species), ]
       } else {
-        aq_data <- aq_data[grepl(polls, names(aq_data), ignore.case = TRUE)]
+        id_cols <- c("source", "uka_code", "code", "site", "date")
+        aq_data <- aq_data[
+          names(aq_data) %in% id_cols | match_pollutant(names(aq_data))
+        ]
       }
     } else {
-      aq_data <- aq_data[grepl(polls, aq_data$pollutant, ignore.case = TRUE), ]
+      aq_data <- aq_data[tolower(aq_data$pollutant) %in% pollutant, ]
     }
   }
 
@@ -580,5 +604,5 @@ guess_source <- function(site) {
     cli::cli_warn(msg)
   }
 
-  return(source_tbl$source)
+  return(as.character(source_tbl$source))
 }

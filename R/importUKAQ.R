@@ -202,16 +202,59 @@ importUKAQ <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    # warn if source == "local"
-    if ("local" %in% source) {
+    # pollutant names are matched in lower case
+    pollutant <- tolower(pollutant)
+
+    # check data_type
+    allowed_types <- c(
+      "hourly",
+      "daily",
+      "monthly",
+      "annual",
+      "daqi",
+      "15min",
+      "15_min",
+      "24_hour",
+      "8_hour",
+      "daily_max_8"
+    )
+
+    data_type <- tolower(data_type)
+
+    if (length(data_type) != 1 || !data_type %in% allowed_types) {
       cli::cli_warn(
         c(
-          "i" = "'local' data is associated with locally managed air quality network sites in England.",
-          "!" = "These sites are not part of the AURN national network, and therefore may not have the same level of quality control applied to them."
-        ),
-        .frequency = "regularly",
-        .frequency_id = "lmam"
+          "!" = "'{data_type}' not recognised. Setting {.arg data_type} to 'hourly'",
+          "i" = "{.arg data_type} should be one of: {allowed_types}"
+        )
       )
+
+      data_type <- "hourly"
+    }
+
+    # handle 15_min for back-compatibility reasons
+    if (data_type == "15_min") {
+      data_type <- "15min"
+    }
+
+    # check sources, allowing for the same aliases as importMeta()
+    if (!is.null(source)) {
+      source <- tolower(source)
+      source[source == "saqd"] <- "saqn"
+      source[source == "niaqn"] <- "ni"
+      source[source == "lmam"] <- "local"
+
+      allowed_sources <- c("aurn", "aqe", "saqn", "waqn", "ni", "local")
+      bad_sources <- unique(source[!source %in% allowed_sources])
+
+      if (length(bad_sources) > 0) {
+        cli::cli_abort(
+          c(
+            "x" = "Unknown {.arg source}{?s}: {.val {bad_sources}}.",
+            "i" = "{.arg source} should be one of: {.val {allowed_sources}}."
+          )
+        )
+      }
     }
 
     # guess sources
@@ -222,6 +265,18 @@ importUKAQ <-
         )
       }
       source <- guess_source(site)
+    }
+
+    # warn if source == "local"
+    if ("local" %in% source) {
+      cli::cli_warn(
+        c(
+          "i" = "'local' data is associated with locally managed air quality network sites in England.",
+          "!" = "These sites are not part of the AURN national network, and therefore may not have the same level of quality control applied to them."
+        ),
+        .frequency = "regularly",
+        .frequency_id = "lmam"
+      )
     }
 
     # check correct "meta_columns" are passed
@@ -251,7 +306,7 @@ importUKAQ <-
     url_domain <- dplyr::recode_values(
       source,
       "aurn" ~ "https://uk-air.defra.gov.uk/openair/R_data/",
-      "aqe" ~ "https://airqualityengland.co.uk/assets/openair/R_data/",
+      "aqe" ~ "https://www.airqualityengland.co.uk/assets/openair/R_data/",
       "saqn" ~ "https://www.scottishairquality.scot/openair/R_data/",
       "waqn" ~
         "https://airquality.gov.wales/sites/default/files/openair/R_data/",
@@ -268,36 +323,6 @@ importUKAQ <-
       "ni" ~ "_NI_",
       "local" ~ "_LMAM_"
     )
-
-    # detect allowed types
-    allowed_types <- c(
-      "hourly",
-      "daily",
-      "monthly",
-      "annual",
-      "daqi",
-      "15min",
-      "15_min",
-      "24_hour",
-      "8_hour",
-      "daily_max_8"
-    )
-
-    # handle 15_min for back-compatibility reasons
-    if (data_type == "15_min") {
-      data_type <- "15min"
-    }
-
-    if (!tolower(data_type) %in% allowed_types) {
-      cli::cli_warn(
-        c(
-          "!" = "'{data_type}' not recognised. Setting {.arg data_type} to 'hourly'",
-          "i" = "{.arg data_type} should be one of: {allowed_types}"
-        )
-      )
-
-      data_type <- "hourly"
-    }
 
     # Import Annual / Monthly Stats?
     if (data_type %in% c("annual", "monthly")) {
@@ -479,7 +504,7 @@ importUKAQ <-
     }
 
     # arrange output by source
-    aq_data <- dplyr::arrange(aq_data, "source", "site")
+    aq_data <- dplyr::arrange(aq_data, .data$source, .data$site)
 
     # return data
     return(dplyr::as_tibble(aq_data))
@@ -522,7 +547,7 @@ importAURN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
+    if (missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
 
@@ -560,7 +585,7 @@ importAQE <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
+    if (missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
 
@@ -597,7 +622,7 @@ importSAQN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
+    if (missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
 
@@ -634,7 +659,7 @@ importWAQN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
+    if (missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
 
@@ -671,7 +696,7 @@ importNI <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
+    if (missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
 
@@ -706,7 +731,7 @@ importLocal <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
+    if (missing(site) && tolower(data_type) %in% c("annual", "monthly", "daqi")) {
       site <- "all"
     }
 
