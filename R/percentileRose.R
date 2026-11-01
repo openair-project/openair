@@ -201,11 +201,11 @@ percentileRose <- function(
     }
     ## use pollutants as conditioning variables
 
-    mydata <- tidyr::gather(
+    mydata <- tidyr::pivot_longer(
       mydata,
-      key = "variable",
-      value = "value",
-      dplyr::all_of(pollutant)
+      cols = dplyr::all_of(pollutant),
+      names_to = "variable",
+      values_to = "value"
     )
     ## now set pollutant to "value"
     pollutant <- "value"

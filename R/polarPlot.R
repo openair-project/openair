@@ -546,13 +546,13 @@ polarPlot <-
       }
 
       # use pollutants as conditioning variables
-      mydata <- tidyr::gather(
+      mydata <- tidyr::pivot_longer(
         mydata,
-        key = "variable",
-        value = "value",
-        dplyr::all_of(pollutant),
-        factor_key = TRUE
+        cols = dplyr::all_of(pollutant),
+        names_to = "variable",
+        values_to = "value"
       )
+      mydata$variable <- factor(mydata$variable, levels = pollutant)
       # now set pollutant to "value"
       pollutant <- "value"
 

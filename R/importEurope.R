@@ -191,33 +191,21 @@ read_saq_observations <- function(file, tz) {
 
 
 make_saq_observations_wider <- function(df) {
-  tryCatch(
-    {
-      df |>
-        dplyr::select(
-          "date",
-          "date_end",
-          "site",
-          "variable",
-          "value"
-        ) |>
-        tidyr::spread("variable", "value")
-    },
-    error = function(e) {
-      cli::cli_warn(
-        "Duplicated date-site-variable combinations detected, observations have been removed..."
-      )
+  df <- dplyr::select(df, "date", "date_end", "site", "variable", "value")
 
-      df |>
-        dplyr::select(
-          "date",
-          "date_end",
-          "site",
-          "variable",
-          "value"
-        ) |>
-        dplyr::distinct("date", "site", "variable", .keep_all = TRUE) |>
-        tidyr::spread("variable", "value")
-    }
-  )
+  dupes <- duplicated(df[c("date", "site", "variable")])
+  if (any(dupes)) {
+    cli::cli_warn(
+      "Duplicated date-site-variable combinations detected, observations have been removed..."
+    )
+    df <- df[!dupes, ]
+  }
+
+  df |>
+    dplyr::arrange(.data$date, .data$date_end, .data$site) |>
+    tidyr::pivot_wider(
+      names_from = "variable",
+      values_from = "value",
+      names_sort = TRUE
+    )
 }
