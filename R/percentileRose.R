@@ -182,17 +182,6 @@ percentileRose <- function(
     mydata[[wd]][id] <- 360
   }
 
-  ## make sure all wds are present
-  ids <- which(!seq(angle, 360, by = angle) %in% unique(mydata[[wd]]))
-  if (length(ids) > 0 && !smooth) {
-    extra <- mydata[rep(1, length(ids)), ]
-    extra[[wd]] <- seq(angle, 360, by = angle)[ids]
-    for (i in pollutant) {
-      extra[[i]] <- NA
-    }
-    mydata <- rbind(mydata, extra)
-  }
-
   ## need lowest value if shading
   if (fill) {
     percentile <- unique(c(0, percentile))
@@ -256,6 +245,16 @@ percentileRose <- function(
     overall.lower <- mydata$lower[1]
     overall.upper <- mydata$upper[1]
 
+    # make sure all wds are present in this panel, so that directions with no
+    # data show as gaps rather than being bridged by the neighbouring bins
+    ids <- which(!seq(angle, 360, by = angle) %in% unique(mydata[[wd]]))
+    if (length(ids) > 0 && !smooth) {
+      extra <- mydata[rep(1, length(ids)), ]
+      extra[[wd]] <- seq(angle, 360, by = angle)[ids]
+      extra[[pollutant]] <- NA
+      mydata <- rbind(mydata, extra)
+    }
+
     # add zero wind angle = same as 360 for cyclic spline
     ids <- which(mydata[, wd] == 360)
 
@@ -295,8 +294,11 @@ percentileRose <- function(
         ## do not smooth
         dat1 <- thedata
         dat2 <- thedata
-        dat1[[wd]] <- thedata[[wd]] - angle / 2
-        dat2[[wd]] <- thedata[[wd]] + angle / 2
+        # clamp to 0-360 so the 0/360 bins don't overlap at north; an area
+        # drawn more than a full turn renders with a hole under the even-odd
+        # fill rule (e.g., in some SVG renderers)
+        dat1[[wd]] <- pmax(thedata[[wd]] - angle / 2, 0)
+        dat2[[wd]] <- pmin(thedata[[wd]] + angle / 2, 360)
         dat1$id <- 2 * seq_len(nrow(dat1)) - 1
         dat2$id <- 2 * seq_len(nrow(dat2))
         thedata <- rbind(dat1, dat2)
@@ -563,6 +565,8 @@ percentileRose <- function(
         thePlot +
         ggplot2::geom_area(
           ggplot2::aes(fill = .data[["percentile"]]),
+          # "align" pads the ends of each area beyond 0/360, causing overlap
+          stat = "identity",
           show.legend = method != "cpf",
           key_glyph = ggplot2::draw_key_rect,
           position = ggplot2::position_identity()

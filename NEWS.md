@@ -48,6 +48,12 @@
 
 ## Bug Fixes
 
+- `percentileRose()` fixes:
+
+    - The north (0/360°) segment no longer disappears in some renderers. Previously, each shaded area wrapped slightly more than a full circle, overlapping itself at north, which renderers using the "even-odd" fill rule drew as a gap.
+
+    - Wind directions with no data in a given panel are now shown as gaps when `type` is used. Previously, only one panel received the empty directions and the others were shaded straight across them.
+
 - `importUKAQ()` and its wrappers (e.g., `importAURN()`) are more robust to user input:
 
     - `pollutant` is now genuinely case-insensitive for all `data_type`s; previously, e.g., `pollutant = "NO2"` silently returned no pollutant data for hourly data.
