@@ -228,11 +228,10 @@ importMeta <-
 
     # special source args
     if (any(source == "ukaq")) {
-      source <- c("aurn", "aqe", "saqn", "waqn", "ni", "local")
+      source <- ukaq_networks$source
     }
     if (any(source == "all")) {
-      source <-
-        c("aurn", "aqe", "saqn", "waqn", "ni", "local", "imperial", "europe")
+      source <- c(ukaq_networks$source, "imperial", "europe")
     }
 
     # check sources are valid

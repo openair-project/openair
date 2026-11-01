@@ -218,8 +218,7 @@ test_that("hourly data is tidied consistently", {
   out <- importUKAQ("my1", 2020, source = "aurn", progress = FALSE)
 
   expect_s3_class(out, "tbl_df")
-  expect_equal(names(out)[1], "source")
-  expect_true(all(c("date", "site", "code") %in% names(out)))
+  expect_equal(names(out)[1:4], c("source", "date", "site", "code"))
   expect_equal(nrow(out), 48L)
   expect_type(out$code, "character")
   expect_type(out$source, "character")
@@ -512,6 +511,36 @@ test_that("unknown site codes give an error from importUKAQ()", {
   expect_equal(conditionCall(err)[[1]], quote(importUKAQ))
 })
 
+test_that("unknown site codes mention networks whose metadata is unavailable", {
+  local_fake_ukaq()
+  local_mocked_bindings(
+    importMeta = function(...) fake_meta[fake_meta$source != "saqn", ]
+  )
+
+  err <- expect_error(importUKAQ("gla4", 2020))
+  msg <- cli::ansi_strip(conditionMessage(err))
+
+  expect_match(msg, "Metadata could not be imported for \"aqe\", \"saqn\"")
+  expect_match(msg, "Specify `source`", fixed = TRUE)
+})
+
+test_that("site data has the same column order whatever the options", {
+  local_fake_ukaq(list(MY1_2020 = fake_site_file("MY1")))
+
+  first_cols <- function(...) {
+    out <- importUKAQ("my1", 2020, source = "aurn", progress = FALSE, ...)
+    names(out)[1:4]
+  }
+
+  expected <- c("source", "date", "site", "code")
+
+  expect_equal(first_cols(), expected)
+  expect_equal(first_cols(hc = TRUE), expected)
+  expect_equal(first_cols(pollutant = "no2"), expected)
+  expect_equal(first_cols(to_narrow = TRUE), expected)
+  expect_equal(first_cols(data_type = "daily"), expected)
+})
+
 test_that("wrappers import from their network", {
   requested <- local_fake_ukaq(list(BEL0_2020 = fake_site_file("BEL0")))
 
@@ -680,8 +709,7 @@ skip_if(is.null(ni_hourly), "WSP servers cannot be reached")
 
 test_that("real hourly data has the expected structure", {
   expect_equal(nrow(ni_hourly), 8760L)
-  expect_equal(names(ni_hourly)[1], "source")
-  expect_true(all(c("date", "site", "code") %in% names(ni_hourly)))
+  expect_equal(names(ni_hourly)[1:4], c("source", "date", "site", "code"))
   expect_true(all(
     c("no2", "no2_qc", "ws", "wd", "air_temp") %in% names(ni_hourly)
   ))

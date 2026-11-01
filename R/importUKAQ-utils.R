@@ -50,10 +50,7 @@ normalise_source <- function(source) {
 guess_site_source <- function(site, call = rlang::caller_env()) {
   ukaq_meta <- importMeta("ukaq") |>
     dplyr::mutate(
-      source = factor(
-        .data$source,
-        c("aurn", "saqn", "aqe", "waqn", "ni", "local")
-      ),
+      source = factor(.data$source, ukaq_networks$source),
       code = toupper(.data$code)
     ) |>
     dplyr::arrange(.data$source) |>
@@ -75,13 +72,23 @@ guess_site_source <- function(site, call = rlang::caller_env()) {
       dplyr::filter(is.na(.data$source)) |>
       dplyr::pull(.data$code)
 
-    cli::cli_abort(
-      c(
-        "x" = "Unknown site codes detected. Please ensure all site codes can be found in {.fun importMeta}.",
-        "i" = "Unknown site codes: {ambiguous_codes}"
-      ),
-      call = call
+    # the sites may be in networks whose metadata couldn't be imported
+    unavailable <- setdiff(ukaq_networks$source, ukaq_meta$source)
+
+    msg <- c(
+      "x" = "Unknown site codes detected. Please ensure all site codes can be found in {.fun importMeta}.",
+      "i" = "Unknown site codes: {ambiguous_codes}"
     )
+
+    if (length(unavailable) > 0) {
+      msg <- c(
+        msg,
+        "!" = "Metadata could not be imported for {.val {unavailable}}, so sites in {cli::qty(unavailable)} {?this network/these networks} cannot be found.",
+        "i" = "Specify {.arg source} to import these sites directly."
+      )
+    }
+
+    cli::cli_abort(msg, call = call)
   }
 
   if (nrow(source_tbl) > length(site)) {
@@ -314,11 +321,6 @@ read_site_file <- function(
       dplyr::any_of(site_file_columns),
       dplyr::matches("_qc")
     )
-  } else {
-    thedata <- dplyr::relocate(
-      thedata,
-      dplyr::any_of(c("site", "code", "date"))
-    )
   }
 
   # rename "temp" to "air_temp" if appropriate
@@ -364,9 +366,10 @@ read_site_file <- function(
       dplyr::arrange(.data$site, .data$code, .data$pollutant, .data$date)
   }
 
-  # add source to output
+  # add source to output, and use a consistent column order
   thedata <-
-    dplyr::mutate(thedata, source = source, .before = dplyr::everything())
+    dplyr::mutate(thedata, source = source) |>
+    dplyr::relocate("source", "date", "site", "code")
 
   dplyr::as_tibble(thedata)
 }
