@@ -280,18 +280,8 @@ timeProp <- function(
     )
 
   # make key full width/height
-  if (key.position %in% c("left", "right")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.height = ggplot2::rel(2)
-      )
-  }
-  if (key.position %in% c("top", "bottom")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.width = ggplot2::rel(2)
-      )
-  }
+  thePlot <- thePlot +
+    theme_legend_key(key.position, size = ggplot2::rel(2), spacing = NULL)
 
   if (plot) {
     plot(thePlot)

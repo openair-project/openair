@@ -1006,22 +1006,7 @@ polarPlot <-
         caption = extra.args$caption %||% sub,
         tag = extra.args$tag
       ) +
-      {
-        if (key.position %in% c("left", "right")) {
-          ggplot2::theme(
-            legend.key.height = ggplot2::unit(1, "null"),
-            legend.key.spacing.y = ggplot2::unit(0, "cm")
-          )
-        }
-      } +
-      {
-        if (key.position %in% c("top", "bottom")) {
-          ggplot2::theme(
-            legend.key.width = ggplot2::unit(1, "null"),
-            legend.key.spacing.x = ggplot2::unit(0, "cm")
-          )
-        }
-      } +
+      theme_legend_key(key.position) +
       get_facet(
         type,
         extra.args = extra.args,

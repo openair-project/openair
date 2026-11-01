@@ -119,6 +119,22 @@ guide_openair <- function(
   )
 }
 
+# Theme setting the length of the legend key along the side of the plot it sits
+# on. By default this makes the key span the full height/width of the plot with
+# no gaps; `spacing = NULL` leaves key spacing unchanged. Returns `NULL` for
+# other positions (e.g., "none"), so it can always be added to a plot.
+theme_legend_key <- function(
+  key.position,
+  size = ggplot2::unit(1, "null"),
+  spacing = ggplot2::unit(0, "cm")
+) {
+  if (key.position %in% c("left", "right")) {
+    ggplot2::theme(legend.key.height = size, legend.key.spacing.y = spacing)
+  } else if (key.position %in% c("top", "bottom")) {
+    ggplot2::theme(legend.key.width = size, legend.key.spacing.x = spacing)
+  }
+}
+
 # Scales ------------------------------------------------------------------
 
 # ggplot2 scale for radial plots
