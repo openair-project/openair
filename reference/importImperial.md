@@ -9,8 +9,8 @@ provides air quality data files as R data objects.
 
 ``` r
 importImperial(
-  site = "my1",
-  year = 2009,
+  site,
+  year,
   pollutant = "all",
   meta = FALSE,
   meteo = FALSE,
@@ -21,8 +21,8 @@ importImperial(
 )
 
 importKCL(
-  site = "my1",
-  year = 2009,
+  site,
+  year,
   pollutant = "all",
   met = FALSE,
   units = "mass",

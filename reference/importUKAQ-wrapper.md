@@ -15,8 +15,8 @@ back-compatibility.
 
 ``` r
 importAURN(
-  site = "my1",
-  year = 2009,
+  site,
+  year,
   data_type = "hourly",
   pollutant = "all",
   hc = FALSE,
@@ -30,8 +30,8 @@ importAURN(
 )
 
 importAQE(
-  site = "yk13",
-  year = 2018,
+  site,
+  year,
   data_type = "hourly",
   pollutant = "all",
   meta = FALSE,
@@ -44,8 +44,8 @@ importAQE(
 )
 
 importSAQN(
-  site = "gla4",
-  year = 2009,
+  site,
+  year,
   data_type = "hourly",
   pollutant = "all",
   meta = FALSE,
@@ -58,8 +58,8 @@ importSAQN(
 )
 
 importWAQN(
-  site = "card",
-  year = 2018,
+  site,
+  year,
   data_type = "hourly",
   pollutant = "all",
   meta = FALSE,
@@ -72,8 +72,8 @@ importWAQN(
 )
 
 importNI(
-  site = "bel0",
-  year = 2018,
+  site,
+  year,
   data_type = "hourly",
   pollutant = "all",
   meta = FALSE,
@@ -86,8 +86,8 @@ importNI(
 )
 
 importLocal(
-  site = "ad1",
-  year = 2018,
+  site,
+  year,
   data_type = "hourly",
   pollutant = "all",
   meta = FALSE,
@@ -107,6 +107,8 @@ importLocal(
   [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md).
   Several sites can be imported at once. For example,
   `site = c("my1", "nott")` imports both Marylebone Road and Nottingham.
+  When `data_type` is `"annual"`, `"monthly"` or `"daqi"`, `site` can be
+  omitted to import all sites in the network.
 
 - year:
 
@@ -151,7 +153,7 @@ importLocal(
 
   Include hydrocarbon measurements in the imported data? Defaults to
   `FALSE` as most users will not be interested in using hydrocarbon
-  data.
+  data. Hydrocarbon data are only available for the AURN.
 
 - meta:
 
@@ -174,13 +176,16 @@ importLocal(
   which will return wind speed (`ws`), wind direction (`wd`) and ambient
   temperature (`air_temp`). The variables are calculated from using the
   WRF model run by WSP and are available for most but not all networks.
-  Setting `meteo = FALSE` is useful if you have other meteorological
-  data to use in preference, for example from the `worldmet` package.
+  They are not available for locally managed networks. Setting
+  `meteo = FALSE` is useful if you have other meteorological data to use
+  in preference, for example from the `worldmet` package.
 
 - ratified:
 
   Append `qc` column(s) to hourly data indicating whether each species
   was ratified (i.e., quality-checked)? Defaults to `FALSE`.
+  Ratification information is not available for locally managed
+  networks.
 
 - to_narrow:
 
@@ -192,15 +197,27 @@ importLocal(
 
 - verbose:
 
-  Print messages to the console if hourly data cannot be imported?
-  Default is `FALSE`. `TRUE` is useful for debugging as the specific
-  `year`(s), `site`(s) and `source`(s) which cannot be imported will be
-  returned.
+  Print a message to the console if any data cannot be imported? Default
+  is `FALSE`. `TRUE` is useful for debugging as the specific `year`(s),
+  `site`(s) and `source`(s) which cannot be imported will be listed. Not
+  used when `data_type` is `"annual"`, `"monthly"` or `"daqi"`.
 
 - progress:
 
   Show a progress bar when many sites/years are being imported? Defaults
   to `TRUE`.
+
+## Details
+
+Not every argument is available in every wrapper, as not all data are
+available for every network:
+
+- `hc` is only available in `importAURN()`, as hydrocarbon data are only
+  measured by the AURN.
+
+- `meteo` and `ratified` are not available in `importLocal()`, as
+  neither modelled meteorological data nor ratification information are
+  available for locally managed networks.
 
 ## Importing UK Air Pollution Data
 

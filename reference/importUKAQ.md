@@ -13,8 +13,8 @@ available sites that can be imported, see
 
 ``` r
 importUKAQ(
-  site = "my1",
-  year = 2022,
+  site,
+  year,
   source = NULL,
   data_type = "hourly",
   pollutant = "all",
@@ -39,7 +39,9 @@ importUKAQ(
   Several sites can be imported at once. For example,
   `site = c("my1", "nott")` imports both Marylebone Road and Nottingham.
   Sites from different networks can be imported through also providing
-  multiple `source`s. Site codes can be upper or lower case.
+  multiple `source`s. Site codes can be upper or lower case. When
+  `data_type` is `"annual"`, `"monthly"` or `"daqi"`, `site` can be
+  omitted to import all sites in the given `source`(s).
 
 - year:
 
@@ -107,7 +109,7 @@ importUKAQ(
 
   Include hydrocarbon measurements in the imported data? Defaults to
   `FALSE` as most users will not be interested in using hydrocarbon
-  data.
+  data. Hydrocarbon data are only available for the AURN.
 
 - meta:
 
@@ -130,13 +132,16 @@ importUKAQ(
   which will return wind speed (`ws`), wind direction (`wd`) and ambient
   temperature (`air_temp`). The variables are calculated from using the
   WRF model run by WSP and are available for most but not all networks.
-  Setting `meteo = FALSE` is useful if you have other meteorological
-  data to use in preference, for example from the `worldmet` package.
+  They are not available for locally managed networks. Setting
+  `meteo = FALSE` is useful if you have other meteorological data to use
+  in preference, for example from the `worldmet` package.
 
 - ratified:
 
   Append `qc` column(s) to hourly data indicating whether each species
   was ratified (i.e., quality-checked)? Defaults to `FALSE`.
+  Ratification information is not available for locally managed
+  networks.
 
 - to_narrow:
 
@@ -148,10 +153,10 @@ importUKAQ(
 
 - verbose:
 
-  Print messages to the console if hourly data cannot be imported?
-  Default is `FALSE`. `TRUE` is useful for debugging as the specific
-  `year`(s), `site`(s) and `source`(s) which cannot be imported will be
-  returned.
+  Print a message to the console if any data cannot be imported? Default
+  is `FALSE`. `TRUE` is useful for debugging as the specific `year`(s),
+  `site`(s) and `source`(s) which cannot be imported will be listed. Not
+  used when `data_type` is `"annual"`, `"monthly"` or `"daqi"`.
 
 - progress:
 
@@ -269,7 +274,8 @@ importUKAQ("my1", year = 2022)
 importUKAQ(c("bn1", "bn2"), year = 2022, source = "aqe")
 
 # import sites across multiple networks
-importUKAQ(c("my1", "bn1", "bn2"),
+importUKAQ(
+  site = c("my1", "bn1", "bn2"),
   year = 2022,
   source = c("aurn", "aqe", "aqe")
 )
@@ -285,6 +291,7 @@ importUKAQ(
 
 # import other data types, filtering by pollutant
 importUKAQ(
+  year = 2020,
   data_type = "annual",
   pollutant = c("no2", "pm2.5", "pm10"),
   source = c("aurn", "aqe")

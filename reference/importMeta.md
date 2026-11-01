@@ -96,10 +96,10 @@ importMeta(
 - lat, lng:
 
   Decimal latitude (`lat`) and longitude (`lng`) (or other Y/X
-  coordinate if using a different `crs`). If provided, the data will be
-  returned with a `distance_km` column displaying the distance of each
-  station from the target coordinate. The data will also be
-  automatically sorted by this column.
+  coordinate if using a different `crs`). Both must be single numbers.
+  If provided, the data will be returned with a `distance_km` column
+  displaying the distance of each station from the target coordinate.
+  The data will also be automatically sorted by this column.
 
 - crs:
 
@@ -117,7 +117,8 @@ importMeta(
   If `lat` and `lng` are provided, `max_dist` and `max_n` further filter
   the metadata. `max_dist` defines a maximum distance from the target
   coordinate in kilometers, and `max_n` a maximum number of sites to be
-  returned. `max_n` is applied after `max_dist`.
+  returned. `max_n` is applied after `max_dist`. Both are ignored, with
+  a warning, if `lat` and `lng` are not provided.
 
 - all:
 
@@ -211,6 +212,11 @@ the complete dataset:
 - **source**: The network with which the site is associated. Note that
   some monitoring sites are part of multiple networks (e.g., the AURN &
   SAQN) so the same site may feature twice under different sources.
+  Networks are always returned in the same order: the AURN, then the
+  devolved networks (AQE, SAQN, WAQN and NI), then locally managed
+  networks, then the Imperial and European networks. When
+  `duplicate = FALSE`, sites are therefore kept from the first of these
+  networks.
 
 - **code**: The site code, used to import data from specific sites of
   interest.
@@ -224,9 +230,9 @@ the complete dataset:
   station, using the World Geodetic System (<https://epsg.io/4326>).
 
 - **start_date** and **end_date**: The opening and closing dates of the
-  monitoring station. If `by_pollutant = TRUE`, these dates are instead
-  the first and last dates at which specific pollutants were measured. A
-  missing value, `NA`, indicates that monitoring is ongoing.
+  monitoring station. If `all = TRUE`, these dates are instead the first
+  and last dates at which specific pollutants were measured. A missing
+  value, `NA`, indicates that monitoring is ongoing.
 
 - **ratified_to**: The date to which data has been ratified (i.e.,
   'quality checked'). Data after this date is subject to change.
@@ -238,8 +244,9 @@ the complete dataset:
 - **local_authority**: The local authority in which the monitoring
   station is found.
 
-- **provider** and **code**: The specific provider of the locally
-  managed dataset (e.g., `"londonair"`).
+- **provider** and **pcode**: The specific provider of the locally
+  managed dataset (e.g., `"Londonair"`) and its short code (e.g.,
+  `"london"`).
 
 ## References
 

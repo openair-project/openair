@@ -2,6 +2,28 @@
 
 ## openair (development version)
 
+### Breaking Changes
+
+- [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md)
+  and its wrappers
+  ([`importAURN()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md),
+  [`importAQE()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md),
+  [`importSAQN()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md),
+  [`importWAQN()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md),
+  [`importNI()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md)
+  and
+  [`importLocal()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md))
+  no longer have default `site` and `year` arguments, which previously
+  silently imported data for an arbitrary site and year. `year` must now
+  always be provided, and `site` must be provided unless `data_type` is
+  `"annual"`, `"monthly"` or `"daqi"`, in which case omitting it imports
+  all sites. Similarly,
+  [`importImperial()`](https://openair-project.github.io/openair/reference/importImperial.md),
+  [`importKCL()`](https://openair-project.github.io/openair/reference/importImperial.md)
+  and
+  [`importEurope()`](https://openair-project.github.io/openair/reference/importEurope.md)
+  now require both `site` and `year` to be provided.
+
 ### New Features
 
 - All plots gain the `theme` argument to provide a convenient way to set
@@ -107,6 +129,52 @@
   have been moved to Suggests.
 
 ### Bug Fixes
+
+- [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md)
+  and its wrappers (e.g.,
+  [`importAURN()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md))
+  are more robust to user input:
+
+  - `pollutant` is now genuinely case-insensitive for all `data_type`s;
+    previously, e.g., `pollutant = "NO2"` silently returned no pollutant
+    data for hourly data.
+
+  - `source` is now case-insensitive, accepts the same aliases as
+    [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md),
+    and raises an informative error if an unknown network is provided
+    rather than failing silently.
+
+  - `data_type` is now case-insensitive.
+
+  - `pollutant` now matches pollutants exactly when `data_type` is
+    `"annual"`, `"monthly"` or `"daqi"`, consistent with other
+    `data_type`s. Previously, partial matching meant that, e.g.,
+    `pollutant = "no"` also returned NO2 and NOx. Capture rates, derived
+    statistics (e.g., `"o3.daily.max.8hour"`) and gravimetric PM
+    measurements are still returned alongside their pollutant.
+
+  - `ratified = TRUE` now correctly flags data for sites which are part
+    of multiple networks (e.g., both the AURN and SAQN) when they are
+    imported from more than one `source`.
+
+  - The `source` column is now always a character vector; previously it
+    was a factor when `source` was guessed.
+
+  - An unrecognised `data_type` now raises an error, rather than a
+    warning and silently importing hourly data instead.
+
+  - `ratified = TRUE` no longer errors when importing data from locally
+    managed networks, which have no ratification information. A warning
+    is now raised and their `qc` values are `NA`.
+
+- [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md)
+  now warns and skips any network whose metadata cannot be imported
+  (e.g., if its server is temporarily unavailable) rather than failing
+  completely, only erroring if no metadata can be imported at all. This
+  also means that
+  [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md)
+  can still guess the `source` of sites when another network is
+  unavailable.
 
 - `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an
   error.

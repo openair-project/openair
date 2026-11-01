@@ -11,8 +11,8 @@ Service instead (<https://eeadmz1-downloads-webapp.azurewebsites.net/>).
 
 ``` r
 importEurope(
-  site = "debw118",
-  year = 2018,
+  site,
+  year,
   tz = "UTC",
   meta = FALSE,
   to_narrow = FALSE,
