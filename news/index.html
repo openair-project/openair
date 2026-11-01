@@ -88,6 +88,11 @@
 <div class="section level3">
 <h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
 <ul><li>
+<p><code><a href="../reference/percentileRose.html">percentileRose()</a></code> fixes:</p>
+<ul><li><p>The north (0/360°) segment no longer disappears in some renderers. Previously, each shaded area wrapped slightly more than a full circle, overlapping itself at north, which renderers using the “even-odd” fill rule drew as a gap.</p></li>
+<li><p>Wind directions with no data in a given panel are now shown as gaps when <code>type</code> is used. Previously, only one panel received the empty directions and the others were shaded straight across them.</p></li>
+</ul></li>
+<li>
 <p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> and its wrappers (e.g., <code><a href="../reference/importUKAQ-wrapper.html">importAURN()</a></code>) are more robust to user input:</p>
 <ul><li><p><code>pollutant</code> is now genuinely case-insensitive for all <code>data_type</code>s; previously, e.g., <code>pollutant = "NO2"</code> silently returned no pollutant data for hourly data.</p></li>
 <li><p><code>source</code> is now case-insensitive, accepts the same aliases as <code><a href="../reference/importMeta.html">importMeta()</a></code>, and raises an informative error if an unknown network is provided rather than failing silently.</p></li>

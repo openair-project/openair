@@ -130,6 +130,18 @@
 
 ### Bug Fixes
 
+- [`percentileRose()`](https://openair-project.github.io/openair/reference/percentileRose.md)
+  fixes:
+
+  - The north (0/360°) segment no longer disappears in some renderers.
+    Previously, each shaded area wrapped slightly more than a full
+    circle, overlapping itself at north, which renderers using the
+    “even-odd” fill rule drew as a gap.
+
+  - Wind directions with no data in a given panel are now shown as gaps
+    when `type` is used. Previously, only one panel received the empty
+    directions and the others were shaded straight across them.
+
 - [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md)
   and its wrappers (e.g.,
   [`importAURN()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md))
