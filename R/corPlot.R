@@ -155,13 +155,22 @@ corPlot <- function(
 
   # deprecated lower arg
   if ("lower" %in% names(extra.args)) {
-    cli::cli_warn(
-      c(
-        "!" = "The {.arg lower} argument has been deprecated. Setting {.arg triangle} to 'lower'.",
-        "i" = "Please use the {.arg triangle} argument directly in {.fun openair::corPlot}."
+    if (isTRUE(extra.args$lower)) {
+      cli::cli_warn(
+        c(
+          "!" = "The {.arg lower} argument has been deprecated. Setting {.arg triangle} to 'lower'.",
+          "i" = "Please use the {.arg triangle} argument directly in {.fun openair::corPlot}."
+        )
       )
-    )
-    triangle <- "upper"
+      triangle <- "lower"
+    } else {
+      cli::cli_warn(
+        c(
+          "!" = "The {.arg lower} argument has been deprecated.",
+          "i" = "Please use the {.arg triangle} argument directly in {.fun openair::corPlot}."
+        )
+      )
+    }
   }
 
   # label controls
