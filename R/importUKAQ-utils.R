@@ -155,6 +155,19 @@ read_remote_file <- function(url) {
   )
 }
 
+#' Read the single object in a remote .RData file, erroring if it cannot be
+#' read
+#' @noRd
+read_remote_object <- function(url) {
+  env <- read_remote_file(url)
+
+  if (is.null(env)) {
+    cli::cli_abort("Could not read {.url {url}}.", call = NULL)
+  }
+
+  get(ls(env)[1], envir = env)
+}
+
 # Site data ---------------------------------------------------------------
 
 #' Import data for individual sites

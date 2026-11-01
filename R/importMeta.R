@@ -508,9 +508,7 @@ importMeta <-
 # Read data from WSP's networks
 read_wsp_meta <- function(url, all, year, pollutant) {
   # load data
-  con <- url(url)
-  on.exit(close(con))
-  meta <- get(load(con))
+  meta <- read_remote_object(url)
 
   # manipulate data
   meta <- dplyr::rename(
@@ -647,9 +645,7 @@ read_wsp_meta <- function(url, all, year, pollutant) {
 
 # read metadata from Imperial College London
 read_imperial_meta <- function(url, all, year) {
-  con <- url(url)
-  on.exit(close(con))
-  meta <- get(load(con))
+  meta <- read_remote_object(url)
 
   ## rename to match imported names e.g. importKCL
   meta <- dplyr::rename(
