@@ -369,7 +369,7 @@ read_site_file <- function(
   # add source to output, and use a consistent column order
   thedata <-
     dplyr::mutate(thedata, source = source) |>
-    dplyr::relocate("source", "date", "site", "code")
+    dplyr::relocate("source", "site", "code", "date")
 
   dplyr::as_tibble(thedata)
 }

@@ -300,6 +300,17 @@ test_that("sites can be filtered by distance", {
   expect_equal(near$code, "MY1")
 })
 
+test_that("networks are returned in a fixed order of priority", {
+  local_fake_meta()
+
+  out <- importMeta(c("local", "saqn", "aurn"), duplicate = TRUE)
+  expect_equal(unique(out$source), c("aurn", "saqn", "local"))
+
+  # the AURN copy of a site in both networks is kept
+  gla4 <- importMeta(c("saqn", "aurn"), code = "gla4")
+  expect_equal(gla4$source, "aurn")
+})
+
 # --- Unavailable networks ----------------------------------------------------
 
 test_that("unavailable networks are skipped with a warning", {

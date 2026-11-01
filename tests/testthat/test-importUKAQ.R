@@ -162,7 +162,7 @@ test_that("invalid arguments give informative errors", {
     "Length of"
   )
   expect_error(
-    importUKAQ("el3", 2020, source = "local", data_type = "daqi"),
+    importUKAQ(site = "el3", 2020, source = "local", data_type = "daqi"),
     "not available for locally managed"
   )
   expect_error(
@@ -218,7 +218,7 @@ test_that("hourly data is tidied consistently", {
   out <- importUKAQ("my1", 2020, source = "aurn", progress = FALSE)
 
   expect_s3_class(out, "tbl_df")
-  expect_equal(names(out)[1:4], c("source", "date", "site", "code"))
+  expect_equal(names(out)[1:4], c("source", "site", "code", "date"))
   expect_equal(nrow(out), 48L)
   expect_type(out$code, "character")
   expect_type(out$source, "character")
@@ -299,7 +299,7 @@ test_that("daily data includes gravimetric PM, including when `pollutant` is set
   expect_true(all(c("no2", "pm10", "gr_pm10") %in% names(out)))
   expect_equal(
     names(out_pm10),
-    c("source", "date", "site", "code", "pm10", "gr_pm10")
+    c("source", "site", "code", "date", "pm10", "gr_pm10")
   )
 })
 
@@ -443,8 +443,8 @@ test_that("locally managed data tries every provider's subfolder", {
   rlang::local_options(rlib_warning_verbosity = "quiet")
   requested <- local_fake_ukaq(list(`aqdm/EL3_2020` = fake_site_file("EL3")))
 
-  expect_no_warning(
-    out <- importUKAQ(
+  out <- expect_no_warning(
+    importUKAQ(
       "el3",
       2020,
       source = "local",
@@ -532,13 +532,88 @@ test_that("site data has the same column order whatever the options", {
     names(out)[1:4]
   }
 
-  expected <- c("source", "date", "site", "code")
+  expected <- c("source", "site", "code", "date")
 
   expect_equal(first_cols(), expected)
   expect_equal(first_cols(hc = TRUE), expected)
   expect_equal(first_cols(pollutant = "no2"), expected)
   expect_equal(first_cols(to_narrow = TRUE), expected)
   expect_equal(first_cols(data_type = "daily"), expected)
+})
+
+test_that("columns are ordered identifiers, pollutants, met, then metadata", {
+  local_fake_ukaq(list(
+    MY1_2020 = fake_site_file("MY1"),
+    summary_annual_AURN_2020 = fake_annual,
+    annual_DAQI_AURN_2020 = fake_daqi
+  ))
+
+  wide <- importUKAQ(
+    "my1",
+    2020,
+    source = "aurn",
+    pollutant = c("no2", "o3"),
+    ratified = TRUE,
+    meta = TRUE,
+    meta_columns = "site_type",
+    progress = FALSE
+  )
+  narrow <- importUKAQ(
+    "my1",
+    2020,
+    source = "aurn",
+    pollutant = "no2",
+    ratified = TRUE,
+    to_narrow = TRUE,
+    progress = FALSE
+  )
+  annual <- importUKAQ(
+    year = 2020,
+    source = "aurn",
+    data_type = "annual",
+    progress = FALSE
+  )
+  daqi <- importUKAQ(
+    year = 2020,
+    source = "aurn",
+    data_type = "daqi",
+    progress = FALSE
+  )
+
+  expect_equal(
+    names(wide),
+    c(
+      "source",
+      "site",
+      "code",
+      "date",
+      "no2",
+      "o3",
+      "no2_qc",
+      "o3_qc",
+      "ws",
+      "wd",
+      "air_temp",
+      "site_type"
+    )
+  )
+  expect_equal(
+    names(narrow),
+    c(
+      "source",
+      "site",
+      "code",
+      "date",
+      "pollutant",
+      "value",
+      "qc",
+      "ws",
+      "wd",
+      "air_temp"
+    )
+  )
+  expect_equal(names(annual)[1:4], c("source", "site", "code", "date"))
+  expect_equal(names(daqi)[1:4], c("source", "site", "code", "date"))
 })
 
 test_that("wrappers import from their network", {
@@ -709,7 +784,7 @@ skip_if(is.null(ni_hourly), "WSP servers cannot be reached")
 
 test_that("real hourly data has the expected structure", {
   expect_equal(nrow(ni_hourly), 8760L)
-  expect_equal(names(ni_hourly)[1:4], c("source", "date", "site", "code"))
+  expect_equal(names(ni_hourly)[1:4], c("source", "site", "code", "date"))
   expect_true(all(
     c("no2", "no2_qc", "ws", "wd", "air_temp") %in% names(ni_hourly)
   ))
@@ -766,14 +841,15 @@ test_that("real network statistics have the expected structure", {
 })
 
 test_that("real locally managed data can be imported", {
-  out <- suppressWarnings(
-    importUKAQ(
-      "el3",
-      2023,
-      source = "local",
-      pollutant = "no2",
-      progress = FALSE
-    )
+  # the warning about locally managed data is only shown once per session
+  rlang::local_options(rlib_warning_verbosity = "quiet")
+
+  out <- importUKAQ(
+    "el3",
+    2023,
+    source = "local",
+    pollutant = "no2",
+    progress = FALSE
   )
   expect_equal(nrow(out), 8760L)
 })

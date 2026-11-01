@@ -158,7 +158,11 @@ dataset:
 \itemize{
 \item \strong{source}: The network with which the site is associated. Note that
 some monitoring sites are part of multiple networks (e.g., the AURN & SAQN)
-so the same site may feature twice under different sources.
+so the same site may feature twice under different sources. Networks are
+always returned in the same order: the AURN, then the devolved networks
+(AQE, SAQN, WAQN and NI), then locally managed networks, then the Imperial
+and European networks. When \code{duplicate = FALSE}, sites are therefore kept
+from the first of these networks.
 \item \strong{code}: The site code, used to import data from specific sites of
 interest.
 \item \strong{site}: The site name, which is more human-readable than the site code.

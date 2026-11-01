@@ -413,6 +413,15 @@ importUKAQ <-
         dplyr::select(-dplyr::any_of(c("ws", "wd", "air_temp")))
     }
 
+    # use a consistent column order: identifiers (from least to most
+    # variable), then pollutants, then meteorological data
+    aq_data <- aq_data |>
+      dplyr::relocate(dplyr::any_of(c("source", "site", "code", "date"))) |>
+      dplyr::relocate(
+        dplyr::any_of(c("ws", "wd", "air_temp")),
+        .after = dplyr::last_col()
+      )
+
     # add meta data?
     if (meta) {
       aq_data <- add_site_meta(aq_data, meta_data, columns = meta_columns)
