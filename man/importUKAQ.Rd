@@ -97,11 +97,10 @@ pollutant/variable. When \code{to_narrow = TRUE} the data are returned with a
 column identifying the pollutant name and a column containing the
 corresponding concentration/statistic. Defaults to \code{FALSE}.}
 
-\item{verbose}{Print a message to the console if any data cannot be
-imported? Default is \code{FALSE}. \code{TRUE} is useful for debugging as the
-specific \code{year}(s), \code{site}(s) and \code{source}(s) which cannot be imported will
-be listed. Not used when \code{data_type} is \code{"annual"}, \code{"monthly"} or
-\code{"daqi"}.}
+\item{verbose}{Print a message to the console if any data cannot be imported?
+Default is \code{FALSE}. \code{TRUE} is useful for debugging as the specific
+\code{year}(s), \code{site}(s) and \code{source}(s) which cannot be imported will be
+listed. Not used when \code{data_type} is \code{"annual"}, \code{"monthly"} or \code{"daqi"}.}
 
 \item{progress}{Show a progress bar when many sites/years are being imported?
 Defaults to \code{TRUE}.}
@@ -203,7 +202,8 @@ importUKAQ("my1", year = 2022)
 importUKAQ(c("bn1", "bn2"), year = 2022, source = "aqe")
 
 # import sites across multiple networks
-importUKAQ(c("my1", "bn1", "bn2"),
+importUKAQ(
+  site = c("my1", "bn1", "bn2"),
   year = 2022,
   source = c("aurn", "aqe", "aqe")
 )
@@ -219,6 +219,7 @@ importUKAQ(
 
 # import other data types, filtering by pollutant
 importUKAQ(
+  year = 2020,
   data_type = "annual",
   pollutant = c("no2", "pm2.5", "pm10"),
   source = c("aurn", "aqe")

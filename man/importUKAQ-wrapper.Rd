@@ -151,11 +151,10 @@ pollutant/variable. When \code{to_narrow = TRUE} the data are returned with a
 column identifying the pollutant name and a column containing the
 corresponding concentration/statistic. Defaults to \code{FALSE}.}
 
-\item{verbose}{Print a message to the console if any data cannot be
-imported? Default is \code{FALSE}. \code{TRUE} is useful for debugging as the
-specific \code{year}(s), \code{site}(s) and \code{source}(s) which cannot be imported will
-be listed. Not used when \code{data_type} is \code{"annual"}, \code{"monthly"} or
-\code{"daqi"}.}
+\item{verbose}{Print a message to the console if any data cannot be imported?
+Default is \code{FALSE}. \code{TRUE} is useful for debugging as the specific
+\code{year}(s), \code{site}(s) and \code{source}(s) which cannot be imported will be
+listed. Not used when \code{data_type} is \code{"annual"}, \code{"monthly"} or \code{"daqi"}.}
 
 \item{progress}{Show a progress bar when many sites/years are being imported?
 Defaults to \code{TRUE}.}

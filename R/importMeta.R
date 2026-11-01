@@ -223,14 +223,8 @@ importMeta <-
     all = FALSE,
     duplicate = FALSE
   ) {
-    # ensure lower case
-    source <- tolower(source)
-
-    # alias source arguments
-    source[source == "kcl"] <- "imperial"
-    source[source == "saqd"] <- "saqn"
-    source[source == "niaqn"] <- "ni"
-    source[source == "lmam"] <- "local"
+    # ensure lower case and resolve aliases
+    source <- normalise_source(source)
 
     # special source args
     if (any(source == "ukaq")) {
@@ -284,14 +278,10 @@ importMeta <-
     # function to import any of the source networks
     get_meta <- function(source, all) {
       if (!source %in% c("imperial", "europe")) {
-        url <- switch(
-          source,
-          aurn = "https://uk-air.defra.gov.uk/openair/R_data/AURN_metadata.RData",
-          saqn = "https://www.scottishairquality.scot/openair/R_data/SCOT_metadata.RData",
-          ni = "https://www.airqualityni.co.uk/openair/R_data/NI_metadata.RData",
-          waqn = "https://airquality.gov.wales/sites/default/files/openair/R_data/WAQ_metadata.RData",
-          aqe = "https://airqualityengland.co.uk/assets/openair/R_data/AQE_metadata.RData",
-          local = "https://uk-air.defra.gov.uk/openair/LMAM/R_data/LMAM_metadata.RData"
+        url <- paste0(
+          ukaq_network_info(source, "url"),
+          ukaq_network_info(source, "abbr"),
+          "_metadata.RData"
         )
 
         meta <- read_wsp_meta(
