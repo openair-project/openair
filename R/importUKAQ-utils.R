@@ -517,7 +517,7 @@ read_summary_file <- function(url, source, data_type, to_narrow, hc) {
   }
 
   if (data_type == "annual") {
-    thedata <- dplyr::rename(thedata, date = year) |>
+    thedata <- dplyr::rename(thedata, date = "year") |>
       tidyr::drop_na(date) |>
       dplyr::mutate(date = lubridate::ymd(paste0(date, "-01-01"), tz = "UTC"))
   }
