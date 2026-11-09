@@ -24,13 +24,28 @@
   [`importEurope()`](https://openair-project.github.io/openair/reference/importEurope.md)
   now require both `site` and `year` to be provided.
 
+### Dependency Changes
+
+- [MASS](http://www.stats.ox.ac.uk/pub/MASS4/) (only used for one
+  statistic type in
+  [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md))
+  and [readr](https://readr.tidyverse.org) (only used for the
+  discontinued European data in
+  [`importEurope()`](https://openair-project.github.io/openair/reference/importEurope.md)
+  and `importMeta(source = "europe")`) have been moved to Suggests.
+
+- [openair](https://openair-project.github.io/openair/) now requires
+  [legendry](https://teunbrand.github.io/legendry/) version 0.3.0 or
+  later for features which use it (e.g., `corPlot(dendrogram = TRUE)`).
+
 ### New Features
 
 - All plots gain the `theme` argument to provide a convenient way to set
   non-data plot aesthetic features, such as gridlines and fonts. The
   following options are provided:
 
-  - `"default"`: the default `openair` theme.
+  - `"default"`: the default
+    [openair](https://openair-project.github.io/openair/) theme.
 
   - `"dark"`: a dark-background variant of the default theme for
     presentations and low-light viewing.
@@ -51,12 +66,9 @@
 
 - Added
   [`distPlot()`](https://openair-project.github.io/openair/reference/distPlot.md),
-  which flexibly plots histograms and density functions to examine the
-  ‘shape’ of the distribution of numeric data.
-
-- [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md)
-  can now filter by site code, site name, site type, pollutants
-  measured, and the distance from a given coordinate.
+  which examines the ‘shape’ of the distribution of numeric data using
+  histograms, frequency polygons, density plots or empirical cumulative
+  distribution functions.
 
 - [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md)
   refinements:
@@ -77,8 +89,8 @@
   gains the `ref.y` argument.
 
 - `key.columns` now defaults to `NULL` in most functions, which will use
-  `ggplot2`’s logic for the number of columns. `key.rows` has also been
-  added.
+  [ggplot2](https://ggplot2.tidyverse.org)’s logic for the number of
+  columns. `key.rows` has also been added.
   [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md),
   [`corPlot()`](https://openair-project.github.io/openair/reference/corPlot.md),
   [`percentileRose()`](https://openair-project.github.io/openair/reference/percentileRose.md),
@@ -92,14 +104,30 @@
   values.
 
 - [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
-  gains the `step` argument which causes a “stairstep” plot to be
-  created instead of a traditional line chart. This is likely most
-  useful for low resolution or ‘multi-day’ (e.g., diffusion tube) data.
+  gains the `step` argument, which creates a “stairstep” plot instead of
+  a traditional line chart. This is likely most useful for low
+  resolution or ‘multi-day’ (e.g., diffusion tube) data.
+
+- `date.breaks` in functions like
+  [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
+  can now take a character string, in line with the `date_breaks`
+  argument of functions like
+  [`ggplot2::scale_x_datetime()`](https://ggplot2.tidyverse.org/reference/scale_date.html).
+  It may also take `NULL`, which will use
+  [ggplot2](https://ggplot2.tidyverse.org) defaults.
+
+- [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
+  now uses a diverging blue-white-red palette by default when comparing
+  two sets of met data with `ws2` and `wd2`.
 
 - The `"gaf.seq"` palette in
   [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
   has been updated to reflect updated guidance from the UK Government
   Analysis Function.
+
+- [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md)
+  can now filter by site code, site name, site type, pollutants
+  measured, and the distance from a given coordinate.
 
 - [`kzFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md)
   and
@@ -113,22 +141,73 @@
   `type = "daylight"` and/or `group = "daylight"`) will now warn if
   `latitude` and/or `longitude` are not also provided.
 
-- `date.breaks` in functions like
-  [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
-  can now take a character string, in line with the `date_breaks`
-  argument of functions like
-  [`ggplot2::scale_x_datetime()`](https://ggplot2.tidyverse.org/reference/scale_date.html).
-  It may also take `NULL`, which will use
-  [ggplot2](https://ggplot2.tidyverse.org) defaults.
-
-- [MASS](http://www.stats.ox.ac.uk/pub/MASS4/) (only used for one
-  statistic type in
-  [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md))
-  and [readr](https://readr.tidyverse.org) (only used in the deprecated
-  [`importEurope()`](https://openair-project.github.io/openair/reference/importEurope.md))
-  have been moved to Suggests.
-
 ### Bug Fixes
+
+- Numeric inputs (e.g., `pollutant`, `ws`, `wd`, `obs` and `mod`) are
+  now checked consistently across
+  [openair](https://openair-project.github.io/openair/). Numbers stored
+  as text or factors are converted with a warning, and anything that
+  can’t be converted to numbers, such as dates or site names, raises an
+  informative error. Previously, most functions failed with an unhelpful
+  error, produced an empty plot, or (for
+  [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md),
+  [`pollutionRose()`](https://openair-project.github.io/openair/reference/pollutionRose.md)
+  and
+  [`TaylorDiagram()`](https://openair-project.github.io/openair/reference/TaylorDiagram.md))
+  silently converted these values to `NA`. This applies to all plotting
+  functions that take numeric variables, as well as
+  [`aqStats()`](https://openair-project.github.io/openair/reference/aqStats.md),
+  [`binData()`](https://openair-project.github.io/openair/reference/bootMeans.md),
+  [`bootMeanDF()`](https://openair-project.github.io/openair/reference/bootMeans.md),
+  [`calcPercentile()`](https://openair-project.github.io/openair/reference/calcPercentile.md),
+  [`GaussianSmooth()`](https://openair-project.github.io/openair/reference/GaussianSmooth.md),
+  [`kzFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md),
+  [`kzaFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md),
+  [`modStats()`](https://openair-project.github.io/openair/reference/modStats.md),
+  [`rollingMean()`](https://openair-project.github.io/openair/reference/rollingMean.md),
+  [`rollingQuantile()`](https://openair-project.github.io/openair/reference/rollingQuantile.md),
+  [`runRegression()`](https://openair-project.github.io/openair/reference/runRegression.md),
+  [`selectRunning()`](https://openair-project.github.io/openair/reference/selectRunning.md)
+  and
+  [`WhittakerSmooth()`](https://openair-project.github.io/openair/reference/WhittakerSmooth.md).
+
+- [`selectRunning()`](https://openair-project.github.io/openair/reference/selectRunning.md)
+  no longer silently returns incorrect results when `pollutant` contains
+  numbers stored as text. Previously, these were compared alphabetically
+  against `threshold` (e.g., `"99"` was treated as greater than `500`).
+
+- Wind direction data in tibbles (e.g., `mydata` or data from
+  [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md))
+  are now checked and cleaned consistently with `data.frame` inputs.
+  Previously, `wd` values outside 0-360 were not removed and, where
+  relevant, calms were not removed and `wd` was not rounded for tibble
+  inputs. This may change outputs for some functions.
+
+- Plotting functions (e.g.,
+  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md))
+  now work with ‘grouped’ tbls created with
+  [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
+  by automatically ungrouping input data.
+
+- `ref.x` and `ref.y` accept plain lists (e.g., `list(h = 10)`) as well
+  as
+  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md).
+  Plain lists also now default to a solid line, and labels default to
+  the line colour.
+
+- ColorBrewer palettes in
+  [`openColours()`](https://openair-project.github.io/openair/reference/openColours.md)
+  (and therefore all plotting functions) fixes:
+
+  - Qualitative palettes (e.g., `"Set1"`) now use their first colours
+    when fewer than three are needed, consistent with
+    [ggplot2](https://ggplot2.tidyverse.org). Previously, the first and
+    last colours of the full palette were used instead (e.g., red and
+    grey rather than red and blue for `"Set1"`).
+
+  - `lightness` and `saturation` are now applied for any number of
+    colours. Previously, they were ignored unless more colours were
+    requested than the palette contains.
 
 - [`percentileRose()`](https://openair-project.github.io/openair/reference/percentileRose.md)
   fixes:
@@ -142,6 +221,46 @@
     when `type` is used. Previously, only one panel received the empty
     directions and the others were shaded straight across them.
 
+- [`polarCluster()`](https://openair-project.github.io/openair/reference/polarCluster.md)
+  once again clusters using only the polar plot surface, restoring the
+  results of previous versions. Previously, other columns of the
+  prediction grid were also used for clustering.
+
+- Restored functionality of `polarPlot(upper = )`.
+
+- `corPlot(cluster = FALSE)` will no longer raise a missing data error,
+  and the `data` object will be appropriately constructed.
+
+- `calendarPlot(annotate = "value")` now correctly works when `breaks`
+  is not `NULL`.
+
+- [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md)
+  fixes:
+
+  - `group` will no longer error if `avg.time = "default"` and `group`
+    is a ‘date’ option (e.g., `"season"`).
+
+  - `windflow = TRUE` no longer duplicates rows when `ws` or `wd` is a
+    `pollutant` and `type` or `group` is also used.
+
+- [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
+  and
+  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+  will no longer plot a caption referencing an irrelevant confidence
+  interval if `ci = FALSE`.
+
+- [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+  overall titles, subtitles and captions are now centred by default, in
+  line with all other
+  [openair](https://openair-project.github.io/openair/) plotting
+  functions.
+
+- `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an
+  error.
+
+- [`trajCluster()`](https://openair-project.github.io/openair/reference/trajCluster.md)
+  now returns its plot as well as its data and the function call.
+
 - [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md)
   and its wrappers (e.g.,
   [`importAURN()`](https://openair-project.github.io/openair/reference/importUKAQ-wrapper.md))
@@ -151,13 +270,6 @@
     previously, e.g., `pollutant = "NO2"` silently returned no pollutant
     data for hourly data.
 
-  - `source` is now case-insensitive, accepts the same aliases as
-    [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md),
-    and raises an informative error if an unknown network is provided
-    rather than failing silently.
-
-  - `data_type` is now case-insensitive.
-
   - `pollutant` now matches pollutants exactly when `data_type` is
     `"annual"`, `"monthly"` or `"daqi"`, consistent with other
     `data_type`s. Previously, partial matching meant that, e.g.,
@@ -165,108 +277,58 @@
     statistics (e.g., `"o3.daily.max.8hour"`) and gravimetric PM
     measurements are still returned alongside their pollutant.
 
+  - `source` is now case-insensitive, accepts the same aliases as
+    [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md),
+    and raises an informative error if an unknown network is provided
+    rather than failing silently.
+
+  - `data_type` is now case-insensitive, and an unrecognised `data_type`
+    now raises an error rather than a warning and silently importing
+    hourly data instead.
+
   - `ratified = TRUE` now correctly flags data for sites which are part
     of multiple networks (e.g., both the AURN and SAQN) when they are
     imported from more than one `source`.
-
-  - The `source` column is now always a character vector; previously it
-    was a factor when `source` was guessed.
-
-  - An unrecognised `data_type` now raises an error, rather than a
-    warning and silently importing hourly data instead.
 
   - `ratified = TRUE` no longer errors when importing data from locally
     managed networks, which have no ratification information. A warning
     is now raised and their `qc` values are `NA`.
 
-- [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md)
-  now warns and skips any network whose metadata cannot be imported
-  (e.g., if its server is temporarily unavailable) rather than failing
-  completely, only erroring if no metadata can be imported at all. This
-  also means that
-  [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md)
-  can still guess the `source` of sites when another network is
-  unavailable.
-
-- `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an
-  error.
-
-- [`trajCluster()`](https://openair-project.github.io/openair/reference/trajCluster.md)
-  now returns its plot as well as its data and the function call.
+  - The `source` column is now always a character vector; previously it
+    was a factor when `source` was guessed.
 
 - [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md)
-  will no longer return `end_date` as a character column if `year` is
-  not given, and will no longer return the `start_year` and `end_year`
-  columns if it is.
+  fixes:
 
-- Add components when single `m` provided to
-  [`kzFilter()`](https://openair-project.github.io/openair/reference/kzFilter.md).
+  - Any network whose metadata cannot be imported (e.g., if its server
+    is temporarily unavailable) is now skipped with a warning rather
+    than causing
+    [`importMeta()`](https://openair-project.github.io/openair/reference/importMeta.md)
+    to fail completely; it only errors if no metadata can be imported at
+    all. This also means that
+    [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md)
+    can still guess the `source` of sites when another network is
+    unavailable.
 
-- Harden
-  [`WhittakerSmooth()`](https://openair-project.github.io/openair/reference/WhittakerSmooth.md)
-  when trailing / leading `NA` or all `NA`.
-
-- [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
-  overall titles, subtitles and captions are now centred by default, in
-  line with all other
-  [openair](https://openair-project.github.io/openair/) plotting
-  functions.
-
-- Clustering using
-  [`polarCluster()`](https://openair-project.github.io/openair/reference/polarCluster.md)
-  wrong clustered more data frame columns than necessary. The update
-  should revert results to previous behaviour.
-
-- Plotting functions (e.g.,
-  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md))
-  now work with ‘grouped’ tbls created with
-  [`dplyr::group_by()`](https://dplyr.tidyverse.org/reference/group_by.html)
-  by automatically ungrouping input data.
-
-- `corPlot(cluster = FALSE)` will no longer raise a missing data error,
-  and the `data` object will be appropriately constructed.
-
-- `calendarPlot(annotate = "value", ...)` now correctly works when
-  `breaks` is not `NULL`.
-
-- [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
-  and
-  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
-  will no longer plot a caption referencing an irrelevant confidence
-  interval if `ci = FALSE`.
-
-- Restored functionality of `polarPlot(upper=)`.
-
-- `timePlot(group=)` will not error if `avg.time = "default"` and
-  `group` is a ‘date’ option (e.g., `"season"`).
+  - `end_date` is no longer returned as a character column if `year` is
+    not given, and the `start_year` and `end_year` columns are no longer
+    returned if it is.
 
 - [`timeAverage()`](https://openair-project.github.io/openair/reference/timeAverage.md)
   will no longer report duplicate dates when `start.date` and `end.date`
   are already in `mydata`.
 
-- Wind direction data in tibbles (e.g., `mydata` or data from
-  [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md))
-  are now checked and cleaned consistently with `data.frame` inputs.
-  Previously, `wd` values outside 0-360 were not removed and, where
-  relevant, calms were not removed and `wd` was not rounded for tibble
-  inputs. This may change outputs for some functions.
-
-- `ref.x` and `ref.y` accept plain lists (e.g., `list(h = 10)`) as well
-  as
-  [`refOpts()`](https://openair-project.github.io/openair/reference/refOpts.md).
-  Plain lists also now default to a solid line, and labels default to
-  the line colour.
-
-- `timePlot(windflow = TRUE)` no longer duplicates rows when `ws` or
-  `wd` is a `pollutant` and `type` or `group` is also used.
-
 - [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
   now interprets `start` and `end` in the time zone of `mydata$date`
   rather than UTC.
 
-- [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
-  now uses a diverging blue-white-red palette by default when comparing
-  two sets of met data with `ws2` and `wd2`.
+- `kzFilter(components = TRUE)` and `kzaFilter(components = TRUE)` now
+  return components when a single `m` is provided. Previously, they were
+  silently omitted.
+
+- [`WhittakerSmooth()`](https://openair-project.github.io/openair/reference/WhittakerSmooth.md)
+  now handles data with leading or trailing `NA` values, or which are
+  entirely `NA`.
 
 ## openair 3.1.0
 
