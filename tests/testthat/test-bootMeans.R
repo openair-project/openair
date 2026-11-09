@@ -44,6 +44,26 @@ test_that("bootMeanDF: wider conf.int produces wider interval", {
 
 test_that("bootMeanDF errors when x is not a vector", {
   expect_error(bootMeanDF(data.frame(x = 1:5)), regexp = "vector")
+  expect_error(bootMeanDF(list(1, 2, 3)), regexp = "vector")
+})
+
+test_that("bootMeanDF converts factors using their labels", {
+  x <- c(10, 20, 30, 40, 50)
+  set.seed(1)
+  expected <- bootMeanDF(x, B = 50)
+  set.seed(1)
+  expect_warning(
+    result <- bootMeanDF(factor(x), B = 50),
+    regexp = "Converted"
+  )
+  expect_equal(result, expected)
+})
+
+test_that("bootMeanDF errors on dates", {
+  expect_error(
+    bootMeanDF(as.Date(c("2020-01-01", "2020-01-02"))),
+    regexp = "must be numeric"
+  )
 })
 
 test_that("bootMeanDF handles a single-element vector without error", {

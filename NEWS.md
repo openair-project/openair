@@ -64,6 +64,12 @@
 
 - `ref.x` and `ref.y` accept plain lists (e.g., `list(h = 10)`) as well as `refOpts()`. Plain lists also now default to a solid line, and labels default to the line colour.
 
+- ColorBrewer palettes in `openColours()` (and therefore all plotting functions) fixes:
+
+    - Qualitative palettes (e.g., `"Set1"`) now use their first colours when fewer than three are needed, consistent with `{ggplot2}`. Previously, the first and last colours of the full palette were used instead (e.g., red and grey rather than red and blue for `"Set1"`).
+
+    - `lightness` and `saturation` are now applied for any number of colours. Previously, they were ignored unless more colours were requested than the palette contains.
+
 - `percentileRose()` fixes:
 
     - The north (0/360°) segment no longer disappears in some renderers. Previously, each shaded area wrapped slightly more than a full circle, overlapping itself at north, which renderers using the "even-odd" fill rule drew as a gap.

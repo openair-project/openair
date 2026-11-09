@@ -346,3 +346,27 @@ test_that("invalid palette_type is rejected", {
   expect_error(openSchemes(palette_type = "bad"))
   expect_error(openSchemes(palette_type = c("seq", "bad")))
 })
+
+test_that("qualitative ColorBrewer palettes use their first colours when n < 3", {
+  set1 <- c("#E41A1CFF", "#377EB8FF")
+  expect_equal(openColours("Set1", n = 2), set1)
+  expect_equal(openColours("Set1", n = 1), set1[1])
+  expect_equal(openColours("Set1", n = 2, direction = -1), rev(set1))
+})
+
+test_that("lightness and saturation apply to ColorBrewer palettes at all n", {
+  for (n in c(2, 5, 15)) {
+    expect_false(identical(
+      openColours("Set1", n = n, lightness = 0.2),
+      openColours("Set1", n = n)
+    ))
+    expect_false(identical(
+      openColours("Blues", n = n, saturation = 0.1),
+      openColours("Blues", n = n)
+    ))
+  }
+})
+
+test_that("reversed ColorBrewer palettes take n = 1 from the reversed end", {
+  expect_equal(openColours("Greys", n = 1, direction = -1), "#000000FF")
+})

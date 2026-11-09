@@ -576,9 +576,9 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
 }
 
 #' Get a ColorBrewer palette from {RColorBrewer}, applying begin/end (sequential
-#' palettes only), direction and alpha
+#' palettes only)
 #' @noRd
-.brewer_pal <- function(n, name, direction = 1, alpha = 1, begin = 0, end = 1) {
+.brewer_pal <- function(n, name, begin = 0, end = 1) {
   rlang::check_installed(
     "RColorBrewer",
     reason = "to use ColorBrewer palettes."
@@ -595,11 +595,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
     cols <- grDevices::colorRampPalette(cols)(n)
   }
 
-  if (direction == -1) {
-    cols <- rev(cols)
-  }
-
-  paste0(substr(cols, 1, 7), sprintf("%02X", round(alpha * 255)))
+  cols
 }
 
 #' Brewer palette dispatcher
@@ -615,31 +611,25 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   saturation
 ) {
   max_n <- maxcolors[[scheme]]
-  if (n >= 3L && n <= max_n) {
-    .brewer_pal(
-      n,
-      scheme,
-      direction = direction,
-      begin = begin,
-      end = end,
-      alpha = alpha
-    )
+
+  cols <- if (n < 3L && scheme %in% .brewer_qual_schemes) {
+    # qualitative palettes use their first n colours, as in {scales}, rather
+    # than interpolating between the ends of the palette
+    .brewer_pal(3L, scheme)[seq_len(n)]
+  } else if (n >= 3L && n <= max_n) {
+    .brewer_pal(n, scheme, begin = begin, end = end)
   } else {
-    base_cols <- .brewer_pal(
-      max_n,
-      scheme,
-      direction = direction,
-      begin = begin,
-      end = end,
-      alpha = alpha
-    )
-    # alpha already baked in — strip before ramp, reapply after
-    cols <- grDevices::colorRampPalette(
-      substr(base_cols, 1, 7),
-      interpolate = "spline"
-    )(n)
-    .finalise(cols, direction = 1L, alpha = alpha, lightness, saturation)
+    # otherwise interpolate across the full palette, reversing it first so
+    # that, e.g., n = 1 is taken from the correct end
+    base_cols <- .brewer_pal(max_n, scheme, begin = begin, end = end)
+    if (direction == -1) {
+      base_cols <- rev(base_cols)
+      direction <- 1
+    }
+    grDevices::colorRampPalette(base_cols, interpolate = "spline")(n)
   }
+
+  .finalise(cols, direction, alpha, lightness, saturation)
 }
 
 #' Hue palette

@@ -130,7 +130,7 @@ binData <- function(
 #' @order 2
 #' @export
 bootMeanDF <- function(x, conf.int = 0.95, B = 1000) {
-  if (!rlang::is_vector(x)) {
+  if (!rlang::is_atomic(x)) {
     cli::cli_abort(c(
       "x" = "{.field x} should be a vector.",
       "i" = "{.field x} is a {class(x)}."
