@@ -73,11 +73,7 @@ rollingQuantile <- function(
   }
 
   # pollutant should be numeric
-  if (!is.numeric(mydata[[pollutant]])) {
-    cli::cli_abort(
-      "mydata{.field ${pollutant}} is not numeric - it is {class(mydata[[pollutant]])}."
-    )
-  }
+  mydata <- check_numeric(mydata, vars = pollutant)
 
   # setting width < 1 crashes R
   if (width < 1L) {

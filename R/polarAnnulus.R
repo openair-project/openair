@@ -232,7 +232,8 @@ polarAnnulus <-
     }
 
     # check data
-    mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+    mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+      check_numeric(vars = c(wd, pollutant))
 
     # if more than one pollutant, need to stack the data and set type = "variable"
     # this case is most relevent for model-measurement compasrions where data are in columns

@@ -60,7 +60,8 @@ runRegression <- function(
 ) {
   # 1. Preparation
   vars <- c("date", x, y)
-  mydata <- checkPrep(mydata, vars, type = "default")
+  mydata <- checkPrep(mydata, vars, type = "default") |>
+    check_numeric(vars = c(x, y))
 
   if (date.pad) {
     mydata <- datePad(mydata)

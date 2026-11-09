@@ -386,7 +386,13 @@ trendLevel <- function(
   }
 
   # all of x, y, temp need to be handled as type here
-  mydata <- checkPrep(mydata, temp, type = c(x, y, type), remove.calm = FALSE)
+  mydata <- checkPrep(
+    mydata,
+    temp,
+    type = c(x, y, type),
+    remove.calm = FALSE
+  ) |>
+    check_numeric(vars = setdiff(temp, "date"))
 
   # if using windflow, need the u & v components of wind
   if (windflow$windflow) {

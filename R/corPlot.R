@@ -193,6 +193,9 @@ corPlot <- function(
   # null and all cases
   if (is.null(pollutants) || any(pollutants == "all")) {
     pollutants <- names(mydata)
+  } else {
+    # only check named pollutants; otherwise non-numeric columns are dropped
+    mydata <- check_numeric(mydata, vars = pollutants)
   }
 
   # keep date if about

@@ -140,7 +140,8 @@ conditionalQuantile <- function(
     vars <- c("date", vars)
   }
 
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    check_numeric(vars = c(mod, obs))
   mydata <- stats::na.omit(mydata)
   mydata <- cutData(mydata, type)
 

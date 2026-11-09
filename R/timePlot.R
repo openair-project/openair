@@ -636,7 +636,11 @@ prepare_timeplot_data <- function(
   }
 
   # standard data checks
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    check_numeric(
+      vars = setdiff(vars, c("date", group)),
+      call = rlang::caller_env()
+    )
 
   # pad out any missing date/times so that line don't extend between areas of missing data
   if (date.pad) {

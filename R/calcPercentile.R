@@ -60,6 +60,8 @@ calcPercentile <- function(
     )
   }
 
+  mydata <- check_numeric(mydata, vars = pollutant)
+
   # iterate over 'percentile's to calculate %tiles
   mydata <- purrr::map(
     .x = percentile,

@@ -500,7 +500,20 @@ prepare_scatter_data <- function(
     vars <- c(vars, z)
   }
 
-  mydata <- checkPrep(mydata, unique(vars), type)
+  # x, y and z must be numeric, although x and y can also be dates
+  numeric_vars <- c(
+    x,
+    y,
+    if (!is.na(z)) z,
+    if (windflow$windflow) c("wd", "ws")
+  )
+  numeric_vars <- purrr::discard(
+    numeric_vars,
+    function(var) inherits(mydata[[var]], c("Date", "POSIXt"))
+  )
+
+  mydata <- checkPrep(mydata, unique(vars), type) |>
+    check_numeric(vars = numeric_vars, call = rlang::caller_env())
 
   ## filter for log scales (require strictly positive)
   if (log.x) {

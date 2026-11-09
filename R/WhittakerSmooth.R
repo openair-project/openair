@@ -66,13 +66,7 @@ WhittakerSmooth <- function(
   ...
 ) {
   # check inputs: pollutants numeric
-  for (pname in pollutant) {
-    if (!is.numeric(mydata[[pname]])) {
-      cli::cli_abort(
-        "mydata{.field ${pname}} is not numeric - it is {class(mydata[[pname]])}."
-      )
-    }
-  }
+  mydata <- check_numeric(mydata, vars = pollutant)
 
   # if p provided validate range and length
   if (!is.null(p)) {

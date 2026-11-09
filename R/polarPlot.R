@@ -509,7 +509,8 @@ polarPlot <-
       vars <- c(vars, "date")
     }
 
-    mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+    mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+      check_numeric(vars = setdiff(vars, "date"))
 
     mydata <- stats::na.omit(mydata)
 

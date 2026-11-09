@@ -175,7 +175,8 @@ modStats <- function(
     vars,
     type,
     remove.calm = FALSE
-  )
+  ) |>
+    check_numeric(vars = c(mod, obs))
 
   mydata <- cutData(mydata, type, ...)
 

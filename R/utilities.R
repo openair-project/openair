@@ -104,15 +104,22 @@ round_any <- function(x, accuracy, f = round) {
   f(x / accuracy) * accuracy
 }
 
-# function to check variables are numeric. non-numeric variables are coerced
+# function to check variables are present and numeric. non-numeric variables are coerced
 # with a warning, but an error is raised if coercion would turn any non-missing
 # values into NA (e.g., dates or site names)
 check_numeric <- function(mydata, vars, call = rlang::caller_env()) {
+  missing_vars <- setdiff(vars, names(mydata))
+  if (length(missing_vars) > 0) {
+    cli::cli_abort(
+      "Can't find the variable{?s} {.field {missing_vars}} in {.arg mydata}.",
+      call = call
+    )
+  }
+
   for (var in vars) {
     x <- mydata[[var]]
 
-    # missing columns are reported elsewhere (e.g., by checkPrep())
-    if (is.null(x) || is.numeric(x)) {
+    if (is.numeric(x)) {
       next
     }
 

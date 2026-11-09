@@ -444,7 +444,8 @@ prepare_smoothtrend_data <- function(
 ) {
   # default checks
   vars <- c("date", pollutant)
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    check_numeric(vars = pollutant, call = rlang::caller_env())
 
   # cutData depending on type
   mydata <- cutData(mydata, type, ...)

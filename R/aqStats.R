@@ -102,7 +102,8 @@ aqStats <- function(
     vars,
     "default",
     remove.calm = FALSE
-  )
+  ) |>
+    check_numeric(vars = pollutant)
 
   # reorganise data
   mydata <-

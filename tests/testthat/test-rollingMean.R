@@ -179,10 +179,27 @@ test_that("rollingMean with date.pad = TRUE still returns original row count", {
 
 test_that("rollingMean errors on non-numeric pollutant column", {
   bad <- dat
-  bad$o3 <- as.character(bad$o3)
+  bad$o3 <- "a"
   expect_error(
     rollingMean(bad, pollutant = "o3", width = 8),
-    regexp = "not numeric"
+    regexp = "must be numeric"
+  )
+})
+
+test_that("rollingMean converts numbers stored as text with a warning", {
+  chr <- dat
+  chr$o3 <- as.character(chr$o3)
+  expect_warning(
+    out <- rollingMean(chr, pollutant = "o3", width = 8, data.thresh = 0),
+    regexp = "Converted"
+  )
+  expect_equal(out, rm_default)
+})
+
+test_that("rollingMean errors on a missing pollutant column", {
+  expect_error(
+    rollingMean(dat, pollutant = "nope", width = 8),
+    regexp = "Can't find"
   )
 })
 

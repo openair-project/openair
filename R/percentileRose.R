@@ -171,7 +171,8 @@ percentileRose <- function(
     }
   }
 
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE, wd = wd)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE, wd = wd) |>
+    check_numeric(vars = c(wd, pollutant))
 
   ## round wd
   mydata[[wd]] <- angle * ceiling(mydata[[wd]] / angle - 0.5)

@@ -231,7 +231,13 @@ TheilSen <- function(
     interval <- "year"
   }
 
-  mydata <- checkPrep(mydata, c("date", pollutant), type, remove.calm = FALSE)
+  mydata <- checkPrep(
+    mydata,
+    c("date", pollutant),
+    type,
+    remove.calm = FALSE
+  ) |>
+    check_numeric(vars = pollutant)
   mydata <- cutData(mydata, type, ...)
 
   mydata <- timeAverage(

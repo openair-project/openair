@@ -722,6 +722,7 @@ prepare_calendar_data <- function(
 
   # check input data
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    check_numeric(vars = setdiff(vars, "date"), call = rlang::caller_env()) |>
     cutData(type, names = cut_names, ...)
 
   return(mydata)

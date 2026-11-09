@@ -189,7 +189,8 @@ polarFreq <- function(
   }
 
   # data checks
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    check_numeric(vars = c(wd, ws, pollutant))
 
   # to make first interval easier to work with, set ws = 0 + e
   ids <- which(mydata[[ws]] == 0)

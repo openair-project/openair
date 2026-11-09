@@ -106,12 +106,23 @@ test_that("increment equals observed minus baseline (within floating-point toler
 
 test_that("WhittakerSmooth errors on non-numeric pollutant column", {
   bad <- dat
-  bad$o3 <- as.character(bad$o3)
+  bad$o3 <- "a"
 
   expect_error(
     WhittakerSmooth(bad, pollutant = "o3", lambda = 100),
-    regexp = "not numeric"
+    regexp = "must be numeric"
   )
+})
+
+test_that("WhittakerSmooth converts numbers stored as text with a warning", {
+  chr <- dat
+  chr$o3 <- as.character(chr$o3)
+
+  expect_warning(
+    out <- WhittakerSmooth(chr, pollutant = "o3", lambda = 100),
+    regexp = "Converted"
+  )
+  expect_equal(out, WhittakerSmooth(dat, pollutant = "o3", lambda = 100))
 })
 
 test_that("WhittakerSmooth errors when p is outside [0, 1]", {

@@ -102,7 +102,8 @@ selectRunning <- function(
     Names = vars,
     type = type,
     remove.calm = FALSE
-  )
+  ) |>
+    check_numeric(vars = pollutant)
 
   # calculate run lengths
   thedata <-
