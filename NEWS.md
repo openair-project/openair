@@ -112,6 +112,8 @@
 
 - `windRose()` now uses a diverging blue-white-red palette by default when comparing two sets of met data with `ws2` and `wd2`.
 
+- `windRose()`, `pollutionRose()` and `TaylorDiagram()` now raise an informative error if a variable that should be numeric (e.g., `ws`, `wd`, `pollutant`, `obs` or `mod`) contains values that can't be converted to numbers, such as dates or site names. Previously, these values were silently converted to `NA` with only a warning. Numbers stored as text or factors are still converted, with a warning.
+
 # openair 3.1.0
 
 ## Dependency Changes

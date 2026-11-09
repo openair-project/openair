@@ -160,6 +160,7 @@ distPlot <- function(
   # data checks
   # need special handling of cutData as `drop` needs to be passed separately
   mydata <- checkPrep(mydata, vars, c(type, group), remove.calm = FALSE) |>
+    check_numeric(vars = pollutant) |>
     tidyr::pivot_longer(
       cols = dplyr::all_of(pollutant),
       names_to = "pollutant",

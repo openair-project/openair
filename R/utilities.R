@@ -104,16 +104,37 @@ round_any <- function(x, accuracy, f = round) {
   f(x / accuracy) * accuracy
 }
 
-# function to check variables are numeric, if not force with warning
-check_numeric <- function(mydata, vars) {
-  for (i in seq_along(vars)) {
-    if (!is.numeric(mydata[[vars[i]]])) {
-      mydata[[vars[i]]] <- as.numeric(as.character(mydata[[vars[i]]]))
+# function to check variables are numeric. non-numeric variables are coerced
+# with a warning, but an error is raised if coercion would turn any non-missing
+# values into NA (e.g., dates or site names)
+check_numeric <- function(mydata, vars, call = rlang::caller_env()) {
+  for (var in vars) {
+    x <- mydata[[var]]
 
-      cli::cli_warn(
-        "{.field {vars[i]}} is not numeric, forcing to numeric..."
+    # missing columns are reported elsewhere (e.g., by checkPrep())
+    if (is.null(x) || is.numeric(x)) {
+      next
+    }
+
+    x_num <- suppressWarnings(as.numeric(as.character(x)))
+    failed <- is.na(x_num) & !is.na(x)
+
+    if (any(failed)) {
+      cli::cli_abort(
+        c(
+          "x" = "{.field {var}} must be numeric, not {.cls {class(x)}}.",
+          "i" = "Values such as {.val {head(unique(as.character(x[failed])), 3)}} could not be converted to numbers."
+        ),
+        call = call
       )
     }
+
+    cli::cli_warn(
+      "Converted {.field {var}} from {.cls {class(x)}} to numeric.",
+      call = call
+    )
+
+    mydata[[var]] <- x_num
   }
 
   return(mydata)
