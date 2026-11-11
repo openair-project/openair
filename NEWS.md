@@ -1,14 +1,14 @@
 # openair (development version)
 
-## Breaking Changes
-
-- `importUKAQ()` and its wrappers (`importAURN()`, `importAQE()`, `importSAQN()`, `importWAQN()`, `importNI()` and `importLocal()`) no longer have default `site` and `year` arguments, which previously silently imported data for an arbitrary site and year. `year` must now always be provided, and `site` must be provided unless `data_type` is `"annual"`, `"monthly"` or `"daqi"`, in which case omitting it imports all sites. Similarly, `importImperial()`, `importKCL()` and `importEurope()` now require both `site` and `year` to be provided.
-
 ## Dependency Changes
 
 - `{MASS}` (only used for one statistic type in `polarPlot()`) and `{readr}` (only used for the discontinued European data in `importEurope()` and `importMeta(source = "europe")`) have been moved to Suggests.
 
 - `{openair}` now requires `{legendry}` version 0.3.0 or later for features which use it (e.g., `corPlot(dendrogram = TRUE)`).
+
+## Breaking Changes
+
+- `importUKAQ()` and its wrappers (`importAURN()`, `importAQE()`, `importSAQN()`, `importWAQN()`, `importNI()` and `importLocal()`) no longer have default `site` and `year` arguments, which previously silently imported data for an arbitrary site and year. `year` must now always be provided, and `site` must be provided unless `data_type` is `"annual"`, `"monthly"` or `"daqi"`, in which case omitting it imports all sites. Similarly, `importImperial()`, `importKCL()` and `importEurope()` now require both `site` and `year` to be provided.
 
 ## New Features
 
@@ -44,15 +44,35 @@
 
 - `windRose()` now uses a diverging blue-white-red palette by default when comparing two sets of met data with `ws2` and `wd2`.
 
-- The `"gaf.seq"` palette in `openColours()` has been updated to reflect updated guidance from the UK Government Analysis Function.
+- The `"gaf.seq"` palette in `openColours()` has been updated to reflect the latest guidance from the UK Government Analysis Function.
 
 - `importMeta()` can now filter by site code, site name, site type, pollutants measured, and the distance from a given coordinate.
 
 - `kzFilter()` and `kzaFilter()` now accept a vector for `k`, allowing a different number of iterations to be set for each `m` window size (a single value is still recycled across all `m`). By default, `k = 5` for every window size except `m = 8761`, which now uses `k = 3`.
 
-- `cutData(type = "daylight")` (and therefore any use of `type = "daylight"` and/or `group = "daylight"`) will now warn if `latitude` and/or `longitude` are not also provided.
+- `cutData(type = "daylight")` (and therefore any use of `type = "daylight"` and/or `group = "daylight"`) now warns if `latitude` and/or `longitude` are not also provided.
 
 ## Bug Fixes
+
+- Numeric inputs (e.g., `pollutant`, `ws`, `wd`, `obs` and `mod`) are now checked consistently across `{openair}`. Numbers stored as text or factors are converted with a warning, and anything that can't be converted to numbers, such as dates or site names, raises an informative error. Previously, most functions failed with an unhelpful error, produced an empty plot, or (for `windRose()`, `pollutionRose()` and `TaylorDiagram()`) silently converted these values to `NA`. This applies to all plotting functions that take numeric variables, as well as `aqStats()`, `binData()`, `bootMeanDF()`, `calcPercentile()`, `GaussianSmooth()`, `kzFilter()`, `kzaFilter()`, `modStats()`, `rollingMean()`, `rollingQuantile()`, `runRegression()`, `selectRunning()` and `WhittakerSmooth()`.
+
+- The number of `type` values is now checked consistently across all plotting functions, with a single informative error if too many are provided. Previously, `percentileRose()`, `polarFreq()`, `pollutionRose()`, `scatterPlot()`, `smoothTrend()`, `TaylorDiagram()`, `TheilSen()`, `timeProp()`, `trajLevel()`, `trajPlot()` and `windRose()` silently accepted three or more `type`s and produced overplotted panels, as only the first two were used for faceting. `trendLevel()` now errors rather than warning and dropping any `type`s beyond the first two, and `variationPlot()` no longer incorrectly says only one `type` is allowed when more than two are given.
+
+- Wind direction data in tibbles (e.g., `mydata` or data from `importUKAQ()`) are now checked and cleaned consistently with `data.frame` inputs. Previously, `wd` values outside 0-360 were not removed and, where relevant, calms were not removed and `wd` was not rounded for tibble inputs. This may change outputs for some functions.
+
+- Plotting functions (e.g., `timeVariation()`) now work with 'grouped' tibbles created with `dplyr::group_by()` by automatically ungrouping input data.
+
+- `ref.x` and `ref.y` accept plain lists (e.g., `list(h = 10)`) as well as `refOpts()`. Plain lists also now default to a solid line, and labels default to the line colour.
+
+- ColorBrewer palettes in `openColours()` (and therefore all plotting functions):
+
+    - Qualitative palettes (e.g., `"Set1"`) now use their first colours when fewer than three are needed, consistent with `{ggplot2}`. Previously, the first and last colours of the full palette were used instead (e.g., red and grey rather than red and blue for `"Set1"`).
+
+    - `lightness` and `saturation` are now applied for any number of colours. Previously, they were ignored unless more colours were requested than the palette contains.
+
+- `calendarPlot(annotate = "value")` now works correctly when `breaks` is not `NULL`.
+
+- `corPlot(cluster = FALSE)` no longer raises a missing data error, and the `data` object is now constructed correctly.
 
 - `cutData()` fixes:
 
@@ -64,53 +84,11 @@
 
     - Numeric `type` columns are now always given the correct interval labels. Previously, if a quantile interval contained no data (e.g., with sparse or highly discrete data), the labels of all following intervals were shifted onto the wrong values.
 
-- `distPlot()`, `variationPlot()` and `timeVariation()` now use the compass facet layout when `type = "wd"`, consistent with other `{openair}` plotting functions. Previously, a standard wrapped facet layout was used.
+- `importMeta()` fixes:
 
-- Numeric inputs (e.g., `pollutant`, `ws`, `wd`, `obs` and `mod`) are now checked consistently across `{openair}`. Numbers stored as text or factors are converted with a warning, and anything that can't be converted to numbers, such as dates or site names, raises an informative error. Previously, most functions failed with an unhelpful error, produced an empty plot, or (for `windRose()`, `pollutionRose()` and `TaylorDiagram()`) silently converted these values to `NA`. This applies to all plotting functions that take numeric variables, as well as `aqStats()`, `binData()`, `bootMeanDF()`, `calcPercentile()`, `GaussianSmooth()`, `kzFilter()`, `kzaFilter()`, `modStats()`, `rollingMean()`, `rollingQuantile()`, `runRegression()`, `selectRunning()` and `WhittakerSmooth()`.
+    - Any network whose metadata cannot be imported (e.g., if its server is temporarily unavailable) is now skipped with a warning rather than causing `importMeta()` to fail completely; it only errors if no metadata can be imported at all. This also means that `importUKAQ()` can still guess the `source` of sites when another network is unavailable.
 
-- `selectRunning()` no longer silently returns incorrect results when `pollutant` contains numbers stored as text. Previously, these were compared alphabetically against `threshold` (e.g., `"99"` was treated as greater than `500`).
-
-- The number of `type` values is now checked consistently across all plotting functions, with a single informative error if too many are provided. Previously, `percentileRose()`, `polarFreq()`, `pollutionRose()`, `scatterPlot()`, `smoothTrend()`, `TaylorDiagram()`, `TheilSen()`, `timeProp()`, `trajLevel()`, `trajPlot()` and `windRose()` silently accepted three or more `type`s and produced overplotted panels, as only the first two were used for faceting. `trendLevel()` now errors rather than warning and dropping any `type`s beyond the first two. `variationPlot()` incorrectly said only one `type` was allowed when more than two were given, and `distPlot()` now explains that multiple `pollutant`s can't be combined with two `type`s, rather than incorrectly saying only two `type`s are allowed.
-
-- Wind direction data in tibbles (e.g., `mydata` or data from `importUKAQ()`) are now checked and cleaned consistently with `data.frame` inputs. Previously, `wd` values outside 0-360 were not removed and, where relevant, calms were not removed and `wd` was not rounded for tibble inputs. This may change outputs for some functions.
-
-- Plotting functions (e.g., `timeVariation()`) now work with 'grouped' tbls created with `dplyr::group_by()` by automatically ungrouping input data.
-
-- `ref.x` and `ref.y` accept plain lists (e.g., `list(h = 10)`) as well as `refOpts()`. Plain lists also now default to a solid line, and labels default to the line colour.
-
-- ColorBrewer palettes in `openColours()` (and therefore all plotting functions) fixes:
-
-    - Qualitative palettes (e.g., `"Set1"`) now use their first colours when fewer than three are needed, consistent with `{ggplot2}`. Previously, the first and last colours of the full palette were used instead (e.g., red and grey rather than red and blue for `"Set1"`).
-
-    - `lightness` and `saturation` are now applied for any number of colours. Previously, they were ignored unless more colours were requested than the palette contains.
-
-- `percentileRose()` fixes:
-
-    - The north (0/360°) segment no longer disappears in some renderers. Previously, each shaded area wrapped slightly more than a full circle, overlapping itself at north, which renderers using the "even-odd" fill rule drew as a gap.
-
-    - Wind directions with no data in a given panel are now shown as gaps when `type` is used. Previously, only one panel received the empty directions and the others were shaded straight across them.
-
-- `polarCluster()` once again clusters using only the polar plot surface, restoring the results of previous versions. Previously, other columns of the prediction grid were also used for clustering.
-
-- Restored functionality of `polarPlot(upper = )`.
-
-- `corPlot(cluster = FALSE)` will no longer raise a missing data error, and the `data` object will be appropriately constructed.
-
-- `calendarPlot(annotate = "value")` now correctly works when `breaks` is not `NULL`.
-
-- `timePlot()` fixes:
-
-    - `group` will no longer error if `avg.time = "default"` and `group` is a 'date' option (e.g., `"season"`).
-
-    - `windflow = TRUE` no longer duplicates rows when `ws` or `wd` is a `pollutant` and `type` or `group` is also used.
-
-- `variationPlot()` and `timeVariation()` will no longer plot a caption referencing an irrelevant confidence interval if `ci = FALSE`.
-
-- `timeVariation()` overall titles, subtitles and captions are now centred by default, in line with all other `{openair}` plotting functions.
-
-- `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.
-
-- `trajCluster()` now returns its plot as well as its data and the function call.
+    - `end_date` is no longer returned as a character column if `year` is not given, and the `start_year` and `end_year` columns are no longer returned if it is.
 
 - `importUKAQ()` and its wrappers (e.g., `importAURN()`) are more robust to user input:
 
@@ -128,17 +106,41 @@
 
     - The `source` column is now always a character vector; previously it was a factor when `source` was guessed.
 
-- `importMeta()` fixes:
+- `kzFilter(components = TRUE)` and `kzaFilter(components = TRUE)` now return components when a single `m` is provided. Previously, they were silently omitted.
 
-    - Any network whose metadata cannot be imported (e.g., if its server is temporarily unavailable) is now skipped with a warning rather than causing `importMeta()` to fail completely; it only errors if no metadata can be imported at all. This also means that `importUKAQ()` can still guess the `source` of sites when another network is unavailable.
+- `percentileRose()` fixes:
 
-    - `end_date` is no longer returned as a character column if `year` is not given, and the `start_year` and `end_year` columns are no longer returned if it is.
+    - The north (0/360°) segment no longer disappears in some renderers. Previously, each shaded area wrapped slightly more than a full circle, overlapping itself at north, which renderers using the "even-odd" fill rule drew as a gap.
 
-- `timeAverage()` will no longer report duplicate dates when `start.date` and `end.date` are already in `mydata`.
+    - Wind directions with no data in a given panel are now shown as gaps when `type` is used. Previously, only one panel received the empty directions and the others were shaded straight across them.
+
+- `polarCluster()` once again clusters using only the polar plot surface, restoring the results of previous versions. Previously, other columns of the prediction grid were also used for clustering.
+
+- `polarPlot(upper = )` works again.
 
 - `selectByDate()` now interprets `start` and `end` in the time zone of `mydata$date` rather than UTC.
 
-- `kzFilter(components = TRUE)` and `kzaFilter(components = TRUE)` now return components when a single `m` is provided. Previously, they were silently omitted.
+- `selectRunning()` no longer silently returns incorrect results when `pollutant` contains numbers stored as text. Previously, these were compared alphabetically against `threshold` (e.g., `"99"` was treated as greater than `500`).
+
+- `timeAverage()` no longer reports duplicate dates when `start.date` and `end.date` are already in `mydata`.
+
+- `timePlot()` fixes:
+
+    - `group` no longer errors if `avg.time = "default"` and `group` is a 'date' option (e.g., `"season"`).
+
+    - `windflow = TRUE` no longer duplicates rows when `ws` or `wd` is a `pollutant` and `type` or `group` is also used.
+
+- `timeVariation()` and `variationPlot()` fixes:
+
+    - `type = "wd"` now uses the compass facet layout, consistent with other `{openair}` plotting functions. Previously, a standard wrapped facet layout was used.
+
+    - A caption referencing an irrelevant confidence interval is no longer added when `ci = FALSE`.
+
+    - `timeVariation()` overall titles, subtitles and captions are now centred by default, in line with all other `{openair}` plotting functions.
+
+- `trajCluster()` now returns its plot as well as its data and the function call.
+
+- `trajLevel(statistic = "pscf", smooth = TRUE)` no longer raises an error.
 
 - `WhittakerSmooth()` now handles data with leading or trailing `NA` values, or which are entirely `NA`.
 
