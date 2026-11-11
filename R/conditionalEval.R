@@ -119,9 +119,7 @@ conditionalEval <- function(
 
   the_stats <- c("MB", "NMB", "r", "COE", "MGE", "NMGE", "RMSE", "FAC2")
 
-  if (length(type) > 1) {
-    cli::cli_abort("Only one type can be used with this function")
-  }
+  check_type(type, max = 1)
 
   extra.args <- capture_dots(...)
 

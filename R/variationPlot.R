@@ -750,11 +750,7 @@ validate_varplot_inputs <- function(
   statistic,
   conf.int
 ) {
-  if (length(type) > 2) {
-    cli::cli_abort(
-      "Can only have one {.arg type} for {.fun openair::variationPlot}."
-    )
-  }
+  check_type(type, max = 2, call = rlang::caller_env())
 
   # validate inputs
   if (any(group != "default") && length(pollutant) > 1) {

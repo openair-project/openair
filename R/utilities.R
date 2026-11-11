@@ -147,6 +147,22 @@ check_numeric <- function(mydata, vars, call = rlang::caller_env()) {
   return(mydata)
 }
 
+# function to check that no more than `max` conditioning variables have been
+# passed to `type`. Most plotting functions can facet by up to two types.
+check_type <- function(type, max = 2L, call = rlang::caller_env()) {
+  if (length(type) > max) {
+    cli::cli_abort(
+      c(
+        "x" = "{.arg type} can have at most {max} value{?s}, not {length(type)}.",
+        "i" = "You supplied {.val {type}}."
+      ),
+      call = call
+    )
+  }
+
+  invisible(type)
+}
+
 #' Function to check if duplicate dates are present in mydata by type
 #' @param mydata Data input
 #' @param type `type` from parent function

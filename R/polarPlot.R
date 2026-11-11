@@ -419,9 +419,7 @@ polarPlot <-
       )
     }
 
-    if (length(type) > 2) {
-      cli::cli_abort("Maximum number of {.arg type}s is 2.")
-    }
+    check_type(type, max = 2)
 
     # can't have conditioning here
     if (uncertainty) {

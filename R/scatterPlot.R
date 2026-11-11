@@ -252,6 +252,8 @@ scatterPlot <- function(
     cols <- get_theme_cols(cols, theme, "seq")
   }
 
+  check_type(type, max = 2)
+
   ## extra args
   extra.args <- capture_dots(...)
   extra.args$size <- extra.args$size %||% 1

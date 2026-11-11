@@ -236,6 +236,8 @@ TaylorDiagram <- function(
     cols <- get_theme_cols(cols, theme, "qual")
   }
 
+  check_type(type, max = 2)
+
   # extra.args setup
   extra.args <- capture_dots(...)
 

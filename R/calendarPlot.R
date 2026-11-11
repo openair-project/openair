@@ -217,10 +217,7 @@ calendarPlot <-
       windflow <- windflowOpts(range = c(0.01, 0.5), linewidth = 0.75)
     }
 
-    # can't have three types
-    if (length(type) >= 3L) {
-      cli::cli_abort("{.arg type} must be length 1 or 2.")
-    }
+    check_type(type, max = 2)
 
     # if 2 types provided, one must be "month", and use that to work out the
     # rows/cols assignment

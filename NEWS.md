@@ -58,6 +58,8 @@
 
 - `selectRunning()` no longer silently returns incorrect results when `pollutant` contains numbers stored as text. Previously, these were compared alphabetically against `threshold` (e.g., `"99"` was treated as greater than `500`).
 
+- The number of `type` values is now checked consistently across all plotting functions, with a single informative error if too many are provided. Previously, `percentileRose()`, `polarFreq()`, `pollutionRose()`, `scatterPlot()`, `smoothTrend()`, `TaylorDiagram()`, `TheilSen()`, `timeProp()`, `trajLevel()`, `trajPlot()` and `windRose()` silently accepted three or more `type`s and produced overplotted panels, as only the first two were used for faceting. `trendLevel()` now errors rather than warning and dropping any `type`s beyond the first two. `variationPlot()` incorrectly said only one `type` was allowed when more than two were given, and `distPlot()` now explains that multiple `pollutant`s can't be combined with two `type`s, rather than incorrectly saying only two `type`s are allowed.
+
 - Wind direction data in tibbles (e.g., `mydata` or data from `importUKAQ()`) are now checked and cleaned consistently with `data.frame` inputs. Previously, `wd` values outside 0-360 were not removed and, where relevant, calms were not removed and `wd` was not rounded for tibble inputs. This may change outputs for some functions.
 
 - Plotting functions (e.g., `timeVariation()`) now work with 'grouped' tbls created with `dplyr::group_by()` by automatically ungrouping input data.

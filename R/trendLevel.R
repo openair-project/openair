@@ -200,16 +200,7 @@ trendLevel <- function(
     )
   }
 
-  # check length of type
-  if (length(type) > 2) {
-    type <- type[1:2]
-    cli::cli_warn(
-      c(
-        "!" = "{.fun openair::trendLevel} does not allow more than two {.field type} values.",
-        "i" = "Setting {.field type} to '{type}'."
-      )
-    )
-  }
+  check_type(type, max = 2)
 
   # ensure x, y and type are unique
   vars <- c(pollutant, x, y, type)

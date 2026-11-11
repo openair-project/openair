@@ -152,6 +152,6 @@ test_that("calcPercentile errors when pollutant is not in mydata", {
       avg.time = "month",
       percentile = 50
     ),
-    regexp = "not present"
+    regexp = "Can.t find"
   )
 })

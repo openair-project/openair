@@ -209,9 +209,7 @@ polarAnnulus <-
         "Cannot have same {.arg type} as {'season'} and {.arg period} as {'trend'}."
       )
     }
-    if (length(type) > 2) {
-      cli::cli_abort("Cannot have more than two {.arg types}.")
-    }
+    check_type(type, max = 2)
 
     # extra.args setup
     extra.args <- capture_dots(...)

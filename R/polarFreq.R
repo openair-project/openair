@@ -170,6 +170,8 @@ polarFreq <- function(
   # intervals in wind direction
   wd.int <- 360 / round(wd.nint)
 
+  check_type(type, max = 2)
+
   # extra.args setup
   extra.args <- capture_dots(...)
 

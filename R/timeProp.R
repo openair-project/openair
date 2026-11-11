@@ -83,6 +83,8 @@ timeProp <- function(
     cols <- get_theme_cols(cols, theme, "qual")
   }
 
+  check_type(type, max = 2)
+
   # extra.args setup
   extra.args <- capture_dots(...)
 
@@ -105,7 +107,8 @@ timeProp <- function(
   vars <- c("date", pollutant)
 
   # check the data
-  mydata <- checkPrep(mydata, vars, c(type, proportion), remove.calm = FALSE)
+  mydata <- checkPrep(mydata, vars, c(type, proportion), remove.calm = FALSE) |>
+    check_numeric(vars = pollutant)
 
   # cut data
   mydata <- cutData(mydata, c(type, proportion), ...)

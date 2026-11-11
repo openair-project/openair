@@ -155,7 +155,7 @@ test_that("more than two type values raises an error", {
       type = c("month", "season", "year"),
       plot = FALSE
     ),
-    regexp = "length 1 or 2"
+    regexp = "at most 2 values"
   )
 })
 

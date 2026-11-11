@@ -135,11 +135,7 @@ corPlot <- function(
     cols <- get_theme_cols(cols, theme, "seq")
   }
 
-  if (length(type) > 1) {
-    cli::cli_abort(
-      "Only one {.arg type} is permitted in {.fun openair::corPlot}"
-    )
-  }
+  check_type(type, max = 1)
 
   # extra.args setup
   extra.args <- capture_dots(...)

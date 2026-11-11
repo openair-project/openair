@@ -97,7 +97,7 @@ distPlot <- function(
     )
   }
 
-  if (length(pollutant) > 1 && length(type) > 2) {
+  if (length(pollutant) > 1 && length(type) > 1) {
     cli::cli_abort(
       "In {.fun openair::distPlot}, cannot have more than one \
       {.arg pollutant} and have two {.arg type}s."
@@ -178,9 +178,7 @@ distPlot <- function(
   if (length(type) == 2) {
     type_cols <- c("type_y", "type_x")
   }
-  if (length(type) > 2) {
-    cli::cli_abort("Only a maximum of two {.arg type}s can be used.")
-  }
+  check_type(type, max = 2)
 
   # if group is default, colour by pollutant
   if (group == "default") {
