@@ -189,3 +189,91 @@ test_that("suffix prevents overwriting an existing column of the same name", {
   # original nox column should still be numeric
   expect_true(is.numeric(result$nox))
 })
+
+# =============================================================================
+# Row order should not affect the result
+# =============================================================================
+
+test_that("factor levels are chronological regardless of row order", {
+  rev_dat <- dat[rev(seq_len(nrow(dat))), ]
+
+  for (t in c("monthyear", "quarteryear", "seasonyear", "week")) {
+    expect_identical(
+      levels(cutData(rev_dat, type = t)[[t]]),
+      levels(cutData(dat, type = t)[[t]]),
+      info = t
+    )
+  }
+
+  expect_identical(
+    levels(cutData(rev_dat, type = "weekend")$weekend),
+    c("weekday", "weekend")
+  )
+  expect_identical(
+    levels(cutData(rev_dat, type = "dst", local.tz = "Europe/London")$dst),
+    c("DST", "Non-DST")
+  )
+  expect_identical(
+    levels(suppressWarnings(cutData(rev_dat, type = "daylight"))$daylight),
+    c("daylight", "nighttime")
+  )
+})
+
+test_that("seasonyear levels are in chronological order", {
+  expected <- paste0(
+    c(
+      "winter (DJF)",
+      "spring (MAM)",
+      "summer (JJA)",
+      "autumn (SON)",
+      "winter (DJF)"
+    ),
+    "-",
+    c(2003, 2003, 2003, 2003, 2004)
+  )
+  strip_newline <- function(x) gsub("\n", " ", x)
+
+  for (drop in c("default", "outside")) {
+    out <- cutData(dat, type = "seasonyear", drop = drop)
+    expect_identical(
+      strip_newline(levels(out$seasonyear)),
+      expected,
+      info = drop
+    )
+  }
+
+  # southern hemisphere starts with summer (DJF)
+  out <- cutData(dat, type = "seasonyear", hemisphere = "southern")
+  expect_match(levels(out$seasonyear)[1], "^summer")
+})
+
+test_that("drop = 'outside' doesn't create NAs for unsorted data", {
+  set.seed(1)
+  shuf <- dat[sample(nrow(dat)), ]
+
+  for (t in c("monthyear", "quarteryear", "seasonyear")) {
+    out <- cutData(shuf, type = t, drop = "outside")
+    expect_false(anyNA(out[[t]]), info = t)
+    expect_identical(
+      levels(out[[t]]),
+      levels(cutData(dat, type = t, drop = "outside")[[t]]),
+      info = t
+    )
+  }
+})
+
+test_that("a constant numeric column gives a single level", {
+  out <- cutData(data.frame(z = rep(5, 10)), type = "z")
+  expect_identical(levels(out$z), "z 5")
+  expect_false(anyNA(out$z))
+
+  out <- cutData(data.frame(z = rep(5, 10)), type = "z", is.axis = TRUE)
+  expect_identical(levels(out$z), "5")
+})
+
+test_that("numeric labels stay aligned when a quantile bin is empty", {
+  # quantiles are 0, 2.5, 5, 7.5, 10 so the middle two bins are empty
+  out <- cutData(data.frame(z = c(0, 10)), type = "z")
+  expect_identical(as.character(out$z), c("z 0 to 2.5", "z 7.5 to 10"))
+  expect_equal(nlevels(out$z), 4L)
+})

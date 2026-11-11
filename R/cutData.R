@@ -16,6 +16,9 @@
 #'
 #'  - `"hour"` splits the data by hour of the day.
 #'
+#'  - `"week"` splits the data by week of the year, where weeks start on a
+#' Monday and any days before the first Monday of the year are in week `00`.
+#'
 #'  - `"monthyear"` (or `"yearmonth"`) splits the data by year and month. It
 #' differs from month in that a level is defined for each month of the data set.
 #' This is useful sometimes to show an ordered sequence of months if the data
@@ -46,8 +49,7 @@
 #' which will assign December to the Winter *after* the year it is actually in.
 #'
 #'  - `"daylight"` splits the data relative to estimated sunrise and sunset to
-#' give either daylight or nighttime. The cut is made by `cutDaylight` but more
-#' conveniently accessed via `cutData`, e.g. `cutData(mydata, type = "daylight",
+#' give either daylight or nighttime, e.g., `cutData(mydata, type = "daylight",
 #' latitude = my.latitude, longitude = my.longitude)`. The daylight estimation,
 #' which is valid for dates between 1901 and 2099, is made using the measurement
 #' location, date, time and astronomical algorithms to estimate the relative
@@ -72,19 +74,22 @@
 #' whether the variation in a pollutant is driven by man-made emissions or
 #' natural processes.
 #'
-#'  - `"wd"` splits the data by 8 wind sectors and requires a column `wd`: "NE",
-#' "E", "SE", "S", "SW", "W", "NW", "N".
+#'  - `"wd"` splits the data into wind sectors and requires a column `wd`. By
+#' default, 8 sectors are used ("N", "NE", "E", "SE", "S", "SW", "W", "NW"),
+#' but this can be changed using `wd.res`.
 #'
 #' Note that all the date-based types, e.g., `"month"`/`"year"` are derived from
-#' a column `date`. If a user already has a column with a name of one of the
-#' date-based types it will not be used.
+#' a column `date`. If a user already has a column with the name of one of the
+#' built-in types it will only be used if it is a factor; otherwise, it will be
+#' recalculated (from `date` or `wd`).
 #'
 #' @param x A data frame containing a field `date`.
 #'
 #' @param type A string giving the way in which the data frame should be split.
-#'   Pre-defined values are: `"default"`, `"year"`, `"hour"`, `"month"`,
-#'   `"season"`, `"weekday"`, `"site"`, `"weekend"`, `"monthyear"`,
-#'   `"daylight"`, `"dst"` (daylight saving time).
+#'   Pre-defined values are: `"default"`, `"year"`, `"hour"`, `"week"`,
+#'   `"month"`, `"monthyear"`, `"quarter"`, `"quarteryear"`, `"season"`,
+#'   `"seasonyear"`, `"weekday"`, `"weekend"`, `"daylight"`, `"dst"` (daylight
+#'   saving time) and `"wd"`. See 'Details' for more information.
 #'
 #'   `type` can also be the name of a numeric or factor. If a numeric column
 #'   name is supplied [cutData()] will split the data into four quantiles.
@@ -96,7 +101,7 @@
 #'   given. The length of `names` should therefore be equal to the length of
 #'   `type`.
 #'
-#' @param suffix If `name` is not specified, `suffix` will be appended to any
+#' @param suffix If `names` is not specified, `suffix` will be appended to any
 #'   added columns that would otherwise overwrite existing columns. For example,
 #'   `cutData(mydata, "nox", suffix = "_cuts")` would append a `nox_cuts` column
 #'   rather than overwriting `nox`.
@@ -116,7 +121,8 @@
 #'   first.
 #'
 #' @param wd.res The number of wind direction bins; one of `4` (N/E/S/W), `8`
-#'   (N/NE/E/SE/etc., the default) or `16` (N/NNE/NE/ENE/etc.).
+#'   (N/NE/E/SE/etc., the default), `16` (N/NNE/NE/ENE/etc.) or `32`
+#'   (N/NbE/NNE/NEbN/etc.).
 #'
 #' @param is.axis A logical (`TRUE`/`FALSE`), used to request shortened cut
 #'   labels for axes.
@@ -377,6 +383,16 @@ drop_na_by_type <- function(x, type) {
 
 # Cut a numeric vector into quantiles
 cut_vec_numeric <- function(x, type, n.levels, is.axis) {
+  # if all values are identical there is only one unique quantile, which
+  # `cut()` would interpret as a *number* of intervals, so return a single level
+  if (length(unique(x[!is.na(x)])) <= 1L) {
+    level <- as.character(unique(x[!is.na(x)]))
+    if (!is.axis) {
+      level <- paste(type, level)
+    }
+    return(factor(rep(level, length(x)), levels = level))
+  }
+
   temp.levels <-
     levels(cut(
       x,
@@ -399,7 +415,8 @@ cut_vec_numeric <- function(x, type, n.levels, is.axis) {
     labels = FALSE
   )
 
-  x <- as.factor(x)
+  # keep empty bins so labels stay aligned with their bin index
+  x <- factor(x, levels = seq_along(temp.levels))
   temp.levels <- gsub("[(]|[)]|[[]|[]]", "", temp.levels)
   temp.levels <- gsub("[,]", " to ", temp.levels)
   levels(x) <- if (is.axis) {
@@ -448,7 +465,7 @@ cut_vec_week <- function(x, drop) {
     levels <- seq(x_range[1], x_range[2], by = 1L)
     x <- ordered(pad_string(x, 2), levels = pad_string(levels, 2))
   } else if (drop %in% c("default", "empty")) {
-    x <- ordered(pad_string(x, 2), levels = pad_string(unique(x), 2))
+    x <- ordered(pad_string(x, 2), levels = pad_string(sort(unique(x)), 2))
   }
   return(x)
 }
@@ -457,11 +474,9 @@ cut_vec_week <- function(x, drop) {
 cut_vec_weekend <- function(x, drop) {
   wdays <- lubridate::wday(x, week_start = 1L)
   x <- dplyr::recode_values(wdays, 1:5 ~ "weekday", 6:7 ~ "weekend")
-  unique_vals <- unique(x)
-  if (drop %in% c("default", "none")) {
-    levels <- c("weekday", "weekend")
-  } else {
-    levels <- unique_vals
+  levels <- c("weekday", "weekend")
+  if (drop %in% c("empty", "outside")) {
+    levels <- levels[levels %in% x]
   }
   x <- ordered(x, levels = levels)
   return(x)
@@ -529,15 +544,15 @@ cut_vec_monthyear <- function(x, is.axis, drop) {
   # combine actual years and months
   x <- paste(mnths, yrs, sep = " ")
 
-  # get the factor levels
+  # get the factor levels - filter the complete, chronologically ordered levels
+  # so the result doesn't depend on the row order of the data
   if (drop %in% c("default", "empty")) {
-    levels <- unique(x)
+    levels <- levels[levels %in% x]
   } else if (drop == "none") {
     levels <- levels
   } else if (drop == "outside") {
-    start <- which(levels == dplyr::first(x))
-    end <- which(levels == dplyr::last(x))
-    levels <- levels[start:end]
+    level_ids <- range(which(levels %in% x))
+    levels <- levels[min(level_ids):max(level_ids)]
   }
 
   x <- ordered(x, levels = levels)
@@ -562,11 +577,21 @@ cut_vec_seasonyear <- function(x, hemisphere, is.axis, drop) {
   months <- lubridate::month(x)
   years[months == 12] <- years[months == 12] + 1L
 
-  # get combinations of years and months
+  # seasons in chronological order within a season-year, starting with the
+  # season containing December-February (as December belongs to the next year)
+  season_order <- cut_vec_season(
+    ISOdate(2000, c(1, 4, 7, 10), 1),
+    hemisphere = hemisphere,
+    is.axis = TRUE,
+    drop = "none"
+  ) |>
+    as.character()
+
+  # get combinations of years and seasons
   levels <-
     tidyr::crossing(
       year = seq(min(years, na.rm = TRUE), max(years, na.rm = TRUE), by = 1L),
-      season = factor(levels(seasons), levels = levels(seasons))
+      season = factor(season_order, levels = season_order)
     ) |>
     dplyr::mutate(
       level = paste(.data$season, .data$year, sep = sep)
@@ -578,7 +603,7 @@ cut_vec_seasonyear <- function(x, hemisphere, is.axis, drop) {
 
   # get the factor levels
   if (drop %in% c("default", "empty")) {
-    levels <- unique(x)
+    levels <- levels[levels %in% x]
   } else if (drop == "none") {
     levels <- levels
   } else if (drop == "outside") {
@@ -687,11 +712,11 @@ cut_vec_dst <- function(x, local.tz, drop) {
 
   x <- dplyr::recode_values(isdst, 0 ~ "Non-DST", 1 ~ "DST")
 
+  levels <- c("DST", "Non-DST")
   if (drop %in% c("default", "empty", "outside")) {
-    x <- factor(x, levels = unique(x))
-  } else if (drop == "none") {
-    x <- factor(x, levels = c("DST", "Non-DST"))
+    levels <- levels[levels %in% x]
   }
+  x <- factor(x, levels = levels)
 
   return(x)
 }
@@ -863,11 +888,11 @@ cut_vec_daylight <- function(
     missing = NA
   )
 
+  levels <- c("daylight", "nighttime")
   if (drop %in% c("default", "empty", "outside")) {
-    x <- factor(x, levels = unique(x))
-  } else if (drop == "none") {
-    x <- factor(x, levels = c("daylight", "nighttime"))
+    levels <- levels[levels %in% x]
   }
+  x <- factor(x, levels = levels)
 
   return(x)
 }
@@ -1001,7 +1026,7 @@ cut_vec_quarteryear <- function(x, drop, is.axis) {
 
   # get the factor levels
   if (drop %in% c("default", "empty")) {
-    levels <- unique(x)
+    levels <- levels[levels %in% x]
   } else if (drop == "none") {
     levels <- levels
   } else if (drop == "outside") {

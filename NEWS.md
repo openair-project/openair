@@ -54,6 +54,16 @@
 
 ## Bug Fixes
 
+- `cutData()` fixes:
+
+    - Factor levels no longer depend on the row order of the data. Previously, `"monthyear"`, `"quarteryear"`, `"seasonyear"` and `"week"` levels were ordered by their first appearance in the data rather than chronologically, and `drop = "outside"` could silently return `NA` for many rows (e.g., `"monthyear"`) if the data weren't sorted by date. `"weekend"`, `"dst"` and `"daylight"` levels now always use a consistent order (e.g., `"DST"` before `"Non-DST"`, `"daylight"` before `"nighttime"`).
+
+    - `"seasonyear"` levels are now always chronological (e.g., winter 2003, spring 2003, ..., winter 2004). Previously, `drop = "outside"` and `drop = "none"` placed winter after autumn within each year.
+
+    - A numeric `type` column containing a single unique value now produces a single level, rather than several meaningless intervals.
+
+    - Numeric `type` columns are now always given the correct interval labels. Previously, if a quantile interval contained no data (e.g., with sparse or highly discrete data), the labels of all following intervals were shifted onto the wrong values.
+
 - `distPlot()`, `variationPlot()` and `timeVariation()` now use the compass facet layout when `type = "wd"`, consistent with other `{openair}` plotting functions. Previously, a standard wrapped facet layout was used.
 
 - Numeric inputs (e.g., `pollutant`, `ws`, `wd`, `obs` and `mod`) are now checked consistently across `{openair}`. Numbers stored as text or factors are converted with a warning, and anything that can't be converted to numbers, such as dates or site names, raises an informative error. Previously, most functions failed with an unhelpful error, produced an empty plot, or (for `windRose()`, `pollutionRose()` and `TaylorDiagram()`) silently converted these values to `NA`. This applies to all plotting functions that take numeric variables, as well as `aqStats()`, `binData()`, `bootMeanDF()`, `calcPercentile()`, `GaussianSmooth()`, `kzFilter()`, `kzaFilter()`, `modStats()`, `rollingMean()`, `rollingQuantile()`, `runRegression()`, `selectRunning()` and `WhittakerSmooth()`.
