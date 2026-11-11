@@ -125,7 +125,7 @@ timeProp <- function(
   if (avg.time == "season") {
     if (any(c("season", "seasonyear") %in% type)) {
       cli::cli_abort(
-        "In {.fun openair::timeProp}, {.arg type} and {.arg avg.time} cannot both be 'season'."
+        "In {.fun openair::timeProp}, {.arg type} and {.arg avg.time} cannot both be {.val season}."
       )
     }
     results <- mydata |>

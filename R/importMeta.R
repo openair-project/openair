@@ -692,7 +692,7 @@ read_saqgetr_meta <- function(url, year) {
   rlang::check_installed("readr")
   msg <-
     c(
-      "!" = "{.fun importEurope} has been discontinued and cannot import \\
+      "!" = "{.fun openair::importEurope} has been discontinued and cannot import \\
       data after February 2024.",
       "i" = "Consider using the EEA Air Quality Download Service \\
       instead {.url https://eeadmz1-downloads-webapp.azurewebsites.net/}"

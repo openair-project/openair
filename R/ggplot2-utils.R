@@ -236,7 +236,7 @@ get_scale_transform <- function(
   }
 
   cli::cli_abort(
-    "{.arg trans} must be logical, a string, or a {.pkg scales} 'transform' object."
+    "{.arg trans} must be logical, a string, or a {.pkg scales} {.cls transform} object."
   )
 }
 

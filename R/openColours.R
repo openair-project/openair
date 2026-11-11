@@ -342,7 +342,7 @@ openColours <- function(
     if (length(scheme) > 1L && any(scheme %in% .all_schemes)) {
       cli::cli_abort(
         c(
-          "x" = "Please provide {.strong either} 1 {.fun openColours} palette {.emph or} a vector of valid R colours.",
+          "x" = "Please provide {.strong either} 1 {.fun openair::openColours} palette {.emph or} a vector of valid R colours.",
           "i" = "See {.code ?openColours} for a list of palettes."
         ),
         call = NULL
@@ -352,7 +352,7 @@ openColours <- function(
     if (!all(check)) {
       cli::cli_abort(
         c(
-          "x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openColours} palettes: {.field {names(check[!check])}}"
+          "x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openair::openColours} palettes: {.val {names(check[!check])}}"
         ),
         call = NULL
       )
@@ -1498,7 +1498,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
     cli::cli_abort(
       c(
         "!" = "Too many colours selected for {.code {scheme}}.",
-        "i" = "{.code n} should be between 1 and {max_n}."
+        "i" = "{.arg n} should be between {.val {1}} and {.val {max_n}}."
       ),
       call = NULL
     )

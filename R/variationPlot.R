@@ -295,7 +295,7 @@ variationPlot <- function(
   if (difference) {
     # identify the two things being differenced
     if (nlevels(mydata$group) != 2L) {
-      cli::cli_abort("Need 2 'groups' to calculate a difference.")
+      cli::cli_abort("{.arg group} must have exactly {.val {2}} levels to calculate a difference.")
     }
     the_levels <- levels(mydata$group) # already set by pivot_longer or group cutData
     poll1 <- the_levels[1]

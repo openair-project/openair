@@ -415,7 +415,7 @@ polarPlot <-
 
     if (statistic %in% correlation_stats && length(pollutant) != 2) {
       cli::cli_abort(
-        "Correlation {.arg statistic} '{statistic}' requires two pollutants."
+        "Correlation {.arg statistic} {.val {statistic}} requires two pollutants."
       )
     }
 
@@ -447,7 +447,7 @@ polarPlot <-
           correlation_stats
         )
     ) {
-      cli::cli_abort("{.arg statistic} '{statistic}' not recognised.")
+      cli::cli_abort("{.arg statistic} {.val {statistic}} not recognised.")
     }
 
     if (length(weights) != 3) {
@@ -540,7 +540,7 @@ polarPlot <-
     # if statistic is 'r' we need the data for two pollutants in columns
     if (length(pollutant) > 1 && !statistic %in% correlation_stats) {
       if (length(type) > 1) {
-        cli::cli_warn("Only {.arg type} = '{type[1]}' will be used.")
+        cli::cli_warn("Only {.arg type} {.val {type[1]}} will be used.")
         type <- type[1]
       }
 
@@ -1203,7 +1203,7 @@ polar_prepare_grid <- function(
         c(
           "Not enough data to fit surface. Try:",
           "i" = "Reducing the value of the smoothing parameter, k to less than {k}, or",
-          "i" = "Using {.arg statistic} = 'nwr'"
+          "i" = "Using {.arg statistic} {.val nwr}."
         )
       )
     }

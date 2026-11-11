@@ -49,7 +49,7 @@ GaussianSmooth <- function(
   # data.thresh must be between 0 & 100
   if (data.thresh < 0 || data.thresh > 100) {
     cli::cli_abort(
-      "{.field data.thresh} must be between {.val {0L}} and {.val {100L}}."
+      "{.arg data.thresh} must be between {.val {0L}} and {.val {100L}}."
     )
   }
 

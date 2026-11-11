@@ -185,8 +185,8 @@ check_duplicate_rows <- function(mydata, type = NULL, fn = cli::cli_warn) {
   if (flag) {
     fn(
       c(
-        "!" = "Duplicate dates detected in mydata{.field $date}.",
-        "i" = 'Are there multiple sites in {.code mydata}? Use the {.field type} argument to condition them separately.'
+        "!" = "Duplicate dates detected in {.code mydata$date}.",
+        "i" = "Are there multiple sites in {.arg mydata}? Use the {.arg type} argument to condition them separately."
       ),
       call = NULL
     )
@@ -346,7 +346,7 @@ check_key_header <- function(key.title, extra.args) {
 check_key_position <- function(key.position, key) {
   if (!is.null(key)) {
     cli::cli_warn(
-      'The {.arg key} argument is deprecated. Please use {.arg key.position = "none"} to remove a legend.'
+      'The {.arg key} argument is deprecated. Please use {.code key.position = "none"} to remove a legend.'
     )
 
     if (isFALSE(key)) {
@@ -503,7 +503,7 @@ recycle_to_length <- function(x, n, expect1 = FALSE) {
 
   if (expect1) {
     cli::cli_abort(
-      "Length mismatch: argument must be length 1 or same length as 'h'/'v'"
+      "Length mismatch: argument must be length {.val {1}} or the same length as {.arg h}/{.arg v}."
     )
   } else {
     while (length(x) < n) {

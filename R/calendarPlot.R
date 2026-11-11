@@ -208,8 +208,8 @@ calendarPlot <-
     if (annotate %in% c("ws", "wd")) {
       cli::cli_warn(
         c(
-          "!" = "{.arg annotate} in {.fun openair::calendarPlot} no longer supports {.arg 'ws'} or {.arg 'wd'}.",
-          "i" = "Please use the {.arg windflow} argument instead for more thorough control over the apperance of the 'windflow' arrow.",
+          "!" = "{.arg annotate} in {.fun openair::calendarPlot} no longer supports {.val ws} or {.val wd}.",
+          "i" = "Please use the {.arg windflow} argument instead for more thorough control over the appearance of the windflow arrow.",
           "i" = "Setting {.arg windflow} to {TRUE}."
         )
       )
@@ -224,7 +224,7 @@ calendarPlot <-
     if (length(type) == 2L) {
       if (!"month" %in% type) {
         cli::cli_abort(
-          "In {.fun openair::calendarPlot}, at least one {.arg type} must be 'month'."
+          "In {.fun openair::calendarPlot}, at least one {.arg type} must be {.val month}."
         )
       }
 
@@ -264,7 +264,7 @@ calendarPlot <-
 
     # check w.shift
     if (w.shift < 0 || w.shift > 6) {
-      cli::cli_abort("{.field w.shift} should be between {0} and {6}.")
+      cli::cli_abort("{.arg w.shift} should be between {.val {0}} and {.val {6}}.")
     }
 
     # extra args
@@ -291,7 +291,7 @@ calendarPlot <-
       cli::cli_warn(
         c(
           "!" = "The {.arg col.arrow} argument of {.fun openair::calendarPlot} has been deprecated.",
-          "i" = "Please use the {.arg windflow} argument with {.fun openair::windflowOpts} to control the appearance of the 'windflow' arrow."
+          "i" = "Please use the {.arg windflow} argument with {.fun openair::windflowOpts} to control the appearance of the windflow arrow."
         )
       )
       windflow$colour <- extra.args$col.arrow
@@ -701,7 +701,7 @@ prepare_calendar_data <- function(
   if (nrow(mydata) == 0) {
     cli::cli_abort(c(
       "x" = "No data to plot.",
-      "i" = "Check {.field year} and {.field month}."
+      "i" = "Check {.arg year} and {.arg month}."
     ))
   }
 

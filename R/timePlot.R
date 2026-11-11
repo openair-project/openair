@@ -250,7 +250,7 @@ timePlot <- function(
   check_type(type, max = 2)
 
   if (!missing(statistic) && missing(avg.time)) {
-    cli::cli_inform("No {.field avg.time} specified; using 'month'.")
+    cli::cli_inform("No {.arg avg.time} specified; using {.val month}.")
     avg.time <- "month"
   }
 
@@ -796,8 +796,8 @@ normalise_timeplot_data <-
 
       if (is.na(target_date)) {
         cli::cli_abort(c(
-          "x" = "Provided {.field normalise} option not recognised.",
-          "i" = "{.field normalise} must be either 'mean' or a string in the format 'DD/MM/YYYY'."
+          "x" = "Provided {.arg normalise} option not recognised.",
+          "i" = "{.arg normalise} must be either {.val mean} or a string in the format {.val DD/MM/YYYY}."
         ))
       }
 

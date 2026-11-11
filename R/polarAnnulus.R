@@ -206,7 +206,7 @@ polarAnnulus <-
 
     if (period == "trend" && "season" %in% type) {
       cli::cli_abort(
-        "Cannot have same {.arg type} as {'season'} and {.arg period} as {'trend'}."
+        "Cannot have {.arg type} as {.val season} and {.arg period} as {.val trend}."
       )
     }
     check_type(type, max = 2)

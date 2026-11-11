@@ -243,7 +243,7 @@ importUKAQ <-
 
     if (ratified && data_type != "hourly") {
       cli::cli_warn(
-        "{.arg ratified} is only available for hourly data, and will be ignored for {.arg data_type} '{data_type}'."
+        "{.arg ratified} is only available for hourly data, and will be ignored for {.arg data_type} {.val {data_type}}."
       )
     }
 
@@ -263,15 +263,15 @@ importUKAQ <-
       if (!is_stats) {
         cli::cli_abort(
           c(
-            "x" = "{.arg site} must be supplied when {.arg data_type} is '{data_type}'.",
-            "i" = "{.arg site} can only be omitted when {.arg data_type} is 'annual', 'monthly' or 'daqi', to import all sites."
+            "x" = "{.arg site} must be supplied when {.arg data_type} is {.val {data_type}}.",
+            "i" = "{.arg site} can only be omitted when {.arg data_type} is {.val annual}, {.val monthly} or {.val daqi}, to import all sites."
           )
         )
       }
 
       if (is.null(source)) {
         cli::cli_abort(
-          "Please provide a {.field source} when {.field data_type} is '{data_type}'."
+          "Please provide a {.arg source} when {.arg data_type} is {.val {data_type}}."
         )
       }
 
@@ -294,7 +294,7 @@ importUKAQ <-
     if ("local" %in% source) {
       cli::cli_warn(
         c(
-          "i" = "'local' data is associated with locally managed air quality network sites in England.",
+          "i" = "{.val local} data is associated with locally managed air quality network sites in England.",
           "!" = "These sites are not part of the AURN national network, and therefore may not have the same level of quality control applied to them."
         ),
         .frequency = "regularly",
@@ -328,7 +328,7 @@ importUKAQ <-
     # DAQI is only available for national networks
     if (data_type == "daqi" && "local" %in% source) {
       cli::cli_abort(c(
-        "!" = "{.arg data_type} 'DAQI' is not available for locally managed networks"
+        "!" = "{.arg data_type} {.val daqi} is not available for locally managed networks."
       ))
     }
 

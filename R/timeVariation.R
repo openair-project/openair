@@ -226,7 +226,7 @@ timeVariation <- function(
     if (isTRUE(extra.args$month.last)) {
       cli::cli_warn(c(
         "!" = "{.arg month.last} has been deprecated. Please use the {.arg panels} argument for flexible control over panels.",
-        "i" = "Setting {.arg panels} to {.code c('hour.weekday', 'hour', 'weekday', 'month')}."
+        "i" = "Setting {.arg panels} to {.val {c(\"hour.weekday\", \"hour\", \"weekday\", \"month\")}}."
       ))
       panels <- c("hour.weekday", "hour", "weekday", "month")
     }

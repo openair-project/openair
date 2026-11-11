@@ -158,7 +158,7 @@ trajPlot <- function(
   rlang::check_installed(c("sf", "rnaturalearth"))
   if (!map.res %in% c(10, 50, 110, "small", "medium", "large")) {
     cli::cli_abort(
-      "{.arg map.res} must be one of {10}/'large', {50}/'medium' or {110}/'small'."
+      "{.arg map.res} must be one of {.val {10}}/{.val large}, {.val {50}}/{.val medium} or {.val {110}}/{.val small}."
     )
   }
 
@@ -255,7 +255,7 @@ trajPlot <- function(
     cli::cli_abort(
       c(
         "x" = "Duplicates in {.field date2} detected. Does {.arg mydata} contain multiple trajectories from different origins?",
-        "i" = "Try setting `type` or `group` to silence this error."
+        "i" = "Try setting {.arg type} or {.arg group} to silence this error."
       )
     )
   }

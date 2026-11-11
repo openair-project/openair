@@ -128,7 +128,7 @@ smoothTrend <- function(
   # validation checks
   if (length(pollutant) > 1 && length(percentile) > 1) {
     cli::cli_warn(
-      "You cannot choose multiple {.field percentiles} and {.field pollutants}; using {.field percentile} = {percentile[1]}."
+      "You cannot choose multiple values of both {.arg percentile} and {.arg pollutant}; using {.code percentile = {percentile[1]}}."
     )
     percentile <- percentile[1]
   }
@@ -136,7 +136,7 @@ smoothTrend <- function(
   # set stat to percentile if user provides some
   if (!missing(percentile) && statistic != "percentile") {
     cli::cli_inform(
-      "{.field percentiles} provided ({percentile}); setting {.field statistic} to 'percentile'."
+      "{.arg percentile} provided ({.val {percentile}}); setting {.arg statistic} to {.val percentile}."
     )
     statistic <- "percentile"
   }

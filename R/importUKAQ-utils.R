@@ -76,7 +76,7 @@ guess_site_source <- function(site, call = rlang::caller_env()) {
     unavailable <- setdiff(ukaq_networks$source, ukaq_meta$source)
 
     msg <- c(
-      "x" = "Unknown site codes detected. Please ensure all site codes can be found in {.fun importMeta}.",
+      "x" = "Unknown site codes detected. Please ensure all site codes can be found in {.fun openair::importMeta}.",
       "i" = "Unknown site codes: {ambiguous_codes}"
     )
 
@@ -128,7 +128,7 @@ guess_site_source <- function(site, call = rlang::caller_env()) {
     msg <- c(
       "x" = "Ambiguous site codes detected. National networks are imported preferentially to locally managed networks.",
       alternatives,
-      "i" = "Specify {.field source} to import sites from specific monitoring networks."
+      "i" = "Specify {.arg source} to import sites from specific monitoring networks."
     )
 
     names(msg)[names(msg) == ""] <- "!"

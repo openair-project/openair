@@ -154,7 +154,7 @@ corPlot <- function(
     if (isTRUE(extra.args$lower)) {
       cli::cli_warn(
         c(
-          "!" = "The {.arg lower} argument has been deprecated. Setting {.arg triangle} to 'lower'.",
+          "!" = "The {.arg lower} argument has been deprecated. Setting {.arg triangle} to {.val lower}.",
           "i" = "Please use the {.arg triangle} argument directly in {.fun openair::corPlot}."
         )
       )

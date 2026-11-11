@@ -62,13 +62,13 @@ rollingQuantile <- function(
   # data.thresh must be between 0 & 100
   if (data.thresh < 0 || data.thresh > 100) {
     cli::cli_abort(
-      "{.field data.thresh} must be between {.val {0L}} and {.val {100L}}."
+      "{.arg data.thresh} must be between {.val {0L}} and {.val {100L}}."
     )
   }
 
   if (!all(probs >= 0 & probs <= 1)) {
     cli::cli_abort(
-      "{.field probs} must be between {.val {0L}} and {.val {1L}}."
+      "{.arg probs} must be between {.val {0L}} and {.val {1L}}."
     )
   }
 

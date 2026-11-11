@@ -153,7 +153,7 @@ percentileRose <- function(
     mean <- FALSE
     if (length(percentile) > 1) {
       cli::cli_abort(
-        "Only one percentile should be supplied when {.arg method} = 'CPF'."
+        "Only one percentile should be supplied when {.code method = \"cpf\"}."
       )
     }
   }
@@ -197,7 +197,7 @@ percentileRose <- function(
   # case pollutant becomes a conditioning variable
   if (length(pollutant) > 1) {
     if (length(type) > 1) {
-      cli::cli_warn("Only type = '{type[1]}' will be used.")
+      cli::cli_warn("Only {.arg type} {.val {type[1]}} will be used.")
       type <- type[1]
     }
     ## use pollutants as conditioning variables

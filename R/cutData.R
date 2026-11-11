@@ -195,7 +195,7 @@ cutData <- function(
   if (!is.null(names)) {
     if (length(names) != length(type)) {
       cli::cli_abort(
-        "Length of {.field names} ({.val {length(names)}}) not equal to length of {.field type} ({.val {length(type)}})."
+        "Length of {.arg names} ({.val {length(names)}}) not equal to length of {.arg type} ({.val {length(type)}})."
       )
     }
   }
@@ -203,8 +203,8 @@ cutData <- function(
   if (any(type == "daylight") && (missing(latitude) || missing(longitude))) {
     cli::cli_warn(
       c(
-        "!" = "{.field type} 'daylight' used without setting {.field latitude} and/or {.field longitude}.",
-        "i" = "Using a {.field latitude} of {latitude} and {.field longitude} of {longitude}."
+        "!" = "{.arg type} {.val daylight} used without setting {.arg latitude} and/or {.arg longitude}.",
+        "i" = "Using a {.arg latitude} of {.val {latitude}} and {.arg longitude} of {.val {longitude}}."
       )
     )
   }
@@ -238,9 +238,9 @@ cutData <- function(
         cli::cli_abort(
           call = NULL,
           c(
-            "x" = "{.field type} '{type}' is neither a built-in option, nor a column in {.field x}.",
-            "i" = "{.emph Built-ins:} {conds}",
-            "i" = "{.emph Names in {.field x}}: {names(x)}"
+            "x" = "{.arg type} {.val {type}} is neither a built-in option, nor a column in {.arg x}.",
+            "i" = "{.emph Built-ins:} {.val {conds}}",
+            "i" = "{.emph Names in {.arg x}:} {.field {names(x)}}"
           )
         )
       }
@@ -375,7 +375,7 @@ drop_na_by_type <- function(x, type) {
     lenNA <- length(which(is.na(x[[type]])))
     x <- x[!is.na(x[[type]]), ]
     cli::cli_warn(c(
-      "!" = "Removing {.val {lenNA}} rows due to missing {.col {type}} data."
+      "!" = "Removing {.val {lenNA}} rows due to missing {.field {type}} data."
     ))
   }
   return(x)
@@ -706,7 +706,7 @@ cut_vec_dst <- function(x, local.tz, drop) {
 
   if (any(isdst == -1)) {
     cli::cli_abort(
-      "Not possible to identify DST for {.field local.tz} '{local.tz}'."
+      "Not possible to identify DST for {.arg local.tz} {.val {local.tz}}."
     )
   }
 

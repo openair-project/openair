@@ -206,8 +206,8 @@ polarFreq <- function(
   # if pollutant chosen but no statistic - use mean, issue warning
   if (statistic == "frequency" && !is.null(pollutant)) {
     cli::cli_warn(c(
-      "x" = "{.code statistic == 'frequency'} incompatible with a defined {.field pollutant}.",
-      "i" = "Setting {.field statistic} to {.code 'mean'}."
+      "x" = "{.code statistic = \"frequency\"} is incompatible with a defined {.arg pollutant}.",
+      "i" = "Setting {.arg statistic} to {.val mean}."
     ))
     statistic <- "mean"
   }
@@ -215,8 +215,8 @@ polarFreq <- function(
   # if statistic chosen but no pollutant stop
   if (statistic != "frequency" && is.null(pollutant)) {
     cli::cli_abort(c(
-      "x" = "No {.field pollutant} chosen",
-      "i" = "Please choose a {.field pollutant}, e.g., {.code pollutant = 'nox'}"
+      "x" = "No {.arg pollutant} chosen.",
+      "i" = "Please choose a {.arg pollutant}, e.g., {.code pollutant = \"nox\"}."
     ))
   }
 

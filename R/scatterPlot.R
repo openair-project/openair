@@ -265,7 +265,7 @@ scatterPlot <- function(
   ## validate
   if (is.na(z) && method == "level") {
     cli::cli_abort(
-      "Need to specify {.arg z} when using {.code method = 'level'}."
+      "Need to specify {.arg z} when using {.code method = \"level\"}."
     )
   }
   if (!is.na(group) && any(group %in% type)) {

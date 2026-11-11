@@ -138,7 +138,7 @@ layer_ref <- function(
   if (ref$method == "band" && n %% 2 != 0) {
     cli::cli_abort(
       "{.fun openair::refOpts} requires an even number of \\
-      {.field intercept} values when {.field method} is 'band'."
+      {.arg intercept} values when {.arg method} is {.val band}."
     )
   }
 
