@@ -54,6 +54,8 @@
 
 ## Bug Fixes
 
+- `distPlot()`, `variationPlot()` and `timeVariation()` now use the compass facet layout when `type = "wd"`, consistent with other `{openair}` plotting functions. Previously, a standard wrapped facet layout was used.
+
 - Numeric inputs (e.g., `pollutant`, `ws`, `wd`, `obs` and `mod`) are now checked consistently across `{openair}`. Numbers stored as text or factors are converted with a warning, and anything that can't be converted to numbers, such as dates or site names, raises an informative error. Previously, most functions failed with an unhelpful error, produced an empty plot, or (for `windRose()`, `pollutionRose()` and `TaylorDiagram()`) silently converted these values to `NA`. This applies to all plotting functions that take numeric variables, as well as `aqStats()`, `binData()`, `bootMeanDF()`, `calcPercentile()`, `GaussianSmooth()`, `kzFilter()`, `kzaFilter()`, `modStats()`, `rollingMean()`, `rollingQuantile()`, `runRegression()`, `selectRunning()` and `WhittakerSmooth()`.
 
 - `selectRunning()` no longer silently returns incorrect results when `pollutant` contains numbers stored as text. Previously, these were compared alphabetically against `threshold` (e.g., `"99"` was treated as greater than `500`).

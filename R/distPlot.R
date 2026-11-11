@@ -357,7 +357,8 @@ distPlot <- function(
       extra.args = extra.args,
       auto.text = auto.text,
       drop = FALSE,
-      wd.res = extra.args$wd.res %||% 8
+      wd.res = extra.args$wd.res %||% 8,
+      wd_layout = identical(type[type != "default"], "wd")
     ) +
     ggplot2::labs(
       x = extra.args$xlab,

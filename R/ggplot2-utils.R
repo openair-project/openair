@@ -1,12 +1,16 @@
 # Facet -------------------------------------------------------------------
 
-# work out the faceting strategy
+# work out the faceting strategy. `wd_layout` controls whether a single `type`
+# is laid out as a compass (via `facet_wd()`); by default this is inferred from
+# the column name, but functions which rename the `type` column (e.g.,
+# `variationPlot()`) need to set it explicitly
 get_facet <- function(
   type,
   extra.args,
   auto.text,
   drop = FALSE,
-  wd.res = 8
+  wd.res = 8,
+  wd_layout = NULL
 ) {
   fun <- NULL
   if (any(type != "default")) {
@@ -21,7 +25,7 @@ get_facet <- function(
       }
 
       # special handling for wd, else normal facet_wrap
-      if (type %in% c("wd", "wd_type")) {
+      if (wd_layout %||% (type %in% c("wd", "wd_type"))) {
         fun <-
           facet_wd(
             ggplot2::vars(.data[[type]]),

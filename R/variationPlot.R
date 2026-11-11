@@ -503,7 +503,8 @@ variationPlot <- function(
       extra.args,
       auto.text = auto.text,
       drop = FALSE,
-      wd.res = extra.args$wd.res %||% 8
+      wd.res = extra.args$wd.res %||% 8,
+      wd_layout = identical(type, "wd")
     ) +
     ggplot2::labs(
       x = extra.args$xlab,

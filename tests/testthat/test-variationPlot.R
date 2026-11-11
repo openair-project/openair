@@ -247,3 +247,13 @@ test_that("timeVariation errors with more than one type", {
     regexp = "type"
   )
 })
+
+test_that("type = 'wd' uses the compass facet layout", {
+  out <- suppressWarnings(
+    variationPlot(dat, pollutant = "nox", type = "wd", plot = FALSE)
+  )
+  expect_s3_class(out$plot$facet, "FacetWinddir")
+
+  out <- variationPlot(dat, pollutant = "nox", type = "season", plot = FALSE)
+  expect_false(inherits(out$plot$facet, "FacetWinddir"))
+})
