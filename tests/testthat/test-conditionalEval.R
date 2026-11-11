@@ -125,7 +125,7 @@ test_that("more than one type raises an error", {
       type = c("season", "weekend"),
       plot = FALSE
     ),
-    regexp = "one type"
+    regexp = "at most 1 value"
   )
 })
 

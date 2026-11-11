@@ -209,6 +209,8 @@ TheilSen <- function(
     text.col <- "black"
   }
 
+  check_type(type, max = 2)
+
   # extra.args setup
   extra.args <- capture_dots(...)
 

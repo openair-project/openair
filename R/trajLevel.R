@@ -256,7 +256,9 @@ trajLevel <- function(
   }
 
   # check data and set up
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  check_type(type, max = 2)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    check_numeric(vars = c("lat", "lon", pollutant))
 
   # extra.args
   extra.args <- capture_dots(...)

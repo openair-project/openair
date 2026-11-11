@@ -244,6 +244,8 @@ windRose <- function(
   }
   angle[angle < 3] <- 3
 
+  check_type(type, max = 2)
+
   # extra.args args setup
   extra.args <- capture_dots(...)
 

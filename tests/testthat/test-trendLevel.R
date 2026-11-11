@@ -140,14 +140,14 @@ test_that("multiple x values warns and uses only the first", {
   )
 })
 
-test_that("more than two type values warns and truncates to two", {
-  expect_warning(
+test_that("more than two type values raises an error", {
+  expect_error(
     trendLevel(
       dat,
       pollutant = "nox",
       type = c("weekend", "season", "year"),
       plot = FALSE
     ),
-    regexp = "more than two"
+    regexp = "at most 2 values"
   )
 })

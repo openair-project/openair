@@ -247,11 +247,7 @@ timePlot <- function(
     )
   }
 
-  if (length(type) > 2) {
-    cli::cli_abort(
-      "Cannot have more than 2 {.arg type}s."
-    )
-  }
+  check_type(type, max = 2)
 
   if (!missing(statistic) && missing(avg.time)) {
     cli::cli_inform("No {.field avg.time} specified; using 'month'.")

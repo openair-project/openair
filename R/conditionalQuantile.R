@@ -129,9 +129,7 @@ conditionalQuantile <- function(
     cols <- get_theme_cols(cols, theme, "seq")
   }
 
-  if (length(type) > 2) {
-    cli::cli_abort("Only two types can be used with this function")
-  }
+  check_type(type, max = 2)
 
   extra.args <- capture_dots(...)
 

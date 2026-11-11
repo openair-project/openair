@@ -205,9 +205,7 @@ timeVariation <- function(
     cols <- get_theme_cols(cols, theme, "qual")
   }
 
-  if (length(type) > 1) {
-    cli::cli_abort("Only one 'type' permitted.")
-  }
+  check_type(type, max = 1)
 
   if (length(panels) == 1) {
     cli::cli_warn(
