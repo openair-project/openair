@@ -93,9 +93,10 @@ plots. Widely used by many <code>openair</code> functions usually through the op
 
 <dt id="arg-type">type<a class="anchor" aria-label="anchor" href="#arg-type"></a></dt>
 <dd><p>A string giving the way in which the data frame should be split.
-Pre-defined values are: <code>"default"</code>, <code>"year"</code>, <code>"hour"</code>, <code>"month"</code>,
-<code>"season"</code>, <code>"weekday"</code>, <code>"site"</code>, <code>"weekend"</code>, <code>"monthyear"</code>,
-<code>"daylight"</code>, <code>"dst"</code> (daylight saving time).</p>
+Pre-defined values are: <code>"default"</code>, <code>"year"</code>, <code>"hour"</code>, <code>"week"</code>,
+<code>"month"</code>, <code>"monthyear"</code>, <code>"quarter"</code>, <code>"quarteryear"</code>, <code>"season"</code>,
+<code>"seasonyear"</code>, <code>"weekday"</code>, <code>"weekend"</code>, <code>"daylight"</code>, <code>"dst"</code> (daylight
+saving time) and <code>"wd"</code>. See 'Details' for more information.</p>
 <p><code>type</code> can also be the name of a numeric or factor. If a numeric column
 name is supplied <code>cutData()</code> will split the data into four quantiles.
 Factors levels will be used to split the data without any adjustment.</p></dd>
@@ -110,7 +111,7 @@ given. The length of <code>names</code> should therefore be equal to the length 
 
 
 <dt id="arg-suffix">suffix<a class="anchor" aria-label="anchor" href="#arg-suffix"></a></dt>
-<dd><p>If <code>name</code> is not specified, <code>suffix</code> will be appended to any
+<dd><p>If <code>names</code> is not specified, <code>suffix</code> will be appended to any
 added columns that would otherwise overwrite existing columns. For example,
 <code>cutData(mydata, "nox", suffix = "_cuts")</code> would append a <code>nox_cuts</code> column
 rather than overwriting <code>nox</code>.</p></dd>
@@ -127,7 +128,8 @@ into seasons.</p></dd>
 
 <dt id="arg-wd-res">wd.res<a class="anchor" aria-label="anchor" href="#arg-wd-res"></a></dt>
 <dd><p>The number of wind direction bins; one of <code>4</code> (N/E/S/W), <code>8</code>
-(N/NE/E/SE/etc., the default) or <code>16</code> (N/NNE/NE/ENE/etc.).</p></dd>
+(N/NE/E/SE/etc., the default), <code>16</code> (N/NNE/NE/ENE/etc.) or <code>32</code>
+(N/NbE/NNE/NEbN/etc.).</p></dd>
 
 
 <dt id="arg-start-day">start.day<a class="anchor" aria-label="anchor" href="#arg-start-day"></a></dt>
@@ -194,6 +196,8 @@ range in the format "day month year".</p></li>
 <li><p><code>"year"</code> splits the data by each year.</p></li>
 <li><p><code>"month"</code> splits the data by month of the year.</p></li>
 <li><p><code>"hour"</code> splits the data by hour of the day.</p></li>
+<li><p><code>"week"</code> splits the data by week of the year, where weeks start on a
+Monday and any days before the first Monday of the year are in week <code>00</code>.</p></li>
 <li><p><code>"monthyear"</code> (or <code>"yearmonth"</code>) splits the data by year and month. It
 differs from month in that a level is defined for each month of the data set.
 This is useful sometimes to show an ordered sequence of months if the data
@@ -216,8 +220,7 @@ periods (e.g., data ratification calendars, or business/economic activity).</p><
 intervals. This is perhaps easier to predict and interpret than <code>yearseason</code>
 which will assign December to the Winter <em>after</em> the year it is actually in.</p></li>
 <li><p><code>"daylight"</code> splits the data relative to estimated sunrise and sunset to
-give either daylight or nighttime. The cut is made by <code>cutDaylight</code> but more
-conveniently accessed via <code>cutData</code>, e.g. <code>cutData(mydata, type = "daylight", latitude = my.latitude, longitude = my.longitude)</code>. The daylight estimation,
+give either daylight or nighttime, e.g., <code>cutData(mydata, type = "daylight", latitude = my.latitude, longitude = my.longitude)</code>. The daylight estimation,
 which is valid for dates between 1901 and 2099, is made using the measurement
 location, date, time and astronomical algorithms to estimate the relative
 positions of the Sun and the measurement location on the Earth's surface, and
@@ -239,11 +242,13 @@ temperature should show a clear shift when expressed in local time. In
 essence, this option when used with <code><a href="timeVariation.html">timeVariation()</a></code> may help determine
 whether the variation in a pollutant is driven by man-made emissions or
 natural processes.</p></li>
-<li><p><code>"wd"</code> splits the data by 8 wind sectors and requires a column <code>wd</code>: "NE",
-"E", "SE", "S", "SW", "W", "NW", "N".</p></li>
+<li><p><code>"wd"</code> splits the data into wind sectors and requires a column <code>wd</code>. By
+default, 8 sectors are used ("N", "NE", "E", "SE", "S", "SW", "W", "NW"),
+but this can be changed using <code>wd.res</code>.</p></li>
 </ul><p>Note that all the date-based types, e.g., <code>"month"</code>/<code>"year"</code> are derived from
-a column <code>date</code>. If a user already has a column with a name of one of the
-date-based types it will not be used.</p>
+a column <code>date</code>. If a user already has a column with the name of one of the
+built-in types it will only be used if it is a factor; otherwise, it will be
+recalculated (from <code>date</code> or <code>wd</code>).</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>

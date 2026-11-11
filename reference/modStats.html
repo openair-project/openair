@@ -131,7 +131,7 @@ given. The length of <code>names</code> should therefore be equal to the length 
 <code>type</code>.</p></dd>
 
     <dt><code>suffix</code></dt>
-<dd><p>If <code>name</code> is not specified, <code>suffix</code> will be appended to any
+<dd><p>If <code>names</code> is not specified, <code>suffix</code> will be appended to any
 added columns that would otherwise overwrite existing columns. For example,
 <code>cutData(mydata, "nox", suffix = "_cuts")</code> would append a <code>nox_cuts</code> column
 rather than overwriting <code>nox</code>.</p></dd>
@@ -156,7 +156,8 @@ first.</p></dd>
 
     <dt><code>wd.res</code></dt>
 <dd><p>The number of wind direction bins; one of <code>4</code> (N/E/S/W), <code>8</code>
-(N/NE/E/SE/etc., the default) or <code>16</code> (N/NNE/NE/ENE/etc.).</p></dd>
+(N/NE/E/SE/etc., the default), <code>16</code> (N/NNE/NE/ENE/etc.) or <code>32</code>
+(N/NbE/NNE/NEbN/etc.).</p></dd>
 
     <dt><code>is.axis</code></dt>
 <dd><p>A logical (<code>TRUE</code>/<code>FALSE</code>), used to request shortened cut

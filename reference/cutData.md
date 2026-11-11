@@ -35,9 +35,10 @@ cutData(
 - type:
 
   A string giving the way in which the data frame should be split.
-  Pre-defined values are: `"default"`, `"year"`, `"hour"`, `"month"`,
-  `"season"`, `"weekday"`, `"site"`, `"weekend"`, `"monthyear"`,
-  `"daylight"`, `"dst"` (daylight saving time).
+  Pre-defined values are: `"default"`, `"year"`, `"hour"`, `"week"`,
+  `"month"`, `"monthyear"`, `"quarter"`, `"quarteryear"`, `"season"`,
+  `"seasonyear"`, `"weekday"`, `"weekend"`, `"daylight"`, `"dst"`
+  (daylight saving time) and `"wd"`. See 'Details' for more information.
 
   `type` can also be the name of a numeric or factor. If a numeric
   column name is supplied `cutData()` will split the data into four
@@ -54,7 +55,7 @@ cutData(
 
 - suffix:
 
-  If `name` is not specified, `suffix` will be appended to any added
+  If `names` is not specified, `suffix` will be appended to any added
   columns that would otherwise overwrite existing columns. For example,
   `cutData(mydata, "nox", suffix = "_cuts")` would append a `nox_cuts`
   column rather than overwriting `nox`.
@@ -70,7 +71,8 @@ cutData(
 - wd.res:
 
   The number of wind direction bins; one of `4` (N/E/S/W), `8`
-  (N/NE/E/SE/etc., the default) or `16` (N/NNE/NE/ENE/etc.).
+  (N/NE/E/SE/etc., the default), `16` (N/NNE/NE/ENE/etc.) or `32`
+  (N/NbE/NNE/NEbN/etc.).
 
 - start.day:
 
@@ -149,6 +151,10 @@ This section give a brief description of each of the define levels of
 
 - `"hour"` splits the data by hour of the day.
 
+- `"week"` splits the data by week of the year, where weeks start on a
+  Monday and any days before the first Monday of the year are in week
+  `00`.
+
 - `"monthyear"` (or `"yearmonth"`) splits the data by year and month. It
   differs from month in that a level is defined for each month of the
   data set. This is useful sometimes to show an ordered sequence of
@@ -184,8 +190,7 @@ This section give a brief description of each of the define levels of
   *after* the year it is actually in.
 
 - `"daylight"` splits the data relative to estimated sunrise and sunset
-  to give either daylight or nighttime. The cut is made by `cutDaylight`
-  but more conveniently accessed via `cutData`, e.g.
+  to give either daylight or nighttime, e.g.,
   `cutData(mydata, type = "daylight", latitude = my.latitude, longitude = my.longitude)`.
   The daylight estimation, which is valid for dates between 1901 and
   2099, is made using the measurement location, date, time and
@@ -215,12 +220,14 @@ This section give a brief description of each of the define levels of
   may help determine whether the variation in a pollutant is driven by
   man-made emissions or natural processes.
 
-- `"wd"` splits the data by 8 wind sectors and requires a column `wd`:
-  "NE", "E", "SE", "S", "SW", "W", "NW", "N".
+- `"wd"` splits the data into wind sectors and requires a column `wd`.
+  By default, 8 sectors are used ("N", "NE", "E", "SE", "S", "SW", "W",
+  "NW"), but this can be changed using `wd.res`.
 
 Note that all the date-based types, e.g., `"month"`/`"year"` are derived
-from a column `date`. If a user already has a column with a name of one
-of the date-based types it will not be used.
+from a column `date`. If a user already has a column with the name of
+one of the built-in types it will only be used if it is a factor;
+otherwise, it will be recalculated (from `date` or `wd`).
 
 ## Author
 
