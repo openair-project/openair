@@ -143,6 +143,14 @@
 
 ### Bug Fixes
 
+- [`distPlot()`](https://openair-project.github.io/openair/reference/distPlot.md),
+  [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
+  and
+  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+  now use the compass facet layout when `type = "wd"`, consistent with
+  other [openair](https://openair-project.github.io/openair/) plotting
+  functions. Previously, a standard wrapped facet layout was used.
+
 - Numeric inputs (e.g., `pollutant`, `ws`, `wd`, `obs` and `mod`) are
   now checked consistently across
   [openair](https://openair-project.github.io/openair/). Numbers stored
