@@ -176,6 +176,33 @@
   numbers stored as text. Previously, these were compared alphabetically
   against `threshold` (e.g., `"99"` was treated as greater than `500`).
 
+- The number of `type` values is now checked consistently across all
+  plotting functions, with a single informative error if too many are
+  provided. Previously,
+  [`percentileRose()`](https://openair-project.github.io/openair/reference/percentileRose.md),
+  [`polarFreq()`](https://openair-project.github.io/openair/reference/polarFreq.md),
+  [`pollutionRose()`](https://openair-project.github.io/openair/reference/pollutionRose.md),
+  [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md),
+  [`smoothTrend()`](https://openair-project.github.io/openair/reference/smoothTrend.md),
+  [`TaylorDiagram()`](https://openair-project.github.io/openair/reference/TaylorDiagram.md),
+  [`TheilSen()`](https://openair-project.github.io/openair/reference/TheilSen.md),
+  [`timeProp()`](https://openair-project.github.io/openair/reference/timeProp.md),
+  [`trajLevel()`](https://openair-project.github.io/openair/reference/trajLevel.md),
+  [`trajPlot()`](https://openair-project.github.io/openair/reference/trajPlot.md)
+  and
+  [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
+  silently accepted three or more `type`s and produced overplotted
+  panels, as only the first two were used for faceting.
+  [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
+  now errors rather than warning and dropping any `type`s beyond the
+  first two.
+  [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
+  incorrectly said only one `type` was allowed when more than two were
+  given, and
+  [`distPlot()`](https://openair-project.github.io/openair/reference/distPlot.md)
+  now explains that multiple `pollutant`s can’t be combined with two
+  `type`s, rather than incorrectly saying only two `type`s are allowed.
+
 - Wind direction data in tibbles (e.g., `mydata` or data from
   [`importUKAQ()`](https://openair-project.github.io/openair/reference/importUKAQ.md))
   are now checked and cleaned consistently with `data.frame` inputs.
