@@ -337,5 +337,5 @@ Jack Davison
 ``` r
 # monthly plot of SO2 showing the contribution by wind sector
 timeProp(mydata, pollutant = "so2", avg.time = "month", proportion = "wd")
-#> Warning: ! Removing 219 rows due to missing `wd` data.
+#> Warning: ! Removing 219 rows due to missing wd data.
 ```
