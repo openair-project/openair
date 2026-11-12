@@ -120,13 +120,15 @@ smoothTrend <- function(
     cols <- get_theme_cols(cols, theme, "qual")
   }
 
+  check_type(type, max = 2)
+
   # extra.args setup
   extra.args <- capture_dots(...)
 
   # validation checks
   if (length(pollutant) > 1 && length(percentile) > 1) {
     cli::cli_warn(
-      "You cannot choose multiple {.field percentiles} and {.field pollutants}; using {.field percentile} = {percentile[1]}."
+      "You cannot choose multiple values of both {.arg percentile} and {.arg pollutant}; using {.code percentile = {percentile[1]}}."
     )
     percentile <- percentile[1]
   }
@@ -134,7 +136,7 @@ smoothTrend <- function(
   # set stat to percentile if user provides some
   if (!missing(percentile) && statistic != "percentile") {
     cli::cli_inform(
-      "{.field percentiles} provided ({percentile}); setting {.field statistic} to 'percentile'."
+      "{.arg percentile} provided ({.val {percentile}}); setting {.arg statistic} to {.val percentile}."
     )
     statistic <- "percentile"
   }
@@ -444,7 +446,8 @@ prepare_smoothtrend_data <- function(
 ) {
   # default checks
   vars <- c("date", pollutant)
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    check_numeric(vars = pollutant, call = rlang::caller_env())
 
   # cutData depending on type
   mydata <- cutData(mydata, type, ...)

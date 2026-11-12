@@ -235,6 +235,8 @@ TheilSen <- function(
     cols <- get_theme_cols(cols, theme, "qual")
   }
 
+  check_type(type, max = 2)
+
   # extra.args setup
   extra.args <- capture_dots(...)
 
@@ -290,8 +292,14 @@ TheilSen <- function(
     interval <- "year"
   }
 
-  mydata <- checkPrep(mydata, c("date", pollutant), vars, remove.calm = FALSE)
-
+  mydata <- checkPrep(
+    mydata,
+    c("date", pollutant),
+    vars,
+    remove.calm = FALSE
+  ) |>
+    check_numeric(vars = pollutant)
+  
   # numeric groups are binned by cutData() so are treated as ordered in the key
   group_is_binned <- !is.null(group) && is.numeric(mydata[[group]])
   mydata <- cutData(mydata, vars, ...)

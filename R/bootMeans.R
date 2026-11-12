@@ -67,6 +67,9 @@ binData <- function(
   B = 250,
   ...
 ) {
+  # bin and uncer must be present and numeric
+  mydata <- check_numeric(mydata, vars = c(bin, uncer))
+
   if (!is.na(interval)) {
     mydata$interval <- cut(
       mydata[[bin]],
@@ -127,12 +130,15 @@ binData <- function(
 #' @order 2
 #' @export
 bootMeanDF <- function(x, conf.int = 0.95, B = 1000) {
-  if (!is.vector(x)) {
+  if (!rlang::is_atomic(x)) {
     cli::cli_abort(c(
-      "x" = "{.field x} should be a vector.",
-      "i" = "{.field x} is a {class(x)}."
+      "x" = "{.arg x} should be a vector.",
+      "i" = "{.arg x} is {.obj_type_friendly {x}}."
     ))
   }
+
+  # x must be numeric; check_numeric() works on data frames
+  x <- check_numeric(data.frame(x = x), vars = "x")$x
 
   res <- bootMean(x = x, conf.int = conf.int, B = B)
   res <- data.frame(

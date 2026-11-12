@@ -122,7 +122,7 @@ resolve_windflow_opts <- function(x, ...) {
   if (!rlang::is_list(x) || !rlang::is_named(x)) {
     cli::cli_abort(
       c(
-        "x" = "The {.arg windflow} argument must be either `TRUE`, `FALSE`, or a named list.",
+        "x" = "The {.arg windflow} argument must be either {.code TRUE}, {.code FALSE}, or a named list.",
         "i" = "See {.fun openair::windflowOpts} for more detail."
       )
     )
@@ -135,7 +135,7 @@ resolve_windflow_opts <- function(x, ...) {
     cli::cli_warn(
       c(
         "!" = "The following lattice-style arguments were used in the {.arg windflow} list: {used_lattice_args}.",
-        "i" = "These have been automatically translated to their {.pkg ggplot2} equivalents, but please update your code to use ggplot2-style arguments (e.g., {.code colour} instead of {.code col}).",
+        "i" = "These have been automatically translated to their {.pkg ggplot2} equivalents, but please update your code to use ggplot2-style arguments (e.g., {.arg colour} instead of {.arg col}).",
         "i" = "See {.fun openair::windflowOpts} for more detail on the available options."
       )
     )

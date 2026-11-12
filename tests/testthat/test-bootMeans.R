@@ -44,6 +44,26 @@ test_that("bootMeanDF: wider conf.int produces wider interval", {
 
 test_that("bootMeanDF errors when x is not a vector", {
   expect_error(bootMeanDF(data.frame(x = 1:5)), regexp = "vector")
+  expect_error(bootMeanDF(list(1, 2, 3)), regexp = "vector")
+})
+
+test_that("bootMeanDF converts factors using their labels", {
+  x <- c(10, 20, 30, 40, 50)
+  set.seed(1)
+  expected <- bootMeanDF(x, B = 50)
+  set.seed(1)
+  expect_warning(
+    result <- bootMeanDF(factor(x), B = 50),
+    regexp = "Converted"
+  )
+  expect_equal(result, expected)
+})
+
+test_that("bootMeanDF errors on dates", {
+  expect_error(
+    bootMeanDF(as.Date(c("2020-01-01", "2020-01-02"))),
+    regexp = "must be numeric"
+  )
 })
 
 test_that("bootMeanDF handles a single-element vector without error", {
@@ -118,4 +138,54 @@ test_that("binData: more intervals (larger n) produces more rows", {
   coarse <- binData(dat, bin = "ws", uncer = "nox", n = 5, B = 50)
   fine <- binData(dat, bin = "ws", uncer = "nox", n = 20, B = 50)
   expect_gte(nrow(fine), nrow(coarse))
+})
+
+# =============================================================================
+# Non-numeric input
+# =============================================================================
+
+test_that("bootMeanDF converts numbers stored as text with a warning", {
+  x <- c(1, 2, 3, 4, 5)
+  set.seed(1)
+  expected <- bootMeanDF(x, B = 50)
+  set.seed(1)
+  expect_warning(
+    result <- bootMeanDF(as.character(x), B = 50),
+    regexp = "Converted"
+  )
+  expect_equal(result, expected)
+})
+
+test_that("bootMeanDF errors on values that can't be converted", {
+  expect_error(bootMeanDF(c("a", "b")), regexp = "must be numeric")
+})
+
+test_that("binData errors on a non-numeric bin or uncer column", {
+  bad <- dat
+  bad$site <- "a"
+  expect_error(
+    binData(bad, bin = "site", uncer = "nox", B = 50),
+    regexp = "must be numeric"
+  )
+  expect_error(
+    binData(bad, bin = "ws", uncer = "site", B = 50),
+    regexp = "must be numeric"
+  )
+})
+
+test_that("binData converts numbers stored as text with a warning", {
+  chr <- dat
+  chr$ws <- as.character(chr$ws)
+  expect_warning(
+    result <- binData(chr, bin = "ws", uncer = "nox", n = 10, B = 50),
+    regexp = "Converted"
+  )
+  expect_equal(nrow(result), nrow(bd))
+})
+
+test_that("binData errors on a missing column", {
+  expect_error(
+    binData(dat, bin = "nope", uncer = "nox", B = 50),
+    regexp = "Can't find"
+  )
 })

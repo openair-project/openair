@@ -206,12 +206,10 @@ polarAnnulus <-
 
     if (period == "trend" && "season" %in% type) {
       cli::cli_abort(
-        "Cannot have same {.arg type} as {'season'} and {.arg period} as {'trend'}."
+        "Cannot have {.arg type} as {.val season} and {.arg period} as {.val trend}."
       )
     }
-    if (length(type) > 2) {
-      cli::cli_abort("Cannot have more than two {.arg types}.")
-    }
+    check_type(type, max = 2)
 
     # extra.args setup
     extra.args <- capture_dots(...)
@@ -232,18 +230,19 @@ polarAnnulus <-
     }
 
     # check data
-    mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+    mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+      check_numeric(vars = c(wd, pollutant))
 
     # if more than one pollutant, need to stack the data and set type = "variable"
     # this case is most relevent for model-measurement compasrions where data are in columns
     if (length(pollutant) > 1) {
-      mydata <- tidyr::gather(
+      mydata <- tidyr::pivot_longer(
         mydata,
-        key = "variable",
-        value = "value",
-        dplyr::all_of(pollutant),
-        factor_key = TRUE
+        cols = dplyr::all_of(pollutant),
+        names_to = "variable",
+        values_to = "value"
       )
+      mydata$variable <- factor(mydata$variable, levels = pollutant)
       # now set pollutant to "value"
       pollutant <- "value"
       type <- "variable"
@@ -733,20 +732,7 @@ polarAnnulus <-
     }
 
     # make key full width/height
-    if (key.position %in% c("left", "right")) {
-      thePlot <- thePlot +
-        ggplot2::theme(
-          legend.key.height = ggplot2::unit(1, "null"),
-          legend.key.spacing.y = ggplot2::unit(0, "cm")
-        )
-    }
-    if (key.position %in% c("top", "bottom")) {
-      thePlot <- thePlot +
-        ggplot2::theme(
-          legend.key.width = ggplot2::unit(1, "null"),
-          legend.key.spacing.x = ggplot2::unit(0, "cm")
-        )
-    }
+    thePlot <- thePlot + theme_legend_key(key.position)
 
     # outputs
     if (plot) {

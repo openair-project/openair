@@ -1,12 +1,16 @@
 # Facet -------------------------------------------------------------------
 
-# work out the faceting strategy
+# work out the faceting strategy. `wd_layout` controls whether a single `type`
+# is laid out as a compass (via `facet_wd()`); by default this is inferred from
+# the column name, but functions which rename the `type` column (e.g.,
+# `variationPlot()`) need to set it explicitly
 get_facet <- function(
   type,
   extra.args,
   auto.text,
   drop = FALSE,
-  wd.res = 8
+  wd.res = 8,
+  wd_layout = NULL
 ) {
   fun <- NULL
   if (any(type != "default")) {
@@ -21,7 +25,7 @@ get_facet <- function(
       }
 
       # special handling for wd, else normal facet_wrap
-      if (type %in% c("wd", "wd_type")) {
+      if (wd_layout %||% (type %in% c("wd", "wd_type"))) {
         fun <-
           facet_wd(
             ggplot2::vars(.data[[type]]),
@@ -117,6 +121,22 @@ guide_openair <- function(
     colourbar = ggplot2::guide_colourbar(theme = theme, ...),
     coloursteps = ggplot2::guide_coloursteps(theme = theme, ...)
   )
+}
+
+# Theme setting the length of the legend key along the side of the plot it sits
+# on. By default this makes the key span the full height/width of the plot with
+# no gaps; `spacing = NULL` leaves key spacing unchanged. Returns `NULL` for
+# other positions (e.g., "none"), so it can always be added to a plot.
+theme_legend_key <- function(
+  key.position,
+  size = ggplot2::unit(1, "null"),
+  spacing = ggplot2::unit(0, "cm")
+) {
+  if (key.position %in% c("left", "right")) {
+    ggplot2::theme(legend.key.height = size, legend.key.spacing.y = spacing)
+  } else if (key.position %in% c("top", "bottom")) {
+    ggplot2::theme(legend.key.width = size, legend.key.spacing.x = spacing)
+  }
 }
 
 # Scales ------------------------------------------------------------------
@@ -216,7 +236,7 @@ get_scale_transform <- function(
   }
 
   cli::cli_abort(
-    "{.arg trans} must be logical, a string, or a {.pkg scales} 'transform' object."
+    "{.arg trans} must be logical, a string, or a {.pkg scales} {.cls transform} object."
   )
 }
 

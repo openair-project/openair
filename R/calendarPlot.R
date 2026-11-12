@@ -208,8 +208,8 @@ calendarPlot <-
     if (annotate %in% c("ws", "wd")) {
       cli::cli_warn(
         c(
-          "!" = "{.arg annotate} in {.fun openair::calendarPlot} no longer supports {.arg 'ws'} or {.arg 'wd'}.",
-          "i" = "Please use the {.arg windflow} argument instead for more thorough control over the apperance of the 'windflow' arrow.",
+          "!" = "{.arg annotate} in {.fun openair::calendarPlot} no longer supports {.val ws} or {.val wd}.",
+          "i" = "Please use the {.arg windflow} argument instead for more thorough control over the appearance of the windflow arrow.",
           "i" = "Setting {.arg windflow} to {TRUE}."
         )
       )
@@ -217,17 +217,14 @@ calendarPlot <-
       windflow <- windflowOpts(range = c(0.01, 0.5), linewidth = 0.75)
     }
 
-    # can't have three types
-    if (length(type) >= 3L) {
-      cli::cli_abort("{.arg type} must be length 1 or 2.")
-    }
+    check_type(type, max = 2)
 
     # if 2 types provided, one must be "month", and use that to work out the
     # rows/cols assignment
     if (length(type) == 2L) {
       if (!"month" %in% type) {
         cli::cli_abort(
-          "In {.fun openair::calendarPlot}, at least one {.arg type} must be 'month'."
+          "In {.fun openair::calendarPlot}, at least one {.arg type} must be {.val month}."
         )
       }
 
@@ -267,7 +264,7 @@ calendarPlot <-
 
     # check w.shift
     if (w.shift < 0 || w.shift > 6) {
-      cli::cli_abort("{.field w.shift} should be between {0} and {6}.")
+      cli::cli_abort("{.arg w.shift} should be between {.val {0}} and {.val {6}}.")
     }
 
     # extra args
@@ -294,7 +291,7 @@ calendarPlot <-
       cli::cli_warn(
         c(
           "!" = "The {.arg col.arrow} argument of {.fun openair::calendarPlot} has been deprecated.",
-          "i" = "Please use the {.arg windflow} argument with {.fun openair::windflowOpts} to control the appearance of the 'windflow' arrow."
+          "i" = "Please use the {.arg windflow} argument with {.fun openair::windflowOpts} to control the appearance of the windflow arrow."
         )
       )
       windflow$colour <- extra.args$col.arrow
@@ -615,20 +612,7 @@ calendarPlot <-
     }
 
     # make key full width/height
-    if (key.position %in% c("left", "right")) {
-      thePlot <- thePlot +
-        ggplot2::theme(
-          legend.key.height = ggplot2::unit(1, "null"),
-          legend.key.spacing.y = ggplot2::unit(0, "cm")
-        )
-    }
-    if (key.position %in% c("top", "bottom")) {
-      thePlot <- thePlot +
-        ggplot2::theme(
-          legend.key.width = ggplot2::unit(1, "null"),
-          legend.key.spacing.x = ggplot2::unit(0, "cm")
-        )
-    }
+    thePlot <- thePlot + theme_legend_key(key.position)
 
     if (annotate == "date") {
       thePlot <- thePlot +
@@ -717,7 +701,7 @@ prepare_calendar_data <- function(
   if (nrow(mydata) == 0) {
     cli::cli_abort(c(
       "x" = "No data to plot.",
-      "i" = "Check {.field year} and {.field month}."
+      "i" = "Check {.arg year} and {.arg month}."
     ))
   }
 
@@ -735,6 +719,7 @@ prepare_calendar_data <- function(
 
   # check input data
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    check_numeric(vars = setdiff(vars, "date"), call = rlang::caller_env()) |>
     cutData(type, names = cut_names, ...)
 
   return(mydata)

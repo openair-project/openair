@@ -135,11 +135,7 @@ corPlot <- function(
     cols <- get_theme_cols(cols, theme, "seq")
   }
 
-  if (length(type) > 1) {
-    cli::cli_abort(
-      "Only one {.arg type} is permitted in {.fun openair::corPlot}"
-    )
-  }
+  check_type(type, max = 1)
 
   # extra.args setup
   extra.args <- capture_dots(...)
@@ -155,13 +151,22 @@ corPlot <- function(
 
   # deprecated lower arg
   if ("lower" %in% names(extra.args)) {
-    cli::cli_warn(
-      c(
-        "!" = "The {.arg lower} argument has been deprecated. Setting {.arg triangle} to 'lower'.",
-        "i" = "Please use the {.arg triangle} argument directly in {.fun openair::corPlot}."
+    if (isTRUE(extra.args$lower)) {
+      cli::cli_warn(
+        c(
+          "!" = "The {.arg lower} argument has been deprecated. Setting {.arg triangle} to {.val lower}.",
+          "i" = "Please use the {.arg triangle} argument directly in {.fun openair::corPlot}."
+        )
       )
-    )
-    triangle <- "upper"
+      triangle <- "lower"
+    } else {
+      cli::cli_warn(
+        c(
+          "!" = "The {.arg lower} argument has been deprecated.",
+          "i" = "Please use the {.arg triangle} argument directly in {.fun openair::corPlot}."
+        )
+      )
+    }
   }
 
   # label controls
@@ -184,6 +189,9 @@ corPlot <- function(
   # null and all cases
   if (is.null(pollutants) || any(pollutants == "all")) {
     pollutants <- names(mydata)
+  } else {
+    # only check named pollutants; otherwise non-numeric columns are dropped
+    mydata <- check_numeric(mydata, vars = pollutants)
   }
 
   # keep date if about
@@ -595,20 +603,7 @@ corPlot <- function(
   }
 
   # make key full width/height
-  if (key.position %in% c("left", "right")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.height = ggplot2::unit(1, "null"),
-        legend.key.spacing.y = ggplot2::unit(0, "cm")
-      )
-  }
-  if (key.position %in% c("top", "bottom")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.width = ggplot2::unit(1, "null"),
-        legend.key.spacing.x = ggplot2::unit(0, "cm")
-      )
-  }
+  thePlot <- thePlot + theme_legend_key(key.position)
 
   # plot
   if (plot) {

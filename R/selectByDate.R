@@ -65,7 +65,7 @@ selectByDate <- function(
   # Check if date is strictly Date or POSIXt (POSIXct/POSIXlt)
   if (!inherits(mydata$date, "Date") && !inherits(mydata$date, "POSIXt")) {
     cli::cli_abort(
-      "{.field mydata$date} must be in {.cls Date} or {.cls POSIXct} format, \\
+      "{.code mydata$date} must be in {.cls Date} or {.cls POSIXct} format, \\
       not {.obj_type_friendly {mydata$date}}."
     )
   }
@@ -83,7 +83,7 @@ selectByDate <- function(
     )
 
     if (is.na(start_date)) {
-      cli::cli_abort("Could not parse {.arg start} date '{start}'.")
+      cli::cli_abort("Could not parse {.arg start} date {.val {start}}.")
     }
     mydata <- dplyr::filter(mydata, date >= start_date)
   }
@@ -97,7 +97,7 @@ selectByDate <- function(
     )
 
     if (is.na(end_date)) {
-      cli::cli_abort("Could not parse {.arg end} date '{end}'.")
+      cli::cli_abort("Could not parse {.arg end} date {.val {end}}.")
     }
 
     # If input is just a date (e.g. "2023-01-01"), include the full day (until 23:59:59)

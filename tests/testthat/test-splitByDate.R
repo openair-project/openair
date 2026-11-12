@@ -108,10 +108,10 @@ test_that("mismatched dates and labels raises an informative error", {
   # 1 date needs exactly 2 labels
   expect_error(
     splitByDate(dat, dates = "1/7/2003", labels = c("only_one")),
-    regexp = "mis-match"
+    regexp = "mismatch"
   )
   expect_error(
     splitByDate(dat, dates = "1/7/2003", labels = c("a", "b", "c")),
-    regexp = "mis-match"
+    regexp = "mismatch"
   )
 })

@@ -104,19 +104,63 @@ round_any <- function(x, accuracy, f = round) {
   f(x / accuracy) * accuracy
 }
 
-# function to check variables are numeric, if not force with warning
-check_numeric <- function(mydata, vars) {
-  for (i in seq_along(vars)) {
-    if (!is.numeric(mydata[[vars[i]]])) {
-      mydata[[vars[i]]] <- as.numeric(as.character(mydata[[vars[i]]]))
+# function to check variables are present and numeric. non-numeric variables are coerced
+# with a warning, but an error is raised if coercion would turn any non-missing
+# values into NA (e.g., dates or site names)
+check_numeric <- function(mydata, vars, call = rlang::caller_env()) {
+  missing_vars <- setdiff(vars, names(mydata))
+  if (length(missing_vars) > 0) {
+    cli::cli_abort(
+      "Can't find the variable{?s} {.field {missing_vars}} in {.arg mydata}.",
+      call = call
+    )
+  }
 
-      cli::cli_warn(
-        "{.field {vars[i]}} is not numeric, forcing to numeric..."
+  for (var in vars) {
+    x <- mydata[[var]]
+
+    if (is.numeric(x)) {
+      next
+    }
+
+    x_num <- suppressWarnings(as.numeric(as.character(x)))
+    failed <- is.na(x_num) & !is.na(x)
+
+    if (any(failed)) {
+      cli::cli_abort(
+        c(
+          "x" = "{.field {var}} must be numeric, not {.cls {class(x)}}.",
+          "i" = "Values such as {.val {head(unique(as.character(x[failed])), 3)}} could not be converted to numbers."
+        ),
+        call = call
       )
     }
+
+    cli::cli_warn(
+      "Converted {.field {var}} from {.cls {class(x)}} to numeric.",
+      call = call
+    )
+
+    mydata[[var]] <- x_num
   }
 
   return(mydata)
+}
+
+# function to check that no more than `max` conditioning variables have been
+# passed to `type`. Most plotting functions can facet by up to two types.
+check_type <- function(type, max = 2L, call = rlang::caller_env()) {
+  if (length(type) > max) {
+    cli::cli_abort(
+      c(
+        "x" = "{.arg type} can have at most {max} value{?s}, not {length(type)}.",
+        "i" = "You supplied {.val {type}}."
+      ),
+      call = call
+    )
+  }
+
+  invisible(type)
 }
 
 #' Function to check if duplicate dates are present in mydata by type
@@ -141,8 +185,8 @@ check_duplicate_rows <- function(mydata, type = NULL, fn = cli::cli_warn) {
   if (flag) {
     fn(
       c(
-        "!" = "Duplicate dates detected in mydata{.field $date}.",
-        "i" = 'Are there multiple sites in {.code mydata}? Use the {.field type} argument to condition them separately.'
+        "!" = "Duplicate dates detected in {.code mydata$date}.",
+        "i" = "Are there multiple sites in {.arg mydata}? Use the {.arg type} argument to condition them separately."
       ),
       call = NULL
     )
@@ -302,7 +346,7 @@ check_key_header <- function(key.title, extra.args) {
 check_key_position <- function(key.position, key) {
   if (!is.null(key)) {
     cli::cli_warn(
-      'The {.arg key} argument is deprecated. Please use {.arg key.position = "none"} to remove a legend.'
+      'The {.arg key} argument is deprecated. Please use {.code key.position = "none"} to remove a legend.'
     )
 
     if (isFALSE(key)) {
@@ -459,7 +503,7 @@ recycle_to_length <- function(x, n, expect1 = FALSE) {
 
   if (expect1) {
     cli::cli_abort(
-      "Length mismatch: argument must be length 1 or same length as 'h'/'v'"
+      "Length mismatch: argument must be length {.val {1}} or the same length as {.arg h}/{.arg v}."
     )
   } else {
     while (length(x) < n) {

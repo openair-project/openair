@@ -6,8 +6,8 @@
 \title{Import data from Imperial College London networks}
 \usage{
 importImperial(
-  site = "my1",
-  year = 2009,
+  site,
+  year,
   pollutant = "all",
   meta = FALSE,
   meteo = FALSE,
@@ -18,8 +18,8 @@ importImperial(
 )
 
 importKCL(
-  site = "my1",
-  year = 2009,
+  site,
+  year,
   pollutant = "all",
   met = FALSE,
   units = "mass",

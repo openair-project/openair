@@ -571,7 +571,7 @@ get_time_parameters <- function(mydata, avg.time) {
         "year"
       )
     cli::cli_abort(c(
-      "x" = "Date unit '{units}' not recognised.",
+      "x" = "Date unit {.val {units}} not recognised.",
       "i" = "Possible options: {.code {opts}}."
     ))
   }

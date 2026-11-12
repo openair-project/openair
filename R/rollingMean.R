@@ -68,16 +68,12 @@ rollingMean <- function(
   # data.thresh must be between 0 & 100
   if (data.thresh < 0 || data.thresh > 100) {
     cli::cli_abort(
-      "{.field data.thresh} must be between {.val {0L}} and {.val {100L}}."
+      "{.arg data.thresh} must be between {.val {0L}} and {.val {100L}}."
     )
   }
 
   # pollutant should be numeric
-  if (!is.numeric(mydata[[pollutant]])) {
-    cli::cli_abort(
-      "mydata{.field ${pollutant}} is not numeric - it is {class(mydata[[pollutant]])}."
-    )
-  }
+  mydata <- check_numeric(mydata, vars = pollutant)
 
   # create new name if not provided
   if (is.null(new.name)) {

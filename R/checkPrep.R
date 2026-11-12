@@ -130,8 +130,8 @@ checkPrep <- function(
     if (!inherits(mydata$date, "Date") && !inherits(mydata$date, "POSIXct")) {
       cli::cli_abort(
         c(
-          "x" = "{.field mydata$date} is {.type {mydata$date}}.",
-          "i" = "{.field mydata$date} must be {.type {as.Date(ISOdate(1,1,1))}} or {.type {ISOdate(1,1,1)}}."
+          "x" = "{.code mydata$date} is {.type {mydata$date}}.",
+          "i" = "{.code mydata$date} must be {.type {as.Date(ISOdate(1,1,1))}} or {.type {ISOdate(1,1,1)}}."
         ),
         call = NULL
       )

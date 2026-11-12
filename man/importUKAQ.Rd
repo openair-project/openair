@@ -5,8 +5,8 @@
 \title{Import data from the UK Air Pollution Networks}
 \usage{
 importUKAQ(
-  site = "my1",
-  year = 2022,
+  site,
+  year,
   source = NULL,
   data_type = "hourly",
   pollutant = "all",
@@ -25,7 +25,9 @@ importUKAQ(
 Road. Site codes can be discovered through the use of \code{\link[=importMeta]{importMeta()}}.
 Several sites can be imported at once. For example, \code{site = c("my1", "nott")} imports both Marylebone Road and Nottingham. Sites from different
 networks can be imported through also providing multiple \code{source}s. Site
-codes can be upper or lower case.}
+codes can be upper or lower case. When \code{data_type} is \code{"annual"},
+\code{"monthly"} or \code{"daqi"}, \code{site} can be omitted to import all sites in the
+given \code{source}(s).}
 
 \item{year}{Year(s) to import. To import a series of years use, e.g.,
 \code{2000:2020}. To import several specific years use \code{year = c(2000, 2010, 2020)}.}
@@ -66,7 +68,8 @@ not available for locally managed monitoring networks.
 from a site. To import only NOx and NO2 for example use \code{pollutant = c("nox", "no2")}. Pollutant names can be upper or lower case.}
 
 \item{hc}{Include hydrocarbon measurements in the imported data? Defaults to
-\code{FALSE} as most users will not be interested in using hydrocarbon data.}
+\code{FALSE} as most users will not be interested in using hydrocarbon data.
+Hydrocarbon data are only available for the AURN.}
 
 \item{meta}{Append metadata columns to data for each selected \code{site}?
 Defaults to \code{FALSE}. Columns are defined using \code{meta_columns}.}
@@ -81,11 +84,12 @@ Defaults to site type, latitude and longitude. Can be any of \code{"site_type"},
 \code{TRUE}, which will return wind speed (\code{ws}), wind direction (\code{wd}) and
 ambient temperature (\code{air_temp}). The variables are calculated from using
 the WRF model run by WSP and are available for most but not all networks.
-Setting \code{meteo = FALSE} is useful if you have other meteorological data to
-use in preference, for example from the \code{worldmet} package.}
+They are not available for locally managed networks. Setting \code{meteo = FALSE} is useful if you have other meteorological data to use in
+preference, for example from the \code{worldmet} package.}
 
 \item{ratified}{Append \code{qc} column(s) to hourly data indicating whether each
-species was ratified (i.e., quality-checked)?  Defaults to \code{FALSE}.}
+species was ratified (i.e., quality-checked)?  Defaults to \code{FALSE}.
+Ratification information is not available for locally managed networks.}
 
 \item{to_narrow}{Return the data in a "narrow"/"long"/"tidy" format? By
 default the returned data is "wide" and has a column for each
@@ -93,10 +97,10 @@ pollutant/variable. When \code{to_narrow = TRUE} the data are returned with a
 column identifying the pollutant name and a column containing the
 corresponding concentration/statistic. Defaults to \code{FALSE}.}
 
-\item{verbose}{Print messages to the console if hourly data cannot be
-imported? Default is \code{FALSE}. \code{TRUE} is useful for debugging as the
-specific \code{year}(s), \code{site}(s) and \code{source}(s) which cannot be imported will
-be returned.}
+\item{verbose}{Print a message to the console if any data cannot be imported?
+Default is \code{FALSE}. \code{TRUE} is useful for debugging as the specific
+\code{year}(s), \code{site}(s) and \code{source}(s) which cannot be imported will be
+listed. Not used when \code{data_type} is \code{"annual"}, \code{"monthly"} or \code{"daqi"}.}
 
 \item{progress}{Show a progress bar when many sites/years are being imported?
 Defaults to \code{TRUE}.}
@@ -198,7 +202,8 @@ importUKAQ("my1", year = 2022)
 importUKAQ(c("bn1", "bn2"), year = 2022, source = "aqe")
 
 # import sites across multiple networks
-importUKAQ(c("my1", "bn1", "bn2"),
+importUKAQ(
+  site = c("my1", "bn1", "bn2"),
   year = 2022,
   source = c("aurn", "aqe", "aqe")
 )
@@ -214,6 +219,7 @@ importUKAQ(
 
 # import other data types, filtering by pollutant
 importUKAQ(
+  year = 2020,
   data_type = "annual",
   pollutant = c("no2", "pm2.5", "pm10"),
   source = c("aurn", "aqe")

@@ -69,7 +69,11 @@
 #'
 #' - **source**: The network with which the site is associated. Note that
 #'   some monitoring sites are part of multiple networks (e.g., the AURN & SAQN)
-#'   so the same site may feature twice under different sources.
+#'   so the same site may feature twice under different sources. Networks are
+#'   always returned in the same order: the AURN, then the devolved networks
+#'   (AQE, SAQN, WAQN and NI), then locally managed networks, then the Imperial
+#'   and European networks. When `duplicate = FALSE`, sites are therefore kept
+#'   from the first of these networks.
 #'
 #' - **code**: The site code, used to import data from specific sites of
 #'   interest.
@@ -82,9 +86,9 @@
 #'   station, using the World Geodetic System (<https://epsg.io/4326>).
 #'
 #' - **start_date** and **end_date**: The opening and closing dates of the
-#'   monitoring station. If `by_pollutant = TRUE`, these dates are instead the
-#'   first and last dates at which specific pollutants were measured. A missing
-#'   value, `NA`, indicates that monitoring is ongoing.
+#'   monitoring station. If `all = TRUE`, these dates are instead the first and
+#'   last dates at which specific pollutants were measured. A missing value,
+#'   `NA`, indicates that monitoring is ongoing.
 #'
 #' - **ratified_to**: The date to which data has been ratified
 #'   (i.e., 'quality checked'). Data after this date is subject to change.
@@ -96,8 +100,9 @@
 #' - **local_authority**: The local authority in which the monitoring station
 #'   is found.
 #'
-#' - **provider** and **code**: The specific provider of the locally
-#'   managed dataset (e.g., `"londonair"`).
+#' - **provider** and **pcode**: The specific provider of the locally
+#'   managed dataset (e.g., `"Londonair"`) and its short code (e.g.,
+#'   `"london"`).
 #'
 #' @param source One or more air quality networks for which data is available
 #'   through openair. Available networks include:
@@ -142,9 +147,9 @@
 #'   to networks available through [importUKAQ()].
 #'
 #' @param lat,lng Decimal latitude (`lat`) and longitude (`lng`) (or other Y/X
-#'   coordinate if using a different `crs`). If provided, the data will be
-#'   returned with a `distance_km` column displaying the distance of each
-#'   station from the target coordinate. The data will also be automatically
+#'   coordinate if using a different `crs`). Both must be single numbers. If
+#'   provided, the data will be returned with a `distance_km` column displaying
+#'   the distance of each station from the target coordinate. The data will also be automatically
 #'   sorted by this column.
 #'
 #' @param crs The coordinate reference system (CRS) of the data, passed to
@@ -158,7 +163,8 @@
 #' @param max_dist,max_n If `lat` and `lng` are provided, `max_dist` and `max_n`
 #'   further filter the metadata. `max_dist` defines a maximum distance from the
 #'   target coordinate in kilometers, and `max_n` a maximum number of sites to
-#'   be returned. `max_n` is applied after `max_dist`.
+#'   be returned. `max_n` is applied after `max_dist`. Both are ignored, with a
+#'   warning, if `lat` and `lng` are not provided.
 #'
 #' @param all When `all = FALSE` only the site code, site name, latitude and
 #'   longitude and site type are imported. Setting `all = TRUE` will import all
@@ -221,22 +227,15 @@ importMeta <-
     all = FALSE,
     duplicate = FALSE
   ) {
-    # ensure lower case
-    source <- tolower(source)
-
-    # alias source arguments
-    source[source == "kcl"] <- "imperial"
-    source[source == "saqd"] <- "saqn"
-    source[source == "niaqn"] <- "ni"
-    source[source == "lmam"] <- "local"
+    # ensure lower case and resolve aliases
+    source <- normalise_source(source)
 
     # special source args
     if (any(source == "ukaq")) {
-      source <- c("aurn", "aqe", "saqn", "waqn", "ni", "local")
+      source <- ukaq_networks$source
     }
     if (any(source == "all")) {
-      source <-
-        c("aurn", "aqe", "saqn", "waqn", "ni", "local", "imperial", "europe")
+      source <- c(ukaq_networks$source, "imperial", "europe")
     }
 
     # check sources are valid
@@ -255,19 +254,41 @@ importMeta <-
       multiple = TRUE
     )
 
+    # return networks in a fixed order of priority: the AURN, then the devolved
+    # networks, then locally managed networks
+    source <- intersect(c(ukaq_networks$source, "imperial", "europe"), source)
+
+    # check spatial filtering arguments
+    if (xor(is.null(lat), is.null(lng))) {
+      cli::cli_abort(
+        "Both {.arg lat} and {.arg lng} must be provided to filter sites by distance."
+      )
+    }
+
+    if (!is.null(lat)) {
+      if (
+        !is.numeric(lat) ||
+          !is.numeric(lng) ||
+          length(lat) != 1 ||
+          length(lng) != 1
+      ) {
+        cli::cli_abort(
+          "{.arg lat} and {.arg lng} must each be a single number."
+        )
+      }
+    } else if (!is.null(max_dist) || !is.null(max_n)) {
+      cli::cli_warn(
+        "{.arg max_dist} and {.arg max_n} are ignored unless {.arg lat} and {.arg lng} are provided."
+      )
+    }
+
     # function to import any of the source networks
     get_meta <- function(source, all) {
       if (!source %in% c("imperial", "europe")) {
-        url <- switch(
-          source,
-          aurn = "https://uk-air.defra.gov.uk/openair/R_data/AURN_metadata.RData",
-          saqn = "https://www.scottishairquality.scot/openair/R_data/SCOT_metadata.RData",
-          saqd = "https://www.scottishairquality.scot/openair/R_data/SCOT_metadata.RData",
-          ni = "https://www.airqualityni.co.uk/openair/R_data/NI_metadata.RData",
-          waqn = "https://airquality.gov.wales/sites/default/files/openair/R_data/WAQ_metadata.RData",
-          aqe = "https://airqualityengland.co.uk/assets/openair/R_data/AQE_metadata.RData",
-          local = "https://uk-air.defra.gov.uk/openair/LMAM/R_data/LMAM_metadata.RData",
-          lmam = "https://uk-air.defra.gov.uk/openair/LMAM/R_data/LMAM_metadata.RData"
+        url <- paste0(
+          ukaq_network_info(source, "url"),
+          ukaq_network_info(source, "abbr"),
+          "_metadata.RData"
         )
 
         meta <- read_wsp_meta(
@@ -305,10 +326,36 @@ importMeta <-
       return(meta)
     }
 
-    # import meta data
-    meta <-
-      purrr::map(.x = source, .f = ~ get_meta(source = .x, all = all)) |>
-      purrr::list_rbind() |>
+    # import meta data, warning rather than failing if a network is unavailable
+    meta <- purrr::map(
+      .x = source,
+      .f = function(x) {
+        tryCatch(
+          get_meta(source = x, all = all),
+          error = function(e) {
+            cli::cli_warn(
+              c(
+                "!" = "Could not import metadata for {.arg source} {.val {x}}; it has been skipped.",
+                "i" = "The network's server may be temporarily unavailable."
+              ),
+              parent = e
+            )
+            NULL
+          }
+        )
+      }
+    )
+
+    if (all(purrr::map_lgl(meta, is.null))) {
+      cli::cli_abort(
+        c(
+          "x" = "Could not import metadata for any {.arg source}.",
+          "i" = "Check your internet connection or try again later."
+        )
+      )
+    }
+
+    meta <- purrr::list_rbind(meta) |>
       dplyr::tibble()
 
     if (nrow(meta) == 0) {
@@ -467,12 +514,8 @@ importMeta <-
 
 # Read data from WSP's networks
 read_wsp_meta <- function(url, all, year, pollutant) {
-  tmp <- tempfile()
-
   # load data
-  con <- url(url)
-  meta <- get(load(con))
-  close(con)
+  meta <- read_remote_object(url)
 
   # manipulate data
   meta <- dplyr::rename(
@@ -594,9 +637,14 @@ read_wsp_meta <- function(url, all, year, pollutant) {
   }
 
   # only extract one line per site to make it easier to use file
-  # mostly interested in coordinates
+  # mostly interested in coordinates. Local sites can be listed by more than
+  # one provider so are also distinguished by "pcode"
   if (!all) {
-    meta <- dplyr::distinct(meta, .data$site, .keep_all = TRUE)
+    meta <- dplyr::distinct(
+      meta,
+      dplyr::across(dplyr::any_of(c("code", "pcode"))),
+      .keep_all = TRUE
+    )
   }
 
   return(meta)
@@ -604,9 +652,7 @@ read_wsp_meta <- function(url, all, year, pollutant) {
 
 # read metadata from Imperial College London
 read_imperial_meta <- function(url, all, year) {
-  con <- url(url)
-  meta <- get(load(con))
-  close(con)
+  meta <- read_remote_object(url)
 
   ## rename to match imported names e.g. importKCL
   meta <- dplyr::rename(
@@ -646,7 +692,7 @@ read_saqgetr_meta <- function(url, year) {
   rlang::check_installed("readr")
   msg <-
     c(
-      "!" = "{.fun importEurope} has been discontinued and cannot import \\
+      "!" = "{.fun openair::importEurope} has been discontinued and cannot import \\
       data after February 2024.",
       "i" = "Consider using the EEA Air Quality Download Service \\
       instead {.url https://eeadmz1-downloads-webapp.azurewebsites.net/}"

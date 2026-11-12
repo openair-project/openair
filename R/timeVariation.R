@@ -205,9 +205,7 @@ timeVariation <- function(
     cols <- get_theme_cols(cols, theme, "qual")
   }
 
-  if (length(type) > 1) {
-    cli::cli_abort("Only one 'type' permitted.")
-  }
+  check_type(type, max = 1)
 
   if (length(panels) == 1) {
     cli::cli_warn(
@@ -220,12 +218,15 @@ timeVariation <- function(
 
   extra.args <- capture_dots(...)
 
+  # check pollutants once here, rather than once per panel in variationPlot()
+  mydata <- check_numeric(mydata, vars = pollutant)
+
   # month.last deprecation
   if ("month.last" %in% names(extra.args)) {
     if (isTRUE(extra.args$month.last)) {
       cli::cli_warn(c(
         "!" = "{.arg month.last} has been deprecated. Please use the {.arg panels} argument for flexible control over panels.",
-        "i" = "Setting {.arg panels} to {.code c('hour.weekday', 'hour', 'weekday', 'month')}."
+        "i" = "Setting {.arg panels} to {.val {c(\"hour.weekday\", \"hour\", \"weekday\", \"month\")}}."
       ))
       panels <- c("hour.weekday", "hour", "weekday", "month")
     }

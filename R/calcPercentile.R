@@ -50,15 +50,8 @@ calcPercentile <- function(
   end.date = NA,
   prefix = "percentile."
 ) {
-  # check pollutant is valid
-  if (!pollutant %in% names(mydata)) {
-    cli::cli_abort(
-      c(
-        "x" = "{.field pollutant} '{pollutant}' not present in data.",
-        "i" = "{.emph Columns in {.field mydata}}: {names(mydata)}"
-      )
-    )
-  }
+  # check pollutant is present and numeric
+  mydata <- check_numeric(mydata, vars = pollutant)
 
   # iterate over 'percentile's to calculate %tiles
   mydata <- purrr::map(

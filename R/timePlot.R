@@ -247,14 +247,10 @@ timePlot <- function(
     )
   }
 
-  if (length(type) > 2) {
-    cli::cli_abort(
-      "Cannot have more than 2 {.arg type}s."
-    )
-  }
+  check_type(type, max = 2)
 
   if (!missing(statistic) && missing(avg.time)) {
-    cli::cli_inform("No {.field avg.time} specified; using 'month'.")
+    cli::cli_inform("No {.arg avg.time} specified; using {.val month}.")
     avg.time <- "month"
   }
 
@@ -636,7 +632,11 @@ prepare_timeplot_data <- function(
   }
 
   # standard data checks
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    check_numeric(
+      vars = setdiff(vars, c("date", group)),
+      call = rlang::caller_env()
+    )
 
   # pad out any missing date/times so that line don't extend between areas of missing data
   if (date.pad) {
@@ -796,8 +796,8 @@ normalise_timeplot_data <-
 
       if (is.na(target_date)) {
         cli::cli_abort(c(
-          "x" = "Provided {.field normalise} option not recognised.",
-          "i" = "{.field normalise} must be either 'mean' or a string in the format 'DD/MM/YYYY'."
+          "x" = "Provided {.arg normalise} option not recognised.",
+          "i" = "{.arg normalise} must be either {.val mean} or a string in the format {.val DD/MM/YYYY}."
         ))
       }
 

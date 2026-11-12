@@ -170,6 +170,8 @@ polarFreq <- function(
   # intervals in wind direction
   wd.int <- 360 / round(wd.nint)
 
+  check_type(type, max = 2)
+
   # extra.args setup
   extra.args <- capture_dots(...)
 
@@ -189,7 +191,8 @@ polarFreq <- function(
   }
 
   # data checks
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    check_numeric(vars = c(wd, ws, pollutant))
 
   # to make first interval easier to work with, set ws = 0 + e
   ids <- which(mydata[[ws]] == 0)
@@ -203,8 +206,8 @@ polarFreq <- function(
   # if pollutant chosen but no statistic - use mean, issue warning
   if (statistic == "frequency" && !is.null(pollutant)) {
     cli::cli_warn(c(
-      "x" = "{.code statistic == 'frequency'} incompatible with a defined {.field pollutant}.",
-      "i" = "Setting {.field statistic} to {.code 'mean'}."
+      "x" = "{.code statistic = \"frequency\"} is incompatible with a defined {.arg pollutant}.",
+      "i" = "Setting {.arg statistic} to {.val mean}."
     ))
     statistic <- "mean"
   }
@@ -212,8 +215,8 @@ polarFreq <- function(
   # if statistic chosen but no pollutant stop
   if (statistic != "frequency" && is.null(pollutant)) {
     cli::cli_abort(c(
-      "x" = "No {.field pollutant} chosen",
-      "i" = "Please choose a {.field pollutant}, e.g., {.code pollutant = 'nox'}"
+      "x" = "No {.arg pollutant} chosen.",
+      "i" = "Please choose a {.arg pollutant}, e.g., {.code pollutant = \"nox\"}."
     ))
   }
 
@@ -413,20 +416,7 @@ polarFreq <- function(
   }
 
   # make key full width/height
-  if (key.position %in% c("left", "right")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.height = ggplot2::unit(1, "null"),
-        legend.key.spacing.y = ggplot2::unit(0, "cm")
-      )
-  }
-  if (key.position %in% c("top", "bottom")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.width = ggplot2::unit(1, "null"),
-        legend.key.spacing.x = ggplot2::unit(0, "cm")
-      )
-  }
+  thePlot <- thePlot + theme_legend_key(key.position)
 
   # add compass points
   thePlot <- thePlot +

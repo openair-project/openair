@@ -226,8 +226,8 @@ windRose <- function(
     calm.col <- "forestgreen"
   }
 
-  # make sure ws and wd and numeric
-  mydata <- check_numeric(mydata, vars = c(ws, wd))
+  # make sure ws, wd and any pollutant are numeric
+  mydata <- check_numeric(mydata, vars = c(ws, wd, pollutant))
 
   if (!is.na(ws2) && !is.na(wd2) && missing(angle)) {
     angle <- 10
@@ -243,6 +243,8 @@ windRose <- function(
     )
   }
   angle[angle < 3] <- 3
+
+  check_type(type, max = 2)
 
   # extra.args args setup
   extra.args <- capture_dots(...)
@@ -1106,6 +1108,9 @@ pollutionRose <- function(
   if (is.null(breaks)) {
     breaks <- 6
   }
+
+  # pollutant must be numeric before calculating breaks
+  mydata <- check_numeric(mydata, vars = pollutant)
 
   if (is.numeric(breaks) && length(breaks) == 1) {
     # breaks from the minimum to 90th percentile, which generally gives sensible

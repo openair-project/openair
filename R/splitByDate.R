@@ -66,8 +66,8 @@ splitByDate <- function(
   if (length(dates) != length(labels) - 1) {
     cli::cli_abort(
       c(
-        "x" = "There is a mis-match between the number of {.field dates} ({.val {length(dates)}}) and {.field labels} ({.val {length(labels)}}).",
-        "i" = "There should be one more {.field label} than {.field date}."
+        "x" = "There is a mismatch between the number of {.arg dates} ({.val {length(dates)}}) and {.arg labels} ({.val {length(labels)}}).",
+        "i" = "{.arg labels} should be one longer than {.arg dates}."
       )
     )
   }

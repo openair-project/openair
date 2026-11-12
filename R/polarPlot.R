@@ -415,13 +415,11 @@ polarPlot <-
 
     if (statistic %in% correlation_stats && length(pollutant) != 2) {
       cli::cli_abort(
-        "Correlation {.arg statistic} '{statistic}' requires two pollutants."
+        "Correlation {.arg statistic} {.val {statistic}} requires two pollutants."
       )
     }
 
-    if (length(type) > 2) {
-      cli::cli_abort("Maximum number of {.arg type}s is 2.")
-    }
+    check_type(type, max = 2)
 
     # can't have conditioning here
     if (uncertainty) {
@@ -449,7 +447,7 @@ polarPlot <-
           correlation_stats
         )
     ) {
-      cli::cli_abort("{.arg statistic} '{statistic}' not recognised.")
+      cli::cli_abort("{.arg statistic} {.val {statistic}} not recognised.")
     }
 
     if (length(weights) != 3) {
@@ -509,7 +507,8 @@ polarPlot <-
       vars <- c(vars, "date")
     }
 
-    mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+    mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+      check_numeric(vars = setdiff(vars, "date"))
 
     mydata <- stats::na.omit(mydata)
 
@@ -541,18 +540,18 @@ polarPlot <-
     # if statistic is 'r' we need the data for two pollutants in columns
     if (length(pollutant) > 1 && !statistic %in% correlation_stats) {
       if (length(type) > 1) {
-        cli::cli_warn("Only {.arg type} = '{type[1]}' will be used.")
+        cli::cli_warn("Only {.arg type} {.val {type[1]}} will be used.")
         type <- type[1]
       }
 
       # use pollutants as conditioning variables
-      mydata <- tidyr::gather(
+      mydata <- tidyr::pivot_longer(
         mydata,
-        key = "variable",
-        value = "value",
-        dplyr::all_of(pollutant),
-        factor_key = TRUE
+        cols = dplyr::all_of(pollutant),
+        names_to = "variable",
+        values_to = "value"
       )
+      mydata$variable <- factor(mydata$variable, levels = pollutant)
       # now set pollutant to "value"
       pollutant <- "value"
 
@@ -1006,22 +1005,7 @@ polarPlot <-
         caption = extra.args$caption %||% sub,
         tag = extra.args$tag
       ) +
-      {
-        if (key.position %in% c("left", "right")) {
-          ggplot2::theme(
-            legend.key.height = ggplot2::unit(1, "null"),
-            legend.key.spacing.y = ggplot2::unit(0, "cm")
-          )
-        }
-      } +
-      {
-        if (key.position %in% c("top", "bottom")) {
-          ggplot2::theme(
-            legend.key.width = ggplot2::unit(1, "null"),
-            legend.key.spacing.x = ggplot2::unit(0, "cm")
-          )
-        }
-      } +
+      theme_legend_key(key.position) +
       get_facet(
         type,
         extra.args = extra.args,
@@ -1219,7 +1203,7 @@ polar_prepare_grid <- function(
         c(
           "Not enough data to fit surface. Try:",
           "i" = "Reducing the value of the smoothing parameter, k to less than {k}, or",
-          "i" = "Using {.arg statistic} = 'nwr'"
+          "i" = "Using {.arg statistic} {.val nwr}."
         )
       )
     }

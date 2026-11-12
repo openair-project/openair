@@ -83,6 +83,8 @@ timeProp <- function(
     cols <- get_theme_cols(cols, theme, "qual")
   }
 
+  check_type(type, max = 2)
+
   # extra.args setup
   extra.args <- capture_dots(...)
 
@@ -105,7 +107,8 @@ timeProp <- function(
   vars <- c("date", pollutant)
 
   # check the data
-  mydata <- checkPrep(mydata, vars, c(type, proportion), remove.calm = FALSE)
+  mydata <- checkPrep(mydata, vars, c(type, proportion), remove.calm = FALSE) |>
+    check_numeric(vars = pollutant)
 
   # cut data
   mydata <- cutData(mydata, c(type, proportion), ...)
@@ -122,7 +125,7 @@ timeProp <- function(
   if (avg.time == "season") {
     if (any(c("season", "seasonyear") %in% type)) {
       cli::cli_abort(
-        "In {.fun openair::timeProp}, {.arg type} and {.arg avg.time} cannot both be 'season'."
+        "In {.fun openair::timeProp}, {.arg type} and {.arg avg.time} cannot both be {.val season}."
       )
     }
     results <- mydata |>
@@ -280,18 +283,8 @@ timeProp <- function(
     )
 
   # make key full width/height
-  if (key.position %in% c("left", "right")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.height = ggplot2::rel(2)
-      )
-  }
-  if (key.position %in% c("top", "bottom")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.width = ggplot2::rel(2)
-      )
-  }
+  thePlot <- thePlot +
+    theme_legend_key(key.position, size = ggplot2::rel(2), spacing = NULL)
 
   if (plot) {
     plot(thePlot)

@@ -62,22 +62,18 @@ rollingQuantile <- function(
   # data.thresh must be between 0 & 100
   if (data.thresh < 0 || data.thresh > 100) {
     cli::cli_abort(
-      "{.field data.thresh} must be between {.val {0L}} and {.val {100L}}."
+      "{.arg data.thresh} must be between {.val {0L}} and {.val {100L}}."
     )
   }
 
   if (!all(probs >= 0 & probs <= 1)) {
     cli::cli_abort(
-      "{.field probs} must be between {.val {0L}} and {.val {1L}}."
+      "{.arg probs} must be between {.val {0L}} and {.val {1L}}."
     )
   }
 
   # pollutant should be numeric
-  if (!is.numeric(mydata[[pollutant]])) {
-    cli::cli_abort(
-      "mydata{.field ${pollutant}} is not numeric - it is {class(mydata[[pollutant]])}."
-    )
-  }
+  mydata <- check_numeric(mydata, vars = pollutant)
 
   # setting width < 1 crashes R
   if (width < 1L) {

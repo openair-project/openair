@@ -146,16 +146,8 @@ kzFilter <- function(
     cli::cli_abort("All values of {.arg k} must be at least {.val {1L}}.")
   }
 
-  for (p in pollutant) {
-    if (!p %in% names(mydata)) {
-      cli::cli_abort("Column {.field {p}} not found in {.arg mydata}.")
-    }
-    if (!is.numeric(mydata[[p]])) {
-      cli::cli_abort(
-        "{.field {p}} is not numeric \u2014 it is {.cls {class(mydata[[p]])}}."
-      )
-    }
-  }
+  # pollutants must be present and numeric
+  mydata <- check_numeric(mydata, vars = pollutant)
 
   multi_poll <- length(pollutant) > 1L
 
@@ -293,16 +285,8 @@ kzaFilter <- function(
     cli::cli_abort("All values of {.arg k} must be at least {.val {1L}}.")
   }
 
-  for (p in pollutant) {
-    if (!p %in% names(mydata)) {
-      cli::cli_abort("Column {.field {p}} not found in {.arg mydata}.")
-    }
-    if (!is.numeric(mydata[[p]])) {
-      cli::cli_abort(
-        "{.field {p}} is not numeric \u2014 it is {.cls {class(mydata[[p]])}}."
-      )
-    }
-  }
+  # pollutants must be present and numeric
+  mydata <- check_numeric(mydata, vars = pollutant)
 
   multi_poll <- length(pollutant) > 1L
 

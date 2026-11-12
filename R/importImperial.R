@@ -137,8 +137,8 @@
 #' }
 importImperial <-
   function(
-    site = "my1",
-    year = 2009,
+    site,
+    year,
     pollutant = "all",
     meta = FALSE,
     meteo = FALSE,
@@ -147,6 +147,9 @@ importImperial <-
     to_narrow = FALSE,
     progress = TRUE
   ) {
+    rlang::check_required(site)
+    rlang::check_required(year)
+
     ## get rid of R check annoyances
     sites <- NULL
     v10 <- NULL
@@ -408,8 +411,8 @@ importImperial <-
 #' @export
 importKCL <-
   function(
-    site = "my1",
-    year = 2009,
+    site,
+    year,
     pollutant = "all",
     met = FALSE,
     units = "mass",
@@ -420,7 +423,7 @@ importKCL <-
   ) {
     cli::cli_warn(
       c(
-        "i" = "{.fun importKCL} has been superseded by, and is equivalent to, {.fun importImperial}. {.strong Please use {.fun importImperial} going forward.}"
+        "i" = "{.fun openair::importKCL} has been superseded by, and is equivalent to, {.fun openair::importImperial}. {.strong Please use {.fun openair::importImperial} going forward.}"
       ),
       .frequency = "regularly",
       .frequency_id = "imperial"

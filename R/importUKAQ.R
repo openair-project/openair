@@ -90,10 +90,14 @@
 #'   Several sites can be imported at once. For example, `site = c("my1",
 #'   "nott")` imports both Marylebone Road and Nottingham. Sites from different
 #'   networks can be imported through also providing multiple `source`s. Site
-#'   codes can be upper or lower case.
+#'   codes can be upper or lower case. When `data_type` is `"annual"`,
+#'   `"monthly"` or `"daqi"`, `site` can be omitted to import all sites in the
+#'   given `source`(s).
+#'
 #' @param year Year(s) to import. To import a series of years use, e.g.,
 #'   `2000:2020`. To import several specific years use `year = c(2000, 2010,
 #'   2020)`.
+#'
 #' @param source The network to which the `site`(s) belong. The default, `NULL`,
 #'   allows [importUKAQ()] to guess the correct `source`, preferring national
 #'   networks over locally managed networks. Alternatively, users can define a
@@ -107,6 +111,7 @@
 #'   - `"waqn"`,  The Welsh Air Quality Network.
 #'   - `"ni"`,  The Northern Ireland Air Quality Network.
 #'   - `"local"`,  Locally managed air quality networks in England.
+#'
 #' @param data_type The type of data to be returned, defaulting to `"hourly"`
 #'   data. Alternative data types include:
 #'   - `"daily"`: Daily average data.
@@ -120,35 +125,47 @@
 #'   [here](https://www.gov.uk/government/publications/health-effects-of-air-pollution)
 #'   for more details of how the index is defined. Note that this `data_type` is
 #'   not available for locally managed monitoring networks.
+#'
 #' @param pollutant Pollutants to import. If omitted will import all pollutants
 #'   from a site. To import only NOx and NO2 for example use `pollutant =
 #'   c("nox", "no2")`. Pollutant names can be upper or lower case.
+#'
 #' @param hc Include hydrocarbon measurements in the imported data? Defaults to
 #'   `FALSE` as most users will not be interested in using hydrocarbon data.
+#'   Hydrocarbon data are only available for the AURN.
+#'
 #' @param meta Append metadata columns to data for each selected `site`?
 #'   Defaults to `FALSE`. Columns are defined using `meta_columns`.
+#'
 #' @param meta_columns The specific columns to append when `meta = TRUE`.
 #'   Defaults to site type, latitude and longitude. Can be any of `"site_type"`,
 #'   `"latitude"`, `"longitude"`, `"zone"`, `"agglomeration"`, and
 #'   `"local_authority"` (as well as `"provider"` for locally managed data). See
 #'   [importMeta()] for more complete information.
+#'
 #' @param meteo Append modelled meteorological data, if available? Defaults to
 #'   `TRUE`, which will return wind speed (`ws`), wind direction (`wd`) and
 #'   ambient temperature (`air_temp`). The variables are calculated from using
 #'   the WRF model run by WSP and are available for most but not all networks.
-#'   Setting `meteo = FALSE` is useful if you have other meteorological data to
-#'   use in preference, for example from the `worldmet` package.
+#'   They are not available for locally managed networks. Setting `meteo =
+#'   FALSE` is useful if you have other meteorological data to use in
+#'   preference, for example from the `worldmet` package.
+#'
 #' @param ratified Append `qc` column(s) to hourly data indicating whether each
 #'   species was ratified (i.e., quality-checked)?  Defaults to `FALSE`.
+#'   Ratification information is not available for locally managed networks.
+#'
 #' @param to_narrow Return the data in a "narrow"/"long"/"tidy" format? By
 #'   default the returned data is "wide" and has a column for each
 #'   pollutant/variable. When `to_narrow = TRUE` the data are returned with a
 #'   column identifying the pollutant name and a column containing the
 #'   corresponding concentration/statistic. Defaults to `FALSE`.
-#' @param verbose Print messages to the console if hourly data cannot be
-#'   imported? Default is `FALSE`. `TRUE` is useful for debugging as the
-#'   specific `year`(s), `site`(s) and `source`(s) which cannot be imported will
-#'   be returned.
+#'
+#' @param verbose Print a message to the console if any data cannot be imported?
+#'   Default is `FALSE`. `TRUE` is useful for debugging as the specific
+#'   `year`(s), `site`(s) and `source`(s) which cannot be imported will be
+#'   listed. Not used when `data_type` is `"annual"`, `"monthly"` or `"daqi"`.
+#'
 #' @param progress Show a progress bar when many sites/years are being imported?
 #'   Defaults to `TRUE`.
 #'
@@ -165,7 +182,8 @@
 #' importUKAQ(c("bn1", "bn2"), year = 2022, source = "aqe")
 #'
 #' # import sites across multiple networks
-#' importUKAQ(c("my1", "bn1", "bn2"),
+#' importUKAQ(
+#'   site = c("my1", "bn1", "bn2"),
 #'   year = 2022,
 #'   source = c("aurn", "aqe", "aqe")
 #' )
@@ -181,6 +199,7 @@
 #'
 #' # import other data types, filtering by pollutant
 #' importUKAQ(
+#'   year = 2020,
 #'   data_type = "annual",
 #'   pollutant = c("no2", "pm2.5", "pm10"),
 #'   source = c("aurn", "aqe")
@@ -188,8 +207,8 @@
 #' }
 importUKAQ <-
   function(
-    site = "my1",
-    year = 2022,
+    site,
+    year,
     source = NULL,
     data_type = "hourly",
     pollutant = "all",
@@ -202,26 +221,85 @@ importUKAQ <-
     verbose = FALSE,
     progress = TRUE
   ) {
+    # pollutant names are matched in lower case
+    pollutant <- tolower(pollutant)
+
+    # check data_type
+    allowed_types <- c(
+      "hourly",
+      "daily",
+      "monthly",
+      "annual",
+      "daqi",
+      "15min",
+      "15_min",
+      "24_hour",
+      "8_hour",
+      "daily_max_8"
+    )
+
+    data_type <- tolower(data_type)
+    data_type <- rlang::arg_match(data_type, allowed_types, multiple = FALSE)
+
+    if (ratified && data_type != "hourly") {
+      cli::cli_warn(
+        "{.arg ratified} is only available for hourly data, and will be ignored for {.arg data_type} {.val {data_type}}."
+      )
+    }
+
+    # handle 15_min for back-compatibility reasons
+    if (data_type == "15_min") {
+      data_type <- "15min"
+    }
+
+    # network-wide statistics are stored differently to individual site data
+    is_stats <- data_type %in% c("annual", "monthly", "daqi")
+
+    # year is always required, but site can be omitted for network-wide
+    # statistics to import all sites
+    rlang::check_required(year)
+
+    if (missing(site)) {
+      if (!is_stats) {
+        cli::cli_abort(
+          c(
+            "x" = "{.arg site} must be supplied when {.arg data_type} is {.val {data_type}}.",
+            "i" = "{.arg site} can only be omitted when {.arg data_type} is {.val annual}, {.val monthly} or {.val daqi}, to import all sites."
+          )
+        )
+      }
+
+      if (is.null(source)) {
+        cli::cli_abort(
+          "Please provide a {.arg source} when {.arg data_type} is {.val {data_type}}."
+        )
+      }
+
+      site <- "all"
+    }
+
+    # check sources, allowing for the same aliases as importMeta()
+    if (!is.null(source)) {
+      source <- normalise_source(source)
+      allowed_sources <- ukaq_networks$source
+      source <- rlang::arg_match(source, allowed_sources, multiple = TRUE)
+    }
+
+    # guess sources
+    if (is.null(source)) {
+      source <- guess_site_source(site)
+    }
+
     # warn if source == "local"
     if ("local" %in% source) {
       cli::cli_warn(
         c(
-          "i" = "'local' data is associated with locally managed air quality network sites in England.",
+          "i" = "{.val local} data is associated with locally managed air quality network sites in England.",
           "!" = "These sites are not part of the AURN national network, and therefore may not have the same level of quality control applied to them."
         ),
         .frequency = "regularly",
         .frequency_id = "lmam"
       )
-    }
-
-    # guess sources
-    if (is.null(source)) {
-      if (data_type %in% c("annual", "monthly", "daqi") && missing(site)) {
-        cli::cli_abort(
-          "Please provide a {.field source} when {.field data_type} is '{data_type}'."
-        )
-      }
-      source <- guess_source(site)
     }
 
     # check correct "meta_columns" are passed
@@ -247,138 +325,15 @@ importUKAQ <-
         )
     }
 
-    # obtain correct URL info for the source
-    url_domain <- dplyr::recode_values(
-      source,
-      "aurn" ~ "https://uk-air.defra.gov.uk/openair/R_data/",
-      "aqe" ~ "https://airqualityengland.co.uk/assets/openair/R_data/",
-      "saqn" ~ "https://www.scottishairquality.scot/openair/R_data/",
-      "waqn" ~
-        "https://airquality.gov.wales/sites/default/files/openair/R_data/",
-      "ni" ~ "https://www.airqualityni.co.uk/openair/R_data/",
-      "local" ~ "https://uk-air.defra.gov.uk/openair/LMAM/R_data/"
-    )
-
-    url_abbr <- dplyr::recode_values(
-      source,
-      "aurn" ~ "_AURN_",
-      "aqe" ~ "_AQE_",
-      "saqn" ~ "_SCOT_",
-      "waqn" ~ "_WAQ_",
-      "ni" ~ "_NI_",
-      "local" ~ "_LMAM_"
-    )
-
-    # detect allowed types
-    allowed_types <- c(
-      "hourly",
-      "daily",
-      "monthly",
-      "annual",
-      "daqi",
-      "15min",
-      "15_min",
-      "24_hour",
-      "8_hour",
-      "daily_max_8"
-    )
-
-    # handle 15_min for back-compatibility reasons
-    if (data_type == "15_min") {
-      data_type <- "15min"
+    # DAQI is only available for national networks
+    if (data_type == "daqi" && "local" %in% source) {
+      cli::cli_abort(c(
+        "!" = "{.arg data_type} {.val daqi} is not available for locally managed networks."
+      ))
     }
 
-    if (!tolower(data_type) %in% allowed_types) {
-      cli::cli_warn(
-        c(
-          "!" = "'{data_type}' not recognised. Setting {.arg data_type} to 'hourly'",
-          "i" = "{.arg data_type} should be one of: {allowed_types}"
-        )
-      )
-
-      data_type <- "hourly"
-    }
-
-    # Import Annual / Monthly Stats?
-    if (data_type %in% c("annual", "monthly")) {
-      if (missing(site)) {
-        site <- "all"
-      }
-
-      # create file paths
-      source <- unique(source)
-      files <- paste0(url_domain, "summary_", data_type, url_abbr)
-      files <- unique(files)
-
-      # import statistics
-      aq_data <- purrr::pmap(
-        tidyr::crossing(tidyr::nesting(files, source), year),
-        readSummaryData,
-        data_type = data_type,
-        to_narrow = to_narrow,
-        hc = hc,
-        .progress = ifelse(progress, "Importing Statistics", FALSE)
-      ) |>
-        purrr::list_rbind()
-
-      if (nrow(aq_data) == 0) {
-        cli::cli_abort(
-          "No data returned. Check {.arg site}, {.arg year} and {.arg source}.",
-          call = NULL
-        )
-      }
-    }
-
-    # Import pre-calculated DAQI?
-    if (data_type == "daqi") {
-      if ("local" %in% source) {
-        cli::cli_abort(c(
-          "!" = "{.arg data_type} 'DAQI' is not available for locally managed networks"
-        ))
-      }
-      if (missing(site)) {
-        site <- "all"
-      }
-
-      # create file paths
-      source <- unique(source)
-      files <- paste0(url_domain, "annual_DAQI", url_abbr)
-      files <- unique(files)
-
-      # import DAQI
-      aq_data <-
-        purrr::pmap(
-          tidyr::crossing(tidyr::nesting(files, source), year),
-          readDAQI,
-          .progress = ifelse(progress, "Importing DAQI", FALSE)
-        ) |>
-        purrr::list_rbind()
-
-      if (nrow(aq_data) == 0) {
-        cli::cli_abort(
-          "No data returned. Check {.arg site}, {.arg year} and {.arg source}.",
-          call = NULL
-        )
-      }
-
-      aq_data <-
-        aq_data |>
-        dplyr::tibble() |>
-        dplyr::mutate(
-          band = dplyr::case_when(
-            .data$poll_index %in% 1:3 ~ "Low",
-            .data$poll_index %in% 4:6 ~ "Moderate",
-            .data$poll_index %in% 7:9 ~ "High",
-            .data$poll_index == 10 ~ "Very High"
-          ),
-          band = factor(.data$band, c("Low", "Moderate", "High", "Very High")),
-          .after = "poll_index"
-        )
-    }
-
-    # Import any other stat
-    if (!data_type %in% c("annual", "monthly", "daqi")) {
-      site <- toupper(site)
+    # each site needs a source
+    if (!is_stats) {
       if (length(source) == 1) {
         source <- rep(source, times = length(site))
       } else if (length(source) != length(site)) {
@@ -386,78 +341,64 @@ importUKAQ <-
           "Length of {.arg source} ({length(source)}) not equal to 1 or length of {.arg site} ({length(site)})."
         )
       }
+    }
 
-      # deal with additional paths needed for local data
+    # import metadata once, if needed for ratification, metadata columns, or
+    # the file paths of locally managed data
+    add_qc <- ratified && data_type == "hourly"
+    meta_data <- NULL
+
+    if (meta || add_qc || (!is_stats && "local" %in% source)) {
+      meta_data <- importMeta(unique(source), all = TRUE, duplicate = TRUE)
+    }
+
+    # import data
+    if (is_stats) {
+      aq_data <- import_network_stats(
+        source = source,
+        year = year,
+        data_type = data_type,
+        to_narrow = to_narrow,
+        hc = hc,
+        progress = progress
+      )
+    } else {
+      aq_data <- import_site_data(
+        site = site,
+        source = source,
+        year = year,
+        data_type = data_type,
+        pollutant = pollutant,
+        hc = hc,
+        to_narrow = to_narrow,
+        verbose = verbose,
+        progress = progress,
+        meta_data = meta_data
+      )
+    }
+
+    if (nrow(aq_data) == 0) {
+      cli::cli_abort(
+        "No data returned. Check {.arg site}, {.arg year} and {.arg source}.",
+        call = NULL
+      )
+    }
+
+    # add ratification flags to hourly data
+    if (add_qc) {
       if ("local" %in% source) {
-        # get pcodes for file paths
-        pcodes <-
-          importMeta("local", all = TRUE) |>
-          dplyr::distinct(.data$site, .keep_all = TRUE) |>
-          dplyr::select("code", "pcode")
-
-        # get sites and pcodes
-        site_info <-
-          data.frame(
-            code = site,
-            source = source,
-            url_data = url_domain
-          ) |>
-          dplyr::left_join(pcodes, by = "code") |>
-          tidyr::crossing(year = year)
-      } else {
-        site_info <-
-          data.frame(
-            code = site,
-            source = source,
-            url_data = url_domain
-          ) |>
-          dplyr::mutate(pcode = rep(NA, times = length(site))) |>
-          tidyr::crossing(year = year)
-      }
-
-      aq_data <-
-        purrr::pmap(
-          .l = site_info,
-          .f = purrr::possibly(
-            ~ readUKAQData(
-              site = ..1,
-              lmam_subfolder = ..4,
-              year = ..5,
-              data_type,
-              pollutant = pollutant,
-              hc = hc,
-              to_narrow = to_narrow,
-              source = ..2,
-              url_data = ..3,
-              verbose = verbose
-            ),
-            quiet = !verbose
-          ),
-          .progress = ifelse(progress, "Importing AQ Data", FALSE)
-        ) |>
-        purrr::list_rbind()
-
-      if (nrow(aq_data) == 0) {
-        cli::cli_abort(
-          "No data returned. Check {.arg site}, {.arg year} and {.arg source}.",
-          call = NULL
+        cli::cli_warn(
+          "Ratification information is not available for locally managed networks; their {.field qc} values will be {.val {NA}}."
         )
       }
 
-      if (ratified && data_type == "hourly") {
-        aq_data <-
-          add_ratified(
-            aq_data = aq_data,
-            source = source,
-            to_narrow = to_narrow
-          )
-      }
+      aq_data <- add_ratified_flags(aq_data, meta_data, to_narrow = to_narrow)
     }
 
     # filter annual/monthly/DAQI data
-    if (data_type %in% c("annual", "monthly", "daqi")) {
+    if (is_stats) {
       aq_data <-
-        filter_site_pollutant(
+        filter_network_stats(
           aq_data,
           site = site,
           pollutant = pollutant,
@@ -472,14 +413,22 @@ importUKAQ <-
         dplyr::select(-dplyr::any_of(c("ws", "wd", "air_temp")))
     }
 
+    # use a consistent column order: identifiers (from least to most
+    # variable), then pollutants, then meteorological data
+    aq_data <- aq_data |>
+      dplyr::relocate(dplyr::any_of(c("source", "site", "code", "date"))) |>
+      dplyr::relocate(
+        dplyr::any_of(c("ws", "wd", "air_temp")),
+        .after = dplyr::last_col()
+      )
+
     # add meta data?
     if (meta) {
-      aq_data <-
-        add_meta(source = source, columns = meta_columns, aq_data)
+      aq_data <- add_site_meta(aq_data, meta_data, columns = meta_columns)
     }
 
     # arrange output by source
-    aq_data <- dplyr::arrange(aq_data, "source", "site")
+    aq_data <- dplyr::arrange(aq_data, .data$source, .data$site)
 
     # return data
     return(dplyr::as_tibble(aq_data))
@@ -495,12 +444,24 @@ importUKAQ <-
 #' more flexibly, including across multiple monitoring networks, these functions
 #' are provided for convenience and back-compatibility.
 #'
+#' Not every argument is available in every wrapper, as not all data are
+#' available for every network:
+#'
+#' - `hc` is only available in [importAURN()], as hydrocarbon data are only
+#' measured by the AURN.
+#'
+#' - `meteo` and `ratified` are not available in [importLocal()], as neither
+#' modelled meteorological data nor ratification information are available for
+#' locally managed networks.
+#'
 #' @inheritSection importUKAQ Importing UK Air Pollution Data
 #'
 #' @param site Site code of the site to import, e.g., `"my1"` is Marylebone
 #'   Road. Site codes can be discovered through the use of [importMeta()].
 #'   Several sites can be imported at once. For example, `site = c("my1",
-#'   "nott")` imports both Marylebone Road and Nottingham.
+#'   "nott")` imports both Marylebone Road and Nottingham. When `data_type` is
+#'   `"annual"`, `"monthly"` or `"daqi"`, `site` can be omitted to import all
+#'   sites in the network.
 #'
 #' @inheritParams importUKAQ
 #' @rdname importUKAQ-wrapper
@@ -509,8 +470,8 @@ importUKAQ <-
 #' @export
 importAURN <-
   function(
-    site = "my1",
-    year = 2009,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     hc = FALSE,
@@ -522,10 +483,6 @@ importAURN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
-      site <- "all"
-    }
-
     importUKAQ(
       site = site,
       year = year,
@@ -548,8 +505,8 @@ importAURN <-
 #' @export
 importAQE <-
   function(
-    site = "yk13",
-    year = 2018,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     meta = FALSE,
@@ -560,10 +517,6 @@ importAQE <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
-      site <- "all"
-    }
-
     importUKAQ(
       site = site,
       year = year,
@@ -585,8 +538,8 @@ importAQE <-
 #' @export
 importSAQN <-
   function(
-    site = "gla4",
-    year = 2009,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     meta = FALSE,
@@ -597,10 +550,6 @@ importSAQN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
-      site <- "all"
-    }
-
     importUKAQ(
       site = site,
       year = year,
@@ -622,8 +571,8 @@ importSAQN <-
 #' @export
 importWAQN <-
   function(
-    site = "card",
-    year = 2018,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     meta = FALSE,
@@ -634,10 +583,6 @@ importWAQN <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
-      site <- "all"
-    }
-
     importUKAQ(
       site = site,
       year = year,
@@ -659,8 +604,8 @@ importWAQN <-
 #' @export
 importNI <-
   function(
-    site = "bel0",
-    year = 2018,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     meta = FALSE,
@@ -671,10 +616,6 @@ importNI <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
-      site <- "all"
-    }
-
     importUKAQ(
       site = site,
       year = year,
@@ -696,8 +637,8 @@ importNI <-
 #' @export
 importLocal <-
   function(
-    site = "ad1",
-    year = 2018,
+    site,
+    year,
     data_type = "hourly",
     pollutant = "all",
     meta = FALSE,
@@ -706,10 +647,6 @@ importLocal <-
     verbose = FALSE,
     progress = TRUE
   ) {
-    if (missing(site) && data_type %in% c("annual", "monthly", "daqi")) {
-      site <- "all"
-    }
-
     importUKAQ(
       site = site,
       year = year,
@@ -717,6 +654,7 @@ importLocal <-
       pollutant = pollutant,
       meta = meta,
       meta_columns = meta_columns,
+      # no modelled met or ratification information for locally managed data
       meteo = TRUE,
       ratified = FALSE,
       to_narrow = to_narrow,

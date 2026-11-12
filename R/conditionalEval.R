@@ -119,9 +119,7 @@ conditionalEval <- function(
 
   the_stats <- c("MB", "NMB", "r", "COE", "MGE", "NMGE", "RMSE", "FAC2")
 
-  if (length(type) > 1) {
-    cli::cli_abort("Only one type can be used with this function")
-  }
+  check_type(type, max = 1)
 
   extra.args <- capture_dots(...)
 
@@ -170,7 +168,8 @@ conditionalEval <- function(
     }
   }
 
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    check_numeric(vars = c(mod, obs, var.obs, var.mod))
   mydata <- stats::na.omit(mydata)
 
   lo <- min(mydata[, c(mod, obs)])

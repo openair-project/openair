@@ -33,19 +33,21 @@
 #' }
 #'
 importEurope <- function(
-  site = "debw118",
-  year = 2018,
+  site,
+  year,
   tz = "UTC",
   meta = FALSE,
   to_narrow = FALSE,
   progress = TRUE
 ) {
+  rlang::check_required(site)
+  rlang::check_required(year)
   rlang::check_installed("readr")
 
   # warn/error w/ deprecation
   msg <-
     c(
-      "!" = "{.fun importEurope} has been discontinued and cannot import data after February 2024.",
+      "!" = "{.fun openair::importEurope} has been discontinued and cannot import data after February 2024.",
       "i" = "Consider using the EEA Air Quality Download Service instead {.url https://eeadmz1-downloads-webapp.azurewebsites.net/}"
     )
   if (any(year > 2024)) {
@@ -189,33 +191,21 @@ read_saq_observations <- function(file, tz) {
 
 
 make_saq_observations_wider <- function(df) {
-  tryCatch(
-    {
-      df |>
-        dplyr::select(
-          "date",
-          "date_end",
-          "site",
-          "variable",
-          "value"
-        ) |>
-        tidyr::spread("variable", "value")
-    },
-    error = function(e) {
-      cli::cli_warn(
-        "Duplicated date-site-variable combinations detected, observations have been removed..."
-      )
+  df <- dplyr::select(df, "date", "date_end", "site", "variable", "value")
 
-      df |>
-        dplyr::select(
-          "date",
-          "date_end",
-          "site",
-          "variable",
-          "value"
-        ) |>
-        dplyr::distinct("date", "site", "variable", .keep_all = TRUE) |>
-        tidyr::spread("variable", "value")
-    }
-  )
+  dupes <- duplicated(df[c("date", "site", "variable")])
+  if (any(dupes)) {
+    cli::cli_warn(
+      "Duplicated date-site-variable combinations detected, observations have been removed..."
+    )
+    df <- df[!dupes, ]
+  }
+
+  df |>
+    dplyr::arrange(.data$date, .data$date_end, .data$site) |>
+    tidyr::pivot_wider(
+      names_from = "variable",
+      values_from = "value",
+      names_sort = TRUE
+    )
 }

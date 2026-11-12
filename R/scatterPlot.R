@@ -252,6 +252,8 @@ scatterPlot <- function(
     cols <- get_theme_cols(cols, theme, "seq")
   }
 
+  check_type(type, max = 2)
+
   ## extra args
   extra.args <- capture_dots(...)
   extra.args$size <- extra.args$size %||% 1
@@ -263,7 +265,7 @@ scatterPlot <- function(
   ## validate
   if (is.na(z) && method == "level") {
     cli::cli_abort(
-      "Need to specify {.arg z} when using {.code method = 'level'}."
+      "Need to specify {.arg z} when using {.code method = \"level\"}."
     )
   }
   if (!is.na(group) && any(group %in% type)) {
@@ -500,7 +502,20 @@ prepare_scatter_data <- function(
     vars <- c(vars, z)
   }
 
-  mydata <- checkPrep(mydata, unique(vars), type)
+  # x, y and z must be numeric, although x and y can also be dates
+  numeric_vars <- c(
+    x,
+    y,
+    if (!is.na(z)) z,
+    if (windflow$windflow) c("wd", "ws")
+  )
+  numeric_vars <- purrr::discard(
+    numeric_vars,
+    function(var) inherits(mydata[[var]], c("Date", "POSIXt"))
+  )
+
+  mydata <- checkPrep(mydata, unique(vars), type) |>
+    check_numeric(vars = numeric_vars, call = rlang::caller_env())
 
   ## filter for log scales (require strictly positive)
   if (log.x) {

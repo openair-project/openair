@@ -49,18 +49,12 @@ GaussianSmooth <- function(
   # data.thresh must be between 0 & 100
   if (data.thresh < 0 || data.thresh > 100) {
     cli::cli_abort(
-      "{.field data.thresh} must be between {.val {0L}} and {.val {100L}}."
+      "{.arg data.thresh} must be between {.val {0L}} and {.val {100L}}."
     )
   }
 
-  # Loop through all provided pollutants to check they are numeric
-  for (p in pollutant) {
-    if (!is.numeric(mydata[[p]])) {
-      cli::cli_abort(
-        "mydata{.field ${p}} is not numeric - it is {class(mydata[[p]])}."
-      )
-    }
-  }
+  # pollutants should be numeric
+  mydata <- check_numeric(mydata, vars = pollutant)
 
   # create new names if not provided or if length mismatch
   if (is.null(new.name) || length(new.name) != length(pollutant)) {

@@ -153,7 +153,7 @@ percentileRose <- function(
     mean <- FALSE
     if (length(percentile) > 1) {
       cli::cli_abort(
-        "Only one percentile should be supplied when {.arg method} = 'CPF'."
+        "Only one percentile should be supplied when {.code method = \"cpf\"}."
       )
     }
   }
@@ -171,7 +171,8 @@ percentileRose <- function(
     }
   }
 
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE, wd = wd)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE, wd = wd) |>
+    check_numeric(vars = c(wd, pollutant))
 
   ## round wd
   mydata[[wd]] <- angle * ceiling(mydata[[wd]] / angle - 0.5)
@@ -180,17 +181,6 @@ percentileRose <- function(
   if (0 %in% mydata[[wd]]) {
     id <- which(mydata[[wd]] == 0)
     mydata[[wd]][id] <- 360
-  }
-
-  ## make sure all wds are present
-  ids <- which(!seq(angle, 360, by = angle) %in% unique(mydata[[wd]]))
-  if (length(ids) > 0 && !smooth) {
-    extra <- mydata[rep(1, length(ids)), ]
-    extra[[wd]] <- seq(angle, 360, by = angle)[ids]
-    for (i in pollutant) {
-      extra[[i]] <- NA
-    }
-    mydata <- rbind(mydata, extra)
   }
 
   ## need lowest value if shading
@@ -207,16 +197,16 @@ percentileRose <- function(
   # case pollutant becomes a conditioning variable
   if (length(pollutant) > 1) {
     if (length(type) > 1) {
-      cli::cli_warn("Only type = '{type[1]}' will be used.")
+      cli::cli_warn("Only {.arg type} {.val {type[1]}} will be used.")
       type <- type[1]
     }
     ## use pollutants as conditioning variables
 
-    mydata <- tidyr::gather(
+    mydata <- tidyr::pivot_longer(
       mydata,
-      key = "variable",
-      value = "value",
-      dplyr::all_of(pollutant)
+      cols = dplyr::all_of(pollutant),
+      names_to = "variable",
+      values_to = "value"
     )
     ## now set pollutant to "value"
     pollutant <- "value"
@@ -226,6 +216,8 @@ percentileRose <- function(
       type <- c(type, "variable")
     }
   }
+
+  check_type(type, max = 2)
 
   # extra.args setup
   extra.args <- capture_dots(...)
@@ -255,6 +247,16 @@ percentileRose <- function(
   prepare.grid <- function(mydata, overall.lower, overall.upper) {
     overall.lower <- mydata$lower[1]
     overall.upper <- mydata$upper[1]
+
+    # make sure all wds are present in this panel, so that directions with no
+    # data show as gaps rather than being bridged by the neighbouring bins
+    ids <- which(!seq(angle, 360, by = angle) %in% unique(mydata[[wd]]))
+    if (length(ids) > 0 && !smooth) {
+      extra <- mydata[rep(1, length(ids)), ]
+      extra[[wd]] <- seq(angle, 360, by = angle)[ids]
+      extra[[pollutant]] <- NA
+      mydata <- rbind(mydata, extra)
+    }
 
     # add zero wind angle = same as 360 for cyclic spline
     ids <- which(mydata[, wd] == 360)
@@ -295,8 +297,11 @@ percentileRose <- function(
         ## do not smooth
         dat1 <- thedata
         dat2 <- thedata
-        dat1[[wd]] <- thedata[[wd]] - angle / 2
-        dat2[[wd]] <- thedata[[wd]] + angle / 2
+        # clamp to 0-360 so the 0/360 bins don't overlap at north; an area
+        # drawn more than a full turn renders with a hole under the even-odd
+        # fill rule (e.g., in some SVG renderers)
+        dat1[[wd]] <- pmax(thedata[[wd]] - angle / 2, 0)
+        dat2[[wd]] <- pmin(thedata[[wd]] + angle / 2, 360)
         dat1$id <- 2 * seq_len(nrow(dat1)) - 1
         dat2$id <- 2 * seq_len(nrow(dat2))
         thedata <- rbind(dat1, dat2)
@@ -563,6 +568,8 @@ percentileRose <- function(
         thePlot +
         ggplot2::geom_area(
           ggplot2::aes(fill = .data[["percentile"]]),
+          # "align" pads the ends of each area beyond 0/360, causing overlap
+          stat = "identity",
           show.legend = method != "cpf",
           key_glyph = ggplot2::draw_key_rect,
           position = ggplot2::position_identity()
@@ -598,18 +605,8 @@ percentileRose <- function(
   }
 
   # make key full width/height
-  if (key.position %in% c("left", "right")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.height = ggplot2::rel(2)
-      )
-  }
-  if (key.position %in% c("top", "bottom")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.width = ggplot2::rel(2)
-      )
-  }
+  thePlot <- thePlot +
+    theme_legend_key(key.position, size = ggplot2::rel(2), spacing = NULL)
 
   # add compass points
   thePlot <- thePlot +

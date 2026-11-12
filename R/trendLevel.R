@@ -183,8 +183,8 @@ trendLevel <- function(
     x <- x[1]
     cli::cli_warn(
       c(
-        "!" = "{.fun openair::trendLevel} does not allow multiple {.field x} values.",
-        "i" = "Setting {.field x} to '{x}'."
+        "!" = "{.fun openair::trendLevel} does not allow multiple {.arg x} values.",
+        "i" = "Setting {.arg x} to {.val {x}}."
       )
     )
   }
@@ -194,22 +194,13 @@ trendLevel <- function(
     y <- y[1]
     cli::cli_warn(
       c(
-        "!" = "{.fun openair::trendLevel} does not allow multiple {.field y} values.",
-        "i" = "Setting {.field y} to '{y}'."
+        "!" = "{.fun openair::trendLevel} does not allow multiple {.arg y} values.",
+        "i" = "Setting {.arg y} to {.val {y}}."
       )
     )
   }
 
-  # check length of type
-  if (length(type) > 2) {
-    type <- type[1:2]
-    cli::cli_warn(
-      c(
-        "!" = "{.fun openair::trendLevel} does not allow more than two {.field type} values.",
-        "i" = "Setting {.field type} to '{type}'."
-      )
-    )
-  }
+  check_type(type, max = 2)
 
   # ensure x, y and type are unique
   vars <- c(pollutant, x, y, type)
@@ -217,7 +208,7 @@ trendLevel <- function(
     cli::cli_abort(
       c(
         "x" = "{.fun openair::trendLevel} could not rationalise plot structure.",
-        "i" = "Duplicate term(s) in {.field pollutant} ('{pollutant}'), {.field x} ('{x}'), {.field y} ('{y}'), and {.field type} ('{type}')."
+        "i" = "Duplicate term(s) in {.arg pollutant} ({.val {pollutant}}), {.arg x} ({.val {x}}), {.arg y} ({.val {y}}), and {.arg type} ({.val {type}})."
       )
     )
   }
@@ -243,7 +234,7 @@ trendLevel <- function(
     if (!is.numeric(vector)) {
       cli::cli_warn(
         c(
-          "!" = "{.fun openair::trendLevel} ignored unrecognised {.field {vector.name}} option.",
+          "!" = "{.fun openair::trendLevel} ignored unrecognised {.arg {vector.name}} option.",
           "i" = "See {.fun openair::trendLevel} for more information."
         ),
         call = NULL
@@ -329,7 +320,7 @@ trendLevel <- function(
 
       if (statistic == "percentile") {
         if (percentile < 0 || percentile > 100) {
-          cli::cli_abort("{.field percentile} outside {0}-{100}.")
+          cli::cli_abort("{.arg percentile} must be between {.val {0}} and {.val {100}}.")
         }
         probs <- percentile / 100
         stat.fun <- function(x, ...) {
@@ -369,9 +360,9 @@ trendLevel <- function(
     # early end for bad stats
     cli::cli_abort(
       c(
-        "x" = "{.fun openair::trendLevel} could not apply given {.field statistic} option.",
+        "x" = "{.fun openair::trendLevel} could not apply given {.arg statistic} option.",
         "i" = "Please provide a valid function or character vector.",
-        "i" = "Valid character vectors: {.emph {eval(formals(trendLevel)$statistic)}}"
+        "i" = "Valid options: {.val {eval(formals(trendLevel)$statistic)}}"
       )
     )
   }
@@ -386,7 +377,13 @@ trendLevel <- function(
   }
 
   # all of x, y, temp need to be handled as type here
-  mydata <- checkPrep(mydata, temp, type = c(x, y, type), remove.calm = FALSE)
+  mydata <- checkPrep(
+    mydata,
+    temp,
+    type = c(x, y, type),
+    remove.calm = FALSE
+  ) |>
+    check_numeric(vars = setdiff(temp, "date"))
 
   # if using windflow, need the u & v components of wind
   if (windflow$windflow) {
@@ -551,20 +548,7 @@ trendLevel <- function(
     )
 
   # make key full width/height
-  if (key.position %in% c("left", "right")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.height = ggplot2::unit(1, "null"),
-        legend.key.spacing.y = ggplot2::unit(0, "cm")
-      )
-  }
-  if (key.position %in% c("top", "bottom")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.width = ggplot2::unit(1, "null"),
-        legend.key.spacing.x = ggplot2::unit(0, "cm")
-      )
-  }
+  thePlot <- thePlot + theme_legend_key(key.position)
 
   # colours
   if (categorical) {

@@ -198,3 +198,32 @@ test_that("invalid mode raises an error", {
     regexp = "mode"
   )
 })
+
+# --- Non-numeric input -------------------------------------------------------
+
+test_that("numbers stored as text are compared numerically, not alphabetically", {
+  chr <- dat
+  chr$nox <- as.character(chr$nox)
+
+  expect_warning(
+    sr_chr <- selectRunning(
+      chr,
+      pollutant = "nox",
+      criterion = ">",
+      run.len = 5,
+      threshold = 100,
+      mode = "flag"
+    ),
+    regexp = "Converted"
+  )
+  expect_equal(sr_chr$criterion, sr_flag$criterion)
+})
+
+test_that("non-numeric pollutant errors", {
+  bad <- dat
+  bad$nox <- "a"
+  expect_error(
+    selectRunning(bad, pollutant = "nox", threshold = 100),
+    regexp = "must be numeric"
+  )
+})

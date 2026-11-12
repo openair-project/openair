@@ -26,9 +26,10 @@ cutData(
 \item{x}{A data frame containing a field \code{date}.}
 
 \item{type}{A string giving the way in which the data frame should be split.
-Pre-defined values are: \code{"default"}, \code{"year"}, \code{"hour"}, \code{"month"},
-\code{"season"}, \code{"weekday"}, \code{"site"}, \code{"weekend"}, \code{"monthyear"},
-\code{"daylight"}, \code{"dst"} (daylight saving time).
+Pre-defined values are: \code{"default"}, \code{"year"}, \code{"hour"}, \code{"week"},
+\code{"month"}, \code{"monthyear"}, \code{"quarter"}, \code{"quarteryear"}, \code{"season"},
+\code{"seasonyear"}, \code{"weekday"}, \code{"weekend"}, \code{"daylight"}, \code{"dst"} (daylight
+saving time) and \code{"wd"}. See 'Details' for more information.
 
 \code{type} can also be the name of a numeric or factor. If a numeric column
 name is supplied \code{\link[=cutData]{cutData()}} will split the data into four quantiles.
@@ -40,7 +41,7 @@ columns, which map onto the \code{type} options in the same order they are
 given. The length of \code{names} should therefore be equal to the length of
 \code{type}.}
 
-\item{suffix}{If \code{name} is not specified, \code{suffix} will be appended to any
+\item{suffix}{If \code{names} is not specified, \code{suffix} will be appended to any
 added columns that would otherwise overwrite existing columns. For example,
 \code{cutData(mydata, "nox", suffix = "_cuts")} would append a \code{nox_cuts} column
 rather than overwriting \code{nox}.}
@@ -51,7 +52,8 @@ into seasons.}
 \item{n.levels}{Number of quantiles to split numeric data into.}
 
 \item{wd.res}{The number of wind direction bins; one of \code{4} (N/E/S/W), \code{8}
-(N/NE/E/SE/etc., the default) or \code{16} (N/NNE/NE/ENE/etc.).}
+(N/NE/E/SE/etc., the default), \code{16} (N/NNE/NE/ENE/etc.) or \code{32}
+(N/NbE/NNE/NEbN/etc.).}
 
 \item{start.day}{What day of the week should the \code{type = "weekday"} start on?
 The user can change the start day by supplying an integer between 0 and 6.
@@ -112,6 +114,8 @@ range in the format "day month year".
 \item \code{"year"} splits the data by each year.
 \item \code{"month"} splits the data by month of the year.
 \item \code{"hour"} splits the data by hour of the day.
+\item \code{"week"} splits the data by week of the year, where weeks start on a
+Monday and any days before the first Monday of the year are in week \code{00}.
 \item \code{"monthyear"} (or \code{"yearmonth"}) splits the data by year and month. It
 differs from month in that a level is defined for each month of the data set.
 This is useful sometimes to show an ordered sequence of months if the data
@@ -134,8 +138,7 @@ periods (e.g., data ratification calendars, or business/economic activity).
 intervals. This is perhaps easier to predict and interpret than \code{yearseason}
 which will assign December to the Winter \emph{after} the year it is actually in.
 \item \code{"daylight"} splits the data relative to estimated sunrise and sunset to
-give either daylight or nighttime. The cut is made by \code{cutDaylight} but more
-conveniently accessed via \code{cutData}, e.g. \code{cutData(mydata, type = "daylight", latitude = my.latitude, longitude = my.longitude)}. The daylight estimation,
+give either daylight or nighttime, e.g., \code{cutData(mydata, type = "daylight", latitude = my.latitude, longitude = my.longitude)}. The daylight estimation,
 which is valid for dates between 1901 and 2099, is made using the measurement
 location, date, time and astronomical algorithms to estimate the relative
 positions of the Sun and the measurement location on the Earth's surface, and
@@ -157,13 +160,15 @@ temperature should show a clear shift when expressed in local time. In
 essence, this option when used with \code{timeVariation()} may help determine
 whether the variation in a pollutant is driven by man-made emissions or
 natural processes.
-\item \code{"wd"} splits the data by 8 wind sectors and requires a column \code{wd}: "NE",
-"E", "SE", "S", "SW", "W", "NW", "N".
+\item \code{"wd"} splits the data into wind sectors and requires a column \code{wd}. By
+default, 8 sectors are used ("N", "NE", "E", "SE", "S", "SW", "W", "NW"),
+but this can be changed using \code{wd.res}.
 }
 
 Note that all the date-based types, e.g., \code{"month"}/\code{"year"} are derived from
-a column \code{date}. If a user already has a column with a name of one of the
-date-based types it will not be used.
+a column \code{date}. If a user already has a column with the name of one of the
+built-in types it will only be used if it is a factor; otherwise, it will be
+recalculated (from \code{date} or \code{wd}).
 }
 \examples{
 # split data by day of the week

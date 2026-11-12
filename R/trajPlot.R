@@ -158,7 +158,7 @@ trajPlot <- function(
   rlang::check_installed(c("sf", "rnaturalearth"))
   if (!map.res %in% c(10, 50, 110, "small", "medium", "large")) {
     cli::cli_abort(
-      "{.arg map.res} must be one of {10}/'large', {50}/'medium' or {110}/'small'."
+      "{.arg map.res} must be one of {.val {10}}/{.val large}, {.val {50}}/{.val medium} or {.val {110}}/{.val small}."
     )
   }
 
@@ -212,6 +212,7 @@ trajPlot <- function(
   }
 
   # check data and prepare for plotting
+  check_type(type, max = 2)
   mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
   mydata <- cutData(mydata, type = type, ...)
 
@@ -254,7 +255,7 @@ trajPlot <- function(
     cli::cli_abort(
       c(
         "x" = "Duplicates in {.field date2} detected. Does {.arg mydata} contain multiple trajectories from different origins?",
-        "i" = "Try setting `type` or `group` to silence this error."
+        "i" = "Try setting {.arg type} or {.arg group} to silence this error."
       )
     )
   }
@@ -437,20 +438,7 @@ trajPlot <- function(
         colour = guide_openair(key.position, type = "colourbar")
       )
 
-    if (key.position %in% c("left", "right")) {
-      thePlot <- thePlot +
-        ggplot2::theme(
-          legend.key.height = ggplot2::unit(1, "null"),
-          legend.key.spacing.y = ggplot2::unit(0, "cm")
-        )
-    }
-    if (key.position %in% c("top", "bottom")) {
-      thePlot <- thePlot +
-        ggplot2::theme(
-          legend.key.width = ggplot2::unit(1, "null"),
-          legend.key.spacing.x = ggplot2::unit(0, "cm")
-        )
-    }
+    thePlot <- thePlot + theme_legend_key(key.position)
   }
 
   if (plot) {

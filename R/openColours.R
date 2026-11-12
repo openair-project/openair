@@ -342,7 +342,7 @@ openColours <- function(
     if (length(scheme) > 1L && any(scheme %in% .all_schemes)) {
       cli::cli_abort(
         c(
-          "x" = "Please provide {.strong either} 1 {.fun openColours} palette {.emph or} a vector of valid R colours.",
+          "x" = "Please provide {.strong either} 1 {.fun openair::openColours} palette {.emph or} a vector of valid R colours.",
           "i" = "See {.code ?openColours} for a list of palettes."
         ),
         call = NULL
@@ -352,7 +352,7 @@ openColours <- function(
     if (!all(check)) {
       cli::cli_abort(
         c(
-          "x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openColours} palettes: {.field {names(check[!check])}}"
+          "x" = "The following are {.emph neither} valid R colours {.emph nor} {.fun openair::openColours} palettes: {.val {names(check[!check])}}"
         ),
         call = NULL
       )
@@ -576,9 +576,9 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
 }
 
 #' Get a ColorBrewer palette from {RColorBrewer}, applying begin/end (sequential
-#' palettes only), direction and alpha
+#' palettes only)
 #' @noRd
-.brewer_pal <- function(n, name, direction = 1, alpha = 1, begin = 0, end = 1) {
+.brewer_pal <- function(n, name, begin = 0, end = 1) {
   rlang::check_installed(
     "RColorBrewer",
     reason = "to use ColorBrewer palettes."
@@ -595,11 +595,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
     cols <- grDevices::colorRampPalette(cols)(n)
   }
 
-  if (direction == -1) {
-    cols <- rev(cols)
-  }
-
-  paste0(substr(cols, 1, 7), sprintf("%02X", round(alpha * 255)))
+  cols
 }
 
 #' Brewer palette dispatcher
@@ -615,42 +611,25 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
   saturation
 ) {
   max_n <- maxcolors[[scheme]]
-  if (n < 3L && scheme %in% .brewer_qual_schemes) {
-    # qualitative palettes take the first n colours rather than interpolating
-    # between the first and last, which would skip the palette's ordering
-    .brewer_pal(
-      3L,
-      scheme,
-      direction = direction,
-      begin = begin,
-      end = end,
-      alpha = alpha
-    )[seq_len(n)]
+
+  cols <- if (n < 3L && scheme %in% .brewer_qual_schemes) {
+    # qualitative palettes use their first n colours, as in {scales}, rather
+    # than interpolating between the ends of the palette
+    .brewer_pal(3L, scheme)[seq_len(n)]
   } else if (n >= 3L && n <= max_n) {
-    .brewer_pal(
-      n,
-      scheme,
-      direction = direction,
-      begin = begin,
-      end = end,
-      alpha = alpha
-    )
+    .brewer_pal(n, scheme, begin = begin, end = end)
   } else {
-    base_cols <- .brewer_pal(
-      max_n,
-      scheme,
-      direction = direction,
-      begin = begin,
-      end = end,
-      alpha = alpha
-    )
-    # alpha already baked in — strip before ramp, reapply after
-    cols <- grDevices::colorRampPalette(
-      substr(base_cols, 1, 7),
-      interpolate = "spline"
-    )(n)
-    .finalise(cols, direction = 1L, alpha = alpha, lightness, saturation)
+    # otherwise interpolate across the full palette, reversing it first so
+    # that, e.g., n = 1 is taken from the correct end
+    base_cols <- .brewer_pal(max_n, scheme, begin = begin, end = end)
+    if (direction == -1) {
+      base_cols <- rev(base_cols)
+      direction <- 1
+    }
+    grDevices::colorRampPalette(base_cols, interpolate = "spline")(n)
   }
+
+  .finalise(cols, direction, alpha, lightness, saturation)
 }
 
 #' Hue palette
@@ -1519,7 +1498,7 @@ openSchemes <- function(palette_type = c("seq", "div", "qual"), n = NULL) {
     cli::cli_abort(
       c(
         "!" = "Too many colours selected for {.code {scheme}}.",
-        "i" = "{.code n} should be between 1 and {max_n}."
+        "i" = "{.arg n} should be between {.val {1}} and {.val {max_n}}."
       ),
       call = NULL
     )

@@ -204,7 +204,7 @@ trajLevel <- function(
   rlang::check_installed(c("sf", "rnaturalearth"))
   if (!map.res %in% c(10, 50, 110, "small", "medium", "large")) {
     cli::cli_abort(
-      "{.arg map.res} must be one of {10}/'large', {50}/'medium' or {110}/'small'."
+      "{.arg map.res} must be one of {.val {10}}/{.val large}, {.val {50}}/{.val medium} or {.val {110}}/{.val small}."
     )
   }
 
@@ -244,7 +244,7 @@ trajLevel <- function(
 
   # check that SQTBA is not being used with a type
   if (statistic == "sqtba" && type != "default") {
-    cli::cli_abort("{.arg type} not available when {.arg statistic} = 'SQTBA'.")
+    cli::cli_abort("{.arg type} not available when {.arg statistic} is {.val sqtba}.")
   }
 
   # variables needed in trajectory plots
@@ -256,7 +256,9 @@ trajLevel <- function(
   }
 
   # check data and set up
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  check_type(type, max = 2)
+  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    check_numeric(vars = c("lat", "lon", pollutant))
 
   # extra.args
   extra.args <- capture_dots(...)
@@ -273,7 +275,7 @@ trajLevel <- function(
       "{.arg method} is no longer supported in {.fun openair::trajLevel}, please use {.arg statistic}."
     )
     if (extra.args$method == "hexbin") {
-      cli::cli_warn("Setting {.arg statistic} to 'hexbin'. ")
+      cli::cli_warn("Setting {.arg statistic} to {.val hexbin}.")
       statistic <- "hexbin"
     }
   }
@@ -976,20 +978,7 @@ trajLevel <- function(
   }
 
   # make legends full width
-  if (key.position %in% c("left", "right")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.height = ggplot2::unit(1, "null"),
-        legend.key.spacing.y = ggplot2::unit(0, "cm")
-      )
-  }
-  if (key.position %in% c("top", "bottom")) {
-    thePlot <- thePlot +
-      ggplot2::theme(
-        legend.key.width = ggplot2::unit(1, "null"),
-        legend.key.spacing.x = ggplot2::unit(0, "cm")
-      )
-  }
+  thePlot <- thePlot + theme_legend_key(key.position)
 
   if (plot) {
     plot(thePlot)

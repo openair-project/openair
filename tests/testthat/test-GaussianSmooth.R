@@ -120,12 +120,23 @@ test_that("GaussianSmooth errors when data.thresh is out of range", {
 
 test_that("GaussianSmooth errors on non-numeric pollutant column", {
   bad <- dat
-  bad$o3 <- as.character(bad$o3)
+  bad$o3 <- "a"
 
   expect_error(
     GaussianSmooth(bad, pollutant = "o3", sigma = 24),
-    regexp = "not numeric"
+    regexp = "must be numeric"
   )
+})
+
+test_that("GaussianSmooth converts numbers stored as text with a warning", {
+  chr <- dat
+  chr$o3 <- as.character(chr$o3)
+
+  expect_warning(
+    out <- GaussianSmooth(chr, pollutant = "o3", sigma = 24),
+    regexp = "Converted"
+  )
+  expect_equal(out, GaussianSmooth(dat, pollutant = "o3", sigma = 24))
 })
 
 # --- Edge cases --------------------------------------------------------------
