@@ -79,65 +79,86 @@ quickText <- function(text, auto.text = TRUE, ...) {
     return(ans)
   }
 
-  text <- gsub("'", "\\\\'", text)
+  # escape backslashes so `text` can be safely embedded in a string within the
+  # plotmath code. Quotes are swapped for a placeholder so that the clean-up of
+  # empty strings (e.g., `''`) below can't remove them; they are escaped
+  # afterwards
+  quote_placeholder <- "\u001f"
+  text_escaped <- gsub("\\\\", "\\\\\\\\", text)
+  text_escaped <- gsub("'", quote_placeholder, text_escaped, fixed = TRUE)
 
   if (parse) {
-    ans <- paste("expression(paste('", text, " ", sep = "")
+    ans <- paste("expression(paste('", text_escaped, sep = "")
   } else {
-    ans <- paste("paste('", text, " ", sep = "")
+    ans <- paste("paste('", text_escaped, sep = "")
   }
 
-  ans <- gsub("NO2", "' 'NO' [2] * '", ans)
-  ans <- gsub("no2", "' 'NO' [2] * '", ans)
+  # substitute `x` only when it isn't part of a longer word, i.e., not preceded
+  # by a letter and not followed by a letter or digit. This prevents, e.g.,
+  # "year2020" becoming "yeaR^2 020" or "pm100" becoming "PM10 0". Underscores
+  # are allowed either side so names like "no2_roadside" are still formatted.
+  sub_word <- function(pattern, replacement, x) {
+    gsub(
+      paste0("(?<![A-Za-z])", pattern, "(?![A-Za-z0-9])"),
+      replacement,
+      x,
+      perl = TRUE
+    )
+  }
+
+  ans <- sub_word("NO2", "' 'NO' [2] * '", ans)
+  ans <- sub_word("no2", "' 'NO' [2] * '", ans)
+  ans <- sub_word("NO3", "' 'NO' [3] * '", ans)
+  ans <- sub_word("no3", "' 'NO' [3] * '", ans)
   ans <- gsub("\\bno\\b", "NO", ans)
   ans <- gsub("\\bNOX\\b", "' 'NO' [x] * '", ans)
   ans <- gsub("\\bnox\\b", "' 'NO' [x] * '", ans)
   ans <- gsub("\\bNOx\\b", "' 'NO' [x] * '", ans)
-  ans <- gsub("NH3", "' 'NH' [3] * '", ans)
-  ans <- gsub("nh3", "' 'NH' [3] * '", ans)
-  ans <- gsub("co ", "' 'CO ' '", ans)
-  ans <- gsub("co,", "' 'CO,' '", ans)
-  ans <- gsub("nmhc", "' 'NMHC' '", ans)
+  ans <- sub_word("NH3", "' 'NH' [3] * '", ans)
+  ans <- sub_word("nh3", "' 'NH' [3] * '", ans)
+  ans <- sub_word("co", "' 'CO' '", ans)
+  ans <- sub_word("nmhc", "' 'NMHC' '", ans)
   ans <- gsub("\\bws\\b", "' 'wind spd.' '", ans)
   ans <- gsub("\\bwd\\b", "' 'wind dir.' '", ans)
   ans <- gsub("\\bWS\\b", "' 'wind spd.' '", ans)
   ans <- gsub("\\bWD\\b", "' 'wind dir.' '", ans)
   ans <- gsub("air_temp", "' 'temperature' '", ans)
-  ans <- gsub("rh ", "' 'relative humidity' '", ans)
-  ans <- gsub("PM10", "' 'PM' [10] * '", ans)
-  ans <- gsub("pm10", "' 'PM' [10] * '", ans)
-  ans <- gsub("pm1", "' 'PM' [1] * '", ans)
-  ans <- gsub("PM1", "' 'PM' [1] * '", ans)
-  ans <- gsub("PM4", "' 'PM' [4] * '", ans)
-  ans <- gsub("pm4", "' 'PM' [4] * '", ans)
-  ans <- gsub("PMtot", "' 'PM' [total] * '", ans)
-  ans <- gsub("pmtot", "' 'PM' [total] * '", ans)
-  ans <- gsub("pmc", "' 'PM' [coarse] * '", ans)
-
-  ans <- gsub("pmcoarse", "' 'PM' [coarse] * '", ans)
-  ans <- gsub("PMc", "' 'PM' [coarse] * '", ans)
-  ans <- gsub("PMcoarse", "' 'PM' [coarse] * '", ans)
-  ans <- gsub("pmf", "' 'PM' [fine] * '", ans)
-  ans <- gsub("pmfine", "' 'PM' [fine] * '", ans)
-  ans <- gsub("PMf", "' 'PM' [fine] * '", ans)
-  ans <- gsub("PMfine", "' 'PM' [fine] * '", ans)
-  ans <- gsub("PM2.5", "' 'PM' [2.5] * '", ans)
-  ans <- gsub("pm2.5", "' 'PM' [2.5] * '", ans)
-  ans <- gsub("pm25", "' 'PM' [2.5] * '", ans)
-  ans <- gsub("PM2.5", "' 'PM' [2.5] * '", ans)
-  ans <- gsub("PM25", "' 'PM' [2.5] * '", ans)
-  ans <- gsub("pm25", "' 'PM' [2.5] * '", ans)
-  ans <- gsub("O3", "' 'O' [3] * '", ans)
-  ans <- gsub("o3", "' 'O' [3] * '", ans)
-  ans <- gsub("ozone", "' 'O' [3] * '", ans)
-  ans <- gsub("CO2", "' 'CO' [2] * '", ans)
-  ans <- gsub("co2", "' 'CO' [2] * '", ans)
-  ans <- gsub("SO2", "' 'SO' [2] * '", ans)
-  ans <- gsub("so2", "' 'SO' [2] * '", ans)
-  ans <- gsub("H2S", "' 'H' [2] * 'S''", ans)
-  ans <- gsub("h2s", "' 'H' [2] * 'S''", ans)
-  ans <- gsub("CH4", "' 'CH' [4] * '", ans)
-  ans <- gsub("ch4", "' 'CH' [4] * '", ans)
+  ans <- sub_word("rh", "' 'relative humidity' '", ans)
+  ans <- sub_word("PM10", "' 'PM' [10] * '", ans)
+  ans <- sub_word("pm10", "' 'PM' [10] * '", ans)
+  ans <- sub_word("pm1", "' 'PM' [1] * '", ans)
+  ans <- sub_word("PM1", "' 'PM' [1] * '", ans)
+  ans <- sub_word("PM4", "' 'PM' [4] * '", ans)
+  ans <- sub_word("pm4", "' 'PM' [4] * '", ans)
+  ans <- sub_word("PMtot", "' 'PM' [total] * '", ans)
+  ans <- sub_word("pmtot", "' 'PM' [total] * '", ans)
+  # long forms must come before short forms (e.g., "pmcoarse" before "pmc"),
+  # otherwise the short form matches first and leaves the rest of the word
+  ans <- sub_word("pmcoarse", "' 'PM' [coarse] * '", ans)
+  ans <- sub_word("PMcoarse", "' 'PM' [coarse] * '", ans)
+  ans <- sub_word("pmc", "' 'PM' [coarse] * '", ans)
+  ans <- sub_word("PMc", "' 'PM' [coarse] * '", ans)
+  ans <- sub_word("pmfine", "' 'PM' [fine] * '", ans)
+  ans <- sub_word("PMfine", "' 'PM' [fine] * '", ans)
+  ans <- sub_word("pmf", "' 'PM' [fine] * '", ans)
+  ans <- sub_word("PMf", "' 'PM' [fine] * '", ans)
+  ans <- sub_word("PM2\\.5", "' 'PM' [2.5] * '", ans)
+  ans <- sub_word("pm2\\.5", "' 'PM' [2.5] * '", ans)
+  ans <- sub_word("pm25", "' 'PM' [2.5] * '", ans)
+  ans <- sub_word("PM2\\.5", "' 'PM' [2.5] * '", ans)
+  ans <- sub_word("PM25", "' 'PM' [2.5] * '", ans)
+  ans <- sub_word("pm25", "' 'PM' [2.5] * '", ans)
+  ans <- sub_word("O3", "' 'O' [3] * '", ans)
+  ans <- sub_word("o3", "' 'O' [3] * '", ans)
+  ans <- sub_word("ozone", "' 'O' [3] * '", ans)
+  ans <- sub_word("CO2", "' 'CO' [2] * '", ans)
+  ans <- sub_word("co2", "' 'CO' [2] * '", ans)
+  ans <- sub_word("SO2", "' 'SO' [2] * '", ans)
+  ans <- sub_word("so2", "' 'SO' [2] * '", ans)
+  ans <- sub_word("H2S", "' 'H' [2] * 'S''", ans)
+  ans <- sub_word("h2s", "' 'H' [2] * 'S''", ans)
+  ans <- sub_word("CH4", "' 'CH' [4] * '", ans)
+  ans <- sub_word("ch4", "' 'CH' [4] * '", ans)
   ans <- gsub("dgrC", "' * degree * 'C' '", ans)
   ans <- gsub("degreeC", "' * degree * 'C' '", ans)
   ans <- gsub("deg. C", "' * degree * 'C' '", ans)
@@ -177,10 +198,10 @@ quickText <- function(text, auto.text = TRUE, ...) {
   ans <- gsub("km/h", "' 'km hr' ^-1 *'", ans)
   ans <- gsub("km/hour", "' 'km hr' ^-1 *'", ans)
 
-  ans <- gsub("r2", "R' ^2 *'", ans)
-  ans <- gsub("R2", "R' ^2 *'", ans)
+  ans <- sub_word("r2", "R' ^2 *'", ans)
+  ans <- sub_word("R2", "R' ^2 *'", ans)
 
-  ans <- gsub("tau ", "' * tau * '", ans)
+  ans <- sub_word("tau", "' * tau * '", ans)
 
   ans <- gsub("umol/m2/s", "' * mu * 'mol m' ^-2 * ' s' ^-1 *'", ans)
   ans <- gsub("umol/m2", "' * mu * 'mol m' ^-2 *'", ans)
@@ -193,30 +214,30 @@ quickText <- function(text, auto.text = TRUE, ...) {
 
   ## commands to strip unecessary * etc...
 
-  if (substr(ans, (nchar(ans) - 8), (nchar(ans) - 6)) == "] *") {
-    a <- ans
-    ans <- paste(
-      substr(a, 1, (nchar(a) - 7)),
-      substr(a, (nchar(a) - 5), nchar(a)),
-      sep = ""
-    )
-  }
-
   ans <- gsub("''", "", ans)
+  # a space between a formatted name/unit and a following one (e.g., "ug/m3
+  # no2") is left as a string containing only spaces (`*' ' 'NO'`). Make it a
+  # plotmath space (`~`) before stray `' '` strings are removed below,
+  # otherwise the space is lost (e.g., giving "ug m-3NO2")
+  ans <- gsub("\\*\\s*' +'\\s*'", "~ '", ans)
   ans <- gsub("' '", "", ans)
   ans <- gsub("\\*  \\*", "~", ans)
-  ans <- gsub("^expression\\(paste\\( \\*", "expression(paste(", ans)
-  ans <- gsub("^expression\\(paste\\(\\*", "expression(paste(", ans)
+  # a leading `*` (e.g., before a symbol) is invalid plotmath, for both
+  # `parse = TRUE` ("expression(paste(") and `parse = FALSE` ("paste(")
+  ans <- sub("^(expression\\()?paste\\( ?\\*", "\\1paste(", ans)
 
-  if (substr(ans, (nchar(ans) - 2), (nchar(ans) - 2)) == "*") {
-    a <- ans
-    ans <- paste(
-      substr(a, 1, (nchar(a) - 2)),
-      " ' ' ",
-      substr(a, (nchar(a) - 1), nchar(a)),
-      sep = ""
-    )
-  }
+  # a trailing `*` (e.g., after a unit) is invalid plotmath, so remove it.
+  # Matched as a pattern, as the closing brackets differ between `parse = TRUE`
+  # ("))") and `parse = FALSE` (")") and may follow a space
+  ans <- sub("\\s*\\*(\\s*\\)+)$", "\\1", ans)
+
+  # two `*` with nothing between them (e.g., from adjacent symbols like "Delta
+  # Delta" or "ug/m3 ug/m3") are invalid plotmath, or parse as a power (`**`),
+  # so join them with a space (`~`) instead
+  ans <- gsub("\\*\\s*\\*", "~", ans)
+
+  # now restore the user's quotes, escaped
+  ans <- gsub(quote_placeholder, "\\'", ans, fixed = TRUE)
 
   ## ###################
   ## new bit
@@ -237,12 +258,9 @@ quickText <- function(text, auto.text = TRUE, ...) {
 
   ## ########################
 
+  # if the expression can't be built, fall back to the original text
   if (parse) {
-    if (!inherits(try(eval(parse(text = ans)), TRUE), "try-error")) {
-      ans <- eval(parse(text = ans))
-    } else {
-      ans <- text
-    }
+    ans <- tryCatch(eval(parse(text = ans)), error = function(e) text)
   }
 
   return(ans)

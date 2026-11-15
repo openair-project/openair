@@ -72,6 +72,22 @@
 
     - `lightness` and `saturation` are now applied for any number of colours. Previously, they were ignored unless more colours were requested than the palette contains.
 
+- `quickText()` fixes:
+
+    - `"pmcoarse"`, `"PMcoarse"`, `"pmfine"` and `"PMfine"` are now formatted correctly. Previously, the shorter `"pmc"`/`"pmf"` rules matched first, giving labels like "PM~coarse~oarse".
+
+    - Facet labels starting or ending with a unit or symbol (e.g., `"no2 ug/m3"`, `"wind m/s"` or `"Delta no2"`) no longer cause an error when the plot is drawn.
+
+    - Pollutant, particulate matter, `"r2"`, `"rh"` and `"tau"` names are no longer formatted when they are part of a longer word. For example, `"pm100"` is no longer formatted as "PM~10~0", `"year2020"` as "yeaR^2^020" or `"Morocco"` as "MorocCO". Underscores still count as word separators, so names like `"no2_roadside"` are still formatted.
+
+    - Formatted text no longer has a trailing space added, which previously shifted centred labels slightly off-centre.
+
+    - Spaces between formatted names, symbols and units are no longer lost. For example, `"ug/m3 no2"` previously appeared as "μg m^-3^NO~2~".
+
+    - Trailing backslashes are no longer dropped.
+
+    - Text with repeated symbols or units (e.g., `"Delta Delta"` or `"ug/m3 ug/m3"`) or lone quotes (e.g., `"'"`) is now formatted correctly. Previously, these could not be formatted and were returned as plain text.
+
 - `calendarPlot(annotate = "value")` now works correctly when `breaks` is not `NULL`.
 
 - `corPlot(cluster = FALSE)` no longer raises a missing data error, and the `data` object is now constructed correctly.
