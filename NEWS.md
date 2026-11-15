@@ -36,6 +36,8 @@
 
 - `variationPlot()` gains the `ref.y` argument.
 
+- Polar coordinate plots (`windRose()`, `pollutionRose()`, `polarPlot()`, `polarFreq()`, `percentileRose()`, `polarAnnulus()`, `polarCluster()` and `polarDiff()`) gain the `compass.points` argument to show more compass directions than N/E/S/W. `compass.points = 8` adds labels and gridlines for the intercardinal directions (NE/SE/SW/NW), and `compass.points = 16` further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.) (#398).
+
 - `scatterPlot(linear = TRUE)` now returns the fitted linear model coefficients in a new `fit` component (e.g., `output$fit`), with one row per panel and `group`. This includes the intercept, slope, their standard errors, R^2^ and the number of observations used (#454).
 
 - `key.columns` now defaults to `NULL` in most functions, which will use `{ggplot2}`'s logic for the number of columns. `key.rows` has also been added. `calendarPlot()`, `corPlot()`, `percentileRose()`, `polarAnnulus()`, `polarFreq()`, `polarPlot()`, `trendLevel()` and `windRose()` gain both arguments, which apply when their legend shows binned values.

@@ -117,3 +117,78 @@ test_that("normalise = TRUE produces a 'freq' column in $data", {
   wr_norm <- windRose(dat, normalise = TRUE, plot = FALSE)
   expect_true("freq" %in% names(wr_norm$data))
 })
+
+# =============================================================================
+# compass.points
+# =============================================================================
+
+get_compass_labels <- function(p) {
+  built <- ggplot2::ggplot_build(p$plot)
+  unlist(lapply(built$data, \(d) d$label))
+}
+
+get_compass_breaks <- function(p) {
+  ggplot2::ggplot_build(p$plot)$layout$panel_scales_x[[1]]$get_breaks()
+}
+
+test_that("compass.points = 8 adds intercardinal labels", {
+  wr4 <- windRose(dat, plot = FALSE)
+  wr8 <- windRose(dat, compass.points = 8, plot = FALSE)
+  expect_false(any(c("NE", "SE", "SW", "NW") %in% get_compass_labels(wr4)))
+  expect_true(all(c("N", "E", "S", "W") %in% get_compass_labels(wr8)))
+  expect_true(all(c("NE", "SE", "SW", "NW") %in% get_compass_labels(wr8)))
+  expect_false("NNE" %in% get_compass_labels(wr8))
+})
+
+test_that("compass.points = 16 adds secondary intercardinal labels", {
+  wr16 <- windRose(dat, compass.points = 16, plot = FALSE)
+  all_points <- c(
+    "N",
+    "NNE",
+    "NE",
+    "ENE",
+    "E",
+    "ESE",
+    "SE",
+    "SSE",
+    "S",
+    "SSW",
+    "SW",
+    "WSW",
+    "W",
+    "WNW",
+    "NW",
+    "NNW"
+  )
+  labels <- get_compass_labels(wr16)
+  expect_true(all(all_points %in% labels))
+  expect_equal(sum(labels %in% all_points), 16L)
+})
+
+test_that("compass.points must be 4, 8 or 16", {
+  expect_error(
+    windRose(dat, compass.points = 6, plot = FALSE),
+    "compass.points"
+  )
+})
+
+test_that("compass.points sets the gridlines", {
+  expect_equal(get_compass_breaks(windRose(dat, plot = FALSE)), seq(0, 270, 90))
+  expect_equal(
+    get_compass_breaks(windRose(dat, compass.points = 8, plot = FALSE)),
+    seq(0, 315, 45)
+  )
+  expect_equal(
+    get_compass_breaks(windRose(dat, compass.points = 16, plot = FALSE)),
+    seq(0, 337.5, 22.5)
+  )
+  expect_equal(
+    get_compass_breaks(windRose(
+      dat,
+      compass.points = 8,
+      annotate = FALSE,
+      plot = FALSE
+    )),
+    seq(0, 315, 45)
+  )
+})

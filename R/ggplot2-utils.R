@@ -145,13 +145,15 @@ theme_legend_key <- function(
 scale_x_compass <- function(
   expand = ggplot2::expansion(),
   oob = scales::oob_keep,
+  points = NULL,
   ...
 ) {
+  points <- resolve_compass_points(points)
   list(
     ggplot2::scale_x_continuous(
       limits = c(0, 360),
       labels = NULL,
-      breaks = seq(0, 360 - 90, 90),
+      breaks = seq(0, 360 - 360 / points, 360 / points),
       expand = expand,
       oob = oob,
       ...,
@@ -160,6 +162,18 @@ scale_x_compass <- function(
       )
     )
   )
+}
+
+# number of compass points used for polar plot gridlines and labels; set by
+# users via `compass.points` in `...`
+resolve_compass_points <- function(points) {
+  points <- points %||% 4
+  if (!rlang::is_scalar_integerish(points) || !points %in% c(4, 8, 16)) {
+    cli::cli_abort(
+      "{.arg compass.points} must be one of {.val {4}}, {.val {8}} or {.val {16}}."
+    )
+  }
+  points
 }
 
 # ggplot2 date/datetime x-axis scale using openair's `date.breaks` and
@@ -245,8 +259,11 @@ get_scale_transform <- function(
 annotate_compass_points <- function(
   size,
   theme,
-  labels = c("N", "E", "S", "W")
+  labels = c("N", "E", "S", "W"),
+  points = NULL
 ) {
+  points <- resolve_compass_points(points)
+
   theme <- theme %||% "default"
   if (ggplot2::is_theme(theme)) {
     theme <- "default"
@@ -270,7 +287,56 @@ annotate_compass_points <- function(
     )
   }
 
+  # (secondary) intercardinal points sit at the same radius as N/E/S/W, nudged
+  # clockwise off their gridline so they don't clash with radial axis labels
+  # (which ggplot2 draws on the anticlockwise side of `angle.scale`, often set
+  # to a diagonal).
+  intercardinal <- NULL
+  if (points > 4) {
+    radius <- 0.435
+    all_points <- c(
+      "N",
+      "NNE",
+      "NE",
+      "ENE",
+      "E",
+      "ESE",
+      "SE",
+      "SSE",
+      "S",
+      "SSW",
+      "SW",
+      "WSW",
+      "W",
+      "WNW",
+      "NW",
+      "NNW"
+    )
+    angles <- seq(0, 360 - 360 / points, 360 / points)
+    # N/E/S/W are drawn separately below
+    angles <- angles[angles %% 90 != 0]
+    point_labels <- all_points[angles / 22.5 + 1]
+    theta <- (angles + 5) * pi / 180
+    intercardinal <- purrr::map2(
+      theta,
+      point_labels,
+      \(angle, label) {
+        compass_annotate(
+          y = I(0.5 + radius * cos(angle)),
+          x = I(0.5 + radius * sin(angle)),
+          label = label
+        )
+      }
+    )
+  }
+
+  # by default, N/S sit to the right of their line and E/W above it. With more
+  # compass points, all labels sit clockwise of their line for consistency, so
+  # S moves to the left of its line and E below it.
+  clockwise <- points > 4
+
   list(
+    intercardinal,
     compass_annotate(
       y = I(0.935),
       x = I(0.52),
@@ -279,9 +345,9 @@ annotate_compass_points <- function(
     ),
     compass_annotate(
       y = I(1 - 0.935),
-      x = I(0.52),
+      x = I(if (clockwise) 0.48 else 0.52),
       label = labels[3],
-      hjust = 0
+      hjust = if (clockwise) 1 else 0
     ),
     compass_annotate(
       y = I(0.52),
@@ -290,10 +356,10 @@ annotate_compass_points <- function(
       vjust = 0
     ),
     compass_annotate(
-      y = I(0.52),
+      y = I(if (clockwise) 0.48 else 0.52),
       x = I(0.935),
       label = labels[2],
-      vjust = 0
+      vjust = if (clockwise) 1 else 0
     )
   )
 }
