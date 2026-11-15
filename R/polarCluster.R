@@ -134,6 +134,7 @@ polarCluster <-
     cols = "Paired",
     theme = "default",
     angle.scale = 315,
+    compass.points = 4,
     units = x,
     auto.text = TRUE,
     plot = TRUE,
@@ -320,7 +321,7 @@ polarCluster <-
         ggplot2::coord_radial(r.axis.inside = angle.scale),
         inner_radius = c(0, 1) * 0.475
       ) +
-      scale_x_compass() +
+      scale_x_compass(points = compass.points) +
       ggplot2::scale_y_continuous(
         limits = range(pretty(results.grid$x, 6)),
         expand = ggplot2::expansion()
@@ -340,6 +341,7 @@ polarCluster <-
         panel.ontop = TRUE
       ) +
       annotate_compass_points(
+        points = compass.points,
         size = ifelse(
           extra.args$annotate %||% TRUE,
           if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,

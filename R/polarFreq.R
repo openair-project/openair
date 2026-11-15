@@ -142,6 +142,7 @@ polarFreq <- function(
   min.bin = 1,
   ws.upper = NA,
   angle.scale = 45,
+  compass.points = 4,
   offset = 10,
   border.col = "transparent",
   key.title = paste(statistic, pollutant, sep = " "),
@@ -349,7 +350,7 @@ polarFreq <- function(
       ),
       inner_radius = c(offset / 100, 1) * 0.475
     ) +
-    scale_x_compass() +
+    scale_x_compass(points = compass.points) +
     ggplot2::scale_y_continuous(
       oob = scales::oob_keep,
       breaks = seq(0, max.ws, by = grid.line),
@@ -421,6 +422,7 @@ polarFreq <- function(
   # add compass points
   thePlot <- thePlot +
     annotate_compass_points(
+      points = compass.points,
       size = ifelse(
         extra.args$annotate %||% TRUE,
         if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,

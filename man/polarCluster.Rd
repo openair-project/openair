@@ -14,6 +14,7 @@ polarCluster(
   cols = "Paired",
   theme = "default",
   angle.scale = 315,
+  compass.points = 4,
   units = x,
   auto.text = TRUE,
   plot = TRUE,
@@ -91,6 +92,11 @@ chosen, sometimes the placement of the scale may interfere with an
 interesting feature. \code{angle.scale} can take any value between \code{0} and \code{360}
 to place the scale at a different angle, or \code{FALSE} to move it to the side
 of the plots.}
+
+\item{compass.points}{In radial plots (e.g., \code{\link[=polarPlot]{polarPlot()}}), the number of
+compass directions to label and draw gridlines for. The default, \code{4},
+shows N/E/S/W. \code{8} adds the intercardinal directions (NE/SE/SW/NW) and
+\code{16} further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.).}
 
 \item{units}{The units shown on the polar axis scale.}
 

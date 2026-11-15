@@ -149,6 +149,7 @@ polarAnnulus <-
     theme = "default",
     offset = 50,
     angle.scale = 0,
+    compass.points = 4,
     min.bin = 1,
     exclude.missing = TRUE,
     date.pad = FALSE,
@@ -600,7 +601,7 @@ polarAnnulus <-
         ),
         inner_radius = c(offset / 100, 1) * 0.475
       ) +
-      scale_x_compass() +
+      scale_x_compass(points = compass.points) +
       theme_openair(
         theme = theme,
         coord = "radial",
@@ -662,6 +663,7 @@ polarAnnulus <-
         fill = quickText(key.title, auto.text = auto.text)
       ) +
       annotate_compass_points(
+        points = compass.points,
         size = ifelse(
           extra.args$annotate %||% TRUE,
           if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,

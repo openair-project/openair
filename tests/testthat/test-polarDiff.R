@@ -56,3 +56,20 @@ test_that("changing pollutant to 'no2' produces a result with an 'no2' column", 
   expect_true("no2" %in% names(pd_no2$data))
   expect_false("nox" %in% names(pd_no2$data))
 })
+
+test_that("compass.points and angle.scale are passed to the final plot", {
+  p <- polarDiff(
+    before,
+    after,
+    compass.points = 8,
+    angle.scale = 45,
+    plot = FALSE
+  )
+  built <- ggplot2::ggplot_build(p$plot)
+  expect_equal(
+    built$layout$panel_scales_x[[1]]$get_breaks(),
+    seq(0, 315, 45)
+  )
+  expect_true("NE" %in% unlist(lapply(built$data, \(d) d$label)))
+  expect_equal(p$plot$coordinates$r_axis_inside, 45)
+})
