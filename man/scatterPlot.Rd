@@ -158,7 +158,8 @@ line between a sequence of points is required.}
 
 \item{linear}{A linear model is fitted to the data if \code{TRUE}; optionally with
 95 percent confidence intervals shown. The equation of the line and R2
-value is also shown.}
+value is also shown. The fitted coefficients are returned in the \code{fit}
+component of the output.}
 
 \item{ci}{Should the confidence intervals for the smooth/linear fit be shown?}
 
@@ -308,7 +309,13 @@ and date-time x-axes. See \code{\link[=timePlot]{timePlot()}} for details.
 }}
 }
 \value{
-an \link[=openair-package]{openair} object
+an \link[=openair-package]{openair} object. When \code{linear = TRUE} and
+\code{method} is \code{"scatter"} or \code{"hexbin"}, the object also contains \code{fit}, a
+data frame of linear model coefficients with one row per panel (and
+\code{group}, if used). It has columns for any \code{type} and \code{group} variables,
+followed by \code{intercept}, \code{intercept.se}, \code{slope}, \code{slope.se}, \code{r.squared}
+and \code{n} (the number of observations used in the fit). For \code{output <- scatterPlot(mydata, linear = TRUE)} this can be extracted using
+\code{output$fit}.
 }
 \description{
 Scatter plots with conditioning and three main approaches: conventional

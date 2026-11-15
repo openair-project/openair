@@ -36,6 +36,8 @@
 
 - `variationPlot()` gains the `ref.y` argument.
 
+- `scatterPlot(linear = TRUE)` now returns the fitted linear model coefficients in a new `fit` component (e.g., `output$fit`), with one row per panel and `group`. This includes the intercept, slope, their standard errors, R^2^ and the number of observations used (#454).
+
 - `key.columns` now defaults to `NULL` in most functions, which will use `{ggplot2}`'s logic for the number of columns. `key.rows` has also been added. `calendarPlot()`, `corPlot()`, `percentileRose()`, `polarAnnulus()`, `polarFreq()`, `polarPlot()`, `trendLevel()` and `windRose()` gain both arguments, which apply when their legend shows binned values.
 
 - `timePlot()` gains the `step` argument, which creates a "stairstep" plot instead of a traditional line chart. This is likely most useful for low resolution or 'multi-day' (e.g., diffusion tube) data.

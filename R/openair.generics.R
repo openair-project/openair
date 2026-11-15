@@ -237,7 +237,7 @@ print.openair <- function(x, silent = FALSE, plot = TRUE, ...) {
 #' @exportS3Method base::names
 names.openair <- function(x, ...) {
   # stuff we own up to...
-  vis.elements <- c("data", "plot", "call", "clust", "clust_stats")
+  vis.elements <- c("data", "plot", "call", "clust", "clust_stats", "fit")
   # make names non-recursive
   class(x) <- "not-openair"
 

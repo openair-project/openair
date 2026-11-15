@@ -71,7 +71,8 @@
 #'
 #' @param linear A linear model is fitted to the data if `TRUE`; optionally with
 #'   95 percent confidence intervals shown. The equation of the line and R2
-#'   value is also shown.
+#'   value is also shown. The fitted coefficients are returned in the `fit`
+#'   component of the output.
 #'
 #' @param ci Should the confidence intervals for the smooth/linear fit be shown?
 #'
@@ -129,7 +130,14 @@
 #'   and date-time x-axes. See [timePlot()] for details.
 #'
 #' @export
-#' @return an [openair][openair-package] object
+#' @return an [openair][openair-package] object. When `linear = TRUE` and
+#'   `method` is `"scatter"` or `"hexbin"`, the object also contains `fit`, a
+#'   data frame of linear model coefficients with one row per panel (and
+#'   `group`, if used). It has columns for any `type` and `group` variables,
+#'   followed by `intercept`, `intercept.se`, `slope`, `slope.se`, `r.squared`
+#'   and `n` (the number of observations used in the fit). For `output <-
+#'   scatterPlot(mydata, linear = TRUE)` this can be extracted using
+#'   `output$fit`.
 #' @author David Carslaw
 #' @seealso [timePlot()] and [timeAverage()] for details on selecting averaging
 #'   times and other statistics in a flexible way
@@ -430,6 +438,9 @@ scatterPlot <- function(
   }
 
   output <- list(plot = out$plot, data = out$data, call = match.call())
+  if (linear && !is.null(out$fit)) {
+    output$fit <- out$fit
+  }
   class(output) <- "openair"
   invisible(output)
 }
@@ -750,6 +761,7 @@ scatter_scatter <- function(
   }
 
   ## linear fit
+  lm_labs <- NULL
   if (linear) {
     if (has_group) {
       ## per-group lines: explicitly map colour/fill so geom_smooth produces one
@@ -883,7 +895,8 @@ scatter_scatter <- function(
   return(
     list(
       plot = plt,
-      data = mydata
+      data = mydata,
+      fit = tidy_lm_fit(lm_labs)
     )
   )
 }
@@ -942,6 +955,7 @@ scatter_hexbin <- function(
     plt <- plt + gg_mod_lines()
   }
 
+  lm_labs <- NULL
   if (linear) {
     plt <- plt +
       ggplot2::geom_smooth(
@@ -1012,7 +1026,8 @@ scatter_hexbin <- function(
   return(
     list(
       plot = plt,
-      data = mydata
+      data = mydata,
+      fit = tidy_lm_fit(lm_labs)
     )
   )
 }
@@ -1569,7 +1584,9 @@ compute_lm_labels <- function(
       {
         mod <- stats::lm(yv ~ xv, data = lm_dat)
         b <- stats::coef(mod)
-        r2 <- summary(mod)$r.squared
+        mod_summary <- summary(mod)
+        se <- mod_summary$coefficients[, "Std. Error"]
+        r2 <- mod_summary$r.squared
         symb <- if (b[1L] >= 0) "+" else ""
         ## Build a plotmath string: variable names are deparsed quickText
         ## expressions embedded in paste(...); geom_text uses parse = TRUE.
@@ -1594,6 +1611,12 @@ compute_lm_labels <- function(
           y_pos = Inf,
           g_idx = g_idx,
           label = lbl,
+          intercept = unname(b[1L]),
+          intercept.se = unname(se[1L]),
+          slope = unname(b[2L]),
+          slope.se = unname(se[2L]),
+          r.squared = r2,
+          n = nrow(lm_dat),
           stringsAsFactors = FALSE
         )
       },
@@ -1644,6 +1667,18 @@ compute_lm_labels <- function(
   })
 
   dplyr::bind_rows(Filter(Negate(is.null), results))
+}
+
+## Drops the plotting columns from compute_lm_labels() output, leaving a tidy
+## table of linear model coefficients to be returned to the user.
+## @noRd
+tidy_lm_fit <- function(lm_labs) {
+  if (is.null(lm_labs) || nrow(lm_labs) == 0L) {
+    return(NULL)
+  }
+  lm_labs |>
+    dplyr::select(-dplyr::any_of(c("x_pos", "y_pos", "g_idx", "label"))) |>
+    dplyr::tibble()
 }
 
 # handle ref layers for scatterplot
