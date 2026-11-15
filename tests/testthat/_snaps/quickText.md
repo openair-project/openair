@@ -319,7 +319,7 @@
         parse = TRUE:  expression(paste("it's NO"[2]))
         parse = FALSE: paste('it\'s NO' [2] )
       "no2\nug/m3"
-        parse = TRUE:  expression(paste(atop("NO"[2] * "", "" * mu * "g m"^-3)))
+        parse = TRUE:  expression(displaystyle(atop(displaystyle("NO"[2] * ""), displaystyle("" *     mu * "g m"^-3))))
         parse = FALSE: paste( 'NO' [2] * ' ' * mu * 'g m' ^-3)
 
 # names are not formatted inside longer words
@@ -389,6 +389,28 @@
       "Delta no2 (ug/m3)"
         parse = TRUE:  expression(paste(Delta ~ "NO"[2] * " (" * mu * "g m"^-3 * ")"))
         parse = FALSE: paste( Delta ~ 'NO' [2] * ' (' * mu * 'g m' ^-3 *')')
+
+# any number of newlines are stacked as lines
+
+    Code
+      show_quicktext(c("Line 1\nLine 2", "a\nb\nc",
+        "Mean no2\n(ug/m3)\n2020\nroadside", "no2\n", "\nno2"))
+    Output
+      "Line 1\nLine 2"
+        parse = TRUE:  expression(displaystyle(atop(displaystyle("Line 1"), displaystyle("Line 2"))))
+        parse = FALSE: paste('Line 1 Line 2')
+      "a\nb\nc"
+        parse = TRUE:  expression(displaystyle(atop(displaystyle("a"), displaystyle(atop(displaystyle("b"),     displaystyle("c"))))))
+        parse = FALSE: paste('a b c')
+      "Mean no2\n(ug/m3)\n2020\nroadside"
+        parse = TRUE:  expression(displaystyle(atop(displaystyle("Mean NO"[2] * ""),     displaystyle(atop(displaystyle("(" * mu * "g m"^-3 * ")"),         displaystyle(atop(displaystyle("2020"), displaystyle("roadside"))))))))
+        parse = FALSE: paste('Mean NO' [2] * ' (' * mu * 'g m' ^-3 *') 2020 roadside')
+      "no2\n"
+        parse = TRUE:  expression(displaystyle(atop(displaystyle("NO"[2] * ""), displaystyle(""))))
+        parse = FALSE: paste( 'NO' [2] * ' ')
+      "\nno2"
+        parse = TRUE:  expression(displaystyle(atop(displaystyle(""), displaystyle("NO"[2]))))
+        parse = FALSE: paste(' NO' [2] )
 
 # adjacent symbols are formatted
 

@@ -187,6 +187,29 @@ test_that("spaces between formatted names and units are kept", {
   )))
 })
 
+test_that("any number of newlines are stacked as lines", {
+  expect_snapshot(show_quicktext(c(
+    "Line 1\nLine 2",
+    "a\nb\nc",
+    "Mean no2\n(ug/m3)\n2020\nroadside",
+    "no2\n",
+    "\nno2"
+  )))
+})
+
+test_that("all lines of multi-line text are kept", {
+  # every line should appear in the expression, however many there are
+  for (n in 2:5) {
+    lines <- paste("line", seq_len(n))
+    out <- quickText(paste(lines, collapse = "\n"))
+    expect_true(is.expression(out))
+    out_text <- paste(deparse(out), collapse = "")
+    for (l in lines) {
+      expect_match(out_text, l, fixed = TRUE)
+    }
+  }
+})
+
 test_that("adjacent symbols are formatted", {
   expect_snapshot(show_quicktext(c(
     "Delta Delta",

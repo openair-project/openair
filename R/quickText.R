@@ -22,6 +22,21 @@ labeller_openair <- function(auto_text = TRUE) {
   }
 }
 
+# Stack plotmath code strings as lines using nested `atop()`, e.g.,
+# `atop(displaystyle(a), displaystyle(atop(displaystyle(b), displaystyle(c))))`
+nest_atop <- function(lines) {
+  if (length(lines) == 1L) {
+    return(paste0("displaystyle(", lines, ")"))
+  }
+  paste0(
+    "displaystyle(atop(displaystyle(",
+    lines[1],
+    "), ",
+    nest_atop(lines[-1]),
+    "))"
+  )
+}
+
 #' Automatic text formatting for openair
 #'
 #' Workhorse function that automatically applies routine text formatting to
@@ -239,24 +254,21 @@ quickText <- function(text, auto.text = TRUE, ...) {
   # now restore the user's quotes, escaped
   ans <- gsub(quote_placeholder, "\\'", ans, fixed = TRUE)
 
-  ## ###################
-  ## new bit
-  ## replace a \n b with atop(a,b)
-  ## one newline only
-
+  # newlines: plotmath has no line break, but `atop()` stacks two items, so
+  # nest it to stack any number of lines. Each part is wrapped in
+  # `displaystyle()` as nested `atop()` otherwise shrinks each level's text
   if (grepl("\n", ans)) {
     if (parse) {
-      a <- ans
-      ans <- paste(substr(a, 1, 17), "atop(", substr(a, 18, nchar(a)), sep = "")
-      ans <- gsub("\n", "' , '", ans)
-      temp <- paste(")", sep = "", collapse = "")
-      ans <- paste(ans, temp, sep = "")
+      # remove the `expression(paste(` ... `))` wrapper, then split into lines.
+      # Newlines always fall inside a string, so close and reopen it either side
+      inner <- sub("^expression\\(paste\\(", "", ans)
+      inner <- sub("\\)\\)$", "", inner)
+      lines <- strsplit(gsub("\n", "' \n '", inner), "\n", fixed = TRUE)[[1]]
+      ans <- paste0("expression(", nest_atop(lines), ")")
     } else {
       ans <- gsub("\n", " ", ans)
     }
   }
-
-  ## ########################
 
   # if the expression can't be built, fall back to the original text
   if (parse) {

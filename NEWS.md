@@ -86,6 +86,8 @@
 
     - Trailing backslashes are no longer dropped.
 
+    - Text with more than one newline (e.g., `"Mean no2\n(ug/m3)\n2020"`) now shows every line. Previously, only the first two lines were shown.
+
     - Text with repeated symbols or units (e.g., `"Delta Delta"` or `"ug/m3 ug/m3"`) or lone quotes (e.g., `"'"`) is now formatted correctly. Previously, these could not be formatted and were returned as plain text.
 
 - `calendarPlot(annotate = "value")` now works correctly when `breaks` is not `NULL`.
