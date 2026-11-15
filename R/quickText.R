@@ -22,21 +22,6 @@ labeller_openair <- function(auto_text = TRUE) {
   }
 }
 
-# Stack plotmath code strings as lines using nested `atop()`, e.g.,
-# `atop(displaystyle(a), displaystyle(atop(displaystyle(b), displaystyle(c))))`
-nest_atop <- function(lines) {
-  if (length(lines) == 1L) {
-    return(paste0("displaystyle(", lines, ")"))
-  }
-  paste0(
-    "displaystyle(atop(displaystyle(",
-    lines[1],
-    "), ",
-    nest_atop(lines[-1]),
-    "))"
-  )
-}
-
 #' Automatic text formatting for openair
 #'
 #' Workhorse function that automatically applies routine text formatting to
@@ -76,204 +61,211 @@ nest_atop <- function(lines) {
 #'   ylab = quickText("pm10 [ ug.m-3 ]")
 #' )
 quickText <- function(text, auto.text = TRUE, ...) {
-  ## the lookup table version
-
-  ## #return if auto.text false
   if (!auto.text) {
-    ans <- text
-    return(ans)
+    return(text)
   }
 
-  # are we going to actually parse this?
-  extra_args <- capture_dots(...)
-  parse <- extra_args$parse %||% TRUE
+  # `parse = FALSE` returns plotmath code as a string, e.g., for
+  # `ggplot2::label_parsed()`
+  parse <- capture_dots(...)$parse %||% TRUE
 
-  ## #return if already expression
   if (is.expression(text)) {
-    ans <- text
-    return(ans)
+    return(text)
   }
 
-  # escape backslashes so `text` can be safely embedded in a string within the
-  # plotmath code. Quotes are swapped for a placeholder so that the clean-up of
-  # empty strings (e.g., `''`) below can't remove them; they are escaped
-  # afterwards
-  quote_placeholder <- "\u001f"
-  text_escaped <- gsub("\\\\", "\\\\\\\\", text)
-  text_escaped <- gsub("'", quote_placeholder, text_escaped, fixed = TRUE)
+  # coerce anything else (e.g., `NULL`, `NA`, numbers, factors) to character
+  text <- paste(text)
+  if (length(text) == 0L) {
+    text <- ""
+  }
+
+  out <- lapply(text, quicktext_format, parse = parse)
 
   if (parse) {
-    ans <- paste("expression(paste('", text_escaped, sep = "")
+    as.expression(out)
   } else {
-    ans <- paste("paste('", text_escaped, sep = "")
+    unlist(out)
+  }
+}
+
+# Formatting rules ---------------------------------------------------------
+
+# Each rule replaces text matching a regular expression `pattern` with a
+# plotmath `expr`. `boundary` controls where a pattern may match:
+#
+#   - "name": not preceded by a letter, nor followed by a letter or digit. This
+#   stops, e.g., "pm100" or "year2020" being formatted, but allows underscores
+#   either side so that names like "no2_roadside" are formatted.
+#
+#   - "word": a regular expression word boundary (`\b`) either side, so
+#   underscores also prevent a match (e.g., "ws_max" is not formatted).
+#
+#   - "none": matched anywhere, e.g., the "m/s" in "km/s".
+#
+# All patterns are combined into one regular expression, so each piece of text
+# is matched once and replacements are never re-matched by other rules. Where
+# patterns could match at the same position, the first rule (and the first
+# alternative within a rule) wins, so longer forms must come first (e.g.,
+# "m/s2" before "m/s"). Patterns must not contain capturing groups.
+qt_rule <- function(pattern, expr, boundary = "name") {
+  list(pattern = pattern, expr = expr, boundary = boundary)
+}
+
+quicktext_rules <- list(
+  # gases
+  qt_rule("NO2|no2", quote("NO"[2])),
+  qt_rule("NO3|no3", quote("NO"[3])),
+  qt_rule("NOX|NOx|nox", quote("NO"[x]), "word"),
+  qt_rule("no", "NO", "word"),
+  qt_rule("NH3|nh3", quote("NH"[3])),
+  qt_rule("CO2|co2", quote("CO"[2])),
+  qt_rule("co", "CO"),
+  qt_rule("nmhc", "NMHC"),
+  qt_rule("O3|o3|ozone", quote("O"[3])),
+  qt_rule("SO2|so2", quote("SO"[2])),
+  qt_rule("H2S|h2s", quote("H"[2] * "S")),
+  qt_rule("CH4|ch4", quote("CH"[4])),
+
+  # particulate matter
+  qt_rule("PM10|pm10", quote("PM"[10])),
+  qt_rule("PM1|pm1", quote("PM"[1])),
+  qt_rule("PM4|pm4", quote("PM"[4])),
+  qt_rule("PM2\\.5|pm2\\.5|PM25|pm25", quote("PM"[2.5])),
+  qt_rule("PMtot|pmtot", quote("PM"[total])),
+  qt_rule("PMcoarse|pmcoarse|PMc|pmc", quote("PM"[coarse])),
+  qt_rule("PMfine|pmfine|PMf|pmf", quote("PM"[fine])),
+
+  # meteorology
+  qt_rule("WS|ws", "wind spd.", "word"),
+  qt_rule("WD|wd", "wind dir.", "word"),
+  qt_rule("air_temp", "temperature", "none"),
+  qt_rule("rh", "relative humidity"),
+
+  # statistics and symbols
+  qt_rule("R2|r2", quote("R"^2)),
+  qt_rule("tau", quote(tau)),
+  qt_rule("Delta|delta", quote(Delta), "none"),
+  qt_rule("degreesC|degreeC|dgrC|deg\\. C", quote(degree * "C"), "none"),
+  qt_rule("degrees", quote(degree), "none"),
+
+  # concentrations
+  qt_rule("ug/m3|ug\\.m-3|ug m-3|ugm-3", quote(mu * "g m"^-3), "none"),
+  qt_rule("mg/m3|mg\\.m-3|mg m-3|mgm-3", quote("mg m"^-3), "none"),
+  qt_rule("ng/m3|ng\\.m-3|ng m-3|ngm-3", quote("ng m"^-3), "none"),
+  qt_rule("g/m3", quote("g m"^-3), "none"),
+  qt_rule("cm-3", quote("cm"^-3), "none"),
+  qt_rule("umol/m2/s", quote(mu * "mol m"^-2 * " s"^-1), "none"),
+  qt_rule("umol/m2", quote(mu * "mol m"^-2), "none"),
+
+  # speeds and rates
+  qt_rule("km/hour/s|km/hr/s|km/h/s", quote("km hr"^-1 * " s"^-1), "none"),
+  qt_rule("km/hour|km/hr|km/h", quote("km hr"^-1), "none"),
+  qt_rule("m/s2", quote("m s"^-2), "none"),
+  qt_rule("m/s|m\\.s-1|m s-1", quote("m s"^-1), "none"),
+  qt_rule("km2", quote("km"^2), "none"),
+  qt_rule("g/km", quote("g km"^-1), "none"),
+  qt_rule("g/s", quote("g s"^-1), "none"),
+  qt_rule("g/hour|g/hr", quote("g hour"^-1), "none"),
+  qt_rule("g/kg", quote("g kg"^-1), "none"),
+  qt_rule("kW/t", quote("kW t"^-1), "none")
+)
+
+# combine all rules into one regular expression, with each rule in its own
+# capturing group so the matching rule can be identified
+quicktext_regex <- paste0(
+  "(",
+  vapply(
+    quicktext_rules,
+    \(rule) {
+      switch(
+        rule$boundary,
+        name = paste0("(?<![A-Za-z])(?:", rule$pattern, ")(?![A-Za-z0-9])"),
+        word = paste0("\\b(?:", rule$pattern, ")\\b"),
+        none = paste0("(?:", rule$pattern, ")")
+      )
+    },
+    character(1)
+  ),
+  ")",
+  collapse = "|"
+)
+
+# Formatting helpers -------------------------------------------------------
+
+# Format a single string, returning an expression (`parse = TRUE`) or plotmath
+# code as a string (`parse = FALSE`)
+quicktext_format <- function(text, parse) {
+  if (!parse) {
+    # plotmath code strings are used for facet labels, which are kept to one
+    # line
+    expr <- quicktext_line(gsub("\n", " ", text, fixed = TRUE))
+    return(paste(deparse(expr, width.cutoff = 500L), collapse = ""))
   }
 
-  # substitute `x` only when it isn't part of a longer word, i.e., not preceded
-  # by a letter and not followed by a letter or digit. This prevents, e.g.,
-  # "year2020" becoming "yeaR^2 020" or "pm100" becoming "PM10 0". Underscores
-  # are allowed either side so names like "no2_roadside" are still formatted.
-  sub_word <- function(pattern, replacement, x) {
-    gsub(
-      paste0("(?<![A-Za-z])", pattern, "(?![A-Za-z0-9])"),
-      replacement,
-      x,
-      perl = TRUE
-    )
+  lines <- strsplit(text, "\n", fixed = TRUE)[[1]]
+  # `strsplit()` drops a trailing empty line
+  if (endsWith(text, "\n") || length(lines) == 0L) {
+    lines <- c(lines, "")
   }
 
-  ans <- sub_word("NO2", "' 'NO' [2] * '", ans)
-  ans <- sub_word("no2", "' 'NO' [2] * '", ans)
-  ans <- sub_word("NO3", "' 'NO' [3] * '", ans)
-  ans <- sub_word("no3", "' 'NO' [3] * '", ans)
-  ans <- gsub("\\bno\\b", "NO", ans)
-  ans <- gsub("\\bNOX\\b", "' 'NO' [x] * '", ans)
-  ans <- gsub("\\bnox\\b", "' 'NO' [x] * '", ans)
-  ans <- gsub("\\bNOx\\b", "' 'NO' [x] * '", ans)
-  ans <- sub_word("NH3", "' 'NH' [3] * '", ans)
-  ans <- sub_word("nh3", "' 'NH' [3] * '", ans)
-  ans <- sub_word("co", "' 'CO' '", ans)
-  ans <- sub_word("nmhc", "' 'NMHC' '", ans)
-  ans <- gsub("\\bws\\b", "' 'wind spd.' '", ans)
-  ans <- gsub("\\bwd\\b", "' 'wind dir.' '", ans)
-  ans <- gsub("\\bWS\\b", "' 'wind spd.' '", ans)
-  ans <- gsub("\\bWD\\b", "' 'wind dir.' '", ans)
-  ans <- gsub("air_temp", "' 'temperature' '", ans)
-  ans <- sub_word("rh", "' 'relative humidity' '", ans)
-  ans <- sub_word("PM10", "' 'PM' [10] * '", ans)
-  ans <- sub_word("pm10", "' 'PM' [10] * '", ans)
-  ans <- sub_word("pm1", "' 'PM' [1] * '", ans)
-  ans <- sub_word("PM1", "' 'PM' [1] * '", ans)
-  ans <- sub_word("PM4", "' 'PM' [4] * '", ans)
-  ans <- sub_word("pm4", "' 'PM' [4] * '", ans)
-  ans <- sub_word("PMtot", "' 'PM' [total] * '", ans)
-  ans <- sub_word("pmtot", "' 'PM' [total] * '", ans)
-  # long forms must come before short forms (e.g., "pmcoarse" before "pmc"),
-  # otherwise the short form matches first and leaves the rest of the word
-  ans <- sub_word("pmcoarse", "' 'PM' [coarse] * '", ans)
-  ans <- sub_word("PMcoarse", "' 'PM' [coarse] * '", ans)
-  ans <- sub_word("pmc", "' 'PM' [coarse] * '", ans)
-  ans <- sub_word("PMc", "' 'PM' [coarse] * '", ans)
-  ans <- sub_word("pmfine", "' 'PM' [fine] * '", ans)
-  ans <- sub_word("PMfine", "' 'PM' [fine] * '", ans)
-  ans <- sub_word("pmf", "' 'PM' [fine] * '", ans)
-  ans <- sub_word("PMf", "' 'PM' [fine] * '", ans)
-  ans <- sub_word("PM2\\.5", "' 'PM' [2.5] * '", ans)
-  ans <- sub_word("pm2\\.5", "' 'PM' [2.5] * '", ans)
-  ans <- sub_word("pm25", "' 'PM' [2.5] * '", ans)
-  ans <- sub_word("PM2\\.5", "' 'PM' [2.5] * '", ans)
-  ans <- sub_word("PM25", "' 'PM' [2.5] * '", ans)
-  ans <- sub_word("pm25", "' 'PM' [2.5] * '", ans)
-  ans <- sub_word("O3", "' 'O' [3] * '", ans)
-  ans <- sub_word("o3", "' 'O' [3] * '", ans)
-  ans <- sub_word("ozone", "' 'O' [3] * '", ans)
-  ans <- sub_word("CO2", "' 'CO' [2] * '", ans)
-  ans <- sub_word("co2", "' 'CO' [2] * '", ans)
-  ans <- sub_word("SO2", "' 'SO' [2] * '", ans)
-  ans <- sub_word("so2", "' 'SO' [2] * '", ans)
-  ans <- sub_word("H2S", "' 'H' [2] * 'S''", ans)
-  ans <- sub_word("h2s", "' 'H' [2] * 'S''", ans)
-  ans <- sub_word("CH4", "' 'CH' [4] * '", ans)
-  ans <- sub_word("ch4", "' 'CH' [4] * '", ans)
-  ans <- gsub("dgrC", "' * degree * 'C' '", ans)
-  ans <- gsub("degreeC", "' * degree * 'C' '", ans)
-  ans <- gsub("deg. C", "' * degree * 'C' '", ans)
-  ans <- gsub("degreesC", "' * degree * 'C' '", ans)
-  ans <- gsub("degrees", "' * degree *'", ans)
-  ans <- gsub("Delta", "' * Delta *'", ans)
-  ans <- gsub("delta", "' * Delta *'", ans)
-  ans <- gsub("ug/m3", "' * mu * 'g m' ^-3 *'", ans)
-  ans <- gsub("ug.m-3", "' * mu * 'g m' ^-3 *'", ans)
-  ans <- gsub("ug m-3", "' * mu * 'g m' ^-3 *'", ans)
-  ans <- gsub("ugm-3", "' * mu * 'g m' ^-3 *'", ans)
-  ans <- gsub("mg/m3", "' * 'm' * 'g m' ^-3 *'", ans)
-  ans <- gsub("mg.m-3", "' * 'm' * 'g m' ^-3 *'", ans)
-  ans <- gsub("mg m-3", "' * 'm' * 'g m' ^-3 *'", ans)
-  ans <- gsub("mgm-3", "' * 'm' * 'g m' ^-3 *'", ans)
-  ans <- gsub("ng/m3", "' * 'n' * 'g m' ^-3 *'", ans)
-  ans <- gsub("ng.m-3", "' * 'n' * 'g m' ^-3 *'", ans)
-  ans <- gsub("ng m-3", "' * 'n' * 'g m' ^-3 *'", ans)
-  ans <- gsub("ngm-3", "' * 'n' * 'g m' ^-3 *'", ans)
-  ans <- gsub("m/s2", "' 'm s' ^-2 *'", ans)
-  ans <- gsub("m/s", "' 'm s' ^-1 *'", ans)
-  ans <- gsub("m.s-1", "' 'm s' ^-1 *'", ans)
-  ans <- gsub("m s-1", "' 'm s' ^-1 *'", ans)
-  ans <- gsub("km2", "' 'km' ^2 *'", ans)
-  ans <- gsub("g/km", "' 'g km' ^-1 *'", ans)
-  ans <- gsub("g/s", "' 'g s' ^-1 *'", ans)
-  ans <- gsub("kW/t", "' 'kW t' ^-1 *'", ans)
-  ans <- gsub("g/hour", "' 'g hour' ^-1 *'", ans)
-  ans <- gsub("g/hr", "' 'g hour' ^-1 *'", ans)
-  ans <- gsub("g/m3", "' 'g m' ^-3 *'", ans)
-  ans <- gsub("g/kg", "' 'g kg' ^-1 *'", ans)
-  ans <- gsub("cm-3", "' 'cm' ^-3 *'", ans)
-  ans <- gsub("km/hr/s", "' 'km hr' ^-1 * ' s' ^-1 *'", ans)
-  ans <- gsub("km/hour/s", "' 'km hr' ^-1 * ' s' ^-1 *'", ans)
-  ans <- gsub("km/h/s", "km hr' ^-1 * ' s' ^-1 *'", ans)
-  ans <- gsub("km/hr", "' 'km hr' ^-1 *'", ans)
-  ans <- gsub("km/h", "' 'km hr' ^-1 *'", ans)
-  ans <- gsub("km/hour", "' 'km hr' ^-1 *'", ans)
+  exprs <- lapply(lines, quicktext_line)
 
-  ans <- sub_word("r2", "R' ^2 *'", ans)
-  ans <- sub_word("R2", "R' ^2 *'", ans)
-
-  ans <- sub_word("tau", "' * tau * '", ans)
-
-  ans <- gsub("umol/m2/s", "' * mu * 'mol m' ^-2 * ' s' ^-1 *'", ans)
-  ans <- gsub("umol/m2", "' * mu * 'mol m' ^-2 *'", ans)
-
-  if (parse) {
-    ans <- paste(ans, "'))", sep = "")
+  if (length(exprs) == 1L) {
+    exprs[[1]]
   } else {
-    ans <- paste(ans, "')", sep = "")
+    quicktext_stack(exprs)
+  }
+}
+
+# Format a single line of text as a plotmath `paste()` call, in which unmatched
+# text is kept as strings and matched text is replaced by each rule's `expr`
+quicktext_line <- function(line) {
+  if (!nzchar(line)) {
+    return(quote(paste()))
   }
 
-  ## commands to strip unecessary * etc...
+  matches <- gregexpr(quicktext_regex, line, perl = TRUE)[[1]]
+  if (matches[1] == -1L) {
+    return(call("paste", line))
+  }
 
-  ans <- gsub("''", "", ans)
-  # a space between a formatted name/unit and a following one (e.g., "ug/m3
-  # no2") is left as a string containing only spaces (`*' ' 'NO'`). Make it a
-  # plotmath space (`~`) before stray `' '` strings are removed below,
-  # otherwise the space is lost (e.g., giving "ug m-3NO2")
-  ans <- gsub("\\*\\s*' +'\\s*'", "~ '", ans)
-  ans <- gsub("' '", "", ans)
-  ans <- gsub("\\*  \\*", "~", ans)
-  # a leading `*` (e.g., before a symbol) is invalid plotmath, for both
-  # `parse = TRUE` ("expression(paste(") and `parse = FALSE` ("paste(")
-  ans <- sub("^(expression\\()?paste\\( ?\\*", "\\1paste(", ans)
+  starts <- as.integer(matches)
+  ends <- starts + attr(matches, "match.length") - 1L
+  # the matching rule is the capturing group that matched. Groups that didn't
+  # match have zero length (no pattern can match an empty string)
+  rule_ids <- apply(attr(matches, "capture.length") > 0L, 1, which.max)
 
-  # a trailing `*` (e.g., after a unit) is invalid plotmath, so remove it.
-  # Matched as a pattern, as the closing brackets differ between `parse = TRUE`
-  # ("))") and `parse = FALSE` (")") and may follow a space
-  ans <- sub("\\s*\\*(\\s*\\)+)$", "\\1", ans)
-
-  # two `*` with nothing between them (e.g., from adjacent symbols like "Delta
-  # Delta" or "ug/m3 ug/m3") are invalid plotmath, or parse as a power (`**`),
-  # so join them with a space (`~`) instead
-  ans <- gsub("\\*\\s*\\*", "~", ans)
-
-  # now restore the user's quotes, escaped
-  ans <- gsub(quote_placeholder, "\\'", ans, fixed = TRUE)
-
-  # newlines: plotmath has no line break, but `atop()` stacks two items, so
-  # nest it to stack any number of lines. Each part is wrapped in
-  # `displaystyle()` as nested `atop()` otherwise shrinks each level's text
-  if (grepl("\n", ans)) {
-    if (parse) {
-      # remove the `expression(paste(` ... `))` wrapper, then split into lines.
-      # Newlines always fall inside a string, so close and reopen it either side
-      inner <- sub("^expression\\(paste\\(", "", ans)
-      inner <- sub("\\)\\)$", "", inner)
-      lines <- strsplit(gsub("\n", "' \n '", inner), "\n", fixed = TRUE)[[1]]
-      ans <- paste0("expression(", nest_atop(lines), ")")
-    } else {
-      ans <- gsub("\n", " ", ans)
+  pieces <- list()
+  pos <- 1L
+  for (i in seq_along(starts)) {
+    if (starts[i] > pos) {
+      pieces[[length(pieces) + 1L]] <- substr(line, pos, starts[i] - 1L)
     }
+    pieces[[length(pieces) + 1L]] <- quicktext_rules[[rule_ids[i]]]$expr
+    pos <- ends[i] + 1L
+  }
+  if (pos <= nchar(line)) {
+    pieces[[length(pieces) + 1L]] <- substr(line, pos, nchar(line))
   }
 
-  # if the expression can't be built, fall back to the original text
-  if (parse) {
-    ans <- tryCatch(eval(parse(text = ans)), error = function(e) text)
-  }
+  as.call(c(as.name("paste"), pieces))
+}
 
-  return(ans)
+# Stack plotmath expressions as lines. Plotmath has no line break, but `atop()`
+# stacks two items, so it is nested to stack any number of lines, e.g.,
+# `atop(displaystyle(a), displaystyle(atop(displaystyle(b), displaystyle(c))))`.
+# Each part is wrapped in `displaystyle()` as nested `atop()` otherwise shrinks
+# each level's text
+quicktext_stack <- function(exprs) {
+  if (length(exprs) == 1L) {
+    return(call("displaystyle", exprs[[1]]))
+  }
+  call(
+    "displaystyle",
+    call(
+      "atop",
+      call("displaystyle", exprs[[1]]),
+      quicktext_stack(exprs[-1])
+    )
+  )
 }

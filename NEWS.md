@@ -72,7 +72,11 @@
 
     - `lightness` and `saturation` are now applied for any number of colours. Previously, they were ignored unless more colours were requested than the palette contains.
 
-- `quickText()` fixes:
+- `quickText()` has been rewritten internally. It now builds plotmath expressions directly from a single table of formatting rules, rather than generating and evaluating R code, and is around 10 times faster. Formatted labels look the same as before, except for the fixes below.
+
+    - `quickText()` now works with character vectors of any length, as documented, returning an expression of the same length. Previously, it errored when given more than one string.
+
+    - `"km/hour"` is now formatted correctly. Previously, it appeared as "km hr^-1^our".
 
     - `"pmcoarse"`, `"PMcoarse"`, `"pmfine"` and `"PMfine"` are now formatted correctly. Previously, the shorter `"pmc"`/`"pmf"` rules matched first, giving labels like "PM~coarse~oarse".
 

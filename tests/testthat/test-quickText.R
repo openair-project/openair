@@ -219,6 +219,25 @@ test_that("adjacent symbols are formatted", {
   )))
 })
 
+test_that("character vectors are formatted element-wise", {
+  out <- quickText(c("no2", "site A", "pm10"))
+  expect_true(is.expression(out))
+  expect_length(out, 3L)
+  expect_identical(out[2], quickText("site A"))
+
+  out_unparsed <- quickText(c("no2", "site A"), parse = FALSE)
+  expect_type(out_unparsed, "character")
+  expect_length(out_unparsed, 2L)
+})
+
+test_that("non-character inputs are coerced", {
+  expect_identical(quickText(NULL), expression(paste()))
+  expect_identical(quickText(""), expression(paste()))
+  expect_identical(quickText(NA), expression(paste("NA")))
+  expect_identical(quickText(5), expression(paste("5")))
+  expect_identical(quickText(factor("no2")), quickText("no2"))
+})
+
 test_that("auto.text = FALSE returns text unchanged", {
   expect_identical(quickText("no2 ug/m3", auto.text = FALSE), "no2 ug/m3")
 })
