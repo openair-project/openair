@@ -88,6 +88,12 @@
 - [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
   gains the `ref.y` argument.
 
+- `scatterPlot(linear = TRUE)` now returns the fitted linear model
+  coefficients in a new `fit` component (e.g., `output$fit`), with one
+  row per panel and `group`. This includes the intercept, slope, their
+  standard errors, R² and the number of observations used
+  ([\#454](https://github.com/openair-project/openair/issues/454)).
+
 - `key.columns` now defaults to `NULL` in most functions, which will use
   [ggplot2](https://ggplot2.tidyverse.org)’s logic for the number of
   columns. `key.rows` has also been added.

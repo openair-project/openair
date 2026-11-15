@@ -204,7 +204,8 @@ scatterPlot(
 
   A linear model is fitted to the data if `TRUE`; optionally with 95
   percent confidence intervals shown. The equation of the line and R2
-  value is also shown.
+  value is also shown. The fitted coefficients are returned in the `fit`
+  component of the output.
 
 - ci:
 
@@ -437,7 +438,14 @@ scatterPlot(
 
 an
 [openair](https://openair-project.github.io/openair/reference/openair-package.md)
-object
+object. When `linear = TRUE` and `method` is `"scatter"` or `"hexbin"`,
+the object also contains `fit`, a data frame of linear model
+coefficients with one row per panel (and `group`, if used). It has
+columns for any `type` and `group` variables, followed by `intercept`,
+`intercept.se`, `slope`, `slope.se`, `r.squared` and `n` (the number of
+observations used in the fit). For
+`output <- scatterPlot(mydata, linear = TRUE)` this can be extracted
+using `output$fit`.
 
 ## Details
 

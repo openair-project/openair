@@ -245,7 +245,8 @@ line between a sequence of points is required.</p></dd>
 <dt id="arg-linear">linear<a class="anchor" aria-label="anchor" href="#arg-linear"></a></dt>
 <dd><p>A linear model is fitted to the data if <code>TRUE</code>; optionally with
 95 percent confidence intervals shown. The equation of the line and R2
-value is also shown.</p></dd>
+value is also shown. The fitted coefficients are returned in the <code>fit</code>
+component of the output.</p></dd>
 
 
 <dt id="arg-ci">ci<a class="anchor" aria-label="anchor" href="#arg-ci"></a></dt>
@@ -431,7 +432,13 @@ and date-time x-axes. See <code><a href="timePlot.html">timePlot()</a></code> fo
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>an <a href="openair-package.html">openair</a> object</p>
+    <p>an <a href="openair-package.html">openair</a> object. When <code>linear = TRUE</code> and
+<code>method</code> is <code>"scatter"</code> or <code>"hexbin"</code>, the object also contains <code>fit</code>, a
+data frame of linear model coefficients with one row per panel (and
+<code>group</code>, if used). It has columns for any <code>type</code> and <code>group</code> variables,
+followed by <code>intercept</code>, <code>intercept.se</code>, <code>slope</code>, <code>slope.se</code>, <code>r.squared</code>
+and <code>n</code> (the number of observations used in the fit). For <code>output &lt;- scatterPlot(mydata, linear = TRUE)</code> this can be extracted using
+<code>output$fit</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
