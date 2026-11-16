@@ -230,6 +230,24 @@ test_that("character vectors are formatted element-wise", {
   expect_length(out_unparsed, 2L)
 })
 
+test_that("label_openair() names labels after the input", {
+  out <- label_openair(c("no2", "site A"))
+  expect_true(is.expression(out))
+  expect_named(out, c("no2", "site A"))
+  expect_named(label_openair(c(a = "no2", b = "o3")), c("a", "b"))
+  expect_named(label_openair(c("no2", "o3"), parse = FALSE), c("no2", "o3"))
+})
+
+test_that("label_openair() keeps empty input empty", {
+  # scales can call label functions with no breaks
+  expect_length(label_openair(character(0)), 0L)
+  expect_length(label_openair(character(0), parse = FALSE), 0L)
+})
+
+test_that("label_openair() returns input unchanged if auto_text = FALSE", {
+  expect_identical(label_openair("no2", auto_text = FALSE), "no2")
+})
+
 test_that("non-character inputs are coerced", {
   expect_identical(quickText(NULL), expression(paste()))
   expect_identical(quickText(""), expression(paste()))

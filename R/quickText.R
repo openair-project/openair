@@ -1,13 +1,14 @@
-# Vectorised `quickText()`
+# `quickText()` for ggplot2 labels (e.g., `scale_*(labels = )`). Unlike
+# `quickText()`, empty input stays empty (scales may have no breaks) and results
+# are named after `x` (or keep its names), as scales can match labels by name
 label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
-  if (!auto_text) {
+  if (!auto_text || length(x) == 0L) {
     return(x)
   }
 
-  sapply(
-    x,
-    \(txt) quickText(txt, auto.text = auto_text, parse = parse)
-  )
+  out <- quickText(x, parse = parse)
+  names(out) <- names(x) %||% if (is.character(x)) x
+  out
 }
 
 # Return a labeller for facets
