@@ -114,8 +114,8 @@ quicktext_rules <- list(
   # meteorology
   qt_rule("WS|ws", "wind spd.", "word"),
   qt_rule("WD|wd", "wind dir.", "word"),
-  qt_rule("air_temp", "temperature", "none"),
-  qt_rule("rh", "relative humidity"),
+  qt_rule("air_temp", "temperature", "word"),
+  qt_rule("rh", "relative humidity", "word"),
 
   # statistics and symbols
   qt_rule("R2|r2", quote("R"^2)),
