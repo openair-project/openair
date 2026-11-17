@@ -1,19 +1,38 @@
-#' Automatic text formatting for openair
-#'
 #' Workhorse function that automatically applies routine text formatting to
 #' common expressions and data names used in openair.
 #'
-#' [quickText()] is routine formatting lookup table. It screens the supplied
+#' [quickText()] is a routine formatting lookup table. It screens the supplied
 #' character vector `text` and automatically applies formatting to any
 #' recognised character sub-series. The function is used in a number of
 #' `openair` functions and can also be used directly by users to format text
-#' components of their own graphs (see below).
+#' in their own graphs, interactive plots (e.g., `{plotly}`) and maps (e.g.,
+#' `{leaflet}`) (see below).
 #'
-#' @param text A character vector.
+#' @details
+#'
+#' [quickText()] recognises common pollutant names (e.g., `"no2"` is shown as
+#' NO with a subscript 2), meteorological variables (e.g., `"ws"` is shown as
+#' "wind spd."), units (e.g., `"ug/m3"` is shown as micrograms per cubic metre,
+#' with a superscript -3) and a few symbols (e.g., `"Delta"` is shown as the
+#' Greek letter). Many names are matched in more than one spelling (e.g.,
+#' `"NO2"` and `"no2"`).
+#'
+#' Names are only formatted where they stand on their own, rather than as part
+#' of a longer word or number. For example, `"no2"` and `"no2 (ppb)"` are
+#' formatted, but `"pm100"`, `"co-located"` and `"m/sec"` are left as they are.
+#' Underscores are allowed either side of most names, so that column names like
+#' `"no2_roadside"` are still formatted.
+#'
+#' @param text A character vector. Other vectors (e.g., numbers or factors) are
+#'   converted to character first. An expression is returned unchanged by
+#'   `format = "expression"` and converted to plotmath code by `format =
+#'   "plotmath"`, but can't be converted to other formats.
+#'
 #' @param auto.text A logical option. The default, `TRUE`, applies [quickText()]
 #'   to `text` and returns the result. The alternative, `FALSE`, returns `text`
 #'   unchanged. (A number of `openair` functions enable/disable [quickText()]
 #'   using this option).
+#'
 #' @param format The output format. One of:
 #'
 #'   - `"expression"` (the default): a plotmath expression, for base R,
@@ -29,16 +48,19 @@
 #' @param ... Format-specific arguments:
 #'
 #'   - `"html"`: `escape`, which defaults to `TRUE`, escapes characters with a
-#'   special meaning in HTML (`&`, `<` and `>`) so text is shown as written.
-#'   Use `escape = FALSE` to allow HTML in `text` (e.g., `"<b>no2</b>"`).
+#'   special meaning in HTML (`&`, `<` and `>`) so text is shown as written. Use
+#'   `escape = FALSE` to allow HTML in `text` (e.g., `"<b>no2</b>"`).
+#'
 #' @export
+#'
 #' @return One element per element of `text`: an expression if `format =
 #'   "expression"`, otherwise a character vector. `NULL` is returned unchanged.
+#'
 #' @author Karl Ropkins
 #' @author David Carslaw
 #' @author Jack Davison
-#' @examples
 #'
+#' @examples
 #' # see axis formatting in an openair plot, e.g.:
 #' scatterPlot(
 #'   mydata,
@@ -51,7 +73,7 @@
 #'   mydata$no2,
 #'   mydata$pm10,
 #'   xlab = quickText("my no2 label"),
-#'   ylab = quickText("pm10 [ ug.m-3 ]")
+#'   ylab = quickText("pm10 (ug.m-3)")
 #' )
 #'
 #' # HTML, e.g., for plotly or leaflet
