@@ -248,8 +248,111 @@ test_that("label_openair() returns input unchanged if auto_text = FALSE", {
   expect_identical(label_openair("no2", auto_text = FALSE), "no2")
 })
 
+test_that("NULL is returned unchanged, so no empty label is drawn", {
+  expect_null(quickText(NULL))
+  expect_null(quickText(NULL, parse = FALSE))
+  expect_null(quickText(NULL, auto.text = FALSE))
+})
+
+test_that("short names that are common words only match on their own", {
+  expect_snapshot(show_quicktext(c(
+    "co",
+    "co (ppm)",
+    "(co)",
+    "[co]",
+    "co/nox",
+    "co, no2",
+    "co: hourly",
+    "co-located",
+    "co.",
+    "co_roadside",
+    "no",
+    "no. 5",
+    "no-data",
+    "NO2 and no"
+  )))
+})
+
+test_that("Delta can prefix names but not start words", {
+  expect_snapshot(show_quicktext(c(
+    "Delta",
+    "DeltaNO2",
+    "delta_no2",
+    "Delta2",
+    "Deltaville",
+    "deltas"
+  )))
+})
+
+test_that("names are not formatted when followed by a decimal part", {
+  expect_snapshot(show_quicktext(c(
+    "pm1.5",
+    "pm2.5",
+    "pm1.",
+    "pm10. data"
+  )))
+})
+
+test_that("units are not formatted when followed by a digit", {
+  for (txt in c("km25", "ug/m30", "cm-30", "m/s10")) {
+    expect_identical(quickText(txt), as.expression(list(call("paste", txt))))
+  }
+  # longer units ending in a digit still win
+  expect_identical(quickText("m/s2"), expression(paste("m s"^-2)))
+})
+
+test_that("units are not formatted when followed by a letter", {
+  expect_snapshot(show_quicktext(c(
+    "speed (m/sec)",
+    "km/hours",
+    "g/second",
+    "ug/m3s",
+    "km/s",
+    "kg/m3",
+    "m/s_mean",
+    "degreesF"
+  )))
+})
+
+test_that("Windows line endings are treated as newlines", {
+  expect_identical(quickText("a\r\nb"), quickText("a\nb"))
+  expect_identical(quickText("a\r\n"), quickText("a\n"))
+  expect_identical(quickText("a\r\nb", parse = FALSE), "paste(\"a b\")")
+})
+
+test_that("empty input gives empty output", {
+  expect_identical(quickText(character(0)), expression())
+  expect_identical(quickText(character(0), parse = FALSE), character(0))
+})
+
+test_that("micro sign and Greek mu are formatted like 'u'", {
+  micro <- "\u00b5"
+  mu <- "\u03bc"
+  for (prefix in c(micro, mu)) {
+    for (unit in c("g/m3", "g.m-3", "g m-3", "gm-3", "mol/m2", "mol/m2/s")) {
+      expect_identical(
+        quickText(paste0(prefix, unit)),
+        quickText(paste0("u", unit)),
+        info = paste0(prefix, unit)
+      )
+    }
+  }
+  expect_identical(
+    quickText(paste0("PM2.5 (", micro, "g/m3)")),
+    quickText("PM2.5 (ug/m3)")
+  )
+})
+
+test_that("parse = FALSE deparses expressions", {
+  out <- quickText(expression(NO[2], x^2), parse = FALSE)
+  expect_identical(out, c("NO[2]", "x^2"))
+})
+
+test_that("label_openair() names factor labels after their levels", {
+  expect_named(label_openair(factor(c("no2", "o3"))), c("no2", "o3"))
+})
+
 test_that("non-character inputs are coerced", {
-  expect_identical(quickText(NULL), expression(paste()))
   expect_identical(quickText(""), expression(paste()))
   expect_identical(quickText(NA), expression(paste("NA")))
   expect_identical(quickText(5), expression(paste("5")))

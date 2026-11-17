@@ -430,3 +430,127 @@
         parse = TRUE:  expression(paste(tau, " ", tau))
         parse = FALSE: paste(tau, " ", tau)
 
+# short names that are common words only match on their own
+
+    Code
+      show_quicktext(c("co", "co (ppm)", "(co)", "[co]", "co/nox", "co, no2",
+        "co: hourly", "co-located", "co.", "co_roadside", "no", "no. 5", "no-data",
+        "NO2 and no"))
+    Output
+      "co"
+        parse = TRUE:  expression(paste("CO"))
+        parse = FALSE: paste("CO")
+      "co (ppm)"
+        parse = TRUE:  expression(paste("CO", " (ppm)"))
+        parse = FALSE: paste("CO", " (ppm)")
+      "(co)"
+        parse = TRUE:  expression(paste("(", "CO", ")"))
+        parse = FALSE: paste("(", "CO", ")")
+      "[co]"
+        parse = TRUE:  expression(paste("[", "CO", "]"))
+        parse = FALSE: paste("[", "CO", "]")
+      "co/nox"
+        parse = TRUE:  expression(paste("CO", "/", "NO"[x]))
+        parse = FALSE: paste("CO", "/", "NO"[x])
+      "co, no2"
+        parse = TRUE:  expression(paste("CO", ", ", "NO"[2]))
+        parse = FALSE: paste("CO", ", ", "NO"[2])
+      "co: hourly"
+        parse = TRUE:  expression(paste("CO", ": hourly"))
+        parse = FALSE: paste("CO", ": hourly")
+      "co-located"
+        parse = TRUE:  expression(paste("co-located"))
+        parse = FALSE: paste("co-located")
+      "co."
+        parse = TRUE:  expression(paste("co."))
+        parse = FALSE: paste("co.")
+      "co_roadside"
+        parse = TRUE:  expression(paste("co_roadside"))
+        parse = FALSE: paste("co_roadside")
+      "no"
+        parse = TRUE:  expression(paste("NO"))
+        parse = FALSE: paste("NO")
+      "no. 5"
+        parse = TRUE:  expression(paste("no. 5"))
+        parse = FALSE: paste("no. 5")
+      "no-data"
+        parse = TRUE:  expression(paste("no-data"))
+        parse = FALSE: paste("no-data")
+      "NO2 and no"
+        parse = TRUE:  expression(paste("NO"[2], " and ", "NO"))
+        parse = FALSE: paste("NO"[2], " and ", "NO")
+
+# Delta can prefix names but not start words
+
+    Code
+      show_quicktext(c("Delta", "DeltaNO2", "delta_no2", "Delta2", "Deltaville",
+        "deltas"))
+    Output
+      "Delta"
+        parse = TRUE:  expression(paste(Delta))
+        parse = FALSE: paste(Delta)
+      "DeltaNO2"
+        parse = TRUE:  expression(paste(Delta, "NO2"))
+        parse = FALSE: paste(Delta, "NO2")
+      "delta_no2"
+        parse = TRUE:  expression(paste(Delta, "_", "NO"[2]))
+        parse = FALSE: paste(Delta, "_", "NO"[2])
+      "Delta2"
+        parse = TRUE:  expression(paste(Delta, "2"))
+        parse = FALSE: paste(Delta, "2")
+      "Deltaville"
+        parse = TRUE:  expression(paste("Deltaville"))
+        parse = FALSE: paste("Deltaville")
+      "deltas"
+        parse = TRUE:  expression(paste("deltas"))
+        parse = FALSE: paste("deltas")
+
+# names are not formatted when followed by a decimal part
+
+    Code
+      show_quicktext(c("pm1.5", "pm2.5", "pm1.", "pm10. data"))
+    Output
+      "pm1.5"
+        parse = TRUE:  expression(paste("pm1.5"))
+        parse = FALSE: paste("pm1.5")
+      "pm2.5"
+        parse = TRUE:  expression(paste("PM"[2.5]))
+        parse = FALSE: paste("PM"[2.5])
+      "pm1."
+        parse = TRUE:  expression(paste("PM"[1], "."))
+        parse = FALSE: paste("PM"[1], ".")
+      "pm10. data"
+        parse = TRUE:  expression(paste("PM"[10], ". data"))
+        parse = FALSE: paste("PM"[10], ". data")
+
+# units are not formatted when followed by a letter
+
+    Code
+      show_quicktext(c("speed (m/sec)", "km/hours", "g/second", "ug/m3s", "km/s",
+        "kg/m3", "m/s_mean", "degreesF"))
+    Output
+      "speed (m/sec)"
+        parse = TRUE:  expression(paste("speed (m/sec)"))
+        parse = FALSE: paste("speed (m/sec)")
+      "km/hours"
+        parse = TRUE:  expression(paste("km/hours"))
+        parse = FALSE: paste("km/hours")
+      "g/second"
+        parse = TRUE:  expression(paste("g/second"))
+        parse = FALSE: paste("g/second")
+      "ug/m3s"
+        parse = TRUE:  expression(paste("ug/m3s"))
+        parse = FALSE: paste("ug/m3s")
+      "km/s"
+        parse = TRUE:  expression(paste("k", "m s"^-1))
+        parse = FALSE: paste("k", "m s"^-1)
+      "kg/m3"
+        parse = TRUE:  expression(paste("k", "g m"^-3))
+        parse = FALSE: paste("k", "g m"^-3)
+      "m/s_mean"
+        parse = TRUE:  expression(paste("m s"^-1, "_mean"))
+        parse = FALSE: paste("m s"^-1, "_mean")
+      "degreesF"
+        parse = TRUE:  expression(paste(degree, "F"))
+        parse = FALSE: paste(degree, "F")
+

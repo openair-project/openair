@@ -72,29 +72,17 @@
 
     - `lightness` and `saturation` are now applied for any number of colours. Previously, they were ignored unless more colours were requested than the palette contains.
 
-- `quickText()` has been rewritten internally. It now builds plotmath expressions directly from a single table of formatting rules, rather than generating and evaluating R code. Formatted labels look the same as before, except for the fixes below.
+- `quickText()` has been rewritten internally. It now builds plotmath expressions directly from a single table of formatting rules, rather than generating and evaluating R code. Formatted labels mostly look the same as before, except for the following fixes:
 
-    - `quickText()` now works with character vectors of any length, as documented, returning an expression of the same length. Previously, it errored when given more than one string.
+    - It now works with character vectors of any length, returning an expression of the same length, and returns `NULL` unchanged. Previously, it errored when given more than one string, and `NULL` gave an empty label that left a blank gap where unset titles and captions would be.
 
-    - `"km/hour"` is now formatted correctly. Previously, it appeared as "km hr^-1^our".
+    - Names are now only formatted where they stand on their own, not inside longer words. For example, `"pm100"`, `"year2020"`, `"Morocco"`, `"air_temperature"`, `"co-located"`, `"Deltaville"`, `"pm1.5"` and `"m/sec"` are no longer partly formatted. Underscores still separate names, so `"no2_roadside"` is still formatted.
 
-    - `"pmcoarse"`, `"PMcoarse"`, `"pmfine"` and `"PMfine"` are now formatted correctly. Previously, the shorter `"pmc"`/`"pmf"` rules matched first, giving labels like "PM~coarse~oarse".
+    - Several garbled labels have been fixed, such as `"km/hour"` (previously "km hr^-1^our"), `"PMcoarse"` (previously "PM~coarse~oarse") and `"ug/m3 no2"` (previously "μg m^-3^NO~2~", with the space lost). Repeated symbols (e.g., `"Delta Delta"`), quotes and backslashes are now kept, and no trailing space is added.
 
-    - Facet labels starting or ending with a unit or symbol (e.g., `"no2 ug/m3"`, `"wind m/s"` or `"Delta no2"`) no longer cause an error when the plot is drawn.
+    - Text with more than one newline now shows every line, rather than only the first two, Windows line endings (`"\r\n"`) are treated as newlines, and facet labels starting or ending with a unit or symbol (e.g., `"no2 ug/m3"`) no longer cause an error.
 
-    - Pollutant, particulate matter, `"r2"` and `"tau"` names are no longer formatted when they are part of a longer word. For example, `"pm100"` is no longer formatted as "PM~10~0", `"year2020"` as "yeaR^2^020" or `"Morocco"` as "MorocCO". Underscores still count as word separators, so names like `"no2_roadside"` are still formatted.
-
-    - `"air_temp"` and `"rh"` are now only formatted as whole words. Previously, `"air_temp"` was replaced anywhere (e.g., `"air_temperature"` appeared as "temperatureerature") and `"rh"` was only formatted when followed by a space.
-
-    - Formatted text no longer has a trailing space added, which previously shifted centred labels slightly off-centre.
-
-    - Spaces between formatted names, symbols and units are no longer lost. For example, `"ug/m3 no2"` previously appeared as "μg m^-3^NO~2~".
-
-    - Trailing backslashes are no longer dropped.
-
-    - Text with more than one newline (e.g., `"Mean no2\n(ug/m3)\n2020"`) now shows every line. Previously, only the first two lines were shown.
-
-    - Text with repeated symbols or units (e.g., `"Delta Delta"` or `"ug/m3 ug/m3"`) or lone quotes (e.g., `"'"`) is now formatted correctly. Previously, these could not be formatted and were returned as plain text.
+    - Units written with the micro sign or Greek mu (e.g., `"µg m-3"`) are now formatted in the same way as those written with `"u"` (e.g., `"ug m-3"`).
 
 - `calendarPlot(annotate = "value")` now works correctly when `breaks` is not `NULL`.
 

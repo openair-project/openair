@@ -14,10 +14,14 @@ to \code{text} and returns the result. The alternative, \code{FALSE}, returns \c
 unchanged. (A number of \code{openair} functions enable/disable \code{\link[=quickText]{quickText()}}
 using this option).}
 
-\item{...}{Not used.}
+\item{...}{Additional arguments. \code{parse = FALSE} returns the formatted text
+as a character vector of plotmath code (e.g., for
+\code{\link[ggplot2:label_parsed]{ggplot2::label_parsed()}}) rather than as an expression.}
 }
 \value{
-The function returns an expression for graphical evaluation.
+An expression for graphical evaluation, with one element per element
+of \code{text}. If \code{parse = FALSE}, a character vector of plotmath code. \code{NULL}
+is returned unchanged.
 }
 \description{
 Workhorse function that automatically applies routine text formatting to
