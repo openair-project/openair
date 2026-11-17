@@ -4,7 +4,7 @@
 \alias{quickText}
 \title{Automatic text formatting for openair}
 \usage{
-quickText(text, auto.text = TRUE, ...)
+quickText(text, auto.text = TRUE, format = "expression", ...)
 }
 \arguments{
 \item{text}{A character vector.}
@@ -14,14 +14,26 @@ to \code{text} and returns the result. The alternative, \code{FALSE}, returns \c
 unchanged. (A number of \code{openair} functions enable/disable \code{\link[=quickText]{quickText()}}
 using this option).}
 
-\item{...}{Additional arguments. \code{parse = FALSE} returns the formatted text
-as a character vector of plotmath code (e.g., for
-\code{\link[ggplot2:label_parsed]{ggplot2::label_parsed()}}) rather than as an expression.}
+\item{format}{The output format. One of:
+\itemize{
+\item \code{"expression"} (the default): a plotmath expression, for base R,
+\code{{lattice}} and \code{{ggplot2}} labels.
+\item \code{"plotmath"}: plotmath code as a character vector, e.g., for
+\code{\link[ggplot2:label_parsed]{ggplot2::label_parsed()}}. Each element is kept to a single line.
+\item \code{"html"}: HTML as a character vector, e.g., for \code{{plotly}}, \code{{leaflet}}
+or \code{{ggtext}}. Subscripts and superscripts use \verb{<sub>} and \verb{<sup>}, and
+line breaks use \verb{<br>}.
+}}
+
+\item{...}{Format-specific arguments:
+\itemize{
+\item \code{"html"}: \code{escape}, which defaults to \code{TRUE}, escapes characters with a
+special meaning in HTML (\code{&}, \code{<} and \code{>}) so text is shown as written.
+Use \code{escape = FALSE} to allow HTML in \code{text} (e.g., \code{"<b>no2</b>"}).
+}}
 }
 \value{
-An expression for graphical evaluation, with one element per element
-of \code{text}. If \code{parse = FALSE}, a character vector of plotmath code. \code{NULL}
-is returned unchanged.
+One element per element of \code{text}: an expression if \code{format = "expression"}, otherwise a character vector. \code{NULL} is returned unchanged.
 }
 \description{
 Workhorse function that automatically applies routine text formatting to
@@ -50,6 +62,9 @@ plot(
   xlab = quickText("my no2 label"),
   ylab = quickText("pm10 [ ug.m-3 ]")
 )
+
+# HTML, e.g., for plotly or leaflet
+quickText(c("no2 (ug/m3)", "pm2.5\nroadside"), format = "html")
 }
 \author{
 Karl Ropkins

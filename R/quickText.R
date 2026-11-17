@@ -14,13 +14,26 @@
 #'   to `text` and returns the result. The alternative, `FALSE`, returns `text`
 #'   unchanged. (A number of `openair` functions enable/disable [quickText()]
 #'   using this option).
-#' @param ... Additional arguments. `parse = FALSE` returns the formatted text
-#'   as a character vector of plotmath code (e.g., for
-#'   [ggplot2::label_parsed()]) rather than as an expression.
+#' @param format The output format. One of:
+#'
+#'   - `"expression"` (the default): a plotmath expression, for base R,
+#'   `{lattice}` and `{ggplot2}` labels.
+#'
+#'   - `"plotmath"`: plotmath code as a character vector, e.g., for
+#'   [ggplot2::label_parsed()]. Each element is kept to a single line.
+#'
+#'   - `"html"`: HTML as a character vector, e.g., for `{plotly}`, `{leaflet}`
+#'   or `{ggtext}`. Subscripts and superscripts use `<sub>` and `<sup>`, and
+#'   line breaks use `<br>`.
+#'
+#' @param ... Format-specific arguments:
+#'
+#'   - `"html"`: `escape`, which defaults to `TRUE`, escapes characters with a
+#'   special meaning in HTML (`&`, `<` and `>`) so text is shown as written.
+#'   Use `escape = FALSE` to allow HTML in `text` (e.g., `"<b>no2</b>"`).
 #' @export
-#' @return An expression for graphical evaluation, with one element per element
-#'   of `text`. If `parse = FALSE`, a character vector of plotmath code. `NULL`
-#'   is returned unchanged.
+#' @return One element per element of `text`: an expression if `format =
+#'   "expression"`, otherwise a character vector. `NULL` is returned unchanged.
 #' @author Karl Ropkins
 #' @author David Carslaw
 #' @author Jack Davison
@@ -40,14 +53,15 @@
 #'   xlab = quickText("my no2 label"),
 #'   ylab = quickText("pm10 [ ug.m-3 ]")
 #' )
-quickText <- function(text, auto.text = TRUE, ...) {
+#'
+#' # HTML, e.g., for plotly or leaflet
+#' quickText(c("no2 (ug/m3)", "pm2.5\nroadside"), format = "html")
+quickText <- function(text, auto.text = TRUE, format = "expression", ...) {
+  format <- rlang::arg_match0(format, c("expression", "plotmath", "html"))
+
   if (!auto.text) {
     return(text)
   }
-
-  # `parse = FALSE` returns plotmath code as a string, e.g., for
-  # `ggplot2::label_parsed()`
-  parse <- capture_dots(...)$parse %||% TRUE
 
   # `NULL` means "no label"; an empty expression would still be drawn, taking up
   # space and replacing default axis titles
@@ -56,23 +70,311 @@ quickText <- function(text, auto.text = TRUE, ...) {
   }
 
   if (is.expression(text)) {
-    if (parse) {
-      return(text)
-    }
-    return(purrr::map_chr(as.list(text), quicktext_deparse))
+    return(switch(
+      format,
+      expression = text,
+      plotmath = purrr::map_chr(as.list(text), quicktext_plotmath_deparse),
+      cli::cli_abort(
+        "{.fn quickText} can't convert expressions to the {.val {format}} format."
+      )
+    ))
   }
 
   # coerce anything else (e.g., `NA`, numbers, factors) to character
   text <- paste(text)
 
-  if (parse) {
-    as.expression(purrr::map(text, quicktext_format, parse = TRUE))
-  } else {
-    purrr::map_chr(text, quicktext_format, parse = FALSE)
-  }
+  # format-specific arguments (e.g., `escape`) are passed on through `...`
+  switch(
+    format,
+    expression = quicktext_expression(text, ...),
+    plotmath = quicktext_plotmath(text, ...),
+    html = quicktext_html(text, ...)
+  )
 }
 
-# Formatting rules ---------------------------------------------------------
+# Dictionary ---------------------------------------------------------------
+
+# Spellings using "u" for micro, plus the same spellings written with the micro
+# sign or Greek mu (escaped to keep the package source ASCII)
+quicktext_micro <- function(spellings) {
+  stem <- sub("^u", "", spellings)
+  c(spellings, paste0("\u00b5", stem), paste0("\u03bc", stem))
+}
+
+# An entry in the dictionary: what any of `spellings` is formatted as in each
+# format, with one row per spelling. Each format is an argument (the
+# "expression" format uses `plotmath`):
+#
+#   - `plotmath`: plotmath code.
+#
+#   - `html`: HTML, written as it is (so isn't escaped).
+#
+# Spellings are plain text (not regular expressions) and only match where their
+# `boundary` allows (see `quicktext_boundaries`). Where spellings could match at
+# the same position, the longest wins (e.g., "m/s2" over "m/s"), so the order of
+# the entries doesn't matter. Each spelling may only appear once.
+quicktext_entry <- function(spellings, plotmath, html, boundary = "name") {
+  dplyr::tibble(
+    spelling = spellings,
+    boundary = boundary,
+    plotmath = list(str2lang(plotmath)),
+    html = html
+  )
+}
+
+quicktext_dictionary <- dplyr::bind_rows(
+  # gases
+  quicktext_entry(
+    c("NO2", "no2"),
+    plotmath = '"NO"[2]',
+    html = "NO<sub>2</sub>"
+  ),
+  quicktext_entry(
+    c("NO3", "no3"),
+    plotmath = '"NO"[3]',
+    html = "NO<sub>3</sub>"
+  ),
+  quicktext_entry(
+    c("NOX", "NOx", "nox"),
+    plotmath = '"NO"[x]',
+    html = "NO<sub>x</sub>",
+    boundary = "word"
+  ),
+  quicktext_entry(
+    "no",
+    plotmath = '"NO"',
+    html = "NO",
+    boundary = "standalone"
+  ),
+  quicktext_entry(
+    c("NH3", "nh3"),
+    plotmath = '"NH"[3]',
+    html = "NH<sub>3</sub>"
+  ),
+  quicktext_entry(
+    c("CO2", "co2"),
+    plotmath = '"CO"[2]',
+    html = "CO<sub>2</sub>"
+  ),
+  quicktext_entry(
+    "co",
+    plotmath = '"CO"',
+    html = "CO",
+    boundary = "standalone"
+  ),
+  quicktext_entry("nmhc", plotmath = '"NMHC"', html = "NMHC"),
+  quicktext_entry(
+    c("O3", "o3", "ozone"),
+    plotmath = '"O"[3]',
+    html = "O<sub>3</sub>"
+  ),
+  quicktext_entry(
+    c("SO2", "so2"),
+    plotmath = '"SO"[2]',
+    html = "SO<sub>2</sub>"
+  ),
+  quicktext_entry(
+    c("H2S", "h2s"),
+    plotmath = '"H"[2] * "S"',
+    html = "H<sub>2</sub>S"
+  ),
+  quicktext_entry(
+    c("CH4", "ch4"),
+    plotmath = '"CH"[4]',
+    html = "CH<sub>4</sub>"
+  ),
+
+  # particulate matter
+  quicktext_entry(
+    c("PM10", "pm10"),
+    plotmath = '"PM"[10]',
+    html = "PM<sub>10</sub>"
+  ),
+  quicktext_entry(
+    c("PM1", "pm1"),
+    plotmath = '"PM"[1]',
+    html = "PM<sub>1</sub>"
+  ),
+  quicktext_entry(
+    c("PM4", "pm4"),
+    plotmath = '"PM"[4]',
+    html = "PM<sub>4</sub>"
+  ),
+  quicktext_entry(
+    c("PM2.5", "pm2.5", "PM25", "pm25"),
+    plotmath = '"PM"[2.5]',
+    html = "PM<sub>2.5</sub>"
+  ),
+  quicktext_entry(
+    c("PMtot", "pmtot"),
+    plotmath = '"PM"[total]',
+    html = "PM<sub>total</sub>"
+  ),
+  quicktext_entry(
+    c("PMcoarse", "pmcoarse", "PMc", "pmc"),
+    plotmath = '"PM"[coarse]',
+    html = "PM<sub>coarse</sub>"
+  ),
+  quicktext_entry(
+    c("PMfine", "pmfine", "PMf", "pmf"),
+    plotmath = '"PM"[fine]',
+    html = "PM<sub>fine</sub>"
+  ),
+
+  # meteorology
+  quicktext_entry(
+    c("WS", "ws"),
+    plotmath = '"wind spd."',
+    html = "wind spd.",
+    boundary = "word"
+  ),
+  quicktext_entry(
+    c("WD", "wd"),
+    plotmath = '"wind dir."',
+    html = "wind dir.",
+    boundary = "word"
+  ),
+  quicktext_entry(
+    "air_temp",
+    plotmath = '"temperature"',
+    html = "temperature",
+    boundary = "word"
+  ),
+  quicktext_entry(
+    "rh",
+    plotmath = '"relative humidity"',
+    html = "relative humidity",
+    boundary = "word"
+  ),
+
+  # statistics and symbols
+  quicktext_entry(c("R2", "r2"), plotmath = '"R"^2', html = "R<sup>2</sup>"),
+  quicktext_entry("tau", plotmath = 'tau', html = "\u03c4"),
+  quicktext_entry(
+    c("Delta", "delta"),
+    plotmath = 'Delta',
+    html = "\u0394",
+    boundary = "prefix"
+  ),
+  quicktext_entry(
+    c("degreesC", "degreeC", "dgrC", "deg. C"),
+    plotmath = 'degree * "C"',
+    html = "\u00b0C",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    "degrees",
+    plotmath = 'degree',
+    html = "\u00b0",
+    boundary = "none"
+  ),
+
+  # concentrations
+  quicktext_entry(
+    quicktext_micro(c("ug/m3", "ug.m-3", "ug m-3", "ugm-3")),
+    plotmath = 'mu * "g m"^-3',
+    html = "\u00b5g m<sup>-3</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    c("mg/m3", "mg.m-3", "mg m-3", "mgm-3"),
+    plotmath = '"mg m"^-3',
+    html = "mg m<sup>-3</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    c("ng/m3", "ng.m-3", "ng m-3", "ngm-3"),
+    plotmath = '"ng m"^-3',
+    html = "ng m<sup>-3</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    "g/m3",
+    plotmath = '"g m"^-3',
+    html = "g m<sup>-3</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    "cm-3",
+    plotmath = '"cm"^-3',
+    html = "cm<sup>-3</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    quicktext_micro("umol/m2/s"),
+    plotmath = 'mu * "mol m"^-2 * " s"^-1',
+    html = "\u00b5mol m<sup>-2</sup> s<sup>-1</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    quicktext_micro("umol/m2"),
+    plotmath = 'mu * "mol m"^-2',
+    html = "\u00b5mol m<sup>-2</sup>",
+    boundary = "unit"
+  ),
+
+  # speeds and rates
+  quicktext_entry(
+    c("km/hour/s", "km/hr/s", "km/h/s"),
+    plotmath = '"km hr"^-1 * " s"^-1',
+    html = "km hr<sup>-1</sup> s<sup>-1</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    c("km/hour", "km/hr", "km/h"),
+    plotmath = '"km hr"^-1',
+    html = "km hr<sup>-1</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    "m/s2",
+    plotmath = '"m s"^-2',
+    html = "m s<sup>-2</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    c("m/s", "m.s-1", "m s-1"),
+    plotmath = '"m s"^-1',
+    html = "m s<sup>-1</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    "km2",
+    plotmath = '"km"^2',
+    html = "km<sup>2</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    "g/km",
+    plotmath = '"g km"^-1',
+    html = "g km<sup>-1</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    "g/s",
+    plotmath = '"g s"^-1',
+    html = "g s<sup>-1</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    c("g/hour", "g/hr"),
+    plotmath = '"g hour"^-1',
+    html = "g hour<sup>-1</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    "g/kg",
+    plotmath = '"g kg"^-1',
+    html = "g kg<sup>-1</sup>",
+    boundary = "unit"
+  ),
+  quicktext_entry(
+    "kW/t",
+    plotmath = '"kW t"^-1',
+    html = "kW t<sup>-1</sup>",
+    boundary = "unit"
+  )
+)
 
 # Where a spelling may match, given as regular expressions checked `before` and
 # `after` it:
@@ -100,124 +402,30 @@ quickText <- function(text, auto.text = TRUE, ...) {
 #
 #   - "none": matched anywhere, e.g., the "degrees" in "degreesF".
 quicktext_boundaries <- dplyr::tribble(
-  ~boundary    , ~before              , ~after                   ,
-  "name"       , "(?<![A-Za-z])"      , "(?![A-Za-z0-9]|\\.[0-9])" ,
-  "standalone" , "(?<![^\\s(\\[/])"   , "(?![^\\s)\\],;:/])"     ,
-  "prefix"     , "(?<![A-Za-z])"      , "(?![a-z])"              ,
-  "word"       , "\\b"                , "\\b"                    ,
-  "unit"       , ""                   , "(?![A-Za-z0-9])"        ,
-  "none"       , ""                   , ""
+  ~boundary    , ~before            , ~after                     ,
+  "name"       , "(?<![A-Za-z])"    , "(?![A-Za-z0-9]|\\.[0-9])" ,
+  "standalone" , "(?<![^\\s(\\[/])" , "(?![^\\s)\\],;:/])"       ,
+  "prefix"     , "(?<![A-Za-z])"    , "(?![a-z])"                ,
+  "word"       , "\\b"              , "\\b"                      ,
+  "unit"       , ""                 , "(?![A-Za-z0-9])"          ,
+  "none"       , ""                 , ""
 )
 
-# Each rule replaces any of its `spellings` (plain text, not regular
-# expressions) with a plotmath `expr`, wherever its `boundary` allows (see
-# above). It returns one row per spelling.
-#
-# Where spellings could match at the same position, the longest wins (e.g.,
-# "m/s2" over "m/s"), so the order of the rules doesn't matter. Each spelling
-# may only appear in one rule.
-qt_rule <- function(spellings, expr, boundary = "name") {
-  dplyr::tibble(spelling = spellings, expr = list(expr), boundary = boundary)
-}
-
-# Spellings using "u" for micro, plus the same spellings written with the micro
-# sign or Greek mu (escaped to keep the package source ASCII)
-qt_micro <- function(spellings) {
-  stem <- sub("^u", "", spellings)
-  c(spellings, paste0("\u00b5", stem), paste0("\u03bc", stem))
-}
-
-quicktext_rules <- dplyr::bind_rows(
-  # gases
-  qt_rule(c("NO2", "no2"), quote("NO"[2])),
-  qt_rule(c("NO3", "no3"), quote("NO"[3])),
-  qt_rule(c("NOX", "NOx", "nox"), quote("NO"[x]), "word"),
-  qt_rule("no", "NO", "standalone"),
-  qt_rule(c("NH3", "nh3"), quote("NH"[3])),
-  qt_rule(c("CO2", "co2"), quote("CO"[2])),
-  qt_rule("co", "CO", "standalone"),
-  qt_rule("nmhc", "NMHC"),
-  qt_rule(c("O3", "o3", "ozone"), quote("O"[3])),
-  qt_rule(c("SO2", "so2"), quote("SO"[2])),
-  qt_rule(c("H2S", "h2s"), quote("H"[2] * "S")),
-  qt_rule(c("CH4", "ch4"), quote("CH"[4])),
-
-  # particulate matter
-  qt_rule(c("PM10", "pm10"), quote("PM"[10])),
-  qt_rule(c("PM1", "pm1"), quote("PM"[1])),
-  qt_rule(c("PM4", "pm4"), quote("PM"[4])),
-  qt_rule(c("PM2.5", "pm2.5", "PM25", "pm25"), quote("PM"[2.5])),
-  qt_rule(c("PMtot", "pmtot"), quote("PM"[total])),
-  qt_rule(c("PMcoarse", "pmcoarse", "PMc", "pmc"), quote("PM"[coarse])),
-  qt_rule(c("PMfine", "pmfine", "PMf", "pmf"), quote("PM"[fine])),
-
-  # meteorology
-  qt_rule(c("WS", "ws"), "wind spd.", "word"),
-  qt_rule(c("WD", "wd"), "wind dir.", "word"),
-  qt_rule("air_temp", "temperature", "word"),
-  qt_rule("rh", "relative humidity", "word"),
-
-  # statistics and symbols
-  qt_rule(c("R2", "r2"), quote("R"^2)),
-  qt_rule("tau", quote(tau)),
-  qt_rule(c("Delta", "delta"), quote(Delta), "prefix"),
-  qt_rule(
-    c("degreesC", "degreeC", "dgrC", "deg. C"),
-    quote(degree * "C"),
-    "unit"
-  ),
-  qt_rule("degrees", quote(degree), "none"),
-
-  # concentrations
-  qt_rule(
-    qt_micro(c("ug/m3", "ug.m-3", "ug m-3", "ugm-3")),
-    quote(mu * "g m"^-3),
-    "unit"
-  ),
-  qt_rule(c("mg/m3", "mg.m-3", "mg m-3", "mgm-3"), quote("mg m"^-3), "unit"),
-  qt_rule(c("ng/m3", "ng.m-3", "ng m-3", "ngm-3"), quote("ng m"^-3), "unit"),
-  qt_rule("g/m3", quote("g m"^-3), "unit"),
-  qt_rule("cm-3", quote("cm"^-3), "unit"),
-  qt_rule(qt_micro("umol/m2/s"), quote(mu * "mol m"^-2 * " s"^-1), "unit"),
-  qt_rule(qt_micro("umol/m2"), quote(mu * "mol m"^-2), "unit"),
-
-  # speeds and rates
-  qt_rule(
-    c("km/hour/s", "km/hr/s", "km/h/s"),
-    quote("km hr"^-1 * " s"^-1),
-    "unit"
-  ),
-  qt_rule(c("km/hour", "km/hr", "km/h"), quote("km hr"^-1), "unit"),
-  qt_rule("m/s2", quote("m s"^-2), "unit"),
-  qt_rule(c("m/s", "m.s-1", "m s-1"), quote("m s"^-1), "unit"),
-  qt_rule("km2", quote("km"^2), "unit"),
-  qt_rule("g/km", quote("g km"^-1), "unit"),
-  qt_rule("g/s", quote("g s"^-1), "unit"),
-  qt_rule(c("g/hour", "g/hr"), quote("g hour"^-1), "unit"),
-  qt_rule("g/kg", quote("g kg"^-1), "unit"),
-  qt_rule("kW/t", quote("kW t"^-1), "unit")
-)
-
-# Look up the formatted `expr` for a matched spelling, e.g.,
-# `quicktext_lookup[["ug/m3"]]`
-quicktext_lookup <- local({
-  clashes <- quicktext_rules |>
-    dplyr::count(.data$spelling) |>
-    dplyr::filter(.data$n > 1L)
-
-  if (nrow(clashes) > 0L) {
+local({
+  clashes <- unique(quicktext_dictionary$spelling[
+    duplicated(quicktext_dictionary$spelling)
+  ])
+  if (length(clashes) > 0L) {
     cli::cli_abort(
-      "{.fn quickText} spellings in more than one rule: {.val {clashes$spelling}}"
+      "{.fn quickText} spellings in more than one entry: {.val {clashes}}"
     )
   }
-
-  rlang::set_names(quicktext_rules$expr, quicktext_rules$spelling)
 })
 
 # One regular expression that matches any spelling, so each piece of text is
-# matched once and replacements are never re-matched by other rules
-quicktext_regex <- quicktext_rules |>
-  # errors if a rule uses an unknown boundary
+# matched once and replacements are never re-matched by other spellings
+quicktext_regex <- quicktext_dictionary |>
+  # errors if a row uses an unknown boundary
   dplyr::inner_join(
     quicktext_boundaries,
     by = "boundary",
@@ -233,62 +441,78 @@ quicktext_regex <- quicktext_rules |>
   dplyr::pull(.data$pattern) |>
   paste(collapse = "|")
 
-# Formatting helpers -------------------------------------------------------
+# Matching -----------------------------------------------------------------
 
-# Format a single string, returning an expression (`parse = TRUE`) or plotmath
-# code as a string (`parse = FALSE`)
-quicktext_format <- function(text, parse) {
-  if (!parse) {
-    # plotmath code strings are used for facet labels, which are kept to one
-    # line
-    expr <- quicktext_line(gsub("\r?\n", " ", text))
-    return(quicktext_deparse(expr))
-  }
-
+# Split text into lines, keeping a trailing empty line
+quicktext_lines <- function(text) {
   # "\r\n" for text with Windows line endings
   lines <- strsplit(text, "\r?\n")[[1]]
   # `strsplit()` drops a trailing empty line
   if (endsWith(text, "\n") || length(lines) == 0L) {
     lines <- c(lines, "")
   }
-
-  exprs <- purrr::map(lines, quicktext_line)
-
-  if (length(exprs) == 1L) {
-    exprs[[1]]
-  } else {
-    quicktext_stack(exprs)
-  }
+  lines
 }
 
-# Turn a plotmath expression into one string of plotmath code
-quicktext_deparse <- function(expr) {
-  paste(deparse(expr, width.cutoff = 500L), collapse = "")
-}
-
-# Format a single line of text as a plotmath `paste()` call, in which unmatched
-# text is kept as strings and matched text is replaced by its rule's `expr`,
-# e.g., "NO2 (ug/m3)" -> `paste(NO[2], " (", mu * "g m"^-3, ")")`
-quicktext_line <- function(line) {
+# Split a line into pieces of unmatched text (passed through `text_fn`) and the
+# `format` column of the dictionary for each matched spelling, skipping empty
+# text (e.g., when a match is at the start or end of the line). For example,
+# for HTML, "NO2 (ppb)" -> `list("NO<sub>2</sub>", " (ppb)")`
+quicktext_match <- function(line, format, text_fn = identity) {
   matches <- gregexpr(quicktext_regex, line, perl = TRUE)
 
   # the matched text, and the text around it (always one more piece)
   matched <- regmatches(line, matches)[[1]]
   between <- regmatches(line, matches, invert = TRUE)[[1]]
+  replacements <- quicktext_dictionary[[format]][
+    match(matched, quicktext_dictionary$spelling)
+  ]
 
-  # interleave them, swapping each match for its formatted expression:
-  # between[1], match 1, between[2], match 2, between[3], ...
+  # interleave them: between[1], match 1, between[2], match 2, between[3], ...
   # (base R rather than purrr here, as this runs for every line of every label
   # and `purrr::map2()` + `purrr::list_flatten()` is ~50x slower)
-  pieces <- list(between[1])
-  for (i in seq_along(matched)) {
-    pieces <- c(pieces, list(quicktext_lookup[[matched[i]]], between[i + 1]))
+  pieces <- list()
+  if (nzchar(between[1])) {
+    pieces <- list(text_fn(between[1]))
   }
+  for (i in seq_along(matched)) {
+    pieces <- c(pieces, list(replacements[[i]]))
+    if (nzchar(between[i + 1])) {
+      pieces <- c(pieces, list(text_fn(between[i + 1])))
+    }
+  }
+  pieces
+}
 
-  # drop empty strings, e.g., when a match is at the start or end of the line
-  pieces <- Filter(\(piece) !identical(piece, ""), pieces)
+# Formats ------------------------------------------------------------------
 
-  bquote(paste(..(pieces)), splice = TRUE)
+# Each format is a function, `quicktext_<format>(text, ...)`, that formats a
+# character vector using its column of the dictionary. Any format-specific
+# arguments come from the `...` of `quickText()`
+
+# Plotmath expressions, with lines stacked
+quicktext_expression <- function(text) {
+  exprs <- purrr::map(text, \(x) {
+    lines <- purrr::map(quicktext_lines(x), quicktext_plotmath_line)
+    if (length(lines) == 1L) lines[[1]] else quicktext_plotmath_stack(lines)
+  })
+  as.expression(exprs)
+}
+
+# Plotmath code as strings, kept to one line, e.g., for facet labels
+quicktext_plotmath <- function(text) {
+  purrr::map_chr(text, \(x) {
+    quicktext_plotmath_deparse(quicktext_plotmath_line(gsub("\r?\n", " ", x)))
+  })
+}
+
+quicktext_plotmath_line <- function(line) {
+  bquote(paste(..(quicktext_match(line, "plotmath"))), splice = TRUE)
+}
+
+# Turn a plotmath expression into one string of plotmath code
+quicktext_plotmath_deparse <- function(expr) {
+  paste(deparse(expr, width.cutoff = 500L), collapse = "")
 }
 
 # Stack plotmath expressions as lines. Plotmath has no line break, but `atop()`
@@ -297,7 +521,7 @@ quicktext_line <- function(line) {
 # `atop(displaystyle(a), displaystyle(atop(displaystyle(b), displaystyle(c))))`.
 # Each part is wrapped in `displaystyle()` as nested `atop()` otherwise shrinks
 # each level's text
-quicktext_stack <- function(exprs) {
+quicktext_plotmath_stack <- function(exprs) {
   exprs <- purrr::map(exprs, \(expr) call("displaystyle", expr))
   purrr::reduce(
     exprs,
@@ -306,17 +530,41 @@ quicktext_stack <- function(exprs) {
   )
 }
 
+# HTML, e.g., for `{plotly}`, `{leaflet}` or `{ggtext}`, with lines separated by
+# `<br>`. `escape = TRUE` escapes characters with a special meaning in HTML, so
+# that text like "a < b" is shown as written; `escape = FALSE` allows HTML in
+# the text (e.g., "<b>no2</b>")
+quicktext_html <- function(text, escape = TRUE) {
+  text_fn <- if (escape) quicktext_html_escape else identity
+  purrr::map_chr(text, \(x) {
+    lines <- purrr::map_chr(
+      quicktext_lines(x),
+      \(line) {
+        paste(unlist(quicktext_match(line, "html", text_fn)), collapse = "")
+      }
+    )
+    paste(lines, collapse = "<br>")
+  })
+}
+
+quicktext_html_escape <- function(x) {
+  # "&" first, so the "&" of other escapes isn't escaped again
+  x <- gsub("&", "&amp;", x, fixed = TRUE)
+  x <- gsub("<", "&lt;", x, fixed = TRUE)
+  gsub(">", "&gt;", x, fixed = TRUE)
+}
+
 # ggplot2 helpers ----------------------------------------------------------
 
 # `quickText()` for ggplot2 labels (e.g., `scale_*(labels = )`). Empty input is
 # returned unchanged (scales may have no breaks), and results are named after
 # `x` (or keep its names), as scales can match labels by name
-label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
+label_openair <- function(x, format = "expression", auto_text = TRUE) {
   if (!auto_text || length(x) == 0L) {
     return(x)
   }
 
-  out <- quickText(x, parse = parse)
+  out <- quickText(x, format = format)
   names(out) <- names(x) %||%
     if (is.character(x) || is.factor(x)) as.character(x)
   out
@@ -326,7 +574,7 @@ label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
 labeller_openair <- function(auto_text = TRUE) {
   if (auto_text) {
     ggplot2::as_labeller(
-      \(x) label_openair(x, parse = FALSE, auto_text = TRUE),
+      \(x) label_openair(x, format = "plotmath", auto_text = TRUE),
       default = ggplot2::label_parsed
     )
   } else {

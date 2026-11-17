@@ -54,6 +54,8 @@
 
 - `cutData(type = "daylight")` (and therefore any use of `type = "daylight"` and/or `group = "daylight"`) now warns if `latitude` and/or `longitude` are not also provided.
 
+- `quickText()` gains the `format` argument, so text can be formatted for places other than R graphics. `format = "html"` returns HTML (e.g., `"NO<sub>2</sub> (µg m<sup>-3</sup>)"`) for `{plotly}`, `{leaflet}` or `{ggtext}`, and `format = "plotmath"` returns plotmath code as a string (e.g., for `ggplot2::label_parsed()`). Format-specific options are passed through `...`, such as `escape = FALSE` to allow HTML in the text.
+
 ## Bug Fixes
 
 - Numeric inputs (e.g., `pollutant`, `ws`, `wd`, `obs` and `mod`) are now checked consistently across `{openair}`. Numbers stored as text or factors are converted with a warning, and anything that can't be converted to numbers, such as dates or site names, raises an informative error. Previously, most functions failed with an unhelpful error, produced an empty plot, or (for `windRose()`, `pollutionRose()` and `TaylorDiagram()`) silently converted these values to `NA`. This applies to all plotting functions that take numeric variables, as well as `aqStats()`, `binData()`, `bootMeanDF()`, `calcPercentile()`, `GaussianSmooth()`, `kzFilter()`, `kzaFilter()`, `modStats()`, `rollingMean()`, `rollingQuantile()`, `runRegression()`, `selectRunning()` and `WhittakerSmooth()`.

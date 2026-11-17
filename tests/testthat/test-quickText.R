@@ -2,17 +2,17 @@
 # substitutions, so outputs are recorded as snapshots to catch any unintended
 # changes when the rules are edited.
 
-# show the output of quickText() for each input in both parse modes
+# show the output of quickText() for each input in both plotmath formats
 show_quicktext <- function(x) {
   for (txt in x) {
-    parsed <- paste(deparse(quickText(txt)), collapse = "")
-    unparsed <- quickText(txt, parse = FALSE)
+    expr <- paste(deparse(quickText(txt)), collapse = "")
+    code <- quickText(txt, format = "plotmath")
     cat(
       deparse(txt),
-      "\n  parse = TRUE:  ",
-      parsed,
-      "\n  parse = FALSE: ",
-      unparsed,
+      "\n  expression: ",
+      expr,
+      "\n  plotmath:   ",
+      code,
       "\n",
       sep = ""
     )
@@ -225,7 +225,7 @@ test_that("character vectors are formatted element-wise", {
   expect_length(out, 3L)
   expect_identical(out[2], quickText("site A"))
 
-  out_unparsed <- quickText(c("no2", "site A"), parse = FALSE)
+  out_unparsed <- quickText(c("no2", "site A"), format = "plotmath")
   expect_type(out_unparsed, "character")
   expect_length(out_unparsed, 2L)
 })
@@ -235,13 +235,16 @@ test_that("label_openair() names labels after the input", {
   expect_true(is.expression(out))
   expect_named(out, c("no2", "site A"))
   expect_named(label_openair(c(a = "no2", b = "o3")), c("a", "b"))
-  expect_named(label_openair(c("no2", "o3"), parse = FALSE), c("no2", "o3"))
+  expect_named(
+    label_openair(c("no2", "o3"), format = "plotmath"),
+    c("no2", "o3")
+  )
 })
 
 test_that("label_openair() keeps empty input empty", {
   # scales can call label functions with no breaks
   expect_length(label_openair(character(0)), 0L)
-  expect_length(label_openair(character(0), parse = FALSE), 0L)
+  expect_length(label_openair(character(0), format = "plotmath"), 0L)
 })
 
 test_that("label_openair() returns input unchanged if auto_text = FALSE", {
@@ -250,7 +253,7 @@ test_that("label_openair() returns input unchanged if auto_text = FALSE", {
 
 test_that("NULL is returned unchanged, so no empty label is drawn", {
   expect_null(quickText(NULL))
-  expect_null(quickText(NULL, parse = FALSE))
+  expect_null(quickText(NULL, format = "plotmath"))
   expect_null(quickText(NULL, auto.text = FALSE))
 })
 
@@ -317,12 +320,12 @@ test_that("units are not formatted when followed by a letter", {
 test_that("Windows line endings are treated as newlines", {
   expect_identical(quickText("a\r\nb"), quickText("a\nb"))
   expect_identical(quickText("a\r\n"), quickText("a\n"))
-  expect_identical(quickText("a\r\nb", parse = FALSE), "paste(\"a b\")")
+  expect_identical(quickText("a\r\nb", format = "plotmath"), "paste(\"a b\")")
 })
 
 test_that("empty input gives empty output", {
   expect_identical(quickText(character(0)), expression())
-  expect_identical(quickText(character(0), parse = FALSE), character(0))
+  expect_identical(quickText(character(0), format = "plotmath"), character(0))
 })
 
 test_that("micro sign and Greek mu are formatted like 'u'", {
@@ -343,8 +346,8 @@ test_that("micro sign and Greek mu are formatted like 'u'", {
   )
 })
 
-test_that("parse = FALSE deparses expressions", {
-  out <- quickText(expression(NO[2], x^2), parse = FALSE)
+test_that("format = 'plotmath' deparses expressions", {
+  out <- quickText(expression(NO[2], x^2), format = "plotmath")
   expect_identical(out, c("NO[2]", "x^2"))
 })
 
@@ -368,12 +371,12 @@ test_that("expressions are returned unchanged", {
   expect_identical(quickText(ex), ex)
 })
 
-test_that("parse = TRUE returns an expression", {
+test_that("format = 'expression' returns an expression", {
   expect_true(is.expression(quickText("no2 ug/m3")))
   expect_true(is.expression(quickText("site A")))
 })
 
-test_that("parse = FALSE always returns valid plotmath", {
+test_that("format = 'plotmath' always returns valid plotmath", {
   inputs <- c(
     "no2",
     "pm10",
@@ -393,7 +396,7 @@ test_that("parse = FALSE always returns valid plotmath", {
     "''"
   )
   for (txt in inputs) {
-    out <- quickText(txt, parse = FALSE)
+    out <- quickText(txt, format = "plotmath")
     expect_no_error(parse(text = out), message = txt)
   }
 })
@@ -419,4 +422,102 @@ test_that("long PM names are not split by shorter PM names", {
     deparse(quickText("PMfine")),
     deparse(quickText("PMf"))
   )
+})
+
+# Formats ------------------------------------------------------------------
+
+test_that("unknown formats and format arguments error", {
+  expect_snapshot(error = TRUE, quickText("no2", format = "nope"))
+  expect_error(quickText("no2", escape = TRUE), "unused argument")
+})
+
+# HTML ---------------------------------------------------------------------
+
+test_that("HTML is formatted", {
+  expect_snapshot(cat(
+    quickText(
+      c(
+        "no2 (ug/m3)",
+        "pm2.5\nroadside",
+        "Mean o3\n(ppb)\n2020",
+        "Delta o3",
+        "temp degreesC",
+        "co2 g/km",
+        "km/hr/s",
+        "ws m/s",
+        "r2 = 0.9",
+        "tau",
+        "PMcoarse",
+        "h2s",
+        "umol/m2/s",
+        "site A",
+        ""
+      ),
+      format = "html"
+    ),
+    sep = "\n"
+  ))
+})
+
+test_that("HTML is escaped unless escape = FALSE", {
+  expect_identical(
+    quickText("nox < no2 & o3", format = "html"),
+    "NO<sub>x</sub> &lt; NO<sub>2</sub> &amp; O<sub>3</sub>"
+  )
+  expect_identical(
+    quickText("<b>no2</b>", format = "html"),
+    "&lt;b&gt;NO<sub>2</sub>&lt;/b&gt;"
+  )
+  expect_identical(
+    quickText("<b>no2</b>", format = "html", escape = FALSE),
+    "<b>NO<sub>2</sub></b>"
+  )
+  # already-escaped text is escaped again, so it is shown as written
+  expect_identical(quickText("&lt;", format = "html"), "&amp;lt;")
+})
+
+test_that("HTML line breaks and empty input", {
+  expect_identical(quickText("a\r\nb", format = "html"), "a<br>b")
+  expect_identical(quickText("a\n", format = "html"), "a<br>")
+  expect_identical(quickText(character(0), format = "html"), character(0))
+  expect_null(quickText(NULL, format = "html"))
+  expect_identical(quickText("", format = "html"), "")
+})
+
+test_that("HTML symbols are written as characters", {
+  expect_identical(
+    quickText("ug/m3", format = "html"),
+    "\u00b5g m<sup>-3</sup>"
+  )
+  expect_identical(quickText("degrees", format = "html"), "\u00b0")
+  expect_identical(quickText("Delta", format = "html"), "\u0394")
+})
+
+test_that("every spelling renders as balanced HTML", {
+  for (spelling in quicktext_dictionary$spelling) {
+    out <- quickText(spelling, format = "html")
+    expect_type(out, "character")
+    for (tag in c("sub", "sup")) {
+      expect_identical(
+        lengths(gregexpr(paste0("<", tag, ">"), out)),
+        lengths(gregexpr(paste0("</", tag, ">"), out)),
+        info = spelling
+      )
+    }
+  }
+})
+
+test_that("label_openair() supports HTML", {
+  expect_identical(
+    label_openair(c("no2", "o3"), format = "html"),
+    c(no2 = "NO<sub>2</sub>", o3 = "O<sub>3</sub>")
+  )
+})
+
+test_that("invalid HTML arguments and expressions error", {
+  expect_error(
+    quickText("no2", format = "html", escpae = FALSE),
+    "unused argument"
+  )
+  expect_snapshot(error = TRUE, quickText(expression(NO[2]), format = "html"))
 })
