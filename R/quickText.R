@@ -219,37 +219,38 @@ quicktext_format <- function(text, parse) {
 }
 
 # Format a single line of text as a plotmath `paste()` call, in which unmatched
-# text is kept as strings and matched text is replaced by each rule's `expr`
+# text is kept as strings and matched text is replaced by each rule's `expr`,
+# e.g., "NO2 (ug/m3)" -> `paste(NO[2], " (", mu * "g m"^-3, ")")`
 quicktext_line <- function(line) {
-  if (!nzchar(line)) {
-    return(quote(paste()))
+  matches <- gregexpr(quicktext_regex, line, perl = TRUE)
+
+  # the text around the matches - always one more piece than there are matches
+  between <- regmatches(line, matches, invert = TRUE)[[1]]
+
+  # the formatted expression for each match
+  formatted <- lapply(quicktext_matched_rules(matches[[1]]), \(rule) rule$expr)
+
+  # interleave them: between[1], formatted[1], between[2], formatted[2], ...
+  pieces <- list(between[1])
+  for (i in seq_along(formatted)) {
+    pieces <- c(pieces, list(formatted[[i]], between[i + 1]))
   }
 
-  matches <- gregexpr(quicktext_regex, line, perl = TRUE)[[1]]
-  if (matches[1] == -1L) {
-    return(call("paste", line))
-  }
-
-  starts <- as.integer(matches)
-  ends <- starts + attr(matches, "match.length") - 1L
-  # the matching rule is the capturing group that matched. Groups that didn't
-  # match have zero length (no pattern can match an empty string)
-  rule_ids <- apply(attr(matches, "capture.length") > 0L, 1, which.max)
-
-  pieces <- list()
-  pos <- 1L
-  for (i in seq_along(starts)) {
-    if (starts[i] > pos) {
-      pieces[[length(pieces) + 1L]] <- substr(line, pos, starts[i] - 1L)
-    }
-    pieces[[length(pieces) + 1L]] <- quicktext_rules[[rule_ids[i]]]$expr
-    pos <- ends[i] + 1L
-  }
-  if (pos <= nchar(line)) {
-    pieces[[length(pieces) + 1L]] <- substr(line, pos, nchar(line))
-  }
+  # drop empty strings, e.g., when a match is at the start or end of the line
+  pieces <- Filter(\(piece) !identical(piece, ""), pieces)
 
   as.call(c(as.name("paste"), pieces))
+}
+
+# Find which rule produced each match of `quicktext_regex`. Each rule is its own
+# capturing group, so the rule is the one group with a non-zero match length
+quicktext_matched_rules <- function(matches) {
+  if (matches[1] == -1L) {
+    return(list())
+  }
+  group_matched <- attr(matches, "capture.length") > 0L
+  rule_ids <- apply(group_matched, 1, which.max)
+  quicktext_rules[rule_ids]
 }
 
 # Stack plotmath expressions as lines. Plotmath has no line break, but `atop()`
