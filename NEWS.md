@@ -54,6 +54,8 @@
 
 - `cutData(type = "daylight")` (and therefore any use of `type = "daylight"` and/or `group = "daylight"`) now warns if `latitude` and/or `longitude` are not also provided.
 
+- `quickText()` gains the `format` argument, so text can be formatted for places other than R graphics. `format = "html"` returns HTML (e.g., `"NO<sub>2</sub> (µg m<sup>-3</sup>)"`) for `{plotly}`, `{leaflet}` or `{ggtext}`, and `format = "plotmath"` returns plotmath code as a string (e.g., for `ggplot2::label_parsed()`). Format-specific options are passed through `...`, such as `escape = FALSE` to allow HTML in the text.
+
 ## Bug Fixes
 
 - Numeric inputs (e.g., `pollutant`, `ws`, `wd`, `obs` and `mod`) are now checked consistently across `{openair}`. Numbers stored as text or factors are converted with a warning, and anything that can't be converted to numbers, such as dates or site names, raises an informative error. Previously, most functions failed with an unhelpful error, produced an empty plot, or (for `windRose()`, `pollutionRose()` and `TaylorDiagram()`) silently converted these values to `NA`. This applies to all plotting functions that take numeric variables, as well as `aqStats()`, `binData()`, `bootMeanDF()`, `calcPercentile()`, `GaussianSmooth()`, `kzFilter()`, `kzaFilter()`, `modStats()`, `rollingMean()`, `rollingQuantile()`, `runRegression()`, `selectRunning()` and `WhittakerSmooth()`.
@@ -71,6 +73,18 @@
     - Qualitative palettes (e.g., `"Set1"`) now use their first colours when fewer than three are needed, consistent with `{ggplot2}`. Previously, the first and last colours of the full palette were used instead (e.g., red and grey rather than red and blue for `"Set1"`).
 
     - `lightness` and `saturation` are now applied for any number of colours. Previously, they were ignored unless more colours were requested than the palette contains.
+
+- `quickText()` has been rewritten internally. It now builds plotmath expressions directly from a single table of formatting rules, rather than generating and evaluating R code. Formatted labels mostly look the same as before, except for the following fixes:
+
+    - It now works with character vectors of any length, returning an expression of the same length, and returns `NULL` unchanged. Previously, it errored when given more than one string, and `NULL` gave an empty label that left a blank gap where unset titles and captions would be.
+
+    - Names are now only formatted where they stand on their own, not inside longer words. For example, `"pm100"`, `"year2020"`, `"Morocco"`, `"air_temperature"`, `"co-located"`, `"Deltaville"`, `"pm1.5"` and `"m/sec"` are no longer partly formatted. Underscores still separate names, so `"no2_roadside"` is still formatted.
+
+    - Several garbled labels have been fixed, such as `"km/hour"` (previously "km hr^-1^our"), `"PMcoarse"` (previously "PM~coarse~oarse") and `"ug/m3 no2"` (previously "μg m^-3^NO~2~", with the space lost). Repeated symbols (e.g., `"Delta Delta"`), quotes and backslashes are now kept, and no trailing space is added.
+
+    - Text with more than one newline now shows every line, rather than only the first two, Windows line endings (`"\r\n"`) are treated as newlines, and facet labels starting or ending with a unit or symbol (e.g., `"no2 ug/m3"`) no longer cause an error.
+
+    - Units written with the micro sign or Greek mu (e.g., `"µg m-3"`) are now formatted in the same way as those written with `"u"` (e.g., `"ug m-3"`).
 
 - `calendarPlot(annotate = "value")` now works correctly when `breaks` is not `NULL`.
 

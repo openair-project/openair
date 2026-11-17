@@ -2,36 +2,65 @@
 % Please edit documentation in R/quickText.R
 \name{quickText}
 \alias{quickText}
-\title{Automatic text formatting for openair}
+\title{Workhorse function that automatically applies routine text formatting to
+common expressions and data names used in openair.}
 \usage{
-quickText(text, auto.text = TRUE, ...)
+quickText(text, auto.text = TRUE, format = "expression", ...)
 }
 \arguments{
-\item{text}{A character vector.}
+\item{text}{A character vector. Other vectors (e.g., numbers or factors) are
+converted to character first. An expression is returned unchanged by
+\code{format = "expression"} and converted to plotmath code by \code{format = "plotmath"}, but can't be converted to other formats.}
 
 \item{auto.text}{A logical option. The default, \code{TRUE}, applies \code{\link[=quickText]{quickText()}}
 to \code{text} and returns the result. The alternative, \code{FALSE}, returns \code{text}
 unchanged. (A number of \code{openair} functions enable/disable \code{\link[=quickText]{quickText()}}
 using this option).}
 
-\item{...}{Not used.}
+\item{format}{The output format. One of:
+\itemize{
+\item \code{"expression"} (the default): a plotmath expression, for base R,
+\code{{lattice}} and \code{{ggplot2}} labels.
+\item \code{"plotmath"}: plotmath code as a character vector, e.g., for
+\code{\link[ggplot2:label_parsed]{ggplot2::label_parsed()}}. Each element is kept to a single line.
+\item \code{"html"}: HTML as a character vector, e.g., for \code{{plotly}}, \code{{leaflet}}
+or \code{{ggtext}}. Subscripts and superscripts use \verb{<sub>} and \verb{<sup>}, and
+line breaks use \verb{<br>}.
+}}
+
+\item{...}{Format-specific arguments:
+\itemize{
+\item \code{"html"}: \code{escape}, which defaults to \code{TRUE}, escapes characters with a
+special meaning in HTML (\code{&}, \code{<} and \code{>}) so text is shown as written. Use
+\code{escape = FALSE} to allow HTML in \code{text} (e.g., \code{"<b>no2</b>"}).
+}}
 }
 \value{
-The function returns an expression for graphical evaluation.
+One element per element of \code{text}: an expression if \code{format = "expression"}, otherwise a character vector. \code{NULL} is returned unchanged.
 }
 \description{
-Workhorse function that automatically applies routine text formatting to
-common expressions and data names used in openair.
-}
-\details{
-\code{\link[=quickText]{quickText()}} is routine formatting lookup table. It screens the supplied
+\code{\link[=quickText]{quickText()}} is a routine formatting lookup table. It screens the supplied
 character vector \code{text} and automatically applies formatting to any
 recognised character sub-series. The function is used in a number of
 \code{openair} functions and can also be used directly by users to format text
-components of their own graphs (see below).
+in their own graphs, interactive plots (e.g., \code{{plotly}}) and maps (e.g.,
+\code{{leaflet}}) (see below).
+}
+\details{
+\code{\link[=quickText]{quickText()}} recognises common pollutant names (e.g., \code{"no2"} is shown as
+NO with a subscript 2), meteorological variables (e.g., \code{"ws"} is shown as
+"wind spd."), units (e.g., \code{"ug/m3"} is shown as micrograms per cubic metre,
+with a superscript -3) and a few symbols (e.g., \code{"Delta"} is shown as the
+Greek letter). Many names are matched in more than one spelling (e.g.,
+\code{"NO2"} and \code{"no2"}).
+
+Names are only formatted where they stand on their own, rather than as part
+of a longer word or number. For example, \code{"no2"} and \code{"no2 (ppb)"} are
+formatted, but \code{"pm100"}, \code{"co-located"} and \code{"m/sec"} are left as they are.
+Underscores are allowed either side of most names, so that column names like
+\code{"no2_roadside"} are still formatted.
 }
 \examples{
-
 # see axis formatting in an openair plot, e.g.:
 scatterPlot(
   mydata,
@@ -44,8 +73,11 @@ plot(
   mydata$no2,
   mydata$pm10,
   xlab = quickText("my no2 label"),
-  ylab = quickText("pm10 [ ug.m-3 ]")
+  ylab = quickText("pm10 (ug.m-3)")
 )
+
+# HTML, e.g., for plotly or leaflet
+quickText(c("no2 (ug/m3)", "pm2.5\nroadside"), format = "html")
 }
 \author{
 Karl Ropkins
