@@ -72,7 +72,7 @@
 
     - `lightness` and `saturation` are now applied for any number of colours. Previously, they were ignored unless more colours were requested than the palette contains.
 
-- `quickText()` has been rewritten internally. It now builds plotmath expressions directly from a single table of formatting rules, rather than generating and evaluating R code, and is around 10 times faster. Formatted labels look the same as before, except for the fixes below.
+- `quickText()` has been rewritten internally. It now builds plotmath expressions directly from a single table of formatting rules, rather than generating and evaluating R code. Formatted labels look the same as before, except for the fixes below.
 
     - `quickText()` now works with character vectors of any length, as documented, returning an expression of the same length. Previously, it errored when given more than one string.
 
@@ -82,7 +82,9 @@
 
     - Facet labels starting or ending with a unit or symbol (e.g., `"no2 ug/m3"`, `"wind m/s"` or `"Delta no2"`) no longer cause an error when the plot is drawn.
 
-    - Pollutant, particulate matter, `"r2"`, `"rh"` and `"tau"` names are no longer formatted when they are part of a longer word. For example, `"pm100"` is no longer formatted as "PM~10~0", `"year2020"` as "yeaR^2^020" or `"Morocco"` as "MorocCO". Underscores still count as word separators, so names like `"no2_roadside"` are still formatted.
+    - Pollutant, particulate matter, `"r2"` and `"tau"` names are no longer formatted when they are part of a longer word. For example, `"pm100"` is no longer formatted as "PM~10~0", `"year2020"` as "yeaR^2^020" or `"Morocco"` as "MorocCO". Underscores still count as word separators, so names like `"no2_roadside"` are still formatted.
+
+    - `"air_temp"` and `"rh"` are now only formatted as whole words. Previously, `"air_temp"` was replaced anywhere (e.g., `"air_temperature"` appeared as "temperatureerature") and `"rh"` was only formatted when followed by a space.
 
     - Formatted text no longer has a trailing space added, which previously shifted centred labels slightly off-centre.
 

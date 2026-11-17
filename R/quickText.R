@@ -55,19 +55,17 @@ quickText <- function(text, auto.text = TRUE, ...) {
     text <- ""
   }
 
-  out <- lapply(text, quicktext_format, parse = parse)
-
   if (parse) {
-    as.expression(out)
+    as.expression(purrr::map(text, quicktext_format, parse = TRUE))
   } else {
-    unlist(out)
+    purrr::map_chr(text, quicktext_format, parse = FALSE)
   }
 }
 
 # Formatting rules ---------------------------------------------------------
 
-# Each rule replaces text matching a regular expression `pattern` with a
-# plotmath `expr`. `boundary` controls where a pattern may match:
+# Where a spelling may match, given as regular expressions checked `before` and
+# `after` it:
 #
 #   - "name": not preceded by a letter, nor followed by a letter or digit. This
 #   stops, e.g., "pm100" or "year2020" being formatted, but allows underscores
@@ -77,94 +75,129 @@ quickText <- function(text, auto.text = TRUE, ...) {
 #   underscores also prevent a match (e.g., "ws_max" is not formatted).
 #
 #   - "none": matched anywhere, e.g., the "m/s" in "km/s".
+quicktext_boundaries <- dplyr::tribble(
+  ~boundary , ~before         , ~after            ,
+  "name"    , "(?<![A-Za-z])" , "(?![A-Za-z0-9])" ,
+  "word"    , "\\b"           , "\\b"             ,
+  "none"    , ""              , ""
+)
+
+# Each rule replaces any of its `spellings` (plain text, not regular
+# expressions) with a plotmath `expr`, wherever its `boundary` allows (see
+# above). It returns one row per spelling.
 #
-# All patterns are combined into one regular expression, so each piece of text
-# is matched once and replacements are never re-matched by other rules. Where
-# patterns could match at the same position, the first rule (and the first
-# alternative within a rule) wins, so longer forms must come first (e.g.,
-# "m/s2" before "m/s"). Patterns must not contain capturing groups.
-qt_rule <- function(pattern, expr, boundary = "name") {
-  list(pattern = pattern, expr = expr, boundary = boundary)
+# Where spellings could match at the same position, the longest wins (e.g.,
+# "m/s2" over "m/s"), so the order of the rules doesn't matter. Each spelling
+# may only appear in one rule.
+qt_rule <- function(spellings, expr, boundary = "name") {
+  dplyr::tibble(spelling = spellings, expr = list(expr), boundary = boundary)
 }
 
-quicktext_rules <- list(
+quicktext_rules <- dplyr::bind_rows(
   # gases
-  qt_rule("NO2|no2", quote("NO"[2])),
-  qt_rule("NO3|no3", quote("NO"[3])),
-  qt_rule("NOX|NOx|nox", quote("NO"[x]), "word"),
+  qt_rule(c("NO2", "no2"), quote("NO"[2])),
+  qt_rule(c("NO3", "no3"), quote("NO"[3])),
+  qt_rule(c("NOX", "NOx", "nox"), quote("NO"[x]), "word"),
   qt_rule("no", "NO", "word"),
-  qt_rule("NH3|nh3", quote("NH"[3])),
-  qt_rule("CO2|co2", quote("CO"[2])),
+  qt_rule(c("NH3", "nh3"), quote("NH"[3])),
+  qt_rule(c("CO2", "co2"), quote("CO"[2])),
   qt_rule("co", "CO"),
   qt_rule("nmhc", "NMHC"),
-  qt_rule("O3|o3|ozone", quote("O"[3])),
-  qt_rule("SO2|so2", quote("SO"[2])),
-  qt_rule("H2S|h2s", quote("H"[2] * "S")),
-  qt_rule("CH4|ch4", quote("CH"[4])),
+  qt_rule(c("O3", "o3", "ozone"), quote("O"[3])),
+  qt_rule(c("SO2", "so2"), quote("SO"[2])),
+  qt_rule(c("H2S", "h2s"), quote("H"[2] * "S")),
+  qt_rule(c("CH4", "ch4"), quote("CH"[4])),
 
   # particulate matter
-  qt_rule("PM10|pm10", quote("PM"[10])),
-  qt_rule("PM1|pm1", quote("PM"[1])),
-  qt_rule("PM4|pm4", quote("PM"[4])),
-  qt_rule("PM2\\.5|pm2\\.5|PM25|pm25", quote("PM"[2.5])),
-  qt_rule("PMtot|pmtot", quote("PM"[total])),
-  qt_rule("PMcoarse|pmcoarse|PMc|pmc", quote("PM"[coarse])),
-  qt_rule("PMfine|pmfine|PMf|pmf", quote("PM"[fine])),
+  qt_rule(c("PM10", "pm10"), quote("PM"[10])),
+  qt_rule(c("PM1", "pm1"), quote("PM"[1])),
+  qt_rule(c("PM4", "pm4"), quote("PM"[4])),
+  qt_rule(c("PM2.5", "pm2.5", "PM25", "pm25"), quote("PM"[2.5])),
+  qt_rule(c("PMtot", "pmtot"), quote("PM"[total])),
+  qt_rule(c("PMcoarse", "pmcoarse", "PMc", "pmc"), quote("PM"[coarse])),
+  qt_rule(c("PMfine", "pmfine", "PMf", "pmf"), quote("PM"[fine])),
 
   # meteorology
-  qt_rule("WS|ws", "wind spd.", "word"),
-  qt_rule("WD|wd", "wind dir.", "word"),
+  qt_rule(c("WS", "ws"), "wind spd.", "word"),
+  qt_rule(c("WD", "wd"), "wind dir.", "word"),
   qt_rule("air_temp", "temperature", "word"),
   qt_rule("rh", "relative humidity", "word"),
 
   # statistics and symbols
-  qt_rule("R2|r2", quote("R"^2)),
+  qt_rule(c("R2", "r2"), quote("R"^2)),
   qt_rule("tau", quote(tau)),
-  qt_rule("Delta|delta", quote(Delta), "none"),
-  qt_rule("degreesC|degreeC|dgrC|deg\\. C", quote(degree * "C"), "none"),
+  qt_rule(c("Delta", "delta"), quote(Delta), "none"),
+  qt_rule(
+    c("degreesC", "degreeC", "dgrC", "deg. C"),
+    quote(degree * "C"),
+    "none"
+  ),
   qt_rule("degrees", quote(degree), "none"),
 
   # concentrations
-  qt_rule("ug/m3|ug\\.m-3|ug m-3|ugm-3", quote(mu * "g m"^-3), "none"),
-  qt_rule("mg/m3|mg\\.m-3|mg m-3|mgm-3", quote("mg m"^-3), "none"),
-  qt_rule("ng/m3|ng\\.m-3|ng m-3|ngm-3", quote("ng m"^-3), "none"),
+  qt_rule(
+    c("ug/m3", "ug.m-3", "ug m-3", "ugm-3"),
+    quote(mu * "g m"^-3),
+    "none"
+  ),
+  qt_rule(c("mg/m3", "mg.m-3", "mg m-3", "mgm-3"), quote("mg m"^-3), "none"),
+  qt_rule(c("ng/m3", "ng.m-3", "ng m-3", "ngm-3"), quote("ng m"^-3), "none"),
   qt_rule("g/m3", quote("g m"^-3), "none"),
   qt_rule("cm-3", quote("cm"^-3), "none"),
   qt_rule("umol/m2/s", quote(mu * "mol m"^-2 * " s"^-1), "none"),
   qt_rule("umol/m2", quote(mu * "mol m"^-2), "none"),
 
   # speeds and rates
-  qt_rule("km/hour/s|km/hr/s|km/h/s", quote("km hr"^-1 * " s"^-1), "none"),
-  qt_rule("km/hour|km/hr|km/h", quote("km hr"^-1), "none"),
+  qt_rule(
+    c("km/hour/s", "km/hr/s", "km/h/s"),
+    quote("km hr"^-1 * " s"^-1),
+    "none"
+  ),
+  qt_rule(c("km/hour", "km/hr", "km/h"), quote("km hr"^-1), "none"),
   qt_rule("m/s2", quote("m s"^-2), "none"),
-  qt_rule("m/s|m\\.s-1|m s-1", quote("m s"^-1), "none"),
+  qt_rule(c("m/s", "m.s-1", "m s-1"), quote("m s"^-1), "none"),
   qt_rule("km2", quote("km"^2), "none"),
   qt_rule("g/km", quote("g km"^-1), "none"),
   qt_rule("g/s", quote("g s"^-1), "none"),
-  qt_rule("g/hour|g/hr", quote("g hour"^-1), "none"),
+  qt_rule(c("g/hour", "g/hr"), quote("g hour"^-1), "none"),
   qt_rule("g/kg", quote("g kg"^-1), "none"),
   qt_rule("kW/t", quote("kW t"^-1), "none")
 )
 
-# combine all rules into one regular expression, with each rule in its own
-# capturing group so the matching rule can be identified
-quicktext_regex <- paste0(
-  "(",
-  vapply(
-    quicktext_rules,
-    \(rule) {
-      switch(
-        rule$boundary,
-        name = paste0("(?<![A-Za-z])(?:", rule$pattern, ")(?![A-Za-z0-9])"),
-        word = paste0("\\b(?:", rule$pattern, ")\\b"),
-        none = paste0("(?:", rule$pattern, ")")
-      )
-    },
-    character(1)
-  ),
-  ")",
-  collapse = "|"
-)
+# Look up the formatted `expr` for a matched spelling, e.g.,
+# `quicktext_lookup[["ug/m3"]]`
+quicktext_lookup <- local({
+  clashes <- quicktext_rules |>
+    dplyr::count(.data$spelling) |>
+    dplyr::filter(.data$n > 1L)
+
+  if (nrow(clashes) > 0L) {
+    cli::cli_abort(
+      "{.fn quickText} spellings in more than one rule: {.val {clashes$spelling}}"
+    )
+  }
+
+  rlang::set_names(quicktext_rules$expr, quicktext_rules$spelling)
+})
+
+# One regular expression that matches any spelling, so each piece of text is
+# matched once and replacements are never re-matched by other rules
+quicktext_regex <- quicktext_rules |>
+  # errors if a rule uses an unknown boundary
+  dplyr::inner_join(
+    quicktext_boundaries,
+    by = "boundary",
+    relationship = "many-to-one",
+    unmatched = c("error", "drop")
+  ) |>
+  # the first alternative that matches wins, so try the longest first
+  dplyr::arrange(dplyr::desc(nchar(.data$spelling))) |>
+  # `\Q...\E` matches the text between them literally (e.g., "." is a dot)
+  dplyr::mutate(
+    pattern = paste0(.data$before, "\\Q", .data$spelling, "\\E", .data$after)
+  ) |>
+  dplyr::pull(.data$pattern) |>
+  paste(collapse = "|")
 
 # Formatting helpers -------------------------------------------------------
 
@@ -184,7 +217,7 @@ quicktext_format <- function(text, parse) {
     lines <- c(lines, "")
   }
 
-  exprs <- lapply(lines, quicktext_line)
+  exprs <- purrr::map(lines, quicktext_line)
 
   if (length(exprs) == 1L) {
     exprs[[1]]
@@ -194,56 +227,42 @@ quicktext_format <- function(text, parse) {
 }
 
 # Format a single line of text as a plotmath `paste()` call, in which unmatched
-# text is kept as strings and matched text is replaced by each rule's `expr`,
+# text is kept as strings and matched text is replaced by its rule's `expr`,
 # e.g., "NO2 (ug/m3)" -> `paste(NO[2], " (", mu * "g m"^-3, ")")`
 quicktext_line <- function(line) {
   matches <- gregexpr(quicktext_regex, line, perl = TRUE)
 
-  # the text around the matches - always one more piece than there are matches
+  # the matched text, and the text around it (always one more piece)
+  matched <- regmatches(line, matches)[[1]]
   between <- regmatches(line, matches, invert = TRUE)[[1]]
 
-  # the formatted expression for each match
-  formatted <- lapply(quicktext_matched_rules(matches[[1]]), \(rule) rule$expr)
-
-  # interleave them: between[1], formatted[1], between[2], formatted[2], ...
+  # interleave them, swapping each match for its formatted expression:
+  # between[1], match 1, between[2], match 2, between[3], ...
+  # (base R rather than purrr here, as this runs for every line of every label
+  # and `purrr::map2()` + `purrr::list_flatten()` is ~50x slower)
   pieces <- list(between[1])
-  for (i in seq_along(formatted)) {
-    pieces <- c(pieces, list(formatted[[i]], between[i + 1]))
+  for (i in seq_along(matched)) {
+    pieces <- c(pieces, list(quicktext_lookup[[matched[i]]], between[i + 1]))
   }
 
   # drop empty strings, e.g., when a match is at the start or end of the line
   pieces <- Filter(\(piece) !identical(piece, ""), pieces)
 
-  as.call(c(as.name("paste"), pieces))
-}
-
-# Find which rule produced each match of `quicktext_regex`. Each rule is its own
-# capturing group, so the rule is the one group with a non-zero match length
-quicktext_matched_rules <- function(matches) {
-  if (matches[1] == -1L) {
-    return(list())
-  }
-  group_matched <- attr(matches, "capture.length") > 0L
-  rule_ids <- apply(group_matched, 1, which.max)
-  quicktext_rules[rule_ids]
+  bquote(paste(..(pieces)), splice = TRUE)
 }
 
 # Stack plotmath expressions as lines. Plotmath has no line break, but `atop()`
-# stacks two items, so it is nested to stack any number of lines, e.g.,
+# stacks two items, so it is nested to stack any number of lines, working back
+# from the last line, e.g.,
 # `atop(displaystyle(a), displaystyle(atop(displaystyle(b), displaystyle(c))))`.
 # Each part is wrapped in `displaystyle()` as nested `atop()` otherwise shrinks
 # each level's text
 quicktext_stack <- function(exprs) {
-  if (length(exprs) == 1L) {
-    return(call("displaystyle", exprs[[1]]))
-  }
-  call(
-    "displaystyle",
-    call(
-      "atop",
-      call("displaystyle", exprs[[1]]),
-      quicktext_stack(exprs[-1])
-    )
+  exprs <- purrr::map(exprs, \(expr) call("displaystyle", expr))
+  purrr::reduce(
+    exprs,
+    \(line, below) call("displaystyle", call("atop", line, below)),
+    .dir = "backward"
   )
 }
 
