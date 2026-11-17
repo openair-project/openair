@@ -1,28 +1,3 @@
-# `quickText()` for ggplot2 labels (e.g., `scale_*(labels = )`). Unlike
-# `quickText()`, empty input stays empty (scales may have no breaks) and results
-# are named after `x` (or keep its names), as scales can match labels by name
-label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
-  if (!auto_text || length(x) == 0L) {
-    return(x)
-  }
-
-  out <- quickText(x, parse = parse)
-  names(out) <- names(x) %||% if (is.character(x)) x
-  out
-}
-
-# Return a labeller for facets
-labeller_openair <- function(auto_text = TRUE) {
-  if (auto_text) {
-    ggplot2::as_labeller(
-      \(x) label_openair(x, parse = FALSE, auto_text = TRUE),
-      default = ggplot2::label_parsed
-    )
-  } else {
-    ggplot2::label_value
-  }
-}
-
 #' Automatic text formatting for openair
 #'
 #' Workhorse function that automatically applies routine text formatting to
@@ -270,4 +245,31 @@ quicktext_stack <- function(exprs) {
       quicktext_stack(exprs[-1])
     )
   )
+}
+
+# ggplot2 helpers ----------------------------------------------------------
+
+# `quickText()` for ggplot2 labels (e.g., `scale_*(labels = )`). Unlike
+# `quickText()`, empty input stays empty (scales may have no breaks) and results
+# are named after `x` (or keep its names), as scales can match labels by name
+label_openair <- function(x, parse = TRUE, auto_text = TRUE) {
+  if (!auto_text || length(x) == 0L) {
+    return(x)
+  }
+
+  out <- quickText(x, parse = parse)
+  names(out) <- names(x) %||% if (is.character(x)) x
+  out
+}
+
+# Return a labeller for facets
+labeller_openair <- function(auto_text = TRUE) {
+  if (auto_text) {
+    ggplot2::as_labeller(
+      \(x) label_openair(x, parse = FALSE, auto_text = TRUE),
+      default = ggplot2::label_parsed
+    )
+  } else {
+    ggplot2::label_value
+  }
 }
