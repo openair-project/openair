@@ -44,3 +44,4 @@ coverage/
 # Claude
 ^.*\.claude$
 Rplots.pdf
+revdep/
