@@ -1,4 +1,4 @@
-# openair (development version)
+# openair 3.2.0
 
 ## Dependency Changes
 
