@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">openair</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">3.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,14 +54,14 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="openair-development-version">openair (development version)<a class="anchor" aria-label="anchor" href="#openair-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="3.2.0" id="openair-320">openair 3.2.0<a class="anchor" aria-label="anchor" href="#openair-320"></a></h2>
 <div class="section level3">
-<h3 id="dependency-changes-development-version">Dependency Changes<a class="anchor" aria-label="anchor" href="#dependency-changes-development-version"></a></h3>
+<h3 id="dependency-changes-3-2-0">Dependency Changes<a class="anchor" aria-label="anchor" href="#dependency-changes-3-2-0"></a></h3>
 <ul><li><p><a href="http://www.stats.ox.ac.uk/pub/MASS4/" class="external-link">MASS</a> (only used for one statistic type in <code><a href="../reference/polarPlot.html">polarPlot()</a></code>) and <a href="https://readr.tidyverse.org" class="external-link">readr</a> (only used for the discontinued European data in <code><a href="../reference/importEurope.html">importEurope()</a></code> and <code>importMeta(source = "europe")</code>) have been moved to Suggests.</p></li>
 <li><p><a href="https://openair-project.github.io/openair/">openair</a> now requires <a href="https://teunbrand.github.io/legendry/" class="external-link">legendry</a> version 0.3.0 or later for features which use it (e.g., <code>corPlot(dendrogram = TRUE)</code>).</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="breaking-changes-development-version">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<h3 id="breaking-changes-3-2-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-3-2-0"></a></h3>
 <ul><li><p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> and its wrappers (<code><a href="../reference/importUKAQ-wrapper.html">importAURN()</a></code>, <code><a href="../reference/importUKAQ-wrapper.html">importAQE()</a></code>, <code><a href="../reference/importUKAQ-wrapper.html">importSAQN()</a></code>, <code><a href="../reference/importUKAQ-wrapper.html">importWAQN()</a></code>, <code><a href="../reference/importUKAQ-wrapper.html">importNI()</a></code> and <code><a href="../reference/importUKAQ-wrapper.html">importLocal()</a></code>) no longer have default <code>site</code> and <code>year</code> arguments, which previously silently imported data for an arbitrary site and year. <code>year</code> must now always be provided, and <code>site</code> must be provided unless <code>data_type</code> is <code>"annual"</code>, <code>"monthly"</code> or <code>"daqi"</code>, in which case omitting it imports all sites. Similarly, <code><a href="../reference/importImperial.html">importImperial()</a></code>, <code><a href="../reference/importImperial.html">importKCL()</a></code> and <code><a href="../reference/importEurope.html">importEurope()</a></code> now require both <code>site</code> and <code>year</code> to be provided.</p></li>
 <li>
 <p><code><a href="../reference/importUKAQ.html">importUKAQ()</a></code> and its wrappers (e.g., <code><a href="../reference/importUKAQ-wrapper.html">importAURN()</a></code>) are stricter about some inputs and outputs:</p>
@@ -75,7 +75,7 @@
 <li><p><code>key.columns</code> now defaults to <code>NULL</code> in most functions, which will use <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a>’s logic for the number of columns. This may change legend layouts.</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="new-features-development-version">New Features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<h3 id="new-features-3-2-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-3-2-0"></a></h3>
 <ul><li><p>Added <code><a href="../reference/distPlot.html">distPlot()</a></code>, which examines the ‘shape’ of the distribution of numeric data using histograms, frequency polygons, density plots or empirical cumulative distribution functions.</p></li>
 <li>
 <p>All plots gain the <code>theme</code> argument to provide a convenient way to set non-data plot aesthetic features, such as gridlines and fonts. The following options are provided:</p>
@@ -105,7 +105,7 @@
 <li><p>The number of <code>type</code> values is now checked consistently across all plotting functions, with a single informative error if too many are provided. Previously, <code><a href="../reference/percentileRose.html">percentileRose()</a></code>, <code><a href="../reference/polarFreq.html">polarFreq()</a></code>, <code><a href="../reference/pollutionRose.html">pollutionRose()</a></code>, <code><a href="../reference/scatterPlot.html">scatterPlot()</a></code>, <code><a href="../reference/smoothTrend.html">smoothTrend()</a></code>, <code><a href="../reference/TaylorDiagram.html">TaylorDiagram()</a></code>, <code><a href="../reference/TheilSen.html">TheilSen()</a></code>, <code><a href="../reference/timeProp.html">timeProp()</a></code>, <code><a href="../reference/trajLevel.html">trajLevel()</a></code>, <code><a href="../reference/trajPlot.html">trajPlot()</a></code> and <code><a href="../reference/windRose.html">windRose()</a></code> silently accepted three or more <code>type</code>s and produced overplotted panels, as only the first two were used for faceting. <code><a href="../reference/trendLevel.html">trendLevel()</a></code> now errors rather than warning and dropping any <code>type</code>s beyond the first two, and <code><a href="../reference/variationPlot.html">variationPlot()</a></code> no longer incorrectly says only one <code>type</code> is allowed when more than two are given.</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="bug-fixes-development-version">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<h3 id="bug-fixes-3-2-0">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-3-2-0"></a></h3>
 <ul><li><p>Plotting functions (e.g., <code><a href="../reference/timeVariation.html">timeVariation()</a></code>) now work with ‘grouped’ tibbles created with <code><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">dplyr::group_by()</a></code> by automatically ungrouping input data.</p></li>
 <li><p><code>ref.x</code> and <code>ref.y</code> accept plain lists (e.g., <code>list(h = 10)</code>) as well as <code><a href="../reference/refOpts.html">refOpts()</a></code>. Plain lists also now default to a solid line, and labels default to the line colour.</p></li>
 <li>
