@@ -231,7 +231,11 @@ distPlot(
     [`ggplot2::labs()`](https://ggplot2.tidyverse.org/reference/labs.html)
     via
     [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
-    if `auto.text = TRUE`.
+    if `auto.text = TRUE`. Any of these can be set to `NULL` to remove a
+    default label (e.g., `caption = NULL`). Labels, including legend
+    titles, can also be overridden by adding
+    [`ggplot2::labs()`](https://ggplot2.tidyverse.org/reference/labs.html)
+    to the returned plot.
 
   - `xlim`, `ylim` and `limits` control the limits of the x-axis, y-axis
     and colorbar scales.

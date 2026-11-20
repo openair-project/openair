@@ -402,7 +402,10 @@ to a file).</p></dd>
 Some additional arguments are also available, varying somewhat in different
 plotting functions:</p><ul><li><p><code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>tag</code>, <code>xlab</code> and <code>ylab</code> control the plot
 title, subtitle, caption, tag, x-axis label and y-axis label, passed to
-<code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs()</a></code> via <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>.</p></li>
+<code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs()</a></code> via <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>. Any of these can
+be set to <code>NULL</code> to remove a default label (e.g., <code>caption = NULL</code>). Labels,
+including legend titles, can also be overridden by adding
+<code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs()</a></code> to the returned plot.</p></li>
 <li><p><code>xlim</code>, <code>ylim</code> and <code>limits</code> control the limits of the x-axis, y-axis and
 colorbar scales.</p></li>
 <li><p><code>ncol</code> and <code>nrow</code> set the number of columns and rows in a faceted plot.</p></li>

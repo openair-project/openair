@@ -13,6 +13,23 @@
   vertical graticule lines. Axis and strip text in the `"default"` and
   `"dark"` themes is now slightly smaller.
 
+- Plot labels are now handled consistently across all plotting
+  functions. Legend titles can now always be overridden by adding
+  [`ggplot2::labs()`](https://ggplot2.tidyverse.org/reference/labs.html)
+  to a plot, and any default label can be removed by setting it to
+  `NULL` (e.g., `caption = NULL`). `auto.text` now applies consistently
+  to all titles, axis labels, captions and legend titles. Unused titles
+  and subtitles no longer leave blank space above some plots.
+  [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
+  and
+  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+  now respect `xlab`,
+  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+  captions now show the confidence interval correctly, and
+  [`polarDiff()`](https://openair-project.github.io/openair/reference/polarDiff.md)
+  now passes all label arguments (e.g., `subtitle`, `caption`) to
+  [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md).
+
 ## openair 3.2.0
 
 CRAN release: 2026-11-19
