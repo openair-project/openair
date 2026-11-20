@@ -170,11 +170,10 @@ modStats <- function(
   }
 
   ## check the data
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     vars,
-    type,
-    remove.calm = FALSE
+    type
   ) |>
     check_numeric(vars = c(mod, obs))
 

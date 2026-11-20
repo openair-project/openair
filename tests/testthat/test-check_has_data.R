@@ -1,4 +1,4 @@
-# check_has_data() and checkPrep(require_data = TRUE) tests
+# check_has_data() and check_prep(require_data = TRUE) tests
 dat <- data.frame(
   date = as.POSIXct("2020-01-01", tz = "GMT") + 3600 * 0:2,
   num = c(1.5, 2, NA),
@@ -14,30 +14,30 @@ test_that("check_has_data() errors for empty data or all-missing variables", {
   expect_no_error(check_has_data(dat, "num"))
 })
 
-test_that("checkPrep() only checks for data when require_data = TRUE", {
+test_that("check_prep() only checks for data when require_data = TRUE", {
   # off by default, so non-plotting functions can accept these inputs
-  expect_no_error(checkPrep(dat[0, ], c("date", "num"), "default"))
-  expect_no_error(checkPrep(dat, c("date", "all_na"), "default"))
+  expect_no_error(check_prep(dat[0, ], c("date", "num"), "default"))
+  expect_no_error(check_prep(dat, c("date", "all_na"), "default"))
 
   expect_error(
-    checkPrep(dat[0, ], c("date", "num"), "default", require_data = TRUE),
+    check_prep(dat[0, ], c("date", "num"), "default", require_data = TRUE),
     regexp = "has no rows"
   )
   expect_error(
-    checkPrep(dat, c("date", "all_na"), "default", require_data = TRUE),
+    check_prep(dat, c("date", "all_na"), "default", require_data = TRUE),
     regexp = "only missing values"
   )
   expect_no_error(
-    checkPrep(dat, c("date", "num"), "default", require_data = TRUE)
+    check_prep(dat, c("date", "num"), "default", require_data = TRUE)
   )
 })
 
-test_that("checkPrep() checks for data after removing invalid values", {
+test_that("check_prep() checks for data after removing invalid values", {
   # all wind speeds are negative, so are removed, leaving nothing to plot
   neg_ws <- data.frame(ws = c(-1, -2), wd = c(90, 180))
   expect_error(
     suppressWarnings(
-      checkPrep(neg_ws, c("ws", "wd"), "default", require_data = TRUE)
+      check_prep(neg_ws, c("ws", "wd"), "default", require_data = TRUE)
     ),
     regexp = "only missing values"
   )

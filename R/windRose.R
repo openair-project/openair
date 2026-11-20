@@ -337,12 +337,11 @@ windRose <- function(
 
   mydata <- cutData(mydata, type, ...)
 
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     vars,
     type,
-    remove.calm = FALSE,
-    remove.neg = rm.neg,
+    remove_negative_ws = rm.neg,
     require_data = TRUE
   )
 

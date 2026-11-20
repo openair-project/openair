@@ -512,10 +512,11 @@ prepare_scatter_data <- function(
     function(var) inherits(mydata[[var]], c("Date", "POSIXt"))
   )
 
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     unique(vars),
     type,
+    remove_calms = TRUE,
     require_data = TRUE,
     call = rlang::caller_env()
   ) |>

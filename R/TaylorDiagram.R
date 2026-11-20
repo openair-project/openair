@@ -332,7 +332,13 @@ TaylorDiagram <- function(
   }
 
   # data checks, for base and new data if necessary
-  mydata <- checkPrep(mydata, vars, type, require_data = TRUE)
+  mydata <- check_prep(
+    mydata,
+    vars,
+    type,
+    remove_calms = TRUE,
+    require_data = TRUE
+  )
 
   # check mod and obs are numbers
   mydata <- check_numeric(mydata, vars = c(obs, mod))

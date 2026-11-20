@@ -225,11 +225,10 @@ TheilSen <- function(
     interval <- "year"
   }
 
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     c("date", pollutant),
     type,
-    remove.calm = FALSE,
     require_data = TRUE
   ) |>
     check_numeric(vars = pollutant)

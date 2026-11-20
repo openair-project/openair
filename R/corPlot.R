@@ -194,11 +194,10 @@ corPlot <- function(
   }
 
   # check input data
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     pollutants,
-    type = type,
-    remove.calm = FALSE
+    type = type
   )
 
   # cut data depending on type

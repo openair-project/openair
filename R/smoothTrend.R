@@ -432,11 +432,10 @@ prepare_smoothtrend_data <- function(
 ) {
   # default checks
   vars <- c("date", pollutant)
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     vars,
     type,
-    remove.calm = FALSE,
     require_data = TRUE,
     call = rlang::caller_env()
   ) |>

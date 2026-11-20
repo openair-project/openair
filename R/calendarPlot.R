@@ -706,11 +706,10 @@ prepare_calendar_data <- function(
   }
 
   # check input data
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     vars,
     type,
-    remove.calm = FALSE,
     require_data = TRUE,
     call = rlang::caller_env()
   ) |>

@@ -60,7 +60,7 @@ splitByDate <- function(
   )
 ) {
   # check data
-  mydata <- checkPrep(mydata, names(mydata), "default", remove.calm = FALSE)
+  mydata <- check_prep(mydata, names(mydata), "default")
 
   # check there are sufficent labels for number of dates
   if (length(dates) != length(labels) - 1) {

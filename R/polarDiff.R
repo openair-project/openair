@@ -67,10 +67,9 @@ polarDiff <- function(
   call <- rlang::current_env()
   prepare <- function(data, period) {
     data <- cutData(data, type = type) |>
-      checkPrep(
+      check_prep(
         vars,
         type,
-        remove.calm = FALSE,
         require_data = TRUE,
         call = call
       ) |>

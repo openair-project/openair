@@ -171,11 +171,10 @@ percentileRose <- function(
     }
   }
 
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     vars,
     type,
-    remove.calm = FALSE,
     wd = wd,
     require_data = TRUE
   ) |>

@@ -213,11 +213,10 @@ trajPlot <- function(
 
   # check data and prepare for plotting
   check_type(type, max = 2)
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     vars,
     type,
-    remove.calm = FALSE,
     require_data = TRUE
   )
   mydata <- cutData(mydata, type = type, ...)

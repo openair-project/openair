@@ -5,15 +5,21 @@
 #'
 #' @param mydata Input data from parent function
 #'
-#' @param remove.calm If `TRUE`, sets "calm" (ws == 0) wd/ws cols to `NA`, and
-#'   rounds `wd` for plotting.
+#' @param vars The variables needed by the parent function. `mydata` is reduced
+#'   to these columns, plus any `type` columns.
 #'
-#' @param remove.neg If `TRUE` sets negative wind speeds to NA.
+#' @param type The conditioning variable(s) used by the parent function. These
+#'   must either be columns of `mydata` or one of the built-in date-based types.
 #'
-#' @param wd Varname for wind direction.
+#' @param remove_calms If `TRUE`, sets "calm" (`ws == 0`) `ws` and `wd` values
+#'   to `NA`, and rounds `wd` to the nearest 10 degrees.
+#'
+#' @param remove_negative_ws If `TRUE`, sets negative wind speeds to `NA`.
+#'
+#' @param wd The name of the wind direction column.
 #'
 #' @param require_data If `TRUE`, error if, after preparation, `mydata` has no
-#'   rows or any of `Names` (other than `"date"`) contains only missing values.
+#'   rows or any of `vars` (other than `"date"`) contains only missing values.
 #'   Used by plotting functions, which otherwise fail with unhelpful errors or
 #'   return empty plots.
 #'
@@ -22,12 +28,12 @@
 #'
 #' @author David Carslaw
 #' @noRd
-checkPrep <- function(
+check_prep <- function(
   mydata,
-  Names,
+  vars,
   type,
-  remove.calm = TRUE,
-  remove.neg = TRUE,
+  remove_calms = FALSE,
+  remove_negative_ws = TRUE,
   wd = "wd",
   require_data = FALSE,
   call = rlang::caller_env()
@@ -36,8 +42,8 @@ checkPrep <- function(
   mydata <- dplyr::ungroup(mydata)
 
   # variables to check for data if `require_data = TRUE`; recorded before
-  # `Names` has any `type` columns added
-  data_vars <- setdiff(Names, "date")
+  # `vars` has any `type` columns added
+  data_vars <- setdiff(vars, "date")
 
   # deal with conditioning variable if present, if user-defined, must exist in
   # data pre-defined types existing conditioning variables that only depend on
@@ -46,7 +52,7 @@ checkPrep <- function(
   all_vars <- unique(c(names(mydata), conds))
 
   # names we want to be there
-  var_names <- c(Names, type)
+  var_names <- c(vars, type)
   matching <- var_names %in% all_vars
 
   if (!all(matching)) {
@@ -59,17 +65,17 @@ checkPrep <- function(
   # add type to names if not in pre-defined list
   if (!all(type %in% conds)) {
     ids <- which(!type %in% conds)
-    Names <- c(Names, type[ids])
+    vars <- c(vars, type[ids])
   }
 
   # if type already present in data frame
   if (any(type %in% names(mydata))) {
     ids <- which(type %in% names(mydata))
-    Names <- unique(c(Names, type[ids]))
+    vars <- unique(c(vars, type[ids]))
   }
 
   # just select data needed
-  mydata <- mydata[, Names]
+  mydata <- mydata[, vars]
 
   # if site is in the data set, check none are missing
   # seems to be a problem for some KCL data...
@@ -89,11 +95,11 @@ checkPrep <- function(
     replace(x, x == Inf | x == -Inf, NA)
   })
 
-  if ("ws" %in% Names) {
-    if ("ws" %in% Names && is.numeric(mydata$ws)) {
+  if ("ws" %in% vars) {
+    if ("ws" %in% vars && is.numeric(mydata$ws)) {
       # check for negative wind speeds
       if (any(sign(mydata$ws[!is.na(mydata$ws)]) == -1)) {
-        if (remove.neg) {
+        if (remove_negative_ws) {
           # remove negative ws only if TRUE
           cli::cli_warn("Wind speed < 0; removing negative data", call = NULL)
           mydata$ws[mydata$ws < 0] <- NA
@@ -106,8 +112,8 @@ checkPrep <- function(
   # data already rounded to nearest 10 degress will not be affected
   # data not rounded will be rounded to nearest 10 degrees
   # assumes 10 is average of 5-15 etc
-  if (wd %in% Names) {
-    if (wd %in% Names && is.numeric(mydata[[wd]])) {
+  if (wd %in% vars) {
+    if (wd %in% vars && is.numeric(mydata[[wd]])) {
       # check for wd <0 or > 360
       if (
         any(
@@ -123,7 +129,7 @@ checkPrep <- function(
         mydata[[wd]][mydata[[wd]] > 360] <- NA
       }
 
-      if (remove.calm) {
+      if (remove_calms) {
         if ("ws" %in% names(mydata)) {
           mydata[[wd]][mydata$ws == 0] <- NA # set wd to NA where there are calms
           mydata$ws[mydata$ws == 0] <- NA # remove calm ws
@@ -139,7 +145,7 @@ checkPrep <- function(
   }
 
   # make sure date is ordered in time if present
-  if ("date" %in% Names) {
+  if ("date" %in% vars) {
     # check if date is Date or POSIXct
     if (!inherits(mydata$date, "Date") && !inherits(mydata$date, "POSIXct")) {
       cli::cli_abort(

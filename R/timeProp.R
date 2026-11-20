@@ -97,11 +97,10 @@ timeProp <- function(
   vars <- c("date", pollutant)
 
   # check the data
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     vars,
     c(type, proportion),
-    remove.calm = FALSE,
     require_data = TRUE
   ) |>
     check_numeric(vars = pollutant)

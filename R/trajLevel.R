@@ -257,11 +257,10 @@ trajLevel <- function(
 
   # check data and set up
   check_type(type, max = 2)
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     vars,
     type,
-    remove.calm = FALSE,
     require_data = TRUE
   ) |>
     check_numeric(vars = c("lat", "lon", pollutant))

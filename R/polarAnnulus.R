@@ -218,11 +218,10 @@ polarAnnulus <-
     break_opts <- resolve_break_opts(breaks, extra.args)
 
     # check data
-    mydata <- checkPrep(
+    mydata <- check_prep(
       mydata,
       vars,
       type,
-      remove.calm = FALSE,
       require_data = TRUE
     ) |>
       check_numeric(vars = c(wd, pollutant))

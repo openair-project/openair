@@ -97,11 +97,10 @@ aqStats <- function(
   check_duplicate_rows(mydata, type, fn = cli::cli_abort)
 
   # check we have the variables
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     vars,
-    "default",
-    remove.calm = FALSE
+    "default"
   ) |>
     check_numeric(vars = pollutant)
 

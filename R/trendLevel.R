@@ -367,7 +367,7 @@ trendLevel <- function(
     )
   }
 
-  # checkPrep
+  # check_prep
   temp <- c(pollutant)
   if (x %in% dateTypes || y %in% dateTypes || any(type %in% dateTypes)) {
     temp <- c(temp, "date")
@@ -377,11 +377,10 @@ trendLevel <- function(
   }
 
   # all of x, y, temp need to be handled as type here
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     temp,
     type = c(x, y, type),
-    remove.calm = FALSE,
     require_data = TRUE
   ) |>
     check_numeric(vars = setdiff(temp, "date"))

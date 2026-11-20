@@ -153,11 +153,10 @@ distPlot <- function(
 
   # data checks
   # need special handling of cutData as `drop` needs to be passed separately
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     vars,
     c(type, group),
-    remove.calm = FALSE,
     require_data = TRUE
   ) |>
     check_numeric(vars = pollutant) |>
