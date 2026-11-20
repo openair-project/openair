@@ -264,6 +264,11 @@ scatterPlot <- function(
 
   ## extra args
   extra.args <- capture_dots(...)
+
+  # check if deprecated key.header / key.footer are being used
+  if (uses_key_header(extra.args)) {
+    key.title <- check_key_header(key.title, extra.args)
+  }
   extra.args$size <- extra.args$size %||% 1
   extra.args$linewidth <- extra.args$linewidth %||% 1
   extra.args$linetype <- extra.args$linetype %||% 1

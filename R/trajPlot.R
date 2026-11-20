@@ -263,6 +263,11 @@ trajPlot <- function(
   # extra.args
   extra.args <- capture_dots(...)
 
+  # check if deprecated key.header / key.footer are being used
+  if (uses_key_header(extra.args)) {
+    key.title <- check_key_header(key.title, extra.args)
+  }
+
   # aspect, size
   extra.args$plot.type <- extra.args$plot.type %||% "l"
   extra.args$size <- extra.args$size %||% 1

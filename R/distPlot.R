@@ -120,6 +120,11 @@ distPlot <- function(
   # extra.args setup
   extra.args <- capture_dots(...)
 
+  # check if deprecated key.header / key.footer are being used
+  if (uses_key_header(extra.args)) {
+    key.title <- check_key_header(key.title, extra.args)
+  }
+
   # default axis labels
   default_ylab <- dplyr::case_when(
     method == "ecdf" ~ "ECDF",

@@ -221,6 +221,11 @@ timePlot <- function(
   # Args setup
   extra.args <- capture_dots(...)
 
+  # check if deprecated key.header / key.footer are being used
+  if (uses_key_header(extra.args)) {
+    key.title <- check_key_header(key.title, extra.args)
+  }
+
   # detect if group is a column name rather than a boolean
   group_is_col <- is.character(group) && length(group) == 1
 

@@ -329,17 +329,21 @@ samp_boot_block <- function(n, b, block_length = 20) {
 
 # check use of deprecated key.header and key.footer
 check_key_header <- function(key.title, extra.args) {
-  if (
-    "key.header" %in%
-      names(extra.args) ||
-      "key.footer" %in% names(extra.args)
-  ) {
+  if (uses_key_header(extra.args)) {
     cli::cli_warn(
       "{.arg key.header} and {.arg key.footer} are deprecated. Please use {.arg key.title} to set a single legend name."
     )
     key.title <- paste(extra.args$key.header, extra.args$key.footer, sep = "\n")
   }
   key.title
+}
+
+# are the deprecated key.header/key.footer args being used? Functions whose
+# `key.title` has a lazy default or which check `missing(key.title)` should
+# only call `check_key_header()` if this is `TRUE`, as calling it forces
+# `key.title`.
+uses_key_header <- function(extra.args) {
+  any(c("key.header", "key.footer") %in% names(extra.args))
 }
 
 # check use of deprecated key arg
