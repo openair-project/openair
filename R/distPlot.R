@@ -384,6 +384,7 @@ distPlot <- function(
     data = mydata,
     call = match.call()
   )
+  class(output) <- "openair"
 
   invisible(output)
 }
