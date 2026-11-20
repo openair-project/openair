@@ -187,6 +187,8 @@ polarFreq <- function(
     mydata,
     vars,
     type,
+    ws = ws,
+    wd = wd,
     require_data = TRUE
   ) |>
     check_numeric(vars = c(wd, ws, pollutant))

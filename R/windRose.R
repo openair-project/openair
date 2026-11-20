@@ -342,6 +342,8 @@ windRose <- function(
     vars,
     type,
     remove_negative_ws = rm.neg,
+    ws = ws,
+    wd = wd,
     require_data = TRUE
   )
 

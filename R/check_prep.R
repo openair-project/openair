@@ -16,7 +16,7 @@
 #'
 #' @param remove_negative_ws If `TRUE`, sets negative wind speeds to `NA`.
 #'
-#' @param wd The name of the wind direction column.
+#' @param ws,wd The names of the wind speed and wind direction columns.
 #'
 #' @param require_data If `TRUE`, error if, after preparation, `mydata` has no
 #'   rows or any of `vars` (other than `"date"`) contains only missing values.
@@ -34,6 +34,7 @@ check_prep <- function(
   type,
   remove_calms = FALSE,
   remove_negative_ws = TRUE,
+  ws = "ws",
   wd = "wd",
   require_data = FALSE,
   call = rlang::caller_env()
@@ -95,14 +96,14 @@ check_prep <- function(
     replace(x, x == Inf | x == -Inf, NA)
   })
 
-  if ("ws" %in% vars) {
-    if ("ws" %in% vars && is.numeric(mydata$ws)) {
+  if (ws %in% vars) {
+    if (ws %in% vars && is.numeric(mydata[[ws]])) {
       # check for negative wind speeds
-      if (any(sign(mydata$ws[!is.na(mydata$ws)]) == -1)) {
+      if (any(sign(mydata[[ws]][!is.na(mydata[[ws]])]) == -1)) {
         if (remove_negative_ws) {
           # remove negative ws only if TRUE
           cli::cli_warn("Wind speed < 0; removing negative data", call = NULL)
-          mydata$ws[mydata$ws < 0] <- NA
+          mydata[[ws]][mydata[[ws]] < 0] <- NA
         }
       }
     }
@@ -130,9 +131,9 @@ check_prep <- function(
       }
 
       if (remove_calms) {
-        if ("ws" %in% names(mydata)) {
-          mydata[[wd]][mydata$ws == 0] <- NA # set wd to NA where there are calms
-          mydata$ws[mydata$ws == 0] <- NA # remove calm ws
+        if (ws %in% names(mydata)) {
+          mydata[[wd]][mydata[[ws]] == 0] <- NA # set wd to NA where there are calms
+          mydata[[ws]][mydata[[ws]] == 0] <- NA # remove calm ws
         }
         mydata[[wd]][mydata[[wd]] == 0] <- 360 # set any legitimate wd to 360
 
