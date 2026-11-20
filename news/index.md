@@ -2,6 +2,8 @@
 
 ## openair 3.2.0
 
+CRAN release: 2026-11-19
+
 ### Dependency Changes
 
 - [MASS](http://www.stats.ox.ac.uk/pub/MASS4/) (only used for one
