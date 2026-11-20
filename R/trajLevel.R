@@ -263,11 +263,6 @@ trajLevel <- function(
   # extra.args
   extra.args <- capture_dots(...)
 
-  extra.args$ylab <- extra.args$ylab %||% ""
-  extra.args$xlab <- extra.args$xlab %||% ""
-  extra.args$title <- extra.args$title %||% ""
-  extra.args$subtitle <- extra.args$subtitle %||% ""
-  extra.args$caption <- extra.args$caption %||% ""
   extra.args$border <- extra.args$border %||% NA
 
   if ("method" %in% names(extra.args)) {
@@ -760,14 +755,10 @@ trajLevel <- function(
       auto.text = auto.text,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    ggplot2::labs(
-      x = quickText(extra.args$xlab, auto.text),
-      y = quickText(extra.args$ylab, auto.text),
-      title = quickText(extra.args$title, auto.text),
-      subtitle = quickText(extra.args$subtitle, auto.text),
-      caption = quickText(extra.args$caption, auto.text),
-      tag = quickText(extra.args$tag, auto.text),
-      fill = quickText(key.title, auto.text = auto.text)
+    labs_openair(
+      extra.args,
+      auto.text,
+      fill = key.title
     )
 
   # add map if requested

@@ -138,8 +138,7 @@ polarDiff <- function(
       key.position = "right",
       par.settings = list(axis.line = list(col = "black")),
       alpha = 1,
-      key.title = paste("Difference", pollutant_name, sep = " "),
-      title = ""
+      key.title = paste("Difference", pollutant_name, sep = " ")
     ),
     extra.args[intersect(
       names(extra.args),
@@ -148,11 +147,18 @@ polarDiff <- function(
         "key.position",
         "par.settings",
         "alpha",
-        "key.title",
-        "title"
+        "key.title"
       )
     )]
   )
+
+  # pass on plot labels, handled by polarPlot() via labs_openair(). Not merged
+  # with modifyList(), which would drop NULLs (e.g., `caption = NULL`).
+  label_args <- extra.args[intersect(
+    names(extra.args),
+    c("xlab", "ylab", "title", "subtitle", "caption", "tag")
+  )]
+  plot_args[names(label_args)] <- label_args
 
   # for non-default types, rename type column to avoid polarPlot date coercion
   if (type != "default") {

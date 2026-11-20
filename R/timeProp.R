@@ -88,21 +88,6 @@ timeProp <- function(
   # extra.args setup
   extra.args <- capture_dots(...)
 
-  # label controls
-  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
-  extra.args$caption <- quickText(
-    extra.args$caption %||% "\ncontribution weighted by mean",
-    auto.text
-  )
-  extra.args$tag <- quickText(extra.args$tag, auto.text)
-  extra.args$xlab <- quickText(extra.args$xlab %||% "date", auto.text)
-  extra.args$ylab <- quickText(
-    extra.args$ylab %||%
-      ifelse(normalise, paste("% contribution to", pollutant), pollutant),
-    auto.text
-  )
-
   # variables needed
   vars <- c("date", pollutant)
 
@@ -259,14 +244,13 @@ timeProp <- function(
       limits = extra.args$ylim,
       expand = ggplot2::expansion(if (normalise) c(0, 0) else c(0, 0.1))
     ) +
-    ggplot2::labs(
-      x = extra.args$xlab,
-      y = extra.args$ylab,
-      title = extra.args$title,
-      subtitle = extra.args$subtitle,
-      caption = extra.args$caption,
-      tag = extra.args$tag,
-      fill = quickText(key.title, auto.text = auto.text)
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = "date",
+      y = ifelse(normalise, paste("% contribution to", pollutant), pollutant),
+      caption = "contribution weighted by mean",
+      fill = key.title
     ) +
     theme_openair(
       theme = theme,

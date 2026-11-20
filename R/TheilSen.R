@@ -214,14 +214,6 @@ TheilSen <- function(
   # extra.args setup
   extra.args <- capture_dots(...)
 
-  # label controls
-  extra.args$ylab <- quickText(extra.args$ylab %||% pollutant, auto.text)
-  extra.args$xlab <- quickText(extra.args$xlab %||% "year", auto.text)
-  extra.args$title <- quickText(extra.args$title, auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-  extra.args$caption <- quickText(extra.args$caption, auto.text)
-  extra.args$tag <- quickText(extra.args$tag, auto.text)
-
   # 2. Time Interval & Data Preparation
   interval <- find_time_interval(mydata$date)
   days <- as.numeric(strsplit(interval, split = " ")[[1]][1]) / 24 / 3600
@@ -317,6 +309,7 @@ TheilSen <- function(
     data.col = data.col,
     trend = trend,
     extra.args = extra.args,
+    pollutant = pollutant,
     ref.x = ref.x,
     ref.y = ref.y,
     auto.text = auto.text,
@@ -533,6 +526,7 @@ build_theilsen_plot <- function(
   data.col,
   trend,
   extra.args,
+  pollutant,
   ref.x,
   ref.y,
   auto.text,
@@ -653,12 +647,10 @@ build_theilsen_plot <- function(
       limits = extra.args$xlim
     ) +
     ggplot2::scale_y_continuous(limits = extra.args$ylim) +
-    ggplot2::labs(
-      x = extra.args$xlab,
-      y = extra.args$ylab,
-      title = extra.args$title,
-      subtitle = extra.args$subtitle,
-      caption = extra.args$caption,
-      tag = extra.args$tag
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = "year",
+      y = pollutant
     )
 }

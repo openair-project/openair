@@ -395,15 +395,13 @@ conditionalQuantile <- function(
       key.position,
       extra.args = extra.args
     ) +
-    ggplot2::labs(
-      color = NULL,
-      fill = NULL,
-      x = quickText(extra.args$xlab %||% "predicted value", auto.text),
-      y = quickText(extra.args$ylab %||% "observed value", auto.text),
-      title = quickText(extra.args$title, auto.text),
-      subtitle = quickText(extra.args$subtitle, auto.text),
-      caption = quickText(extra.args$caption, auto.text),
-      tag = quickText(extra.args$tag, auto.text)
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = "predicted value",
+      y = "observed value",
+      colour = NULL,
+      fill = NULL
     )
 
   if (plot) {

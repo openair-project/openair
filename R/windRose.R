@@ -249,18 +249,6 @@ windRose <- function(
   # extra.args args setup
   extra.args <- capture_dots(...)
 
-  # label controls
-  extra.args$xlab <- quickText(extra.args$xlab, auto.text)
-  extra.args$ylab <- quickText(extra.args$ylab, auto.text)
-  extra.args$title <- quickText(extra.args$title, auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-  extra.args$tag <- quickText(extra.args$tag, auto.text)
-
-  # need separate handling to be overwritten
-  if ("caption" %in% names(extra.args)) {
-    extra.args$caption <- quickText(extra.args$caption %||% NULL, auto.text)
-  }
-
   # preset statitistics
   if (is.character(statistic)) {
     # allowed cases
@@ -519,22 +507,15 @@ windRose <- function(
         low = cols[1],
         mid = cols[2],
         high = cols[3],
-        midpoint = 0,
-        name = quickText(
-          key.title,
-          auto.text = auto.text
-        )
+        midpoint = 0
       ) +
-      ggplot2::labs(
-        x = extra.args$xlab,
-        y = extra.args$ylab,
-        title = extra.args$title,
-        subtitle = extra.args$subtitle,
-        caption = extra.args$caption %||%
-          if (annotate) {
-            "Mean wind speed bias (test \u2212 reference) by reference direction"
-          },
-        tag = extra.args$tag
+      labs_openair(
+        extra.args,
+        auto.text,
+        caption = if (annotate) {
+          "Mean wind speed bias (test \u2212 reference) by reference direction"
+        },
+        fill = key.title
       ) +
       ggplot2::guides(fill = fill_guide) +
       get_facet(
@@ -804,7 +785,6 @@ windRose <- function(
     )
 
   key.title <- check_key_header(key.title, extra.args)
-  key_label <- quickText(key.title, auto.text = auto.text)
   key_guide <- guide_openair(
     key.position,
     reverse = TRUE,
@@ -860,13 +840,14 @@ windRose <- function(
       aesthetics = c("colour", "fill"),
       na.translate = FALSE
     ) +
-    ggplot2::labs(
-      x = extra.args$xlab,
-      y = extra.args$ylab,
-      title = extra.args$title,
-      subtitle = extra.args$subtitle,
-      caption = extra.args$caption %||% if (annotate) stat.lab,
-      tag = extra.args$tag
+    # bars (incl. normalised) use fill; paddles use colour and linewidth
+    labs_openair(
+      extra.args,
+      auto.text,
+      caption = if (annotate) stat.lab,
+      fill = if (normalise || !paddle) key.title,
+      colour = if (!normalise && paddle) key.title,
+      linewidth = if (!normalise && paddle) key.title
     ) +
     ggplot2::guides(
       fill = key_guide,
@@ -896,9 +877,6 @@ windRose <- function(
         fill = NA,
         position = ggplot2::position_stack(reverse = TRUE),
         width = seg * angle
-      ) +
-      ggplot2::labs(
-        fill = key_label
       )
   } else {
     if (paddle) {
@@ -929,10 +907,6 @@ windRose <- function(
         ) +
         ggplot2::scale_linewidth_manual(
           values = 5 * width * box.widths
-        ) +
-        ggplot2::labs(
-          linewidth = key_label,
-          color = key_label
         )
     } else {
       thePlot <-
@@ -942,9 +916,6 @@ windRose <- function(
           position = ggplot2::position_stack(reverse = TRUE),
           width = seg * angle,
           color = border
-        ) +
-        ggplot2::labs(
-          fill = key_label
         )
     }
   }

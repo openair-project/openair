@@ -173,7 +173,10 @@
 #'
 #'   - `title`, `subtitle`, `caption`, `tag`, `xlab` and `ylab` control the plot
 #'   title, subtitle, caption, tag, x-axis label and y-axis label, passed to
-#'   [ggplot2::labs()] via [quickText()] if `auto.text = TRUE`.
+#'   [ggplot2::labs()] via [quickText()] if `auto.text = TRUE`. Any of these can
+#'   be set to `NULL` to remove a default label (e.g., `caption = NULL`). Labels,
+#'   including legend titles, can also be overridden by adding
+#'   [ggplot2::labs()] to the returned plot.
 #'
 #'   - `xlim`, `ylim` and `limits` control the limits of the x-axis, y-axis and
 #'   colorbar scales.

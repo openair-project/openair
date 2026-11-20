@@ -4,6 +4,8 @@
 
 - Refined the built-in `theme` options. Titles, subtitles and captions now have clearer differences in size, weight and colour, and more space between them and the plot. Captions are right-aligned in the `"modern"`, `"soft"` and `"print"` themes. Several theme settings were previously being lost, which is now fixed: e.g., `fontsize` no longer turns text black in `theme = "dark"`, and `"print"` maps now show vertical graticule lines. Axis and strip text in the `"default"` and `"dark"` themes is now slightly smaller.
 
+- Plot labels are now handled consistently across all plotting functions. Legend titles can now always be overridden by adding `ggplot2::labs()` to a plot, and any default label can be removed by setting it to `NULL` (e.g., `caption = NULL`). `auto.text` now applies consistently to all titles, axis labels, captions and legend titles. Unused titles and subtitles no longer leave blank space above some plots. `variationPlot()` and `timeVariation()` now respect `xlab`, `timeVariation()` captions now show the confidence interval correctly, and `polarDiff()` now passes all label arguments (e.g., `subtitle`, `caption`) to `polarPlot()`.
+
 # openair 3.2.0
 
 ## Dependency Changes

@@ -469,21 +469,10 @@ polarPlot <-
     extra.args <- capture_dots(...)
     col.na <- extra.args$mis.col %||% col.na
 
-    # label controls
-    extra.args$xlab <- quickText(extra.args$xlab, auto.text)
-    extra.args$ylab <- quickText(extra.args$ylab, auto.text)
-    extra.args$title <- quickText(extra.args$title, auto.text)
-    extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-    extra.args$tag <- quickText(extra.args$tag, auto.text)
     extra.args$annotate <- extra.args$annotate %||% TRUE
 
     # deal with breaks
     break_opts <- resolve_break_opts(breaks, extra.args)
-
-    # separate handling for being overwritten
-    if ("caption" %in% names(extra.args)) {
-      extra.args$caption <- quickText(extra.args$caption, auto.text)
-    }
 
     # if clustering, return lower resolution plot
     extra.args$cluster <- if ("cluster" %in% names(extra.args)) {
@@ -685,11 +674,11 @@ polarPlot <-
     # define radial axis
     if (extra.args$annotate) {
       # label radial axis
-      sub <- quickText(paste(
+      sub <- paste(
         paste0("Radial axis shows ", x),
         sub,
         sep = "\n"
-      ))
+      )
     }
 
     # Thin wrapper — delegates to polar_prepare_grid() with all dependencies
@@ -872,9 +861,6 @@ polarPlot <-
     # check if key.header / key.footer are being used
     key.title <- check_key_header(key.title, extra.args)
 
-    # run through
-    legend_title <- quickText(key.title, auto.text)
-
     # restore to polar coordinates
     plot_data <-
       res |>
@@ -996,14 +982,11 @@ polarPlot <-
         ),
         theme = theme
       ) +
-      ggplot2::labs(
-        fill = legend_title,
-        x = extra.args$xlab,
-        y = extra.args$ylab,
-        title = extra.args$title,
-        subtitle = extra.args$subtitle,
-        caption = extra.args$caption %||% sub,
-        tag = extra.args$tag
+      labs_openair(
+        extra.args,
+        auto.text,
+        caption = sub,
+        fill = key.title
       ) +
       theme_legend_key(key.position) +
       get_facet(

@@ -222,18 +222,6 @@ percentileRose <- function(
   # extra.args setup
   extra.args <- capture_dots(...)
 
-  # label controls
-  extra.args$xlab <- quickText(extra.args$xlab, auto.text)
-  extra.args$ylab <- quickText(extra.args$ylab, auto.text)
-  extra.args$title <- quickText(extra.args$title, auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-  extra.args$tag <- quickText(extra.args$tag, auto.text)
-
-  # separate handling for being overwritten
-  if ("caption" %in% names(extra.args)) {
-    extra.args$caption <- quickText(extra.args$caption, auto.text)
-  }
-
   extra.args$linewidth <- extra.args$linewidth %||% 2
 
   # check if key.header / key.footer are being used
@@ -533,13 +521,13 @@ percentileRose <- function(
       extra.args = extra.args,
       panel.ontop = TRUE
     ) +
-    ggplot2::labs(
-      x = extra.args$xlab,
-      y = extra.args$ylab,
-      title = extra.args$title,
-      subtitle = extra.args$subtitle,
-      caption = extra.args$caption %||% sub,
-      tag = extra.args$tag
+    labs_openair(
+      extra.args,
+      auto.text,
+      caption = sub,
+      # percentiles are filled areas or coloured lines
+      fill = if (fill) key.title,
+      colour = if (!fill) key.title
     ) +
     ggplot2::scale_colour_manual(
       values = c(
@@ -547,7 +535,6 @@ percentileRose <- function(
         mean.col
       ),
       breaks = fct_labels,
-      name = quickText(key.title, auto.text = auto.text),
       aesthetics = c("colour", "fill")
     ) +
     ggplot2::guides(

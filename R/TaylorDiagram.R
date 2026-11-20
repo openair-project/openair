@@ -241,29 +241,13 @@ TaylorDiagram <- function(
   # extra.args setup
   extra.args <- capture_dots(...)
 
-  # label controls
-  extra.args$xlab <- quickText(
-    extra.args$xlab %||%
-      ifelse(
-        normalise,
-        "standard deviation (normalised)",
-        "standard deviation"
-      ),
-    auto.text
+  # default axis label
+  sd_lab <- ifelse(
+    normalise,
+    "standard deviation (normalised)",
+    "standard deviation"
   )
-  extra.args$ylab <- quickText(
-    extra.args$ylab %||%
-      ifelse(
-        normalise,
-        "standard deviation (normalised)",
-        "standard deviation"
-      ),
-    auto.text
-  )
-  extra.args$title <- quickText(extra.args$title, auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-  extra.args$caption <- quickText(extra.args$caption, auto.text)
-  extra.args$tag <- quickText(extra.args$tag, auto.text)
+
   extra.args$shape <- extra.args$shape %||% 20
   extra.args$size <- extra.args$size %||% 2
   extra.args$fontsize <- extra.args$fontsize %||% 11
@@ -589,16 +573,16 @@ TaylorDiagram <- function(
       panel.grid.minor = ggplot2::element_blank(),
       panel.grid.major.y = ggplot2::element_line()
     ) +
-    ggplot2::labs(
-      x = extra.args$xlab,
-      y = if (!positive_only) NULL else extra.args$ylab,
-      title = extra.args$title,
-      subtitle = extra.args$subtitle,
-      caption = extra.args$caption,
-      tag = extra.args$tag,
-      color = quickText(key.title, auto.text = auto.text),
-      shape = quickText(key.title, auto.text = auto.text)
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = sd_lab,
+      y = sd_lab,
+      colour = key.title,
+      shape = key.title
     ) +
+    # no y axis title when the diagram extends to negative correlations
+    (if (!positive_only) ggplot2::labs(y = NULL)) +
     ggplot2::scale_shape_manual(
       values = c(shapes, 20),
       breaks = c(levels(results[[group]]), text.obs)

@@ -285,14 +285,6 @@ scatterPlot <- function(
   ## handle windflow
   windflow <- resolve_windflow_opts(windflow)
 
-  ## axis labels / title
-  xlab <- quickText(extra.args$xlab %||% x, auto.text)
-  ylab <- quickText(extra.args$ylab %||% y, auto.text)
-  title <- quickText(extra.args$title, auto.text)
-  subtitle <- quickText(extra.args$subtitle, auto.text)
-  caption <- quickText(extra.args$caption, auto.text)
-  tag <- quickText(extra.args$tag, auto.text)
-
   ## prepare data
   mydata <- prepare_scatter_data(
     mydata = mydata,
@@ -342,12 +334,6 @@ scatterPlot <- function(
       trans = trans,
       k = k,
       auto.text = auto.text,
-      xlab = xlab,
-      ylab = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag,
       extra.args = extra.args
     ),
     hexbin = scatter_hexbin(
@@ -369,12 +355,6 @@ scatterPlot <- function(
       key.position = key.position,
       trans = trans,
       auto.text = auto.text,
-      xlab = xlab,
-      ylab = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag,
       extra.args = extra.args
     ),
     level = scatter_level(
@@ -400,12 +380,6 @@ scatterPlot <- function(
       k = k,
       dist = dist,
       auto.text = auto.text,
-      xlab = xlab,
-      ylab = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag,
       extra.args = extra.args
     ),
     density = scatter_density(
@@ -423,12 +397,6 @@ scatterPlot <- function(
       key.position = key.position,
       trans = trans,
       auto.text = auto.text,
-      xlab = xlab,
-      ylab = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag,
       extra.args = extra.args
     )
   )
@@ -572,12 +540,6 @@ scatter_scatter <- function(
   trans,
   k,
   auto.text,
-  xlab,
-  ylab,
-  title = title,
-  subtitle = subtitle,
-  caption = caption,
-  tag = tag,
   extra.args
 ) {
   has_z <- !is.na(z)
@@ -664,10 +626,8 @@ scatter_scatter <- function(
         ),
         transform = get_scale_transform(trans %||% "identity"),
         aesthetics = c("colour", "fill")
-      ) +
-      ggplot2::labs(
-        color = quickText(z, auto.text)
       )
+    legend_labs <- list(colour = z)
   } else if (has_group) {
     grp_aes <- ggplot2::aes(
       color = .data[[group]],
@@ -691,7 +651,7 @@ scatter_scatter <- function(
       seq_len(n_groups) %% 25 + 1L
     }
 
-    pol_name <- sapply(group_levels, function(x) quickText(x, auto.text))
+    pol_name <- label_openair(group_levels, auto_text = auto.text)
 
     theGuide <- guide_openair(
       key.position,
@@ -712,11 +672,8 @@ scatter_scatter <- function(
         values = shape_vals,
         labels = pol_name,
         guide = theGuide
-      ) +
-      ggplot2::labs(
-        color = quickText(key.title, auto.text),
-        shape = quickText(key.title, auto.text)
       )
+    legend_labs <- list(colour = key.title, shape = key.title)
   } else {
     ## single series — fixed colour, no legend
     plt <- plt +
@@ -731,6 +688,7 @@ scatter_scatter <- function(
         fixed_color = myColors[1L],
         extra.args = extra.args
       )
+    legend_labs <- list()
   }
 
   ## smooth fit
@@ -883,14 +841,13 @@ scatter_scatter <- function(
       key.position = if (n_groups == 1L && !has_z) "none" else key.position,
       extra.args = extra.args
     ) +
-    ggplot2::labs(
-      x = xlab,
-      y = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag
-    )
+    rlang::inject(labs_openair(
+      extra.args,
+      auto.text,
+      x = x,
+      y = y,
+      !!!legend_labs
+    ))
 
   return(
     list(
@@ -925,12 +882,6 @@ scatter_hexbin <- function(
   key.position,
   trans,
   auto.text,
-  xlab,
-  ylab,
-  title = title,
-  subtitle = subtitle,
-  caption = caption,
-  tag,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
@@ -946,9 +897,6 @@ scatter_hexbin <- function(
       guide = ggplot2::guide_colorbar(
         position = key.position
       )
-    ) +
-    ggplot2::labs(
-      fill = "count"
     )
 
   if (mod.line) {
@@ -1014,13 +962,12 @@ scatter_hexbin <- function(
       key.position = key.position,
       extra.args = extra.args
     ) +
-    ggplot2::labs(
-      x = xlab,
-      y = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = x,
+      y = y,
+      fill = "count"
     )
 
   return(
@@ -1060,12 +1007,6 @@ scatter_level <- function(
   k,
   dist,
   auto.text,
-  xlab,
-  ylab,
-  title = title,
-  subtitle = subtitle,
-  caption = caption,
-  tag,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
@@ -1153,9 +1094,6 @@ scatter_level <- function(
         position = key.position
       ),
       transform = get_scale_transform(trans %||% "identity")
-    ) +
-    ggplot2::labs(
-      fill = quickText(z, auto.text)
     )
 
   if (mod.line) {
@@ -1181,13 +1119,12 @@ scatter_level <- function(
       key.position = key.position,
       extra.args = extra.args
     ) +
-    ggplot2::labs(
-      x = xlab,
-      y = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = x,
+      y = y,
+      fill = z
     )
 
   return(
@@ -1318,12 +1255,6 @@ scatter_density <- function(
   key.position,
   trans,
   auto.text,
-  xlab,
-  ylab,
-  title,
-  subtitle,
-  caption,
-  tag,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
@@ -1353,9 +1284,6 @@ scatter_density <- function(
         position = key.position
       ),
       transform = get_scale_transform(trans %||% "identity")
-    ) +
-    ggplot2::labs(
-      fill = "intensity"
     )
 
   if (mod.line) {
@@ -1382,13 +1310,12 @@ scatter_density <- function(
       key.position = key.position,
       extra.args = extra.args
     ) +
-    ggplot2::labs(
-      x = xlab,
-      y = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = x,
+      y = y,
+      fill = "intensity"
     )
 
   return(

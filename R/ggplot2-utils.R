@@ -79,6 +79,96 @@ get_facet <- function(
   fun
 }
 
+# Labels ------------------------------------------------------------------
+
+# Build the labels of an openair plot as a `ggplot2::labs()` object.
+#
+# Every openair plotting function should set its labels through this function
+# so that they are all handled in the same way:
+#
+# 1. A value supplied by the user via `...` (`xlab`, `ylab`, `title`,
+#    `subtitle`, `caption`, `tag`) takes precedence over the function's
+#    default. Users can pass `NULL` (e.g., `caption = NULL`) to remove a default
+#    label.
+#
+# 2. The label is passed through `quickText()` if `auto.text` applies to that
+#    part of the plot (see `use_quicktext()`).
+#
+# Legend titles are supplied by aesthetic via `...` (e.g., `fill = key.title`)
+# and are set here rather than via `name` in a scale or `title` in a guide, so
+# that users can override them with `+ ggplot2::labs()`. Labels for aesthetics
+# that aren't used by the plot are ignored by ggplot2, so it is safe to supply
+# the legend title for every aesthetic a plot might use.
+labs_openair <- function(
+  extra.args = list(),
+  auto.text = TRUE,
+  x = NULL,
+  y = NULL,
+  title = NULL,
+  subtitle = NULL,
+  caption = NULL,
+  tag = NULL,
+  ...
+) {
+  # plot-level labels: user-supplied value (if any), else function default
+  defaults <- list(
+    x = x,
+    y = y,
+    title = title,
+    subtitle = subtitle,
+    caption = caption,
+    tag = tag
+  )
+  user_names <- c(
+    x = "xlab",
+    y = "ylab",
+    title = "title",
+    subtitle = "subtitle",
+    caption = "caption",
+    tag = "tag"
+  )
+
+  labels <- lapply(names(defaults), function(part) {
+    label <- resolve_label(extra.args, user_names[[part]], defaults[[part]])
+    label_part(label, part, auto.text)
+  })
+  names(labels) <- names(defaults)
+
+  # legend titles, supplied by aesthetic
+  legend <- lapply(rlang::list2(...), label_part, "legend", auto.text)
+
+  # build with `do.call()` so that NULL labels remove the label
+  do.call(ggplot2::labs, c(labels, legend))
+}
+
+# The value for a label: the user's value if they supplied one (even `NULL`),
+# else the default
+resolve_label <- function(extra.args, name, default) {
+  if (name %in% names(extra.args)) {
+    extra.args[[name]]
+  } else {
+    default
+  }
+}
+
+# Pass a single label through `quickText()` if `auto.text` applies to `part`
+label_part <- function(text, part, auto.text) {
+  if (is.null(text)) {
+    return(NULL)
+  }
+  quickText(text, auto.text = use_quicktext(auto.text, part))
+}
+
+# Should `quickText()` be applied to a given part of the plot?
+#
+# `part` is one of "x", "y", "title", "subtitle", "caption", "tag" or
+# "legend". Currently `auto.text` is a single `TRUE`/`FALSE` applying to all
+# parts; this is the single place to extend if `auto.text` is to target
+# specific parts of a plot.
+use_quicktext <- function(auto.text, part) {
+  isTRUE(auto.text)
+}
+
 # Guides ------------------------------------------------------------------
 
 # ggplot2 legend, colourbar or coloursteps with openair's title/text placement.

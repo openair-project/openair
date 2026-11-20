@@ -233,20 +233,6 @@ timeVariation <- function(
     extra.args$month.last <- NULL
   }
 
-  # label controls
-  # xlab handled in formals and code because unique
-  extra.args$ylab <- quickText(
-    extra.args$ylab %||%
-      ifelse(normalise, "normalised level", toString(pollutant)),
-    auto.text
-  )
-  extra.args$title <- quickText(extra.args$title, auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-  extra.args$caption <- quickText(
-    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int, ci),
-    auto.text
-  )
-
   # if user supplies separate ylims for each plot
   if ("ylim" %in% names(extra.args)) {
     if (is.list(extra.args$ylim)) {
@@ -276,27 +262,23 @@ timeVariation <- function(
     panels_xlabs <- xlab
   }
 
-  # title for overall and individual plots
-  overall.title <- if (identical(extra.args$title, expression(paste()))) {
-    NULL
-  } else {
-    extra.args$title
+  # title, subtitle and caption apply to the whole assembled plot, not to
+  # individual panels. Axis labels are passed on to `variationPlot()`, which
+  # labels each panel via `labs_openair()`.
+  # default conf.int, as in variationPlot(), so the caption is correct
+  if (is.null(conf.int)) {
+    conf.int <- if (statistic == "median") c(0.75, 0.95) else 0.95
   }
-  extra.args$title <- ""
 
-  overall.subtitle <- if (identical(extra.args$subtitle, expression(paste()))) {
-    NULL
-  } else {
-    extra.args$subtitle
-  }
-  extra.args$subtitle <- ""
-
-  overall.caption <- if (identical(extra.args$caption, expression(paste()))) {
-    NULL
-  } else {
-    extra.args$caption
-  }
-  extra.args$caption <- ""
+  overall_defaults <- list(
+    title = NULL,
+    subtitle = NULL,
+    caption = create_varplot_sub_text(statistic, conf.int, ci)
+  )
+  overall_labs <- purrr::imap(overall_defaults, \(default, part) {
+    label_part(resolve_label(extra.args, part, default), part, auto.text)
+  })
+  extra.args[c("title", "subtitle", "caption")] <- list(NULL)
 
   # get the xvars and facets for each panel
   panels_x <- list()
@@ -343,9 +325,13 @@ timeVariation <- function(
           name.pol = name.pol,
           auto.text = auto.text,
           ylim = ylim_list[[i]],
-          plot = FALSE,
-          xlab = panels_xlabs[[i]]
+          plot = FALSE
         )
+
+        # only pass `xlab` if set; `variationPlot()` otherwise uses its default
+        if (!is.null(panels_xlabs[[i]])) {
+          args$xlab <- panels_xlabs[[i]]
+        }
 
         args <- append(args, extra.args)
 
@@ -398,9 +384,9 @@ timeVariation <- function(
         heights = c(0.4, 0.6)
       ) +
       patchwork::plot_annotation(
-        title = overall.title,
-        subtitle = overall.subtitle,
-        caption = overall.caption,
+        title = overall_labs$title,
+        subtitle = overall_labs$subtitle,
+        caption = overall_labs$caption,
         theme = ggplot2::theme(
           plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
           plot.subtitle = ggplot2::element_text(hjust = 0.5),

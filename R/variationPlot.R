@@ -148,20 +148,11 @@ variationPlot <- function(
   # extra.args setup
   extra.args <- capture_dots(...)
 
-  # labels
-  extra.args$ylab <- quickText(
-    extra.args$ylab %||%
-      ifelse(normalise, "normalised level", toString(pollutant)),
-    auto.text
-  )
-  extra.args$xlab <- quickText(extra.args$x %||% x, auto.text)
-  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
-  extra.args$caption <- quickText(
-    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int, ci),
-    auto.text
-  )
-  extra.args$tag <- quickText(extra.args$tag, auto.text)
+  # default labels
+  default_ylab <- ifelse(normalise, "normalised level", toString(pollutant))
+  default_xlab <- x
+  default_caption <- create_varplot_sub_text(statistic, conf.int, ci)
+
   extra.args$linetype <- extra.args$linetype %||% 1
   extra.args$linewidth <- extra.args$linewidth %||% 0.75
   extra.args$shape <- extra.args$shape %||% 16
@@ -506,18 +497,17 @@ variationPlot <- function(
       wd.res = extra.args$wd.res %||% 8,
       wd_layout = identical(type, "wd")
     ) +
-    ggplot2::labs(
-      x = extra.args$xlab,
-      y = extra.args$ylab,
-      color = NULL,
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = default_xlab,
+      y = default_ylab,
+      caption = default_caption,
+      colour = NULL,
       fill = NULL,
       linetype = NULL,
       linewidth = NULL,
-      shape = NULL,
-      title = extra.args$title,
-      subtitle = extra.args$subtitle,
-      caption = extra.args$caption,
-      tag = extra.args$tag
+      shape = NULL
     ) +
     ggplot2::coord_cartesian(
       ylim = extra.args$ylim

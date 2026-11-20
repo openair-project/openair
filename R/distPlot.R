@@ -120,26 +120,15 @@ distPlot <- function(
   # extra.args setup
   extra.args <- capture_dots(...)
 
-  # labels
-  extra.args$ylab <- quickText(
-    extra.args$ylab %||%
-      dplyr::case_when(
-        method == "ecdf" ~ "ECDF",
-        (position %||% "identity") == "fill" ~ "Proportion",
-        (method == "density" &&
-          (position %||% "identity") == "identity") ~ "Density",
-        .default = "Count"
-      ),
-    auto.text
+  # default axis labels
+  default_ylab <- dplyr::case_when(
+    method == "ecdf" ~ "ECDF",
+    (position %||% "identity") == "fill" ~ "Proportion",
+    (method == "density" &&
+      (position %||% "identity") == "identity") ~ "Density",
+    .default = "Count"
   )
-  extra.args$xlab <- quickText(
-    extra.args$xlab %||% paste(pollutant, collapse = ", "),
-    auto.text
-  )
-  extra.args$title <- quickText(extra.args$title, auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-  extra.args$caption <- quickText(extra.args$caption, auto.text)
-  extra.args$tag <- quickText(extra.args$tag, auto.text)
+  default_xlab <- paste(pollutant, collapse = ", ")
 
   extra.args$linetype <- extra.args$linetype %||% 1
   extra.args$linewidth <- extra.args$linewidth %||% 0.5
@@ -360,20 +349,19 @@ distPlot <- function(
       wd.res = extra.args$wd.res %||% 8,
       wd_layout = identical(type[type != "default"], "wd")
     ) +
-    ggplot2::labs(
-      x = extra.args$xlab,
-      y = extra.args$ylab,
-      title = extra.args$title,
-      subtitle = extra.args$subtitle,
-      caption = extra.args$caption,
-      tag = extra.args$tag
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = default_xlab,
+      y = default_ylab,
+      colour = key.title,
+      fill = key.title
     ) +
     ggplot2::scale_color_manual(
       values = resolve_colour_opts(
         cols,
         dplyr::n_distinct(mydata$group)
       ),
-      name = quickText(key.title, auto.text),
       breaks = levels(mydata$group),
       labels = \(x) label_openair(x, auto_text = auto.text),
       drop = FALSE,

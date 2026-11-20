@@ -269,10 +269,11 @@ conditionalEval <- function(
       ggplot2::guides(
         fill = ggplot2::guide_legend(direction = "vertical")
       ) +
-      ggplot2::labs(
-        fill = quickText(statistic, auto.text),
-        x = quickText(extra.args$xlab, auto.text),
-        y = quickText("proportion", auto.text)
+      labs_openair(
+        extra.args,
+        auto.text,
+        y = "proportion",
+        fill = statistic
       )
 
     return_data <- other_results
@@ -440,11 +441,11 @@ conditionalEval <- function(
         key.position = "bottom",
         extra.args = extra.args
       ) +
-      ggplot2::labs(
-        x = quickText(extra.args$xlab, auto.text),
-        y = quickText(extra.args$ylab, auto.text),
-        color = quickText("variable", auto.text),
-        fill = quickText("variable", auto.text)
+      labs_openair(
+        extra.args,
+        auto.text,
+        colour = "variable",
+        fill = "variable"
       ) +
       ggplot2::guides(
         fill = ggplot2::guide_legend(direction = "vertical"),
@@ -454,10 +455,10 @@ conditionalEval <- function(
     return_data <- results
   }
 
+  # the right panel's labels are set above; the title is shared by both panels
   if ("title" %in% names(extra.args)) {
-    title <- quickText(extra.args$title, auto.text)
-    cq_plt <- cq_plt + ggplot2::labs(title = title)
-    right_plt <- right_plt + ggplot2::labs(title = title)
+    cq_plt <- cq_plt +
+      ggplot2::labs(title = label_part(extra.args$title, "title", auto.text))
   }
 
   thePlot <- patchwork::wrap_plots(
