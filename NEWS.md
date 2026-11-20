@@ -12,6 +12,8 @@
 
 - `rollingQuantile()` gains a `new.name` argument to name the new quantile columns, consistent with `rollingMean()`. It takes one name per value of `probs`, e.g., `new.name = c("o3_low", "o3_high")`.
 
+- openair objects gain `grid::grid.draw()`, `as.data.frame()` and `tibble::as_tibble()` methods. This means openair objects can be saved directly with `ggplot2::ggsave()` (e.g., `ggsave("plot.png", polarPlot(mydata))`), and their data extracted as a data frame or tibble. Where an object contains several data frames (e.g., from `timeVariation()`), use `subset` to choose one.
+
 - `variationPlot()` and `timeVariation()` gain a `windflow` argument, consistent with `timePlot()`, `scatterPlot()`, `trendLevel()` and `calendarPlot()`. Arrows show the vector-averaged wind speed and direction for each point on the plot, e.g., for each hour of the day. When `group` is used, the wind is averaged separately for each group. The averaged `ws` and `wd` are also returned in the `data` element of the output.
 
 ## Bug Fixes
@@ -27,6 +29,16 @@
 - `timeVariation()` with a single panel (e.g., `panels = "hour"`) no longer drops its title, subtitle and caption.
 
 - All plotting functions now give a clear error when there is nothing to plot, i.e., when `mydata` has no rows or a requested variable (e.g., a `pollutant`) contains only missing values. Previously, this caused unhelpful errors or silently returned empty plots.
+
+- Fixed several issues with the methods for openair objects:
+
+    - `print()` now returns the object invisibly, rather than `NULL`.
+
+    - `print()` now writes its description to standard output rather than as messages, so it can be captured with `capture.output()` and appears as printed output in R Markdown and Quarto documents. The description is also more compact, and long function calls no longer display incorrectly (this also affected `results()`).
+
+    - `head()`, `tail()` and `summary()` now return their results without printing them (or a header), so they only print when not assigned, as is standard in R.
+
+    - When some requested `subset`s are missing, `head()`, `tail()` and `summary()` now warn and ignore them, as their message said, rather than erroring. Their error and warning messages now name the function used.
 
 - `selectByDate()` is more robust when parsing and checking its inputs:
 
