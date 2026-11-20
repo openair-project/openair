@@ -35,6 +35,7 @@ variationPlot(
   key.rows = NULL,
   name.pol = NULL,
   auto.text = TRUE,
+  windflow = NULL,
   plot = TRUE,
   ...
 )
@@ -250,6 +251,15 @@ variationPlot(
   will automatically try and format pollutant names and units properly,
   e.g., by subscripting the "2" in "NO2". Passed to
   [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md).
+
+- windflow:
+
+  If `TRUE`, the vector-averaged wind speed and direction will be
+  plotted using arrows. Alternatively, can be a list of arguments to
+  control the appearance of the arrows (colour, linewidth, alpha value,
+  etc.). See
+  [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md)
+  for details.
 
 - plot:
 

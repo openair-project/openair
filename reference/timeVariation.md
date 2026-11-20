@@ -39,6 +39,7 @@ timeVariation(
   panel.gap = 1.5,
   auto.text = TRUE,
   alpha = 0.4,
+  windflow = NULL,
   plot = TRUE,
   ...
 )
@@ -267,6 +268,15 @@ timeVariation(
 
   The alpha transparency used for plotting confidence intervals. `0` is
   fully transparent and 1 is opaque. The default is `0.4`.
+
+- windflow:
+
+  If `TRUE`, the vector-averaged wind speed and direction will be
+  plotted using arrows. Alternatively, can be a list of arguments to
+  control the appearance of the arrows (colour, linewidth, alpha value,
+  etc.). See
+  [`windflowOpts()`](https://openair-project.github.io/openair/reference/windflowOpts.md)
+  for details.
 
 - plot:
 

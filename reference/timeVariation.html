@@ -106,6 +106,7 @@ separate plots are produced. This is a convenient alternative to using
 <span>  panel.gap <span class="op">=</span> <span class="fl">1.5</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  alpha <span class="op">=</span> <span class="fl">0.4</span>,</span>
+<span>  windflow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -304,6 +305,13 @@ properly, e.g., by subscripting the "2" in "NO2". Passed to <code><a href="quick
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
 <dd><p>The alpha transparency used for plotting confidence intervals.
 <code>0</code> is fully transparent and 1 is opaque. The default is <code>0.4</code>.</p></dd>
+
+
+<dt id="arg-windflow">windflow<a class="anchor" aria-label="anchor" href="#arg-windflow"></a></dt>
+<dd><p>If <code>TRUE</code>, the vector-averaged wind speed and direction will
+be plotted using arrows. Alternatively, can be a list of arguments to
+control the appearance of the arrows (colour, linewidth, alpha value,
+etc.). See <code><a href="windflowOpts.html">windflowOpts()</a></code> for details.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>

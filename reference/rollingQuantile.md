@@ -16,6 +16,7 @@ rollingQuantile(
   data.thresh = 75,
   align = c("centre", "center", "left", "right"),
   probs = 0.5,
+  new.name = NULL,
   date.pad = FALSE,
   ...
 )
@@ -62,6 +63,13 @@ rollingQuantile(
 
   Probability for quantile calculate. A number between 0 and 1. Can be
   more than length one e.g. `probs = c(0.05, 0.95)`.
+
+- new.name:
+
+  The names given to the new quantile columns, one per value of `probs`,
+  e.g., `new.name = c("o3_low", "o3_high")` when
+  `probs = c(0.05, 0.95)`. If not supplied, names are created from the
+  pollutant and probability, e.g., `"q_o3_0.05"`.
 
 - date.pad:
 

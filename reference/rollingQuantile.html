@@ -77,6 +77,7 @@ frame with the same number of rows supplied.</p>
 <span>  data.thresh <span class="op">=</span> <span class="fl">75</span>,</span>
 <span>  align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"centre"</span>, <span class="st">"center"</span>, <span class="st">"left"</span>, <span class="st">"right"</span><span class="op">)</span>,</span>
 <span>  probs <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  new.name <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  date.pad <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -121,6 +122,12 @@ means that the previous hours (including the current) are averaged.
 
 <dt id="arg-probs">probs<a class="anchor" aria-label="anchor" href="#arg-probs"></a></dt>
 <dd><p>Probability for quantile calculate. A number between 0 and 1. Can be more than length one e.g. <code>probs = c(0.05, 0.95)</code>.</p></dd>
+
+
+<dt id="arg-new-name">new.name<a class="anchor" aria-label="anchor" href="#arg-new-name"></a></dt>
+<dd><p>The names given to the new quantile columns, one per value of
+<code>probs</code>, e.g., <code>new.name = c("o3_low", "o3_high")</code> when <code>probs = c(0.05, 0.95)</code>. If not supplied, names are created from the pollutant and
+probability, e.g., <code>"q_o3_0.05"</code>.</p></dd>
 
 
 <dt id="arg-date-pad">date.pad<a class="anchor" aria-label="anchor" href="#arg-date-pad"></a></dt>

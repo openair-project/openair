@@ -2,6 +2,37 @@
 
 ## openair (development version)
 
+### Breaking Changes
+
+- [`rollingQuantile()`](https://openair-project.github.io/openair/reference/rollingQuantile.md)
+  now names its count of valid values `n_<pollutant>` (e.g., `n_o3`),
+  consistent with
+  [`rollingMean()`](https://openair-project.github.io/openair/reference/rollingMean.md).
+  Previously it was named `counts`.
+
+### New Features
+
+- [`rollingQuantile()`](https://openair-project.github.io/openair/reference/rollingQuantile.md)
+  gains a `new.name` argument to name the new quantile columns,
+  consistent with
+  [`rollingMean()`](https://openair-project.github.io/openair/reference/rollingMean.md).
+  It takes one name per value of `probs`, e.g.,
+  `new.name = c("o3_low", "o3_high")`.
+
+- [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
+  and
+  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+  gain a `windflow` argument, consistent with
+  [`timePlot()`](https://openair-project.github.io/openair/reference/timePlot.md),
+  [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md),
+  [`trendLevel()`](https://openair-project.github.io/openair/reference/trendLevel.md)
+  and
+  [`calendarPlot()`](https://openair-project.github.io/openair/reference/calendarPlot.md).
+  Arrows show the vector-averaged wind speed and direction for each
+  point on the plot, e.g., for each hour of the day. When `group` is
+  used, the wind is averaged separately for each group. The averaged
+  `ws` and `wd` are also returned in the `data` element of the output.
+
 ### Bug Fixes
 
 - Refined the built-in `theme` options. Titles, subtitles and captions
@@ -46,6 +77,16 @@
   plot, i.e., when `mydata` has no rows or a requested variable (e.g., a
   `pollutant`) contains only missing values. Previously, this caused
   unhelpful errors or silently returned empty plots.
+
+- [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
+  and
+  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+  no longer error when `"wd"` is one of the `pollutant`s. When
+  `pollutant = "wd"` is used with `group`, wind direction is now
+  vector-averaged; previously it was averaged arithmetically, so
+  e.g. 350 and 10 degrees averaged to 180 rather than 360. Using
+  `difference = TRUE` with `"wd"` now gives a clear error, as
+  differences in wind direction aren’t supported.
 
 - [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
   and

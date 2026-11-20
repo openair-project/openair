@@ -100,6 +100,7 @@ variables will be joined by a line.</p>
 <span>  key.rows <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  name.pol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  windflow <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -279,6 +280,13 @@ the user wanted a different description, then setting <code>name.pol = "nox befo
 <dd><p>Either <code>TRUE</code> (default) or <code>FALSE</code>. If <code>TRUE</code> titles and
 axis labels will automatically try and format pollutant names and units
 properly, e.g., by subscripting the "2" in "NO2". Passed to <code><a href="quickText.html">quickText()</a></code>.</p></dd>
+
+
+<dt id="arg-windflow">windflow<a class="anchor" aria-label="anchor" href="#arg-windflow"></a></dt>
+<dd><p>If <code>TRUE</code>, the vector-averaged wind speed and direction will
+be plotted using arrows. Alternatively, can be a list of arguments to
+control the appearance of the arrows (colour, linewidth, alpha value,
+etc.). See <code><a href="windflowOpts.html">windflowOpts()</a></code> for details.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
