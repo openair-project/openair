@@ -170,3 +170,115 @@ test_that("selectByDate with no arguments returns the full data frame", {
 
   expect_equal(nrow(result), nrow(mydata))
 })
+
+# --- date parsing ------------------------------------------------------------
+
+test_that("partial or malformed dates error rather than being misread", {
+  expect_error(selectByDate(mydata, start = "2003-06"), "Could not parse")
+  expect_error(selectByDate(mydata, start = "2003-06-01 10"), "Could not parse")
+  expect_error(selectByDate(mydata, start = "31/02/2003"), "Could not parse")
+  expect_error(selectByDate(mydata, start = 2003), "Could not parse")
+})
+
+test_that("slash dates are d/m/yyyy by default; other formats via `format`", {
+  result <- selectByDate(mydata, start = "1/2/2003", end = "1/2/2003")
+  expect_true(all(as.Date(result$date) == as.Date("2003-02-01")))
+
+  expect_error(selectByDate(mydata, start = "12/25/2003"), "Could not parse")
+
+  result <- selectByDate(
+    mydata,
+    start = "12/25/2003 10:00",
+    end = "12/25/2003 12:00",
+    format = "%m/%d/%Y %H:%M"
+  )
+  expect_equal(
+    format(range(result$date), "%Y-%m-%d %H:%M"),
+    c("2003-12-25 10:00", "2003-12-25 12:00")
+  )
+})
+
+test_that("ISO dates with times are accepted", {
+  result <- selectByDate(
+    mydata,
+    start = "2003-06-01 10:00",
+    end = "2003-06-01 12:30:00"
+  )
+  expect_equal(
+    format(range(result$date), "%H:%M"),
+    c("10:00", "12:00")
+  )
+})
+
+test_that("formats are tried in order, and `end` covers its whole period", {
+  # whole months, including a leap-year February
+  result <- selectByDate(
+    mydata,
+    start = "2004-02",
+    end = "2004-02",
+    format = "%Y-%m"
+  )
+  expect_equal(
+    format(range(result$date), "%Y-%m-%d %H:%M"),
+    c("2004-02-01 00:00", "2004-02-29 23:00")
+  )
+
+  # whole years; second format used for `start`
+  result <- selectByDate(
+    mydata,
+    start = "2003",
+    end = "2003-02",
+    format = c("%Y-%m", "%Y")
+  )
+  expect_equal(
+    format(range(result$date), "%Y-%m-%d %H:%M"),
+    c("2003-01-01 00:00", "2003-02-28 23:00")
+  )
+
+  # an `end` with a time is exact
+  result <- selectByDate(
+    mydata,
+    start = "2003-06-01 05",
+    end = "2003-06-01 07",
+    format = "%Y-%m-%d %H"
+  )
+  expect_equal(nrow(result), 3)
+})
+
+test_that("end as a Date includes the whole day; POSIXct end is exact", {
+  result <- selectByDate(
+    mydata,
+    start = as.Date("2003-01-31"),
+    end = as.Date("2003-01-31")
+  )
+  expect_equal(nrow(result), 24)
+
+  result <- selectByDate(
+    mydata,
+    start = as.POSIXct("2003-01-31", tz = "GMT"),
+    end = as.POSIXct("2003-01-31 05:00", tz = "GMT")
+  )
+  expect_equal(nrow(result), 6)
+})
+
+test_that("start and end must be a single date", {
+  expect_error(
+    selectByDate(mydata, start = c("1/1/2003", "1/1/2004")),
+    "single date"
+  )
+  expect_error(selectByDate(mydata, end = NA), "single date")
+})
+
+# --- input validation --------------------------------------------------------
+
+test_that("out-of-range month, hour and day error", {
+  expect_error(selectByDate(mydata, month = c(1, 13)), "month")
+  expect_error(selectByDate(mydata, hour = 24), "hour")
+  expect_error(selectByDate(mydata, day = 32), "day")
+})
+
+test_that("hour errors for Date-class data", {
+  dat <- data.frame(date = as.Date("2003-01-01") + 0:9, x = 1)
+  expect_error(selectByDate(dat, hour = 5), "hour")
+  expect_equal(nrow(selectByDate(dat, start = "3/1/2003")), 8)
+})

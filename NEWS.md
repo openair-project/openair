@@ -4,7 +4,11 @@
 
 - `rollingQuantile()` now names its count of valid values `n_<pollutant>` (e.g., `n_o3`), consistent with `rollingMean()`. Previously it was named `counts`.
 
+- `selectByDate()` no longer guesses the format of character `start` and `end` dates. By default, it accepts yyyy-mm-dd and dd/mm/yyyy dates, optionally followed by HH:MM or HH:MM:SS. Other formats, including the m/d/yyyy dates previously accepted, can be used with the new `format` argument (e.g., `format = "%m/%d/%Y"`).
+
 ## New Features
+
+- `selectByDate()` gains a `format` argument, consistent with `splitByDate()`, to control how character `start` and `end` dates are read. Dates are parsed strictly, so `start` and `end` no longer risk being misread. A character `end` includes the whole of the period its format specifies, so, e.g., `selectByDate(mydata, start = "2003-06", end = "2003-08", format = "%Y-%m")` selects June to August 2003.
 
 - `rollingQuantile()` gains a `new.name` argument to name the new quantile columns, consistent with `rollingMean()`. It takes one name per value of `probs`, e.g., `new.name = c("o3_low", "o3_high")`.
 
@@ -23,6 +27,14 @@
 - `timeVariation()` with a single panel (e.g., `panels = "hour"`) no longer drops its title, subtitle and caption.
 
 - All plotting functions now give a clear error when there is nothing to plot, i.e., when `mydata` has no rows or a requested variable (e.g., a `pollutant`) contains only missing values. Previously, this caused unhelpful errors or silently returned empty plots.
+
+- `selectByDate()` is more robust when parsing and checking its inputs:
+
+    - Dates in `start` and `end` that don't match `format` (e.g., `"2003-06"` by default) now raise an error. Previously, they could be silently misread (e.g., `"2003-06"` as 20 March 2006).
+
+    - `end` now always includes the whole day when no time is given, including when it is a `Date`. Previously, a `Date` `end` only included midnight.
+
+    - Out-of-range `month`, `hour` or `day` values (e.g., `hour = 24`), using `hour` with `Date` data, and giving more than one `start` or `end` now raise clear errors rather than silently returning no data or failing with unhelpful errors.
 
 - `variationPlot()` and `timeVariation()` no longer error when `"wd"` is one of the `pollutant`s. When `pollutant = "wd"` is used with `group`, wind direction is now vector-averaged; previously it was averaged arithmetically, so e.g. 350 and 10 degrees averaged to 180 rather than 360. Using `difference = TRUE` with `"wd"` now gives a clear error, as differences in wind direction aren't supported.
 
