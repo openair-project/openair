@@ -1,5 +1,13 @@
 # openair (development version)
 
+## Breaking Changes
+
+- `rollingQuantile()` now names its count of valid values `n_<pollutant>` (e.g., `n_o3`), consistent with `rollingMean()`. Previously it was named `counts`.
+
+## New Features
+
+- `rollingQuantile()` gains a `new.name` argument to name the new quantile columns, consistent with `rollingMean()`. It takes one name per value of `probs`, e.g., `new.name = c("o3_low", "o3_high")`.
+
 ## Bug Fixes
 
 - Refined the built-in `theme` options. Titles, subtitles and captions now have clearer differences in size, weight and colour, and more space between them and the plot. Captions are right-aligned in the `"modern"`, `"soft"` and `"print"` themes. Several theme settings were previously being lost, which is now fixed: e.g., `fontsize` no longer turns text black in `theme = "dark"`, and `"print"` maps now show vertical graticule lines. Axis and strip text in the `"default"` and `"dark"` themes is now slightly smaller.

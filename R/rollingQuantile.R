@@ -29,6 +29,11 @@
 #'
 #' @param probs Probability for quantile calculate. A number between 0 and 1. Can be more than length one e.g. `probs = c(0.05, 0.95)`.
 #'
+#' @param new.name The names given to the new quantile columns, one per value of
+#'   `probs`, e.g., `new.name = c("o3_low", "o3_high")` when `probs = c(0.05,
+#'   0.95)`. If not supplied, names are created from the pollutant and
+#'   probability, e.g., `"q_o3_0.05"`.
+#'
 #' @param date.pad Should missing dates be padded? Default is `FALSE`.
 #'
 #' @param ... Passed to [cutData()] for use with `type`.
@@ -49,6 +54,7 @@ rollingQuantile <- function(
   data.thresh = 75,
   align = c("centre", "center", "left", "right"),
   probs = 0.5,
+  new.name = NULL,
   date.pad = FALSE,
   ...
 ) {
@@ -69,6 +75,23 @@ rollingQuantile <- function(
   if (!all(probs >= 0 & probs <= 1)) {
     cli::cli_abort(
       "{.arg probs} must be between {.val {0L}} and {.val {1L}}."
+    )
+  }
+
+  # create new names if not provided; otherwise need one per quantile
+  if (is.null(new.name)) {
+    new.name <- paste0("q_", pollutant, "_", probs)
+  } else if (
+    !is.character(new.name) ||
+      length(new.name) != length(probs) ||
+      anyNA(new.name) ||
+      anyDuplicated(new.name)
+  ) {
+    cli::cli_abort(
+      c(
+        "{.arg new.name} must be a character vector of unique names, one for each value of {.arg probs}.",
+        "i" = "{.arg probs} has length {length(probs)}."
+      )
     )
   }
 
@@ -114,7 +137,7 @@ rollingQuantile <- function(
     )
 
     results <- as.data.frame(results)
-    names(results)[seq_along(probs)] <- paste0("q_", pollutant, "_", probs)
+    names(results) <- c(new.name, paste0("n_", pollutant))
 
     mydata <- dplyr::bind_cols(mydata, results)
 
