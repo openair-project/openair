@@ -227,8 +227,16 @@ to a file).</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Other graphical parameters passed onto <code><a href="conditionalQuantile.html">conditionalQuantile()</a></code>
-and <code><a href="cutData.html">cutData()</a></code>.</p></dd>
+<dd><p>Additional graphical options:</p><ul><li><p><code>title</code>, <code>subtitle</code> and <code>caption</code> label the whole figure, and <code>xlab</code>,
+<code>ylab</code> and <code>tag</code> label the right-hand panel. These are passed through
+<code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>, and can be set to <code>NULL</code> to remove a
+default label.</p></li>
+<li><p><code>ncol</code>, <code>nrow</code> and <code>scales</code> control the faceting of the right-hand panel
+when using <code>type</code>.</p></li>
+<li><p><code>fontsize</code> sets the overall font size.</p></li>
+<li><p><code>lineend</code>, <code>linejoin</code> and <code>linemitre</code> control how lines are drawn in the
+right-hand panel.</p></li>
+</ul></dd>
 
 </dl></div>
     <div class="section level2">

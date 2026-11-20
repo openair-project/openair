@@ -30,6 +30,31 @@
   now passes all label arguments (e.g., `subtitle`, `caption`) to
   [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md).
 
+- [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
+  now respects `key.title` for all methods; previously it was ignored
+  when using `z` or `method = "hexbin"`, `"level"` or `"density"`.
+
+- [`conditionalEval()`](https://openair-project.github.io/openair/reference/conditionalEval.md)
+  now uses `title`, `subtitle` and `caption` to label the whole figure,
+  rather than repeating the title over both panels.
+
+- [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)
+  with a single panel (e.g., `panels = "hour"`) no longer drops its
+  title, subtitle and caption.
+
+- All plotting functions now give a clear error when there is nothing to
+  plot, i.e., when `mydata` has no rows or a requested variable (e.g., a
+  `pollutant`) contains only missing values. Previously, this caused
+  unhelpful errors or silently returned empty plots.
+
+- [`windRose()`](https://openair-project.github.io/openair/reference/windRose.md)
+  and
+  [`polarFreq()`](https://openair-project.github.io/openair/reference/polarFreq.md)
+  now check and clean wind data consistently when `ws` and `wd` are not
+  the default column names. Previously, `rm.neg` had no effect, and `wd`
+  values outside 0-360 were not removed, for custom column names. This
+  may change outputs for these functions.
+
 ## openair 3.2.0
 
 CRAN release: 2026-11-19

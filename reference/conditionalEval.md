@@ -183,10 +183,22 @@ conditionalEval(
 
 - ...:
 
-  Other graphical parameters passed onto
-  [`conditionalQuantile()`](https://openair-project.github.io/openair/reference/conditionalQuantile.md)
-  and
-  [`cutData()`](https://openair-project.github.io/openair/reference/cutData.md).
+  Additional graphical options:
+
+  - `title`, `subtitle` and `caption` label the whole figure, and
+    `xlab`, `ylab` and `tag` label the right-hand panel. These are
+    passed through
+    [`quickText()`](https://openair-project.github.io/openair/reference/quickText.md)
+    if `auto.text = TRUE`, and can be set to `NULL` to remove a default
+    label.
+
+  - `ncol`, `nrow` and `scales` control the faceting of the right-hand
+    panel when using `type`.
+
+  - `fontsize` sets the overall font size.
+
+  - `lineend`, `linejoin` and `linemitre` control how lines are drawn in
+    the right-hand panel.
 
 ## Details
 
