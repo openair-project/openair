@@ -14,6 +14,8 @@
 
 - All plotting functions now give a clear error when there is nothing to plot, i.e., when `mydata` has no rows or a requested variable (e.g., a `pollutant`) contains only missing values. Previously, this caused unhelpful errors or silently returned empty plots.
 
+- `windRose()` and `polarFreq()` now check and clean wind data consistently when `ws` and `wd` are not the default column names. Previously, `rm.neg` had no effect, and `wd` values outside 0-360 were not removed, for custom column names. This may change outputs for these functions.
+
 # openair 3.2.0
 
 ## Dependency Changes

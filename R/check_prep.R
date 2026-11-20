@@ -59,90 +59,69 @@ check_prep <- function(
   if (!all(matching)) {
     cli::cli_abort(
       "Can't find the variable(s): {.field {var_names[!matching]}}.",
-      call = NULL
+      call = call
     )
   }
 
-  # add type to names if not in pre-defined list
-  if (!all(type %in% conds)) {
-    ids <- which(!type %in% conds)
-    vars <- c(vars, type[ids])
-  }
+  # keep any `type` columns already in the data (user-defined types must be,
+  # as checked above; built-in date-based types are created later by cutData)
+  vars <- unique(c(vars, intersect(type, names(mydata))))
 
-  # if type already present in data frame
-  if (any(type %in% names(mydata))) {
-    ids <- which(type %in% names(mydata))
-    vars <- unique(c(vars, type[ids]))
-  }
+  # just select data needed; `[` (not `[, ]`) so a single column stays a data
+  # frame
+  mydata <- mydata[vars]
 
-  # just select data needed
-  mydata <- mydata[, vars]
-
-  # if site is in the data set, check none are missing
-  # seems to be a problem for some KCL data...
+  # remove rows with a missing site
   if ("site" %in% names(mydata)) {
-    # split by site
-
-    # remove any NA sites
-    if (anyNA(mydata$site)) {
-      id <- which(is.na(mydata$site))
-      mydata <- mydata[-id, ]
-    }
+    mydata <- mydata[!is.na(mydata$site), ]
   }
 
   # sometimes ratios are considered which can results in infinite values
   # make sure all infinite values are set to NA
   mydata[] <- lapply(mydata, function(x) {
-    replace(x, x == Inf | x == -Inf, NA)
+    if (is.numeric(x)) {
+      x[is.infinite(x)] <- NA
+    }
+    x
   })
 
-  if (ws %in% vars) {
-    if (ws %in% vars && is.numeric(mydata[[ws]])) {
-      # check for negative wind speeds
-      if (any(sign(mydata[[ws]][!is.na(mydata[[ws]])]) == -1)) {
-        if (remove_negative_ws) {
-          # remove negative ws only if TRUE
-          cli::cli_warn("Wind speed < 0; removing negative data", call = NULL)
-          mydata[[ws]][mydata[[ws]] < 0] <- NA
-        }
-      }
-    }
+  # remove negative wind speeds
+  if (
+    remove_negative_ws &&
+      ws %in% vars &&
+      is.numeric(mydata[[ws]]) &&
+      any(mydata[[ws]] < 0, na.rm = TRUE)
+  ) {
+    cli::cli_warn("Wind speed < 0; removing negative data", call = call)
+    mydata[[ws]][mydata[[ws]] < 0] <- NA
   }
 
   # round wd to make processing obvious
   # data already rounded to nearest 10 degress will not be affected
   # data not rounded will be rounded to nearest 10 degrees
   # assumes 10 is average of 5-15 etc
-  if (wd %in% vars) {
-    if (wd %in% vars && is.numeric(mydata[[wd]])) {
-      # check for wd <0 or > 360
-      if (
-        any(
-          sign(mydata[[wd]][!is.na(mydata[[wd]])]) == -1 |
-            mydata[[wd]][!is.na(mydata[[wd]])] > 360
-        )
-      ) {
-        cli::cli_warn(
-          "Wind direction < 0 or > 360; removing these data.",
-          call = NULL
-        )
-        mydata[[wd]][mydata[[wd]] < 0] <- NA
-        mydata[[wd]][mydata[[wd]] > 360] <- NA
-      }
-
-      if (remove_calms) {
-        if (ws %in% names(mydata)) {
-          mydata[[wd]][mydata[[ws]] == 0] <- NA # set wd to NA where there are calms
-          mydata[[ws]][mydata[[ws]] == 0] <- NA # remove calm ws
-        }
-        mydata[[wd]][mydata[[wd]] == 0] <- 360 # set any legitimate wd to 360
-
-        # round wd for use in functions - except windRose/pollutionRose
-        mydata[[wd]] <- 10 * ceiling(mydata[[wd]] / 10 - 0.5)
-        mydata[[wd]][mydata[[wd]] == 0] <- 360 # angles <5 should be in 360 bin
-      }
-      mydata[[wd]][mydata[[wd]] == 0] <- 360 # set any legitimate wd to 360
+  if (wd %in% vars && is.numeric(mydata[[wd]])) {
+    # check for wd < 0 or > 360
+    if (any(mydata[[wd]] < 0 | mydata[[wd]] > 360, na.rm = TRUE)) {
+      cli::cli_warn(
+        "Wind direction < 0 or > 360; removing these data.",
+        call = call
+      )
+      mydata[[wd]][mydata[[wd]] < 0 | mydata[[wd]] > 360] <- NA
     }
+
+    if (remove_calms) {
+      if (ws %in% names(mydata)) {
+        mydata[[wd]][mydata[[ws]] == 0] <- NA # set wd to NA where there are calms
+        mydata[[ws]][mydata[[ws]] == 0] <- NA # remove calm ws
+      }
+
+      # round wd for use in functions - except windRose/pollutionRose
+      mydata[[wd]] <- 10 * ceiling(mydata[[wd]] / 10 - 0.5)
+    }
+
+    # north is 360, not 0 (incl. angles < 5 rounded down above)
+    mydata[[wd]][mydata[[wd]] == 0] <- 360
   }
 
   # make sure date is ordered in time if present
@@ -154,7 +133,7 @@ check_prep <- function(
           "x" = "{.code mydata$date} is {.type {mydata$date}}.",
           "i" = "{.code mydata$date} must be {.type {as.Date(ISOdate(1,1,1))}} or {.type {ISOdate(1,1,1)}}."
         ),
-        call = NULL
+        call = call
       )
     }
 
@@ -172,7 +151,7 @@ check_prep <- function(
       mydata <- mydata[-ids, ]
       cli::cli_warn(
         "Missing dates detected, removing {length(ids)} lines.",
-        call = NULL
+        call = call
       )
     }
 
@@ -180,7 +159,7 @@ check_prep <- function(
     if (any(lubridate::dst(mydata$date))) {
       cli::cli_inform(
         c("i" = "Detected data with Daylight Saving Time."),
-        call = NULL
+        call = call
       )
     }
   }
