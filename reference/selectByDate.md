@@ -14,7 +14,9 @@ selectByDate(
   year = NULL,
   month = NULL,
   day = NULL,
-  hour = NULL
+  hour = NULL,
+  format = c("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d",
+    "%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M", "%d/%m/%Y")
 )
 ```
 
@@ -26,13 +28,16 @@ selectByDate(
 
 - start:
 
-  A start date or date-time string in the form d/m/yyyy, m/d/yyyy,
-  d/m/yyyy HH:MM, m/d/yyyy HH:MM, d/m/yyyy HH:MM:SS, m/d/yyyy HH:MM:SS,
-  yyyy-mm-dd, yyyy-mm-dd HH:MM or yyyy-mm-dd HH:MM:SS.
+  A single start date. Can be a `Date`, a `POSIXct`, or a character
+  string in one of the formats given by `format`.
 
 - end:
 
-  See `start` for format.
+  A single end date, in any of the forms accepted by `start`. If no time
+  is given (including when `end` is a `Date`), the whole of that day is
+  included. More generally, a character `end` includes the whole of the
+  smallest period its format specifies, e.g., the whole month with
+  `format = "%Y-%m"`.
 
 - year:
 
@@ -58,6 +63,16 @@ selectByDate(
 
   An hour or hours to select from 0-23 e.g. `hour = 0:12` to select
   hours 0 to 12 inclusive.
+
+- format:
+
+  When `start` and/or `end` are character strings, the format(s) used to
+  read them, in [`strptime()`](https://rdrr.io/r/base/strptime.html)
+  notation. Formats are tried in order and the first that matches the
+  whole string is used. The defaults accept yyyy-mm-dd and dd/mm/yyyy
+  dates, optionally followed by HH:MM or HH:MM:SS. For example, use
+  `format = "%m/%d/%Y"` for US-style dates, or `format = "%Y-%m"` to
+  give `start` and `end` as months.
 
 ## Author
 
@@ -91,7 +106,21 @@ tail(data.1999)
 #> 6 1999-12-31 23:00:00  3.24   200   181    37    NA    28  3.48  1.78    22
 
 # or...
-data.1999 <- selectByDate(mydata, start = "1999-01-01", end = "1999-12-31 23:00")
+data.1999 <- selectByDate(mydata, start = "1999-01-01", end = "1999-12-31")
+
+# US-style dates, or whole months, can be given using `format`
+data.1999 <- selectByDate(
+  mydata,
+  start = "01/01/1999",
+  end = "12/31/1999",
+  format = "%m/%d/%Y"
+)
+data.summer <- selectByDate(
+  mydata,
+  start = "1999-06",
+  end = "1999-08",
+  format = "%Y-%m"
+)
 
 # easier way
 data.1999 <- selectByDate(mydata, year = 1999)

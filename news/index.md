@@ -10,7 +10,24 @@
   [`rollingMean()`](https://openair-project.github.io/openair/reference/rollingMean.md).
   Previously it was named `counts`.
 
+- [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
+  no longer guesses the format of character `start` and `end` dates. By
+  default, it accepts yyyy-mm-dd and dd/mm/yyyy dates, optionally
+  followed by HH:MM or HH:MM:SS. Other formats, including the m/d/yyyy
+  dates previously accepted, can be used with the new `format` argument
+  (e.g., `format = "%m/%d/%Y"`).
+
 ### New Features
+
+- [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
+  gains a `format` argument, consistent with
+  [`splitByDate()`](https://openair-project.github.io/openair/reference/splitByDate.md),
+  to control how character `start` and `end` dates are read. Dates are
+  parsed strictly, so `start` and `end` no longer risk being misread. A
+  character `end` includes the whole of the period its format specifies,
+  so, e.g.,
+  `selectByDate(mydata, start = "2003-06", end = "2003-08", format = "%Y-%m")`
+  selects June to August 2003.
 
 - [`rollingQuantile()`](https://openair-project.github.io/openair/reference/rollingQuantile.md)
   gains a `new.name` argument to name the new quantile columns,
@@ -18,6 +35,18 @@
   [`rollingMean()`](https://openair-project.github.io/openair/reference/rollingMean.md).
   It takes one name per value of `probs`, e.g.,
   `new.name = c("o3_low", "o3_high")`.
+
+- openair objects gain
+  [`grid::grid.draw()`](https://rdrr.io/r/grid/grid.draw.html),
+  [`as.data.frame()`](https://rdrr.io/r/base/as.data.frame.html) and
+  [`tibble::as_tibble()`](https://tibble.tidyverse.org/reference/as_tibble.html)
+  methods. This means openair objects can be saved directly with
+  [`ggplot2::ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html)
+  (e.g., `ggsave("plot.png", polarPlot(mydata))`), and their data
+  extracted as a data frame or tibble. Where an object contains several
+  data frames (e.g., from
+  [`timeVariation()`](https://openair-project.github.io/openair/reference/timeVariation.md)),
+  use `subset` to choose one.
 
 - [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
   and
@@ -77,6 +106,48 @@
   plot, i.e., when `mydata` has no rows or a requested variable (e.g., a
   `pollutant`) contains only missing values. Previously, this caused
   unhelpful errors or silently returned empty plots.
+
+- Fixed several issues with the methods for openair objects:
+
+  - [`print()`](https://rdrr.io/r/base/print.html) now returns the
+    object invisibly, rather than `NULL`.
+
+  - [`print()`](https://rdrr.io/r/base/print.html) now writes its
+    description to standard output rather than as messages, so it can be
+    captured with
+    [`capture.output()`](https://rdrr.io/r/utils/capture.output.html)
+    and appears as printed output in R Markdown and Quarto documents.
+    The description is also more compact, and long function calls no
+    longer display incorrectly (this also affected `results()`).
+
+  - [`head()`](https://rdrr.io/r/utils/head.html),
+    [`tail()`](https://rdrr.io/r/utils/head.html) and
+    [`summary()`](https://rdrr.io/r/base/summary.html) now return their
+    results without printing them (or a header), so they only print when
+    not assigned, as is standard in R.
+
+  - When some requested `subset`s are missing,
+    [`head()`](https://rdrr.io/r/utils/head.html),
+    [`tail()`](https://rdrr.io/r/utils/head.html) and
+    [`summary()`](https://rdrr.io/r/base/summary.html) now warn and
+    ignore them, as their message said, rather than erroring. Their
+    error and warning messages now name the function used.
+
+- [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
+  is more robust when parsing and checking its inputs:
+
+  - Dates in `start` and `end` that don’t match `format` (e.g.,
+    `"2003-06"` by default) now raise an error. Previously, they could
+    be silently misread (e.g., `"2003-06"` as 20 March 2006).
+
+  - `end` now always includes the whole day when no time is given,
+    including when it is a `Date`. Previously, a `Date` `end` only
+    included midnight.
+
+  - Out-of-range `month`, `hour` or `day` values (e.g., `hour = 24`),
+    using `hour` with `Date` data, and giving more than one `start` or
+    `end` now raise clear errors rather than silently returning no data
+    or failing with unhelpful errors.
 
 - [`variationPlot()`](https://openair-project.github.io/openair/reference/variationPlot.md)
   and

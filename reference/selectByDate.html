@@ -73,7 +73,9 @@ function can be used to select quite complex dates simply.</p>
 <span>  year <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  month <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  day <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  hour <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  hour <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"%Y-%m-%d %H:%M:%S"</span>, <span class="st">"%Y-%m-%d %H:%M"</span>, <span class="st">"%Y-%m-%d"</span>,</span>
+<span>    <span class="st">"%d/%m/%Y %H:%M:%S"</span>, <span class="st">"%d/%m/%Y %H:%M"</span>, <span class="st">"%d/%m/%Y"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -87,13 +89,15 @@ format.</p></dd>
 
 
 <dt id="arg-start">start<a class="anchor" aria-label="anchor" href="#arg-start"></a></dt>
-<dd><p>A start date or date-time string in the form d/m/yyyy, m/d/yyyy,
-d/m/yyyy HH:MM, m/d/yyyy HH:MM, d/m/yyyy HH:MM:SS, m/d/yyyy HH:MM:SS,
-yyyy-mm-dd, yyyy-mm-dd HH:MM or yyyy-mm-dd HH:MM:SS.</p></dd>
+<dd><p>A single start date. Can be a <code>Date</code>, a <code>POSIXct</code>, or a
+character string in one of the formats given by <code>format</code>.</p></dd>
 
 
 <dt id="arg-end">end<a class="anchor" aria-label="anchor" href="#arg-end"></a></dt>
-<dd><p>See <code>start</code> for format.</p></dd>
+<dd><p>A single end date, in any of the forms accepted by <code>start</code>. If no
+time is given (including when <code>end</code> is a <code>Date</code>), the whole of that day is
+included. More generally, a character <code>end</code> includes the whole of the
+smallest period its format specifies, e.g., the whole month with <code>format = "%Y-%m"</code>.</p></dd>
 
 
 <dt id="arg-year">year<a class="anchor" aria-label="anchor" href="#arg-year"></a></dt>
@@ -117,6 +121,14 @@ Friday) and <code>"weekend"</code> for convenience.</p></dd>
 <dt id="arg-hour">hour<a class="anchor" aria-label="anchor" href="#arg-hour"></a></dt>
 <dd><p>An hour or hours to select from 0-23 e.g. <code>hour = 0:12</code> to select
 hours 0 to 12 inclusive.</p></dd>
+
+
+<dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
+<dd><p>When <code>start</code> and/or <code>end</code> are character strings, the format(s)
+used to read them, in <code><a href="https://rdrr.io/r/base/strptime.html" class="external-link">strptime()</a></code> notation. Formats are tried in order and
+the first that matches the whole string is used. The defaults accept
+yyyy-mm-dd and dd/mm/yyyy dates, optionally followed by HH:MM or HH:MM:SS.
+For example, use <code>format = "%m/%d/%Y"</code> for US-style dates, or <code>format = "%Y-%m"</code> to give <code>start</code> and <code>end</code> as months.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -151,7 +163,21 @@ hours 0 to 12 inclusive.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 1999-12-31 <span style="color: #949494;">23:00:00</span>  3.24   200   181    37    <span style="color: #BB0000;">NA</span>    28  3.48  1.78    22</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># or...</span></span></span>
-<span class="r-in"><span><span class="va">data.1999</span> <span class="op">&lt;-</span> <span class="fu">selectByDate</span><span class="op">(</span><span class="va">mydata</span>, start <span class="op">=</span> <span class="st">"1999-01-01"</span>, end <span class="op">=</span> <span class="st">"1999-12-31 23:00"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data.1999</span> <span class="op">&lt;-</span> <span class="fu">selectByDate</span><span class="op">(</span><span class="va">mydata</span>, start <span class="op">=</span> <span class="st">"1999-01-01"</span>, end <span class="op">=</span> <span class="st">"1999-12-31"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># US-style dates, or whole months, can be given using `format`</span></span></span>
+<span class="r-in"><span><span class="va">data.1999</span> <span class="op">&lt;-</span> <span class="fu">selectByDate</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  start <span class="op">=</span> <span class="st">"01/01/1999"</span>,</span></span>
+<span class="r-in"><span>  end <span class="op">=</span> <span class="st">"12/31/1999"</span>,</span></span>
+<span class="r-in"><span>  format <span class="op">=</span> <span class="st">"%m/%d/%Y"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data.summer</span> <span class="op">&lt;-</span> <span class="fu">selectByDate</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">mydata</span>,</span></span>
+<span class="r-in"><span>  start <span class="op">=</span> <span class="st">"1999-06"</span>,</span></span>
+<span class="r-in"><span>  end <span class="op">=</span> <span class="st">"1999-08"</span>,</span></span>
+<span class="r-in"><span>  format <span class="op">=</span> <span class="st">"%Y-%m"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># easier way</span></span></span>
 <span class="r-in"><span><span class="va">data.1999</span> <span class="op">&lt;-</span> <span class="fu">selectByDate</span><span class="op">(</span><span class="va">mydata</span>, year <span class="op">=</span> <span class="fl">1999</span><span class="op">)</span></span></span>
