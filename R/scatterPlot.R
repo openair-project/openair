@@ -308,6 +308,17 @@ scatterPlot <- function(
     ...
   )
 
+  ## legend title: user-supplied `key.title`, else a default for the method
+  if (missing(key.title)) {
+    key.title <- switch(
+      method,
+      scatter = if (!is.na(z)) z else group,
+      hexbin = "count",
+      level = z,
+      density = "intensity"
+    )
+  }
+
   ## dispatch to method
   out <- switch(
     method,
@@ -358,6 +369,7 @@ scatterPlot <- function(
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
+      key.title = key.title,
       trans = trans,
       auto.text = auto.text,
       extra.args = extra.args
@@ -381,6 +393,7 @@ scatterPlot <- function(
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
+      key.title = key.title,
       trans = trans,
       k = k,
       dist = dist,
@@ -400,6 +413,7 @@ scatterPlot <- function(
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
+      key.title = key.title,
       trans = trans,
       auto.text = auto.text,
       extra.args = extra.args
@@ -626,13 +640,15 @@ scatter_scatter <- function(
         limits = z_limits,
         oob = scales::oob_squish,
         labels = z_labs,
-        guide = ggplot2::guide_colorbar(
+        guide = guide_openair(
+          key.position,
+          type = "colourbar",
           position = key.position
         ),
         transform = get_scale_transform(trans %||% "identity"),
         aesthetics = c("colour", "fill")
       )
-    legend_labs <- list(colour = z)
+    legend_labs <- list(colour = key.title)
   } else if (has_group) {
     grp_aes <- ggplot2::aes(
       color = .data[[group]],
@@ -885,6 +901,7 @@ scatter_hexbin <- function(
   ref.x,
   ref.y,
   key.position,
+  key.title,
   trans,
   auto.text,
   extra.args
@@ -899,7 +916,9 @@ scatter_hexbin <- function(
       colors = myColors,
       transform = get_scale_transform(trans %||% "log10"),
       labels = scales::label_number(accuracy = 1),
-      guide = ggplot2::guide_colorbar(
+      guide = guide_openair(
+        key.position,
+        type = "colourbar",
         position = key.position
       )
     )
@@ -972,7 +991,7 @@ scatter_hexbin <- function(
       auto.text,
       x = x,
       y = y,
-      fill = "count"
+      fill = key.title
     )
 
   return(
@@ -1008,6 +1027,7 @@ scatter_level <- function(
   ref.x,
   ref.y,
   key.position,
+  key.title,
   trans,
   k,
   dist,
@@ -1095,7 +1115,9 @@ scatter_level <- function(
       oob = scales::oob_squish,
       labels = scale_labs,
       na.value = "transparent",
-      guide = ggplot2::guide_colorbar(
+      guide = guide_openair(
+        key.position,
+        type = "colourbar",
         position = key.position
       ),
       transform = get_scale_transform(trans %||% "identity")
@@ -1129,7 +1151,7 @@ scatter_level <- function(
       auto.text,
       x = x,
       y = y,
-      fill = z
+      fill = key.title
     )
 
   return(
@@ -1258,6 +1280,7 @@ scatter_density <- function(
   ref.x,
   ref.y,
   key.position,
+  key.title,
   trans,
   auto.text,
   extra.args
@@ -1285,7 +1308,9 @@ scatter_density <- function(
     ggplot2::scale_fill_gradientn(
       colors = myColors,
       na.value = "transparent",
-      guide = ggplot2::guide_colorbar(
+      guide = guide_openair(
+        key.position,
+        type = "colourbar",
         position = key.position
       ),
       transform = get_scale_transform(trans %||% "identity")
@@ -1320,7 +1345,7 @@ scatter_density <- function(
       auto.text,
       x = x,
       y = y,
-      fill = "intensity"
+      fill = key.title
     )
 
   return(

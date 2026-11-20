@@ -263,7 +263,9 @@ conditionalQuantile <- function(
   hist_pred <- hist_data[hist_data$hist_type == "predicted", ]
   hist_obs <- hist_data[hist_data$hist_type == "observed", ]
 
-  key_guide <- ggplot2::guide_legend(
+  key_guide <- guide_openair(
+    key.position,
+    var_text_position = FALSE,
     ncol = key.columns,
     nrow = key.rows
   )

@@ -141,6 +141,31 @@ labs_openair <- function(
   do.call(ggplot2::labs, c(labels, legend))
 }
 
+# Overall title, subtitle and caption for a multi-panel (patchwork) openair
+# plot, resolved in the same way as `labs_openair()`. Axis labels and legend
+# titles belong to the individual panels, so are set with `labs_openair()`
+# there. `...` is passed to `patchwork::plot_annotation()` (e.g., `theme`).
+annotation_openair <- function(
+  extra.args = list(),
+  auto.text = TRUE,
+  title = NULL,
+  subtitle = NULL,
+  caption = NULL,
+  ...
+) {
+  defaults <- list(title = title, subtitle = subtitle, caption = caption)
+  labels <- purrr::imap(defaults, \(default, part) {
+    label_part(resolve_label(extra.args, part, default), part, auto.text)
+  })
+
+  patchwork::plot_annotation(
+    title = labels$title,
+    subtitle = labels$subtitle,
+    caption = labels$caption,
+    ...
+  )
+}
+
 # The value for a label: the user's value if they supplied one (even `NULL`),
 # else the default
 resolve_label <- function(extra.args, name, default) {

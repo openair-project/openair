@@ -6,6 +6,12 @@
 
 - Plot labels are now handled consistently across all plotting functions. Legend titles can now always be overridden by adding `ggplot2::labs()` to a plot, and any default label can be removed by setting it to `NULL` (e.g., `caption = NULL`). `auto.text` now applies consistently to all titles, axis labels, captions and legend titles. Unused titles and subtitles no longer leave blank space above some plots. `variationPlot()` and `timeVariation()` now respect `xlab`, `timeVariation()` captions now show the confidence interval correctly, and `polarDiff()` now passes all label arguments (e.g., `subtitle`, `caption`) to `polarPlot()`.
 
+- `scatterPlot()` now respects `key.title` for all methods; previously it was ignored when using `z` or `method = "hexbin"`, `"level"` or `"density"`.
+
+- `conditionalEval()` now uses `title`, `subtitle` and `caption` to label the whole figure, rather than repeating the title over both panels.
+
+- `timeVariation()` with a single panel (e.g., `panels = "hour"`) no longer drops its title, subtitle and caption.
+
 # openair 3.2.0
 
 ## Dependency Changes

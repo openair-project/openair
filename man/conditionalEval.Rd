@@ -122,8 +122,18 @@ This may be useful when the plot \emph{data} is of more interest, or the plot is
 required to appear later (e.g., later in a Quarto document, or to be saved
 to a file).}
 
-\item{...}{Other graphical parameters passed onto \code{\link[=conditionalQuantile]{conditionalQuantile()}}
-and \code{\link[=cutData]{cutData()}}.}
+\item{...}{Additional graphical options:
+\itemize{
+\item \code{title}, \code{subtitle} and \code{caption} label the whole figure, and \code{xlab},
+\code{ylab} and \code{tag} label the right-hand panel. These are passed through
+\code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}, and can be set to \code{NULL} to remove a
+default label.
+\item \code{ncol}, \code{nrow} and \code{scales} control the faceting of the right-hand panel
+when using \code{type}.
+\item \code{fontsize} sets the overall font size.
+\item \code{lineend}, \code{linejoin} and \code{linemitre} control how lines are drawn in the
+right-hand panel.
+}}
 }
 \description{
 This function enhances \code{\link[=conditionalQuantile]{conditionalQuantile()}} by also considering how other

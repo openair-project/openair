@@ -270,14 +270,16 @@ timeVariation <- function(
     conf.int <- if (statistic == "median") c(0.75, 0.95) else 0.95
   }
 
-  overall_defaults <- list(
-    title = NULL,
-    subtitle = NULL,
-    caption = create_varplot_sub_text(statistic, conf.int, ci)
+  overall_annotation <- annotation_openair(
+    extra.args,
+    auto.text,
+    caption = create_varplot_sub_text(statistic, conf.int, ci),
+    theme = ggplot2::theme(
+      plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
+      plot.subtitle = ggplot2::element_text(hjust = 0.5),
+      plot.caption = ggplot2::element_text(hjust = 0.5)
+    )
   )
-  overall_labs <- purrr::imap(overall_defaults, \(default, part) {
-    label_part(resolve_label(extra.args, part, default), part, auto.text)
-  })
   extra.args[c("title", "subtitle", "caption")] <- list(NULL)
 
   # get the xvars and facets for each panel
@@ -383,16 +385,7 @@ timeVariation <- function(
         design = layout,
         heights = c(0.4, 0.6)
       ) +
-      patchwork::plot_annotation(
-        title = overall_labs$title,
-        subtitle = overall_labs$subtitle,
-        caption = overall_labs$caption,
-        theme = ggplot2::theme(
-          plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
-          plot.subtitle = ggplot2::element_text(hjust = 0.5),
-          plot.caption = ggplot2::element_text(hjust = 0.5)
-        )
-      ) &
+      overall_annotation &
       theme_openair(
         theme = theme,
         coord = "cartesian",
@@ -409,7 +402,13 @@ timeVariation <- function(
       thePlot[[i]] <- thePlot[[i]] + ggplot2::theme(legend.position = "none")
     }
   } else {
-    thePlot <- plots[[1]]
+    # a single panel is a plain ggplot, so takes the overall labels directly
+    thePlot <- plots[[1]] +
+      ggplot2::labs(
+        title = overall_annotation$title,
+        subtitle = overall_annotation$subtitle,
+        caption = overall_annotation$caption
+      )
   }
 
   # control key
