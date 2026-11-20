@@ -162,11 +162,23 @@ polarCluster <-
     vars <- c("wd", x, pollutant)
     vars <- c(vars, "date", ".id")
 
-    mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    mydata <- checkPrep(
+      mydata,
+      vars,
+      type,
+      remove.calm = FALSE,
+      require_data = TRUE
+    ) |>
       check_numeric(vars = c("wd", x, pollutant))
 
     if (is.data.frame(after)) {
-      after <- checkPrep(after, vars, type, remove.calm = FALSE) |>
+      after <- checkPrep(
+        after,
+        vars,
+        type,
+        remove.calm = FALSE,
+        require_data = TRUE
+      ) |>
         check_numeric(vars = c("wd", x, pollutant))
     }
 

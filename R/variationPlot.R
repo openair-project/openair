@@ -184,7 +184,7 @@ variationPlot <- function(
   # data checks
   # need special handling of cutData as `drop` needs to be passed separately
   mydata <- mydata |>
-    checkPrep(vars, c(type, group), remove.calm = FALSE) |>
+    checkPrep(vars, c(type, group), remove.calm = FALSE, require_data = TRUE) |>
     check_numeric(vars = pollutant) |>
     (\(df) {
       do.call(

@@ -67,7 +67,13 @@ polarDiff <- function(
   call <- rlang::current_env()
   prepare <- function(data, period) {
     data <- cutData(data, type = type) |>
-      checkPrep(vars, type, remove.calm = FALSE) |>
+      checkPrep(
+        vars,
+        type,
+        remove.calm = FALSE,
+        require_data = TRUE,
+        call = call
+      ) |>
       check_numeric(vars = vars, call = call) |>
       dplyr::mutate(period = period)
     if (type == "default") {

@@ -381,7 +381,8 @@ trendLevel <- function(
     mydata,
     temp,
     type = c(x, y, type),
-    remove.calm = FALSE
+    remove.calm = FALSE,
+    require_data = TRUE
   ) |>
     check_numeric(vars = setdiff(temp, "date"))
 

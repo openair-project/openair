@@ -625,7 +625,14 @@ prepare_timeplot_data <- function(
   }
 
   # standard data checks
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+  mydata <- checkPrep(
+    mydata,
+    vars,
+    type,
+    remove.calm = FALSE,
+    require_data = TRUE,
+    call = rlang::caller_env()
+  ) |>
     check_numeric(
       vars = setdiff(vars, c("date", group)),
       call = rlang::caller_env()

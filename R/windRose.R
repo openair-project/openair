@@ -226,8 +226,10 @@ windRose <- function(
     calm.col <- "forestgreen"
   }
 
-  # make sure ws, wd and any pollutant are numeric
+  # make sure ws, wd and any pollutant are numeric, and that there is data
+  # before calculating ranges below
   mydata <- check_numeric(mydata, vars = c(ws, wd, pollutant))
+  check_has_data(mydata, c(ws, wd, pollutant))
 
   if (!is.na(ws2) && !is.na(wd2) && missing(angle)) {
     angle <- 10
@@ -340,7 +342,8 @@ windRose <- function(
     vars,
     type,
     remove.calm = FALSE,
-    remove.neg = rm.neg
+    remove.neg = rm.neg,
+    require_data = TRUE
   )
 
   # original data to use later
@@ -1080,8 +1083,9 @@ pollutionRose <- function(
     breaks <- 6
   }
 
-  # pollutant must be numeric before calculating breaks
+  # pollutant must be numeric, and have data, before calculating breaks
   mydata <- check_numeric(mydata, vars = pollutant)
+  check_has_data(mydata, pollutant)
 
   if (is.numeric(breaks) && length(breaks) == 1) {
     # breaks from the minimum to 90th percentile, which generally gives sensible

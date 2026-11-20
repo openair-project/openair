@@ -220,6 +220,7 @@ timeVariation <- function(
 
   # check pollutants once here, rather than once per panel in variationPlot()
   mydata <- check_numeric(mydata, vars = pollutant)
+  check_has_data(mydata, pollutant)
 
   # month.last deprecation
   if ("month.last" %in% names(extra.args)) {

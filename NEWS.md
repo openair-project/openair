@@ -12,6 +12,8 @@
 
 - `timeVariation()` with a single panel (e.g., `panels = "hour"`) no longer drops its title, subtitle and caption.
 
+- All plotting functions now give a clear error when there is nothing to plot, i.e., when `mydata` has no rows or a requested variable (e.g., a `pollutant`) contains only missing values. Previously, this caused unhelpful errors or silently returned empty plots.
+
 # openair 3.2.0
 
 ## Dependency Changes

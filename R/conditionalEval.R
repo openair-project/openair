@@ -185,7 +185,13 @@ conditionalEval <- function(
     }
   }
 
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+  mydata <- checkPrep(
+    mydata,
+    vars,
+    type,
+    remove.calm = FALSE,
+    require_data = TRUE
+  ) |>
     check_numeric(vars = c(mod, obs, var.obs, var.mod))
   mydata <- stats::na.omit(mydata)
 

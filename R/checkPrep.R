@@ -12,6 +12,14 @@
 #'
 #' @param wd Varname for wind direction.
 #'
+#' @param require_data If `TRUE`, error if, after preparation, `mydata` has no
+#'   rows or any of `Names` (other than `"date"`) contains only missing values.
+#'   Used by plotting functions, which otherwise fail with unhelpful errors or
+#'   return empty plots.
+#'
+#' @param call The execution environment of the calling function, used to
+#'   report errors from `require_data`.
+#'
 #' @author David Carslaw
 #' @noRd
 checkPrep <- function(
@@ -20,10 +28,16 @@ checkPrep <- function(
   type,
   remove.calm = TRUE,
   remove.neg = TRUE,
-  wd = "wd"
+  wd = "wd",
+  require_data = FALSE,
+  call = rlang::caller_env()
 ) {
   # ensure data is ungrouped
   mydata <- dplyr::ungroup(mydata)
+
+  # variables to check for data if `require_data = TRUE`; recorded before
+  # `Names` has any `type` columns added
+  data_vars <- setdiff(Names, "date")
 
   # deal with conditioning variable if present, if user-defined, must exist in
   # data pre-defined types existing conditioning variables that only depend on
@@ -162,6 +176,11 @@ checkPrep <- function(
         call = NULL
       )
     }
+  }
+
+  # check there is something to plot, after any data have been removed above
+  if (require_data) {
+    check_has_data(mydata, data_vars, call = call)
   }
 
   # return data frame

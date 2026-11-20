@@ -147,6 +147,39 @@ check_numeric <- function(mydata, vars, call = rlang::caller_env()) {
   return(mydata)
 }
 
+# error clearly if there is no data to plot: `mydata` has no rows, or any of
+# `vars` contains only missing values. Without this, plotting functions tend to
+# fail deep inside with unhelpful errors, or silently return empty plots.
+check_has_data <- function(mydata, vars, call = rlang::caller_env()) {
+  if (nrow(mydata) == 0L) {
+    cli::cli_abort(
+      c(
+        "x" = "{.arg mydata} has no rows, so there is nothing to plot.",
+        "i" = "Check that any filtering (e.g., with {.fun selectByDate}) hasn't removed all of the data."
+      ),
+      call = call
+    )
+  }
+
+  all_missing <- vars[vapply(
+    vars,
+    \(var) all(is.na(mydata[[var]])),
+    logical(1)
+  )]
+
+  if (length(all_missing) > 0) {
+    cli::cli_abort(
+      c(
+        "x" = "{.field {all_missing}} {cli::qty(length(all_missing))}contain{?s/} only missing values, so there is nothing to plot.",
+        "i" = "Check that {cli::qty(length(all_missing))}{?this variable is/these variables are} measured for the site(s) and period in {.arg mydata}."
+      ),
+      call = call
+    )
+  }
+
+  invisible(mydata)
+}
+
 # function to check that no more than `max` conditioning variables have been
 # passed to `type`. Most plotting functions can facet by up to two types.
 check_type <- function(type, max = 2L, call = rlang::caller_env()) {

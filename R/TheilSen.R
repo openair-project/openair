@@ -229,7 +229,8 @@ TheilSen <- function(
     mydata,
     c("date", pollutant),
     type,
-    remove.calm = FALSE
+    remove.calm = FALSE,
+    require_data = TRUE
   ) |>
     check_numeric(vars = pollutant)
   mydata <- cutData(mydata, type, ...)

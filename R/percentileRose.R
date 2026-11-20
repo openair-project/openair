@@ -171,7 +171,14 @@ percentileRose <- function(
     }
   }
 
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE, wd = wd) |>
+  mydata <- checkPrep(
+    mydata,
+    vars,
+    type,
+    remove.calm = FALSE,
+    wd = wd,
+    require_data = TRUE
+  ) |>
     check_numeric(vars = c(wd, pollutant))
 
   ## round wd

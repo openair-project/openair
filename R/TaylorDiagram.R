@@ -284,6 +284,9 @@ TaylorDiagram <- function(
     }
   }
 
+  # check there is data before cutData(), which fails on empty data
+  check_has_data(mydata, c(obs, mod))
+
   mydata <- cutData(mydata, type, ...)
 
   if (missing(group)) {
@@ -329,7 +332,7 @@ TaylorDiagram <- function(
   }
 
   # data checks, for base and new data if necessary
-  mydata <- checkPrep(mydata, vars, type)
+  mydata <- checkPrep(mydata, vars, type, require_data = TRUE)
 
   # check mod and obs are numbers
   mydata <- check_numeric(mydata, vars = c(obs, mod))

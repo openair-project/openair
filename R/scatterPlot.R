@@ -512,7 +512,13 @@ prepare_scatter_data <- function(
     function(var) inherits(mydata[[var]], c("Date", "POSIXt"))
   )
 
-  mydata <- checkPrep(mydata, unique(vars), type) |>
+  mydata <- checkPrep(
+    mydata,
+    unique(vars),
+    type,
+    require_data = TRUE,
+    call = rlang::caller_env()
+  ) |>
     check_numeric(vars = numeric_vars, call = rlang::caller_env())
 
   ## filter for log scales (require strictly positive)
