@@ -1,5 +1,9 @@
 # openair (development version)
 
+## Bug Fixes
+
+- Refined the built-in `theme` options. Titles, subtitles and captions now have clearer differences in size, weight and colour, and more space between them and the plot. Captions are right-aligned in the `"modern"`, `"soft"` and `"print"` themes. Several theme settings were previously being lost, which is now fixed: e.g., `fontsize` no longer turns text black in `theme = "dark"`, and `"print"` maps now show vertical graticule lines. Axis and strip text in the `"default"` and `"dark"` themes is now slightly smaller.
+
 # openair 3.2.0
 
 ## Dependency Changes

@@ -404,7 +404,7 @@ timeVariation <- function(
         theme = ggplot2::theme(
           plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
           plot.subtitle = ggplot2::element_text(hjust = 0.5),
-          plot.caption = ggplot2::element_text(hjust = 0.5, face = "bold")
+          plot.caption = ggplot2::element_text(hjust = 0.5)
         )
       ) &
       theme_openair(
