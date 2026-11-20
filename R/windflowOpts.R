@@ -168,11 +168,16 @@ resolve_windflow_opts <- function(x, ...) {
   out
 }
 
-# Function to create a windflow layer using the resolved options
-layer_windflow_opts <- function(data, windflow_opts) {
+# Function to create a windflow layer using the resolved options; `mapping` can
+# be used to add aesthetics (e.g., `y`) not set by the parent plot
+layer_windflow_opts <- function(
+  data,
+  windflow_opts,
+  mapping = ggplot2::aes(ws = .data$ws, wd = .data$wd)
+) {
   layer_windflow(
     data = data,
-    ggplot2::aes(ws = .data$ws, wd = .data$wd),
+    mapping,
     limits = windflow_opts$limits,
     range = windflow_opts$range,
     arrow = ggplot2::arrow(

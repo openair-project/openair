@@ -197,6 +197,7 @@ timeVariation <- function(
   panel.gap = 1.5,
   auto.text = TRUE,
   alpha = 0.4,
+  windflow = NULL,
   plot = TRUE,
   ...
 ) {
@@ -328,6 +329,7 @@ timeVariation <- function(
           name.pol = name.pol,
           auto.text = auto.text,
           ylim = ylim_list[[i]],
+          windflow = windflow,
           plot = FALSE
         )
 

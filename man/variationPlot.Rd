@@ -26,6 +26,7 @@ variationPlot(
   key.rows = NULL,
   name.pol = NULL,
   auto.text = TRUE,
+  windflow = NULL,
   plot = TRUE,
   ...
 )
@@ -170,6 +171,11 @@ the user wanted a different description, then setting \code{name.pol = "nox befo
 \item{auto.text}{Either \code{TRUE} (default) or \code{FALSE}. If \code{TRUE} titles and
 axis labels will automatically try and format pollutant names and units
 properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickText]{quickText()}}.}
+
+\item{windflow}{If \code{TRUE}, the vector-averaged wind speed and direction will
+be plotted using arrows. Alternatively, can be a list of arguments to
+control the appearance of the arrows (colour, linewidth, alpha value,
+etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
 
 \item{plot}{When \code{openair} plots are created they are automatically printed
 to the active graphics device. \code{plot = FALSE} deactivates this behaviour.

@@ -29,6 +29,7 @@ timeVariation(
   panel.gap = 1.5,
   auto.text = TRUE,
   alpha = 0.4,
+  windflow = NULL,
   plot = TRUE,
   ...
 )
@@ -184,6 +185,11 @@ properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickTe
 
 \item{alpha}{The alpha transparency used for plotting confidence intervals.
 \code{0} is fully transparent and 1 is opaque. The default is \code{0.4}.}
+
+\item{windflow}{If \code{TRUE}, the vector-averaged wind speed and direction will
+be plotted using arrows. Alternatively, can be a list of arguments to
+control the appearance of the arrows (colour, linewidth, alpha value,
+etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
 
 \item{plot}{When \code{openair} plots are created they are automatically printed
 to the active graphics device. \code{plot = FALSE} deactivates this behaviour.

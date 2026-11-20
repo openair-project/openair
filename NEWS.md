@@ -8,6 +8,8 @@
 
 - `rollingQuantile()` gains a `new.name` argument to name the new quantile columns, consistent with `rollingMean()`. It takes one name per value of `probs`, e.g., `new.name = c("o3_low", "o3_high")`.
 
+- `variationPlot()` and `timeVariation()` gain a `windflow` argument, consistent with `timePlot()`, `scatterPlot()`, `trendLevel()` and `calendarPlot()`. Arrows show the vector-averaged wind speed and direction for each point on the plot, e.g., for each hour of the day. When `group` is used, the wind is averaged separately for each group. The averaged `ws` and `wd` are also returned in the `data` element of the output.
+
 ## Bug Fixes
 
 - Refined the built-in `theme` options. Titles, subtitles and captions now have clearer differences in size, weight and colour, and more space between them and the plot. Captions are right-aligned in the `"modern"`, `"soft"` and `"print"` themes. Several theme settings were previously being lost, which is now fixed: e.g., `fontsize` no longer turns text black in `theme = "dark"`, and `"print"` maps now show vertical graticule lines. Axis and strip text in the `"default"` and `"dark"` themes is now slightly smaller.
@@ -21,6 +23,8 @@
 - `timeVariation()` with a single panel (e.g., `panels = "hour"`) no longer drops its title, subtitle and caption.
 
 - All plotting functions now give a clear error when there is nothing to plot, i.e., when `mydata` has no rows or a requested variable (e.g., a `pollutant`) contains only missing values. Previously, this caused unhelpful errors or silently returned empty plots.
+
+- `variationPlot()` and `timeVariation()` no longer error when `"wd"` is one of the `pollutant`s. When `pollutant = "wd"` is used with `group`, wind direction is now vector-averaged; previously it was averaged arithmetically, so e.g. 350 and 10 degrees averaged to 180 rather than 360. Using `difference = TRUE` with `"wd"` now gives a clear error, as differences in wind direction aren't supported.
 
 - `windRose()` and `polarFreq()` now check and clean wind data consistently when `ws` and `wd` are not the default column names. Previously, `rm.neg` had no effect, and `wd` values outside 0-360 were not removed, for custom column names. This may change outputs for these functions.
 
