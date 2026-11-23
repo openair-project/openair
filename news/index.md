@@ -19,6 +19,22 @@
 
 ### New Features
 
+- Polar coordinate plots
+  ([`windRose()`](https://openair-project.github.io/openair/reference/windRose.md),
+  [`pollutionRose()`](https://openair-project.github.io/openair/reference/pollutionRose.md),
+  [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md),
+  [`polarFreq()`](https://openair-project.github.io/openair/reference/polarFreq.md),
+  [`percentileRose()`](https://openair-project.github.io/openair/reference/percentileRose.md),
+  [`polarAnnulus()`](https://openair-project.github.io/openair/reference/polarAnnulus.md),
+  [`polarCluster()`](https://openair-project.github.io/openair/reference/polarCluster.md)
+  and
+  [`polarDiff()`](https://openair-project.github.io/openair/reference/polarDiff.md))
+  gain the `compass.points` argument to show more compass directions
+  than N/E/S/W. `compass.points = 8` adds labels and gridlines for the
+  intercardinal directions (NE/SE/SW/NW), and `compass.points = 16`
+  further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.)
+  ([\#398](https://github.com/openair-project/openair/issues/398)).
+
 - [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)
   gains a `format` argument, consistent with
   [`splitByDate()`](https://openair-project.github.io/openair/reference/splitByDate.md),
@@ -309,7 +325,7 @@ CRAN release: 2026-11-19
 - `scatterPlot(linear = TRUE)` now returns the fitted linear model
   coefficients in a new `fit` component (e.g., `output$fit`), with one
   row per panel and `group`. This includes the intercept, slope, their
-  standard errors, R2 and the number of observations used
+  standard errors, R² and the number of observations used
   ([\#454](https://github.com/openair-project/openair/issues/454)).
 
 - `key.rows` has been added alongside `key.columns` (which now defaults

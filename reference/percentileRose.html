@@ -82,6 +82,7 @@ conditioning. The plot can display multiple percentile lines or filled areas.</p
 <span>  fill <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  intervals <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  angle.scale <span class="op">=</span> <span class="fl">45</span>,</span>
+<span>  compass.points <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  offset <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  auto.text <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  key.title <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -235,6 +236,13 @@ chosen, sometimes the placement of the scale may interfere with an
 interesting feature. <code>angle.scale</code> can take any value between <code>0</code> and <code>360</code>
 to place the scale at a different angle, or <code>FALSE</code> to move it to the side
 of the plots.</p></dd>
+
+
+<dt id="arg-compass-points">compass.points<a class="anchor" aria-label="anchor" href="#arg-compass-points"></a></dt>
+<dd><p>In radial plots (e.g., <code><a href="polarPlot.html">polarPlot()</a></code>), the number of
+compass directions to label and draw gridlines for. The default, <code>4</code>,
+shows N/E/S/W. <code>8</code> adds the intercardinal directions (NE/SE/SW/NW) and
+<code>16</code> further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.).</p></dd>
 
 
 <dt id="arg-offset">offset<a class="anchor" aria-label="anchor" href="#arg-offset"></a></dt>

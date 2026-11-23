@@ -92,6 +92,7 @@ concentrations are calculated for wind speed-direction ‘bins’ (e.g.
 <span>  col.na <span class="op">=</span> <span class="st">"grey"</span>,</span>
 <span>  upper <span class="op">=</span> <span class="cn">NA</span>,</span>
 <span>  angle.scale <span class="op">=</span> <span class="fl">315</span>,</span>
+<span>  compass.points <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  units <span class="op">=</span> <span class="va">x</span>,</span>
 <span>  force.positive <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  k <span class="op">=</span> <span class="fl">100</span>,</span>
@@ -378,6 +379,13 @@ chosen, sometimes the placement of the scale may interfere with an
 interesting feature. <code>angle.scale</code> can take any value between <code>0</code> and <code>360</code>
 to place the scale at a different angle, or <code>FALSE</code> to move it to the side
 of the plots.</p></dd>
+
+
+<dt id="arg-compass-points">compass.points<a class="anchor" aria-label="anchor" href="#arg-compass-points"></a></dt>
+<dd><p>In radial plots (e.g., <code>polarPlot()</code>), the number of
+compass directions to label and draw gridlines for. The default, <code>4</code>,
+shows N/E/S/W. <code>8</code> adds the intercardinal directions (NE/SE/SW/NW) and
+<code>16</code> further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.).</p></dd>
 
 
 <dt id="arg-units">units<a class="anchor" aria-label="anchor" href="#arg-units"></a></dt>

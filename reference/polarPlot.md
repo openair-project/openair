@@ -29,6 +29,7 @@ polarPlot(
   col.na = "grey",
   upper = NA,
   angle.scale = 315,
+  compass.points = 4,
   units = x,
   force.positive = TRUE,
   k = 100,
@@ -361,6 +362,14 @@ polarPlot(
   feature. `angle.scale` can take any value between `0` and `360` to
   place the scale at a different angle, or `FALSE` to move it to the
   side of the plots.
+
+- compass.points:
+
+  In radial plots (e.g., `polarPlot()`), the number of compass
+  directions to label and draw gridlines for. The default, `4`, shows
+  N/E/S/W. `8` adds the intercardinal directions (NE/SE/SW/NW) and `16`
+  further adds the secondary intercardinal directions
+  (NNE/ENE/ESE/etc.).
 
 - units:
 
