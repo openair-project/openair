@@ -631,6 +631,7 @@ polarAnnulus <-
               colours = resolve_colour_opts(cols, 100),
               aesthetics = c("colour", "fill"),
               limits = limits,
+              oob = scales::oob_squish,
               breaks = scales::breaks_pretty(6),
               na.value = col.na,
               transform = get_scale_transform(trans)

@@ -923,6 +923,7 @@ scatter_hexbin <- function(
       colors = myColors,
       transform = get_scale_transform(trans %||% "log10"),
       labels = scales::label_number(accuracy = 1),
+      oob = scales::oob_squish,
       guide = guide_openair(
         key.position,
         type = "colourbar",
@@ -1315,6 +1316,7 @@ scatter_density <- function(
     ggplot2::scale_fill_gradientn(
       colors = myColors,
       na.value = "transparent",
+      oob = scales::oob_squish,
       guide = guide_openair(
         key.position,
         type = "colourbar",
