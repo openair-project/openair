@@ -123,6 +123,7 @@ percentileRose <- function(
   fill = TRUE,
   intervals = NULL,
   angle.scale = 45,
+  compass.points = 4,
   offset = 0,
   auto.text = TRUE,
   key.title = NULL,
@@ -514,7 +515,7 @@ percentileRose <- function(
       ggplot2::coord_radial(r.axis.inside = angle.scale),
       inner_radius = c(offset / 100, 1) * 0.475
     ) +
-    scale_x_compass() +
+    scale_x_compass(points = compass.points) +
     ggplot2::scale_y_continuous(
       expand = ggplot2::expansion(c(0, 0.1)),
       limits = c(0, ifelse(is.null(intervals), NA, max(intervals))),
@@ -604,6 +605,7 @@ percentileRose <- function(
   # add compass points
   thePlot <- thePlot +
     annotate_compass_points(
+      points = compass.points,
       size = ifelse(
         extra.args$annotate %||% TRUE,
         if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,

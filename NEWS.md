@@ -8,6 +8,8 @@
 
 ## New Features
 
+- Polar coordinate plots (`windRose()`, `pollutionRose()`, `polarPlot()`, `polarFreq()`, `percentileRose()`, `polarAnnulus()`, `polarCluster()` and `polarDiff()`) gain the `compass.points` argument to show more compass directions than N/E/S/W. `compass.points = 8` adds labels and gridlines for the intercardinal directions (NE/SE/SW/NW), and `compass.points = 16` further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.) (#398).
+
 - `selectByDate()` gains a `format` argument, consistent with `splitByDate()`, to control how character `start` and `end` dates are read. Dates are parsed strictly, so `start` and `end` no longer risk being misread. A character `end` includes the whole of the period its format specifies, so, e.g., `selectByDate(mydata, start = "2003-06", end = "2003-08", format = "%Y-%m")` selects June to August 2003.
 
 - `rollingQuantile()` gains a `new.name` argument to name the new quantile columns, consistent with `rollingMean()`. It takes one name per value of `probs`, e.g., `new.name = c("o3_low", "o3_high")`.
@@ -108,7 +110,7 @@
 
 - `variationPlot()` gains the `ref.y` argument.
 
-- `scatterPlot(linear = TRUE)` now returns the fitted linear model coefficients in a new `fit` component (e.g., `output$fit`), with one row per panel and `group`. This includes the intercept, slope, their standard errors, R2 and the number of observations used (#454).
+- `scatterPlot(linear = TRUE)` now returns the fitted linear model coefficients in a new `fit` component (e.g., `output$fit`), with one row per panel and `group`. This includes the intercept, slope, their standard errors, R^2^ and the number of observations used (#454).
 
 - `key.rows` has been added alongside `key.columns` (which now defaults to `NULL`; see Breaking Changes). `calendarPlot()`, `corPlot()`, `percentileRose()`, `polarAnnulus()`, `polarFreq()`, `polarPlot()`, `trendLevel()` and `windRose()` gain both arguments, which apply when their legend shows binned values.
 

@@ -23,6 +23,7 @@ percentileRose(
   fill = TRUE,
   intervals = NULL,
   angle.scale = 45,
+  compass.points = 4,
   offset = 0,
   auto.text = TRUE,
   key.title = NULL,
@@ -145,6 +146,11 @@ chosen, sometimes the placement of the scale may interfere with an
 interesting feature. \code{angle.scale} can take any value between \code{0} and \code{360}
 to place the scale at a different angle, or \code{FALSE} to move it to the side
 of the plots.}
+
+\item{compass.points}{In radial plots (e.g., \code{\link[=polarPlot]{polarPlot()}}), the number of
+compass directions to label and draw gridlines for. The default, \code{4},
+shows N/E/S/W. \code{8} adds the intercardinal directions (NE/SE/SW/NW) and
+\code{16} further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.).}
 
 \item{offset}{\code{offset} controls the size of the 'hole' in the middle and is
 expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a

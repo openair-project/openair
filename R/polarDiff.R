@@ -152,7 +152,10 @@ polarDiff <- function(
         "key.position",
         "par.settings",
         "alpha",
-        "key.title"
+        "key.title",
+        "title",
+        "angle.scale",
+        "compass.points"
       )
     )]
   )

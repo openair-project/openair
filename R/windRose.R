@@ -204,6 +204,7 @@ windRose <- function(
   pollutant = NULL,
   annotate = TRUE,
   angle.scale = 315,
+  compass.points = 4,
   border = NA,
   plot = TRUE,
   key = NULL,
@@ -506,7 +507,7 @@ windRose <- function(
         labels = paste0(grid_labels_v, " m/s"),
         expand = ggplot2::expansion(0, 0)
       ) +
-      scale_x_compass() +
+      scale_x_compass(points = compass.points) +
       ggplot2::scale_fill_gradient2(
         low = cols[1],
         mid = cols[2],
@@ -563,6 +564,7 @@ windRose <- function(
     if (annotate) {
       thePlot <- thePlot +
         annotate_compass_points(
+          points = compass.points,
           size = if (is.null(extra.args$fontsize)) {
             3
           } else {
@@ -838,7 +840,7 @@ windRose <- function(
       labels = \(x) paste0(x, stat.unit),
       limits = c(0, max.freq)
     ) +
-    scale_x_compass() +
+    scale_x_compass(points = compass.points) +
     ggplot2::scale_fill_manual(
       values = resolve_colour_opts(cols, n = length(interval_labels)),
       aesthetics = c("colour", "fill"),
@@ -961,6 +963,7 @@ windRose <- function(
   if (annotate) {
     thePlot <- thePlot +
       annotate_compass_points(
+        points = compass.points,
         size = if (is.null(extra.args$fontsize)) 3 else extra.args$fontsize / 3,
         theme = theme
       )
