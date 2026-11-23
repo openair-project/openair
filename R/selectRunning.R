@@ -97,11 +97,10 @@ selectRunning <- function(
 
   # check input data - ensures `date` are in correct order
   vars <- unique(c("date", names(mydata)))
-  thedata <- checkPrep(
+  thedata <- check_prep(
     mydata,
-    Names = vars,
-    type = type,
-    remove.calm = FALSE
+    vars = vars,
+    type = type
   ) |>
     check_numeric(vars = pollutant)
 

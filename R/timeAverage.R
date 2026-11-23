@@ -232,11 +232,10 @@ timeAverage <- function(
 
   # extract variables of interest
   vars <- unique(c("date", names(mydata)))
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     vars,
-    type = "default",
-    remove.calm = FALSE
+    type = "default"
   )
 
   # time zone of data (replace missing w/ GMT)

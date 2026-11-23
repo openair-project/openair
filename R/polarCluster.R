@@ -163,11 +163,21 @@ polarCluster <-
     vars <- c("wd", x, pollutant)
     vars <- c(vars, "date", ".id")
 
-    mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    mydata <- check_prep(
+      mydata,
+      vars,
+      type,
+      require_data = TRUE
+    ) |>
       check_numeric(vars = c("wd", x, pollutant))
 
     if (is.data.frame(after)) {
-      after <- checkPrep(after, vars, type, remove.calm = FALSE) |>
+      after <- check_prep(
+        after,
+        vars,
+        type,
+        require_data = TRUE
+      ) |>
         check_numeric(vars = c("wd", x, pollutant))
     }
 
@@ -178,14 +188,6 @@ polarCluster <-
     min.scale <- floor(min(mydata[[x]], na.rm = TRUE))
 
     extra.args <- capture_dots(...)
-
-    # label controls
-    extra.args$xlab <- quickText(extra.args$xlab, auto.text)
-    extra.args$ylab <- quickText(extra.args$ylab, auto.text)
-    extra.args$title <- quickText(extra.args$title, auto.text)
-    extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-    extra.args$caption <- quickText(extra.args$caption, auto.text)
-    extra.args$tag <- quickText(extra.args$tag, auto.text)
 
     # if considering differences
     if (is.data.frame(after)) {
@@ -349,14 +351,10 @@ polarCluster <-
         ),
         theme = theme
       ) +
-      ggplot2::labs(
-        color = "Cluster",
-        x = extra.args$xlab,
-        y = extra.args$ylab,
-        title = extra.args$title,
-        subtitle = extra.args$subtitle,
-        caption = extra.args$caption,
-        tag = extra.args$tag
+      labs_openair(
+        extra.args,
+        auto.text,
+        colour = "Cluster"
       ) +
       get_facet(
         ifelse(dplyr::n_distinct(results.grid$nclust) > 1, "nclust", "default"),

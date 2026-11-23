@@ -367,7 +367,7 @@ trendLevel <- function(
     )
   }
 
-  # checkPrep
+  # check_prep
   temp <- c(pollutant)
   if (x %in% dateTypes || y %in% dateTypes || any(type %in% dateTypes)) {
     temp <- c(temp, "date")
@@ -377,11 +377,11 @@ trendLevel <- function(
   }
 
   # all of x, y, temp need to be handled as type here
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     temp,
     type = c(x, y, type),
-    remove.calm = FALSE
+    require_data = TRUE
   ) |>
     check_numeric(vars = setdiff(temp, "date"))
 
@@ -526,14 +526,12 @@ trendLevel <- function(
       panel.grid.minor.x = ggplot2::element_blank(),
       panel.grid.minor.y = ggplot2::element_blank()
     ) +
-    ggplot2::labs(
-      x = quickText(extra.args$xlab %||% x, auto.text = auto.text),
-      y = quickText(extra.args$ylab %||% y, auto.text = auto.text),
-      title = quickText(extra.args$title %||% "", auto.text = auto.text),
-      subtitle = quickText(extra.args$subtitle %||% "", auto.text = auto.text),
-      caption = quickText(extra.args$caption %||% "", auto.text = auto.text),
-      tag = quickText(extra.args$tag, auto.text = auto.text),
-      fill = quickText(key.title, auto.text = auto.text)
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = x,
+      y = y,
+      fill = key.title
     ) +
     ggplot2::guides(
       x = ggplot2::guide_axis(check.overlap = TRUE, angle = rotate.axis[1]),

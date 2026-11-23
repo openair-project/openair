@@ -30,6 +30,48 @@ test_that("rollingQuantile single prob produces exactly one new quantile column"
   expect_true("q_o3_0.5" %in% new_cols)
 })
 
+test_that("rollingQuantile new.name renames the quantile columns", {
+  default <- rollingQuantile(
+    dat,
+    pollutant = "o3",
+    width = 8,
+    probs = c(0.05, 0.95)
+  )
+  named <- rollingQuantile(
+    dat,
+    pollutant = "o3",
+    width = 8,
+    probs = c(0.05, 0.95),
+    new.name = c("o3_low", "o3_high")
+  )
+
+  expect_true(all(c("o3_low", "o3_high") %in% names(named)))
+  expect_false(any(c("q_o3_0.05", "q_o3_0.95") %in% names(named)))
+  expect_equal(named$o3_low, default$q_o3_0.05)
+  expect_equal(named$o3_high, default$q_o3_0.95)
+})
+
+test_that("rollingQuantile count column is named like rollingMean's", {
+  result <- rollingQuantile(dat, pollutant = "o3", width = 8, probs = 0.5)
+  rm_result <- rollingMean(dat, pollutant = "o3", width = 8)
+
+  expect_true("n_o3" %in% names(result))
+  expect_false("counts" %in% names(result))
+  expect_equal(result$n_o3, rm_result$n_o3)
+})
+
+test_that("rollingQuantile errors on invalid new.name", {
+  expect_error(
+    rollingQuantile(dat, probs = c(0.05, 0.95), new.name = "one"),
+    "new.name"
+  )
+  expect_error(
+    rollingQuantile(dat, probs = c(0.05, 0.95), new.name = c("a", "a")),
+    "new.name"
+  )
+  expect_error(rollingQuantile(dat, probs = 0.5, new.name = 1), "new.name")
+})
+
 # --- Numerical sanity --------------------------------------------------------
 
 test_that("rolling median (p=0.5) is numeric with no NaN", {

@@ -169,14 +169,6 @@ corPlot <- function(
     }
   }
 
-  # label controls
-  extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
-  extra.args$ylab <- quickText(extra.args$ylab %||% NULL, auto.text)
-  extra.args$title <- quickText(extra.args$title %||% NULL, auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-  extra.args$caption <- quickText(extra.args$caption, auto.text)
-  extra.args$tag <- quickText(extra.args$tag, auto.text)
-
   # check triangle is set properly
   triangle <- rlang::arg_match(triangle)
   annotate <- rlang::arg_match(annotate)
@@ -202,11 +194,10 @@ corPlot <- function(
   }
 
   # check input data
-  mydata <- checkPrep(
+  mydata <- check_prep(
     mydata,
     pollutants,
-    type = type,
-    remove.calm = FALSE
+    type = type
   )
 
   # cut data depending on type
@@ -495,13 +486,9 @@ corPlot <- function(
       ),
       expand = ggplot2::expansion(c(0.01, 0.01))
     ) +
-    ggplot2::labs(
-      x = extra.args$xlab,
-      y = extra.args$ylab,
-      title = extra.args$title,
-      subtitle = extra.args$subtitle,
-      caption = extra.args$caption,
-      tag = extra.args$tag,
+    labs_openair(
+      extra.args,
+      auto.text,
       fill = key.title
     )
 

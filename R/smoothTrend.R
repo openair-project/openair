@@ -147,17 +147,6 @@ smoothTrend <- function(
   extra.args$shape <- extra.args$shape %||% 1L
   extra.args$size <- extra.args$size %||% 5L
 
-  # label controls
-  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
-  extra.args$caption <- quickText(extra.args$caption %||% "", auto.text)
-  extra.args$tag <- quickText(extra.args$tag, auto.text)
-  extra.args$ylab <- quickText(
-    extra.args$ylab %||% paste(pollutant, collapse = ", "),
-    auto.text
-  )
-  extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
-
   # find time interval
   # need this because if user has a data capture threshold, need to know
   # original time interval. better to do this before conditioning
@@ -392,14 +381,11 @@ smoothTrend <- function(
       drop = TRUE,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    ggplot2::labs(
-      y = extra.args$ylab,
-      x = extra.args$xlab,
-      title = extra.args$title,
-      subtitle = extra.args$subtitle,
-      caption = extra.args$caption,
-      tag = extra.args$tag,
-      color = NULL,
+    labs_openair(
+      extra.args,
+      auto.text,
+      y = paste(pollutant, collapse = ", "),
+      colour = NULL,
       fill = NULL,
       shape = NULL,
       linetype = NULL,
@@ -446,7 +432,13 @@ prepare_smoothtrend_data <- function(
 ) {
   # default checks
   vars <- c("date", pollutant)
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+  mydata <- check_prep(
+    mydata,
+    vars,
+    type,
+    require_data = TRUE,
+    call = rlang::caller_env()
+  ) |>
     check_numeric(vars = pollutant, call = rlang::caller_env())
 
   # cutData depending on type

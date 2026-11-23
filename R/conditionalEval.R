@@ -84,8 +84,20 @@
 #' @param var.names Variable names to be shown in the legend for `var.obs`
 #'   and `var.mod`.
 #'
-#' @param ... Other graphical parameters passed onto [conditionalQuantile()]
-#'   and [cutData()].
+#' @param ... Additional graphical options:
+#'
+#'   - `title`, `subtitle` and `caption` label the whole figure, and `xlab`,
+#'   `ylab` and `tag` label the right-hand panel. These are passed through
+#'   [quickText()] if `auto.text = TRUE`, and can be set to `NULL` to remove a
+#'   default label.
+#'
+#'   - `ncol`, `nrow` and `scales` control the faceting of the right-hand panel
+#'   when using `type`.
+#'
+#'   - `fontsize` sets the overall font size.
+#'
+#'   - `lineend`, `linejoin` and `linemitre` control how lines are drawn in the
+#'   right-hand panel.
 #'
 #' @export
 #' @author David Carslaw
@@ -122,6 +134,11 @@ conditionalEval <- function(
   check_type(type, max = 1)
 
   extra.args <- capture_dots(...)
+
+  # title, subtitle and caption label the whole figure (see below), so are
+  # removed from the right-hand panel's labels
+  panel_label_args <- extra.args
+  panel_label_args[c("title", "subtitle", "caption")] <- list(NULL)
 
   # Determine mode: "other" (variable/date) or model-eval statistic
   other <- FALSE
@@ -168,7 +185,12 @@ conditionalEval <- function(
     }
   }
 
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+  mydata <- check_prep(
+    mydata,
+    vars,
+    type,
+    require_data = TRUE
+  ) |>
     check_numeric(vars = c(mod, obs, var.obs, var.mod))
   mydata <- stats::na.omit(mydata)
 
@@ -267,12 +289,17 @@ conditionalEval <- function(
         extra.args = extra.args
       ) +
       ggplot2::guides(
-        fill = ggplot2::guide_legend(direction = "vertical")
+        fill = guide_openair(
+          "bottom",
+          var_text_position = FALSE,
+          direction = "vertical"
+        )
       ) +
-      ggplot2::labs(
-        fill = quickText(statistic, auto.text),
-        x = quickText(extra.args$xlab, auto.text),
-        y = quickText("proportion", auto.text)
+      labs_openair(
+        panel_label_args,
+        auto.text,
+        y = "proportion",
+        fill = statistic
       )
 
     return_data <- other_results
@@ -440,30 +467,43 @@ conditionalEval <- function(
         key.position = "bottom",
         extra.args = extra.args
       ) +
-      ggplot2::labs(
-        x = quickText(extra.args$xlab, auto.text),
-        y = quickText(extra.args$ylab, auto.text),
-        color = quickText("variable", auto.text),
-        fill = quickText("variable", auto.text)
+      labs_openair(
+        panel_label_args,
+        auto.text,
+        colour = "variable",
+        fill = "variable"
       ) +
       ggplot2::guides(
-        fill = ggplot2::guide_legend(direction = "vertical"),
-        color = ggplot2::guide_legend(direction = "vertical")
+        fill = guide_openair(
+          "bottom",
+          var_text_position = FALSE,
+          direction = "vertical"
+        ),
+        colour = guide_openair(
+          "bottom",
+          var_text_position = FALSE,
+          direction = "vertical"
+        )
       )
 
     return_data <- results
   }
 
-  if ("title" %in% names(extra.args)) {
-    title <- quickText(extra.args$title, auto.text)
-    cq_plt <- cq_plt + ggplot2::labs(title = title)
-    right_plt <- right_plt + ggplot2::labs(title = title)
-  }
-
+  # title, subtitle and caption apply to the whole figure
   thePlot <- patchwork::wrap_plots(
     cq_plt,
     right_plt
-  )
+  ) +
+    annotation_openair(
+      extra.args,
+      auto.text,
+      theme = theme_openair(
+        theme = theme,
+        coord = "cartesian",
+        key.position = "bottom",
+        extra.args = extra.args
+      )
+    )
 
   if (plot) {
     plot(thePlot)

@@ -215,23 +215,16 @@ polarAnnulus <-
     # extra.args setup
     extra.args <- capture_dots(...)
 
-    # label controls
-    extra.args$xlab <- quickText(extra.args$xlab, auto.text)
-    extra.args$ylab <- quickText(extra.args$ylab, auto.text)
-    extra.args$title <- quickText(extra.args$title, auto.text)
-    extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-    extra.args$tag <- quickText(extra.args$tag, auto.text)
-
     # deal with breaks
     break_opts <- resolve_break_opts(breaks, extra.args)
 
-    # separate handling for being overwritten
-    if ("caption" %in% names(extra.args)) {
-      extra.args$caption <- quickText(extra.args$caption, auto.text)
-    }
-
     # check data
-    mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+    mydata <- check_prep(
+      mydata,
+      vars,
+      type,
+      require_data = TRUE
+    ) |>
       check_numeric(vars = c(wd, pollutant))
 
     # if more than one pollutant, need to stack the data and set type = "variable"
@@ -311,8 +304,6 @@ polarAnnulus <-
         sub,
         sep = "\n"
       )
-
-      sub <- quickText(sub, auto.text = auto.text)
     }
 
     prepare.grid <- function(mydata) {
@@ -641,6 +632,7 @@ polarAnnulus <-
               colours = resolve_colour_opts(cols, 100),
               aesthetics = c("colour", "fill"),
               limits = limits,
+              oob = scales::oob_squish,
               breaks = scales::breaks_pretty(6),
               na.value = col.na,
               transform = get_scale_transform(trans)
@@ -652,15 +644,12 @@ polarAnnulus <-
           )
         }
       } +
-      ggplot2::labs(
-        x = extra.args$xlab,
-        y = extra.args$ylab,
-        title = extra.args$title,
-        subtitle = extra.args$subtitle,
-        caption = extra.args$caption %||% sub,
-        tag = extra.args$tag,
-        colour = quickText(key.title, auto.text = auto.text),
-        fill = quickText(key.title, auto.text = auto.text)
+      labs_openair(
+        extra.args,
+        auto.text,
+        caption = sub,
+        colour = key.title,
+        fill = key.title
       ) +
       annotate_compass_points(
         points = compass.points,

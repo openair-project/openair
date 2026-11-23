@@ -68,12 +68,11 @@ theme_openair <- function(
   theme <- theme + extra_theme
 
   if ("fontsize" %in% names(extra.args)) {
-    theme <- ggplot2::`%+replace%`(
-      theme,
+    # `+` (not `%+replace%`) so the theme's text colour/family are kept
+    theme <- theme +
       ggplot2::theme(
         text = ggplot2::element_text(size = extra.args$fontsize)
       )
-    )
   }
 
   theme
@@ -198,8 +197,7 @@ theme_openair_default <- function(key.position) {
     ))
   }
 
-  ggplot2::`%+replace%`(
-    ggplot2::theme_bw(base_size = 11),
+  ggplot2::theme_bw(base_size = 11) +
     ggplot2::theme(
       # === BACKGROUND ===
       plot.background = ggplot2::element_rect(
@@ -240,21 +238,30 @@ theme_openair_default <- function(key.position) {
       strip.text = ggplot2::element_text(
         colour = "black",
         face = "bold",
-        margin = ggplot2::margin_auto(1)
+        margin = ggplot2::margin_auto(4)
       ),
 
       # === TEXT ===
-      # Centred titles throughout — the default/dark convention
+      # Centred titles throughout — the default/dark convention. The caption
+      # stays centred for legacy reasons, but is smaller and plain so it
+      # doesn't read as a second title.
       plot.title = ggplot2::element_text(
         hjust = 0.5,
-        face = "bold"
+        face = "bold",
+        size = ggplot2::rel(1.2),
+        margin = ggplot2::margin(b = 4)
       ),
       plot.subtitle = ggplot2::element_text(
-        hjust = 0.5
+        hjust = 0.5,
+        colour = "grey30",
+        size = ggplot2::rel(0.95),
+        margin = ggplot2::margin(b = 10)
       ),
       plot.caption = ggplot2::element_text(
         hjust = 0.5,
-        face = "bold"
+        colour = "grey30",
+        size = ggplot2::rel(0.8),
+        margin = ggplot2::margin(t = 8)
       ),
 
       # === LEGEND ===
@@ -278,7 +285,6 @@ theme_openair_default <- function(key.position) {
       # === LAYOUT ===
       plot.margin = ggplot2::margin(10, 10, 10, 10)
     )
-  )
 }
 
 theme_openair_default_radial <- function(
@@ -289,8 +295,7 @@ theme_openair_default_radial <- function(
     return(theme_openair_default(key.position))
   }
 
-  ggplot2::`%+replace%`(
-    theme_openair_default(key.position),
+  theme_openair_default(key.position) +
     ggplot2::theme(
       # === GRID ===
       # Spokes dark and solid, rings dashed and light —
@@ -337,10 +342,9 @@ theme_openair_default_radial <- function(
       strip.text = ggplot2::element_text(
         colour = "black",
         face = "bold",
-        margin = ggplot2::margin_auto(0.5)
+        margin = ggplot2::margin_auto(3)
       )
     )
-  )
 }
 
 theme_openair_default_sf <- function(key.position, grid.col) {
@@ -348,8 +352,7 @@ theme_openair_default_sf <- function(key.position, grid.col) {
     return(theme_openair_default(key.position))
   }
 
-  ggplot2::`%+replace%`(
-    theme_openair_default(key.position),
+  theme_openair_default(key.position) +
     ggplot2::theme(
       # === GRID ===
       # Dashed graticule in the caller-supplied colour (typically deepskyblue)
@@ -377,7 +380,6 @@ theme_openair_default_sf <- function(key.position, grid.col) {
       ),
       panel.ontop = TRUE
     )
-  )
 }
 
 # Dark --------------------------------------------------------------------
@@ -403,8 +405,7 @@ theme_openair_dark <- function(key.position) {
   axis_col <- "#94A3B8"
   accent_col <- "#94A3B8"
 
-  ggplot2::`%+replace%`(
-    ggplot2::theme_minimal(base_size = 11),
+  ggplot2::theme_minimal(base_size = 11) +
     ggplot2::theme(
       # === BACKGROUND ===
       # Inverted contrast: panel slightly darker than surround (opposite of light themes)
@@ -439,7 +440,7 @@ theme_openair_dark <- function(key.position) {
       strip.text = ggplot2::element_text(
         colour = text_col,
         face = "bold",
-        margin = ggplot2::margin_auto(1)
+        margin = ggplot2::margin_auto(4)
       ),
 
       # === TEXT ===
@@ -450,16 +451,20 @@ theme_openair_dark <- function(key.position) {
         hjust = 0.5,
         face = "bold",
         colour = text_col,
-        size = ggplot2::rel(1.2)
+        size = ggplot2::rel(1.2),
+        margin = ggplot2::margin(b = 4)
       ),
       plot.subtitle = ggplot2::element_text(
         hjust = 0.5,
-        colour = axis_col
+        colour = axis_col,
+        size = ggplot2::rel(0.95),
+        margin = ggplot2::margin(b = 10)
       ),
       plot.caption = ggplot2::element_text(
         hjust = 0.5,
         colour = axis_col,
-        size = ggplot2::rel(0.8)
+        size = ggplot2::rel(0.8),
+        margin = ggplot2::margin(t = 8)
       ),
 
       # === LEGEND ===
@@ -472,7 +477,6 @@ theme_openair_dark <- function(key.position) {
       ),
       legend.key = ggplot2::element_rect(fill = panel_bg, colour = NA),
       legend.title = ggplot2::element_text(
-        hjust = 0.5,
         colour = text_col,
         face = "bold"
       ),
@@ -492,7 +496,6 @@ theme_openair_dark <- function(key.position) {
       panel.spacing = ggplot2::rel(2),
       plot.margin = ggplot2::margin(10, 10, 10, 10)
     )
-  )
 }
 
 theme_openair_dark_radial <- function(
@@ -510,8 +513,7 @@ theme_openair_dark_radial <- function(
   axis_col <- "#94A3B8"
   accent_col <- "#94A3B8"
 
-  ggplot2::`%+replace%`(
-    theme_openair_dark(key.position),
+  theme_openair_dark(key.position) +
     ggplot2::theme(
       # === GRID ===
       # Rings dashed, spokes solid — consistent convention across all themes
@@ -564,10 +566,9 @@ theme_openair_dark_radial <- function(
       strip.text = ggplot2::element_text(
         colour = text_col,
         face = "bold",
-        margin = ggplot2::margin_auto(0.5)
+        margin = ggplot2::margin_auto(3)
       )
     )
-  )
 }
 
 theme_openair_dark_sf <- function(
@@ -585,8 +586,7 @@ theme_openair_dark_sf <- function(
   axis_col <- "#94A3B8"
   accent_col <- "#94A3B8"
 
-  ggplot2::`%+replace%`(
-    theme_openair_dark(key.position),
+  theme_openair_dark(key.position) +
     ggplot2::theme(
       # === GRID ===
       # Dashed graticule in the same blue-grey as the rest of the theme
@@ -612,7 +612,6 @@ theme_openair_dark_sf <- function(
       panel.border = ggplot2::element_blank(),
       panel.ontop = TRUE
     )
-  )
 }
 
 # Modern ------------------------------------------------------------------
@@ -636,8 +635,7 @@ theme_openair_modern <- function(key.position) {
   xline_col <- "#1F2937" # near-black baseline — the structural anchor
   text_col <- "#111827"
 
-  ggplot2::`%+replace%`(
-    ggplot2::theme_minimal(base_size = 11),
+  ggplot2::theme_minimal(base_size = 11) +
     ggplot2::theme(
       plot.title.position = "plot",
       plot.caption.position = "plot",
@@ -674,28 +672,32 @@ theme_openair_modern <- function(key.position) {
         face = "bold",
         colour = text_col,
         size = ggplot2::rel(0.95),
-        margin = ggplot2::margin_auto(2)
+        margin = ggplot2::margin_auto(4)
       ),
 
       # === TEXT ===
       text = ggplot2::element_text(colour = text_col),
 
-      # Large, left-aligned title — dashboard headers are assertive
+      # Large, left-aligned title — dashboard headers are assertive.
+      # Caption right-aligned, the conventional home for source/notes.
       plot.title = ggplot2::element_text(
         hjust = 0,
         face = "bold",
         size = ggplot2::rel(1.4),
-        colour = text_col
+        colour = text_col,
+        margin = ggplot2::margin(b = 4)
       ),
       plot.subtitle = ggplot2::element_text(
         hjust = 0,
         colour = "#4B5563",
-        size = ggplot2::rel(0.95)
+        size = ggplot2::rel(0.95),
+        margin = ggplot2::margin(b = 10)
       ),
       plot.caption = ggplot2::element_text(
-        hjust = 0.5,
+        hjust = 1,
         colour = "#6B7280",
-        size = ggplot2::rel(0.8)
+        size = ggplot2::rel(0.8),
+        margin = ggplot2::margin(t = 8)
       ),
 
       # === LEGEND ===
@@ -704,7 +706,6 @@ theme_openair_modern <- function(key.position) {
       legend.background = ggplot2::element_blank(),
       legend.key = ggplot2::element_rect(colour = NA),
       legend.title = ggplot2::element_text(
-        hjust = 0.5,
         face = "bold",
         colour = text_col
       ),
@@ -720,7 +721,6 @@ theme_openair_modern <- function(key.position) {
       panel.spacing = ggplot2::rel(2),
       plot.margin = ggplot2::margin(10, 10, 10, 10)
     )
-  )
 }
 
 theme_openair_modern_radial <- function(
@@ -735,8 +735,7 @@ theme_openair_modern_radial <- function(
   axis_col <- "#9CA3AF"
   text_col <- "#111827"
 
-  ggplot2::`%+replace%`(
-    theme_openair_modern(key.position),
+  theme_openair_modern(key.position) +
     ggplot2::theme(
       # === GRID ===
       # Radial needs both directions — rings dashed, spokes solid
@@ -790,10 +789,9 @@ theme_openair_modern_radial <- function(
         face = "bold",
         colour = text_col,
         size = ggplot2::rel(0.95),
-        margin = ggplot2::margin_auto(1)
+        margin = ggplot2::margin_auto(3)
       )
     )
-  )
 }
 
 theme_openair_modern_sf <- function(
@@ -813,12 +811,18 @@ theme_openair_modern_sf <- function(
   axis_col <- "#9CA3AF"
   text_col <- "#111827"
 
-  ggplot2::`%+replace%`(
-    theme_openair_modern(key.position),
+  theme_openair_modern(key.position) +
     ggplot2::theme(
       # === GRID ===
-      # Subtle dashed graticule — present for reference, not dominant
-      panel.grid.major = ggplot2::element_line(
+      # Subtle dashed graticule — present for reference, not dominant.
+      # .x/.y set explicitly because the base modern theme sets them (and
+      # blanks major.x), which would otherwise override `panel.grid.major`.
+      panel.grid.major.x = ggplot2::element_line(
+        colour = grid.col,
+        linewidth = 0.25,
+        linetype = "dashed"
+      ),
+      panel.grid.major.y = ggplot2::element_line(
         colour = grid.col,
         linewidth = 0.25,
         linetype = "dashed"
@@ -826,14 +830,20 @@ theme_openair_modern_sf <- function(
       panel.grid.minor = ggplot2::element_blank(),
 
       # === AXES ===
-      # No baseline on maps — the panel border handles framing
-      axis.line = ggplot2::element_blank(),
-      axis.ticks = ggplot2::element_blank(),
-      axis.text = ggplot2::element_text(
+      # No baseline on maps. Children set explicitly to override the base
+      # modern theme's x baseline and per-axis text styling.
+      axis.line.x = ggplot2::element_blank(),
+      axis.line.y = ggplot2::element_blank(),
+      axis.ticks.x = ggplot2::element_blank(),
+      axis.ticks.y = ggplot2::element_blank(),
+      axis.text.x = ggplot2::element_text(
         colour = axis_col,
         size = ggplot2::rel(0.8)
       ),
-      axis.line.y = ggplot2::element_line(colour = "#1F2937", linewidth = 0.7),
+      axis.text.y = ggplot2::element_text(
+        colour = axis_col,
+        size = ggplot2::rel(0.8)
+      ),
 
       # === PANEL ===
       # Transparent so map geometry shows through; panel.ontop keeps grid on top
@@ -841,7 +851,6 @@ theme_openair_modern_sf <- function(
       panel.border = ggplot2::element_blank(),
       panel.ontop = TRUE
     )
-  )
 }
 
 # Soft --------------------------------------------------------------------
@@ -865,8 +874,8 @@ theme_openair_soft <- function(key.position) {
   text_col <- "#1F2937"
   axis_col <- "#6B7280"
 
-  ggplot2::`%+replace%`(
-    ggplot2::theme_minimal(base_size = 12), # slightly larger — editorial feel
+  # slightly larger base size — editorial feel
+  ggplot2::theme_minimal(base_size = 12) +
     ggplot2::theme(
       # === BACKGROUND ===
       plot.background = ggplot2::element_rect(fill = bg, colour = NA),
@@ -898,26 +907,31 @@ theme_openair_soft <- function(key.position) {
       strip.text = ggplot2::element_text(
         colour = text_col,
         face = "bold",
-        margin = ggplot2::margin_auto(1)
+        margin = ggplot2::margin_auto(4)
       ),
 
       # === TEXT ===
       text = ggplot2::element_text(colour = text_col),
 
+      plot.title.position = "plot",
+      plot.caption.position = "plot",
       plot.title = ggplot2::element_text(
         hjust = 0,
         face = "bold",
-        size = ggplot2::rel(1.3)
+        size = ggplot2::rel(1.3),
+        margin = ggplot2::margin(b = 4)
       ),
       plot.subtitle = ggplot2::element_text(
         hjust = 0,
         colour = axis_col,
-        size = ggplot2::rel(0.95)
+        size = ggplot2::rel(0.95),
+        margin = ggplot2::margin(b = 10)
       ),
       plot.caption = ggplot2::element_text(
-        hjust = 0.5,
+        hjust = 1,
         colour = axis_col,
-        size = ggplot2::rel(0.85)
+        size = ggplot2::rel(0.8),
+        margin = ggplot2::margin(t = 8)
       ),
 
       # === LEGEND ===
@@ -929,7 +943,7 @@ theme_openair_soft <- function(key.position) {
         linewidth = 0.4
       ),
       legend.key = ggplot2::element_rect(fill = panel_bg, colour = NA),
-      legend.title = ggplot2::element_text(hjust = 0.5, colour = text_col),
+      legend.title = ggplot2::element_text(colour = text_col),
       legend.text = ggplot2::element_text(colour = text_col),
       legend.ticks = ggplot2::element_line(colour = axis_col),
       legend.ticks.length = structure(
@@ -946,7 +960,6 @@ theme_openair_soft <- function(key.position) {
       panel.spacing = ggplot2::rel(2),
       plot.margin = ggplot2::margin(12, 12, 12, 12) # slightly more generous
     )
-  )
 }
 
 theme_openair_soft_radial <- function(
@@ -962,8 +975,7 @@ theme_openair_soft_radial <- function(
   text_col <- "#1F2937"
   axis_col <- "#6B7280"
 
-  ggplot2::`%+replace%`(
-    theme_openair_soft(key.position),
+  theme_openair_soft(key.position) +
     ggplot2::theme(
       # === GRID ===
       # Rings dashed, spokes solid — same convention as print radial
@@ -1005,10 +1017,9 @@ theme_openair_soft_radial <- function(
       strip.text = ggplot2::element_text(
         face = "bold",
         colour = text_col,
-        margin = ggplot2::margin_auto(1)
+        margin = ggplot2::margin_auto(3)
       )
     )
-  )
 }
 
 theme_openair_soft_sf <- function(
@@ -1029,8 +1040,7 @@ theme_openair_soft_sf <- function(
   text_col <- "#1F2937"
   axis_col <- "#6B7280"
 
-  ggplot2::`%+replace%`(
-    theme_openair_soft(key.position),
+  theme_openair_soft(key.position) +
     ggplot2::theme(
       # === GRID ===
       # Very subtle graticule — present but not competing with map data
@@ -1055,7 +1065,6 @@ theme_openair_soft_sf <- function(
       panel.border = ggplot2::element_blank(),
       panel.ontop = TRUE
     )
-  )
 }
 
 # Print -------------------------------------------------------------------
@@ -1084,8 +1093,7 @@ theme_openair_print <- function(key.position) {
   text_col <- "#000000" # pure black text
   strip_col <- "#E0E0E0" # light grey strip background
 
-  ggplot2::`%+replace%`(
-    ggplot2::theme_bw(base_size = 11),
+  ggplot2::theme_bw(base_size = 11) +
     ggplot2::theme(
       # === BACKGROUND ===
       # Pure white everywhere — no warm or cool tint
@@ -1132,26 +1140,31 @@ theme_openair_print <- function(key.position) {
         face = "bold",
         colour = text_col,
         size = ggplot2::rel(0.9),
-        margin = ggplot2::margin_auto(1)
+        margin = ggplot2::margin_auto(4)
       ),
 
       # === TEXT ===
       text = ggplot2::element_text(colour = text_col, family = ""),
 
+      plot.title.position = "plot",
+      plot.caption.position = "plot",
       plot.title = ggplot2::element_text(
         hjust = 0,
         face = "bold",
-        size = ggplot2::rel(1.1)
+        size = ggplot2::rel(1.2),
+        margin = ggplot2::margin(b = 4)
       ),
       plot.subtitle = ggplot2::element_text(
         hjust = 0,
         colour = "#333333", # very dark grey — only concession away from black
-        size = ggplot2::rel(0.95)
+        size = ggplot2::rel(0.95),
+        margin = ggplot2::margin(b = 10)
       ),
       plot.caption = ggplot2::element_text(
-        hjust = 0.5,
+        hjust = 1,
         colour = "#333333",
-        size = ggplot2::rel(0.8)
+        size = ggplot2::rel(0.8),
+        margin = ggplot2::margin(t = 8)
       ),
 
       # === LEGEND ===
@@ -1163,7 +1176,6 @@ theme_openair_print <- function(key.position) {
       ),
       legend.key = ggplot2::element_blank(),
       legend.title = ggplot2::element_text(
-        hjust = 0.5,
         face = "bold",
         colour = text_col
       ),
@@ -1183,7 +1195,6 @@ theme_openair_print <- function(key.position) {
       panel.spacing = ggplot2::rel(1.5),
       plot.margin = ggplot2::margin(10, 10, 10, 10)
     )
-  )
 }
 
 theme_openair_print_radial <- function(
@@ -1198,8 +1209,7 @@ theme_openair_print_radial <- function(
   axis_col <- "#000000"
   text_col <- "#000000"
 
-  ggplot2::`%+replace%`(
-    theme_openair_print(key.position),
+  theme_openair_print(key.position) +
     ggplot2::theme(
       # Both grid directions needed for radial — dashed rings, solid spokes
       panel.grid.major.y = ggplot2::element_line(
@@ -1246,7 +1256,6 @@ theme_openair_print_radial <- function(
       panel.ontop = panel.ontop,
       panel.spacing = ggplot2::rel(1)
     )
-  )
 }
 
 theme_openair_print_sf <- function(
@@ -1272,11 +1281,17 @@ theme_openair_print_sf <- function(
   axis_col <- "#555555" # slightly softened for lat/lon labels on maps
   text_col <- "#000000"
 
-  ggplot2::`%+replace%`(
-    theme_openair_print(key.position),
+  theme_openair_print(key.position) +
     ggplot2::theme(
-      # Subtle grey graticule lines — present but not distracting
-      panel.grid = ggplot2::element_line(
+      # Subtle grey graticule lines — present but not distracting.
+      # Set .x/.y explicitly: the base print theme blanks major.x and styles
+      # major.y, which would otherwise take precedence over `panel.grid`.
+      panel.grid.major.x = ggplot2::element_line(
+        colour = grid.col,
+        linewidth = 0.25,
+        linetype = "dashed"
+      ),
+      panel.grid.major.y = ggplot2::element_line(
         colour = grid.col,
         linewidth = 0.25,
         linetype = "dashed"
@@ -1303,5 +1318,4 @@ theme_openair_print_sf <- function(
       ),
       panel.ontop = TRUE
     )
-  )
 }

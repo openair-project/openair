@@ -176,14 +176,6 @@ polarFreq <- function(
   # extra.args setup
   extra.args <- capture_dots(...)
 
-  # label controls
-  extra.args$xlab <- quickText(extra.args$xlab, auto.text)
-  extra.args$ylab <- quickText(extra.args$ylab, auto.text)
-  extra.args$title <- quickText(extra.args$title, auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-  extra.args$caption <- quickText(extra.args$caption, auto.text)
-  extra.args$tag <- quickText(extra.args$tag, auto.text)
-
   # deal with breaks
   break_opts <- resolve_break_opts(breaks, extra.args)
 
@@ -192,7 +184,14 @@ polarFreq <- function(
   }
 
   # data checks
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+  mydata <- check_prep(
+    mydata,
+    vars,
+    type,
+    ws = ws,
+    wd = wd,
+    require_data = TRUE
+  ) |>
     check_numeric(vars = c(wd, ws, pollutant))
 
   # to make first interval easier to work with, set ws = 0 + e
@@ -363,14 +362,10 @@ polarFreq <- function(
       extra.args = extra.args,
       panel.ontop = TRUE
     ) +
-    ggplot2::labs(
-      y = extra.args$ylab,
-      x = extra.args$xlab,
-      title = extra.args$title,
-      subtitle = extra.args$subtitle,
-      caption = extra.args$caption,
-      tag = extra.args$tag,
-      fill = quickText(key.title, auto.text = auto.text)
+    labs_openair(
+      extra.args,
+      auto.text,
+      fill = key.title
     ) +
     get_facet(
       type,

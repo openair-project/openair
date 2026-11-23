@@ -257,3 +257,141 @@ test_that("type = 'wd' uses the compass facet layout", {
   out <- variationPlot(dat, pollutant = "nox", type = "season", plot = FALSE)
   expect_false(inherits(out$plot$facet, "FacetWinddir"))
 })
+
+# --- windflow ----------------------------------------------------------------
+
+test_that("windflow adds vector-averaged ws/wd and an arrow layer", {
+  out <- variationPlot(
+    dat1,
+    pollutant = "nox",
+    x = "hour",
+    B = 20,
+    windflow = TRUE,
+    plot = FALSE
+  )
+  expect_true(all(c("ws", "wd") %in% names(out$data)))
+  expect_true(any(vapply(
+    out$plot$layers,
+    \(l) inherits(l$geom, "GeomWindflow"),
+    logical(1)
+  )))
+
+  # check the vector average against a manual calculation for one hour
+  h0 <- dplyr::filter(dat1, as.numeric(format(date, "%H")) == 0)
+  u <- mean(-h0$ws * sin(h0$wd * pi / 180), na.rm = TRUE)
+  v <- mean(-h0$ws * cos(h0$wd * pi / 180), na.rm = TRUE)
+  res <- dplyr::filter(out$data, x == 0)
+  expect_equal(res$ws, sqrt(u^2 + v^2))
+  expect_equal(res$wd, (atan2(-u, -v) * 180 / pi) %% 360)
+})
+
+test_that("windflow is off by default and calculated per group", {
+  out <- variationPlot(dat1, pollutant = "nox", B = 20, plot = FALSE)
+  expect_false(any(c("ws", "wd") %in% names(out$data)))
+
+  split <- splitByDate(dat, dates = "1/2/2003", labels = c("a", "b"))
+  out <- variationPlot(
+    split,
+    pollutant = "nox",
+    x = "hour",
+    group = "split.by",
+    B = 20,
+    windflow = TRUE,
+    plot = FALSE
+  )
+  wind <- dplyr::distinct(out$data, x, group, ws)
+  expect_false(isTRUE(all.equal(
+    wind$ws[wind$group == "a"],
+    wind$ws[wind$group == "b"]
+  )))
+})
+
+test_that("windflow works when ws is also a pollutant, and in timeVariation", {
+  out <- variationPlot(
+    dat1,
+    pollutant = c("ws", "nox"),
+    B = 20,
+    windflow = TRUE,
+    plot = FALSE
+  )
+  expect_setequal(levels(out$data$group), c("ws", "nox"))
+
+  tv_wf <- timeVariation(
+    dat1,
+    pollutant = "nox",
+    B = 20,
+    windflow = TRUE,
+    plot = FALSE
+  )
+  panels <- setdiff(names(tv_wf$data), "subsets")
+  expect_true(all(vapply(
+    tv_wf$data[panels],
+    \(d) all(c("ws", "wd") %in% names(d)),
+    logical(1)
+  )))
+})
+
+# --- wd as a pollutant -------------------------------------------------------
+
+test_that("wd can be a pollutant and is vector-averaged", {
+  for (p in list("wd", c("nox", "wd"), c("wd", "ws", "nox"))) {
+    out <- variationPlot(dat1, pollutant = p, x = "hour", B = 20, plot = FALSE)
+    expect_equal(levels(out$data$group), p)
+  }
+
+  out <- variationPlot(dat1, pollutant = "wd", x = "hour", B = 20, plot = FALSE)
+  h0 <- dplyr::filter(dat1, format(date, "%H") == "00")
+  u <- mean(sin(h0$wd * pi / 180), na.rm = TRUE)
+  v <- mean(cos(h0$wd * pi / 180), na.rm = TRUE)
+  expect_equal(
+    dplyr::filter(out$data, x == 0)$mid,
+    (atan2(u, v) * 180 / pi) %% 360
+  )
+})
+
+test_that("wd is vector-averaged when used with group", {
+  wd_dat <- data.frame(
+    date = as.POSIXct("2024-01-01", tz = "GMT") + 3600 * (0:47),
+    wd = rep(c(350, 10), 24),
+    g = rep(c("p", "q"), each = 24)
+  )
+  for (st in c("mean", "median")) {
+    out <- variationPlot(
+      wd_dat,
+      pollutant = "wd",
+      x = "weekday",
+      group = "g",
+      statistic = st,
+      ci = FALSE,
+      B = 5,
+      plot = FALSE
+    )
+    # one value per weekday/group, all north (an arithmetic mean gives 180)
+    res <- dplyr::filter(out$data, !is.na(mid))
+    expect_equal(dplyr::n_distinct(res$group), 2)
+    expect_true(all(abs((res$mid + 180) %% 360 - 180) < 1e-6))
+    expect_false(any(grepl("_u$|_v$|wd_component", names(out$data))))
+  }
+})
+
+test_that("difference with wd gives a clear error", {
+  split <- splitByDate(dat1, dates = "15/1/2003", labels = c("a", "b"))
+  expect_error(
+    variationPlot(dat1, pollutant = c("wd", "nox"), difference = TRUE, plot = FALSE),
+    "difference"
+  )
+  expect_error(
+    variationPlot(
+      split,
+      pollutant = "wd",
+      group = "split.by",
+      difference = TRUE,
+      plot = FALSE
+    ),
+    "difference"
+  )
+  expect_error(
+    timeVariation(dat1, pollutant = c("wd", "nox"), difference = TRUE, plot = FALSE),
+    "difference"
+  )
+})

@@ -264,6 +264,11 @@ scatterPlot <- function(
 
   ## extra args
   extra.args <- capture_dots(...)
+
+  # check if deprecated key.header / key.footer are being used
+  if (uses_key_header(extra.args)) {
+    key.title <- check_key_header(key.title, extra.args)
+  }
   extra.args$size <- extra.args$size %||% 1
   extra.args$linewidth <- extra.args$linewidth %||% 1
   extra.args$linetype <- extra.args$linetype %||% 1
@@ -285,14 +290,6 @@ scatterPlot <- function(
   ## handle windflow
   windflow <- resolve_windflow_opts(windflow)
 
-  ## axis labels / title
-  xlab <- quickText(extra.args$xlab %||% x, auto.text)
-  ylab <- quickText(extra.args$ylab %||% y, auto.text)
-  title <- quickText(extra.args$title, auto.text)
-  subtitle <- quickText(extra.args$subtitle, auto.text)
-  caption <- quickText(extra.args$caption, auto.text)
-  tag <- quickText(extra.args$tag, auto.text)
-
   ## prepare data
   mydata <- prepare_scatter_data(
     mydata = mydata,
@@ -310,6 +307,17 @@ scatterPlot <- function(
     log.y = log.y,
     ...
   )
+
+  ## legend title: user-supplied `key.title`, else a default for the method
+  if (missing(key.title)) {
+    key.title <- switch(
+      method,
+      scatter = if (!is.na(z)) z else group,
+      hexbin = "count",
+      level = z,
+      density = "intensity"
+    )
+  }
 
   ## dispatch to method
   out <- switch(
@@ -342,12 +350,6 @@ scatterPlot <- function(
       trans = trans,
       k = k,
       auto.text = auto.text,
-      xlab = xlab,
-      ylab = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag,
       extra.args = extra.args
     ),
     hexbin = scatter_hexbin(
@@ -367,14 +369,9 @@ scatterPlot <- function(
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
+      key.title = key.title,
       trans = trans,
       auto.text = auto.text,
-      xlab = xlab,
-      ylab = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag,
       extra.args = extra.args
     ),
     level = scatter_level(
@@ -396,16 +393,11 @@ scatterPlot <- function(
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
+      key.title = key.title,
       trans = trans,
       k = k,
       dist = dist,
       auto.text = auto.text,
-      xlab = xlab,
-      ylab = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag,
       extra.args = extra.args
     ),
     density = scatter_density(
@@ -421,14 +413,9 @@ scatterPlot <- function(
       ref.x = ref.x,
       ref.y = ref.y,
       key.position = key.position,
+      key.title = key.title,
       trans = trans,
       auto.text = auto.text,
-      xlab = xlab,
-      ylab = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag,
       extra.args = extra.args
     )
   )
@@ -525,7 +512,14 @@ prepare_scatter_data <- function(
     function(var) inherits(mydata[[var]], c("Date", "POSIXt"))
   )
 
-  mydata <- checkPrep(mydata, unique(vars), type) |>
+  mydata <- check_prep(
+    mydata,
+    unique(vars),
+    type,
+    remove_calms = TRUE,
+    require_data = TRUE,
+    call = rlang::caller_env()
+  ) |>
     check_numeric(vars = numeric_vars, call = rlang::caller_env())
 
   ## filter for log scales (require strictly positive)
@@ -572,12 +566,6 @@ scatter_scatter <- function(
   trans,
   k,
   auto.text,
-  xlab,
-  ylab,
-  title = title,
-  subtitle = subtitle,
-  caption = caption,
-  tag = tag,
   extra.args
 ) {
   has_z <- !is.na(z)
@@ -659,15 +647,15 @@ scatter_scatter <- function(
         limits = z_limits,
         oob = scales::oob_squish,
         labels = z_labs,
-        guide = ggplot2::guide_colorbar(
+        guide = guide_openair(
+          key.position,
+          type = "colourbar",
           position = key.position
         ),
         transform = get_scale_transform(trans %||% "identity"),
         aesthetics = c("colour", "fill")
-      ) +
-      ggplot2::labs(
-        color = quickText(z, auto.text)
       )
+    legend_labs <- list(colour = key.title)
   } else if (has_group) {
     grp_aes <- ggplot2::aes(
       color = .data[[group]],
@@ -691,7 +679,7 @@ scatter_scatter <- function(
       seq_len(n_groups) %% 25 + 1L
     }
 
-    pol_name <- sapply(group_levels, function(x) quickText(x, auto.text))
+    pol_name <- label_openair(group_levels, auto_text = auto.text)
 
     theGuide <- guide_openair(
       key.position,
@@ -712,11 +700,8 @@ scatter_scatter <- function(
         values = shape_vals,
         labels = pol_name,
         guide = theGuide
-      ) +
-      ggplot2::labs(
-        color = quickText(key.title, auto.text),
-        shape = quickText(key.title, auto.text)
       )
+    legend_labs <- list(colour = key.title, shape = key.title)
   } else {
     ## single series — fixed colour, no legend
     plt <- plt +
@@ -731,6 +716,7 @@ scatter_scatter <- function(
         fixed_color = myColors[1L],
         extra.args = extra.args
       )
+    legend_labs <- list()
   }
 
   ## smooth fit
@@ -883,14 +869,13 @@ scatter_scatter <- function(
       key.position = if (n_groups == 1L && !has_z) "none" else key.position,
       extra.args = extra.args
     ) +
-    ggplot2::labs(
-      x = xlab,
-      y = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag
-    )
+    rlang::inject(labs_openair(
+      extra.args,
+      auto.text,
+      x = x,
+      y = y,
+      !!!legend_labs
+    ))
 
   return(
     list(
@@ -923,14 +908,9 @@ scatter_hexbin <- function(
   ref.x,
   ref.y,
   key.position,
+  key.title,
   trans,
   auto.text,
-  xlab,
-  ylab,
-  title = title,
-  subtitle = subtitle,
-  caption = caption,
-  tag,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
@@ -943,12 +923,12 @@ scatter_hexbin <- function(
       colors = myColors,
       transform = get_scale_transform(trans %||% "log10"),
       labels = scales::label_number(accuracy = 1),
-      guide = ggplot2::guide_colorbar(
+      oob = scales::oob_squish,
+      guide = guide_openair(
+        key.position,
+        type = "colourbar",
         position = key.position
       )
-    ) +
-    ggplot2::labs(
-      fill = "count"
     )
 
   if (mod.line) {
@@ -1014,13 +994,12 @@ scatter_hexbin <- function(
       key.position = key.position,
       extra.args = extra.args
     ) +
-    ggplot2::labs(
-      x = xlab,
-      y = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = x,
+      y = y,
+      fill = key.title
     )
 
   return(
@@ -1056,16 +1035,11 @@ scatter_level <- function(
   ref.x,
   ref.y,
   key.position,
+  key.title,
   trans,
   k,
   dist,
   auto.text,
-  xlab,
-  ylab,
-  title = title,
-  subtitle = subtitle,
-  caption = caption,
-  tag,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
@@ -1149,13 +1123,12 @@ scatter_level <- function(
       oob = scales::oob_squish,
       labels = scale_labs,
       na.value = "transparent",
-      guide = ggplot2::guide_colorbar(
+      guide = guide_openair(
+        key.position,
+        type = "colourbar",
         position = key.position
       ),
       transform = get_scale_transform(trans %||% "identity")
-    ) +
-    ggplot2::labs(
-      fill = quickText(z, auto.text)
     )
 
   if (mod.line) {
@@ -1181,13 +1154,12 @@ scatter_level <- function(
       key.position = key.position,
       extra.args = extra.args
     ) +
-    ggplot2::labs(
-      x = xlab,
-      y = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = x,
+      y = y,
+      fill = key.title
     )
 
   return(
@@ -1316,14 +1288,9 @@ scatter_density <- function(
   ref.x,
   ref.y,
   key.position,
+  key.title,
   trans,
   auto.text,
-  xlab,
-  ylab,
-  title,
-  subtitle,
-  caption,
-  tag,
   extra.args
 ) {
   mydata <- cutData(mydata, type)
@@ -1349,13 +1316,13 @@ scatter_density <- function(
     ggplot2::scale_fill_gradientn(
       colors = myColors,
       na.value = "transparent",
-      guide = ggplot2::guide_colorbar(
+      oob = scales::oob_squish,
+      guide = guide_openair(
+        key.position,
+        type = "colourbar",
         position = key.position
       ),
       transform = get_scale_transform(trans %||% "identity")
-    ) +
-    ggplot2::labs(
-      fill = "intensity"
     )
 
   if (mod.line) {
@@ -1382,13 +1349,12 @@ scatter_density <- function(
       key.position = key.position,
       extra.args = extra.args
     ) +
-    ggplot2::labs(
-      x = xlab,
-      y = ylab,
-      title = title,
-      subtitle = subtitle,
-      caption = caption,
-      tag = tag
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = x,
+      y = y,
+      fill = key.title
     )
 
   return(

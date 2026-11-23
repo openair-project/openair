@@ -29,6 +29,7 @@ timeVariation(
   panel.gap = 1.5,
   auto.text = TRUE,
   alpha = 0.4,
+  windflow = NULL,
   plot = TRUE,
   ...
 )
@@ -185,6 +186,11 @@ properly, e.g., by subscripting the "2" in "NO2". Passed to \code{\link[=quickTe
 \item{alpha}{The alpha transparency used for plotting confidence intervals.
 \code{0} is fully transparent and 1 is opaque. The default is \code{0.4}.}
 
+\item{windflow}{If \code{TRUE}, the vector-averaged wind speed and direction will
+be plotted using arrows. Alternatively, can be a list of arguments to
+control the appearance of the arrows (colour, linewidth, alpha value,
+etc.). See \code{\link[=windflowOpts]{windflowOpts()}} for details.}
+
 \item{plot}{When \code{openair} plots are created they are automatically printed
 to the active graphics device. \code{plot = FALSE} deactivates this behaviour.
 This may be useful when the plot \emph{data} is of more interest, or the plot is
@@ -197,7 +203,10 @@ plotting functions:
 \itemize{
 \item \code{title}, \code{subtitle}, \code{caption}, \code{tag}, \code{xlab} and \code{ylab} control the plot
 title, subtitle, caption, tag, x-axis label and y-axis label, passed to
-\code{\link[ggplot2:labs]{ggplot2::labs()}} via \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}.
+\code{\link[ggplot2:labs]{ggplot2::labs()}} via \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}. Any of these can
+be set to \code{NULL} to remove a default label (e.g., \code{caption = NULL}). Labels,
+including legend titles, can also be overridden by adding
+\code{\link[ggplot2:labs]{ggplot2::labs()}} to the returned plot.
 \item \code{xlim}, \code{ylim} and \code{limits} control the limits of the x-axis, y-axis and
 colorbar scales.
 \item \code{ncol} and \code{nrow} set the number of columns and rows in a faceted plot.

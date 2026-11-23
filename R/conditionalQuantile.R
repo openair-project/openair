@@ -138,7 +138,12 @@ conditionalQuantile <- function(
     vars <- c("date", vars)
   }
 
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+  mydata <- check_prep(
+    mydata,
+    vars,
+    type,
+    require_data = TRUE
+  ) |>
     check_numeric(vars = c(mod, obs))
   mydata <- stats::na.omit(mydata)
   mydata <- cutData(mydata, type)
@@ -263,7 +268,9 @@ conditionalQuantile <- function(
   hist_pred <- hist_data[hist_data$hist_type == "predicted", ]
   hist_obs <- hist_data[hist_data$hist_type == "observed", ]
 
-  key_guide <- ggplot2::guide_legend(
+  key_guide <- guide_openair(
+    key.position,
+    var_text_position = FALSE,
     ncol = key.columns,
     nrow = key.rows
   )
@@ -395,15 +402,13 @@ conditionalQuantile <- function(
       key.position,
       extra.args = extra.args
     ) +
-    ggplot2::labs(
-      color = NULL,
-      fill = NULL,
-      x = quickText(extra.args$xlab %||% "predicted value", auto.text),
-      y = quickText(extra.args$ylab %||% "observed value", auto.text),
-      title = quickText(extra.args$title, auto.text),
-      subtitle = quickText(extra.args$subtitle, auto.text),
-      caption = quickText(extra.args$caption, auto.text),
-      tag = quickText(extra.args$tag, auto.text)
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = "predicted value",
+      y = "observed value",
+      colour = NULL,
+      fill = NULL
     )
 
   if (plot) {

@@ -221,6 +221,11 @@ timePlot <- function(
   # Args setup
   extra.args <- capture_dots(...)
 
+  # check if deprecated key.header / key.footer are being used
+  if (uses_key_header(extra.args)) {
+    key.title <- check_key_header(key.title, extra.args)
+  }
+
   # detect if group is a column name rather than a boolean
   group_is_col <- is.character(group) && length(group) == 1
 
@@ -314,20 +319,11 @@ timePlot <- function(
     group <- TRUE
   }
 
-  # label controls
-  extra.args$title <- quickText(extra.args$title, auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-  extra.args$caption <- quickText(extra.args$caption, auto.text)
-  extra.args$tag <- quickText(extra.args$tag, auto.text)
-  extra.args$xlab <- quickText(extra.args$xlab %||% "", auto.text)
-  extra.args$ylab <- quickText(
-    extra.args$ylab %||%
-      dplyr::case_when(
-        !is.null(normalise) ~
-          paste("normalised", paste(pollutant, collapse = ", ")),
-        .default = paste(pollutant, collapse = ", ")
-      ),
-    auto.text
+  # default y axis label
+  default_ylab <- dplyr::case_when(
+    !is.null(normalise) ~
+      paste("normalised", paste(pollutant, collapse = ", ")),
+    .default = paste(pollutant, collapse = ", ")
   )
 
   # if stacking of plots by year is needed
@@ -435,9 +431,9 @@ timePlot <- function(
   if (missing(key.title)) {
     legend_title <-
       if (group_is_col) {
-        quickText(group, auto.text)
+        group
       } else if (colour_by_type) {
-        quickText(type_colour_col, auto.text)
+        type_colour_col
       } else {
         NULL
       }
@@ -503,13 +499,10 @@ timePlot <- function(
       key.position = ifelse(n_groups == 1, "none", key.position),
       extra.args = extra.args
     ) +
-    ggplot2::labs(
-      x = extra.args$xlab,
-      y = extra.args$ylab,
-      title = extra.args$title,
-      subtitle = extra.args$subtitle,
-      caption = extra.args$caption,
-      tag = extra.args$tag,
+    labs_openair(
+      extra.args,
+      auto.text,
+      y = default_ylab,
       fill = legend_title,
       colour = legend_title,
       linetype = legend_title,
@@ -632,7 +625,13 @@ prepare_timeplot_data <- function(
   }
 
   # standard data checks
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+  mydata <- check_prep(
+    mydata,
+    vars,
+    type,
+    require_data = TRUE,
+    call = rlang::caller_env()
+  ) |>
     check_numeric(
       vars = setdiff(vars, c("date", group)),
       call = rlang::caller_env()

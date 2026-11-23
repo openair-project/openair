@@ -273,14 +273,6 @@ calendarPlot <-
     # if no axes set, use all_x for a nice default
     extra.args$axes <- extra.args$axes %||% "all_x"
 
-    # label controls
-    extra.args$xlab <- quickText(extra.args$xlab %||% NULL, auto.text)
-    extra.args$ylab <- quickText(extra.args$ylab %||% NULL, auto.text)
-    extra.args$title <- quickText(extra.args$title %||% NULL, auto.text)
-    extra.args$subtitle <- quickText(extra.args$subtitle, auto.text)
-    extra.args$caption <- quickText(extra.args$caption, auto.text)
-    extra.args$tag <- quickText(extra.args$tag, auto.text)
-
     # resolve breaks
     break_opts <- resolve_break_opts(breaks, extra.args)
 
@@ -561,14 +553,10 @@ calendarPlot <-
         axis.ticks = ggplot2::element_blank(),
         axis.text.y = ggplot2::element_blank()
       ) +
-      ggplot2::labs(
-        y = extra.args$ylab,
-        x = extra.args$xlab,
-        title = extra.args$title,
-        subtitle = extra.args$subtitle,
-        caption = extra.args$caption,
-        tag = extra.args$tag,
-        fill = quickText(key.title, auto.text = auto.text)
+      labs_openair(
+        extra.args,
+        auto.text,
+        fill = key.title
       ) +
       ggplot2::scale_x_continuous(
         labels = weekday.abb,
@@ -718,7 +706,13 @@ prepare_calendar_data <- function(
   }
 
   # check input data
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE) |>
+  mydata <- check_prep(
+    mydata,
+    vars,
+    type,
+    require_data = TRUE,
+    call = rlang::caller_env()
+  ) |>
     check_numeric(vars = setdiff(vars, "date"), call = rlang::caller_env()) |>
     cutData(type, names = cut_names, ...)
 

@@ -116,11 +116,15 @@ variationPlot <- function(
   key.rows = NULL,
   name.pol = NULL,
   auto.text = TRUE,
+  windflow = NULL,
   plot = TRUE,
   ...
 ) {
   # check key.position
   key.position <- check_key_position(key.position, key = NULL)
+
+  # ensure windflow is a list
+  windflow <- resolve_windflow_opts(windflow)
 
   if (is.null(conf.int)) {
     if (statistic == "median") {
@@ -142,26 +146,18 @@ variationPlot <- function(
     pollutant = pollutant,
     type = type,
     statistic = statistic,
-    conf.int = conf.int
+    conf.int = conf.int,
+    difference = difference
   )
 
   # extra.args setup
   extra.args <- capture_dots(...)
 
-  # labels
-  extra.args$ylab <- quickText(
-    extra.args$ylab %||%
-      ifelse(normalise, "normalised level", toString(pollutant)),
-    auto.text
-  )
-  extra.args$xlab <- quickText(extra.args$x %||% x, auto.text)
-  extra.args$title <- quickText(extra.args$title %||% "", auto.text)
-  extra.args$subtitle <- quickText(extra.args$subtitle %||% "", auto.text)
-  extra.args$caption <- quickText(
-    extra.args$caption %||% create_varplot_sub_text(statistic, conf.int, ci),
-    auto.text
-  )
-  extra.args$tag <- quickText(extra.args$tag, auto.text)
+  # default labels
+  default_ylab <- ifelse(normalise, "normalised level", toString(pollutant))
+  default_xlab <- x
+  default_caption <- create_varplot_sub_text(statistic, conf.int, ci)
+
   extra.args$linetype <- extra.args$linetype %||% 1
   extra.args$linewidth <- extra.args$linewidth %||% 0.75
   extra.args$shape <- extra.args$shape %||% 16
@@ -183,6 +179,9 @@ variationPlot <- function(
     vars <- c(vars, group)
   }
   vars <- vars[vars != "default"]
+  if (windflow$windflow) {
+    vars <- unique(c(vars, "ws", "wd"))
+  }
 
   # how many 'types' are we working with?
   type_cols <- "type"
@@ -193,8 +192,10 @@ variationPlot <- function(
   # data checks
   # need special handling of cutData as `drop` needs to be passed separately
   mydata <- mydata |>
-    checkPrep(vars, c(type, group), remove.calm = FALSE) |>
-    check_numeric(vars = pollutant) |>
+    check_prep(vars, c(type, group), require_data = TRUE) |>
+    check_numeric(
+      vars = unique(c(pollutant, if (windflow$windflow) c("ws", "wd")))
+    ) |>
     (\(df) {
       do.call(
         cutData,
@@ -247,6 +248,33 @@ variationPlot <- function(
     attr(mydata$date, "tzone") <- local.tz
   }
 
+  # if x is hour or week, make sure it's numeric for plotting
+  if (x %in% c("hour", "week")) {
+    mydata$x <- as.numeric(as.character(mydata$x))
+  }
+
+  # vector-average wind speed and direction in each x/type(/group) bin for the
+  # windflow arrows; done before reshaping as `ws`/`wd` may also be pollutants
+  if (windflow$windflow) {
+    wind_data <- mydata |>
+      dplyr::summarise(
+        wind_u = mean(-.data$ws * sin(.data$wd * pi / 180), na.rm = TRUE),
+        wind_v = mean(-.data$ws * cos(.data$wd * pi / 180), na.rm = TRUE),
+        .by = dplyr::all_of(c("x", type_cols, if (group != "default") "group"))
+      ) |>
+      dplyr::mutate(
+        ws = sqrt(.data$wind_u^2 + .data$wind_v^2),
+        wd = (atan2(-.data$wind_u, -.data$wind_v) * 180 / pi) %% 360,
+        .keep = "unused"
+      )
+
+    # drop ws/wd unless they are being plotted, so they don't affect reshaping
+    mydata <- dplyr::select(
+      mydata,
+      -dplyr::any_of(setdiff(c("ws", "wd"), pollutant))
+    )
+  }
+
   # reformat data for plotting
   if (group == "default") {
     mydata$group <- NULL
@@ -263,9 +291,24 @@ variationPlot <- function(
     names(mydata)[names(mydata) == pollutant] <- "value"
   }
 
-  # if x is hour or week, make sure it's numeric for plotting
-  if (x %in% c("hour", "week")) {
-    mydata$x <- as.numeric(as.character(mydata$x))
+  # when `group` is used, "wd" is the only pollutant and can't be split into u/v
+  # groups (as below), so split it into u/v rows, summarised separately
+  wd_grouped <- group != "default" && identical(pollutant, "wd")
+  stat_by <- c("x", type_cols, "group")
+  if (wd_grouped) {
+    mydata <- dplyr::bind_rows(
+      dplyr::mutate(
+        mydata,
+        value = sin(pi * .data$value / 180),
+        wd_component = "u"
+      ),
+      dplyr::mutate(
+        mydata,
+        value = cos(pi * .data$value / 180),
+        wd_component = "v"
+      )
+    )
+    stat_by <- c(stat_by, "wd_component")
   }
 
   # before summary stats - decompose wd into u/v
@@ -288,7 +331,17 @@ variationPlot <- function(
             group = "wd_v"
           )
       ) |>
-      dplyr::mutate(group = factor(.data$group, levels = pollutant))
+      # "wd" is temporarily replaced by its u/v components
+      dplyr::mutate(
+        group = factor(
+          .data$group,
+          levels = append(
+            setdiff(pollutant, "wd"),
+            c("wd_u", "wd_v"),
+            after = match("wd", pollutant) - 1L
+          )
+        )
+      )
   }
 
   # calculate summary values and confidence intervals
@@ -387,7 +440,7 @@ variationPlot <- function(
             dplyr::summarise(
               mydata,
               bootMeanDF(.data$value, conf.int = q, B = B),
-              .by = dplyr::all_of(c("x", type_cols, "group"))
+              .by = dplyr::all_of(stat_by)
             ) |>
               dplyr::rename("mid" = "mean") |>
               dplyr::mutate(
@@ -409,7 +462,7 @@ variationPlot <- function(
               mid = stats::quantile(.data$value, 0.5, na.rm = TRUE),
               min = stats::quantile(.data$value, qs[1], na.rm = TRUE),
               max = stats::quantile(.data$value, qs[2], na.rm = TRUE),
-              .by = dplyr::all_of(c("x", type_cols, "group"))
+              .by = dplyr::all_of(stat_by)
             ) |>
               dplyr::mutate(
                 ci = q
@@ -418,6 +471,26 @@ variationPlot <- function(
         ) |>
         dplyr::bind_rows()
     }
+  }
+
+  # after summary stats - convert u/v rows back to wd when using `group`
+  if (wd_grouped) {
+    mydata <- mydata |>
+      tidyr::pivot_wider(
+        names_from = "wd_component",
+        values_from = c("mid", "min", "max")
+      ) |>
+      dplyr::mutate(
+        mid = (atan2(.data$mid_u, .data$mid_v) * 180 / pi) %% 360,
+        min = (atan2(.data$min_u, .data$min_v) * 180 / pi) %% 360,
+        max = (atan2(.data$max_u, .data$max_v) * 180 / pi) %% 360
+      ) |>
+      dplyr::select(
+        -dplyr::all_of(paste0(
+          rep(c("mid", "min", "max"), each = 2),
+          c("_u", "_v")
+        ))
+      )
   }
 
   # after summary stats - convert wd_u/wd_v back to wd
@@ -476,6 +549,19 @@ variationPlot <- function(
     )
   }
 
+  # bind on the vector-averaged ws/wd for the windflow arrows
+  if (windflow$windflow) {
+    wind_by <- setdiff(names(wind_data), c("ws", "wd"))
+    if ("group" %in% wind_by) {
+      wind_data$group <- as.character(wind_data$group)
+    }
+    group_levels <- levels(mydata$group)
+    mydata <- mydata |>
+      dplyr::mutate(group = as.character(.data$group)) |>
+      dplyr::left_join(wind_data, by = wind_by) |>
+      dplyr::mutate(group = factor(.data$group, levels = group_levels))
+  }
+
   # set pollutant labels for legend
   poll_labels <- name.pol %||% levels(mydata$group)
 
@@ -506,18 +592,17 @@ variationPlot <- function(
       wd.res = extra.args$wd.res %||% 8,
       wd_layout = identical(type, "wd")
     ) +
-    ggplot2::labs(
-      x = extra.args$xlab,
-      y = extra.args$ylab,
-      color = NULL,
+    labs_openair(
+      extra.args,
+      auto.text,
+      x = default_xlab,
+      y = default_ylab,
+      caption = default_caption,
+      colour = NULL,
       fill = NULL,
       linetype = NULL,
       linewidth = NULL,
-      shape = NULL,
-      title = extra.args$title,
-      subtitle = extra.args$subtitle,
-      caption = extra.args$caption,
-      tag = extra.args$tag
+      shape = NULL
     ) +
     ggplot2::coord_cartesian(
       ylim = extra.args$ylim
@@ -719,6 +804,23 @@ variationPlot <- function(
       )
   }
 
+  # windflow arrows on each line, once per x value (not per conf.int)
+  if (windflow$windflow) {
+    thePlot <-
+      thePlot +
+      layer_windflow_opts(
+        data = dplyr::filter(
+          mydata,
+          .data$ci == min(.data$ci, na.rm = TRUE),
+          !is.na(.data$mid),
+          !is.na(.data$ws),
+          !is.na(.data$wd)
+        ),
+        windflow_opts = windflow,
+        mapping = ggplot2::aes(y = .data$mid, ws = .data$ws, wd = .data$wd)
+      )
+  }
+
   thePlot <-
     thePlot +
     layer_ref(
@@ -749,9 +851,21 @@ validate_varplot_inputs <- function(
   pollutant,
   type,
   statistic,
-  conf.int
+  conf.int,
+  difference = FALSE
 ) {
   check_type(type, max = 2, call = rlang::caller_env())
+
+  # a difference in wind directions isn't meaningful as a simple subtraction
+  if (difference && "wd" %in% pollutant) {
+    cli::cli_abort(
+      c(
+        "x" = "{.arg difference} can't be used when {.arg pollutant} includes {.val wd}.",
+        "i" = "Differences in wind direction aren't supported."
+      ),
+      call = rlang::caller_env()
+    )
+  }
 
   # validate inputs
   if (any(group != "default") && length(pollutant) > 1) {

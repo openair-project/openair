@@ -67,7 +67,12 @@ polarDiff <- function(
   call <- rlang::current_env()
   prepare <- function(data, period) {
     data <- cutData(data, type = type) |>
-      checkPrep(vars, type, remove.calm = FALSE) |>
+      check_prep(
+        vars,
+        type,
+        require_data = TRUE,
+        call = call
+      ) |>
       check_numeric(vars = vars, call = call) |>
       dplyr::mutate(period = period)
     if (type == "default") {
@@ -138,8 +143,7 @@ polarDiff <- function(
       key.position = "right",
       par.settings = list(axis.line = list(col = "black")),
       alpha = 1,
-      key.title = paste("Difference", pollutant_name, sep = " "),
-      title = ""
+      key.title = paste("Difference", pollutant_name, sep = " ")
     ),
     extra.args[intersect(
       names(extra.args),
@@ -155,6 +159,14 @@ polarDiff <- function(
       )
     )]
   )
+
+  # pass on plot labels, handled by polarPlot() via labs_openair(). Not merged
+  # with modifyList(), which would drop NULLs (e.g., `caption = NULL`).
+  label_args <- extra.args[intersect(
+    names(extra.args),
+    c("xlab", "ylab", "title", "subtitle", "caption", "tag")
+  )]
+  plot_args[names(label_args)] <- label_args
 
   # for non-default types, rename type column to avoid polarPlot date coercion
   if (type != "default") {

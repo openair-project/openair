@@ -213,7 +213,12 @@ trajPlot <- function(
 
   # check data and prepare for plotting
   check_type(type, max = 2)
-  mydata <- checkPrep(mydata, vars, type, remove.calm = FALSE)
+  mydata <- check_prep(
+    mydata,
+    vars,
+    type,
+    require_data = TRUE
+  )
   mydata <- cutData(mydata, type = type, ...)
 
   # prepare group, unless `pollutant` is being used; numeric groups are binned
@@ -263,16 +268,16 @@ trajPlot <- function(
   # extra.args
   extra.args <- capture_dots(...)
 
+  # check if deprecated key.header / key.footer are being used
+  if (uses_key_header(extra.args)) {
+    key.title <- check_key_header(key.title, extra.args)
+  }
+
   # aspect, size
   extra.args$plot.type <- extra.args$plot.type %||% "l"
   extra.args$size <- extra.args$size %||% 1
   extra.args$linetype <- extra.args$linetype %||% 1
   extra.args$linewidth <- extra.args$linewidth %||% 1
-  extra.args$ylab <- extra.args$ylab %||% ""
-  extra.args$xlab <- extra.args$xlab %||% ""
-  extra.args$title <- extra.args$title %||% NULL
-  extra.args$subtitle <- extra.args$subtitle %||% NULL
-  extra.args$caption <- extra.args$caption %||% NULL
   extra.args$alpha <- extra.args$alpha %||% 1
 
   # convert traj data to simple features
@@ -333,14 +338,10 @@ trajPlot <- function(
       auto.text = auto.text,
       wd.res = extra.args$wd.res %||% 8
     ) +
-    ggplot2::labs(
-      x = quickText(extra.args$xlab, auto.text),
-      y = quickText(extra.args$ylab, auto.text),
-      title = quickText(extra.args$title, auto.text),
-      subtitle = quickText(extra.args$subtitle, auto.text),
-      caption = quickText(extra.args$caption, auto.text),
-      tag = quickText(extra.args$tag, auto.text),
-      colour = quickText(key.title, auto.text)
+    labs_openair(
+      extra.args,
+      auto.text,
+      colour = key.title
     )
 
   # add map if requested
