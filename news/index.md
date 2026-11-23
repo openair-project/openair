@@ -64,6 +64,14 @@
 
 ### Bug Fixes
 
+- [`polarAnnulus()`](https://openair-project.github.io/openair/reference/polarAnnulus.md)
+  and
+  [`scatterPlot()`](https://openair-project.github.io/openair/reference/scatterPlot.md)
+  now treat colour values outside of their colour scales as the maximum
+  or minimum part of the scale, rather than treating them as missing.
+  This is in line with similar functions like
+  [`polarPlot()`](https://openair-project.github.io/openair/reference/polarPlot.md).
+
 - Refined the built-in `theme` options. Titles, subtitles and captions
   now have clearer differences in size, weight and colour, and more
   space between them and the plot. Captions are right-aligned in the
