@@ -94,9 +94,10 @@ to place the scale at a different angle, or \code{FALSE} to move it to the side
 of the plots.}
 
 \item{compass.points}{In radial plots (e.g., \code{\link[=polarPlot]{polarPlot()}}), the number of
-compass directions to label and draw gridlines for. The default, \code{4},
-shows N/E/S/W. \code{8} adds the intercardinal directions (NE/SE/SW/NW) and
-\code{16} further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.).}
+compass directions to label and draw gridlines for. The default, \code{4}, shows
+N/E/S/W. \code{8} adds the intercardinal directions (NE/SE/SW/NW) and \code{16}
+further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.). \code{0}
+displays no gridlines.}
 
 \item{units}{The units shown on the polar axis scale.}
 

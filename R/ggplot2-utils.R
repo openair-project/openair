@@ -264,11 +264,16 @@ scale_x_compass <- function(
   ...
 ) {
   points <- resolve_compass_points(points)
+  if (points == 0) {
+    breaks <- NULL
+  } else {
+    breaks <- seq(0, 360 - 360 / points, 360 / points)
+  }
   list(
     ggplot2::scale_x_continuous(
       limits = c(0, 360),
       labels = NULL,
-      breaks = seq(0, 360 - 360 / points, 360 / points),
+      breaks = breaks,
       expand = expand,
       oob = oob,
       ...,
@@ -283,9 +288,9 @@ scale_x_compass <- function(
 # users via `compass.points` in `...`
 resolve_compass_points <- function(points) {
   points <- points %||% 4
-  if (!rlang::is_scalar_integerish(points) || !points %in% c(4, 8, 16)) {
+  if (!rlang::is_scalar_integerish(points) || !points %in% c(0, 4, 8, 16)) {
     cli::cli_abort(
-      "{.arg compass.points} must be one of {.val {4}}, {.val {8}} or {.val {16}}."
+      "{.arg compass.points} must be one of {.val {0}}, {.val {4}}, {.val {8}} or {.val {16}}."
     )
   }
   points
@@ -378,6 +383,10 @@ annotate_compass_points <- function(
   points = NULL
 ) {
   points <- resolve_compass_points(points)
+
+  if (points == 0) {
+    return(NULL)
+  }
 
   theme <- theme %||% "default"
   if (ggplot2::is_theme(theme)) {

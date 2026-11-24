@@ -8,7 +8,7 @@
 
 ## New Features
 
-- Polar coordinate plots (`windRose()`, `pollutionRose()`, `polarPlot()`, `polarFreq()`, `percentileRose()`, `polarAnnulus()`, `polarCluster()` and `polarDiff()`) gain the `compass.points` argument to show more compass directions than N/E/S/W. `compass.points = 8` adds labels and gridlines for the intercardinal directions (NE/SE/SW/NW), and `compass.points = 16` further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.) (#398).
+- Polar coordinate plots (`windRose()`, `pollutionRose()`, `polarPlot()`, `polarFreq()`, `percentileRose()`, `polarAnnulus()`, `polarCluster()` and `polarDiff()`) gain the `compass.points` argument to show more compass directions than N/E/S/W. `compass.points = 8` adds labels and gridlines for the intercardinal directions (NE/SE/SW/NW), and `compass.points = 16` further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.). Additionally, `compass.points = 0` removes the existing N/E/S/W markers completely (#398).
 
 - `selectByDate()` gains a `format` argument, consistent with `splitByDate()`, to control how character `start` and `end` dates are read. Dates are parsed strictly, so `start` and `end` no longer risk being misread. A character `end` includes the whole of the period its format specifies, so, e.g., `selectByDate(mydata, start = "2003-06", end = "2003-08", format = "%Y-%m")` selects June to August 2003.
 

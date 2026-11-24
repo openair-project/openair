@@ -148,9 +148,10 @@ to place the scale at a different angle, or \code{FALSE} to move it to the side
 of the plots.}
 
 \item{compass.points}{In radial plots (e.g., \code{\link[=polarPlot]{polarPlot()}}), the number of
-compass directions to label and draw gridlines for. The default, \code{4},
-shows N/E/S/W. \code{8} adds the intercardinal directions (NE/SE/SW/NW) and
-\code{16} further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.).}
+compass directions to label and draw gridlines for. The default, \code{4}, shows
+N/E/S/W. \code{8} adds the intercardinal directions (NE/SE/SW/NW) and \code{16}
+further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.). \code{0}
+displays no gridlines.}
 
 \item{offset}{\code{offset} controls the size of the 'hole' in the middle and is
 expressed on a scale of \code{0} to \code{100}, where \code{0} is no hole and \code{100} is a
@@ -188,8 +189,8 @@ plotting functions:
 \item \code{title}, \code{subtitle}, \code{caption}, \code{tag}, \code{xlab} and \code{ylab} control the plot
 title, subtitle, caption, tag, x-axis label and y-axis label, passed to
 \code{\link[ggplot2:labs]{ggplot2::labs()}} via \code{\link[=quickText]{quickText()}} if \code{auto.text = TRUE}. Any of these can
-be set to \code{NULL} to remove a default label (e.g., \code{caption = NULL}). Labels,
-including legend titles, can also be overridden by adding
+be set to \code{NULL} to remove a default label (e.g., \code{caption = NULL}).
+Labels, including legend titles, can also be overridden by adding
 \code{\link[ggplot2:labs]{ggplot2::labs()}} to the returned plot.
 \item \code{xlim}, \code{ylim} and \code{limits} control the limits of the x-axis, y-axis and
 colorbar scales.
