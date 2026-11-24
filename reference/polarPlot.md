@@ -369,7 +369,7 @@ polarPlot(
   directions to label and draw gridlines for. The default, `4`, shows
   N/E/S/W. `8` adds the intercardinal directions (NE/SE/SW/NW) and `16`
   further adds the secondary intercardinal directions
-  (NNE/ENE/ESE/etc.).
+  (NNE/ENE/ESE/etc.). `0` displays no gridlines.
 
 - units:
 

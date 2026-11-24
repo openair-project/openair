@@ -32,7 +32,9 @@
   gain the `compass.points` argument to show more compass directions
   than N/E/S/W. `compass.points = 8` adds labels and gridlines for the
   intercardinal directions (NE/SE/SW/NW), and `compass.points = 16`
-  further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.)
+  further adds the secondary intercardinal directions
+  (NNE/ENE/ESE/etc.). Additionally, `compass.points = 0` removes the
+  existing N/E/S/W markers completely
   ([\#398](https://github.com/openair-project/openair/issues/398)).
 
 - [`selectByDate()`](https://openair-project.github.io/openair/reference/selectByDate.md)

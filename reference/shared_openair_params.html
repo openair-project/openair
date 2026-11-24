@@ -184,9 +184,10 @@ of the plots.</p></dd>
 
 <dt id="arg-compass-points">compass.points<a class="anchor" aria-label="anchor" href="#arg-compass-points"></a></dt>
 <dd><p>In radial plots (e.g., <code><a href="polarPlot.html">polarPlot()</a></code>), the number of
-compass directions to label and draw gridlines for. The default, <code>4</code>,
-shows N/E/S/W. <code>8</code> adds the intercardinal directions (NE/SE/SW/NW) and
-<code>16</code> further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.).</p></dd>
+compass directions to label and draw gridlines for. The default, <code>4</code>, shows
+N/E/S/W. <code>8</code> adds the intercardinal directions (NE/SE/SW/NW) and <code>16</code>
+further adds the secondary intercardinal directions (NNE/ENE/ESE/etc.). <code>0</code>
+displays no gridlines.</p></dd>
 
 
 <dt id="arg-windflow">windflow<a class="anchor" aria-label="anchor" href="#arg-windflow"></a></dt>
@@ -268,8 +269,8 @@ Some additional arguments are also available, varying somewhat in different
 plotting functions:</p><ul><li><p><code>title</code>, <code>subtitle</code>, <code>caption</code>, <code>tag</code>, <code>xlab</code> and <code>ylab</code> control the plot
 title, subtitle, caption, tag, x-axis label and y-axis label, passed to
 <code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs()</a></code> via <code><a href="quickText.html">quickText()</a></code> if <code>auto.text = TRUE</code>. Any of these can
-be set to <code>NULL</code> to remove a default label (e.g., <code>caption = NULL</code>). Labels,
-including legend titles, can also be overridden by adding
+be set to <code>NULL</code> to remove a default label (e.g., <code>caption = NULL</code>).
+Labels, including legend titles, can also be overridden by adding
 <code><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggplot2::labs()</a></code> to the returned plot.</p></li>
 <li><p><code>xlim</code>, <code>ylim</code> and <code>limits</code> control the limits of the x-axis, y-axis and
 colorbar scales.</p></li>
