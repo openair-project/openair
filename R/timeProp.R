@@ -157,9 +157,9 @@ timeProp <- function(
     ) |>
     # calculate mean & count per type & pollutant, retain type mean
     dplyr::summarise(
+      n = sum(!is.na(.data[[pollutant]])),
       {{ pollutant }} := mean(.data[[pollutant]], na.rm = TRUE),
       mean_value = mean(.data$mean_value, na.rm = TRUE),
-      n = dplyr::n(),
       .by = dplyr::all_of(group_2)
     ) |>
     # needs specific arrangement
