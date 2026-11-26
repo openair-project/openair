@@ -133,10 +133,16 @@ timeProp <- function(
         xright = add_interval(.data$xleft, "3 month")
       )
   } else {
+    # keep the class of the input dates (Date or POSIXct)
+    xleft <- cut(mydata$date, avg.time)
     results <-
       dplyr::mutate(
         mydata,
-        xleft = as.POSIXct(cut(.data$date, avg.time), tz = tzone),
+        xleft = if (lubridate::is.Date(.data$date)) {
+          as.Date(xleft)
+        } else {
+          as.POSIXct(xleft, tz = tzone %||% "")
+        },
         xright = add_interval(.data$xleft, avg.time)
       )
   }
