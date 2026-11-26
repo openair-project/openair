@@ -39,9 +39,10 @@
 #'   3-month seasonal values are calculated with spring defined as March, April,
 #'   May and so on.
 #'
-#'   Note that `avg.time` when used in [timeProp()] should be greater than the
+#'   Note that `avg.time` when used in [timeProp()] should be no shorter than the
 #'   time gap in the original data. For example, `avg.time = "day"` for hourly
-#'   data is OK, but `avg.time = "hour"` for daily data is not.
+#'   data is OK, but `avg.time = "hour"` for daily data is not, and will give a
+#'   warning (or an error if `date` is a `Date`).
 #'
 #' @param normalise If `normalise = TRUE` then each time interval is scaled to
 #'   100. This is helpful to show the relative (percentage) contribution of the
@@ -114,6 +115,8 @@ timeProp <- function(
     )
   }
 
+  check_avg_time(mydata$date, avg.time)
+
   # cut data
   mydata <- cutData(mydata, c(type, proportion), ...)
 
@@ -124,14 +127,8 @@ timeProp <- function(
   group_1 <- c("xleft", "xright", type)
   group_2 <- c(type, "xleft", "xright", proportion)
 
-  # calculate left and right extremes of each bar, add the most common
-  # non-zero time interval to left to get right
+  # calculate the left and right extremes of each bar
   if (avg.time == "season") {
-    if (any(c("season", "seasonyear") %in% type)) {
-      cli::cli_abort(
-        "In {.fun openair::timeProp}, {.arg type} and {.arg avg.time} cannot both be {.val season}."
-      )
-    }
     # seasons always start in Dec, Mar, Jun or Sep and last three months
     results <- mydata |>
       dplyr::mutate(
@@ -249,7 +246,7 @@ timeProp <- function(
     ggplot2::scale_fill_manual(
       values = resolve_colour_opts(
         cols,
-        dplyr::n_distinct(results[[proportion]])
+        nlevels(results[[proportion]])
       ),
       breaks = levels(results[[proportion]]),
       labels = \(x) label_openair(x, auto_text = auto.text),
@@ -335,4 +332,41 @@ add_stack <- function(data, by) {
     .by = dplyr::all_of(by)
   ) |>
     dplyr::select(-"stack_pos", -"stack_neg")
+}
+
+# `avg.time` must be a valid specification and no finer than the time
+# resolution of the data (e.g., not "hour" for daily data), as bars would
+# otherwise be thin slivers (or, for Dates, impossible to draw)
+check_avg_time <- function(date, avg.time, call = rlang::caller_env()) {
+  start <- as.POSIXct(min(date))
+  by <- if (identical(avg.time, "season")) "3 month" else avg.time
+
+  end <- tryCatch(seq(start, by = by, length.out = 2)[2], error = \(e) NULL)
+  if (is.null(end)) {
+    cli::cli_abort(
+      c(
+        "x" = "{.arg avg.time} must be a valid time interval, not {.val {avg.time}}.",
+        "i" = "See {.arg avg.time} in {.fun timeProp} for the options available."
+      ),
+      call = call
+    )
+  }
+
+  avg_secs <- as.numeric(end) - as.numeric(start)
+  data_secs <- find_time_interval(date, return.seconds = TRUE)
+
+  # tolerance as months and years differ in length
+  if (avg_secs < 0.9 * data_secs) {
+    msg <- c(
+      "x" = "{.arg avg.time} ({.val {avg.time}}) is shorter than the time interval of the data.",
+      "i" = "{.arg avg.time} should be at least as long as the time gap in the data; e.g., {.code avg.time = \"day\"} for hourly data is fine, but {.code avg.time = \"hour\"} for daily data is not."
+    )
+    # Dates cannot be cut into units shorter than a day
+    if (inherits(date, "Date") && avg_secs < 86400) {
+      cli::cli_abort(msg, call = call)
+    }
+    cli::cli_warn(msg, call = call)
+  }
+
+  invisible(avg.time)
 }

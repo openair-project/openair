@@ -47,9 +47,10 @@ followed by a space. For example, an average of 2 months would be \code{avg.time
 3-month seasonal values are calculated with spring defined as March, April,
 May and so on.
 
-Note that \code{avg.time} when used in \code{\link[=timeProp]{timeProp()}} should be greater than the
+Note that \code{avg.time} when used in \code{\link[=timeProp]{timeProp()}} should be no shorter than the
 time gap in the original data. For example, \code{avg.time = "day"} for hourly
-data is OK, but \code{avg.time = "hour"} for daily data is not.}
+data is OK, but \code{avg.time = "hour"} for daily data is not, and will give a
+warning (or an error if \code{date} is a \code{Date}).}
 
 \item{type}{Character string(s) defining how data should be split/conditioned
 before plotting. \code{"default"} produces a single panel using the entire

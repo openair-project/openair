@@ -30,6 +30,10 @@
 
 - `timeProp()` now stacks negative values downwards from zero, separately from positive values, so bars for data that can be negative (e.g., temperature) no longer overlap.
 
+- `timeProp()` now gives a clear error if `avg.time` is not a valid interval, and a warning if it is shorter than the time gap in the data (e.g., `"hour"` for daily data), where bars will be thin. For `Date` data, an `avg.time` shorter than a day is an error, rather than failing with an obscure error from `cut()`.
+
+- `timeProp()` no longer fails with "Insufficient values in manual scale" when `proportion` has categories (e.g., wind sectors) that do not appear in the data. The legend now shows every category, with a consistent colour for each. It also no longer errors when `avg.time = "season"` is combined with `type = "season"`.
+
 - `polarAnnulus()` and `scatterPlot()` now treat colour values outside of their colour scales as the maximum or minimum part of the scale, rather than treating them as missing. This is in line with similar functions like `polarPlot()`.
 
 - Refined the built-in `theme` options. Titles, subtitles and captions now have clearer differences in size, weight and colour, and more space between them and the plot. Captions are right-aligned in the `"modern"`, `"soft"` and `"print"` themes. Several theme settings were previously being lost, which is now fixed: e.g., `fontsize` no longer turns text black in `theme = "dark"`, and `"print"` maps now show vertical graticule lines. Axis and strip text in the `"default"` and `"dark"` themes is now slightly smaller.
