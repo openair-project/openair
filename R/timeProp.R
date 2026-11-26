@@ -105,6 +105,15 @@ timeProp <- function(
   ) |>
     check_numeric(vars = pollutant)
 
+  if (normalise && any(mydata[[pollutant]] < 0, na.rm = TRUE)) {
+    cli::cli_abort(
+      c(
+        "x" = "{.code normalise = TRUE} cannot be used when {.field {pollutant}} contains negative values.",
+        "i" = "Percentage contributions are not meaningful for data that can be negative."
+      )
+    )
+  }
+
   # cut data
   mydata <- cutData(mydata, c(type, proportion), ...)
 
@@ -169,26 +178,31 @@ timeProp <- function(
       .data$xright,
       .data[[proportion]]
     ) |>
-    # weighted mean, with cumulative sum for bar heights
+    # weighted mean, with stacked bar heights
     dplyr::mutate(
       weighted_mean = .data[[pollutant]] * .data$n / sum(.data$n),
       Var1 = tidyr::replace_na(.data$weighted_mean, 0),
-      var2 = cumsum(.data$Var1),
-      var2lag = dplyr::lag(.data$var2, default = 0),
       date = .data$xleft,
       .by = dplyr::all_of(group_1)
-    )
+    ) |>
+    add_stack(by = group_1)
 
   # normalise to 100 if needed
   if (normalise) {
     results <-
       dplyr::mutate(
         results,
-        Var1 = .data$Var1 * (100 / sum(.data$Var1, na.rm = TRUE)),
-        var2 = cumsum(.data$Var1),
-        var2lag = dplyr::lag(.data$var2, default = 0),
+        # intervals with no total (all zero or missing) are left empty
+        total = sum(.data$Var1, na.rm = TRUE),
+        Var1 = dplyr::if_else(
+          .data$total == 0,
+          0,
+          .data$Var1 * (100 / .data$total)
+        ),
         .by = dplyr::all_of(c(type, "date"))
-      )
+      ) |>
+      dplyr::select(-"total") |>
+      add_stack(by = c(type, "date"))
   }
 
   # make sure we know order of data frame for adding other dates
@@ -306,4 +320,19 @@ add_interval <- function(x, by) {
   ends <- purrr::map(starts, \(d) seq(d, by = by, length.out = 2)[2]) |>
     purrr::list_c()
   ends[match(x, starts)]
+}
+
+# bar edges for each category within each bar. Positive and negative
+# contributions are stacked separately, upwards and downwards from zero, so
+# that bars with mixed signs do not overlap
+add_stack <- function(data, by) {
+  dplyr::mutate(
+    data,
+    stack_pos = cumsum(pmax(.data$Var1, 0)),
+    stack_neg = cumsum(pmin(.data$Var1, 0)),
+    var2 = dplyr::if_else(.data$Var1 < 0, .data$stack_neg, .data$stack_pos),
+    var2lag = .data$var2 - .data$Var1,
+    .by = dplyr::all_of(by)
+  ) |>
+    dplyr::select(-"stack_pos", -"stack_neg")
 }

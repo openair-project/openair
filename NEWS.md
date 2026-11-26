@@ -26,6 +26,10 @@
 
 - `timeProp()` bar heights now correctly add up to the mean of `pollutant` for each time interval when there is missing data. Previously, missing values were counted when weighting each category's contribution, so bars were too short. The `n` column in the returned `data` now counts valid (non-missing) values.
 
+- `timeProp()` with `normalise = TRUE` no longer produces missing values (and broken bars) for time intervals where `pollutant` is zero in every category; these intervals are now left empty. `normalise = TRUE` now gives an error if `pollutant` contains negative values, as percentage contributions are not meaningful then.
+
+- `timeProp()` now stacks negative values downwards from zero, separately from positive values, so bars for data that can be negative (e.g., temperature) no longer overlap.
+
 - `polarAnnulus()` and `scatterPlot()` now treat colour values outside of their colour scales as the maximum or minimum part of the scale, rather than treating them as missing. This is in line with similar functions like `polarPlot()`.
 
 - Refined the built-in `theme` options. Titles, subtitles and captions now have clearer differences in size, weight and colour, and more space between them and the plot. Captions are right-aligned in the `"modern"`, `"soft"` and `"print"` themes. Several theme settings were previously being lost, which is now fixed: e.g., `fontsize` no longer turns text black in `theme = "dark"`, and `"print"` maps now show vertical graticule lines. Axis and strip text in the `"default"` and `"dark"` themes is now slightly smaller.
