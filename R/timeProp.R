@@ -123,21 +123,21 @@ timeProp <- function(
         "In {.fun openair::timeProp}, {.arg type} and {.arg avg.time} cannot both be {.val season}."
       )
     }
+    # seasons always start in Dec, Mar, Jun or Sep and last three months
     results <- mydata |>
-      cutData(type = "seasonyear") |>
-      dplyr::mutate(xleft = min(.data$date), .by = c("seasonyear", type)) |>
       dplyr::mutate(
-        xright = .data$xleft +
-          stats::median(diff(.data$xleft)[diff(.data$xleft) != 0])
-      ) |>
-      dplyr::select(-dplyr::any_of("seasonyear"))
+        xleft = lubridate::floor_date(.data$date, "month") -
+          lubridate::period(
+            month = (lubridate::month(.data$date) - 12) %% 3
+          ),
+        xright = add_interval(.data$xleft, "3 month")
+      )
   } else {
     results <-
       dplyr::mutate(
         mydata,
         xleft = as.POSIXct(cut(.data$date, avg.time), tz = tzone),
-        xright = .data$xleft +
-          stats::median(diff(.data$xleft)[diff(.data$xleft) != 0])
+        xright = add_interval(.data$xleft, avg.time)
       )
   }
 
@@ -186,7 +186,7 @@ timeProp <- function(
   }
 
   # make sure we know order of data frame for adding other dates
-  results <- dplyr::arrange(results, dplyr::pick(dplyr::all_of(type)), "date")
+  results <- dplyr::arrange(results, dplyr::pick(dplyr::all_of(type)), .data$date)
 
   # check key.position
   key.position <- check_key_position(key.position, key)
@@ -291,4 +291,13 @@ timeProp <- function(
   )
   class(output) <- "openair"
   invisible(output)
+}
+
+# end of each bar: start of the next `avg.time` interval, so that bars for
+# months, quarters, DST days etc. have their true (unequal) widths
+add_interval <- function(x, by) {
+  starts <- unique(x)
+  ends <- purrr::map(starts, \(d) seq(d, by = by, length.out = 2)[2]) |>
+    purrr::list_c()
+  ends[match(x, starts)]
 }

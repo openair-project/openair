@@ -20,6 +20,8 @@
 
 ## Bug Fixes
 
+- `timeProp()` bars now have their true width when `avg.time` covers intervals of unequal length. Previously every bar was given the same width, so, e.g., bars for months were all 31 days wide and overlapped their neighbours. With `avg.time = "season"`, bars now start at the beginning of each season (December, March, June and September) rather than at the first observation, so partial seasons are drawn correctly. The returned `data` is also now correctly sorted by `date`.
+
 - `polarAnnulus()` and `scatterPlot()` now treat colour values outside of their colour scales as the maximum or minimum part of the scale, rather than treating them as missing. This is in line with similar functions like `polarPlot()`.
 
 - Refined the built-in `theme` options. Titles, subtitles and captions now have clearer differences in size, weight and colour, and more space between them and the plot. Captions are right-aligned in the `"modern"`, `"soft"` and `"print"` themes. Several theme settings were previously being lost, which is now fixed: e.g., `fontsize` no longer turns text black in `theme = "dark"`, and `"print"` maps now show vertical graticule lines. Axis and strip text in the `"default"` and `"dark"` themes is now slightly smaller.
