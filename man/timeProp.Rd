@@ -13,6 +13,7 @@ timeProp(
   cols = "Set1",
   theme = "default",
   normalise = FALSE,
+  statistic = "mean",
   ref.x = NULL,
   ref.y = NULL,
   key.columns = NULL,
@@ -115,6 +116,23 @@ openair theme will not be fully applied; instead, only minimal adjustments
 \item{normalise}{If \code{normalise = TRUE} then each time interval is scaled to
 100. This is helpful to show the relative (percentage) contribution of the
 proportions.}
+
+\item{statistic}{How each category's contribution to a bar is calculated. Only
+statistics that add up across categories can be stacked, so the height of
+each bar is always meaningful. Can be:
+\itemize{
+\item \code{"mean"} (the default): the bar shows the mean of \code{pollutant} over the
+time interval. Each category contributes its own mean, weighted by its
+share of the valid data.
+\item \code{"sum"}: the bar shows the sum of \code{pollutant} over the time interval, and
+each category contributes its own sum. Useful for quantities that
+accumulate, such as rainfall or emissions. Note that missing data will
+reduce the sum.
+\item \code{"frequency"}: the bar shows the number of valid \code{pollutant} readings in
+the time interval, and each category contributes its own number of
+readings. With \code{normalise = TRUE} this is the percentage of time in each
+category.
+}}
 
 \item{ref.x}{Either a single value or values representing the x axis
 intercepts to draw lines, or a list such as that provided by \code{\link[=refOpts]{refOpts()}} to
@@ -223,6 +241,15 @@ made up for any time interval.
 \examples{
 # monthly plot of SO2 showing the contribution by wind sector
 timeProp(mydata, pollutant = "so2", avg.time = "month", proportion = "wd")
+
+# monthly percentage of time spent in each wind sector
+timeProp(
+  mydata,
+  pollutant = "so2",
+  avg.time = "month",
+  statistic = "frequency",
+  normalise = TRUE
+)
 }
 \seealso{
 Other time series and trend functions:

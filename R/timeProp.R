@@ -48,6 +48,24 @@
 #'   100. This is helpful to show the relative (percentage) contribution of the
 #'   proportions.
 #'
+#' @param statistic How each category's contribution to a bar is calculated. Only
+#'   statistics that add up across categories can be stacked, so the height of
+#'   each bar is always meaningful. Can be:
+#'
+#'   - `"mean"` (the default): the bar shows the mean of `pollutant` over the
+#'   time interval. Each category contributes its own mean, weighted by its
+#'   share of the valid data.
+#'
+#'   - `"sum"`: the bar shows the sum of `pollutant` over the time interval, and
+#'   each category contributes its own sum. Useful for quantities that
+#'   accumulate, such as rainfall or emissions. Note that missing data will
+#'   reduce the sum.
+#'
+#'   - `"frequency"`: the bar shows the number of valid `pollutant` readings in
+#'   the time interval, and each category contributes its own number of
+#'   readings. With `normalise = TRUE` this is the percentage of time in each
+#'   category.
+#'
 #' @export
 #' @return an [openair][openair-package] object
 #' @author David Carslaw
@@ -57,6 +75,15 @@
 #' @examples
 #' # monthly plot of SO2 showing the contribution by wind sector
 #' timeProp(mydata, pollutant = "so2", avg.time = "month", proportion = "wd")
+#'
+#' # monthly percentage of time spent in each wind sector
+#' timeProp(
+#'   mydata,
+#'   pollutant = "so2",
+#'   avg.time = "month",
+#'   statistic = "frequency",
+#'   normalise = TRUE
+#' )
 timeProp <- function(
   mydata,
   pollutant = "nox",
@@ -66,6 +93,7 @@ timeProp <- function(
   cols = "Set1",
   theme = "default",
   normalise = FALSE,
+  statistic = "mean",
   ref.x = NULL,
   ref.y = NULL,
   key.columns = NULL,
@@ -94,6 +122,8 @@ timeProp <- function(
     key.title <- check_key_header(key.title, extra.args)
   }
 
+  statistic <- rlang::arg_match(statistic, c("mean", "sum", "frequency"))
+
   # variables needed
   vars <- c("date", pollutant)
 
@@ -106,7 +136,11 @@ timeProp <- function(
   ) |>
     check_numeric(vars = pollutant)
 
-  if (normalise && any(mydata[[pollutant]] < 0, na.rm = TRUE)) {
+  if (
+    normalise &&
+      statistic != "frequency" &&
+      any(mydata[[pollutant]] < 0, na.rm = TRUE)
+  ) {
     cli::cli_abort(
       c(
         "x" = "{.code normalise = TRUE} cannot be used when {.field {pollutant}} contains negative values.",
@@ -175,10 +209,16 @@ timeProp <- function(
       .data$xright,
       .data[[proportion]]
     ) |>
-    # weighted mean, with stacked bar heights
+    # bar heights: each category's contribution to the interval total
     dplyr::mutate(
       weighted_mean = .data[[pollutant]] * .data$n / sum(.data$n),
-      Var1 = tidyr::replace_na(.data$weighted_mean, 0),
+      Var1 = switch(
+        statistic,
+        mean = .data$weighted_mean,
+        sum = .data[[pollutant]] * .data$n,
+        frequency = .data$n
+      ) |>
+        tidyr::replace_na(0),
       date = .data$xleft,
       .by = dplyr::all_of(group_1)
     ) |>
@@ -210,6 +250,22 @@ timeProp <- function(
 
   # x-axis scale type
   x_type <- if (lubridate::is.Date(results$xleft)) "date" else "datetime"
+
+  # default y-axis label
+  ylab_default <- switch(
+    statistic,
+    mean = if (normalise) paste("% contribution to", pollutant) else pollutant,
+    sum = if (normalise) {
+      paste("% contribution to sum of", pollutant)
+    } else {
+      paste("sum of", pollutant)
+    },
+    frequency = if (normalise) {
+      paste("% of", pollutant, "readings")
+    } else {
+      paste("number of", pollutant, "readings")
+    }
+  )
 
   # plot
   thePlot <-
@@ -275,8 +331,8 @@ timeProp <- function(
       extra.args,
       auto.text,
       x = "date",
-      y = ifelse(normalise, paste("% contribution to", pollutant), pollutant),
-      caption = "contribution weighted by mean",
+      y = ylab_default,
+      caption = if (statistic == "mean") "contribution weighted by mean",
       fill = key.title
     ) +
     theme_openair(

@@ -16,6 +16,8 @@
 
 - openair objects gain `grid::grid.draw()`, `as.data.frame()` and `tibble::as_tibble()` methods. This means openair objects can be saved directly with `ggplot2::ggsave()` (e.g., `ggsave("plot.png", polarPlot(mydata))`), and their data extracted as a data frame or tibble. Where an object contains several data frames (e.g., from `timeVariation()`), use `subset` to choose one.
 
+- `timeProp()` gains a `statistic` argument. The default, `"mean"`, is the existing behaviour, with bars showing the mean of `pollutant` split by each category's contribution. `statistic = "sum"` shows the sum instead (e.g., for rainfall or emissions), and `statistic = "frequency"` shows the number of valid readings, which with `normalise = TRUE` gives the percentage of time in each category.
+
 - `variationPlot()` and `timeVariation()` gain a `windflow` argument, consistent with `timePlot()`, `scatterPlot()`, `trendLevel()` and `calendarPlot()`. Arrows show the vector-averaged wind speed and direction for each point on the plot, e.g., for each hour of the day. When `group` is used, the wind is averaged separately for each group. The averaged `ws` and `wd` are also returned in the `data` element of the output.
 
 ## Bug Fixes
